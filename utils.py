@@ -1265,11 +1265,30 @@ def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
                                     separators, invalid_strings)
 
 
+def get_actor_from_post_id(post_id: str) -> str:
+    """Returns an actor url from a post id
+    eg. https://somedomain/users/nick/statuses/123 becomes
+    https://somedomain/users/nick
+    """
+    actor = post_id
+    if has_users_path(actor):
+        if '/statuses/' in actor:
+            actor = actor.split('/statuses/')[0]
+        elif '/objects/' in actor:
+            actor = actor.split('/objects/')[0]
+    elif '/p/' in actor:
+        # pixelfed style post id
+        nick = actor.split('/p/')[1]
+        if '/' in nick:
+            nick = nick.split('/')[0]
+        actor = actor.split('/p/')[0] + '/users/' + nick
+    return actor
+
+
 def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
     """Returns the display name for the given actor
     """
-    if '/statuses/' in actor:
-        actor = actor.split('/statuses/')[0]
+    actor = get_actor_from_post_id(actor)
     if not person_cache.get(actor):
         return None
     name_found = None
@@ -1341,8 +1360,7 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
     This is for use by text-to-speech for pitch setting
     """
     default_gender = 'They/Them'
-    if '/statuses/' in actor:
-        actor = actor.split('/statuses/')[0]
+    actor = get_actor_from_post_id(actor)
     if not person_cache.get(actor):
         return default_gender
     bio_found = None
@@ -1820,7 +1838,7 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
                  post_url: str, reply_interval_hours: int,
                  curr_date_str: str = None,
                  post_json_object: {} = None) -> bool:
-    """Is replying to the given post permitted?
+    """Is replying to the given local post permitted?
     This is a spam mitigation feature, so that spammers can't
     add a lot of replies to old post which you don't notice.
     """

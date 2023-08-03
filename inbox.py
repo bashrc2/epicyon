@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
 from utils import is_quote_toot
 from utils import acct_handle_dir
@@ -3110,19 +3111,7 @@ def _receive_announce(recent_posts_cache: {},
                         if not contains_invalid_actor_url_chars(attrib):
                             lookup_actor = attrib
         if lookup_actor:
-            if has_users_path(lookup_actor):
-                if '/statuses/' in lookup_actor:
-                    lookup_actor = lookup_actor.split('/statuses/')[0]
-                elif '/objects/' in lookup_actor:
-                    lookup_actor = lookup_actor.split('/objects/')[0]
-            elif '/p/' in lookup_actor:
-                # pixelfed style post id
-                lookup_nick = lookup_actor.split('/p/')[1]
-                if '/' in lookup_nick:
-                    lookup_nick = lookup_nick.split('/')[0]
-                lookup_actor = \
-                    lookup_actor.split('/p/')[0] + '/users/' + lookup_nick
-
+            lookup_actor = get_actor_from_post_id(lookup_actor)
             if lookup_actor:
                 if is_recent_post(post_json_object, 3):
                     if not os.path.isfile(post_filename + '.tts'):

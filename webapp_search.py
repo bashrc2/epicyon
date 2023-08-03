@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import get_actor_from_post_id
 from utils import remove_html
 from utils import harmless_markup
 from utils import remove_id_ending
@@ -1182,9 +1183,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                'cc' in post_json_object:
                 new_url = \
                     remove_id_ending(post_json_object['id'])
-                actor = new_url
-                if '/statuses/' in actor:
-                    actor = actor.split('/statuses/')[0]
+                actor = get_actor_from_post_id(new_url)
                 new_post_json_object = {
                     "type": "Create",
                     "id": new_url + '/activity',
