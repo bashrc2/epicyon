@@ -5553,7 +5553,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if '/statuses/' not in announced_json['id'] and \
            '/objects/' not in announced_json['id']:
             print('WARN: announced post id does not contain /statuses/ ' +
-                  'or /objects/' + str(announced_json))
+                  'or /objects/ ' + str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
