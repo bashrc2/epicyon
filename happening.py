@@ -963,6 +963,10 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
             "type": "Place",
             "name": location
         })
+        event_json['object']['location'] = {
+            'type': 'Place',
+            'name': location
+        }
     handle = nickname + '@' + domain
     handle_dir = acct_handle_dir(base_dir, handle)
     outbox_dir = handle_dir + '/outbox'

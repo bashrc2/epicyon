@@ -609,11 +609,17 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                 "value": shared_item['category']
             })
         if shared_item['location']:
+            # tag representation of location
             offer_item['object']['attachment'].append({
                 "@context": "https://www.w3.org/ns/activitystreams",
                 "type": "Place",
                 "name": shared_item['location'].title()
             })
+            # pixelfed style representation of location
+            offer_item['object']['location'] = {
+                "type": "Place",
+                "name": shared_item['location'].title()
+            }
         if shared_item['imageUrl']:
             if '://' in shared_item['imageUrl']:
                 file_extension = None

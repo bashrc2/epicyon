@@ -102,6 +102,7 @@ from linked_data_sig import generate_json_signature
 from petnames import resolve_petnames
 from video import convert_video_to_note
 from context import get_individual_post_context
+from maps import get_location_dict_from_tags
 from maps import geocoords_from_map_link
 from keys import get_person_key
 from markdown import markdown_to_html
@@ -1280,6 +1281,25 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
             "crawlable": False
         }
     }
+
+    # pixelfed style location representation
+    location = get_location_dict_from_tags(tags)
+    if location:
+        if location.get('name') and \
+           location.get('longitude') and \
+           location.get('latitude'):
+            new_post['object']['location'] = {
+                'type': 'Place',
+                'name': location['name'],
+                'longitude': location['longitude'],
+                'latitude': location['latitude']
+            }
+        elif location.get('name'):
+            new_post['object']['location'] = {
+                'type': 'Place',
+                'name': location['name']
+            }
+
     if attach_image_filename:
         new_post['object'] = \
             attach_media(base_dir, http_prefix, nickname, domain, port,
@@ -1354,6 +1374,25 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         },
         "crawlable": False
     }
+
+    # pixelfed style location representation
+    location = get_location_dict_from_tags(tags)
+    if location:
+        if location.get('name') and \
+           location.get('longitude') and \
+           location.get('latitude'):
+            new_post['location'] = {
+                'type': 'Place',
+                'name': location['name'],
+                'longitude': location['longitude'],
+                'latitude': location['latitude']
+            }
+        elif location.get('name'):
+            new_post['location'] = {
+                'type': 'Place',
+                'name': location['name']
+            }
+
     if attach_image_filename:
         new_post = \
             attach_media(base_dir, http_prefix, nickname, domain, port,

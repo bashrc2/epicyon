@@ -27,7 +27,7 @@ def _geocoords_to_osm_link(osm_domain: str, zoom: int,
         str(zoom) + '/' + str(latitude) + '/' + str(longitude)
 
 
-def _get_location_from_tags(tags: []) -> str:
+def get_location_dict_from_tags(tags: []) -> str:
     """Returns the location from the tags list
     """
     for tag_item in tags:
@@ -39,7 +39,16 @@ def _get_location_from_tags(tags: []) -> str:
             continue
         if not isinstance(tag_item['name'], str):
             continue
-        location_str = tag_item['name'].replace('\n', ' ')
+        return tag_item
+    return None
+
+
+def _get_location_from_tags(tags: []) -> str:
+    """Returns the location from the tags list
+    """
+    locn = get_location_dict_from_tags(tags)
+    if locn:
+        location_str = locn['name'].replace('\n', ' ')
         return remove_html(location_str)
     return None
 
@@ -68,12 +77,17 @@ def get_location_from_post(post_json_object: {}) -> str:
                     if is_float(post_obj['location']['longitude']) and \
                        is_float(post_obj['location']['latitude']):
                         locn_exists = True
+            if not locn_exists:
+                if post_obj['location'].get('name'):
+                    if isinstance(post_obj['location']['name'], str):
+                        locn = post_obj['location']['name']
     if locn_exists:
         osm_domain = 'osm.org'
         zoom = 17
         locn = _geocoords_to_osm_link(osm_domain, zoom,
                                       post_obj['location']['latitude'],
                                       post_obj['location']['longitude'])
+
     return locn
 
 
