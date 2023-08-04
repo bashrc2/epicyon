@@ -2259,8 +2259,13 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     attachment = []
                     if post_json_object['object'].get('attachment'):
                         attachment = post_json_object['object']['attachment']
+                    capabilities = {}
+                    if post_json_object['object'].get('capabilities'):
+                        capabilities = \
+                            post_json_object['object']['capabilities']
                     if not disallow_announce(post_summary + ' ' +
-                                             post_content, attachment):
+                                             post_content, attachment,
+                                             capabilities):
                         if post_json_object.get('id'):
                             post_id = post_json_object['id']
                             announce_actor = \

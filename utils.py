@@ -4013,9 +4013,18 @@ def is_i2p_request(calling_domain: str, referer_domain: str,
     return False
 
 
-def disallow_announce(content: str, attachment: []) -> bool:
+def disallow_announce(content: str, attachment: [], capabilities: {}) -> bool:
     """Are announces/boosts not allowed for the given post?
     """
+    # pixelfed style capabilities
+    if capabilities.get('announce'):
+        if isinstance(capabilities['announce'], str):
+            if not capabilities['announce'].endswith('#Public'):
+                # TODO handle non-public announce permissions
+                print('CAPABILITIES: announce ' + capabilities['announce'])
+                return True
+
+    # emojis
     disallow_strings = (
         ':boost_no:',
         ':noboost:',

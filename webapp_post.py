@@ -2637,7 +2637,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
         attachment = []
         if post_json_object['object'].get('attachment'):
             attachment = post_json_object['object']['attachment']
-        if disallow_announce(content_all_str, attachment):
+        capabilities = {}
+        if post_json_object['object'].get('capabilities'):
+            capabilities = post_json_object['object']['capabilities']
+        if disallow_announce(content_all_str, attachment, capabilities):
             announce_str = ''
         # does an emoji indicate a no replies preference?
         # if so then don't show the reply icon
