@@ -1372,8 +1372,9 @@ def get_rss(base_dir: str, domain: str, session, url: str,
                         timeout=timeout_sec,
                         allow_redirects=False)
         if result:
-            if int(len(result.text) / 1024) < max_feed_size_kb and \
-               not contains_invalid_chars(result.text):
+            if int(len(result.text) / 1024) >= max_feed_size_kb:
+                print('WARN: feed is too large: ' + url)
+            elif not contains_invalid_chars(result.text):
                 return _xml_str_to_dict(base_dir, domain, result.text,
                                         moderated, mirrored,
                                         max_posts_per_source,
@@ -1382,8 +1383,7 @@ def get_rss(base_dir: str, domain: str, session, url: str,
                                         session, debug,
                                         preferred_podcast_formats,
                                         system_language)
-            print('WARN: feed is too large, ' +
-                  'or contains invalid characters: ' + url)
+            print('WARN: feed contains invalid characters: ' + url)
         else:
             print('WARN: no result returned for feed ' + url)
     except requests.exceptions.RequestException as ex:
