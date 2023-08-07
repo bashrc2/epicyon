@@ -2396,13 +2396,14 @@ class JsonLdProcessor(object):
                 # hash bnode paths
                 path_namer = UniqueNamer('_:b')
                 path_namer.get_name(bnode)
+                bnode_path = None
                 try:
                     bnode_path = self._hash_paths(
                         bnode, bnodes, namer, path_namer)
-                    results.append(bnode_path)
                 except BaseException:
                     print('WARN: jsonld bnode_path failed')
-                    pass
+                if bnode_path:
+                    results.append(bnode_path)
 
             # name bnodes in hash order
             cmp_hashes = cmp_to_key(lambda x, y: cmp(x['hash'], y['hash']))

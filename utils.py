@@ -1472,7 +1472,7 @@ def get_user_paths() -> []:
     return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/',
             '/c/', '/m/', '/video-channels/', '/author/',
             '/activitypub/', '/actors/', '/snac/', '/@/', '/~/',
-            '/fediverse/blog/')
+            '/fediverse/blog/', '/user/')
 
 
 def get_group_paths() -> []:
