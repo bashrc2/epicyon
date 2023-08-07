@@ -125,7 +125,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
     if agent_str:
         # is this a web crawler? If so then block it by default
         # unless this is a news instance or if it is in the allowed list
-        bot_strings = ('bot/', 'bot-', '/bot', '/robot')
+        bot_strings = ('bot/', 'bot-', '/bot', '/robot', 'gptbot')
         contains_bot_string = False
         for bot_str in bot_strings:
             if bot_str in agent_str_lower:
