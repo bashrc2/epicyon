@@ -239,6 +239,10 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
                      session, person_url, as_header, None, debug,
                      project_version, http_prefix, person_domain)
         if not get_json_valid(person_json):
+            if person_json is not None:
+                if isinstance(person_json, dict):
+                    # return the error code
+                    return person_json
             return None
     pub_key, _ = get_actor_public_key_from_id(person_json, original_person_url)
     if not pub_key:

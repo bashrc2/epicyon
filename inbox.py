@@ -3142,9 +3142,16 @@ def _receive_announce(recent_posts_cache: {},
                                            i2p_domain,
                                            signing_priv_key_pem)
                     if pub_key:
-                        if debug:
-                            print('DEBUG: public key obtained for announce: ' +
-                                  lookup_actor)
+                        if not isinstance(pub_key, dict):
+                            if debug:
+                                print('DEBUG: ' +
+                                      'public key obtained for announce: ' +
+                                      lookup_actor)
+                        else:
+                            if debug:
+                                print('DEBUG: http error code returned for ' +
+                                      'public key obtained for announce: ' +
+                                      lookup_actor + ' ' + str(pub_key))
                         break
 
                     if debug:
@@ -3398,8 +3405,15 @@ def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
                                domain, onion_domain, i2p_domain,
                                signing_priv_key_pem)
         if pub_key:
-            if debug:
-                print('DEBUG: public key obtained for reply: ' + lookup_actor)
+            if not isinstance(pub_key, dict):
+                if debug:
+                    print('DEBUG: public key obtained for reply: ' +
+                          lookup_actor)
+            else:
+                if debug:
+                    print('DEBUG: http error code for public key ' +
+                          'obtained for reply: ' + lookup_actor + ' ' +
+                          str(pub_key))
             break
 
         if debug:
@@ -5500,15 +5514,21 @@ def _receive_follow_request(session, session_onion, session_i2p,
         # Getting their public key has the same result
         if debug:
             print('Obtaining the following actor: ' + message_json['actor'])
-        if not get_person_pub_key(base_dir, curr_session,
-                                  message_json['actor'],
-                                  person_cache, debug, project_version,
-                                  curr_http_prefix,
-                                  this_domain, onion_domain,
-                                  i2p_domain, signing_priv_key_pem):
+        pubkey_result = \
+            get_person_pub_key(base_dir, curr_session,
+                               message_json['actor'],
+                               person_cache, debug, project_version,
+                               curr_http_prefix,
+                               this_domain, onion_domain,
+                               i2p_domain, signing_priv_key_pem)
+        if not pubkey_result:
             if debug:
                 print('Unable to obtain following actor: ' +
                       message_json['actor'])
+        elif isinstance(pubkey_result, dict):
+            if debug:
+                print('http error code trying to obtain following actor: ' +
+                      message_json['actor'] + ' ' + str(pubkey_result))
 
         group_account = \
             has_group_type(base_dir, message_json['actor'], person_cache)
@@ -5545,15 +5565,22 @@ def _receive_follow_request(session, session_onion, session_i2p,
             if debug:
                 print('Obtaining the following actor: ' +
                       message_json['actor'])
-            if not get_person_pub_key(base_dir, curr_session,
-                                      message_json['actor'],
-                                      person_cache, debug, project_version,
-                                      curr_http_prefix, this_domain,
-                                      onion_domain, i2p_domain,
-                                      signing_priv_key_pem):
+            pubkey_result = \
+                get_person_pub_key(base_dir, curr_session,
+                                   message_json['actor'],
+                                   person_cache, debug, project_version,
+                                   curr_http_prefix, this_domain,
+                                   onion_domain, i2p_domain,
+                                   signing_priv_key_pem)
+            if not pubkey_result:
                 if debug:
                     print('Unable to obtain following actor: ' +
                           message_json['actor'])
+            elif isinstance(pubkey_result, dict):
+                if debug:
+                    print('http error code trying to obtain ' +
+                          'following actor: ' + message_json['actor'] +
+                          ' ' + str(pubkey_result))
 
             print('Updating followers file: ' +
                   followers_filename + ' adding ' + approve_handle)
@@ -5881,8 +5908,13 @@ def run_inbox_queue(server,
                                 'INBOX', 'get_person_pub_key', debug)
             inbox_start_time = time.time()
             if pub_key:
-                if debug:
-                    print('DEBUG: public key: ' + str(pub_key))
+                if not isinstance(pub_key, dict):
+                    if debug:
+                        print('DEBUG: public key: ' + str(pub_key))
+                else:
+                    if debug:
+                        print('DEBUG: http code error for public key: ' +
+                              str(pub_key))
                 break
 
             if debug:

@@ -938,6 +938,14 @@ class PubServer(BaseHTTPRequestHandler):
                       'obtain public key for ' + key_id)
             return False
 
+        # was an error http code returned?
+        if isinstance(pub_key, dict):
+            if self.server.debug:
+                print('AUTH: failed to ' +
+                      'obtain public key for ' + key_id +
+                      ' ' + str(pub_key))
+            return False
+
         # verify the GET request without any digest
         if verify_post_headers(self.server.http_prefix,
                                self.server.domain_full,
