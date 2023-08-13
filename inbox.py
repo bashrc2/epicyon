@@ -5911,6 +5911,7 @@ def run_inbox_queue(server,
                 if not isinstance(pub_key, dict):
                     if debug:
                         print('DEBUG: public key: ' + str(pub_key))
+                    pub_key = None
                 else:
                     if debug:
                         print('DEBUG: http code error for public key: ' +
