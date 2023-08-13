@@ -38,6 +38,7 @@ from acceptreject import create_reject
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from session import get_json
+from session import get_json_valid
 from session import post_json
 from followerSync import remove_followers_sync
 
@@ -1221,7 +1222,7 @@ def get_following_via_server(session, nickname: str, password: str,
     following_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
                  project_version, http_prefix, domain, 10, True)
-    if not following_json:
+    if not get_json_valid(following_json):
         if debug:
             print('DEBUG: GET following list failed for c2s to ' + url)
         return 5
@@ -1259,7 +1260,7 @@ def get_followers_via_server(session, nickname: str, password: str,
     followers_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
                  project_version, http_prefix, domain, 10, True)
-    if not followers_json:
+    if not get_json_valid(followers_json):
         if debug:
             print('DEBUG: GET followers list failed for c2s to ' + url)
         return 5
@@ -1298,7 +1299,7 @@ def get_follow_requests_via_server(session,
     followers_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
                  project_version, http_prefix, domain, 10, True)
-    if not followers_json:
+    if not get_json_valid(followers_json):
         if debug:
             print('DEBUG: GET follow requests list failed for c2s to ' + url)
         return 5
@@ -1338,7 +1339,7 @@ def approve_follow_request_via_server(session,
     approve_html = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
                  project_version, http_prefix, domain, 10, True)
-    if not approve_html:
+    if not get_json_valid(approve_html):
         if debug:
             print('DEBUG: GET approve follow request failed for c2s to ' + url)
         return 5
@@ -1378,7 +1379,7 @@ def deny_follow_request_via_server(session,
     deny_html = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
                  project_version, http_prefix, domain, 10, True)
-    if not deny_html:
+    if not get_json_valid(deny_html):
         if debug:
             print('DEBUG: GET deny follow request failed for c2s to ' + url)
         return 5

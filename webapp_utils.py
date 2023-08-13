@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
+from session import get_json_valid
 from utils import local_network_host
 from utils import get_media_extensions
 from utils import dangerous_markup
@@ -420,7 +421,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
             get_json(signing_priv_key_pem, session, actor,
                      session_headers, None,
                      debug, __version__, http_prefix, None)
-        if person_json:
+        if get_json_valid(person_json):
             if not person_json.get('id'):
                 return None
             pub_key, _ = get_actor_public_key_from_id(person_json, None)

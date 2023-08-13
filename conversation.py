@@ -17,6 +17,7 @@ from utils import load_json
 from utils import harmless_markup
 from keys import get_instance_actor_key
 from session import get_json
+from session import get_json_valid
 
 
 def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
@@ -137,9 +138,9 @@ def download_conversation_posts(authorized: bool, session,
                          as_header, None, debug, __version__,
                          http_prefix, domain)
     if debug:
-        if not post_json_object:
+        if not get_json_valid(post_json_object):
             print(post_id + ' returned no json')
-    while post_json_object:
+    while get_json_valid(post_json_object):
         if not isinstance(post_json_object, dict):
             break
         if not has_object_dict(post_json_object):
@@ -205,6 +206,6 @@ def download_conversation_posts(authorized: bool, session,
                              as_header, None, debug, __version__,
                              http_prefix, domain)
         if debug:
-            if not post_json_object:
+            if not get_json_valid(post_json_object):
                 print(post_id + ' returned no json')
     return conversation_view

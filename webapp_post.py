@@ -109,6 +109,7 @@ from maps import set_map_preferences_coords
 from maps import set_map_preferences_url
 from maps import geocoords_from_map_link
 from maps import get_location_from_post
+from session import get_json_valid
 from session import get_json
 
 
@@ -1543,7 +1544,7 @@ def _get_post_title_reply_html(base_dir: str,
                      session, reply_url,
                      headers, None, debug,
                      __version__, http_prefix, domain)
-        if reply_post_json:
+        if get_json_valid(reply_post_json):
             if isinstance(reply_post_json, dict):
                 obj_json = reply_post_json
                 if has_object_dict(reply_post_json):

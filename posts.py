@@ -29,6 +29,7 @@ from session import get_json
 from session import post_json
 from session import post_json_string
 from session import post_image
+from session import get_json_valid
 from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
@@ -242,7 +243,7 @@ def parse_user_feed(signing_priv_key_pem: str,
     feed_json = \
         get_json(signing_priv_key_pem, session, feed_url, as_header, None,
                  debug, project_version, http_prefix, origin_domain)
-    if not feed_json:
+    if not get_json_valid(feed_json):
         profile_str = 'https://www.w3.org/ns/activitystreams'
         accept_str = 'application/ld+json; profile="' + profile_str + '"'
         if as_header['Accept'] != accept_str:
@@ -252,7 +253,7 @@ def parse_user_feed(signing_priv_key_pem: str,
             feed_json = get_json(signing_priv_key_pem, session, feed_url,
                                  as_header, None, debug, project_version,
                                  http_prefix, origin_domain)
-    if not feed_json:
+    if not get_json_valid(feed_json):
         if debug:
             print('No user feed was returned')
         return None
@@ -315,7 +316,7 @@ def _get_person_box_actor(session, base_dir: str, actor: str,
     person_json = \
         get_json(signing_priv_key_pem, session, actor, as_header, None,
                  debug, project_version, http_prefix, origin_domain)
-    if person_json:
+    if get_json_valid(person_json):
         return person_json
     as_header = {
         'Accept': 'application/ld+json; profile="' + profile_str + '"'
@@ -323,7 +324,7 @@ def _get_person_box_actor(session, base_dir: str, actor: str,
     person_json = \
         get_json(signing_priv_key_pem, session, actor, as_header, None,
                  debug, project_version, http_prefix, origin_domain)
-    if person_json:
+    if get_json_valid(person_json):
         return person_json
     print('Unable to get actor for ' + actor + ' ' + str(source_id))
     if not signing_priv_key_pem:
@@ -604,7 +605,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                         get_json(signing_priv_key_pem, session, this_item,
                                  as_header2, None, debug, __version__,
                                  http_prefix, origin_domain)
-                    if not this_item:
+                    if not get_json_valid(this_item):
                         continue
 
         content = get_base_content_from_post(this_item, system_language)
@@ -5114,7 +5115,7 @@ def download_follow_collection(signing_priv_key_pem: str,
         followers_json = \
             get_json(signing_priv_key_pem, session, url, session_headers, None,
                      debug, __version__, http_prefix, None)
-        if followers_json:
+        if get_json_valid(followers_json):
             if followers_json.get('orderedItems'):
                 for follower_actor in followers_json['orderedItems']:
                     if follower_actor not in result:
@@ -5509,7 +5510,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                      as_header, None, debug, project_version,
                      http_prefix, domain)
 
-        if not announced_json:
+        if not get_json_valid(announced_json):
             return None
 
         if not isinstance(announced_json, dict):
@@ -6163,7 +6164,7 @@ def c2s_box_json(session, nickname: str, password: str,
     box_json = get_json(signing_priv_key_pem, session, url, headers, None,
                         debug, __version__, http_prefix, None)
 
-    if box_json is not None and debug:
+    if get_json_valid(box_json) and debug:
         print('DEBUG: GET c2s_box_json success')
 
     return box_json

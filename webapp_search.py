@@ -49,6 +49,7 @@ from webapp_utils import html_search_result_share
 from webapp_post import individual_post_as_html
 from webapp_hashtagswarm import html_hash_tag_swarm
 from maps import html_hashtag_maps
+from session import get_json_valid
 from session import get_json
 
 
@@ -1100,7 +1101,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                  session, hashtag_url_with_page, as_header, None, debug,
                  __version__, http_prefix, domain)
     lines = []
-    if hashtag_json:
+    if get_json_valid(hashtag_json):
         if 'orderedItems' in hashtag_json:
             lines = hashtag_json['orderedItems']
         else:
@@ -1171,7 +1172,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             get_json(signing_priv_key_pem,
                      session, post_id, as_header, None, debug,
                      __version__, http_prefix, domain)
-        if not post_json_object:
+        if not get_json_valid(post_json_object):
             print('No hashtag post for ' + post_id)
             continue
         if not isinstance(post_json_object, dict):

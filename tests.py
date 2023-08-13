@@ -34,6 +34,7 @@ from cache import store_person_in_cache
 from cache import get_person_from_cache
 from threads import thread_with_trace
 from daemon import run_daemon
+from session import get_json_valid
 from session import create_session
 from session import get_json
 from posts import convert_post_content_to_html
@@ -1885,7 +1886,7 @@ def test_shared_items_federation(base_dir: str) -> None:
         get_json(signing_priv_key_pem, session_client,
                  'http://' + bob_address + '/@actor', test_headers, {}, True,
                  __version__, 'http', 'somedomain.or.other', 10, False)
-    if not bob_instance_actor_json:
+    if not get_json_valid(bob_instance_actor_json):
         print('Unable to get json for ' + 'http://' + bob_address + '/@actor')
     assert bob_instance_actor_json
     pprint(bob_instance_actor_json)
@@ -2202,7 +2203,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     signing_priv_key_pem = None
     catalog_json = get_json(signing_priv_key_pem, session_alice, url, headers,
                             None, True)
-    assert catalog_json
+    assert get_json_valid(catalog_json)
     pprint(catalog_json)
     assert 'DFC:supplies' in catalog_json
     assert len(catalog_json.get('DFC:supplies')) == 3
@@ -2353,7 +2354,7 @@ def test_group_follow(base_dir: str) -> None:
     signing_priv_key_pem = None
     outbox_json = get_json(signing_priv_key_pem, session, alice_outbox,
                            as_header, None, True, __version__, 'http', None)
-    assert outbox_json
+    assert get_json_valid(outbox_json)
     pprint(outbox_json)
     assert outbox_json['type'] == 'OrderedCollection'
     assert 'first' in outbox_json
@@ -2365,7 +2366,7 @@ def test_group_follow(base_dir: str) -> None:
     outbox_json = get_json(signing_priv_key_pem, session,
                            first_page, as_header,
                            None, True, __version__, 'http', None)
-    assert outbox_json
+    assert get_json_valid(outbox_json)
     pprint(outbox_json)
     assert 'orderedItems' in outbox_json
     assert outbox_json['type'] == 'OrderedCollectionPage'

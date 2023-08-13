@@ -22,6 +22,7 @@ from posts import get_person_box
 from session import post_json
 from session import post_image
 from session import create_session
+from session import get_json_valid
 from utils import acct_handle_dir
 from utils import remove_eol
 from utils import has_object_string_type
@@ -1021,7 +1022,7 @@ def get_shared_items_catalog_via_server(session, nickname: str, password: str,
         print('Shared items catalog request to: ' + url)
     catalog_json = get_json(signing_priv_key_pem, session, url, headers, None,
                             debug, __version__, http_prefix, None)
-    if not catalog_json:
+    if not get_json_valid(catalog_json):
         if debug:
             print('DEBUG: GET shared items catalog failed for c2s to ' + url)
 #        return 5
@@ -1056,7 +1057,7 @@ def get_offers_via_server(session, nickname: str, password: str,
         print('Offers collection request to: ' + url)
     offers_json = get_json(signing_priv_key_pem, session, url, headers, None,
                            debug, __version__, http_prefix, None)
-    if not offers_json:
+    if not get_json_valid(offers_json):
         if debug:
             print('DEBUG: GET offers collection failed for c2s to ' + url)
 #        return 5
@@ -1091,7 +1092,7 @@ def get_wanted_via_server(session, nickname: str, password: str,
         print('Wanted collection request to: ' + url)
     wanted_json = get_json(signing_priv_key_pem, session, url, headers, None,
                            debug, __version__, http_prefix, None)
-    if not wanted_json:
+    if not get_json_valid(wanted_json):
         if debug:
             print('DEBUG: GET wanted collection failed for c2s to ' + url)
 #        return 5
@@ -1658,7 +1659,7 @@ def _update_federated_shares_cache(session, shared_items_federated_domains: [],
         as_header['Authorization'] = tokens_json[federated_domain_full]
         catalog_json = get_json(session, url, as_header, None,
                                 debug, __version__, http_prefix, None)
-        if not catalog_json:
+        if not get_json_valid(catalog_json):
             print('WARN: failed to download shared items catalog for ' +
                   federated_domain_full)
             continue

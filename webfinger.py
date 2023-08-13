@@ -10,6 +10,7 @@ __module_group__ = "ActivityPub"
 import os
 import urllib.parse
 from session import get_json
+from session import get_json_valid
 from cache import store_webfinger_in_cache
 from cache import get_webfinger_from_cache
 from utils import remove_html
@@ -110,7 +111,7 @@ def webfinger_handle(session, handle: str, http_prefix: str,
 
     # if the first attempt fails then try specifying the webfinger
     # resource in a different way
-    if not result:
+    if not get_json_valid(result):
         resource = handle
         if handle == wf_handle:
             # reconstruct the actor
@@ -128,7 +129,7 @@ def webfinger_handle(session, handle: str, http_prefix: str,
             print('ERROR: webfinger_handle ' + wf_handle + ' ' + str(ex))
             return None
 
-    if result:
+    if get_json_valid(result):
         store_webfinger_in_cache(wf_handle, result, cached_webfingers)
     else:
         print("WARN: Unable to webfinger " + str(url) + ' ' +

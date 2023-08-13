@@ -94,6 +94,7 @@ from blocking import get_account_blocks
 from blocking import is_blocked
 from content import bold_reading_string
 from roles import is_devops
+from session import get_json_valid
 from session import site_is_verified
 from session import get_json
 
@@ -460,7 +461,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                     if debug:
                         print('DEBUG: resolved public feed announce ' +
                               str(item))
-                    if not item:
+                    if not get_json_valid(item):
                         continue
             show_item, post_json_object = \
                 _valid_profile_preview_post(item, person_url)

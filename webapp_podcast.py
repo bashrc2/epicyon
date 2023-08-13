@@ -20,6 +20,7 @@ from webapp_utils import get_broken_link_substitute
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
+from session import get_json_valid
 from session import get_json
 
 
@@ -62,7 +63,7 @@ def _html_podcast_chapters(link_url: str,
                 get_json(None, curr_session, chapters_url,
                          as_header, None, debug, __version__,
                          http_prefix, domain)
-            if not chapters_json:
+            if not get_json_valid(chapters_json):
                 return ''
             if not chapters_json.get('chapters'):
                 return ''

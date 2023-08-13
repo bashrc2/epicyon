@@ -11,6 +11,7 @@ import os
 import datetime
 from session import url_exists
 from session import get_json
+from session import get_json_valid
 from utils import load_json
 from utils import save_json
 from utils import get_file_case_insensitive
@@ -237,7 +238,7 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
             get_json(signing_priv_key_pem,
                      session, person_url, as_header, None, debug,
                      project_version, http_prefix, person_domain)
-        if not person_json:
+        if not get_json_valid(person_json):
             return None
     pub_key, _ = get_actor_public_key_from_id(person_json, original_person_url)
     if not pub_key:

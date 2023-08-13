@@ -11,6 +11,7 @@ import os
 import json
 import time
 from datetime import datetime
+from session import get_json_valid
 from utils import remove_eol
 from utils import has_object_string
 from utils import has_object_string_object
@@ -1744,7 +1745,7 @@ def get_blocks_via_server(session, nickname: str, password: str,
         print('Blocked collection request to: ' + url)
     blocked_json = get_json(signing_priv_key_pem, session, url, headers, None,
                             debug, version, http_prefix, None)
-    if not blocked_json:
+    if not get_json_valid(blocked_json):
         if debug:
             print('DEBUG: GET blocked collection failed for c2s to ' + url)
 #        return 5

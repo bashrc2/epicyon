@@ -67,6 +67,7 @@ from utils import get_group_paths
 from utils import local_actor_url
 from utils import dangerous_svg
 from utils import text_in_file
+from session import get_json_valid
 from session import create_session
 from session import get_json
 from webfinger import webfinger_handle
@@ -1748,7 +1749,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
             get_json(signing_priv_key_pem, session, person_url, as_header,
                      None, debug, __version__, http_prefix, host_domain,
                      20, quiet)
-        if person_json:
+        if get_json_valid(person_json):
             if not quiet:
                 pprint(person_json)
             return person_json, as_header

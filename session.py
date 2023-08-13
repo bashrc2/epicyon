@@ -105,14 +105,34 @@ def _get_json_request(session, url: str, domain_full: str, session_headers: {},
         if result.status_code != 200:
             if result.status_code == 401:
                 print("WARN: get_json " + url + ' rejected by secure mode')
+                return {
+                    "error": 401
+                }
             elif result.status_code == 403:
                 print('WARN: get_json Forbidden url: ' + url)
+                return {
+                    "error": 403
+                }
             elif result.status_code == 404:
                 print('WARN: get_json Not Found url: ' + url)
+                return {
+                    "error": 404
+                }
             elif result.status_code == 410:
                 print('WARN: get_json no longer available url: ' + url)
+                return {
+                    "error": 410
+                }
             elif result.status_code == 303:
                 print('WARN: get_json redirect not permitted: ' + url)
+                return {
+                    "error": 303
+                }
+            elif result.status_code == 301:
+                print('WARN: get_json moved permanently: ' + url)
+                return {
+                    "error": 301
+                }
             else:
                 session_headers2 = session_headers.copy()
                 if session_headers2.get('Authorization'):
@@ -221,6 +241,16 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
     return _get_json_request(session, url, domain_full, session_headers,
                              session_params, timeout_sec, None, quiet,
                              debug, return_json)
+
+
+def get_json_valid(test_json: {}) -> bool:
+    """Is the given get_json result valid?
+    """
+    if not test_json:
+        return False
+    if 'error' in test_json:
+        return False
+    return True
 
 
 def get_json(signing_priv_key_pem: str,
