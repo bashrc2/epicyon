@@ -1290,6 +1290,8 @@ def get_actor_from_post_id(post_id: str) -> str:
     statuses_list = _get_statuses_list()
     pixelfed_style_statuses = ['/p/']
     for status_str in statuses_list:
+        if status_str not in actor:
+            continue
         if status_str in pixelfed_style_statuses:
             # pixelfed style post id
             nick = actor.split(status_str)[1]
@@ -1297,10 +1299,9 @@ def get_actor_from_post_id(post_id: str) -> str:
                 nick = nick.split('/')[0]
             actor = actor.split(status_str)[0] + '/users/' + nick
             break
-        if status_str in actor:
-            if has_users_path(actor):
-                actor = actor.split(status_str)[0]
-                break
+        elif has_users_path(actor):
+            actor = actor.split(status_str)[0]
+            break
     return actor
 
 
