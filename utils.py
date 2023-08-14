@@ -1299,7 +1299,7 @@ def get_actor_from_post_id(post_id: str) -> str:
                 nick = nick.split('/')[0]
             actor = actor.split(status_str)[0] + '/users/' + nick
             break
-        elif has_users_path(actor):
+        if has_users_path(actor):
             actor = actor.split(status_str)[0]
             break
     return actor
