@@ -1265,23 +1265,42 @@ def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
                                     separators, invalid_strings)
 
 
+def _get_statuses_list() -> []:
+    """Returns a list of statuses path strings
+    """
+    return ('/statuses/', '/objects/', '/p/')
+
+
+def contains_statuses(url: str) -> bool:
+    """Whether the given url contains /statuses/
+    """
+    statuses_list = _get_statuses_list()
+    for status_str in statuses_list:
+        if status_str in url:
+            return True
+    return False
+
+
 def get_actor_from_post_id(post_id: str) -> str:
-    """Returns an actor url from a post id
+    """Returns an actor url from a post id containing /statuses/ or equivalent
     eg. https://somedomain/users/nick/statuses/123 becomes
     https://somedomain/users/nick
     """
     actor = post_id
-    if has_users_path(actor):
-        if '/statuses/' in actor:
-            actor = actor.split('/statuses/')[0]
-        elif '/objects/' in actor:
-            actor = actor.split('/objects/')[0]
-    elif '/p/' in actor:
-        # pixelfed style post id
-        nick = actor.split('/p/')[1]
-        if '/' in nick:
-            nick = nick.split('/')[0]
-        actor = actor.split('/p/')[0] + '/users/' + nick
+    statuses_list = _get_statuses_list()
+    pixelfed_style_statuses = ['/p/']
+    for status_str in statuses_list:
+        if status_str in pixelfed_style_statuses:
+            # pixelfed style post id
+            nick = actor.split(status_str)[1]
+            if '/' in nick:
+                nick = nick.split('/')[0]
+            actor = actor.split(status_str)[0] + '/users/' + nick
+            break
+        if status_str in actor:
+            if has_users_path(actor):
+                actor = actor.split(status_str)[0]
+                break
     return actor
 
 
@@ -4452,13 +4471,3 @@ def ap_proxy_type(json_object: {}) -> str:
             if isinstance(proxy_dict['protocol'], str):
                 return proxy_dict['protocol']
     return None
-
-
-def contains_statuses(url: str) -> bool:
-    """Whether the given url contains /statuses/
-    """
-    statuses_list = ('/statuses/', '/objects/', '/p/')
-    for status_str in statuses_list:
-        if status_str in url:
-            return True
-    return False
