@@ -67,6 +67,7 @@ from utils import get_group_paths
 from utils import local_actor_url
 from utils import dangerous_svg
 from utils import text_in_file
+from utils import contains_statuses
 from session import get_json_valid
 from session import create_session
 from session import get_json
@@ -1236,9 +1237,7 @@ def can_remove_post(base_dir: str,
                     domain: str, port: int, post_id: str) -> bool:
     """Returns true if the given post can be removed
     """
-    if '/statuses/' not in post_id and \
-       '/objects/' not in post_id and \
-       '/p/' not in post_id:
+    if not contains_statuses(post_id):
         return False
 
     domain_full = get_full_domain(domain, port)

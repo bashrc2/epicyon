@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import contains_statuses
 from utils import contains_invalid_actor_url_chars
 from utils import acct_handle_dir
 from utils import is_dm
@@ -5551,9 +5552,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                                       announced_json, blocked_cache)
             if converted_json:
                 announced_json = converted_json
-        if '/statuses/' not in announced_json['id'] and \
-           '/objects/' not in announced_json['id'] and \
-           '/p/' not in announced_json['id']:
+        if not contains_statuses(announced_json['id']):
             print('WARN: announced post id does not contain /statuses/ ' +
                   'or /objects/ or /p/ ' + str(announced_json))
             _reject_announce(announce_filename,

@@ -4452,3 +4452,13 @@ def ap_proxy_type(json_object: {}) -> str:
             if isinstance(proxy_dict['protocol'], str):
                 return proxy_dict['protocol']
     return None
+
+
+def contains_statuses(url: str) -> bool:
+    """Whether the given url contains /statuses/
+    """
+    statuses_list = ('/statuses/', '/objects/', '/p/')
+    for status_str in statuses_list:
+        if status_str in url:
+            return True
+    return False

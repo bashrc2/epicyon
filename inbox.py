@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import contains_statuses
 from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
 from utils import is_quote_toot
@@ -978,9 +979,7 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
     else:
         if debug and post_json_object.get('object'):
             if isinstance(post_json_object['object'], str):
-                if '/statuses/' in post_json_object['object'] or \
-                   '/objects/' in post_json_object['object'] or \
-                   '/p/' in post_json_object['object']:
+                if contains_statuses(post_json_object['object']):
                     print('DEBUG: inbox item is a link to a post')
                 else:
                     if '/users/' in post_json_object['object']:
