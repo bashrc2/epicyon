@@ -5495,10 +5495,10 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if is_blocked(base_dir, nickname, domain, object_nickname,
                       object_domain):
             if object_nickname and object_domain:
-                print('Announce download blocked object: ' +
+                print('Announce download blocked handle: ' +
                       object_nickname + '@' + object_domain)
             else:
-                print('Announce download blocked object: ' +
+                print('Announce download blocked handle 2: ' +
                       str(post_json_object['object']))
             return None
         if debug:
