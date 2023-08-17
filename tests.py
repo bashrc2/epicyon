@@ -7300,6 +7300,22 @@ def _test_link_from_rss_item() -> None:
     assert mime_type
     assert mime_type == 'audio/mpeg'
 
+    pub_date = rss_item.split('<pubDate>')[1]
+    pub_date = pub_date.split('</pubDate>')[0]
+    unique_string_identifier = link
+    pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
+    expected_pub_date = '2022-01-12 14:28:46+00:00'
+    if pub_date_str != expected_pub_date:
+        print('pub_date_str ' + pub_date_str + ' != ' + expected_pub_date)
+    assert pub_date_str == expected_pub_date
+
+    pub_date = 'Wed, 16 Aug 2023 08:44:26 -0400'
+    pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
+    expected_pub_date = '2023-08-16 12:44:26+00:00'
+    if pub_date_str != expected_pub_date:
+        print('pub_date_str ' + pub_date_str + ' != ' + expected_pub_date)
+    assert pub_date_str == expected_pub_date
+
     link, mime_type = get_link_from_rss_item(rss_item, ['audio/mp3'], None)
     assert link
     assert link.endswith('1.mp3')
