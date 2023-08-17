@@ -776,6 +776,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
         title = unescaped_text(title)
         title = remove_script(title, None, None, None)
         title = remove_html(title)
+        title = title.replace('\n', '')
 
         description = ''
         if '<description>' in rss_item and '</description>' in rss_item:
