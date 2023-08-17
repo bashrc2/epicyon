@@ -1422,6 +1422,10 @@ def _command_options() -> None:
         session = create_session(None)
         if not argb.language:
             argb.language = 'en'
+        if not argb.domain:
+            domain = 'mydomain'
+        else:
+            domain = argb.domain
         test_rss = get_rss(base_dir, domain, session, argb.rss,
                            False, False, 1000, 1000, 1000, 1000, debug,
                            preferred_podcast_formats, timeout_sec,
