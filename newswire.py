@@ -1371,7 +1371,7 @@ def get_rss(base_dir: str, domain: str, session, url: str,
             session.get(url, headers=session_headers,
                         params=session_params,
                         timeout=timeout_sec,
-                        allow_redirects=False)
+                        allow_redirects=True)
         if result:
             if int(len(result.text) / 1024) >= max_feed_size_kb:
                 print('WARN: feed is too large: ' + url)
