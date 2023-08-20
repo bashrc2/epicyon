@@ -22414,6 +22414,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     print('Adding wanted item')
                     shares_file_type = 'wanted'
+                on_profile = False
                 add_share(self.server.base_dir,
                           self.server.http_prefix,
                           nickname,
@@ -22430,7 +22431,8 @@ class PubServer(BaseHTTPRequestHandler):
                           fields['languagesDropdown'],
                           self.server.translate, shares_file_type,
                           self.server.low_bandwidth,
-                          self.server.content_license_url)
+                          self.server.content_license_url,
+                          on_profile)
                 if filename:
                     if os.path.isfile(filename):
                         try:

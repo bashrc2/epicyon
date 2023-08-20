@@ -312,7 +312,7 @@ def add_share(base_dir: str,
               price: str, currency: str,
               system_language: str, translate: {},
               shares_file_type: str, low_bandwidth: bool,
-              content_license_url: str) -> None:
+              content_license_url: str, on_profile: bool) -> None:
     """Adds a new share
     """
     if is_filtered_globally(base_dir,
@@ -391,7 +391,8 @@ def add_share(base_dir: str,
         "published": published,
         "expire": duration_sec,
         "itemPrice": price,
-        "itemCurrency": currency
+        "itemCurrency": currency,
+        "onProfile": on_profile
     }
 
     save_json(shares_json, shares_filename)
@@ -1170,7 +1171,8 @@ def outbox_share_upload(base_dir: str, http_prefix: str,
               message_json['object']['itemPrice'],
               message_json['object']['itemCurrency'],
               system_language, translate, 'shares',
-              low_bandwidth, content_license_url)
+              low_bandwidth, content_license_url,
+              False)
     if debug:
         print('DEBUG: shared item received via c2s')
 
@@ -1924,7 +1926,8 @@ def _dfc_to_shares_format(catalog_json: {},
             "published": start_time_sec,
             "expire": expiry_time_sec,
             "itemPrice": item['DFC:price'].split(' ')[0],
-            "itemCurrency": item['DFC:price'].split(' ')[1]
+            "itemCurrency": item['DFC:price'].split(' ')[1],
+            "onProfile": False
         }
     return shares_json
 

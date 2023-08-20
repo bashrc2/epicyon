@@ -3459,7 +3459,7 @@ def _command_options() -> None:
                   "City", "0", "GBP",
                   "2 months",
                   debug, city, argb.language, {}, 'shares', argb.low_bandwidth,
-                  argb.content_license_url)
+                  argb.content_license_url, False)
         add_share(base_dir,
                   http_prefix, nickname, domain, port,
                   "witch hat",
@@ -3470,7 +3470,7 @@ def _command_options() -> None:
                   "City", "0", "GBP",
                   "3 months",
                   debug, city, argb.language, {}, 'shares', argb.low_bandwidth,
-                  argb.content_license_url)
+                  argb.content_license_url, False)
 
         delete_all_posts(base_dir, nickname, domain, 'inbox')
         delete_all_posts(base_dir, nickname, domain, 'outbox')
