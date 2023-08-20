@@ -666,13 +666,14 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
         reciprocal_direction = "provider"
         collection_name = nickname + "'s Wanted Items"
 
+    om2_link = \
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/"
+
     for _, shared_item in shares_json.items():
         if not shared_item.get('shareId'):
             continue
         share_id = shared_item['shareId'].replace('___', '://')
         share_id = share_id.replace('--', '/')
-        om2_link = \
-            "http://www.ontology-of-units-of-measure.org/resource/om-2/"
         offer_item = {
             "@context": [
                 "https://www.w3.org/ns/activitystreams",
