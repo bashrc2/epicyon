@@ -657,8 +657,14 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
 
     if shares_file_type == 'shares':
         share_type = 'Proposal'
+        publishes_direction = "provider"
+        reciprocal_direction = "receiver"
+        collection_name = nickname + "'s Shared Items"
     else:
         share_type = 'Want'
+        publishes_direction = "receiver"
+        reciprocal_direction = "provider"
+        collection_name = nickname + "'s Wanted Items"
 
     for _, shared_item in shares_json.items():
         if not shared_item.get('shareId'):
@@ -704,7 +710,7 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                     "hasUnit": "one",
                     "hasNumericalValue": str(shared_item['itemQty'])
                 },
-                "provider": shared_item['actor']
+                publishes_direction: shared_item['actor']
             },
             "attachment": [],
             "unitBased": False,
@@ -757,7 +763,7 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                     "hasUnit": "one",
                     "hasNumericalValue": str(shared_item['itemPrice'])
                 },
-                "receiver": shared_item['actor']
+                reciprocal_direction: shared_item['actor']
             }
 
         shares_collection.append(offer_item)
@@ -768,7 +774,7 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
         ],
         "id": actor + '?page=' + str(page_number),
         "type": "OrderedCollection",
-        "name": nickname + "'s Shared Items",
+        "name": collection_name,
         "orderedItems": shares_collection
     }
 
