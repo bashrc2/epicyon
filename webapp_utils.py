@@ -561,6 +561,44 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
     return result_json, last_page
 
 
+def _currency_to_wikidata(currency_type: str) -> str:
+    """Converts a currency type, such as USD, into a wikidata reference
+    """
+    currencies = {
+        "GBP": "https://www.wikidata.org/wiki/Q25224",
+        "EUR": "https://www.wikidata.org/wiki/Q4916",
+        "USD": "https://www.wikidata.org/wiki/Q4917",
+        "AUD": "https://www.wikidata.org/wiki/Q259502",
+        "CHF": "https://www.wikidata.org/wiki/Q25344",
+        "UAH": "https://www.wikidata.org/wiki/Q81893",
+        "VND": "https://www.wikidata.org/wiki/Q192090",
+        "PLN": "https://www.wikidata.org/wiki/Q123213",
+        "PKR": "https://www.wikidata.org/wiki/Q188289",
+        "PEN": "https://www.wikidata.org/wiki/Q204656",
+        "PAB": "https://www.wikidata.org/wiki/Q210472",
+        "PHP": "https://www.wikidata.org/wiki/Q17193",
+        "RUB": "https://www.wikidata.org/wiki/Q41044",
+        "RWF": "https://www.wikidata.org/wiki/Q4741",
+        "NOK": "https://www.wikidata.org/wiki/Q132643",
+        "NZD": "https://www.wikidata.org/wiki/Q1472704",
+        "MYR": "https://www.wikidata.org/wiki/Q163712",
+        "MXN": "https://www.wikidata.org/wiki/Q4730",
+        "JMD": "https://www.wikidata.org/wiki/Q209792",
+        "ISK": "https://www.wikidata.org/wiki/Q131473",
+        "INR": "https://www.wikidata.org/wiki/Q80524",
+        "ILS": "https://www.wikidata.org/wiki/Q131309",
+        "EGP": "https://www.wikidata.org/wiki/Q199462",
+        "CUP": "https://www.wikidata.org/wiki/Q201505",
+        "JPY": "https://www.wikidata.org/wiki/Q8146",
+        "CNY": "https://www.wikidata.org/wiki/Q39099"
+    }
+    currency_type = currency_type.upper()
+    for curr, curr_url in currencies.items():
+        if curr in currency_type:
+            return curr_url
+    return "https://www.wikidata.org/wiki/Q25224"
+
+
 def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                           base_dir: str, domain: str, nickname: str,
                           max_shares_per_account: int,
@@ -619,7 +657,7 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
             "published": shared_item['published'],
             "publishes": {
                 "type": "Intent",
-                "id": share_id,
+                "id": share_id + '#primary',
                 "action": "transfer",
                 "resourceQuantity": {
                     "hasUnit": "one",
@@ -668,16 +706,19 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                         'url': shared_item_url
                     })
         if shared_item['itemPrice'] and shared_item['itemCurrency']:
-            offer_item['attachment'].append({
-                "type": "PropertyValue",
-                "name": "price",
-                "value": shared_item['itemPrice']
-            })
-            offer_item['attachment'].append({
-                "type": "PropertyValue",
-                "name": "currency",
-                "value": shared_item['itemCurrency']
-            })
+            currency_url = _currency_to_wikidata(shared_item['itemCurrency'])
+            offer_item['publishes']['reciprocal'] = {
+                "type": "Intent",
+                "id": share_id + '#reciprocal',
+                "action": "transfer",
+                "resourceConformsTo": currency_url,
+                "resourceQuantity": {
+                    "hasUnit": "one",
+                    "hasNumericalValue": str(shared_item['itemPrice'])
+                },
+                "receiver": shared_item['actor']
+            }
+
         shares_collection.append(offer_item)
 
     result_json = {

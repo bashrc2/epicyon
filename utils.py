@@ -870,6 +870,10 @@ def remove_id_ending(id_str: str) -> str:
         id_str = id_str.split('#delete')[0]
     elif '#update' in id_str:
         id_str = id_str.split('#update')[0]
+    elif '#primary' in id_str:
+        id_str = id_str.split('#primary')[0]
+    elif '#reciprocal' in id_str:
+        id_str = id_str.split('#reciprocal')[0]
     return id_str
 
 
