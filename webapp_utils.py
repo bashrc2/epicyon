@@ -566,8 +566,8 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                           max_shares_per_account: int,
                           shared_items_federated_domains: [],
                           shares_file_type: str) -> {}:
-    """Returns an ActivityStreams collection of Offer activities
-    https://www.w3.org/TR/activitystreams-vocabulary/#dfn-offer
+    """Returns an ActivityStreams collection of ValueFlows Proposal objects
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
     """
     shares_collection = []
     shares_json, _ = \
@@ -577,7 +577,7 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                              shared_items_federated_domains, shares_file_type)
 
     if shares_file_type == 'shares':
-        share_type = 'Offer'
+        share_type = 'Proposal'
     else:
         share_type = 'Want'
 
@@ -588,36 +588,62 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
             continue
         share_id = shared_item['shareId'].replace('___', '://')
         share_id = share_id.replace('--', '/')
+        om2_link = \
+            "http://www.ontology-of-units-of-measure.org/resource/om-2/"
         offer_item = {
-            "@context": "https://www.w3.org/ns/activitystreams",
-            "summary": shared_item['summary'],
+            "@context": [
+                "https://www.w3.org/ns/activitystreams",
+                {
+                    "om2": om2_link,
+                    "vf": "https://w3id.org/valueflows/",
+                    "Proposal": "vf:Proposal",
+                    "Intent": "vf:Intent",
+                    "receiver": "vf:receiver",
+                    "provider": "vf:provider",
+                    "action": "vf:action",
+                    "unitBased": "vf:unitBased",
+                    "publishes": "vf:publishes",
+                    "reciprocal": "vf:reciprocal",
+                    "resourceClassifiedAs": "vf:resourceClassifiedAs",
+                    "resourceConformsTo": "vf:resourceConformsTo",
+                    "resourceQuantity": "vf:resourceQuantity",
+                    "hasUnit": "om2:hasUnit",
+                    "hasNumericalValue": "om2:hasNumericalValue"
+                }
+            ],
             "type": share_type,
-            "actor": shared_item['actor'],
             "id": share_id,
+            "attributedTo": shared_item['actor'],
+            "name": shared_item['displayName'],
+            "content": shared_item['summary'],
             "published": shared_item['published'],
-            "object": {
+            "publishes": {
+                "type": "Intent",
                 "id": share_id,
-                "type": shared_item['itemType'].title(),
-                "name": shared_item['displayName'],
-                "published": shared_item['published'],
-                "attachment": []
-            }
+                "action": "transfer",
+                "resourceQuantity": {
+                    "hasUnit": "one",
+                    "hasNumericalValue": str(shared_item['itemQty'])
+                },
+                "provider": shared_item['actor']
+            },
+            "attachment": [],
+            "unitBased": False,
+            "to": "https://www.w3.org/ns/activitystreams#Public"
+
         }
+        if shared_item.get('dfcId'):
+            offer_item['publishes']['resourceConformsTo'] = \
+                shared_item['dfcId']
         if shared_item['category']:
-            offer_item['object']['attachment'].append({
+            offer_item['attachment'].append({
                 "type": "PropertyValue",
                 "name": "category",
                 "value": shared_item['category']
             })
         if shared_item['location']:
-            # tag representation of location
-            offer_item['object']['attachment'].append({
-                "@context": "https://www.w3.org/ns/activitystreams",
-                "type": "Place",
-                "name": shared_item['location'].title()
-            })
             # pixelfed style representation of location
-            offer_item['object']['location'] = {
+            offer_item['location'] = {
                 "type": "Place",
                 "name": shared_item['location'].title()
             }
@@ -635,19 +661,19 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                 if file_extension:
                     media_type = 'image/' + file_extension
                     shared_item_url = remove_html(shared_item['imageUrl'])
-                    offer_item['object']['attachment'].append({
+                    offer_item['attachment'].append({
                         'mediaType': media_type,
                         'name': shared_item['displayName'],
                         'type': 'Document',
                         'url': shared_item_url
                     })
         if shared_item['itemPrice'] and shared_item['itemCurrency']:
-            offer_item['object']['attachment'].append({
+            offer_item['attachment'].append({
                 "type": "PropertyValue",
                 "name": "price",
                 "value": shared_item['itemPrice']
             })
-            offer_item['object']['attachment'].append({
+            offer_item['attachment'].append({
                 "type": "PropertyValue",
                 "name": "currency",
                 "value": shared_item['itemCurrency']
