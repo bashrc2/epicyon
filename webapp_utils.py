@@ -669,8 +669,6 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
     for _, shared_item in shares_json.items():
         if not shared_item.get('shareId'):
             continue
-        if not shared_item.get('itemType'):
-            continue
         share_id = shared_item['shareId'].replace('___', '://')
         share_id = share_id.replace('--', '/')
         om2_link = \
