@@ -3752,7 +3752,7 @@ def get_currencies() -> {}:
         "฿": "THB",
         "TT$": "TTD",
         "₴": "UAH",
-        "Bs": "VEF",
+        "Bs": "VEB",
         "₫": "VND",
         "Z$": "ZQD"
     }
