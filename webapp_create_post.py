@@ -628,6 +628,7 @@ def html_new_post(edit_post_params: {},
         extra_fields += \
             edit_number_field(translate['Duration of listing in days'],
                               'duration', 14, 1, 365, 1)
+        extra_fields += '  <br>\n'
         extra_fields += \
             edit_check_box(translate['Display on your public profile'],
                            'shareOnProfile', False)
