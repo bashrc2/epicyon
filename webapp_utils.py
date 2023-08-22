@@ -13,7 +13,6 @@ from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
 from utils import local_network_host
-from utils import get_media_extensions
 from utils import dangerous_markup
 from utils import acct_handle_dir
 from utils import remove_id_ending
@@ -43,6 +42,7 @@ from person import get_person_avatar_url
 from posts import is_moderator
 from blocking import is_blocked
 from blocking import allowed_announce
+from shares import vf_proposal_from_share
 
 
 def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
@@ -561,85 +561,6 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
     return result_json, last_page
 
 
-def _currency_to_wikidata(currency_type: str) -> str:
-    """Converts a currency type, such as USD, into a wikidata reference
-    """
-    currencies = {
-        "GBP": "https://www.wikidata.org/wiki/Q25224",
-        "EUR": "https://www.wikidata.org/wiki/Q4916",
-        "CAD": "https://www.wikidata.org/wiki/Q1104069",
-        "USD": "https://www.wikidata.org/wiki/Q4917",
-        "AUD": "https://www.wikidata.org/wiki/Q259502",
-        "PKR": "https://www.wikidata.org/wiki/Q188289",
-        "PEN": "https://www.wikidata.org/wiki/Q204656",
-        "PAB": "https://www.wikidata.org/wiki/Q210472",
-        "PHP": "https://www.wikidata.org/wiki/Q17193",
-        "RWF": "https://www.wikidata.org/wiki/Q4741",
-        "NZD": "https://www.wikidata.org/wiki/Q1472704",
-        "MXN": "https://www.wikidata.org/wiki/Q4730",
-        "JMD": "https://www.wikidata.org/wiki/Q209792",
-        "ISK": "https://www.wikidata.org/wiki/Q131473",
-        "EGP": "https://www.wikidata.org/wiki/Q199462",
-        "CNY": "https://www.wikidata.org/wiki/Q39099",
-        "AFN": "https://www.wikidata.org/wiki/Q199471",
-        "AWG": "https://www.wikidata.org/wiki/Q232270",
-        "AZN": "https://www.wikidata.org/wiki/Q483725",
-        "BYN": "https://www.wikidata.org/wiki/Q21531507",
-        "BZD": "https://www.wikidata.org/wiki/Q275112",
-        "BOB": "https://www.wikidata.org/wiki/Q200737",
-        "BAM": "https://www.wikidata.org/wiki/Q179620",
-        "BWP": "https://www.wikidata.org/wiki/Q186794",
-        "BGN": "https://www.wikidata.org/wiki/Q172540",
-        "BRL": "https://www.wikidata.org/wiki/Q173117",
-        "KHR": "https://www.wikidata.org/wiki/Q204737",
-        "UYU": "https://www.wikidata.org/wiki/Q209272",
-        "DOP": "https://www.wikidata.org/wiki/Q242922",
-        "CRC": "https://www.wikidata.org/wiki/Q242915",
-        "HRK": "https://www.wikidata.org/wiki/Q595634",
-        "CUP": "https://www.wikidata.org/wiki/Q201505",
-        "CZK": "https://www.wikidata.org/wiki/Q131016",
-        "NOK": "https://www.wikidata.org/wiki/Q132643",
-        "GHS": "https://www.wikidata.org/wiki/Q183530",
-        "GTQ": "https://www.wikidata.org/wiki/Q207396",
-        "HNL": "https://www.wikidata.org/wiki/Q4719",
-        "HUF": "https://www.wikidata.org/wiki/Q47190",
-        "IDR": "https://www.wikidata.org/wiki/Q41588",
-        "INR": "https://www.wikidata.org/wiki/Q80524",
-        "IRR": "https://www.wikidata.org/wiki/Q188608",
-        "ILS": "https://www.wikidata.org/wiki/Q131309",
-        "JPY": "https://www.wikidata.org/wiki/Q8146",
-        "KRW": "https://www.wikidata.org/wiki/Q202040",
-        "LAK": "https://www.wikidata.org/wiki/Q200055",
-        "MKD": "https://www.wikidata.org/wiki/Q177875",
-        "MYR": "https://www.wikidata.org/wiki/Q163712",
-        "MUR": "https://www.wikidata.org/wiki/Q212967",
-        "MNT": "https://www.wikidata.org/wiki/Q183435",
-        "MZN": "https://www.wikidata.org/wiki/Q200753",
-        "NIO": "https://www.wikidata.org/wiki/Q207312",
-        "NGN": "https://www.wikidata.org/wiki/Q203567",
-        "PYG": "https://www.wikidata.org/wiki/Q207514",
-        "PLN": "https://www.wikidata.org/wiki/Q123213",
-        "RON": "https://www.wikidata.org/wiki/Q131645",
-        "RUB": "https://www.wikidata.org/wiki/Q41044",
-        "RSD": "https://www.wikidata.org/wiki/Q172524",
-        "SOS": "https://www.wikidata.org/wiki/Q4603",
-        "ZAR": "https://www.wikidata.org/wiki/Q181907",
-        "CHF": "https://www.wikidata.org/wiki/Q25344",
-        "TWD": "https://www.wikidata.org/wiki/Q208526",
-        "THB": "https://www.wikidata.org/wiki/Q177882",
-        "TTD": "https://www.wikidata.org/wiki/Q242890",
-        "UAH": "https://www.wikidata.org/wiki/Q81893",
-        "VES": "https://www.wikidata.org/wiki/Q56349362",
-        "VEB": "https://www.wikidata.org/wiki/Q56349362",
-        "VND": "https://www.wikidata.org/wiki/Q192090"
-    }
-    currency_type = currency_type.upper()
-    for curr, curr_url in currencies.items():
-        if curr in currency_type:
-            return curr_url
-    return "https://www.wikidata.org/wiki/Q25224"
-
-
 def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                           base_dir: str, domain: str, nickname: str,
                           max_shares_per_account: int,
@@ -666,106 +587,13 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
         reciprocal_direction = "provider"
         collection_name = nickname + "'s Wanted Items"
 
-    om2_link = \
-        "http://www.ontology-of-units-of-measure.org/resource/om-2/"
-
     for _, shared_item in shares_json.items():
-        if not shared_item.get('shareId'):
-            continue
-        share_id = shared_item['shareId'].replace('___', '://')
-        share_id = share_id.replace('--', '/')
-        offer_item = {
-            "@context": [
-                "https://www.w3.org/ns/activitystreams",
-                {
-                    "om2": om2_link,
-                    "vf": "https://w3id.org/valueflows/",
-                    "Proposal": "vf:Proposal",
-                    "Intent": "vf:Intent",
-                    "receiver": "vf:receiver",
-                    "provider": "vf:provider",
-                    "action": "vf:action",
-                    "unitBased": "vf:unitBased",
-                    "publishes": "vf:publishes",
-                    "reciprocal": "vf:reciprocal",
-                    "resourceClassifiedAs": "vf:resourceClassifiedAs",
-                    "resourceConformsTo": "vf:resourceConformsTo",
-                    "resourceQuantity": "vf:resourceQuantity",
-                    "hasUnit": "om2:hasUnit",
-                    "hasNumericalValue": "om2:hasNumericalValue"
-                }
-            ],
-            "type": share_type,
-            "id": share_id,
-            "attributedTo": shared_item['actor'],
-            "name": shared_item['displayName'],
-            "content": shared_item['summary'],
-            "published": shared_item['published'],
-            "publishes": {
-                "type": "Intent",
-                "id": share_id + '#primary',
-                "action": "transfer",
-                "resourceQuantity": {
-                    "hasUnit": "one",
-                    "hasNumericalValue": str(shared_item['itemQty'])
-                },
-                publishes_direction: shared_item['actor']
-            },
-            "attachment": [],
-            "unitBased": False,
-            "to": "https://www.w3.org/ns/activitystreams#Public"
-
-        }
-        if shared_item.get('dfcId'):
-            offer_item['publishes']['resourceConformsTo'] = \
-                shared_item['dfcId']
-        if shared_item['category']:
-            offer_item['attachment'].append({
-                "type": "PropertyValue",
-                "name": "category",
-                "value": shared_item['category']
-            })
-        if shared_item['location']:
-            # pixelfed style representation of location
-            offer_item['location'] = {
-                "type": "Place",
-                "name": shared_item['location'].title()
-            }
-        if shared_item['imageUrl']:
-            if '://' in shared_item['imageUrl']:
-                file_extension = None
-                accepted_types = get_media_extensions()
-                for mtype in accepted_types:
-                    if shared_item['imageUrl'].endswith('.' + mtype):
-                        if mtype == 'jpg':
-                            mtype = 'jpeg'
-                        if mtype == 'mp3':
-                            mtype = 'mpeg'
-                        file_extension = mtype
-                if file_extension:
-                    media_type = 'image/' + file_extension
-                    shared_item_url = remove_html(shared_item['imageUrl'])
-                    offer_item['attachment'].append({
-                        'mediaType': media_type,
-                        'name': shared_item['displayName'],
-                        'type': 'Document',
-                        'url': shared_item_url
-                    })
-        if shared_item['itemPrice'] and shared_item['itemCurrency']:
-            currency_url = _currency_to_wikidata(shared_item['itemCurrency'])
-            offer_item['publishes']['reciprocal'] = {
-                "type": "Intent",
-                "id": share_id + '#reciprocal',
-                "action": "transfer",
-                "resourceConformsTo": currency_url,
-                "resourceQuantity": {
-                    "hasUnit": "one",
-                    "hasNumericalValue": str(shared_item['itemPrice'])
-                },
-                reciprocal_direction: shared_item['actor']
-            }
-
-        shares_collection.append(offer_item)
+        offer_item = vf_proposal_from_share(shared_item,
+                                            share_type,
+                                            publishes_direction,
+                                            reciprocal_direction)
+        if offer_item:
+            shares_collection.append(offer_item)
 
     result_json = {
         "@context": [

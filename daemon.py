@@ -268,6 +268,7 @@ from webapp_welcome import html_welcome_screen
 from webapp_welcome import is_welcome_screen_complete
 from webapp_welcome_profile import html_welcome_profile
 from webapp_welcome_final import html_welcome_final
+from shares import add_shares_to_actor
 from shares import merge_shared_item_tokens
 from shares import run_federated_shares_daemon
 from shares import run_federated_shares_watchdog
@@ -5268,6 +5269,24 @@ class PubServer(BaseHTTPRequestHandler):
                     remove_shared_item(base_dir,
                                        share_nickname, share_domain, item_id,
                                        'shares')
+                    # remove shared items from the actor attachments
+                    # https://codeberg.org/fediverse/fep/
+                    # src/branch/main/fep/0837/fep-0837.md
+                    actor = \
+                        self._get_instance_url(calling_domain) + \
+                        '/users/' + share_nickname
+                    person_cache = self.server.person_cache
+                    actor_json = get_person_from_cache(base_dir,
+                                                       actor, person_cache)
+                    if add_shares_to_actor(base_dir,
+                                           share_nickname, share_domain,
+                                           actor_json,
+                                           self.server.max_shares_on_profile):
+                        store_person_in_cache(base_dir, actor,
+                                              actor_json, person_cache, False)
+                        actor_filename = acct_dir(base_dir, share_nickname,
+                                                  share_domain) + '.json'
+                        save_json(actor_json, actor_filename)
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
@@ -22415,6 +22434,9 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Adding wanted item')
                     shares_file_type = 'wanted'
                 on_profile = False
+                if fields.get('onProfile'):
+                    if fields['onProfile'] == 'on':
+                        on_profile = True
                 add_share(self.server.base_dir,
                           self.server.http_prefix,
                           nickname,
@@ -22433,6 +22455,26 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.low_bandwidth,
                           self.server.content_license_url,
                           on_profile)
+                if post_type == 'newshare':
+                    # add onProfile items to the actor attachments
+                    # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
+                    actor = \
+                        self._get_instance_url(calling_domain) + \
+                        '/users/' + nickname
+                    person_cache = self.server.person_cache
+                    actor_json = get_person_from_cache(self.server.base_dir,
+                                                       actor, person_cache)
+                    if add_shares_to_actor(self.server.base_dir,
+                                           nickname, self.server.domain,
+                                           actor_json,
+                                           self.server.max_shares_on_profile):
+                        store_person_in_cache(self.server.base_dir, actor,
+                                              actor_json, person_cache, False)
+                        actor_filename = acct_dir(self.server.base_dir,
+                                                  nickname,
+                                                  self.server.domain) + '.json'
+                        save_json(actor_json, actor_filename)
+
                 if filename:
                     if os.path.isfile(filename):
                         try:
@@ -23666,6 +23708,8 @@ def run_daemon(max_hashtags: int,
         return False
 
     httpd.starting_daemon = True
+
+    httpd.max_shares_on_profile = 8
 
     # load a list of nicknames for accounts blocking military instances
     httpd.block_military = load_blocked_military(base_dir)
