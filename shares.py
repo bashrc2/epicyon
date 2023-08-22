@@ -2153,7 +2153,7 @@ def add_shares_to_actor(base_dir: str,
     new_attachment = []
     for attach_item in actor_json['attachment']:
         is_proposal = False
-        if 'rel' not in attach_item:
+        if 'rel' in attach_item:
             if isinstance(attach_item['rel'], list):
                 if len(attach_item['rel']) == 2:
                     if attach_item['rel'][0] == 'payment' and \
