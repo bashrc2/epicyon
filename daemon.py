@@ -22437,6 +22437,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if fields.get('shareOnProfile'):
                     if fields['shareOnProfile'] == 'on':
                         share_on_profile = True
+                print('DEBUG: shareOnProfile: ' + post_type + ' ' + str(fields))
                 add_share(self.server.base_dir,
                           self.server.http_prefix,
                           nickname,
