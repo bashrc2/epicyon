@@ -2142,7 +2142,8 @@ def add_shares_to_actor(base_dir: str,
                         nickname: str, domain: str,
                         actor_json: {},
                         max_shares_on_profile: int) -> bool:
-    """Adds shared items to the given actor
+    """Adds shared items to the given actor attachments
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
     """
     if 'attachment' not in actor_json:
         actor_json['attachment'] = []
