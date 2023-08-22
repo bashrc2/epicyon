@@ -23709,6 +23709,8 @@ def run_daemon(max_hashtags: int,
 
     httpd.starting_daemon = True
 
+    # maximum number of shared items attached to actors, as in
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
     httpd.max_shares_on_profile = 8
 
     # load a list of nicknames for accounts blocking military instances
