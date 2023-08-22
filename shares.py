@@ -2183,9 +2183,7 @@ def add_shares_to_actor(base_dir: str,
             break
         if not shared_item.get('shareOnProfile'):
             continue
-        if not shared_item.get('shareId'):
-            continue
-        share_id = _vf_share_id(shared_item['shareId'])
+        share_id = _vf_share_id(share_id)
         actor_json['attachment'].append({
             "type": "Link",
             "name": shared_item['displayName'],
