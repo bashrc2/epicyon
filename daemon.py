@@ -22474,8 +22474,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                   nickname,
                                                   self.server.domain) + '.json'
                         save_json(actor_json, actor_filename)
-                        print('DEBUG: add_shares_to_actor: saved')
-                    print('DEBUG: add_shares_to_actor: ' + str(actor_json))
 
                 if filename:
                     if os.path.isfile(filename):
