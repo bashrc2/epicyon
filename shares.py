@@ -314,7 +314,7 @@ def add_share(base_dir: str,
               price: str, currency: str,
               system_language: str, translate: {},
               shares_file_type: str, low_bandwidth: bool,
-              content_license_url: str, on_profile: bool) -> None:
+              content_license_url: str, share_on_profile: bool) -> None:
     """Adds a new share
     """
     if is_filtered_globally(base_dir,
@@ -394,7 +394,7 @@ def add_share(base_dir: str,
         "expire": duration_sec,
         "itemPrice": price,
         "itemCurrency": currency,
-        "onProfile": on_profile
+        "shareOnProfile": share_on_profile
     }
 
     save_json(shares_json, shares_filename)
@@ -1929,7 +1929,7 @@ def _dfc_to_shares_format(catalog_json: {},
             "expire": expiry_time_sec,
             "itemPrice": item['DFC:price'].split(' ')[0],
             "itemCurrency": item['DFC:price'].split(' ')[1],
-            "onProfile": False
+            "shareOnProfile": False
         }
     return shares_json
 
@@ -2181,7 +2181,7 @@ def add_shares_to_actor(base_dir: str,
     for share_id, shared_item in shares_json.items():
         if ctr >= max_shares_on_profile:
             break
-        if not shared_item.get('onProfile'):
+        if not shared_item.get('shareOnProfile'):
             continue
         if not shared_item.get('shareId'):
             continue

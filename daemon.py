@@ -22433,10 +22433,10 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     print('Adding wanted item')
                     shares_file_type = 'wanted'
-                on_profile = False
-                if fields.get('onProfile'):
-                    if fields['onProfile'] == 'on':
-                        on_profile = True
+                share_on_profile = False
+                if fields.get('shareOnProfile'):
+                    if fields['shareOnProfile'] == 'on':
+                        share_on_profile = True
                 add_share(self.server.base_dir,
                           self.server.http_prefix,
                           nickname,
@@ -22454,9 +22454,9 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.translate, shares_file_type,
                           self.server.low_bandwidth,
                           self.server.content_license_url,
-                          on_profile)
+                          share_on_profile)
                 if post_type == 'newshare':
-                    # add onProfile items to the actor attachments
+                    # add shareOnProfile items to the actor attachments
                     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
                     actor = \
                         self._get_instance_url(calling_domain) + \

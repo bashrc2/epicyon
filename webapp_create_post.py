@@ -24,6 +24,7 @@ from utils import get_currencies
 from utils import get_category_types
 from utils import get_account_timezone
 from utils import get_supported_languages
+from webapp_utils import edit_check_box
 from webapp_utils import get_buy_links
 from webapp_utils import html_following_data_list
 from webapp_utils import html_common_emoji
@@ -627,6 +628,9 @@ def html_new_post(edit_post_params: {},
         extra_fields += \
             edit_number_field(translate['Duration of listing in days'],
                               'duration', 14, 1, 365, 1)
+        extra_fields += \
+            edit_check_box(translate['Display on your public profile'],
+                           'shareOnProfile', False)
         extra_fields += '</div>\n'
         extra_fields += '<div class="container">\n'
         city_or_loc_str = translate['City or location of the shared item']
