@@ -2124,7 +2124,7 @@ def vf_proposal_from_share(shared_item: {},
                 })
     if shared_item['itemPrice'] and shared_item['itemCurrency']:
         currency_url = _currency_to_wikidata(shared_item['itemCurrency'])
-        offer_item['publishes']['reciprocal'] = {
+        offer_item['reciprocal'] = {
             "type": "Intent",
             "id": share_id + '#reciprocal',
             "action": "transfer",
