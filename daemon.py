@@ -5282,16 +5282,28 @@ class PubServer(BaseHTTPRequestHandler):
                     person_cache = self.server.person_cache
                     actor_json = get_person_from_cache(base_dir,
                                                        actor, person_cache)
-                    if add_shares_to_actor(base_dir,
-                                           share_nickname, share_domain,
-                                           actor_json,
-                                           self.server.max_shares_on_profile):
-                        remove_person_from_cache(base_dir, actor, person_cache)
-                        store_person_in_cache(base_dir, actor,
-                                              actor_json, person_cache, True)
-                        actor_filename = acct_dir(base_dir, share_nickname,
-                                                  share_domain) + '.json'
-                        save_json(actor_json, actor_filename)
+                    if not actor_json:
+                        actor_filename = \
+                            acct_dir(base_dir, share_nickname,
+                                     share_domain) + '.json'
+                        if os.path.isfile(actor_filename):
+                            actor_json = load_json(actor_filename, 1, 1)
+                    if actor_json:
+                        max_shares_on_profile = \
+                            self.server.max_shares_on_profile
+                        if add_shares_to_actor(base_dir,
+                                               share_nickname, share_domain,
+                                               actor_json,
+                                               max_shares_on_profile):
+                            remove_person_from_cache(base_dir, actor,
+                                                     person_cache)
+                            store_person_in_cache(base_dir, actor,
+                                                  actor_json,
+                                                  person_cache, True)
+                            self.server.person_cache = person_cache
+                            actor_filename = acct_dir(base_dir, share_nickname,
+                                                      share_domain) + '.json'
+                            save_json(actor_json, actor_filename)
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
@@ -22566,18 +22578,30 @@ class PubServer(BaseHTTPRequestHandler):
                     person_cache = self.server.person_cache
                     actor_json = get_person_from_cache(self.server.base_dir,
                                                        actor, person_cache)
-                    if add_shares_to_actor(self.server.base_dir,
-                                           nickname, self.server.domain,
-                                           actor_json,
-                                           self.server.max_shares_on_profile):
-                        remove_person_from_cache(self.server.base_dir, actor,
-                                                 person_cache)
-                        store_person_in_cache(self.server.base_dir, actor,
-                                              actor_json, person_cache, True)
-                        actor_filename = acct_dir(self.server.base_dir,
-                                                  nickname,
-                                                  self.server.domain) + '.json'
-                        save_json(actor_json, actor_filename)
+                    if not actor_json:
+                        actor_filename = \
+                            acct_dir(self.server.base_dir, nickname,
+                                     self.server.domain) + '.json'
+                        if os.path.isfile(actor_filename):
+                            actor_json = load_json(actor_filename, 1, 1)
+                    if actor_json:
+                        max_shares_on_profile = \
+                            self.server.max_shares_on_profile
+                        if add_shares_to_actor(self.server.base_dir,
+                                               nickname, self.server.domain,
+                                               actor_json,
+                                               max_shares_on_profile):
+                            remove_person_from_cache(self.server.base_dir,
+                                                     actor, person_cache)
+                            store_person_in_cache(self.server.base_dir, actor,
+                                                  actor_json, person_cache,
+                                                  True)
+                            self.server.person_cache = person_cache
+                            actor_filename = \
+                                acct_dir(self.server.base_dir,
+                                         nickname,
+                                         self.server.domain) + '.json'
+                            save_json(actor_json, actor_filename)
 
                 if filename:
                     if os.path.isfile(filename):
