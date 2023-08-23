@@ -224,7 +224,7 @@ def _html_shares_result(base_dir: str, shares_json: {}, page_number: int,
                                              http_prefix, domain_full,
                                              contact_nickname,
                                              name, actor, shares_file_type,
-                                             shared_item['category'])
+                                             shared_item['category'], False)
                 if not results_exist and curr_page > 1:
                     # show the previous page button
                     shared_items_form += \

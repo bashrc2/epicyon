@@ -1913,7 +1913,8 @@ def html_search_result_share(base_dir: str, shared_item: {}, translate: {},
                              http_prefix: str, domain_full: str,
                              contact_nickname: str, item_id: str,
                              actor: str, shares_file_type: str,
-                             category: str) -> str:
+                             category: str,
+                             publicly_visible: bool) -> str:
     """Returns the html for an individual shared item
     """
     shared_items_form = '<div class="container">\n'
@@ -1959,15 +1960,20 @@ def html_search_result_share(base_dir: str, shared_item: {}, translate: {},
         contact_title_str = translate['Request to stay']
         button_style_str = 'contactbutton'
 
-    shared_items_form += \
-        '<p>' + \
-        '<a href="' + actor + '?replydm=sharedesc:' + \
-        shared_item['displayName'] + '?mention=' + contact_actor + \
-        '?category=' + category + \
-        '"><button class="' + button_style_str + '">' + contact_title_str + \
-        '</button></a>\n' + \
-        '<a href="' + contact_actor + '"><button class="button">' + \
-        translate['Profile'] + '</button></a>\n'
+    if not publicly_visible:
+        shared_items_form += \
+            '<p>' + \
+            '<a href="' + actor + '?replydm=sharedesc:' + \
+            shared_item['displayName'] + '?mention=' + contact_actor + \
+            '?category=' + category + '">' + \
+            '<button class="' + button_style_str + '">' + contact_title_str + \
+            '</button></a>\n' + \
+            '<a href="' + contact_actor + '"><button class="button">' + \
+            translate['Profile'] + '</button></a>\n'
+    else:
+        shared_items_form += \
+            '<a href="' + contact_actor + '"><button class="button">' + \
+            translate['Contact'] + '</button></a>\n'
 
     # should the remove button be shown?
     show_remove_button = False
@@ -1984,7 +1990,7 @@ def html_search_result_share(base_dir: str, shared_item: {}, translate: {},
             if actor.endswith('/users/' + admin_nickname):
                 show_remove_button = True
 
-    if show_remove_button:
+    if show_remove_button and not publicly_visible:
         if shares_file_type == 'shares':
             shared_items_form += \
                 ' <a href="' + actor + '?rmshare=' + \
@@ -2004,7 +2010,8 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
                     item_id: str, translate: {},
                     shared_items_federated_domains: [],
                     default_timeline: str, theme: str,
-                    shares_file_type: str, category: str) -> str:
+                    shares_file_type: str, category: str,
+                    publicly_visible: bool) -> str:
     """Shows an individual shared item after selecting it from the left column
     """
     shares_json = None
@@ -2069,7 +2076,8 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
     share_str += \
         html_search_result_share(base_dir, shared_item, translate, http_prefix,
                                  domain_full, contact_nickname, item_id,
-                                 actor, shares_file_type, category)
+                                 actor, shares_file_type, category,
+                                 publicly_visible)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):

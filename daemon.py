@@ -17393,7 +17393,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.shared_items_federated_domains,
                                     self.server.default_timeline,
                                     self.server.theme_name, shares_file_type,
-                                    share_category)
+                                    share_category, not authorized)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -18461,7 +18461,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 item_id, self.server.translate,
                                 self.server.shared_items_federated_domains,
                                 self.server.default_timeline,
-                                self.server.theme_name, 'shares', category)
+                                self.server.theme_name, 'shares', category,
+                                False)
             if not msg:
                 if calling_domain.endswith('.onion') and \
                    self.server.onion_domain:
