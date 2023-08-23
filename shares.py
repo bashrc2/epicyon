@@ -2224,6 +2224,20 @@ def vf_proposal_from_id(base_dir: str, nickname: str, domain: str,
                                   reciprocal_direction)
 
 
+def _is_valueflows_attachment(attach_item: {}) -> bool:
+    """Returns true if the given item is a ValueFlows entry
+    within the actor attachment list
+    """
+    if 'rel' in attach_item and 'href' in attach_item:
+        if isinstance(attach_item['rel'], list) and \
+           isinstance(attach_item['href'], str):
+            if len(attach_item['rel']) == 2:
+                if attach_item['rel'][0] == 'payment' and \
+                   attach_item['rel'][1].endswith('/valueflows/Proposal'):
+                    return True
+    return False
+
+
 def actor_attached_shares(actor_json: {}) -> []:
     """Returns any shared items attached to an actor
     https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
@@ -2233,14 +2247,27 @@ def actor_attached_shares(actor_json: {}) -> []:
 
     attached_shares = []
     for attach_item in actor_json['attachment']:
-        if 'rel' in attach_item and 'href' in attach_item:
-            if isinstance(attach_item['rel'], list) and \
-               isinstance(attach_item['href'], str):
-                if len(attach_item['rel']) == 2:
-                    if attach_item['rel'][0] == 'payment' and \
-                       attach_item['rel'][1].endswith('/valueflows/Proposal'):
-                        attached_shares.append(attach_item['href'])
+        if _is_valueflows_attachment(attach_item):
+            attached_shares.append(attach_item['href'])
     return attached_shares
+
+
+def actor_attached_shares_as_html(actor_json: {}) -> str:
+    """Returns html for any shared items attached to an actor
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
+    """
+    if not actor_json.get('attachment'):
+        return ''
+
+    html_str = ''
+    for attach_item in actor_json['attachment']:
+        if _is_valueflows_attachment(attach_item):
+            html_str += \
+                '<a href="' + attach_item['href'] + '" tabindex="1">' + \
+                attach_item['name'] + '</a> '
+    if html_str:
+        html_str = html_str.strip()
+    return html_str
 
 
 def add_shares_to_actor(base_dir: str,
@@ -2258,13 +2285,9 @@ def add_shares_to_actor(base_dir: str,
     new_attachment = []
     for attach_item in actor_json['attachment']:
         is_proposal = False
-        if 'rel' in attach_item:
-            if isinstance(attach_item['rel'], list):
-                if len(attach_item['rel']) == 2:
-                    if attach_item['rel'][0] == 'payment' and \
-                       attach_item['rel'][1].endswith('/valueflows/Proposal'):
-                        changed = True
-                        is_proposal = True
+        if _is_valueflows_attachment(attach_item):
+            changed = True
+            is_proposal = True
         if not is_proposal:
             new_attachment.append(attach_item)
     actor_json['attachment'] = new_attachment

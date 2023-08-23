@@ -97,6 +97,7 @@ from roles import is_devops
 from session import get_json_valid
 from session import site_is_verified
 from session import get_json
+from shares import actor_attached_shares_as_html
 
 THEME_FORMATS = '.zip, .gz'
 BLOCKFILE_FORMATS = '.csv'
@@ -517,6 +518,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         theme: str, moved_to: str,
                         also_known_as: [],
                         pinned_content: str,
+                        attached_shared_items: str,
                         access_keys: {},
                         joined_date: str,
                         occupation_name: str,
@@ -632,6 +634,10 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         featured_hashtags + login_button
     if pinned_content:
         html_str += pinned_content.replace('<p>', '<p>📎', 1)
+    if attached_shared_items:
+        html_str += \
+            '<p><b>' + translate['Shares'] + ':</b><br>\n' + \
+            attached_shared_items + '</p>\n'
 
     # show vcard download link
     html_str += \
@@ -1113,13 +1119,17 @@ def html_profile(signing_priv_key_pem: str,
                                '/system/accounts/avatars/',
                                '://' + domain_full + '/users/')
 
-    # get pinned post content
     account_dir = acct_dir(base_dir, nickname, domain)
+    # get pinned post content
     pinned_filename = account_dir + '/pinToProfile.txt'
     pinned_content = None
     if os.path.isfile(pinned_filename):
         with open(pinned_filename, 'r', encoding='utf-8') as pin_file:
             pinned_content = pin_file.read()
+
+    # shared items attached to the actor
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
+    attached_shared_items = actor_attached_shares_as_html(profile_json)
 
     profile_header_str = \
         _get_profile_header(base_dir, http_prefix,
@@ -1130,8 +1140,10 @@ def html_profile(signing_priv_key_pem: str,
                             featured_hashtags,
                             login_button, avatar_url, theme,
                             moved_to, also_known_as,
-                            pinned_content, access_keys,
-                            joined_date, occupation_name,
+                            pinned_content,
+                            attached_shared_items,
+                            access_keys, joined_date,
+                            occupation_name,
                             actor_proxied)
 
     # keyboard navigation
