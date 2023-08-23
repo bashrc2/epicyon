@@ -50,6 +50,8 @@ from siteactive import site_is_active
 from content import get_price_from_string
 from blocking import is_blocked
 from threads import begin_thread
+from cache import remove_person_from_cache
+from cache import store_person_in_cache
 
 
 def _load_dfc_ids(base_dir: str, system_language: str,
@@ -404,7 +406,8 @@ def add_share(base_dir: str,
                                   shares_file_type)
 
 
-def expire_shares(base_dir: str) -> None:
+def expire_shares(base_dir: str, max_shares_on_profile: int,
+                  person_cache: {}) -> None:
     """Removes expired items from shares
     """
     for _, dirs, _ in os.walk(base_dir + '/accounts'):
@@ -413,32 +416,60 @@ def expire_shares(base_dir: str) -> None:
                 continue
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
-            for shares_file_type in get_shares_files_list():
-                _expire_shares_for_account(base_dir, nickname, domain,
-                                           shares_file_type)
+            shares_list = get_shares_files_list()
+            expired_ctr = 0
+            for shares_file_type in shares_list:
+                ctr = \
+                    _expire_shares_for_account(base_dir, nickname, domain,
+                                               shares_file_type)
+                if shares_file_type == 'shares':
+                    expired_ctr = ctr
+            # have shared items been expired?
+            if expired_ctr > 0:
+                continue
+            # regenerate shared items within actor attachment
+            actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+            if not os.path.isfile(actor_filename):
+                continue
+            actor_json = load_json(actor_filename)
+            if not actor_json:
+                continue
+            if add_shares_to_actor(base_dir,
+                                   nickname, domain,
+                                   actor_json,
+                                   max_shares_on_profile):
+                actor = actor_json['id']
+                remove_person_from_cache(base_dir, actor,
+                                         person_cache)
+                store_person_in_cache(base_dir, actor,
+                                      actor_json,
+                                      person_cache, True)
+                save_json(actor_json, actor_filename)
         break
 
 
 def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
-                               shares_file_type: str) -> None:
+                               shares_file_type: str) -> int:
     """Removes expired items from shares for a particular account
+    Returns the number of items removed
     """
     handle_domain = remove_domain_port(domain)
     handle = nickname + '@' + handle_domain
     shares_filename = \
         acct_handle_dir(base_dir, handle) + '/' + shares_file_type + '.json'
     if not os.path.isfile(shares_filename):
-        return
+        return 0
     shares_json = load_json(shares_filename, 1, 2)
     if not shares_json:
-        return
+        return 0
     curr_time = int(time.time())
     delete_item_id = []
     for item_id, item in shares_json.items():
         if curr_time > item['expire']:
             delete_item_id.append(item_id)
     if not delete_item_id:
-        return
+        return 0
+    removed_ctr = len(delete_item_id)
     for item_id in delete_item_id:
         del shares_json[item_id]
         # remove any associated images
@@ -452,6 +483,7 @@ def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
                     print('EX: _expire_shares_for_account unable to delete ' +
                           item_idfile + '.' + ext)
     save_json(shares_json, shares_filename)
+    return removed_ctr
 
 
 def get_shares_feed_for_person(base_dir: str,

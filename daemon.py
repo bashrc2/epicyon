@@ -18503,7 +18503,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 item_id, self.server.translate,
                                 self.server.shared_items_federated_domains,
                                 self.server.default_timeline,
-                                self.server.theme_name, 'wanted', category)
+                                self.server.theme_name, 'wanted', category,
+                                False)
             if not msg:
                 if calling_domain.endswith('.onion') and \
                    self.server.onion_domain:
@@ -23671,12 +23672,13 @@ def run_posts_queue(base_dir: str, send_threads: [], debug: bool,
         remove_dormant_threads(base_dir, send_threads, debug, timeout_mins)
 
 
-def run_shares_expire(version_number: str, base_dir: str) -> None:
+def run_shares_expire(version_number: str, base_dir: str, httpd) -> None:
     """Expires shares as needed
     """
     while True:
         time.sleep(120)
-        expire_shares(base_dir)
+        expire_shares(base_dir, httpd.max_shares_on_profile,
+                      httpd.person_cache)
 
 
 def run_posts_watchdog(project_version: str, httpd) -> None:
@@ -24306,7 +24308,9 @@ def run_daemon(max_hashtags: int,
     print('THREAD: Creating expire thread for shared items')
     httpd.thrSharesExpire = \
         thread_with_trace(target=run_shares_expire,
-                          args=(project_version, base_dir), daemon=True)
+                          args=(project_version, base_dir,
+                                httpd),
+                          daemon=True)
     if not unit_test:
         print('THREAD: run_shares_expire_watchdog')
         httpd.thrSharesExpireWatchdog = \
