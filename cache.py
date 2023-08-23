@@ -18,8 +18,8 @@ from utils import get_file_case_insensitive
 from utils import get_user_paths
 
 
-def _remove_person_from_cache(base_dir: str, person_url: str,
-                              person_cache: {}) -> bool:
+def remove_person_from_cache(base_dir: str, person_url: str,
+                             person_cache: {}) -> bool:
     """Removes an actor from the cache
     """
     cache_filename = base_dir + '/cache/actors/' + \
@@ -53,8 +53,8 @@ def clear_actor_cache(base_dir: str, person_cache: {},
             if clear_domain not in fname:
                 continue
             person_url = fname.replace('#', '/').replace('.json', '')
-            _remove_person_from_cache(base_dir, person_url,
-                                      person_cache)
+            remove_person_from_cache(base_dir, person_url,
+                                     person_cache)
         break
 
 
@@ -73,7 +73,7 @@ def check_for_changed_actor(session, base_dir: str,
         return
     if url_exists(session, avatar_url, timeout_sec, http_prefix, domain_full):
         return
-    _remove_person_from_cache(base_dir, person_url, person_cache)
+    remove_person_from_cache(base_dir, person_url, person_cache)
 
 
 def store_person_in_cache(base_dir: str, person_url: str,

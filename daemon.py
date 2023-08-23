@@ -386,6 +386,7 @@ from content import add_html_tags
 from content import extract_media_in_form_post
 from content import save_media_in_form_post
 from content import extract_text_fields_in_post
+from cache import remove_person_from_cache
 from cache import clear_actor_cache
 from cache import get_actor_public_key_from_id
 from cache import check_for_changed_actor
@@ -5285,8 +5286,9 @@ class PubServer(BaseHTTPRequestHandler):
                                            share_nickname, share_domain,
                                            actor_json,
                                            self.server.max_shares_on_profile):
+                        remove_person_from_cache(base_dir, actor, person_cache)
                         store_person_in_cache(base_dir, actor,
-                                              actor_json, person_cache, False)
+                                              actor_json, person_cache, True)
                         actor_filename = acct_dir(base_dir, share_nickname,
                                                   share_domain) + '.json'
                         save_json(actor_json, actor_filename)
@@ -22568,8 +22570,10 @@ class PubServer(BaseHTTPRequestHandler):
                                            nickname, self.server.domain,
                                            actor_json,
                                            self.server.max_shares_on_profile):
+                        remove_person_from_cache(self.server.base_dir, actor,
+                                                 person_cache)
                         store_person_in_cache(self.server.base_dir, actor,
-                                              actor_json, person_cache, False)
+                                              actor_json, person_cache, True)
                         actor_filename = acct_dir(self.server.base_dir,
                                                   nickname,
                                                   self.server.domain) + '.json'
