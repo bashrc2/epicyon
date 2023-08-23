@@ -5300,7 +5300,6 @@ class PubServer(BaseHTTPRequestHandler):
                             store_person_in_cache(base_dir, actor,
                                                   actor_json,
                                                   person_cache, True)
-                            self.server.person_cache = person_cache
                             actor_filename = acct_dir(base_dir, share_nickname,
                                                       share_domain) + '.json'
                             save_json(actor_json, actor_filename)
@@ -17365,13 +17364,11 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             # is the given shared item in the list?
             share_id = None
-            for share_item in attached_shares:
-                if not share_item.get('href'):
+            for share_href in attached_shares:
+                if not isinstance(share_href, str):
                     continue
-                if not isinstance(share_item['href'], str):
-                    continue
-                if share_item['href'].endswith(self.path):
-                    share_id = share_item['href'].replace('://', '___')
+                if share_href.endswith(self.path):
+                    share_id = share_href.replace('://', '___')
                     share_id = share_id.replace('/', '--')
                     break
             if not share_id:
@@ -22596,7 +22593,6 @@ class PubServer(BaseHTTPRequestHandler):
                             store_person_in_cache(self.server.base_dir, actor,
                                                   actor_json, person_cache,
                                                   True)
-                            self.server.person_cache = person_cache
                             actor_filename = \
                                 acct_dir(self.server.base_dir,
                                          nickname,
