@@ -2158,7 +2158,8 @@ def get_share_category(base_dir: str, nickname: str, domain: str,
 
 
 def vf_proposal_from_id(base_dir: str, nickname: str, domain: str,
-                        shares_file_type: str, share_id: str) -> {}:
+                        shares_file_type: str, share_id: str,
+                        actor: str) -> {}:
     """Returns a ValueFlows proposal from a shared item id
     """
     shares_filename = \
@@ -2183,6 +2184,7 @@ def vf_proposal_from_id(base_dir: str, nickname: str, domain: str,
         publishes_direction = "receiver"
         reciprocal_direction = "provider"
     shares_json[share_id]['shareId'] = share_id
+    shares_json[share_id]['actor'] = actor
     return vf_proposal_from_share(shares_json[share_id],
                                   share_type,
                                   publishes_direction,

@@ -589,6 +589,7 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
 
     for share_id, shared_item in shares_json.items():
         shared_item['shareId'] = share_id
+        shared_item['actor'] = actor
         offer_item = vf_proposal_from_share(shared_item,
                                             share_type,
                                             publishes_direction,

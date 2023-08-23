@@ -17408,7 +17408,8 @@ class PubServer(BaseHTTPRequestHandler):
                 share_json = \
                     vf_proposal_from_id(self.server.base_dir,
                                         nickname, self.server.domain,
-                                        shares_file_type, share_id)
+                                        shares_file_type, share_id,
+                                        actor)
                 if share_json:
                     msg_str = json.dumps(share_json)
                     msg_str = self._convert_domains(calling_domain,
