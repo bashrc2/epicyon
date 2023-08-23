@@ -17327,6 +17327,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 return
             if not self._has_accept(calling_domain):
+                print('DEBUG: shareditems 1')
                 self._404()
                 return
             # get the actor from the cache
@@ -17340,10 +17341,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(actor_filename):
                     actor_json = load_json(actor_filename, 1, 1)
             if not actor_json:
+                print('DEBUG: shareditems 2 ' + actor)
                 self._404()
                 return
             attached_shares = actor_attached_shares(actor_json)
             if not attached_shares:
+                print('DEBUG: shareditems 3 ' + str(actor_json['attachment']))
                 self._404()
                 return
             # is the given shared item in the list?
@@ -17358,9 +17361,11 @@ class PubServer(BaseHTTPRequestHandler):
                     share_id = share_id.replace('/', '--')
                     break
             if not share_id:
+                print('DEBUG: shareditems 4')
                 self._404()
                 return
             # show the shared item
+            print('DEBUG: shareditems 5 ' + share_id)
             shares_file_type = 'shares'
             if self._request_http():
                 # get the category for share_id
@@ -17385,6 +17390,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       None, calling_domain, True)
                     self._write(msg)
                     return
+                else:
+                    print('DEBUG: shareditems 6 ' + share_id)
             else:
                 # get json for the shared item in ValueFlows format
                 share_json = \
@@ -17402,6 +17409,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       None, calling_domain, True)
                     self._write(msg)
                     return
+                else:
+                    print('DEBUG: shareditems 7 ' + share_id)
             self._404()
             return
 
