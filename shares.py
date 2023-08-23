@@ -2045,6 +2045,7 @@ def vf_proposal_from_share(shared_item: {},
     om2_link = \
         "http://www.ontology-of-units-of-measure.org/resource/om-2/"
     share_id = _vf_share_id(shared_item['shareId'])
+    published = date_seconds_to_string(shared_item['published'])
     offer_item = {
         "@context": [
             "https://www.w3.org/ns/activitystreams",
@@ -2071,7 +2072,7 @@ def vf_proposal_from_share(shared_item: {},
         "attributedTo": shared_item['actor'],
         "name": shared_item['displayName'],
         "content": shared_item['summary'],
-        "published": shared_item['published'],
+        "published": published,
         "publishes": {
             "type": "Intent",
             "id": share_id + '#primary',
