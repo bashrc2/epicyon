@@ -2164,12 +2164,15 @@ def vf_proposal_from_id(base_dir: str, nickname: str, domain: str,
     shares_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
     if not os.path.isfile(shares_filename):
+        print('DEBUG: vf_proposal_from_id file not found ' + shares_filename)
         return {}
 
     shares_json = load_json(shares_filename)
     if not shares_json:
+        print('DEBUG: vf_proposal_from_id file not loaded ' + shares_filename)
         return {}
     if not shares_json.get(share_id):
+        print('DEBUG: vf_proposal_from_id does not contain id ' + share_id)
         return {}
     if shares_file_type == 'shares':
         share_type = 'Proposal'
@@ -2179,6 +2182,7 @@ def vf_proposal_from_id(base_dir: str, nickname: str, domain: str,
         share_type = 'Want'
         publishes_direction = "receiver"
         reciprocal_direction = "provider"
+    shares_json[share_id]['shareId'] = share_id
     return vf_proposal_from_share(shares_json[share_id],
                                   share_type,
                                   publishes_direction,

@@ -587,7 +587,8 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
         reciprocal_direction = "provider"
         collection_name = nickname + "'s Wanted Items"
 
-    for _, shared_item in shares_json.items():
+    for share_id, shared_item in shares_json.items():
+        shared_item['shareId'] = share_id
         offer_item = vf_proposal_from_share(shared_item,
                                             share_type,
                                             publishes_direction,
