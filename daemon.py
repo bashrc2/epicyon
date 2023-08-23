@@ -268,6 +268,9 @@ from webapp_welcome import html_welcome_screen
 from webapp_welcome import is_welcome_screen_complete
 from webapp_welcome_profile import html_welcome_profile
 from webapp_welcome_final import html_welcome_final
+from shares import get_share_category
+from shares import vf_proposal_from_id
+from shares import actor_attached_shares
 from shares import add_shares_to_actor
 from shares import merge_shared_item_tokens
 from shares import run_federated_shares_daemon
@@ -17312,6 +17315,94 @@ class PubServer(BaseHTTPRequestHandler):
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', '_show_conversation_thread',
                                 self.server.debug)
+            return
+
+        # show a shared item if it is listed within actor attachment
+        if self.path.startswith('/users/') and '/shareditems/' in self.path:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            shared_item_display_name = self.path.split('/shareditems/')[1]
+            if not nickname or not shared_item_display_name:
+                self._404()
+                return
+            if not self._has_accept(calling_domain):
+                self._404()
+                return
+            # get the actor from the cache
+            actor = \
+                self._get_instance_url(calling_domain) + '/users/' + nickname
+            actor_json = get_person_from_cache(self.server.base_dir, actor,
+                                               self.server.person_cache)
+            if not actor_json:
+                actor_filename = acct_dir(self.server.base_dir, nickname,
+                                          self.server.domain) + '.json'
+                if os.path.isfile(actor_filename):
+                    actor_json = load_json(actor_filename, 1, 1)
+            if not actor_json:
+                self._404()
+                return
+            attached_shares = actor_attached_shares(actor_json)
+            if not attached_shares:
+                self._404()
+                return
+            # is the given shared item in the list?
+            share_id = None
+            for share_item in attached_shares:
+                if not share_item.get('href'):
+                    continue
+                if not isinstance(share_item['href'], str):
+                    continue
+                if share_item['href'].endswith(self.path):
+                    share_id = share_item['href'].replace('://', '___')
+                    share_id = share_id.replace('/', '--')
+                    break
+            if not share_id:
+                self._404()
+                return
+            # show the shared item
+            shares_file_type = 'shares'
+            if self._request_http():
+                # get the category for share_id
+                share_category = \
+                    get_share_category(self.server.base_dir,
+                                       nickname, self.server.domain,
+                                       shares_file_type, share_id)
+                msg = \
+                    html_show_share(self.server.base_dir,
+                                    self.server.domain, nickname,
+                                    self.server.http_prefix,
+                                    self.server.domain_full,
+                                    share_id, self.server.translate,
+                                    self.server.shared_items_federated_domains,
+                                    self.server.default_timeline,
+                                    self.server.theme_name, shares_file_type,
+                                    share_category)
+                if msg:
+                    msg = msg.encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('text/html', msglen,
+                                      None, calling_domain, True)
+                    self._write(msg)
+                    return
+            else:
+                # get json for the shared item in ValueFlows format
+                share_json = \
+                    vf_proposal_from_id(self.server.base_dir,
+                                        nickname, self.server.domain,
+                                        shares_file_type, share_id)
+                if share_json:
+                    msg_str = json.dumps(share_json)
+                    msg_str = self._convert_domains(calling_domain,
+                                                    referer_domain,
+                                                    msg_str)
+                    msg = msg_str.encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('application/json', msglen,
+                                      None, calling_domain, True)
+                    self._write(msg)
+                    return
+            self._404()
             return
 
         # shared items offers collection for this instance

@@ -2138,6 +2138,72 @@ def vf_proposal_from_share(shared_item: {},
     return offer_item
 
 
+def get_share_category(base_dir: str, nickname: str, domain: str,
+                       shares_file_type: str, share_id: str) -> str:
+    """Returns the category for a shared item
+    """
+    shares_filename = \
+        acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
+    if not os.path.isfile(shares_filename):
+        return ''
+
+    shares_json = load_json(shares_filename)
+    if not shares_json:
+        return ''
+    if not shares_json.get(share_id):
+        return ''
+    if not shares_json[share_id].get('category'):
+        return ''
+    return shares_json[share_id]['category']
+
+
+def vf_proposal_from_id(base_dir: str, nickname: str, domain: str,
+                        shares_file_type: str, share_id: str) -> {}:
+    """Returns a ValueFlows proposal from a shared item id
+    """
+    shares_filename = \
+        acct_dir(base_dir, nickname, domain) + '/' + shares_file_type + '.json'
+    if not os.path.isfile(shares_filename):
+        return {}
+
+    shares_json = load_json(shares_filename)
+    if not shares_json:
+        return {}
+    if not shares_json.get(share_id):
+        return {}
+    if shares_file_type == 'shares':
+        share_type = 'Proposal'
+        publishes_direction = "provider"
+        reciprocal_direction = "receiver"
+    else:
+        share_type = 'Want'
+        publishes_direction = "receiver"
+        reciprocal_direction = "provider"
+    return vf_proposal_from_share(shares_json[share_id],
+                                  share_type,
+                                  publishes_direction,
+                                  reciprocal_direction)
+
+
+def actor_attached_shares(actor_json: {}) -> []:
+    """Returns any shared items attached to an actor
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
+    """
+    if not actor_json.get('attachment'):
+        return []
+
+    attached_shares = []
+    for attach_item in actor_json['attachment']:
+        if 'rel' in attach_item and 'href' in attach_item:
+            if isinstance(attach_item['rel'], list) and \
+               isinstance(attach_item['href'], str):
+                if len(attach_item['rel']) == 2:
+                    if attach_item['rel'][0] == 'payment' and \
+                       attach_item['rel'][1].endswith('/valueflows/Proposal'):
+                        attached_shares.append(attach_item['href'])
+    return attached_shares
+
+
 def add_shares_to_actor(base_dir: str,
                         nickname: str, domain: str,
                         actor_json: {},
