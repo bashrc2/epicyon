@@ -2262,11 +2262,13 @@ def actor_attached_shares_as_html(actor_json: {}) -> str:
     html_str = ''
     for attach_item in actor_json['attachment']:
         if _is_valueflows_attachment(attach_item):
+            if not html_str:
+                html_str = '<ul>\n'
             html_str += \
-                '<a href="' + attach_item['href'] + '" tabindex="1">' + \
-                attach_item['name'] + '</a> '
+                '  <li><a href="' + attach_item['href'] + '" tabindex="1">' + \
+                attach_item['name'] + '</a></li>\n'
     if html_str:
-        html_str = html_str.strip()
+        html_str = html_str.strip() + '</ul>\n'
     return html_str
 
 
