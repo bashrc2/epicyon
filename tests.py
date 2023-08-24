@@ -870,8 +870,9 @@ def create_server_alice(path: str, domain: str, port: int,
     clacks = None
     map_format = 'gpx'
     max_hashtags = 20
+    max_shares_on_profile = 8
     print('Server running: Alice')
-    run_daemon(max_hashtags, map_format,
+    run_daemon(max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
@@ -1045,8 +1046,9 @@ def create_server_bob(path: str, domain: str, port: int,
     clacks = None
     map_format = 'gpx'
     max_hashtags = 20
+    max_shares_on_profile = 8
     print('Server running: Bob')
-    run_daemon(max_hashtags, map_format,
+    run_daemon(max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
@@ -1131,8 +1133,9 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     clacks = None
     map_format = 'gpx'
     max_hashtags = 20
+    max_shares_on_profile = 8
     print('Server running: Eve')
-    run_daemon(max_hashtags, map_format,
+    run_daemon(max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
@@ -1219,8 +1222,9 @@ def create_server_group(path: str, domain: str, port: int,
     clacks = None
     map_format = 'gpx'
     max_hashtags = 20
+    max_shares_on_profile = 8
     print('Server running: Group')
-    run_daemon(max_hashtags, map_format,
+    run_daemon(max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,

@@ -262,6 +262,10 @@ def _command_options() -> None:
                         dest='max_newswire_posts_per_source', type=int,
                         default=4,
                         help='Maximum newswire posts per feed or account')
+    parser.add_argument('--maxSharesOnProfile',
+                        dest='max_shares_on_profile', type=int,
+                        default=8,
+                        help='Maximum shared items shown on profile')
     parser.add_argument('--dormant_months',
                         dest='dormant_months', type=int,
                         default=3,
@@ -3904,7 +3908,8 @@ def _command_options() -> None:
 if __name__ == "__main__":
     argb2, opt2 = _command_options()
     print('allowdeletion: ' + str(argb2.allowdeletion))
-    run_daemon(argb2.max_hashtags,
+    run_daemon(argb2.max_shares_on_profile,
+               argb2.max_hashtags,
                argb2.mapFormat,
                argb2.clacks,
                opt2['preferred_podcast_formats'],

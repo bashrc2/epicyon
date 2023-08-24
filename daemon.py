@@ -23766,7 +23766,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(max_hashtags: int,
+def run_daemon(max_shares_on_profile: int,
+               max_hashtags: int,
                map_format: str,
                clacks: str,
                preferred_podcast_formats: [],
@@ -23865,7 +23866,7 @@ def run_daemon(max_hashtags: int,
 
     # maximum number of shared items attached to actors, as in
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
-    httpd.max_shares_on_profile = 8
+    httpd.max_shares_on_profile = max_shares_on_profile
 
     # load a list of nicknames for accounts blocking military instances
     httpd.block_military = load_blocked_military(base_dir)
