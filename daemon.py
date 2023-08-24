@@ -5220,7 +5220,8 @@ class PubServer(BaseHTTPRequestHandler):
     def _remove_share(self, calling_domain: str, cookie: str,
                       authorized: bool, path: str,
                       base_dir: str, http_prefix: str, domain_full: str,
-                      onion_domain: str, i2p_domain: str) -> None:
+                      onion_domain: str, i2p_domain: str,
+                      curr_session, proxy_type: str) -> None:
         """Removes a shared item
         """
         users_path = path.split('/rmshare')[0]
@@ -5309,6 +5310,18 @@ class PubServer(BaseHTTPRequestHandler):
                             actor_filename = acct_dir(base_dir, share_nickname,
                                                       share_domain) + '.json'
                             save_json(actor_json, actor_filename)
+                            # send profile update to followers
+
+                            update_actor_json = \
+                                get_actor_update_json(actor_json)
+                            print('Sending actor update ' +
+                                  'after change to attached shares 2: ' +
+                                  str(update_actor_json))
+                            self._post_to_outbox(update_actor_json,
+                                                 self.server.project_version,
+                                                 share_nickname,
+                                                 curr_session,
+                                                 proxy_type)
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
@@ -22627,6 +22640,16 @@ class PubServer(BaseHTTPRequestHandler):
                                          nickname,
                                          self.server.domain) + '.json'
                             save_json(actor_json, actor_filename)
+                            # send profile update to followers
+                            update_actor_json = \
+                                get_actor_update_json(actor_json)
+                            print('Sending actor update ' +
+                                  'after change to attached shares: ' +
+                                  str(update_actor_json))
+                            self._post_to_outbox(update_actor_json,
+                                                 self.server.project_version,
+                                                 nickname,
+                                                 curr_session, proxy_type)
 
                 if filename:
                     if os.path.isfile(filename):
@@ -23049,7 +23072,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.http_prefix,
                                    self.server.domain_full,
                                    self.server.onion_domain,
-                                   self.server.i2p_domain)
+                                   self.server.i2p_domain,
+                                   curr_session, proxy_type)
                 self.server.postreq_busy = False
                 return
 
