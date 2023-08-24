@@ -23,6 +23,7 @@ from session import post_json
 from session import post_image
 from session import create_session
 from session import get_json_valid
+from utils import dangerous_markup
 from utils import remove_html
 from utils import get_media_extensions
 from utils import acct_handle_dir
@@ -2228,16 +2229,24 @@ def _is_valueflows_attachment(attach_item: {}) -> bool:
     """Returns true if the given item is a ValueFlows entry
     within the actor attachment list
     """
-    if 'rel' in attach_item and \
-       'href' in attach_item and \
-       'name' in attach_item:
-        if isinstance(attach_item['rel'], list) and \
-           isinstance(attach_item['name'], str) and \
-           isinstance(attach_item['href'], str):
-            if len(attach_item['rel']) == 2 and len(attach_item['name']) > 1:
-                if attach_item['rel'][0] == 'payment' and \
-                   attach_item['rel'][1].endswith('/valueflows/Proposal'):
-                    return True
+    if 'rel' not in attach_item or \
+       'href' not in attach_item or \
+       'name' not in attach_item:
+        return False
+    if not isinstance(attach_item['rel'], list):
+        return False
+    if not isinstance(attach_item['name'], str):
+        return False
+    if not isinstance(attach_item['href'], str):
+        return False
+    if len(attach_item['rel']) != 2:
+        return False
+    if len(attach_item['name']) <= 1:
+        return False
+    if attach_item['rel'][0] == 'payment' and \
+       attach_item['rel'][1].endswith('/valueflows/Proposal'):
+        if not dangerous_markup(attach_item['href'], False, []):
+            return True
     return False
 
 
@@ -2272,7 +2281,7 @@ def actor_attached_shares_as_html(actor_json: {},
                 html_str = '<ul>\n'
             html_str += \
                 '  <li><a href="' + attach_item['href'] + '" tabindex="1">' + \
-                attach_item['name'] + '</a></li>\n'
+                remove_html(attach_item['name']) + '</a></li>\n'
             ctr += 1
             if ctr >= max_shares_on_profile:
                 break
