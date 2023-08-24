@@ -2234,7 +2234,7 @@ def _is_valueflows_attachment(attach_item: {}) -> bool:
         if isinstance(attach_item['rel'], list) and \
            isinstance(attach_item['name'], str) and \
            isinstance(attach_item['href'], str):
-            if len(attach_item['rel']) == 2 and len(attach_item['name'] > 1):
+            if len(attach_item['rel']) == 2 and len(attach_item['name']) > 1:
                 if attach_item['rel'][0] == 'payment' and \
                    attach_item['rel'][1].endswith('/valueflows/Proposal'):
                     return True
