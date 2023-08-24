@@ -2255,7 +2255,8 @@ def actor_attached_shares(actor_json: {}) -> []:
     return attached_shares
 
 
-def actor_attached_shares_as_html(actor_json: {}) -> str:
+def actor_attached_shares_as_html(actor_json: {},
+                                  max_shares_on_profile: int) -> str:
     """Returns html for any shared items attached to an actor
     https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
     """

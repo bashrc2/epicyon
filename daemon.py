@@ -3284,6 +3284,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             min_images_for_accounts = \
                 self.server.min_images_for_accounts
+            max_shares_on_profile = \
+                self.server.max_shares_on_profile
             profile_str = \
                 html_profile_after_search(recent_posts_cache,
                                           self.server.max_recent_posts,
@@ -3319,7 +3321,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           bold_reading,
                                           self.server.dogwhistles,
                                           min_images_for_accounts,
-                                          self.server.buy_sites)
+                                          self.server.buy_sites,
+                                          max_shares_on_profile)
             if profile_str:
                 msg = profile_str.encode('utf-8')
                 msglen = len(msg)
@@ -4909,6 +4912,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                     min_images_for_accounts = \
                         self.server.min_images_for_accounts
+                    max_shares_on_profile = \
+                        self.server.max_shares_on_profile
                     profile_str = \
                         html_profile_after_search(recent_posts_cache,
                                                   self.server.max_recent_posts,
@@ -4944,7 +4949,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   bold_reading,
                                                   self.server.dogwhistles,
                                                   min_images_for_accounts,
-                                                  self.server.buy_sites)
+                                                  self.server.buy_sites,
+                                                  max_shares_on_profile)
                 if profile_str:
                     msg = profile_str.encode('utf-8')
                     msglen = len(msg)
@@ -12382,7 +12388,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.lists_enabled,
                                      self.server.content_license_url,
                                      timezone, bold_reading,
-                                     self.server.buy_sites, None)
+                                     self.server.buy_sites, None,
+                                     self.server.max_shares_on_profile)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12475,6 +12482,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 bold_reading = False
                                 if self.server.bold_reading.get(nick):
                                     bold_reading = True
+                                max_shares_on_profile = \
+                                    self.server.max_shares_on_profile
                                 msg = \
                                     html_profile(signing_priv_key_pem,
                                                  self.server.rss_icon_at_top,
@@ -12510,7 +12519,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  content_license_url,
                                                  timezone, bold_reading,
                                                  self.server.buy_sites,
-                                                 None)
+                                                 None,
+                                                 max_shares_on_profile)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -15159,7 +15169,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.content_license_url,
                                      timezone, bold_reading,
                                      self.server.buy_sites,
-                                     None)
+                                     None,
+                                     self.server.max_shares_on_profile)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -15266,6 +15277,8 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    max_shares_on_profile = \
+                        self.server.max_shares_on_profile
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
@@ -15303,7 +15316,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      content_license_url,
                                      timezone, bold_reading,
                                      self.server.buy_sites,
-                                     None).encode('utf-8')
+                                     None,
+                                     max_shares_on_profile).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15404,6 +15418,8 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    max_shares_on_profile = \
+                        self.server.max_shares_on_profile
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
@@ -15441,7 +15457,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      content_license_url,
                                      timezone, bold_reading,
                                      self.server.buy_sites,
-                                     None).encode('utf-8')
+                                     None,
+                                     max_shares_on_profile).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15546,6 +15563,8 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    max_shares_on_profile = \
+                        self.server.max_shares_on_profile
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
@@ -15583,7 +15602,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      content_license_url,
                                      timezone, bold_reading,
                                      self.server.buy_sites,
-                                     None).encode('utf-8')
+                                     None,
+                                     max_shares_on_profile).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15688,6 +15708,8 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    max_shares_on_profile = \
+                        self.server.max_shares_on_profile
                     msg = \
                         html_profile(self.server.signing_priv_key_pem,
                                      self.server.rss_icon_at_top,
@@ -15726,7 +15748,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      content_license_url,
                                      timezone, bold_reading,
                                      self.server.buy_sites,
-                                     None).encode('utf-8')
+                                     None,
+                                     max_shares_on_profile).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
                                       cookie, calling_domain, False)
@@ -15861,6 +15884,8 @@ class PubServer(BaseHTTPRequestHandler):
             bold_reading = False
             if self.server.bold_reading.get(nickname):
                 bold_reading = True
+            max_shares_on_profile = \
+                self.server.max_shares_on_profile
             msg = \
                 html_profile(self.server.signing_priv_key_pem,
                              self.server.rss_icon_at_top,
@@ -15894,7 +15919,8 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.content_license_url,
                              timezone, bold_reading,
                              self.server.buy_sites,
-                             None).encode('utf-8')
+                             None,
+                             max_shares_on_profile).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)

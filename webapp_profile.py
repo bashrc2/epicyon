@@ -203,7 +203,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                               onion_domain: str, i2p_domain: str,
                               bold_reading: bool, dogwhistles: {},
                               min_images_for_accounts: [],
-                              buy_sites: {}) -> str:
+                              buy_sites: {},
+                              max_shares_on_profile: int) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -257,7 +258,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
 
     # shared items attached to the actor
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
-    attached_shared_items = actor_attached_shares_as_html(profile_json)
+    attached_shared_items = \
+        actor_attached_shares_as_html(profile_json, max_shares_on_profile)
 
     avatar_url = ''
     if profile_json.get('icon'):
@@ -801,7 +803,8 @@ def html_profile(signing_priv_key_pem: str,
                  content_license_url: str,
                  timezone: str, bold_reading: bool,
                  buy_sites: {},
-                 actor_proxied: str) -> str:
+                 actor_proxied: str,
+                 max_shares_on_profile: int) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -1139,7 +1142,8 @@ def html_profile(signing_priv_key_pem: str,
 
     # shared items attached to the actor
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
-    attached_shared_items = actor_attached_shares_as_html(profile_json)
+    attached_shared_items = \
+        actor_attached_shares_as_html(profile_json, max_shares_on_profile)
 
     profile_header_str = \
         _get_profile_header(base_dir, http_prefix,
