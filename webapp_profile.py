@@ -255,6 +255,10 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         if profile_json['type'] == 'Group':
             is_group = True
 
+    # shared items attached to the actor
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
+    attached_shared_items = actor_attached_shares_as_html(profile_json)
+
     avatar_url = ''
     if profile_json.get('icon'):
         if profile_json['icon'].get('url'):
@@ -361,7 +365,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                          avatar_url, image_url,
                                          moved_to, profile_json['id'],
                                          also_known_as, access_keys,
-                                         joined_date, actor_proxied)
+                                         joined_date, actor_proxied,
+                                         attached_shared_items)
 
     domain_full = get_full_domain(domain, port)
 
@@ -666,7 +671,8 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
                                      also_known_as: [],
                                      access_keys: {},
                                      joined_date: str,
-                                     actor_proxied: str) -> str:
+                                     actor_proxied: str,
+                                     attached_shared_items: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -763,6 +769,10 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
         featured_hashtags + \
         '      </figcaption>\n' + \
         '    </figure>\n\n'
+    if attached_shared_items:
+        html_str += \
+            '<p><b>' + translate['Shares'] + ':</b><br>\n' + \
+            attached_shared_items + '</p>\n'
     return html_str
 
 
