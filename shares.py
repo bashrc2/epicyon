@@ -2260,10 +2260,12 @@ def actor_attached_shares_as_html(actor_json: {},
     """Returns html for any shared items attached to an actor
     https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
     """
-    if not actor_json.get('attachment'):
+    if not actor_json.get('attachment') or \
+       max_shares_on_profile == 0:
         return ''
 
     html_str = ''
+    ctr = 0
     for attach_item in actor_json['attachment']:
         if _is_valueflows_attachment(attach_item):
             if not html_str:
@@ -2271,6 +2273,9 @@ def actor_attached_shares_as_html(actor_json: {},
             html_str += \
                 '  <li><a href="' + attach_item['href'] + '" tabindex="1">' + \
                 attach_item['name'] + '</a></li>\n'
+            ctr += 1
+            if ctr >= max_shares_on_profile:
+                break
     if html_str:
         html_str = html_str.strip() + '</ul>\n'
     return html_str
