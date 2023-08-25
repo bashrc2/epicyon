@@ -81,7 +81,7 @@ def url_exists(session, url: str, timeout_sec: int = 3,
         result = session.get(url, headers=session_headers,
                              params=session_params,
                              timeout=timeout_sec,
-                             allow_redirects=False)
+                             allow_redirects=True)
         if result:
             if result.status_code in (200, 304):
                 return True
@@ -101,7 +101,7 @@ def _get_json_request(session, url: str, domain_full: str, session_headers: {},
     try:
         result = session.get(url, headers=session_headers,
                              params=session_params, timeout=timeout_sec,
-                             allow_redirects=False)
+                             allow_redirects=True)
         if result.status_code != 200:
             if result.status_code == 401:
                 print("WARN: get_json " + url + ' rejected by secure mode')
@@ -330,7 +330,7 @@ def get_vcard(xml_format: bool,
     try:
         result = session.get(url, headers=session_headers,
                              params=session_params, timeout=timeout_sec,
-                             allow_redirects=False)
+                             allow_redirects=True)
         if result.status_code != 200:
             if result.status_code == 401:
                 print("WARN: get_vcard " + url + ' rejected by secure mode')
@@ -775,7 +775,7 @@ def download_image(session, url: str, image_filename: str, debug: bool,
             result = session.get(url,
                                  headers=session_headers,
                                  params=None,
-                                 allow_redirects=False)
+                                 allow_redirects=True)
             if result.status_code < 200 or \
                result.status_code > 202:
                 if debug:
@@ -823,7 +823,7 @@ def download_image_any_mime_type(session, url: str,
     try:
         result = session.get(url, headers=session_headers,
                              timeout=timeout_sec,
-                             allow_redirects=False)
+                             allow_redirects=True)
     except requests.exceptions.RequestException as ex:
         print('EX: download_image_any_mime_type failed1: ' +
               str(url) + ', ' + str(ex))
