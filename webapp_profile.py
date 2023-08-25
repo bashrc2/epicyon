@@ -515,6 +515,15 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         profile_str + text_mode_separator + html_footer()
 
 
+def _profile_shared_items_list(attached_shared_items: str,
+                               translate: {}) -> str:
+    """Complete html for shared items shown on profile
+    """
+    return \
+        '<p><b>' + translate['Shares'] + ':</b><br>\n' + \
+        attached_shared_items + '</p>\n'
+
+
 def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         domain: str, domain_full: str, translate: {},
                         default_timeline: str,
@@ -643,8 +652,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         html_str += pinned_content.replace('<p>', '<p>📎', 1)
     if attached_shared_items:
         html_str += \
-            '<p><b>' + translate['Shares'] + ':</b><br>\n' + \
-            attached_shared_items + '</p>\n'
+            _profile_shared_items_list(attached_shared_items,
+                                       translate)
 
     # show vcard download link
     html_str += \
@@ -773,8 +782,8 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
         '    </figure>\n\n'
     if attached_shared_items:
         html_str += \
-            '<p><b>' + translate['Shares'] + ':</b><br>\n' + \
-            attached_shared_items + '</p>\n'
+            _profile_shared_items_list(attached_shared_items,
+                                       translate)
     return html_str
 
 
