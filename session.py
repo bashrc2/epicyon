@@ -574,7 +574,8 @@ def post_json(http_prefix: str, domain_full: str,
         post_result = \
             session.post(url=inbox_url,
                          data=json.dumps(post_json_object),
-                         headers=headers, timeout=timeout_sec)
+                         headers=headers, timeout=timeout_sec,
+                         allow_redirects=True)
     except requests.Timeout as ex:
         if not quiet:
             print('EX: post_json timeout ' + inbox_url + ' ' +
@@ -627,7 +628,8 @@ def post_json_string(session, post_json_str: str,
     try:
         post_result = \
             session.post(url=inbox_url, data=post_json_str,
-                         headers=headers, timeout=timeout_sec)
+                         headers=headers, timeout=timeout_sec,
+                         allow_redirects=True)
     except requests.exceptions.RequestException as ex:
         if not quiet:
             print('EX: error during post_json_string requests ' + str(ex))
@@ -701,7 +703,7 @@ def post_image(session, attach_image_filename: str, federation_list: [],
 
         try:
             post_result = session.post(url=inbox_url, data=media_binary,
-                                       headers=headers)
+                                       headers=headers, allow_redirects=True)
         except requests.exceptions.RequestException as ex:
             print('EX: error during post_image requests ' + str(ex))
             return None
