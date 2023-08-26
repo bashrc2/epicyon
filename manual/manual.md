@@ -685,6 +685,8 @@ When creating a new post one of the scope options is called *shares*. You can de
 
 Sharing is primarily intended to not require any monetary transactions, although prices can optionally be added. There are no payment mechanisms implemented and if that is required then it is recommended to include details of payment method within the description.
 
+It is optionally possible to display the shared item on your profile, which makes it *fully public to the whole internet*. Only a small number of shared items can be shown on your profile though, which is decided via the command option *--maxSharesOnProfile*.
+
 ![Adding a new shared item](manual-new-share.png)
 
 ## Adding a wanted item
