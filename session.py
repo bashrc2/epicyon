@@ -918,7 +918,8 @@ def get_method(method_name: str, xml_str: str,
     try:
         result = session.request(method_name, url, headers=session_headers,
                                  data=xml_str,
-                                 params=session_params, timeout=timeout_sec)
+                                 params=session_params, timeout=timeout_sec,
+                                 allow_redirects=True)
         if result.status_code not in (200, 207):
             if result.status_code == 401:
                 print("WARN: get_method " + url + ' rejected by secure mode')
