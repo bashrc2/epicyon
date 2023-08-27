@@ -232,6 +232,8 @@ def get_actor_update_json(actor_json: {}) -> {}:
             "https://w3id.org/security/v1",
             {
                 "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+                "indexable": "toot:indexable",
+                "memorial": "toot:memorial",
                 "toot": "http://joinmastodon.org/ns#",
                 "featured":
                 {
@@ -357,6 +359,8 @@ def get_default_person_context() -> str:
         'focalPoint': {'@container': '@list', '@id': 'toot:focalPoint'},
         'identityKey': {'@id': 'toot:identityKey', '@type': '@id'},
         'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
+        'indexable': 'toot:indexable',
+        'memorial': 'toot:memorial',
         'messageFranking': 'toot:messageFranking',
         'messageType': 'toot:messageType',
         'movedTo': {'@id': 'as:movedTo', '@type': '@id'},
