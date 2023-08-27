@@ -98,6 +98,7 @@ from session import get_json_valid
 from session import site_is_verified
 from session import get_json
 from shares import actor_attached_shares_as_html
+from git import get_repo_url
 
 THEME_FORMATS = '.zip, .gz'
 BLOCKFILE_FORMATS = '.csv'
@@ -356,6 +357,9 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
 
     actor_proxied = ap_proxy_type(profile_json)
 
+    website_url = get_website(profile_json, translate)
+    repo_url = get_repo_url(profile_json)
+
     profile_str = \
         _get_profile_header_after_search(nickname, default_timeline,
                                          search_nickname,
@@ -368,7 +372,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                          moved_to, profile_json['id'],
                                          also_known_as, access_keys,
                                          joined_date, actor_proxied,
-                                         attached_shared_items)
+                                         attached_shared_items,
+                                         website_url, repo_url)
 
     domain_full = get_full_domain(domain, port)
 
@@ -683,7 +688,9 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
                                      access_keys: {},
                                      joined_date: str,
                                      actor_proxied: str,
-                                     attached_shared_items: str) -> str:
+                                     attached_shared_items: str,
+                                     website_url: str,
+                                     repo_url: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -775,6 +782,12 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
 
     if featured_hashtags:
         featured_hashtags += '\n'
+    if website_url:
+        html_str += '  <p>🌐 <a href="' + website_url + '">' + \
+            website_url + '</a></p>\n'
+    if repo_url:
+        html_str += '  <p>💻 <a href="' + repo_url + '">' + \
+            repo_url + '</a></p>\n'
     html_str += \
         '        <p>' + profile_description_short + '</p>\n' + \
         featured_hashtags + \
@@ -908,6 +921,7 @@ def html_profile(signing_priv_key_pem: str,
     donate_section = ''
     donate_url = get_donation_url(profile_json)
     website_url = get_website(profile_json, translate)
+    repo_url = get_repo_url(profile_json)
     gemini_link = get_gemini_link(profile_json, translate)
     blog_address = get_blog_address(profile_json)
     enigma_pub_key = get_enigma_pub_key(profile_json)
@@ -921,8 +935,8 @@ def html_profile(signing_priv_key_pem: str,
     briar_address = get_briar_address(profile_json)
     cwtch_address = get_cwtch_address(profile_json)
     verified_site_checkmark = '✔'
-    if donate_url or website_url or xmpp_address or matrix_address or \
-       ssb_address or tox_address or briar_address or \
+    if donate_url or website_url or repo_url or xmpp_address or \
+       matrix_address or ssb_address or tox_address or briar_address or \
        cwtch_address or pgp_pub_key or enigma_pub_key or \
        pgp_fingerprint or email_address:
         donate_section = '<div class="container">\n'
@@ -949,6 +963,10 @@ def html_profile(signing_priv_key_pem: str,
                     '<a href="' + \
                     website_url + '" rel="me" tabindex="1">' + \
                     website_url + '</a></p>\n'
+        if repo_url:
+            donate_section += \
+                '<p>💻 <a href="' + repo_url + '" tabindex="1">' + \
+                repo_url + '</a></p>\n'
         if gemini_link:
             donate_section += \
                 '<p>' + 'Gemini' + ': <a href="' + \
