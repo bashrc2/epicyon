@@ -220,6 +220,12 @@ def get_actor_update_json(actor_json: {}) -> {}:
     """
     pub_number, _ = get_status_number()
     manually_approves_followers = actor_json['manuallyApprovesFollowers']
+    memorial = False
+    if actor_json.get('memorial'):
+        memorial = True
+    indexable = False
+    if actor_json.get('indexable'):
+        indexable = True
     return {
         '@context': [
             "https://www.w3.org/ns/activitystreams",
@@ -319,9 +325,11 @@ def get_actor_update_json(actor_json: {}) -> {}:
             'url': actor_json['url'],
             'manuallyApprovesFollowers': manually_approves_followers,
             'discoverable': actor_json['discoverable'],
+            'memorial': memorial,
+            'indexable': indexable,
             'published': actor_json['published'],
             'devices': actor_json['devices'],
-            "publicKey": actor_json['publicKey'],
+            "publicKey": actor_json['publicKey']
         }
     }
 
@@ -473,6 +481,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         'inbox': inbox_str,
         'manuallyApprovesFollowers': approve_followers,
         'discoverable': True,
+        'indexable': False,
+        'memorial': False,
         'name': person_name,
         'outbox': person_id + '/outbox',
         'preferredUsername': person_name,
@@ -797,6 +807,14 @@ def person_upgrade_actor(base_dir: str, person_json: {},
             person_id = person_json['id']
             person_json['moderators'] = person_id + '/moderators'
             update_actor = True
+
+    if not person_json.get('memorial'):
+        person_json['memorial'] = False
+        update_actor = True
+
+    if not person_json.get('indexable'):
+        person_json['indexable'] = False
+        update_actor = True
 
     # add a speaker endpoint
     if not person_json.get('tts'):
