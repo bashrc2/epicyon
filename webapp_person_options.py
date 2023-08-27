@@ -164,7 +164,8 @@ def html_person_options(default_timeline: str,
                         access_keys: {},
                         is_group: bool,
                         theme: str,
-                        blocked_cache: []) -> str:
+                        blocked_cache: [],
+                        repo_url: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_link_str = ''
@@ -364,6 +365,13 @@ def html_person_options(default_timeline: str,
         options_str += \
             '  <p class="imText">🌐 <a href="' + web_str + '">' + \
             web_address + '</a></p>\n'
+    if repo_url:
+        repo_str = remove_html(repo_url)
+        if '://' not in repo_str:
+            repo_str = 'https://' + repo_str
+        options_str += \
+            '  <p class="imText">💻 <a href="' + repo_str + '">' + \
+            repo_url + '</a></p>\n'
     if gemini_link:
         gemini_str = remove_html(gemini_link)
         if '://' not in gemini_str:

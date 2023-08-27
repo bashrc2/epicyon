@@ -450,6 +450,7 @@ from maps import map_format_from_tagmaps_path
 from relationships import get_moved_feed
 from relationships import get_inactive_feed
 from relationships import update_moved_actors
+from git import get_repo_url
 
 # maximum number of posts to list in outbox feed
 MAX_POSTS_IN_FEED = 12
@@ -9010,6 +9011,7 @@ class PubServer(BaseHTTPRequestHandler):
             locked_account = False
             also_known_as = None
             moved_to = ''
+            repo_url = None
             actor_json = \
                 get_person_from_cache(base_dir,
                                       options_actor,
@@ -9040,6 +9042,7 @@ class PubServer(BaseHTTPRequestHandler):
                 pgp_fingerprint = get_pgp_fingerprint(actor_json)
                 if actor_json.get('alsoKnownAs'):
                     also_known_as = remove_html(actor_json['alsoKnownAs'])
+                repo_url = get_repo_url(actor_json)
 
             access_keys = self.server.access_keys
             nickname = 'instance'
@@ -9096,7 +9099,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     authorized,
                                     access_keys, is_group,
                                     self.server.theme_name,
-                                    self.server.blocked_cache)
+                                    self.server.blocked_cache,
+                                    repo_url)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)

@@ -12,6 +12,8 @@ import html
 from utils import acct_dir
 from utils import has_object_string_type
 from utils import text_in_file
+from utils import get_attachment_property_value
+from utils import remove_html
 
 
 def _git_format_content(content: str) -> str:
@@ -220,3 +222,40 @@ def receive_git_patch(base_dir: str, nickname: str, domain: str,
     except OSError as ex:
         print('EX: receive_git_patch ' + patch_filename + ' ' + str(ex))
     return False
+
+
+def get_repo_url(actor_json: {}) -> str:
+    """Returns a link used for code repo
+    """
+    if not actor_json.get('attachment'):
+        return ''
+    repo_type = ('github', 'gitlab', 'codeberg', 'launchpad',
+                 'sourceforge', 'bitbucket', 'gitea')
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
+            continue
+        if name_value.lower() not in repo_type:
+            continue
+        if not property_value.get('type'):
+            continue
+        prop_value_name, prop_value = \
+            get_attachment_property_value(property_value)
+        if not prop_value:
+            continue
+        if not property_value['type'].endswith('PropertyValue'):
+            continue
+        if '<a href="' in property_value[prop_value_name]:
+            repo_url = property_value[prop_value_name].split('<a href="')[1]
+            if '"' in repo_url:
+                repo_url = repo_url.split('"')[0]
+        else:
+            repo_url = property_value[prop_value_name]
+        if '.' not in repo_url:
+            continue
+        return remove_html(repo_url)
+    return ''
