@@ -3043,7 +3043,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
 
     to_domain_url = http_prefix + '://' + to_domain
     if not site_is_active(to_domain_url, 10):
-        print('Domain is inactive: ' + to_domain_url)
+        print('send_signed_json domain is inactive: ' + to_domain_url)
         return 9
     print('Domain is active: ' + to_domain_url)
     handle_base = to_domain_url + '/@'
@@ -3054,7 +3054,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         handle = handle_base + single_user_instance_nickname
 
     if debug:
-        print('DEBUG: handle - ' + handle + ' to_port ' + str(to_port))
+        print('DEBUG: send_signed_json handle - ' + handle +
+              ' to_port ' + str(to_port))
 
     # domain shown in the user agent
     ua_domain = curr_domain
@@ -3070,16 +3071,17 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                                   group_account, signing_priv_key_pem)
     if not wf_request:
         if debug:
-            print('DEBUG: webfinger for ' + handle + ' failed')
+            print('DEBUG: send_signed_json webfinger for ' +
+                  handle + ' failed')
         return 1
     if not isinstance(wf_request, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wf_request))
+        print('WARN: send_signed_json webfinger for ' + handle +
+              ' did not return a dict. ' + str(wf_request))
         return 1
 
     if wf_request.get('errors'):
         if debug:
-            print('DEBUG: webfinger for ' + handle +
+            print('DEBUG: send_signed_json webfinger for ' + handle +
                   ' failed with errors ' + str(wf_request['errors']))
 
     if not client_to_server:
@@ -3098,9 +3100,9 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                             nickname, domain, post_to_box,
                             source_id)
 
-    print("inbox_url: " + str(inbox_url))
-    print("to_person_id: " + str(to_person_id))
-    print("shared_inbox_url: " + str(shared_inbox_url))
+    print("send_signed_json inbox_url: " + str(inbox_url))
+    print("send_signed_json to_person_id: " + str(to_person_id))
+    print("send_signed_json shared_inbox_url: " + str(shared_inbox_url))
     if inbox_url:
         if inbox_url.endswith('/actor/inbox') or \
            inbox_url.endswith('/instance.actor/inbox'):
@@ -3108,19 +3110,19 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
 
     if not inbox_url:
         if debug:
-            print('DEBUG: missing inbox_url')
+            print('DEBUG: send_signed_json missing inbox_url')
         return 3
 
     if debug:
-        print('DEBUG: Sending to endpoint ' + inbox_url)
+        print('DEBUG: send_signed_json sending to endpoint ' + inbox_url)
 
     if not pub_key:
         if debug:
-            print('DEBUG: missing pubkey')
+            print('DEBUG: send_signed_json missing pubkey')
         return 4
     if not to_person_id:
         if debug:
-            print('DEBUG: missing person_id')
+            print('DEBUG: send_signed_json missing person_id')
         return 5
     # shared_inbox is optional
 
@@ -3136,14 +3138,15 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         get_person_key(nickname, account_domain, base_dir, 'private', debug)
     if len(private_key_pem) == 0:
         if debug:
-            print('DEBUG: Private key not found for ' +
+            print('DEBUG: send_signed_json private key not found for ' +
                   nickname + '@' + account_domain +
                   ' in ' + base_dir + '/keys/private')
         return 6
 
     if to_domain not in inbox_url:
         if debug:
-            print('DEBUG: ' + to_domain + ' is not in ' + inbox_url)
+            print('DEBUG: send_signed_json ' +
+                  to_domain + ' is not in ' + inbox_url)
         return 7
     post_path = inbox_url.split(to_domain, 1)[1]
 
@@ -3166,13 +3169,14 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     # if the sender domain has changed from clearnet to onion or i2p
     # then change the content of the post accordingly
     if debug:
-        print('Checking for changed origin domain: ' +
+        print('send_signed_json checking for changed origin domain: ' +
               domain + ' ' + curr_domain)
     if domain != curr_domain:
         if not curr_domain.endswith('.onion') and \
            not curr_domain.endswith('.i2p'):
             if debug:
-                print('Changing post content sender domain from ' +
+                print('send_signed_json ' +
+                      'changing post content sender domain from ' +
                       curr_domain + ' to ' + domain)
             post_json_str = \
                 post_json_str.replace(curr_domain, domain)
@@ -3196,7 +3200,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         signature_header_json['Origin'] = get_full_domain(domain, port)
         signature_header_json['SharesCatalog'] = shared_items_token
     elif debug:
-        print('Not sending shared items federation token')
+        print('send_signed_json not sending shared items federation token')
 
     # add any extra headers
     for header_title, header_text in extra_headers.items():
@@ -3204,16 +3208,17 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
 
     # Keep the number of threads being used small
     while len(send_threads) > 1000:
-        print('WARN: Maximum threads reached - killing send thread')
+        print('WARN: send_signed_json maximum threads reached - ' +
+              'killing send thread')
         send_threads[0].kill()
         send_threads.pop(0)
-        print('WARN: thread killed')
+        print('WARN: send_signed_json thread killed')
 
     if debug:
-        print('DEBUG: starting thread to send post')
+        print('DEBUG: send_signed_json starting thread to send post')
         pprint(post_json_object)
     domain_full = get_full_domain(domain, port)
-    print('THREAD: thread_send_post 2')
+    print('THREAD: send_signed_json thread_send_post 2')
     thr = \
         thread_with_trace(target=thread_send_post,
                           args=(session,
