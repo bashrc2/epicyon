@@ -369,7 +369,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         if text_in_file(person_url,
                         send_block_filename, False):
             send_blocks_str = translate['FollowAccountWarning']
-        elif text_in_file('://' + search_domain_full,
+        elif text_in_file('://' + search_domain_full + '\n',
                           send_block_filename, False):
             send_blocks_str = translate['FollowWarning']
 

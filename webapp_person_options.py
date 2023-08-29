@@ -294,6 +294,17 @@ def html_person_options(default_timeline: str,
     options_str += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + handle_shown + '</p>\n'
+
+    # is sending posts to this account blocked?
+    send_block_filename = \
+        acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
+    if os.path.isfile(send_block_filename):
+        if text_in_file(options_actor,
+                        send_block_filename, False):
+            options_str += \
+                '  <p class="optionsText"><b>' + \
+                translate['FollowAccountWarning'] + '</b></p>\n'
+
     if follows_you and authorized:
         options_str += \
             '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'

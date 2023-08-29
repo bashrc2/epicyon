@@ -234,7 +234,7 @@ def html_confirm_follow(translate: {}, base_dir: str,
         send_block_filename = \
             acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
         if os.path.isfile(send_block_filename):
-            if text_in_file('://' + follow_domain,
+            if text_in_file('://' + follow_domain + '\n',
                             send_block_filename, False):
                 follow_str += \
                     '  <p class="followText"><b>' + \
