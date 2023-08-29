@@ -237,7 +237,7 @@ def html_confirm_follow(translate: {}, base_dir: str,
             if text_in_file('://' + follow_domain,
                             send_block_filename, False):
                 follow_str += \
-                    '<p class="followText"><b>' + \
+                    '  <p class="followText"><b>' + \
                     translate['FollowWarning'] + '</b></p>\n'
         follow_str += \
             '  <p class="followText">' + translate['Follow'] + ' ' + \
