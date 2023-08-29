@@ -304,6 +304,11 @@ def html_person_options(default_timeline: str,
             options_str += \
                 '  <p class="optionsText"><b>' + \
                 translate['FollowAccountWarning'] + '</b></p>\n'
+        elif text_in_file('://' + options_domain + '\n',
+                          send_block_filename, False):
+            options_str += \
+                '  <p class="optionsText"><b>' + \
+                translate['FollowWarning'] + '</b></p>\n'
 
     if follows_you and authorized:
         options_str += \
