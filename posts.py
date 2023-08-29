@@ -2538,12 +2538,69 @@ def create_report_post(base_dir: str,
     return post_json_object
 
 
+def _add_send_block(base_dir: str, nickname: str, domain: str,
+                    inbox_url: str) -> None:
+    """Adds an inbox which is blocking this instance
+    """
+    send_block_filename = \
+        acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
+
+    if not os.path.isfile(send_block_filename):
+        try:
+            with open(send_block_filename, 'w+',
+                      encoding='utf-8') as fp_blocks:
+                fp_blocks.write(inbox_url + '\n')
+        except OSError:
+            print('EX: _add_send_block unable to create ' +
+                  send_block_filename)
+        return
+
+    if not text_in_file(inbox_url + '\n', send_block_filename, False):
+        try:
+            with open(send_block_filename, 'a+',
+                      encoding='utf-8') as fp_blocks:
+                fp_blocks.write(inbox_url + '\n')
+        except OSError:
+            print('EX: _add_send_block unable to write ' +
+                  send_block_filename)
+
+
+def _remove_send_block(base_dir: str, nickname: str, domain: str,
+                       inbox_url: str) -> None:
+    """Removes an inbox which is blocking this instance
+    """
+    send_block_filename = \
+        acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
+
+    if not os.path.isfile(send_block_filename):
+        return
+
+    if text_in_file(inbox_url + '\n', send_block_filename, False):
+        send_blocks_str = ''
+        try:
+            with open(send_block_filename, 'r',
+                      encoding='utf-8') as fp_blocks:
+                send_blocks_str = fp_blocks.read()
+        except OSError:
+            print('EX: _remove_send_block unable to read ' +
+                  send_block_filename)
+        send_blocks_str = send_blocks_str.replace(inbox_url + '\n', '')
+        try:
+            with open(send_block_filename, 'w+',
+                      encoding='utf-8') as fp_blocks:
+                fp_blocks.write(send_blocks_str)
+        except OSError:
+            print('EX: _remove_send_block unable to write ' +
+                  send_block_filename)
+
+
 def thread_send_post(session, post_json_str: str, federation_list: [],
                      inbox_url: str, base_dir: str,
                      signature_header_json: {},
                      signature_header_json_ld: {},
                      post_log: [], debug: bool,
-                     http_prefix: str, domain_full: str) -> None:
+                     http_prefix: str, domain_full: str,
+                     nickname: str, domain: str) -> None:
     """Sends a with retries
     """
     tries = 0
@@ -2592,6 +2649,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
                 print('ERROR: ld post_json_string failed ' + str(ex))
 
         if unauthorized:
+            _add_send_block(base_dir, nickname, domain, inbox_url)
             print('WARN: thread_send_post: Post is unauthorized ' +
                   inbox_url + ' ' + post_json_str)
             break
@@ -2617,6 +2675,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
                     log_file.write(log_str + '\n')
 
         if post_result:
+            _remove_send_block(base_dir, nickname, domain, inbox_url)
             if debug:
                 print('DEBUG: successful json post to ' + inbox_url)
             # our work here is done
@@ -2791,7 +2850,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                                 signature_header_json.copy(),
                                 signature_header_json_ld.copy(),
                                 post_log, debug, http_prefix,
-                                domain_full), daemon=True)
+                                domain_full,
+                                nickname, domain), daemon=True)
     send_threads.append(thr)
     begin_thread(thr, 'send_post')
     return 0
@@ -3228,7 +3288,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                                 signature_header_json.copy(),
                                 signature_header_json_ld.copy(),
                                 post_log, debug,
-                                http_prefix, domain_full), daemon=True)
+                                http_prefix, domain_full,
+                                nickname, domain), daemon=True)
     send_threads.append(thr)
     # begin_thread(thr, 'send_signed_json')
     return 0
