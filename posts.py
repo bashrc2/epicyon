@@ -2545,21 +2545,25 @@ def _add_send_block(base_dir: str, nickname: str, domain: str,
     send_block_filename = \
         acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
 
+    inbox_url = inbox_url + '\n'
+    if inbox_url.endswith('/inbox\n'):
+        inbox_url = inbox_url.replace('/inbox\n', '\n')
+
     if not os.path.isfile(send_block_filename):
         try:
             with open(send_block_filename, 'w+',
                       encoding='utf-8') as fp_blocks:
-                fp_blocks.write(inbox_url + '\n')
+                fp_blocks.write(inbox_url)
         except OSError:
             print('EX: _add_send_block unable to create ' +
                   send_block_filename)
         return
 
-    if not text_in_file(inbox_url + '\n', send_block_filename, False):
+    if not text_in_file(inbox_url, send_block_filename, False):
         try:
             with open(send_block_filename, 'a+',
                       encoding='utf-8') as fp_blocks:
-                fp_blocks.write(inbox_url + '\n')
+                fp_blocks.write(inbox_url)
         except OSError:
             print('EX: _add_send_block unable to write ' +
                   send_block_filename)
@@ -2572,10 +2576,14 @@ def _remove_send_block(base_dir: str, nickname: str, domain: str,
     send_block_filename = \
         acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
 
+    inbox_url = inbox_url + '\n'
+    if inbox_url.endswith('/inbox\n'):
+        inbox_url = inbox_url.replace('/inbox\n', '\n')
+
     if not os.path.isfile(send_block_filename):
         return
 
-    if text_in_file(inbox_url + '\n', send_block_filename, False):
+    if text_in_file(inbox_url, send_block_filename, False):
         send_blocks_str = ''
         try:
             with open(send_block_filename, 'r',
@@ -2584,7 +2592,7 @@ def _remove_send_block(base_dir: str, nickname: str, domain: str,
         except OSError:
             print('EX: _remove_send_block unable to read ' +
                   send_block_filename)
-        send_blocks_str = send_blocks_str.replace(inbox_url + '\n', '')
+        send_blocks_str = send_blocks_str.replace(inbox_url, '')
         try:
             with open(send_block_filename, 'w+',
                       encoding='utf-8') as fp_blocks:
