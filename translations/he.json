@@ -633,5 +633,6 @@
     "Clear Cache": "נקה מטמון",
     "Block military instances": "חסום מקרים צבאיים",
     "Display on your public profile": "הצג בפרופיל הציבורי שלך",
-    "FollowWarning": "אזהרה: ייתכן שהמקרה הזה חוסם אותך"
+    "FollowWarning": "אזהרה: ייתכן שהמקרה הזה חוסם אותך",
+    "FollowAccountWarning": "אזהרה: ייתכן שחשבון זה חוסם אותך"
 }

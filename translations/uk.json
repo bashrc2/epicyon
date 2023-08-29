@@ -633,5 +633,6 @@
     "Clear Cache": "Очистити кеш",
     "Block military instances": "Блокувати військові інстанції",
     "Display on your public profile": "Відображати у своєму публічному профілі",
-    "FollowWarning": "УВАГА: цей екземпляр може блокувати вас"
+    "FollowWarning": "УВАГА: цей екземпляр може блокувати вас",
+    "FollowAccountWarning": "УВАГА: цей обліковий запис може блокувати вас"
 }

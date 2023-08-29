@@ -633,5 +633,6 @@
     "Clear Cache": "कैश को साफ़ करें",
     "Block military instances": "सैन्य उदाहरणों को ब्लॉक करें",
     "Display on your public profile": "अपनी सार्वजनिक प्रोफ़ाइल पर प्रदर्शित करें",
-    "FollowWarning": "चेतावनी: यह उदाहरण आपको अवरुद्ध कर सकता है"
+    "FollowWarning": "चेतावनी: यह उदाहरण आपको अवरुद्ध कर सकता है",
+    "FollowAccountWarning": "चेतावनी: यह खाता आपको ब्लॉक कर सकता है"
 }

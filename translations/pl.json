@@ -633,5 +633,6 @@
     "Clear Cache": "Wyczyść pamięć podręczną",
     "Block military instances": "Blokuj instancje wojskowe",
     "Display on your public profile": "Wyświetlaj na swoim profilu publicznym",
-    "FollowWarning": "OSTRZEŻENIE: ta instancja może Cię blokować"
+    "FollowWarning": "OSTRZEŻENIE: ta instancja może Cię blokować",
+    "FollowAccountWarning": "OSTRZEŻENIE: to konto może Cię blokować"
 }

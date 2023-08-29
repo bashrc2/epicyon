@@ -633,5 +633,6 @@
     "Clear Cache": "Glan Taisce",
     "Block military instances": "Bloc cásanna míleata",
     "Display on your public profile": "Taispeáin ar do phróifíl phoiblí",
-    "FollowWarning": "RABHADH: seans go bhfuil an cás seo ag cur bac ort"
+    "FollowWarning": "RABHADH: seans go bhfuil an cás seo ag cur bac ort",
+    "FollowAccountWarning": "RABHADH: seans go bhfuil an cuntas seo ag cur bac ort"
 }

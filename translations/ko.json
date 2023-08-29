@@ -633,5 +633,6 @@
     "Clear Cache": "캐시 지우기",
     "Block military instances": "군사 인스턴스 차단",
     "Display on your public profile": "공개 프로필에 표시",
-    "FollowWarning": "경고: 이 인스턴스가 귀하를 차단하고 있을 수 있습니다."
+    "FollowWarning": "경고: 이 인스턴스가 귀하를 차단하고 있을 수 있습니다.",
+    "FollowAccountWarning": "경고: 이 계정이 귀하를 차단하고 있을 수 있습니다."
 }

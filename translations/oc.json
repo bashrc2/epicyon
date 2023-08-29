@@ -629,5 +629,6 @@
     "Clear Cache": "Clear Cache",
     "Block military instances": "Block military instances",
     "Display on your public profile": "Display on your public profile",
-    "FollowWarning": "WARNING: this instance may be blocking you"
+    "FollowWarning": "WARNING: this instance may be blocking you",
+    "FollowAccountWarning": "WARNING: this account may be blocking you"
 }

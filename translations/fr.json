@@ -633,5 +633,6 @@
     "Clear Cache": "Vider le cache",
     "Block military instances": "Bloquer les instances militaires",
     "Display on your public profile": "Afficher sur votre profil public",
-    "FollowWarning": "ATTENTION : cette instance peut vous bloquer"
+    "FollowWarning": "ATTENTION : cette instance peut vous bloquer",
+    "FollowAccountWarning": "ATTENTION : ce compte peut vous bloquer"
 }

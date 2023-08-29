@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import text_in_file
 from utils import dangerous_markup
 from utils import ap_proxy_type
 from utils import remove_id_ending
@@ -360,6 +361,18 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
     website_url = get_website(profile_json, translate)
     repo_url = get_repo_url(profile_json)
 
+    # is sending posts to this account blocked?
+    send_block_filename = \
+        acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
+    send_blocks_str = ''
+    if os.path.isfile(send_block_filename):
+        if text_in_file(person_url,
+                        send_block_filename, False):
+            send_blocks_str = translate['FollowAccountWarning']
+        elif text_in_file('://' + search_domain_full,
+                          send_block_filename, False):
+            send_blocks_str = translate['FollowWarning']
+
     profile_str = \
         _get_profile_header_after_search(nickname, default_timeline,
                                          search_nickname,
@@ -373,7 +386,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                          also_known_as, access_keys,
                                          joined_date, actor_proxied,
                                          attached_shared_items,
-                                         website_url, repo_url)
+                                         website_url, repo_url,
+                                         send_blocks_str)
 
     domain_full = get_full_domain(domain, port)
 
@@ -690,7 +704,8 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
                                      actor_proxied: str,
                                      attached_shared_items: str,
                                      website_url: str,
-                                     repo_url: str) -> str:
+                                     repo_url: str,
+                                     send_blocks_str: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -742,6 +757,8 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
             joined_date.split('T')[0] + '</p>\n'
     if follows_you:
         html_str += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
+    if send_blocks_str:
+        html_str += '        <p><b>' + send_blocks_str + '</b></p>\n'
     if moved_to:
         new_nickname = get_nickname_from_actor(moved_to)
         new_domain, new_port = get_domain_from_actor(moved_to)
