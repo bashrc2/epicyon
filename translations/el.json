@@ -632,5 +632,6 @@
     "Chat link": "Σύνδεσμος συνομιλίας",
     "Clear Cache": "Εκκαθάριση προσωρινής μνήμης",
     "Block military instances": "Αποκλεισμός στρατιωτικών περιπτώσεων",
-    "Display on your public profile": "Εμφάνιση στο δημόσιο προφίλ σας"
+    "Display on your public profile": "Εμφάνιση στο δημόσιο προφίλ σας",
+    "FollowWarning": "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: αυτή η περίπτωση μπορεί να σας μπλοκάρει"
 }

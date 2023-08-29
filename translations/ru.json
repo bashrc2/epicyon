@@ -632,5 +632,6 @@
     "Chat link": "Ссылка на чат",
     "Clear Cache": "Очистить кэш",
     "Block military instances": "Блокировать военные инстансы",
-    "Display on your public profile": "Отобразить в своем общедоступном профиле"
+    "Display on your public profile": "Отобразить в своем общедоступном профиле",
+    "FollowWarning": "ВНИМАНИЕ: этот экземпляр может блокировать вас."
 }

@@ -632,5 +632,6 @@
     "Chat link": "Collegamento alla chat",
     "Clear Cache": "Cancella cache",
     "Block military instances": "Blocca istanze militari",
-    "Display on your public profile": "Visualizza sul tuo profilo pubblico"
+    "Display on your public profile": "Visualizza sul tuo profilo pubblico",
+    "FollowWarning": "ATTENZIONE: questa istanza potrebbe bloccarti"
 }

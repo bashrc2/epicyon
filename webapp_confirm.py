@@ -18,6 +18,7 @@ from utils import get_config_param
 from utils import get_alt_path
 from utils import acct_dir
 from utils import get_account_timezone
+from utils import text_in_file
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -203,7 +204,8 @@ def html_confirm_remove_shared_item(translate: {},
 def html_confirm_follow(translate: {}, base_dir: str,
                         origin_path_str: str,
                         follow_actor: str,
-                        follow_profile_url: str) -> str:
+                        follow_profile_url: str,
+                        nickname: str, domain: str) -> str:
     """Asks to confirm a follow
     """
     follow_domain, _ = get_domain_from_actor(follow_actor)
@@ -229,6 +231,14 @@ def html_confirm_follow(translate: {}, base_dir: str,
         'src="' + follow_profile_url + '"/></a>\n'
     follow_actor_nick = get_nickname_from_actor(follow_actor)
     if follow_actor_nick and follow_domain:
+        send_block_filename = \
+            acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
+        if os.path.isfile(send_block_filename):
+            if text_in_file('://' + follow_domain,
+                            send_block_filename, False):
+                follow_str += \
+                    '<p class="followText"><b>' + \
+                    translate['FollowWarning'] + '</b></p>\n'
         follow_str += \
             '  <p class="followText">' + translate['Follow'] + ' ' + \
             follow_actor_nick + '@' + follow_domain + ' ?</p>\n'

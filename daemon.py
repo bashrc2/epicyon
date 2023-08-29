@@ -3671,7 +3671,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     base_dir,
                                     users_path,
                                     options_actor,
-                                    options_avatar_url).encode('utf-8')
+                                    options_avatar_url,
+                                    chooser_nickname,
+                                    domain).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -3689,7 +3691,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     base_dir,
                                     users_path,
                                     options_actor_moved,
-                                    options_avatar_url).encode('utf-8')
+                                    options_avatar_url,
+                                    chooser_nickname,
+                                    domain).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,

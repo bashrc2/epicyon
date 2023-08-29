@@ -628,5 +628,6 @@
     "Chat link": "Chat link",
     "Clear Cache": "Clear Cache",
     "Block military instances": "Block military instances",
-    "Display on your public profile": "Display on your public profile"
+    "Display on your public profile": "Display on your public profile",
+    "FollowWarning": "WARNING: this instance may be blocking you"
 }

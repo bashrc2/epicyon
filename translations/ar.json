@@ -632,5 +632,6 @@
     "Chat link": "رابط الدردشة",
     "Clear Cache": "مسح ذاكرة التخزين المؤقت",
     "Block military instances": "منع الحالات العسكرية",
-    "Display on your public profile": "عرض على ملفك الشخصي العام"
+    "Display on your public profile": "عرض على ملفك الشخصي العام",
+    "FollowWarning": "تحذير: قد يكون هذا المثيل يمنعك"
 }

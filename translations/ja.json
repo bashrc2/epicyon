@@ -632,5 +632,6 @@
     "Chat link": "チャットリンク",
     "Clear Cache": "キャッシュの消去",
     "Block military instances": "軍事インスタンスをブロックする",
-    "Display on your public profile": "公開プロフィールに表示する"
+    "Display on your public profile": "公開プロフィールに表示する",
+    "FollowWarning": "警告: このインスタンスはあなたをブロックしている可能性があります"
 }
