@@ -750,7 +750,7 @@ def is_memorial_account(base_dir: str, nickname: str) -> bool:
     memorial_list = []
     try:
         with open(memorial_file, 'r', encoding='utf-8') as fp_memorial:
-            memorial_list = fp_memorial.split('\n')
+            memorial_list = fp_memorial.read().split('\n')
     except OSError:
         print('EX: unable to read ' + memorial_file)
     if nickname in memorial_list:
