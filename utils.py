@@ -747,7 +747,13 @@ def is_memorial_account(base_dir: str, nickname: str) -> bool:
     memorial_file = base_dir + '/accounts/memorial'
     if not os.path.isfile(memorial_file):
         return False
-    if text_in_file(nickname + '\n', memorial_file, True):
+    memorial_list = []
+    try:
+        with open(memorial_file, 'r', encoding='utf-8') as fp_memorial:
+            memorial_list = fp_memorial.split('\n')
+    except OSError:
+        print('EX: unable to read ' + memorial_file)
+    if nickname in memorial_list:
         return True
     return False
 
