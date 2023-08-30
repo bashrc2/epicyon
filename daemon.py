@@ -296,6 +296,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import is_memorial_account
 from utils import is_public_post_from_url
 from utils import license_link_from_name
 from utils import acct_handle_dir
@@ -8304,6 +8305,15 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: _profile_edit ' +
                                       'unable to delete ' +
                                       git_projects_filename)
+
+                    # change memorial status
+                    if is_memorial_account(base_dir, nickname):
+                        if not actor_json.get('memorial'):
+                            actor_json['memorial'] = True
+                            actor_changed = True
+                    elif actor_json.get('memorial'):
+                        actor_json['memorial'] = False
+                        actor_changed = True
 
                     # save actor json file within accounts
                     if actor_changed:

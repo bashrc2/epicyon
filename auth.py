@@ -14,6 +14,7 @@ import os
 import secrets
 import datetime
 from utils import is_system_account
+from utils import is_memorial_account
 from utils import has_users_path
 from utils import text_in_file
 from utils import remove_eol
@@ -137,6 +138,10 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
             print('DEBUG: Nickname given in the path (' + nickname_from_path +
                   ') does not match the one in the Authorization header (' +
                   nickname + ')')
+        return False
+    if is_memorial_account(base_dir, nickname):
+        print('basic auth - attempted login using memorial account ' +
+              nickname + ' in Auth header')
         return False
     password_file = base_dir + '/accounts/passwords'
     if not os.path.isfile(password_file):

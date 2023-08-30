@@ -741,6 +741,17 @@ def is_system_account(nickname: str) -> bool:
     return False
 
 
+def is_memorial_account(base_dir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is a memorial account
+    """
+    memorial_file = base_dir + '/accounts/memorial'
+    if not os.path.isfile(memorial_file):
+        return False
+    if text_in_file(nickname + '\n', memorial_file, True):
+        return True
+    return False
+
+
 def _create_config(base_dir: str) -> None:
     """Creates a configuration file
     """
