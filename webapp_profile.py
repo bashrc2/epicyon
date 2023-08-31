@@ -2382,8 +2382,9 @@ def _html_edit_profile_memorial(base_dir: str, translate: {}) -> str:
 
     title_str = \
         translate['Nicknames of memorial accounts (one per line)']
-    edit_text_area(title_str, None, 'memorialAccounts', memorial_accounts_str,
-                   200, '', True)
+    edit_profile_form += \
+        edit_text_area(title_str, None, 'memorialAccounts',
+                       memorial_accounts_str, 200, '', True)
 
     edit_profile_form += end_edit_section()
     return edit_profile_form
