@@ -97,6 +97,7 @@ fi
 if [ ! -f /etc/torrc.d/epicyon ]; then
     { echo 'HiddenServiceDir /var/lib/tor/hidden_service_epicyon/';
       echo 'HiddenServiceVersion 3';
+      echo '#HiddenServicePoWDefensesEnabled 0';
       echo "HiddenServicePort 80 127.0.0.1:${NGINX_PORT}"; } > /etc/torrc.d/epicyon
 fi
 
