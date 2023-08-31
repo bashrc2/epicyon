@@ -6904,12 +6904,12 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('memorialAccounts'):
                             if fields['memorialAccounts'] != \
                                curr_memorial:
-                                set_memorials(base_dir,
+                                set_memorials(base_dir, self.server.domain,
                                               fields['memorialAccounts'])
                         else:
                             if curr_memorial:
                                 set_memorials(base_dir,
-                                              'memorialAccounts', '')
+                                              self.server.domain, '')
 
                     # change email address
                     current_email_address = get_email_address(actor_json)

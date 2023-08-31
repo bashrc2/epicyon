@@ -757,9 +757,20 @@ def get_memorials(base_dir: str) -> str:
     return memorial_str
 
 
-def set_memorials(base_dir: str, memorial_str) -> None:
+def set_memorials(base_dir: str, domain: str, memorial_str) -> None:
     """Sets the nicknames for memorial accounts
     """
+    # check that the accounts exist
+    memorial_list = memorial_str.split('\n')
+    new_memorial_str = ''
+    for memorial_item in memorial_list:
+        memorial_nick = memorial_item.strip()
+        check_dir = acct_dir(base_dir, memorial_nick, domain)
+        if os.path.isdir(check_dir):
+            new_memorial_str += memorial_nick + '\n'
+    memorial_str = new_memorial_str
+
+    # save the accounts
     memorial_file = base_dir + '/accounts/memorial'
     try:
         with open(memorial_file, 'w+', encoding='utf-8') as fp_memorial:
