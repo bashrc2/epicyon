@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import get_memorials
 from utils import text_in_file
 from utils import dangerous_markup
 from utils import ap_proxy_type
@@ -1768,7 +1769,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                                 media_instance_str: str,
                                 blogs_instance_str: str,
                                 news_instance_str: str) -> (str, str,
-                                                            str, str):
+                                                            str, str, str):
     """Edit profile instance settings
     """
     image_formats = get_image_formats()
@@ -1967,8 +1968,11 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     libretranslate_str = \
         _html_edit_profile_libre_translate(libretranslate_url,
                                            libretranslate_api_key)
+    memorial_str = \
+        _html_edit_profile_memorial(base_dir, translate)
 
-    return instance_str, role_assign_str, peertube_str, libretranslate_str
+    return instance_str, role_assign_str, peertube_str, \
+        libretranslate_str, memorial_str
 
 
 def _html_edit_profile_danger_zone(translate: {}) -> str:
@@ -2364,6 +2368,22 @@ def _html_edit_profile_libre_translate(libretranslate_url: str,
     edit_profile_form += \
         edit_text_field('API Key', 'libretranslateApiKey',
                         libretranslate_api_key)
+
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
+
+
+def _html_edit_profile_memorial(base_dir: str, translate: {}) -> str:
+    """Change memorial accounts
+    """
+    memorial_accounts_str = get_memorials(base_dir)
+
+    edit_profile_form = begin_edit_section(translate['Memorials'])
+
+    title_str = \
+        translate['Nicknames of memorial accounts (one per line)']
+    edit_text_area(title_str, None, 'memorialAccounts', memorial_accounts_str,
+                   200, '', True)
 
     edit_profile_form += end_edit_section()
     return edit_profile_form
@@ -2897,6 +2917,7 @@ def html_edit_profile(server, translate: {},
     role_assign_str = ''
     peertube_str = ''
     libretranslate_str = ''
+    memorial_str = ''
     system_monitor_str = ''
     graphics_str = ''
     shares_federation_str = ''
@@ -2916,7 +2937,8 @@ def html_edit_profile(server, translate: {},
             # shared items section
             shares_federation_str = \
                 _html_edit_profile_shared_items(base_dir, translate)
-            instance_str, role_assign_str, peertube_str, libretranslate_str = \
+            (instance_str, role_assign_str, peertube_str,
+             libretranslate_str, memorial_str) = \
                 _html_edit_profile_instance(base_dir, translate,
                                             peertube_instances,
                                             media_instance_str,
@@ -3024,6 +3046,9 @@ def html_edit_profile(server, translate: {},
 
     # automatic translations
     edit_profile_form += libretranslate_str
+
+    # memorial accounts
+    edit_profile_form += memorial_str
 
     # system monitor
     edit_profile_form += system_monitor_str

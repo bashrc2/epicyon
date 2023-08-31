@@ -634,5 +634,7 @@
     "Block military instances": "阻止军事实例",
     "Display on your public profile": "显示在您的公开个人资料上",
     "FollowWarning": "警告：此实例可能会阻止您",
-    "FollowAccountWarning": "警告：此帐户可能会阻止您"
+    "FollowAccountWarning": "警告：此帐户可能会阻止您",
+    "Nicknames of memorial accounts (one per line)": "纪念帐户昵称（每行一个）",
+    "Memorials": "纪念馆"
 }

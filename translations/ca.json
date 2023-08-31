@@ -634,5 +634,7 @@
     "Block military instances": "Bloquejar instàncies militars",
     "Display on your public profile": "Mostra al teu perfil públic",
     "FollowWarning": "ADVERTIMENT: aquesta instància pot estar bloquejant-vos",
-    "FollowAccountWarning": "ADVERTIMENT: és possible que aquest compte us estigui bloquejant"
+    "FollowAccountWarning": "ADVERTIMENT: és possible que aquest compte us estigui bloquejant",
+    "Nicknames of memorial accounts (one per line)": "Sobrenoms dels comptes commemoratius (un per línia)",
+    "Memorials": "Memorials"
 }

@@ -634,5 +634,7 @@
     "Block military instances": "Askeri örnekleri engelle",
     "Display on your public profile": "Herkese açık profilinizde görüntüleyin",
     "FollowWarning": "UYARI: bu örnek sizi engelliyor olabilir",
-    "FollowAccountWarning": "DİKKAT: Bu hesap sizi engelliyor olabilir"
+    "FollowAccountWarning": "DİKKAT: Bu hesap sizi engelliyor olabilir",
+    "Nicknames of memorial accounts (one per line)": "Anma hesaplarının takma adları (her satıra bir tane)",
+    "Memorials": "Anıtlar"
 }

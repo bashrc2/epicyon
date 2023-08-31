@@ -296,6 +296,8 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import get_memorials
+from utils import set_memorials
 from utils import is_memorial_account
 from utils import is_public_post_from_url
 from utils import license_link_from_name
@@ -6896,6 +6898,18 @@ class PubServer(BaseHTTPRequestHandler):
                             if curr_instance_description:
                                 set_config_param(base_dir,
                                                  'instanceDescription', '')
+
+                        # change memorial accounts
+                        curr_memorial = get_memorials(base_dir)
+                        if fields.get('memorialAccounts'):
+                            if fields['memorialAccounts'] != \
+                               curr_memorial:
+                                set_memorials(base_dir,
+                                              fields['memorialAccounts'])
+                        else:
+                            if curr_memorial:
+                                set_memorials(base_dir,
+                                              'memorialAccounts', '')
 
                     # change email address
                     current_email_address = get_email_address(actor_json)

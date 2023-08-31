@@ -634,5 +634,7 @@
     "Block military instances": "موارد نظامی را مسدود کنید",
     "Display on your public profile": "نمایش در نمایه عمومی شما",
     "FollowWarning": "هشدار: این مورد ممکن است شما را مسدود کند",
-    "FollowAccountWarning": "هشدار: این حساب ممکن است شما را مسدود کند"
+    "FollowAccountWarning": "هشدار: این حساب ممکن است شما را مسدود کند",
+    "Nicknames of memorial accounts (one per line)": "نام مستعار حساب های یادبود (یکی در هر خط)",
+    "Memorials": "یادبودها"
 }

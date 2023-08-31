@@ -634,5 +634,7 @@
     "Block military instances": "Blocca istanze militari",
     "Display on your public profile": "Visualizza sul tuo profilo pubblico",
     "FollowWarning": "ATTENZIONE: questa istanza potrebbe bloccarti",
-    "FollowAccountWarning": "ATTENZIONE: questo account potrebbe bloccarti"
+    "FollowAccountWarning": "ATTENZIONE: questo account potrebbe bloccarti",
+    "Nicknames of memorial accounts (one per line)": "Soprannomi degli account commemorativi (uno per riga)",
+    "Memorials": "Memoriali"
 }

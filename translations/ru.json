@@ -634,5 +634,7 @@
     "Block military instances": "Блокировать военные инстансы",
     "Display on your public profile": "Отобразить в своем общедоступном профиле",
     "FollowWarning": "ВНИМАНИЕ: этот экземпляр может блокировать вас.",
-    "FollowAccountWarning": "ВНИМАНИЕ: этот аккаунт может вас заблокировать"
+    "FollowAccountWarning": "ВНИМАНИЕ: этот аккаунт может вас заблокировать",
+    "Nicknames of memorial accounts (one per line)": "Никнеймы мемориальных аккаунтов (по одному в строке)",
+    "Memorials": "Мемориалы"
 }

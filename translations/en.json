@@ -634,5 +634,7 @@
     "Block military instances": "Block military instances",
     "Display on your public profile": "Display on your public profile",
     "FollowWarning": "WARNING: this instance may be blocking you",
-    "FollowAccountWarning": "WARNING: this account may be blocking you"
+    "FollowAccountWarning": "WARNING: this account may be blocking you",
+    "Nicknames of memorial accounts (one per line)": "Nicknames of memorial accounts (one per line)",
+    "Memorials": "Memorials"
 }

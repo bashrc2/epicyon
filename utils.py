@@ -741,6 +741,33 @@ def is_system_account(nickname: str) -> bool:
     return False
 
 
+def get_memorials(base_dir: str) -> str:
+    """Returns the nicknames for memorial accounts
+    """
+    memorial_file = base_dir + '/accounts/memorial'
+    if not os.path.isfile(memorial_file):
+        return ''
+
+    memorial_str = ''
+    try:
+        with open(memorial_file, 'r', encoding='utf-8') as fp_memorial:
+            memorial_str = fp_memorial.read()
+    except OSError:
+        print('EX: unable to read ' + memorial_file)
+    return memorial_str
+
+
+def set_memorials(base_dir: str, memorial_str) -> None:
+    """Sets the nicknames for memorial accounts
+    """
+    memorial_file = base_dir + '/accounts/memorial'
+    try:
+        with open(memorial_file, 'w+', encoding='utf-8') as fp_memorial:
+            fp_memorial.write(memorial_str)
+    except OSError:
+        print('EX: unable to write ' + memorial_file)
+
+
 def is_memorial_account(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is a memorial account
     """

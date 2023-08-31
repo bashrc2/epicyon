@@ -634,5 +634,7 @@
     "Block military instances": "Rhwystro achosion milwrol",
     "Display on your public profile": "Arddangos ar eich proffil cyhoeddus",
     "FollowWarning": "RHYBUDD: efallai bod yr achos hwn yn eich rhwystro",
-    "FollowAccountWarning": "RHYBUDD: efallai bod y cyfrif hwn yn eich rhwystro"
+    "FollowAccountWarning": "RHYBUDD: efallai bod y cyfrif hwn yn eich rhwystro",
+    "Nicknames of memorial accounts (one per line)": "Llysenwau cyfrifon coffa (un fesul llinell)",
+    "Memorials": "Cofebau"
 }

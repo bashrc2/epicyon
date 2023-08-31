@@ -634,5 +634,7 @@
     "Block military instances": "חסום מקרים צבאיים",
     "Display on your public profile": "הצג בפרופיל הציבורי שלך",
     "FollowWarning": "אזהרה: ייתכן שהמקרה הזה חוסם אותך",
-    "FollowAccountWarning": "אזהרה: ייתכן שחשבון זה חוסם אותך"
+    "FollowAccountWarning": "אזהרה: ייתכן שחשבון זה חוסם אותך",
+    "Nicknames of memorial accounts (one per line)": "כינויים של חשבונות זיכרון (אחד בכל שורה)",
+    "Memorials": "אנדרטאות"
 }

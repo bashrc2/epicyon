@@ -634,5 +634,7 @@
     "Block military instances": "Bloc cásanna míleata",
     "Display on your public profile": "Taispeáin ar do phróifíl phoiblí",
     "FollowWarning": "RABHADH: seans go bhfuil an cás seo ag cur bac ort",
-    "FollowAccountWarning": "RABHADH: seans go bhfuil an cuntas seo ag cur bac ort"
+    "FollowAccountWarning": "RABHADH: seans go bhfuil an cuntas seo ag cur bac ort",
+    "Nicknames of memorial accounts (one per line)": "Leasainmneacha na gcuntas cuimhneacháin (ceann in aghaidh na líne)",
+    "Memorials": "Cuimhneacháin"
 }

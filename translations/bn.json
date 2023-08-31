@@ -634,5 +634,7 @@
     "Block military instances": "সামরিক দৃষ্টান্ত ব্লক করুন",
     "Display on your public profile": "আপনার পাবলিক প্রোফাইলে প্রদর্শন করুন",
     "FollowWarning": "সতর্কতা: এই উদাহরণটি আপনাকে অবরুদ্ধ করতে পারে",
-    "FollowAccountWarning": "সতর্কতা: এই অ্যাকাউন্টটি আপনাকে ব্লক করতে পারে"
+    "FollowAccountWarning": "সতর্কতা: এই অ্যাকাউন্টটি আপনাকে ব্লক করতে পারে",
+    "Nicknames of memorial accounts (one per line)": "স্মারক অ্যাকাউন্টের ডাকনাম (প্রতি লাইনে একটি)",
+    "Memorials": "স্মারক"
 }

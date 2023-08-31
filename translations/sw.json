@@ -634,5 +634,7 @@
     "Block military instances": "Zuia matukio ya kijeshi",
     "Display on your public profile": "Onyesha kwenye wasifu wako wa umma",
     "FollowWarning": "ONYO: mfano huu unaweza kuwa unakuzuia",
-    "FollowAccountWarning": "ONYO: akaunti hii inaweza kuwa inakuzuia"
+    "FollowAccountWarning": "ONYO: akaunti hii inaweza kuwa inakuzuia",
+    "Nicknames of memorial accounts (one per line)": "Majina ya utani ya akaunti za ukumbusho (moja kwa kila mstari)",
+    "Memorials": "Makumbusho"
 }
