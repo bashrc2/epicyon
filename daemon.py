@@ -63,6 +63,7 @@ from donate import get_website
 from donate import set_website
 from donate import get_gemini_link
 from donate import set_gemini_link
+from person import update_memorial_flags
 from person import get_featured_hashtags
 from person import set_featured_hashtags
 from person import clear_person_qrcodes
@@ -6906,10 +6907,14 @@ class PubServer(BaseHTTPRequestHandler):
                                curr_memorial:
                                 set_memorials(base_dir, self.server.domain,
                                               fields['memorialAccounts'])
+                                update_memorial_flags(base_dir,
+                                                      self.server.person_cache)
                         else:
                             if curr_memorial:
                                 set_memorials(base_dir,
                                               self.server.domain, '')
+                                update_memorial_flags(base_dir,
+                                                      self.server.person_cache)
 
                     # change email address
                     current_email_address = get_email_address(actor_json)
@@ -24542,6 +24547,8 @@ def run_daemon(max_shares_on_profile: int,
         print('Starting federated shares daemon')
         begin_thread(httpd.thrFederatedSharesDaemon,
                      'run_daemon start federated shares')
+
+    update_memorial_flags(base_dir, httpd.person_cache)
 
     if client_to_server:
         print('Running ActivityPub client on ' +

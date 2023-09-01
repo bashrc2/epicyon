@@ -38,6 +38,8 @@ from roles import set_role
 from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import get_memorials
+from utils import is_account_dir
 from utils import valid_hash_tag
 from utils import acct_handle_dir
 from utils import safe_system_string
@@ -75,6 +77,7 @@ from webfinger import webfinger_handle
 from pprint import pprint
 from cache import get_person_from_cache
 from cache import store_person_in_cache
+from cache import remove_person_from_cache
 from filters import is_filtered_bio
 from follow import is_following_actor
 
@@ -2107,3 +2110,40 @@ def set_featured_hashtags(actor_json: {}, hashtags: str,
         actor_json['tag'] = result
     else:
         actor_json['tag'] += result
+
+
+def update_memorial_flags(base_dir: str, person_cache: {}) -> None:
+    """Sets or clears the memorial flags based upon the content of
+    accounts/memorial file
+    """
+    memorials = get_memorials(base_dir).split('\n')
+
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for account in dirs:
+            if not is_account_dir(account):
+                continue
+            actor_filename = base_dir + '/accounts/' + account + '.json'
+            if not os.path.isfile(actor_filename):
+                continue
+            actor_json = load_json(actor_filename)
+            if not actor_json:
+                continue
+            if not actor_json.get('id'):
+                continue
+            nickname = account.split('@')[0]
+            actor_changed = False
+            if not actor_json.get('memorial'):
+                if nickname in memorials:
+                    actor_json['memorial'] = True
+                    actor_changed = True
+            else:
+                if nickname not in memorials:
+                    actor_json['memorial'] = False
+                    actor_changed = True
+            if actor_changed:
+                save_json(actor_json, actor_filename)
+                actor = actor_json['id']
+                remove_person_from_cache(base_dir, actor, person_cache)
+                store_person_in_cache(base_dir, actor, actor_json,
+                                      person_cache, True)
+        break
