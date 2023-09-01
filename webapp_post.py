@@ -2138,7 +2138,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if post_is_dm:
             show_repeat_icon = False
         else:
-            if not is_public_post(post_json_object):
+            if is_public_post(post_json_object):
                 is_public_repeat = True
 
     title_str = ''
