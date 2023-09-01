@@ -2140,10 +2140,11 @@ def update_memorial_flags(base_dir: str, person_cache: {}) -> None:
                 if nickname not in memorials:
                     actor_json['memorial'] = False
                     actor_changed = True
-            if actor_changed:
-                save_json(actor_json, actor_filename)
-                actor = actor_json['id']
-                remove_person_from_cache(base_dir, actor, person_cache)
-                store_person_in_cache(base_dir, actor, actor_json,
-                                      person_cache, True)
+            if not actor_changed:
+                continue
+            save_json(actor_json, actor_filename)
+            actor = actor_json['id']
+            remove_person_from_cache(base_dir, actor, person_cache)
+            store_person_in_cache(base_dir, actor, actor_json,
+                                  person_cache, True)
         break
