@@ -287,6 +287,7 @@ from shares import expire_shares
 from shares import shares_catalog_endpoint
 from shares import shares_catalog_account_endpoint
 from shares import shares_catalog_csv_endpoint
+from categories import load_city_hashtags
 from categories import set_hashtag_category
 from categories import update_hashtag_categories
 from languages import get_reply_language
@@ -24135,6 +24136,9 @@ def run_daemon(max_shares_on_profile: int,
         if not httpd.translate:
             print('ERROR: no translations were loaded')
             sys.exit()
+
+    # create hashtag categories for cities
+    load_city_hashtags(base_dir, httpd.translate)
 
     # spoofed city for gps location misdirection
     httpd.city = city

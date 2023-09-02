@@ -38,6 +38,76 @@ def get_hashtag_category(base_dir: str, hashtag: str) -> str:
     return ''
 
 
+def load_city_hashtags(base_dir: str, translate: {}) -> None:
+    """create hashtag categories for cities
+    """
+    category_str = 'places'
+    if translate.get(category_str):
+        category_str = translate[category_str]
+
+    for _, _, files in os.walk(base_dir + '/data/cities'):
+        for cities_file in files:
+            if not cities_file.endswith('.txt'):
+                continue
+            cities_filename = base_dir + '/data/cities/' + cities_file
+            if not os.path.isfile(cities_filename):
+                continue
+            cities = []
+            try:
+                with open(cities_filename, 'r', encoding='utf-8') as fp_cities:
+                    cities = fp_cities.read().split('\n')
+            except OSError:
+                print('EX: unable to load cities file ' + cities_filename)
+            if not cities:
+                continue
+            for hashtag in cities:
+                hashtag = hashtag.lower().strip()
+                hashtag = hashtag.replace(' & ', ' and ')
+
+                hashtag2 = hashtag.replace('-', '').replace(' ', '')
+                city_filename = base_dir + '/tags/' + hashtag2 + '.category'
+                if not os.path.isfile(city_filename):
+                    try:
+                        with open(city_filename, 'w+',
+                                  encoding='utf-8') as fp_city:
+                            fp_city.write(category_str)
+                    except OSError:
+                        print('EX: unable to write city category ' +
+                              city_filename)
+                if '-' in hashtag:
+                    section = hashtag.split('-')
+                    new_hashtag = ''
+                    for text in section:
+                        new_hashtag += text.lower().title()
+                    hashtag2 = new_hashtag
+                    city_filename = \
+                        base_dir + '/tags/' + hashtag2 + '.category'
+                    if not os.path.isfile(city_filename):
+                        try:
+                            with open(city_filename, 'w+',
+                                      encoding='utf-8') as fp_city:
+                                fp_city.write(category_str)
+                        except OSError:
+                            print('EX: unable to write city category2 ' +
+                                  city_filename)
+                if ' ' in hashtag:
+                    section = hashtag.split(' ')
+                    new_hashtag = ''
+                    for text in section:
+                        new_hashtag += text.lower().title()
+                    hashtag2 = new_hashtag
+                    city_filename = \
+                        base_dir + '/tags/' + hashtag2 + '.category'
+                    if not os.path.isfile(city_filename):
+                        try:
+                            with open(city_filename, 'w+',
+                                      encoding='utf-8') as fp_city:
+                                fp_city.write(category_str)
+                        except OSError:
+                            print('EX: unable to write city category3 ' +
+                                  city_filename)
+
+
 def get_hashtag_categories(base_dir: str,
                            recent: bool = False,
                            category: str = None) -> None:
