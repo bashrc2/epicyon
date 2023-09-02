@@ -60,36 +60,38 @@ def get_hashtag_categories(base_dir: str,
             hashtag = catfile.split('.')[0]
             if len(hashtag) > MAX_TAG_LENGTH:
                 continue
+
+            category_str = None
             with open(category_filename, 'r', encoding='utf-8') as fp_category:
                 category_str = fp_category.read()
 
-                if not category_str:
+            if not category_str:
+                continue
+
+            if category:
+                # only return a dictionary for a specific category
+                if category_str != category:
                     continue
 
-                if category:
-                    # only return a dictionary for a specific category
-                    if category_str != category:
-                        continue
+            if recent:
+                tags_filename = base_dir + '/tags/' + hashtag + '.txt'
+                if not os.path.isfile(tags_filename):
+                    continue
+                mod_time_since_epoc = \
+                    os.path.getmtime(tags_filename)
+                last_modified_date = \
+                    datetime.datetime.fromtimestamp(mod_time_since_epoc)
+                file_days_since_epoch = \
+                    (last_modified_date -
+                     datetime.datetime(1970, 1, 1)).days
+                if file_days_since_epoch < recently:
+                    continue
 
-                if recent:
-                    tags_filename = base_dir + '/tags/' + hashtag + '.txt'
-                    if not os.path.isfile(tags_filename):
-                        continue
-                    mod_time_since_epoc = \
-                        os.path.getmtime(tags_filename)
-                    last_modified_date = \
-                        datetime.datetime.fromtimestamp(mod_time_since_epoc)
-                    file_days_since_epoch = \
-                        (last_modified_date -
-                         datetime.datetime(1970, 1, 1)).days
-                    if file_days_since_epoch < recently:
-                        continue
-
-                if not hashtag_categories.get(category_str):
-                    hashtag_categories[category_str] = [hashtag]
-                else:
-                    if hashtag not in hashtag_categories[category_str]:
-                        hashtag_categories[category_str].append(hashtag)
+            if not hashtag_categories.get(category_str):
+                hashtag_categories[category_str] = [hashtag]
+            else:
+                if hashtag not in hashtag_categories[category_str]:
+                    hashtag_categories[category_str].append(hashtag)
         break
     return hashtag_categories
 
