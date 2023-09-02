@@ -636,5 +636,6 @@
     "FollowWarning": "WAARSCHUWING: deze instantie blokkeert u mogelijk",
     "FollowAccountWarning": "WAARSCHUWING: dit account blokkeert u mogelijk",
     "Nicknames of memorial accounts (one per line)": "Bijnamen van herdenkingsverslagen (één per regel)",
-    "Memorials": "Gedenktekens"
+    "Memorials": "Gedenktekens",
+    "places": "plaatsen"
 }

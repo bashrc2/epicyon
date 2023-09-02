@@ -636,5 +636,6 @@
     "FollowWarning": "ATTENZIONE: questa istanza potrebbe bloccarti",
     "FollowAccountWarning": "ATTENZIONE: questo account potrebbe bloccarti",
     "Nicknames of memorial accounts (one per line)": "Soprannomi degli account commemorativi (uno per riga)",
-    "Memorials": "Memoriali"
+    "Memorials": "Memoriali",
+    "places": "luoghi"
 }

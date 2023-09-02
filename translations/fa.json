@@ -636,5 +636,6 @@
     "FollowWarning": "هشدار: این مورد ممکن است شما را مسدود کند",
     "FollowAccountWarning": "هشدار: این حساب ممکن است شما را مسدود کند",
     "Nicknames of memorial accounts (one per line)": "نام مستعار حساب های یادبود (یکی در هر خط)",
-    "Memorials": "یادبودها"
+    "Memorials": "یادبودها",
+    "places": "مکان ها"
 }

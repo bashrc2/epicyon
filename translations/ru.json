@@ -636,5 +636,6 @@
     "FollowWarning": "ВНИМАНИЕ: этот экземпляр может блокировать вас.",
     "FollowAccountWarning": "ВНИМАНИЕ: этот аккаунт может вас заблокировать",
     "Nicknames of memorial accounts (one per line)": "Никнеймы мемориальных аккаунтов (по одному в строке)",
-    "Memorials": "Мемориалы"
+    "Memorials": "Мемориалы",
+    "places": "места"
 }

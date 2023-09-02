@@ -636,5 +636,6 @@
     "FollowWarning": "WARNING: this instance may be blocking you",
     "FollowAccountWarning": "WARNING: this account may be blocking you",
     "Nicknames of memorial accounts (one per line)": "Nicknames of memorial accounts (one per line)",
-    "Memorials": "Memorials"
+    "Memorials": "Memorials",
+    "places": "places"
 }

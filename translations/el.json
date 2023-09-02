@@ -636,5 +636,6 @@
     "FollowWarning": "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: αυτή η περίπτωση μπορεί να σας μπλοκάρει",
     "FollowAccountWarning": "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: αυτός ο λογαριασμός μπορεί να σας αποκλείει",
     "Nicknames of memorial accounts (one per line)": "Ψευδώνυμα λογαριασμών μνήμης (ένα ανά γραμμή)",
-    "Memorials": "Μνημείων"
+    "Memorials": "Μνημείων",
+    "places": "μέρη"
 }

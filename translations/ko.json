@@ -636,5 +636,6 @@
     "FollowWarning": "경고: 이 인스턴스가 귀하를 차단하고 있을 수 있습니다.",
     "FollowAccountWarning": "경고: 이 계정이 귀하를 차단하고 있을 수 있습니다.",
     "Nicknames of memorial accounts (one per line)": "추모 계정의 닉네임(한 줄에 하나씩)",
-    "Memorials": "기록"
+    "Memorials": "기록",
+    "places": "장소"
 }

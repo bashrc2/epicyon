@@ -636,5 +636,6 @@
     "FollowWarning": "警告：此实例可能会阻止您",
     "FollowAccountWarning": "警告：此帐户可能会阻止您",
     "Nicknames of memorial accounts (one per line)": "纪念帐户昵称（每行一个）",
-    "Memorials": "纪念馆"
+    "Memorials": "纪念馆",
+    "places": "地方"
 }

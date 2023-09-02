@@ -636,5 +636,6 @@
     "FollowWarning": "সতর্কতা: এই উদাহরণটি আপনাকে অবরুদ্ধ করতে পারে",
     "FollowAccountWarning": "সতর্কতা: এই অ্যাকাউন্টটি আপনাকে ব্লক করতে পারে",
     "Nicknames of memorial accounts (one per line)": "স্মারক অ্যাকাউন্টের ডাকনাম (প্রতি লাইনে একটি)",
-    "Memorials": "স্মারক"
+    "Memorials": "স্মারক",
+    "places": "জায়গা"
 }

@@ -636,5 +636,6 @@
     "FollowWarning": "ATTENTION : cette instance peut vous bloquer",
     "FollowAccountWarning": "ATTENTION : ce compte peut vous bloquer",
     "Nicknames of memorial accounts (one per line)": "Surnoms des comptes commémoratifs (un par ligne)",
-    "Memorials": "Mémoriaux"
+    "Memorials": "Mémoriaux",
+    "places": "lieux"
 }
