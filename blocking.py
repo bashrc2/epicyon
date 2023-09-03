@@ -332,7 +332,7 @@ def _add_block_reason(base_dir: str,
                       nickname: str, domain: str,
                       block_nickname: str, block_domain: str,
                       reason: str) -> bool:
-    """Store a block reason
+    """Store an account level block reason
     """
     if not reason:
         return False
