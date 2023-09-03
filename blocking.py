@@ -339,7 +339,7 @@ def _add_block_reason(base_dir: str,
 
     domain = remove_domain_port(domain)
     blocking_reasons_filename = \
-        acct_dir(base_dir, nickname, domain) + '/blocking.txt'
+        acct_dir(base_dir, nickname, domain) + '/blocking_reasons.txt'
 
     if not block_nickname.startswith('#'):
         # is the handle already blocked?
