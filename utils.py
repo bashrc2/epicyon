@@ -1327,7 +1327,7 @@ def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
 def _get_statuses_list() -> []:
     """Returns a list of statuses path strings
     """
-    return ('/statuses/', '/objects/', '/p/')
+    return ('/statuses/', '/objects/', '/p/', '/h/')
 
 
 def contains_statuses(url: str) -> bool:
