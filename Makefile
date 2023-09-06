@@ -3,8 +3,6 @@ VERSION=1.1.0
 
 all:
 debug:
-sbom:
-	scanoss-py scan . > sbom.json
 source:
 	rm -f *.*~ *~
 	rm -f ontology/*~

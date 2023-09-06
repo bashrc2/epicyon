@@ -347,13 +347,3 @@ To run the network tests. These simulate instances exchanging messages.
 ``` bash
 python3 epicyon.py --testsnetwork
 ```
-
-## Software Bill of Materials
-
-To update the software bill of materials:
-
-``` bash
-sudo pip3 install scanoss
-make clean
-make sbom
-```
