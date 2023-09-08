@@ -48,7 +48,8 @@ def get_email_address(actor_json: {}) -> str:
         if not name_value:
             continue
         if not name_value.lower().startswith('email'):
-            continue
+            if 'Mail' not in name_value:
+                continue
         if not property_value.get('type'):
             continue
         prop_value_name, _ = \
@@ -57,11 +58,14 @@ def get_email_address(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        if '@' not in property_value[prop_value_name]:
+        value_str = remove_html(property_value[prop_value_name])
+        if '://' in value_str:
             continue
-        if '.' not in property_value[prop_value_name]:
+        if '@' not in value_str:
             continue
-        return remove_html(property_value[prop_value_name])
+        if '.' not in value_str:
+            continue
+        return value_str
     return ''
 
 
