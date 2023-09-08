@@ -74,7 +74,12 @@ def get_website(actor_json: {}, translate: {}) -> str:
             name_value = property_value['schema:name']
         if not name_value:
             continue
-        if name_value.lower() not in match_strings:
+        found = False
+        for possible_str in match_strings:
+            if possible_str in name_value.lower():
+                found = True
+                break
+        if not found:
             continue
         if not property_value.get('type'):
             continue
