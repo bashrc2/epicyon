@@ -15,7 +15,7 @@ from utils import remove_html
 def _get_donation_types() -> []:
     return ('patreon', 'paypal', 'gofundme', 'liberapay',
             'kickstarter', 'indiegogo', 'crowdsupply',
-            'subscribestar')
+            'subscribestar', 'kofi')
 
 
 def _get_website_strings() -> []:
