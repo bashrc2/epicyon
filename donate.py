@@ -19,7 +19,7 @@ def _get_donation_types() -> []:
 
 
 def _get_website_strings() -> []:
-    return ['www', 'website', 'web', 'homepage']
+    return ['www', 'website', 'web', 'homepage', 'contact']
 
 
 def _get_gemini_strings() -> []:
@@ -84,7 +84,11 @@ def get_website(actor_json: {}, translate: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        return remove_html(property_value[prop_value_name])
+        value_str = remove_html(property_value[prop_value_name])
+        if 'https://' not in value_str and \
+           'http://' not in value_str:
+            continue
+        return value_str
     return ''
 
 
