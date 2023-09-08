@@ -17,7 +17,9 @@ def _get_donation_types() -> []:
             'kickstarter', 'indiegogo', 'crowdsupply',
             'subscribestar', 'kofi', 'fundly', 'crowdrise',
             'justgiving', 'globalgiving', 'givedirectly',
-            'fundrazr', 'kiva', 'thebiggive', 'donorbox')
+            'fundrazr', 'kiva', 'thebiggive', 'donorbox',
+            'opencollective', 'buymeacoffee', 'flattr',
+            'bountysource', 'coindrop', 'gitpay', 'tipeee')
 
 
 def _get_website_strings() -> []:
