@@ -24,7 +24,8 @@ Denver
 Washington
 Nashville-Davidson
 Baltimore
-Louisville/Jefferson
+Louisville
+Jefferson
 Portland
 Oklahoma
 Milwaukee

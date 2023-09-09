@@ -63,6 +63,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
             for hashtag in cities:
                 hashtag = hashtag.lower().strip()
                 hashtag = hashtag.replace(' & ', ' and ')
+                hashtag = hashtag.replace('/', '')
 
                 hashtag2 = hashtag.replace('-', '').replace(' ', '')
                 city_filename = base_dir + '/tags/' + hashtag2 + '.category'
