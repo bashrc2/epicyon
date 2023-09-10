@@ -1186,7 +1186,7 @@ h3 {
         font-family:   var(--header-font);
         font-size: var(--font-size);
         color: var(--title-color);
-        float: var(--text-justify);
+        direction: var(--language-direction);
     }
     .container img.postScopeIcon {
         float: none;
@@ -1920,7 +1920,7 @@ h3 {
         transform: scale(2);
         padding: 10px;
         margin: 20px 30px;
-        float: var(--text-justify);
+        direction: var(--language-direction);
     }
     input[type=radio]
     {
@@ -2018,7 +2018,7 @@ h3 {
         font-family:   var(--header-font);
         font-size: var(--font-size-mobile);
         color: var(--title-color);
-        float: var(--text-justify);
+        direction: var(--language-direction);
     }
     .container img.attachment {
 	width: 125%;
@@ -2752,7 +2752,7 @@ h3 {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
-        float: var(--text-justify);
+        direction: var(--language-direction);
     }
     input[type=radio]
     {
@@ -2848,7 +2848,7 @@ h3 {
         font-family:   var(--header-font);
         font-size: var(--font-size-tiny);
         color: var(--title-color);
-        float: var(--text-justify);
+        direction: var(--language-direction);
     }
     .container img.attachment {
 	width: 125%;
@@ -3583,7 +3583,7 @@ h3 {
         padding: 20px;
         margin: 30px 40px;
         width: 10px;
-        float: var(--text-justify);
+        direction: var(--language-direction);
     }
     input[type=radio]
     {
