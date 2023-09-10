@@ -23,11 +23,11 @@ from utils import remove_domain_port
 from utils import acct_dir
 from utils import local_actor_url
 from utils import replace_users_with_at
+from utils import language_right_to_left
 from happening import get_todays_events
 from happening import get_calendar_events
 from happening import get_todays_events_icalendar
 from happening import get_month_events_icalendar
-from webapp_utils import language_right_to_left
 from webapp_utils import get_banner_file
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style

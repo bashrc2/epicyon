@@ -2176,15 +2176,6 @@ def text_mode_browser(ua_str: str) -> bool:
     return False
 
 
-def language_right_to_left(language: str) -> bool:
-    """is the given language written from right to left?
-    """
-    rtl_languages = ('ar', 'fa')
-    if language in rtl_languages:
-        return True
-    return False
-
-
 def get_default_path(media_instance: bool, blogs_instance: bool,
                      nickname: str) -> str:
     """Returns the default timeline

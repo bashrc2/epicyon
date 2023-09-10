@@ -4531,3 +4531,12 @@ def ap_proxy_type(json_object: {}) -> str:
             if isinstance(proxy_dict['protocol'], str):
                 return proxy_dict['protocol']
     return None
+
+
+def language_right_to_left(language: str) -> bool:
+    """is the given language written from right to left?
+    """
+    rtl_languages = ('ar', 'fa', 'he')
+    if language in rtl_languages:
+        return True
+    return False

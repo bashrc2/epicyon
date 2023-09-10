@@ -19,6 +19,7 @@ from utils import local_actor_url
 from utils import remove_html
 from utils import text_in_file
 from utils import remove_eol
+from utils import language_right_to_left
 from shutil import copyfile
 from shutil import make_archive
 from shutil import unpack_archive
@@ -327,11 +328,13 @@ def set_css_param(css: str, param: str, value: str) -> str:
 
 def _set_theme_from_dict(base_dir: str, name: str,
                          theme_params: {}, bg_params: {},
-                         allow_local_network_access: bool) -> None:
+                         allow_local_network_access: bool,
+                         system_language: str) -> None:
     """Uses a dictionary to set a theme
     """
     if name:
         _set_theme_in_config(base_dir, name)
+    rtl = language_right_to_left(system_language)
     theme_files = _get_theme_files()
     for filename in theme_files:
         # check for custom css within the theme directory
@@ -387,6 +390,12 @@ def _set_theme_from_dict(base_dir: str, name: str,
                         _set_publish_button_at_top(base_dir, False)
                     continue
                 css = set_css_param(css, param_name, param_value)
+
+            # set the text direction
+            if rtl:
+                css = set_css_param(css, 'text-justify', 'right')
+                css = set_css_param(css, 'language-direction', 'rtl')
+
             filename = base_dir + '/' + filename
             with open(filename, 'w+', encoding='utf-8') as cssfile:
                 cssfile.write(css)
@@ -549,7 +558,8 @@ def reset_theme_designer_settings(base_dir: str) -> None:
 
 def _read_variables_file(base_dir: str, theme_name: str,
                          variables_file: str,
-                         allow_local_network_access: bool) -> None:
+                         allow_local_network_access: bool,
+                         system_language: str) -> None:
     """Reads variables from a file in the theme directory
     """
     theme_params = load_json(variables_file, 0)
@@ -571,10 +581,11 @@ def _read_variables_file(base_dir: str, theme_name: str,
         "search": "jpg"
     }
     _set_theme_from_dict(base_dir, theme_name, theme_params, bg_params,
-                         allow_local_network_access)
+                         allow_local_network_access, system_language)
 
 
-def _set_theme_default(base_dir: str, allow_local_network_access: bool):
+def _set_theme_default(base_dir: str, allow_local_network_access: bool,
+                       system_language: str):
     name = 'default'
     _remove_theme(base_dir)
     _set_theme_in_config(base_dir, name)
@@ -582,7 +593,8 @@ def _set_theme_default(base_dir: str, allow_local_network_access: bool):
     variables_file = base_dir + '/theme/' + name + '/theme.json'
     if os.path.isfile(variables_file):
         _read_variables_file(base_dir, name, variables_file,
-                             allow_local_network_access)
+                             allow_local_network_access,
+                             system_language)
     else:
         bg_params = {
             "login": "jpg",
@@ -601,7 +613,8 @@ def _set_theme_default(base_dir: str, allow_local_network_access: bool):
             "search-banner-height-mobile": "15vh"
         }
         _set_theme_from_dict(base_dir, name, theme_params, bg_params,
-                             allow_local_network_access)
+                             allow_local_network_access,
+                             system_language)
 
 
 def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
@@ -886,14 +899,16 @@ def set_theme(base_dir: str, name: str, domain: str,
 
     if not result:
         # default
-        _set_theme_default(base_dir, allow_local_network_access)
+        _set_theme_default(base_dir, allow_local_network_access,
+                           system_language)
         result = True
 
     # read theme settings from a json file in the theme directory
     variables_file = base_dir + '/theme/' + name + '/theme.json'
     if os.path.isfile(variables_file):
         _read_variables_file(base_dir, name, variables_file,
-                             allow_local_network_access)
+                             allow_local_network_access,
+                             system_language)
 
     if dyslexic_font:
         _set_dyslexic_font(base_dir)
@@ -918,6 +933,7 @@ def set_theme(base_dir: str, name: str, domain: str,
     _copy_theme_help_files(base_dir, name, system_language)
     _set_theme_in_config(base_dir, name)
     _set_clear_cache_flag(base_dir)
+
     return result
 
 

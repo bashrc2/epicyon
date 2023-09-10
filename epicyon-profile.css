@@ -1,6 +1,8 @@
 @charset "UTF-8";
 
 :root {
+    --text-justify: left;
+    --language-direction: ltr;
     --hashtag-margin: 2%;
     --hashtag-size1: 30px;
     --hashtag-size2: 40px;
@@ -289,6 +291,10 @@ mark {
     font-weight: bold;
 }
 
+details {
+    direction: var(--language-direction);
+}
+
 .diff_add {
     color: var(--diff-add);
 }
@@ -518,7 +524,7 @@ a:focus {
 }
 
 .buttonprev {
-    float: left;
+    float: var(--text-justify);
     width: 10%;
     -ms-transform: translateY(30%);
     transform: translateY(30%);
@@ -653,7 +659,7 @@ a:focus {
     hyphens: auto;
     text-wrap: pretty;
     text-align: justify;
-    direction: ltr;
+    direction: var(--language-direction);
 }
 
 .message_rtl {
@@ -823,7 +829,7 @@ a:focus {
 
 .skill-title {
     margin-left: 25%;
-    text-align: left;
+    text-align: var(--text-justify);
     font-size: var(--font-size2);
     font-family: 'Arial, Helvetica, sans-serif';
     font-weight: bold;
@@ -856,11 +862,13 @@ input[type=number] {
     resize: vertical;
     font-size: var(--font-size-header);
     font-family: 'Arial, Helvetica, sans-serif';
+    float: var(--text-justify);
 }
 
 .labels {
     font-size: var(--font-size);
     font-family: 'Arial, Helvetica, sans-serif';
+    float: var(--text-justify);
 }
 
 .transparent {
@@ -1178,6 +1186,7 @@ h3 {
         font-family:   var(--header-font);
         font-size: var(--font-size);
         color: var(--title-color);
+        float: var(--text-justify);
     }
     .container img.postScopeIcon {
         float: none;
@@ -1794,6 +1803,7 @@ h3 {
         font-family: 'Arial, Helvetica, sans-serif';
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
+        direction: var(--language-direction);
     }
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
@@ -1910,6 +1920,7 @@ h3 {
         transform: scale(2);
         padding: 10px;
         margin: 20px 30px;
+        float: var(--text-justify);
     }
     input[type=radio]
     {
@@ -2007,6 +2018,7 @@ h3 {
         font-family:   var(--header-font);
         font-size: var(--font-size-mobile);
         color: var(--title-color);
+        float: var(--text-justify);
     }
     .container img.attachment {
 	width: 125%;
@@ -2623,6 +2635,7 @@ h3 {
         font-family: 'Arial, Helvetica, sans-serif';
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
+        direction: var(--language-direction);
     }
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
@@ -2739,6 +2752,7 @@ h3 {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
+        float: var(--text-justify);
     }
     input[type=radio]
     {
@@ -2834,6 +2848,7 @@ h3 {
         font-family:   var(--header-font);
         font-size: var(--font-size-tiny);
         color: var(--title-color);
+        float: var(--text-justify);
     }
     .container img.attachment {
 	width: 125%;
@@ -3450,6 +3465,7 @@ h3 {
         font-family: 'Arial, Helvetica, sans-serif';
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
+        direction: var(--language-direction);
     }
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
@@ -3567,6 +3583,7 @@ h3 {
         padding: 20px;
         margin: 30px 40px;
         width: 10px;
+        float: var(--text-justify);
     }
     input[type=radio]
     {

@@ -69,6 +69,7 @@ from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import local_actor_url
 from utils import is_unlisted_post
+from utils import language_right_to_left
 from content import replace_remote_hashtags
 from content import detect_dogwhistles
 from content import create_edits_html
@@ -84,7 +85,6 @@ from content import switch_words
 from person import is_person_snoozed
 from person import get_person_avatar_url
 from webapp_utils import get_buy_links
-from webapp_utils import language_right_to_left
 from webapp_utils import get_banner_file
 from webapp_utils import get_avatar_image_url
 from webapp_utils import update_avatar_image_cache
