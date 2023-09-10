@@ -863,6 +863,7 @@ input[type=number] {
     font-size: var(--font-size-header);
     font-family: 'Arial, Helvetica, sans-serif';
     direction: var(--language-direction);
+    float: var(--text-justify);
 }
 
 .labels {
