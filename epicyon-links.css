@@ -505,7 +505,7 @@ input[type=number] {
     resize: vertical;
     font-size: var(--font-size-header);
     font-family: Arial, Helvetica, sans-serif;
-    float: var(--text-justify);
+    direction: var(--language-direction);
 }
 
 .labels {
