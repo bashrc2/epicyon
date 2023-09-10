@@ -4536,7 +4536,7 @@ def ap_proxy_type(json_object: {}) -> str:
 def language_right_to_left(language: str) -> bool:
     """is the given language written from right to left?
     """
-    rtl_languages = ('ar', 'fa', 'he')
+    rtl_languages = ('ar', 'fa', 'he', 'yi')
     if language in rtl_languages:
         return True
     return False
