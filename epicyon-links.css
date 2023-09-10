@@ -1,6 +1,8 @@
 @charset "UTF-8";
 
 :root {
+    --text-justify: left;
+    --language-direction: ltr;
     --avatar-rounding: 10%;
     --main-bg-color: #282c37;
     --link-bg-color: #282c37;
@@ -103,6 +105,10 @@ body, html {
     font-size: var(--font-size);
     line-height: var(--line-spacing);
     image-rendering: var(--rendering);
+}
+
+details {
+    direction: var(--language-direction);
 }
 
 blockquote {
@@ -214,7 +220,7 @@ a:focus {
 }
 
 .buttonprev {
-    float: left;
+    float: var(--text-justify);
     width: 10%;
     -ms-transform: translateY(30%);
     transform: translateY(30%);
@@ -231,6 +237,7 @@ h1 {
     font-family: var(--header-font);
     font-size: var(--font-size);
     color: var(--title-color);
+    direction: var(--language-direction);
 }
 
 .new-post-subtext {
@@ -340,6 +347,7 @@ h1 {
 .message {
     margin-left: 7%;
     width: 90%;
+    direction: var(--language-direction);
 }
 
 .message:focus{
@@ -464,7 +472,7 @@ h1 {
 
 .skill-title {
     margin-left: 25%;
-    text-align: left;
+    text-align: var(--text-justify);
     font-size: var(--font-size2);
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
@@ -497,11 +505,13 @@ input[type=number] {
     resize: vertical;
     font-size: var(--font-size-header);
     font-family: Arial, Helvetica, sans-serif;
+    float: var(--text-justify);
 }
 
 .labels {
     font-size: var(--font-size);
     font-family: Arial, Helvetica, sans-serif;
+    float: var(--text-justify);
 }
 
 .transparent {
@@ -1205,6 +1215,7 @@ aside .toggle-inside li {
         font-family: Arial, Helvetica, sans-serif;
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
+        direction: var(--language-direction);
     }
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
@@ -1233,6 +1244,7 @@ aside .toggle-inside li {
         width: 32px;
         vertical-align: middle;
         margin-right: 20px;
+        direction: var(--language-direction);
     }
     input.vote[type=submit] {
         background-color: var(--button-background);
@@ -1354,6 +1366,7 @@ aside .toggle-inside li {
         transform: scale(2);
         padding: 10px;
         margin: 20px 30px;
+        direction: var(--language-direction);
     }
     input[type=radio]
     {
@@ -1364,6 +1377,7 @@ aside .toggle-inside li {
         transform: scale(2);
         padding: 10px;
         margin: 20px 30px;
+        direction: var(--language-direction);
     }
     input[type=number]
     {
@@ -1691,6 +1705,7 @@ aside .toggle-inside li {
         font-family: Arial, Helvetica, sans-serif;
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
+        direction: var(--language-direction);
     }
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
@@ -1719,6 +1734,7 @@ aside .toggle-inside li {
         height: 90px;
         vertical-align: middle;
         margin-right: 20px;
+        direction: var(--language-direction);
     }
     input.vote[type=submit] {
         background-color: var(--button-background);
@@ -1851,6 +1867,7 @@ aside .toggle-inside li {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
+        direction: var(--language-direction);
     }
     input[type=number]
     {
@@ -2169,6 +2186,7 @@ aside .toggle-inside li {
         font-family: Arial, Helvetica, sans-serif;
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
+        direction: var(--language-direction);
     }
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
@@ -2197,6 +2215,7 @@ aside .toggle-inside li {
         height: 90px;
         vertical-align: middle;
         margin-right: 20px;
+        direction: var(--language-direction);
     }
     input.vote[type=submit] {
         background-color: var(--button-background);
@@ -2319,6 +2338,7 @@ aside .toggle-inside li {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
+        direction: var(--language-direction);
     }
     input[type=radio]
     {
@@ -2329,6 +2349,7 @@ aside .toggle-inside li {
         transform: scale(2);
         padding: 20px;
         margin: 30px 40px;
+        direction: var(--language-direction);
     }
     input[type=number]
     {
