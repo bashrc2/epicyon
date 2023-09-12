@@ -378,10 +378,10 @@ from utils import dangerous_markup
 from utils import refresh_newswire
 from utils import is_image_file
 from utils import has_group_type
+from utils import binary_is_image
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread
 from announce import create_announce
-from content import binary_is_image
 from content import add_name_emojis_to_tags
 from content import load_dogwhistles
 from content import valid_url_lengths
@@ -5217,6 +5217,9 @@ class PubServer(BaseHTTPRequestHandler):
         media_filename = \
             media_filename_base + '.' + \
             get_image_extension_from_mime_type(self.headers['Content-type'])
+        if not binary_is_image(media_filename, media_bytes):
+            print('WARN: _receive_image image binary is not recognized ' +
+                  media_filename)
         try:
             with open(media_filename, 'wb') as av_file:
                 av_file.write(media_bytes)

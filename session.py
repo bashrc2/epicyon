@@ -13,6 +13,7 @@ from utils import text_in_file
 from utils import acct_dir
 from utils import url_permitted
 from utils import is_image_file
+from utils import binary_is_image
 from httpsig import create_signed_header
 import json
 from socket import error as SocketError
@@ -791,11 +792,16 @@ def download_image(session, url: str, image_filename: str, debug: bool,
                         print('EX: download_image unable to delete ' +
                               image_filename)
             else:
-                with open(image_filename, 'wb') as im_file:
-                    im_file.write(result.content)
-                    if debug:
-                        print('Image downloaded from ' + url)
-                    return True
+                media_binary = result.content
+                if binary_is_image(image_filename, media_binary):
+                    with open(image_filename, 'wb') as im_file:
+                        im_file.write(media_binary)
+                        if debug:
+                            print('Image downloaded from ' + url)
+                        return True
+                else:
+                    print('WARN: download_image binary not recognized ' +
+                          image_filename)
         except BaseException as ex:
             print('EX: Failed to download image: ' +
                   str(url) + ' ' + str(ex))

@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import binary_is_image
 from utils import get_content_from_post
 from utils import get_full_domain
 from utils import get_user_paths
@@ -1648,6 +1649,14 @@ def save_media_in_form_post(media_bytes, debug: bool,
         if not _valid_follows_csv(csv_str):
             return None, None
 
+    # if this is an image then check that the binary looks like an image
+    image_extension_types = get_image_extensions()
+    if detected_extension in image_extension_types:
+        if not binary_is_image(filename, media_bytes[start_pos:]):
+            print('WARN: save_media_in_form_post ' +
+                  'image binary not recognized ' + filename)
+            return None, None
+
     try:
         with open(filename, 'wb') as fp_media:
             fp_media.write(media_bytes[start_pos:])
@@ -2184,40 +2193,3 @@ def add_name_emojis_to_tags(base_dir: str, http_prefix: str,
         if updated:
             new_tag['updated'] = updated
         actor_json['tag'].append(new_tag)
-
-
-def binary_is_image(filename: str, media_binary) -> bool:
-    """Returns true if the given file binary data contains an image
-    """
-    if len(media_binary) < 13:
-        return False
-    filename_lower = filename.lower()
-    bin_is_image = False
-    if filename_lower.endswith('.jpeg') or filename_lower.endswith('jpg'):
-        if media_binary[6:10] in (b'JFIF', b'Exif'):
-            bin_is_image = True
-    elif filename_lower.endswith('.ico'):
-        if media_binary.startswith(b'\x00\x00\x01\x00'):
-            bin_is_image = True
-    elif filename_lower.endswith('.png'):
-        if media_binary.startswith(b'\211PNG\r\n\032\n'):
-            bin_is_image = True
-    elif filename_lower.endswith('.webp'):
-        if media_binary.startswith(b'RIFF') and media_binary[8:12] == b'WEBP':
-            bin_is_image = True
-    elif filename_lower.endswith('.gif'):
-        if media_binary[:6] in (b'GIF87a', b'GIF89a'):
-            bin_is_image = True
-    elif filename_lower.endswith('.avif'):
-        if media_binary[4:12] == b'ftypavif':
-            bin_is_image = True
-    elif filename_lower.endswith('.heic'):
-        if media_binary[4:12] == b'ftypmif1':
-            bin_is_image = True
-    elif filename_lower.endswith('.jxl'):
-        if media_binary.startswith(b'\xff\n'):
-            bin_is_image = True
-    elif filename_lower.endswith('.svg'):
-        if '<svg' in str(media_binary):
-            bin_is_image = True
-    return bin_is_image

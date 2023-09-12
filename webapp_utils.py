@@ -33,10 +33,10 @@ from utils import get_image_extensions
 from utils import local_actor_url
 from utils import text_in_file
 from utils import remove_eol
+from utils import binary_is_image
 from filters import is_filtered
 from cache import get_actor_public_key_from_id
 from cache import store_person_in_cache
-from content import binary_is_image
 from content import add_html_tags
 from content import replace_emoji_from_tags
 from person import get_person_avatar_url
@@ -409,7 +409,8 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
                         return avatar_image_filename.replace(base_dir +
                                                              '/cache', '')
                 else:
-                    print('WARN: avatar image binary not recognized ' +
+                    print('WARN: update_avatar_image_cache ' +
+                          'avatar image binary not recognized ' +
                           actor + ' ' + str(media_binary[0:20]))
         except Exception as ex:
             print('EX: Failed to download avatar image: ' +
