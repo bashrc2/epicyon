@@ -36,6 +36,7 @@ from utils import remove_eol
 from filters import is_filtered
 from cache import get_actor_public_key_from_id
 from cache import store_person_in_cache
+from content import binary_is_image
 from content import add_html_tags
 from content import replace_emoji_from_tags
 from person import get_person_avatar_url
@@ -399,12 +400,17 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
                               'update_avatar_image_cache unable to delete ' +
                               avatar_image_filename)
             else:
-                with open(avatar_image_filename, 'wb') as fp_av:
-                    fp_av.write(result.content)
-                    if debug:
-                        print('avatar image downloaded for ' + actor)
-                    return avatar_image_filename.replace(base_dir + '/cache',
-                                                         '')
+                media_binary = result.content
+                if binary_is_image(avatar_image_filename, media_binary):
+                    with open(avatar_image_filename, 'wb') as fp_av:
+                        fp_av.write(media_binary)
+                        if debug:
+                            print('avatar image downloaded for ' + actor)
+                        return avatar_image_filename.replace(base_dir +
+                                                             '/cache', '')
+                else:
+                    print('WARN: avatar image binary not recognized ' +
+                          actor + ' ' + str(media_binary[0:20]))
         except Exception as ex:
             print('EX: Failed to download avatar image: ' +
                   str(avatar_url) + ' ' + str(ex))

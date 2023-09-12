@@ -381,6 +381,7 @@ from utils import has_group_type
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread
 from announce import create_announce
+from content import binary_is_image
 from content import add_name_emojis_to_tags
 from content import load_dogwhistles
 from content import valid_url_lengths
@@ -9541,18 +9542,21 @@ class PubServer(BaseHTTPRequestHandler):
         except OSError:
             print('EX: unable to read cached favicon ' + fav_filename)
         if media_binary:
-            mime_type = media_file_mime_type(fav_filename)
-            self._set_headers_etag(fav_filename,
-                                   mime_type,
-                                   media_binary, None,
-                                   referer_domain,
-                                   False, None)
-            self._write(media_binary)
-            fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_cached_favicon',
-                                self.server.debug)
-            self.server.favicons_cache[fav_file] = media_binary
-            return
+            if binary_is_image(fav_filename, media_binary):
+                mime_type = media_file_mime_type(fav_filename)
+                self._set_headers_etag(fav_filename,
+                                       mime_type,
+                                       media_binary, None,
+                                       referer_domain,
+                                       False, None)
+                self._write(media_binary)
+                fitness_performance(getreq_start_time, self.server.fitness,
+                                    '_GET', '_show_cached_favicon',
+                                    self.server.debug)
+                self.server.favicons_cache[fav_file] = media_binary
+                return
+            else:
+                print('WARN: favicon is not an image ' + fav_filename)
         self._404()
 
     def _show_cached_avatar(self, referer_domain: str, path: str,
