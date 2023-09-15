@@ -212,7 +212,7 @@ def run_post_schedule_watchdog(project_version: str, httpd) -> None:
         time.sleep(20)
 
         # save the list of unavailable sites
-        if str(curr_sites_unavailable) != httpd.sites_unavailable:
+        if str(curr_sites_unavailable) != str(httpd.sites_unavailable):
             save_unavailable_sites(httpd.base_dir, httpd.sites_unavailable)
             curr_sites_unavailable = httpd.sites_unavailable.copy()
 
