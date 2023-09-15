@@ -73,7 +73,8 @@ def _reactionpost(recent_posts_cache: {},
                   debug: bool, project_version: str,
                   signing_priv_key_pem: str,
                   curr_domain: str,
-                  onion_domain: str, i2p_domain: str) -> {}:
+                  onion_domain: str, i2p_domain: str,
+                  sites_unavailable: []) -> {}:
     """Creates an emoji reaction
     actor is the person doing the reacting
     'to' might be a specific person (actor) whose post was reaction
@@ -148,7 +149,7 @@ def _reactionpost(recent_posts_cache: {},
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 7165392,
                          curr_domain, onion_domain, i2p_domain,
-                         extra_headers)
+                         extra_headers, sites_unavailable)
 
     return new_reaction_json
 
@@ -164,7 +165,8 @@ def reaction_post(recent_posts_cache: {},
                   person_cache: {}, cached_webfingers: {},
                   debug: bool, project_version: str,
                   signing_priv_key_pem: str,
-                  curr_domain: str, onion_domain: str, i2p_domain: str) -> {}:
+                  curr_domain: str, onion_domain: str, i2p_domain: str,
+                  sites_unavailable: []) -> {}:
     """Adds a reaction to a given status post. This is only used by unit tests
     """
     reaction_domain = get_full_domain(reaction_domain, reaction_port)
@@ -181,7 +183,8 @@ def reaction_post(recent_posts_cache: {},
                          send_threads, post_log, person_cache,
                          cached_webfingers,
                          debug, project_version, signing_priv_key_pem,
-                         curr_domain, onion_domain, i2p_domain)
+                         curr_domain, onion_domain, i2p_domain,
+                         sites_unavailable)
 
 
 def send_reaction_via_server(base_dir: str, session,

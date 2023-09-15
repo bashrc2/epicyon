@@ -445,6 +445,7 @@ from fitnessFunctions import fitness_performance
 from fitnessFunctions import fitness_thread
 from fitnessFunctions import sorted_watch_points
 from fitnessFunctions import html_watch_points_graph
+from siteactive import load_unavailable_sites
 from siteactive import referer_is_active
 from webapp_likers import html_likers_of_post
 from crawlers import update_known_crawlers
@@ -1403,7 +1404,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
             if not referer_is_active(http_prefix,
                                      referer_domain, ua_str,
-                                     calling_site_timeout):
+                                     calling_site_timeout,
+                                     self.server.sites_unavailable):
                 print('mastodon api referer url is not active ' +
                       referer_domain)
                 self._400()
@@ -1596,7 +1598,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             if not referer_is_active(http_prefix,
                                      referer_domain, ua_str,
-                                     calling_site_timeout):
+                                     calling_site_timeout,
+                                     self.server.sites_unavailable):
                 print('nodeinfo referer url is not active ' +
                       referer_domain)
                 self._400()
@@ -1704,7 +1707,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             if not referer_is_active(http_prefix,
                                      referer_domain, ua_str,
-                                     calling_site_timeout):
+                                     calling_site_timeout,
+                                     self.server.sites_unavailable):
                 print('security.txt referer url is not active ' +
                       referer_domain)
                 self._400()
@@ -1911,7 +1915,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.content_license_url,
                                       self.server.dogwhistles,
                                       self.server.min_images_for_accounts,
-                                      self.server.buy_sites)
+                                      self.server.buy_sites,
+                                      self.server.sites_unavailable)
 
     def _get_outbox_thread_index(self, nickname: str,
                                  max_outbox_threads_per_account: int) -> int:
@@ -4238,7 +4243,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.signing_priv_key_pem,
                                     self.server.domain,
                                     self.server.onion_domain,
-                                    self.server.i2p_domain)
+                                    self.server.i2p_domain,
+                                    self.server.sites_unavailable)
 
         if '&submitUnblock=' in follow_confirm_params:
             blocking_actor = \
@@ -9809,7 +9815,7 @@ class PubServer(BaseHTTPRequestHandler):
                          getreq_start_time,
                          repeat_private: bool,
                          debug: bool,
-                         curr_session) -> None:
+                         curr_session, sites_unavailable: []) -> None:
         """The announce/repeat button was pressed on a post
         """
         page_number = 1
@@ -9899,7 +9905,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.signing_priv_key_pem,
                             self.server.domain,
                             onion_domain,
-                            i2p_domain)
+                            i2p_domain, sites_unavailable)
         announce_filename = None
         if announce_json:
             # save the announce straight to the outbox
@@ -10194,7 +10200,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.project_version,
                                                  signing_priv_key_pem,
                                                  proxy_type,
-                                                 followers_sync_cache)
+                                                 followers_sync_cache,
+                                                 self.server.sites_unavailable)
         origin_path_str_absolute = \
             http_prefix + '://' + domain_full + origin_path_str
         if calling_domain.endswith('.onion') and onion_domain:
@@ -10355,7 +10362,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               debug,
                                               self.server.project_version,
                                               self.server.signing_priv_key_pem,
-                                              self.server.followers_sync_cache)
+                                              self.server.followers_sync_cache,
+                                              self.server.sites_unavailable)
         origin_path_str_absolute = \
             http_prefix + '://' + domain_full + origin_path_str
         if calling_domain.endswith('.onion') and onion_domain:
@@ -19852,7 +19860,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   getreq_start_time,
                                   repeat_private,
                                   self.server.debug,
-                                  curr_session)
+                                  curr_session,
+                                  self.server.sites_unavailable)
             self.server.getreq_busy = False
             return
 
@@ -23932,6 +23941,9 @@ def run_daemon(max_shares_on_profile: int,
         return False
 
     httpd.starting_daemon = True
+
+    # list of websites which are currently down
+    httpd.sites_unavailable = load_unavailable_sites(base_dir)
 
     # maximum number of shared items attached to actors, as in
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md

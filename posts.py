@@ -3090,7 +3090,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                      signing_priv_key_pem: str,
                      source_id: int, curr_domain: str,
                      onion_domain: str, i2p_domain: str,
-                     extra_headers: {}) -> int:
+                     extra_headers: {}, sites_unavailable: []) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -3110,7 +3110,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     to_domain = get_full_domain(to_domain, to_port)
 
     to_domain_url = http_prefix + '://' + to_domain
-    if not site_is_active(to_domain_url, 10):
+    if not site_is_active(to_domain_url, 10, sites_unavailable):
         print('send_signed_json domain is inactive: ' + to_domain_url)
         return 9
     print('Domain is active: ' + to_domain_url)
@@ -3401,7 +3401,8 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                              shared_item_federation_tokens: {},
                              signing_priv_key_pem: str,
                              proxy_type: str,
-                             followers_sync_cache: {}) -> None:
+                             followers_sync_cache: {},
+                             sites_unavailable: []) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -3598,7 +3599,7 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                          shared_items_token, group_account,
                          signing_priv_key_pem, 34436782,
                          domain, onion_domain, i2p_domain,
-                         extra_headers)
+                         extra_headers, sites_unavailable)
 
 
 def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
@@ -3614,7 +3615,8 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                    shared_item_federation_tokens: {},
                                    signing_priv_key_pem: str,
                                    proxy_type: str,
-                                   followers_sync_cache: {}):
+                                   followers_sync_cache: {},
+                                   sites_unavailable: []):
     """Returns a thread used to send a post to named addresses
     """
     print('THREAD: _send_to_named_addresses')
@@ -3632,7 +3634,8 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                 shared_item_federation_tokens,
                                 signing_priv_key_pem,
                                 proxy_type,
-                                followers_sync_cache), daemon=True)
+                                followers_sync_cache,
+                                sites_unavailable), daemon=True)
     if not begin_thread(send_thread, 'send_to_named_addresses_thread'):
         print('WARN: socket error while starting ' +
               'thread to send to named addresses.')
@@ -3684,7 +3687,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
                       project_version: str,
                       shared_items_federated_domains: [],
                       shared_item_federation_tokens: {},
-                      signing_priv_key_pem: str) -> None:
+                      signing_priv_key_pem: str,
+                      sites_unavailable: []) -> None:
     """sends a post to the followers of the given nickname
     """
     print('send_to_followers')
@@ -3748,7 +3752,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
 
         # check that the follower's domain is active
         follower_domain_url = http_prefix + '://' + follower_domain
-        if not site_is_active(follower_domain_url, 10):
+        if not site_is_active(follower_domain_url, 10, sites_unavailable):
             print('Sending post to followers domain is inactive: ' +
                   follower_domain_url)
             continue
@@ -3856,7 +3860,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                              shared_items_token, group_account,
                              signing_priv_key_pem, 639342,
                              domain, onion_domain, i2p_domain,
-                             extra_headers)
+                             extra_headers, sites_unavailable)
         else:
             # randomize the order of handles, so that we are not
             # favoring any particular account in terms of its delivery time
@@ -3890,7 +3894,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                                  shared_items_token, group_account,
                                  signing_priv_key_pem, 634219,
                                  domain, onion_domain, i2p_domain,
-                                 extra_headers)
+                                 extra_headers, sites_unavailable)
 
         time.sleep(4)
 
@@ -3913,7 +3917,8 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
                              project_version: str,
                              shared_items_federated_domains: [],
                              shared_item_federation_tokens: {},
-                             signing_priv_key_pem: str):
+                             signing_priv_key_pem: str,
+                             sites_unavailable: []):
     """Returns a thread used to send a post to followers
     """
     print('THREAD: send_to_followers')
@@ -3929,7 +3934,8 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
                                 project_version,
                                 shared_items_federated_domains,
                                 shared_item_federation_tokens,
-                                signing_priv_key_pem), daemon=True)
+                                signing_priv_key_pem,
+                                sites_unavailable), daemon=True)
     if not begin_thread(send_thread, 'send_to_followers_thread'):
         print('WARN: error while starting ' +
               'thread to send to followers.')

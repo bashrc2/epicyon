@@ -1596,6 +1596,7 @@ def _command_options() -> None:
         if i2p_domain:
             session_i2p = create_session('i2p')
         followers_sync_cache = {}
+        sites_unavailable = []
         manual_approve_follow_request(session, session_onion, session_i2p,
                                       onion_domain, i2p_domain,
                                       base_dir, http_prefix,
@@ -1606,7 +1607,8 @@ def _command_options() -> None:
                                       cached_webfingers, person_cache,
                                       debug, __version__,
                                       signing_priv_key_pem, proxy_type,
-                                      followers_sync_cache)
+                                      followers_sync_cache,
+                                      sites_unavailable)
         sys.exit()
 
     if argb.deny:
@@ -1639,6 +1641,7 @@ def _command_options() -> None:
         if i2p_domain:
             session_i2p = create_session('i2p')
         followers_sync_cache = {}
+        sites_unavailable = []
         manual_deny_follow_request(session, session_onion, session_i2p,
                                    onion_domain, i2p_domain,
                                    base_dir, http_prefix,
@@ -1649,7 +1652,8 @@ def _command_options() -> None:
                                    cached_webfingers, person_cache,
                                    debug, __version__,
                                    signing_priv_key_pem,
-                                   followers_sync_cache)
+                                   followers_sync_cache,
+                                   sites_unavailable)
         sys.exit()
 
     if argb.followerspending:

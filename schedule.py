@@ -20,6 +20,7 @@ from utils import remove_eol
 from outbox import post_message_to_outbox
 from session import create_session
 from threads import begin_thread
+from siteactive import save_unavailable_sites
 
 
 def _update_post_schedule(base_dir: str, handle: str, httpd,
@@ -148,7 +149,8 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                                           httpd.content_license_url,
                                           httpd.dogwhistles,
                                           httpd.min_images_for_accounts,
-                                          httpd.buy_sites):
+                                          httpd.buy_sites,
+                                          httpd.sites_unavailable):
                 index_lines.remove(line)
                 try:
                     os.remove(post_filename)
@@ -205,8 +207,15 @@ def run_post_schedule_watchdog(project_version: str, httpd) -> None:
     post_schedule_original = \
         httpd.thrPostSchedule.clone(run_post_schedule)
     begin_thread(httpd.thrPostSchedule, 'run_post_schedule_watchdog')
+    curr_sites_unavailable = httpd.sites_unavailable.copy()
     while True:
         time.sleep(20)
+
+        # save the list of unavailable sites
+        if str(curr_sites_unavailable) != httpd.sites_unavailable:
+            save_unavailable_sites(httpd.base_dir, httpd.sites_unavailable)
+            curr_sites_unavailable = httpd.sites_unavailable.copy()
+
         if httpd.thrPostSchedule.is_alive():
             continue
         httpd.thrPostSchedule.kill()

@@ -79,7 +79,8 @@ def _create_like(recent_posts_cache: {},
                  debug: bool, project_version: str,
                  signing_priv_key_pem: str,
                  curr_domain: str,
-                 onion_domain: str, i2p_domain: str) -> {}:
+                 onion_domain: str, i2p_domain: str,
+                 sites_unavailable: []) -> {}:
     """Creates a like
     actor is the person doing the liking
     'to' might be a specific person (actor) whose post was liked
@@ -147,7 +148,7 @@ def _create_like(recent_posts_cache: {},
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 7367374,
                          curr_domain, onion_domain, i2p_domain,
-                         extra_headers)
+                         extra_headers, sites_unavailable)
 
     return new_like_json
 
@@ -162,7 +163,8 @@ def like_post(recent_posts_cache: {},
               person_cache: {}, cached_webfingers: {},
               debug: bool, project_version: str,
               signing_priv_key_pem: str,
-              curr_domain: str, onion_domain: str, i2p_domain: str) -> {}:
+              curr_domain: str, onion_domain: str, i2p_domain: str,
+              sites_unavailable: []) -> {}:
     """Likes a given status post. This is only used by unit tests
     """
     like_domain = get_full_domain(like_domain, like_port)
@@ -178,7 +180,8 @@ def like_post(recent_posts_cache: {},
                         send_threads, post_log, person_cache,
                         cached_webfingers,
                         debug, project_version, signing_priv_key_pem,
-                        curr_domain, onion_domain, i2p_domain)
+                        curr_domain, onion_domain, i2p_domain,
+                        sites_unavailable)
 
 
 def send_like_via_server(base_dir: str, session,

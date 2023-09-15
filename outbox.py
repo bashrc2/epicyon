@@ -239,7 +239,8 @@ def post_message_to_outbox(session, translate: {},
                            content_license_url: str,
                            dogwhistles: {},
                            min_images_for_accounts: [],
-                           buy_sites: {}) -> bool:
+                           buy_sites: {},
+                           sites_unavailable: []) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -654,7 +655,8 @@ def post_message_to_outbox(session, translate: {},
                                  version,
                                  shared_items_federated_domains,
                                  shared_item_federation_tokens,
-                                 signing_priv_key_pem)
+                                 signing_priv_key_pem,
+                                 sites_unavailable)
     followers_threads.append(followers_thread)
 
     if debug:
@@ -788,6 +790,7 @@ def post_message_to_outbox(session, translate: {},
                                        shared_item_federation_tokens,
                                        signing_priv_key_pem,
                                        proxy_type,
-                                       server.followers_sync_cache)
+                                       server.followers_sync_cache,
+                                       server.sites_unavailable)
     followers_threads.append(named_addresses_thread)
     return True

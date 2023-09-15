@@ -35,7 +35,8 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
                                debug: bool,
                                project_version: str,
                                signing_priv_key_pem: str,
-                               followers_sync_cache: {}) -> None:
+                               followers_sync_cache: {},
+                               sites_unavailable: []) -> None:
     """Manually deny a follow request
     """
     accounts_dir = acct_dir(base_dir, nickname, domain)
@@ -76,7 +77,8 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
                              cached_webfingers, person_cache,
                              debug, project_version,
                              signing_priv_key_pem,
-                             followers_sync_cache)
+                             followers_sync_cache,
+                             sites_unavailable)
 
     print('Follow request from ' + deny_handle + ' was denied.')
 
@@ -92,7 +94,8 @@ def manual_deny_follow_request_thread(session, session_onion, session_i2p,
                                       debug: bool,
                                       project_version: str,
                                       signing_priv_key_pem: str,
-                                      followers_sync_cache: {}) -> None:
+                                      followers_sync_cache: {},
+                                      sites_unavailable: []) -> None:
     """Manually deny a follow request, within a thread so that the
     user interface doesn't lag
     """
@@ -110,7 +113,8 @@ def manual_deny_follow_request_thread(session, session_onion, session_i2p,
                                 debug,
                                 project_version,
                                 signing_priv_key_pem,
-                                followers_sync_cache), daemon=True)
+                                followers_sync_cache,
+                                sites_unavailable), daemon=True)
     begin_thread(thr, 'manual_deny_follow_request_thread')
     send_threads.append(thr)
 
@@ -149,7 +153,8 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                   project_version: str,
                                   signing_priv_key_pem: str,
                                   proxy_type: str,
-                                  followers_sync_cache: {}) -> None:
+                                  followers_sync_cache: {},
+                                  sites_unavailable: []) -> None:
     """Manually approve a follow request
     """
     handle = nickname + '@' + domain
@@ -285,7 +290,8 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                                      domain,
                                                      onion_domain,
                                                      i2p_domain,
-                                                     followers_sync_cache)
+                                                     followers_sync_cache,
+                                                     sites_unavailable)
                     update_approved_followers = True
                 else:
                     # this isn't the approved follow so it will remain
@@ -358,7 +364,8 @@ def manual_approve_follow_request_thread(session, session_onion, session_i2p,
                                          project_version: str,
                                          signing_priv_key_pem: str,
                                          proxy_type: str,
-                                         followers_sync_cache: {}) -> None:
+                                         followers_sync_cache: {},
+                                         sites_unavailable: []) -> None:
     """Manually approve a follow request, in a thread so as not to cause
     the UI to lag
     """
@@ -377,6 +384,7 @@ def manual_approve_follow_request_thread(session, session_onion, session_i2p,
                                 project_version,
                                 signing_priv_key_pem,
                                 proxy_type,
-                                followers_sync_cache), daemon=True)
+                                followers_sync_cache,
+                                sites_unavailable), daemon=True)
     begin_thread(thr, 'manual_approve_follow_request_thread')
     send_threads.append(thr)

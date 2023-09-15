@@ -3709,7 +3709,8 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                            person_cache: {}, debug: bool,
                            curr_domain: str,
                            onion_domain: str, i2p_domain: str,
-                           signing_priv_key_pem: str) -> None:
+                           signing_priv_key_pem: str,
+                           sites_unavailable: []) -> None:
     """When a post arrives for a group send it out to the group members
     """
     if debug:
@@ -3761,7 +3762,8 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                         send_threads, post_log,
                         person_cache, cached_webfingers,
                         debug, __version__, signing_priv_key_pem,
-                        curr_domain, onion_domain, i2p_domain)
+                        curr_domain, onion_domain, i2p_domain,
+                        sites_unavailable)
 
     send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir, nickname, domain,
@@ -3772,7 +3774,8 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                              announce_json, debug, __version__,
                              shared_items_federated_domains,
                              shared_item_federation_tokens,
-                             signing_priv_key_pem)
+                             signing_priv_key_pem,
+                             sites_unavailable)
 
 
 def _inbox_update_calendar(base_dir: str, handle: str,
@@ -3906,7 +3909,8 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                dm_license_url: str,
                languages_understood: [],
                bounce_is_chat: bool,
-               curr_domain: str, onion_domain: str, i2p_domain: str) -> bool:
+               curr_domain: str, onion_domain: str, i2p_domain: str,
+               sites_unavailable: []) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -3986,7 +3990,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                      person_cache, debug, __version__, None, group_account,
                      signing_priv_key_pem, 7238634,
                      curr_domain, onion_domain, i2p_domain,
-                     extra_headers)
+                     extra_headers, sites_unavailable)
     return True
 
 
@@ -4003,7 +4007,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                  signing_priv_key_pem: str,
                  dm_license_url: str,
                  languages_understood: [],
-                 curr_domain: str, onion_domain: str, i2p_domain: str) -> bool:
+                 curr_domain: str, onion_domain: str, i2p_domain: str,
+                 sites_unavailable: []) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -4107,7 +4112,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                                    languages_understood,
                                    bounce_chat,
                                    curr_domain,
-                                   onion_domain, i2p_domain)
+                                   onion_domain, i2p_domain,
+                                   sites_unavailable)
                 return False
 
     # dm index will be updated
@@ -4136,7 +4142,8 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                            cw_lists: {}, lists_enabled: bool,
                            bold_reading: bool, dogwhistles: {},
                            min_images_for_accounts: [],
-                           buy_sites: {}) -> None:
+                           buy_sites: {},
+                           sites_unavailable: []) -> None:
     """Updates the votes on a Question/poll
     """
     # if this is a reply to a question then update the votes
@@ -4219,7 +4226,8 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                              post_json_object, debug, __version__,
                              shared_items_federated_domains,
                              shared_item_federation_tokens,
-                             signing_priv_key_pem)
+                             signing_priv_key_pem,
+                             sites_unavailable)
 
 
 def _create_reply_notification_file(base_dir: str, nickname: str, domain: str,
@@ -4374,7 +4382,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          languages_understood: [],
                          mitm: bool, bold_reading: bool,
                          dogwhistles: {},
-                         max_hashtags: int, buy_sites: {}) -> bool:
+                         max_hashtags: int, buy_sites: {},
+                         sites_unavailable: []) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -4709,7 +4718,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                cw_lists, lists_enabled,
                                bold_reading, dogwhistles,
                                server.min_images_for_accounts,
-                               server.buy_sites)
+                               server.buy_sites,
+                               server.sites_unavailable)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_question_vote',
                             debug)
@@ -4805,7 +4815,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                     dm_license_url,
                                     languages_understood,
                                     domain,
-                                    onion_domain, i2p_domain):
+                                    onion_domain, i2p_domain,
+                                    server.sites_unavailable):
                     if debug:
                         print('Invalid DM ' + str(post_json_object))
                     return False
@@ -5091,7 +5102,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                        post_log, cached_webfingers,
                                        person_cache, debug,
                                        domain, onion_domain, i2p_domain,
-                                       signing_priv_key_pem)
+                                       signing_priv_key_pem,
+                                       sites_unavailable)
                 fitness_performance(inbox_start_time,
                                     server.fitness,
                                     'INBOX', '_send_to_group_members',
@@ -5353,7 +5365,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                             this_domain: str, onion_domain: str,
                             i2p_domain: str, signing_priv_key_pem: str,
                             unit_test: bool, system_language: str,
-                            followers_sync_cache: {}) -> bool:
+                            followers_sync_cache: {},
+                            sites_unavailable: []) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not message_json['type'].startswith('Follow'):
@@ -5632,7 +5645,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     debug, project_version, True,
                                     signing_priv_key_pem,
                                     this_domain, onion_domain, i2p_domain,
-                                    followers_sync_cache)
+                                    followers_sync_cache, sites_unavailable)
 
 
 def run_inbox_queue(server,
@@ -6072,7 +6085,8 @@ def run_inbox_queue(server,
                                    onion_domain, i2p_domain,
                                    signing_priv_key_pem, unit_test,
                                    system_language,
-                                   server.followers_sync_cache):
+                                   server.followers_sync_cache,
+                                   server.sites_unavailable):
             if os.path.isfile(queue_filename):
                 try:
                     os.remove(queue_filename)
@@ -6260,7 +6274,8 @@ def run_inbox_queue(server,
                                  dm_license_url,
                                  languages_understood, mitm,
                                  bold_reading, dogwhistles,
-                                 max_hashtags, server.buy_sites)
+                                 max_hashtags, server.buy_sites,
+                                 server.sites_unavailable)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'handle_after_initial',
                                 debug)

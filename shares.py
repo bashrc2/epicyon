@@ -1658,7 +1658,8 @@ def _update_federated_shares_cache(session, shared_items_federated_domains: [],
                                    http_prefix: str,
                                    tokens_json: {}, debug: bool,
                                    system_language: str,
-                                   shares_file_type: str) -> None:
+                                   shares_file_type: str,
+                                   sites_unavailable: []) -> None:
     """Updates the cache of federated shares for the instance.
     This enables shared items to be available even when other instances
     might not be online
@@ -1687,7 +1688,8 @@ def _update_federated_shares_cache(session, shared_items_federated_domains: [],
         if not tokens_json.get(federated_domain_full):
             # token has been obtained for the other domain
             continue
-        if not site_is_active(http_prefix + '://' + federated_domain_full, 10):
+        if not site_is_active(http_prefix + '://' + federated_domain_full, 10,
+                              sites_unavailable):
             continue
         if shares_file_type == 'shares':
             url = http_prefix + '://' + federated_domain_full + '/catalog'
@@ -1827,6 +1829,7 @@ def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
     min_days = 7
     max_days = 14
     _generate_next_shares_token_update(base_dir, min_days, max_days)
+    sites_unavailable = []
     while True:
         shared_items_federated_domains_str = \
             get_config_param(base_dir, 'sharedItemsFederatedDomains')
@@ -1866,7 +1869,7 @@ def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
                                            shared_items_federated_domains,
                                            base_dir, domain_full, http_prefix,
                                            tokens_json, debug, system_language,
-                                           shares_file_type)
+                                           shares_file_type, sites_unavailable)
         time.sleep(seconds_per_hour * 6)
 
 

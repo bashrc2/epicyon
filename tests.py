@@ -1476,6 +1476,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     bob_post_log = []
     bob_person_cache = {}
     bob_cached_webfingers = {}
+    sites_unavailable = []
     status_number = None
     outbox_post_filename = None
     outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
@@ -1492,7 +1493,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                      status_number, False, bob_send_threads, bob_post_log,
                      bob_person_cache, bob_cached_webfingers,
                      True, __version__, signing_priv_key_pem,
-                     bob_domain, None, None)
+                     bob_domain, None, None, sites_unavailable)
 
     for _ in range(20):
         if text_in_file('likes', outbox_post_filename):
@@ -1508,6 +1509,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     print('\n\n*******************************************************')
     print("Bob reacts to Alice's post")
 
+    sites_unavailable = []
     assert reaction_post({}, session_bob, bob_dir, federation_list,
                          'bob', bob_domain, bob_port, http_prefix,
                          'alice', alice_domain, alice_port, [],
@@ -1515,7 +1517,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                          False, bob_send_threads, bob_post_log,
                          bob_person_cache, bob_cached_webfingers,
                          True, __version__, signing_priv_key_pem,
-                         bob_domain, None, None)
+                         bob_domain, None, None, sites_unavailable)
 
     for _ in range(20):
         if text_in_file('reactions', outbox_post_filename):
@@ -1546,13 +1548,14 @@ def test_post_message_between_servers(base_dir: str) -> None:
     print('outbox items before announce: ' + str(outbox_before_announce_count))
     assert outbox_before_announce_count == 0
     assert before_announce_count == 0
+    sites_unavailable = []
     announce_public(session_bob, bob_dir, federation_list,
                     'bob', bob_domain, bob_port, http_prefix,
                     object_url,
                     False, bob_send_threads, bob_post_log,
                     bob_person_cache, bob_cached_webfingers,
                     True, __version__, signing_priv_key_pem,
-                    bob_domain, None, None)
+                    bob_domain, None, None, sites_unavailable)
     announce_message_arrived = False
     outbox_message_arrived = False
     for _ in range(20):
@@ -1688,6 +1691,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     alice_person_cache = {}
     alice_cached_webfingers = {}
     alice_post_log = []
+    sites_unavailable = []
     bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     signing_priv_key_pem = None
     send_result = \
@@ -1700,7 +1704,7 @@ def test_follow_between_servers(base_dir: str) -> None:
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            alice_domain, None, None)
+                            alice_domain, None, None, sites_unavailable)
     print('send_result: ' + str(send_result))
 
     for _ in range(16):
@@ -1919,6 +1923,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     alice_person_cache = {}
     alice_cached_webfingers = {}
     alice_post_log = []
+    sites_unavailable = []
     bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     send_result = \
         send_follow_request(session_alice, alice_dir,
@@ -1930,7 +1935,7 @@ def test_shared_items_federation(base_dir: str) -> None:
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            alice_domain, None, None)
+                            alice_domain, None, None, sites_unavailable)
     print('send_result: ' + str(send_result))
 
     for _ in range(16):
@@ -2397,6 +2402,7 @@ def test_group_follow(base_dir: str) -> None:
     alice_person_cache = {}
     alice_cached_webfingers = {}
     alice_post_log = []
+    sites_unavailable = []
     # aliceActor = http_prefix + '://' + alice_address + '/users/alice'
     testgroup_actor = \
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
@@ -2411,7 +2417,7 @@ def test_group_follow(base_dir: str) -> None:
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            alice_domain, None, None)
+                            alice_domain, None, None, sites_unavailable)
     print('send_result: ' + str(send_result))
 
     alice_following_filename = \
@@ -2475,6 +2481,7 @@ def test_group_follow(base_dir: str) -> None:
     bob_person_cache = {}
     bob_cached_webfingers = {}
     bob_post_log = []
+    sites_unavailable = []
     # bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     testgroup_actor = \
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
@@ -2489,7 +2496,7 @@ def test_group_follow(base_dir: str) -> None:
                             bob_send_threads, bob_post_log,
                             bob_cached_webfingers, bob_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            bob_domain, None, None)
+                            bob_domain, None, None, sites_unavailable)
     print('send_result: ' + str(send_result))
 
     bob_following_filename = \
@@ -4100,11 +4107,15 @@ def _test_jsonld():
 def _test_site_active():
     print('test_site_is_active')
     timeout = 10
+    sites_unavailable = []
     # at least one site should resolve
-    if not site_is_active('https://archive.org', timeout):
-        if not site_is_active('https://wikipedia.org', timeout):
-            assert site_is_active('https://mastodon.social', timeout)
-    assert not site_is_active('https://notarealwebsite.a.b.c', timeout)
+    if not site_is_active('https://archive.org', timeout, sites_unavailable):
+        if not site_is_active('https://wikipedia.org', timeout,
+                              sites_unavailable):
+            assert site_is_active('https://mastodon.social', timeout,
+                                  sites_unavailable)
+    assert not site_is_active('https://notarealwebsite.a.b.c', timeout,
+                              sites_unavailable)
 
 
 def _test_strip_html():
