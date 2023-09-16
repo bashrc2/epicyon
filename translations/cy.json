@@ -637,5 +637,6 @@
     "FollowAccountWarning": "RHYBUDD: efallai bod y cyfrif hwn yn eich rhwystro",
     "Nicknames of memorial accounts (one per line)": "Llysenwau cyfrifon coffa (un fesul llinell)",
     "Memorials": "Cofebau",
-    "places": "lleoedd"
+    "places": "lleoedd",
+    "offline": "all-lein"
 }

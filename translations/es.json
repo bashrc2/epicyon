@@ -637,5 +637,6 @@
     "FollowAccountWarning": "ADVERTENCIA: esta cuenta puede estar bloqueándote",
     "Nicknames of memorial accounts (one per line)": "Apodos de cuentas conmemorativas (uno por línea)",
     "Memorials": "Memoriales",
-    "places": "lugares"
+    "places": "lugares",
+    "offline": "desconectada"
 }

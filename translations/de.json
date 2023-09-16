@@ -637,5 +637,6 @@
     "FollowAccountWarning": "ACHTUNG: Dieses Konto blockiert Sie möglicherweise",
     "Nicknames of memorial accounts (one per line)": "Spitznamen der Gedenkkonten (einer pro Zeile)",
     "Memorials": "Denkmäler",
-    "places": "setzt"
+    "places": "setzt",
+    "offline": "offline"
 }

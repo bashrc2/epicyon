@@ -637,5 +637,6 @@
     "FollowAccountWarning": "DİKKAT: Bu hesap sizi engelliyor olabilir",
     "Nicknames of memorial accounts (one per line)": "Anma hesaplarının takma adları (her satıra bir tane)",
     "Memorials": "Anıtlar",
-    "places": "yer"
+    "places": "yer",
+    "offline": "çevrimdışı"
 }

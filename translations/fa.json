@@ -637,5 +637,6 @@
     "FollowAccountWarning": "هشدار: این حساب ممکن است شما را مسدود کند",
     "Nicknames of memorial accounts (one per line)": "نام مستعار حساب های یادبود (یکی در هر خط)",
     "Memorials": "یادبودها",
-    "places": "مکان ها"
+    "places": "مکان ها",
+    "offline": "آفلاین"
 }

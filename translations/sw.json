@@ -637,5 +637,6 @@
     "FollowAccountWarning": "ONYO: akaunti hii inaweza kuwa inakuzuia",
     "Nicknames of memorial accounts (one per line)": "Majina ya utani ya akaunti za ukumbusho (moja kwa kila mstari)",
     "Memorials": "Makumbusho",
-    "places": "maeneo"
+    "places": "maeneo",
+    "offline": "nje ya mtandao"
 }

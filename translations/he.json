@@ -637,5 +637,6 @@
     "FollowAccountWarning": "אזהרה: ייתכן שחשבון זה חוסם אותך",
     "Nicknames of memorial accounts (one per line)": "כינויים של חשבונות זיכרון (אחד בכל שורה)",
     "Memorials": "אנדרטאות",
-    "places": "מקומות"
+    "places": "מקומות",
+    "offline": "במצב לא מקוון"
 }

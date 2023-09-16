@@ -637,5 +637,6 @@
     "FollowAccountWarning": "ADVERTIMENT: és possible que aquest compte us estigui bloquejant",
     "Nicknames of memorial accounts (one per line)": "Sobrenoms dels comptes commemoratius (un per línia)",
     "Memorials": "Memorials",
-    "places": "llocs"
+    "places": "llocs",
+    "offline": "fora de línia"
 }

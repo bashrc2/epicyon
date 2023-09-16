@@ -637,5 +637,6 @@
     "FollowAccountWarning": "警告: このアカウントはあなたをブロックしている可能性があります",
     "Nicknames of memorial accounts (one per line)": "追悼アカウントのニックネーム（1行に1つ）",
     "Memorials": "記念碑",
-    "places": "場所"
+    "places": "場所",
+    "offline": "オフライン"
 }

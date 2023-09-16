@@ -637,5 +637,6 @@
     "FollowAccountWarning": "WARNING: this account may be blocking you",
     "Nicknames of memorial accounts (one per line)": "Nicknames of memorial accounts (one per line)",
     "Memorials": "Memorials",
-    "places": "places"
+    "places": "places",
+    "offline": "offline"
 }

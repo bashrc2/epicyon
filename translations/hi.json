@@ -637,5 +637,6 @@
     "FollowAccountWarning": "चेतावनी: यह खाता आपको ब्लॉक कर सकता है",
     "Nicknames of memorial accounts (one per line)": "स्मारक खातों के उपनाम (प्रति पंक्ति एक)",
     "Memorials": "इतिवृत्त",
-    "places": "स्थानों"
+    "places": "स्थानों",
+    "offline": "ऑफलाइन"
 }

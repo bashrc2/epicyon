@@ -844,7 +844,8 @@ def html_profile(signing_priv_key_pem: str,
                  timezone: str, bold_reading: bool,
                  buy_sites: {},
                  actor_proxied: str,
-                 max_shares_on_profile: int) -> str:
+                 max_shares_on_profile: int,
+                 sites_unavailable: []) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -1394,7 +1395,8 @@ def html_profile(signing_priv_key_pem: str,
                                         users_path, page_number,
                                         max_items_per_page,
                                         dormant_months, debug,
-                                        signing_priv_key_pem)
+                                        signing_priv_key_pem,
+                                        sites_unavailable)
         if show_moved_accounts and selected == 'moved':
             profile_str += \
                 _html_profile_following(translate, base_dir, http_prefix,
@@ -1407,7 +1409,8 @@ def html_profile(signing_priv_key_pem: str,
                                         users_path, page_number,
                                         max_items_per_page,
                                         dormant_months, debug,
-                                        signing_priv_key_pem)
+                                        signing_priv_key_pem,
+                                        sites_unavailable)
     if selected == 'followers':
         profile_str += \
             _html_profile_following(translate, base_dir, http_prefix,
@@ -1418,7 +1421,7 @@ def html_profile(signing_priv_key_pem: str,
                                     project_version, ["block"],
                                     selected, users_path, page_number,
                                     max_items_per_page, dormant_months, debug,
-                                    signing_priv_key_pem)
+                                    signing_priv_key_pem, sites_unavailable)
     if authorized and selected == 'inactive':
         profile_str += \
             _html_profile_following(translate, base_dir, http_prefix,
@@ -1429,7 +1432,7 @@ def html_profile(signing_priv_key_pem: str,
                                     project_version, ["block"],
                                     selected, users_path, page_number,
                                     max_items_per_page, dormant_months, debug,
-                                    signing_priv_key_pem)
+                                    signing_priv_key_pem, sites_unavailable)
     if not is_group:
         if selected == 'roles':
             profile_str += \
@@ -1560,7 +1563,8 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                             page_number: int,
                             max_items_per_page: int,
                             dormant_months: int, debug: bool,
-                            signing_priv_key_pem: str) -> str:
+                            signing_priv_key_pem: str,
+                            sites_unavailable: []) -> str:
     """Shows following on the profile screen
     """
     profile_str = ''
@@ -1582,10 +1586,18 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
     for following_actor in following_json['orderedItems']:
         # is this a dormant followed account?
         dormant = False
-        if authorized and feed_name == 'following':
-            dormant = \
-                is_dormant(base_dir, nickname, domain, following_actor,
-                           dormant_months)
+        offline = False
+
+        following_domain, _ = get_domain_from_actor(following_actor)
+        if authorized:
+            if following_domain in sites_unavailable:
+                dormant = True
+                offline = True
+            else:
+                if feed_name == 'following':
+                    dormant = \
+                        is_dormant(base_dir, nickname, domain,
+                                   following_actor, dormant_months)
 
         profile_str += \
             _individual_follow_as_html(signing_priv_key_pem,
@@ -1593,7 +1605,8 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                                        cached_webfingers, person_cache,
                                        domain, following_actor,
                                        authorized, nickname,
-                                       http_prefix, project_version, dormant,
+                                       http_prefix, project_version,
+                                       dormant, offline,
                                        debug, buttons)
 
     if authorized and max_items_per_page and page_number:
@@ -3104,6 +3117,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                http_prefix: str,
                                project_version: str,
                                dormant: bool,
+                               offline: bool,
                                debug: bool,
                                buttons=[]) -> str:
     """An individual follow entry on the profile screen
@@ -3156,6 +3170,8 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
 
     if dormant:
         title_str += ' 💤'
+    if offline:
+        title_str += ' <b>[' + translate['offline'].upper() + ']</b>'
 
     buttons_str = ''
     if authorized:

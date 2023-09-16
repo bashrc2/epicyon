@@ -637,5 +637,6 @@
     "FollowAccountWarning": "УВАГА: цей обліковий запис може блокувати вас",
     "Nicknames of memorial accounts (one per line)": "Ніки меморіалів (по одному в рядку)",
     "Memorials": "Меморіали",
-    "places": "місць"
+    "places": "місць",
+    "offline": "офлайн"
 }
