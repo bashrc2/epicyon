@@ -161,7 +161,8 @@ def save_unavailable_sites(base_dir: str, sites_unavailable: []) -> None:
         with open(unavailable_sites_filename, 'w+',
                   encoding='utf-8') as fp_sites:
             for site in sites_unavailable:
-                fp_sites.write(site + '\n')
+                if site:
+                    fp_sites.write(site + '\n')
     except OSError:
         print('EX: unable to save unavailable sites')
 
