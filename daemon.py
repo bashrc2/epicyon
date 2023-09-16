@@ -9144,7 +9144,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     access_keys, is_group,
                                     self.server.theme_name,
                                     self.server.blocked_cache,
-                                    repo_url)
+                                    repo_url,
+                                    self.server.sites_unavailable)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)

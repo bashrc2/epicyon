@@ -165,7 +165,8 @@ def html_person_options(default_timeline: str,
                         is_group: bool,
                         theme: str,
                         blocked_cache: [],
-                        repo_url: str) -> str:
+                        repo_url: str,
+                        sites_unavailable: []) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_link_str = ''
@@ -180,6 +181,9 @@ def html_person_options(default_timeline: str,
                      base_dir + '/accounts/options-background.jpg')
 
     dormant = False
+    offline = False
+    if options_domain in sites_unavailable:
+        offline = True
     follow_str = 'Follow'
     if is_group:
         follow_str = 'Join'
@@ -198,9 +202,10 @@ def html_person_options(default_timeline: str,
             follow_str = 'Unfollow'
             if is_group:
                 follow_str = 'Leave'
-            dormant = \
-                is_dormant(base_dir, nickname, domain, options_actor,
-                           dormant_months)
+            if not offline:
+                dormant = \
+                    is_dormant(base_dir, nickname, domain, options_actor,
+                               dormant_months)
 
         options_nickname = get_nickname_from_actor(options_actor)
         if not options_nickname:
@@ -291,6 +296,8 @@ def html_person_options(default_timeline: str,
         handle_shown += ' ⌂'
     if dormant:
         handle_shown += ' 💤'
+    if offline:
+        handle_shown += ' [' + translate['offline'].upper() + ']'
     options_str += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + handle_shown + '</p>\n'

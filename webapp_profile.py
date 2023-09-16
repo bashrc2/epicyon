@@ -3168,10 +3168,10 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                       display_name, False, translate)
         title_str = display_name
 
-    if dormant:
-        title_str += ' 💤'
     if offline:
         title_str += ' <b>[' + translate['offline'].upper() + ']</b>'
+    elif dormant:
+        title_str += ' 💤'
 
     buttons_str = ''
     if authorized:
