@@ -15564,14 +15564,15 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, port: int, getreq_start_time,
                             proxy_type: str, cookie: str,
                             debug: str, curr_session,
-                            dormant_months: int) -> bool:
+                            dormant_months: int,
+                            sites_unavailable: []) -> bool:
         """Shows the inactive accounts feed
         """
         following = \
             get_inactive_feed(base_dir, domain, port, path,
                               http_prefix, authorized,
                               dormant_months,
-                              FOLLOWS_PER_PAGE)
+                              FOLLOWS_PER_PAGE, sites_unavailable)
         if following:
             if self._request_http():
                 page_number = 1
@@ -15582,7 +15583,8 @@ class PubServer(BaseHTTPRequestHandler):
                         get_inactive_feed(base_dir, domain, port, path,
                                           http_prefix, authorized,
                                           dormant_months,
-                                          FOLLOWS_PER_PAGE)
+                                          FOLLOWS_PER_PAGE,
+                                          sites_unavailable)
                 else:
                     page_number_str = path.split('?page=')[1]
                     if ';' in page_number_str:
@@ -20994,7 +20996,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     proxy_type,
                                     cookie, self.server.debug,
                                     curr_session,
-                                    self.server.dormant_months):
+                                    self.server.dormant_months,
+                                    self.server.sites_unavailable):
             self.server.getreq_busy = False
             return
 

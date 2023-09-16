@@ -308,7 +308,8 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
 
 
 def _get_inactive_accounts(base_dir: str, nickname: str, domain: str,
-                           dormant_months: int) -> []:
+                           dormant_months: int,
+                           sites_unavailable: []) -> []:
     """returns a list of inactive accounts
     """
     # get the list of followers
@@ -332,6 +333,9 @@ def _get_inactive_accounts(base_dir: str, nickname: str, domain: str,
         if '@' in handle:
             follower_nickname = handle.split('@')[0]
             follower_domain = handle.split('@')[1]
+            if follower_domain in sites_unavailable:
+                result.append(handle)
+                continue
             found = False
             for http_prefix in ('https://', 'http://'):
                 for users_str in users_list:
@@ -355,16 +359,22 @@ def _get_inactive_accounts(base_dir: str, nickname: str, domain: str,
                     break
         elif '://' in handle:
             actor = handle
+            follower_domain = actor.split('://')[1]
+            if '/' in follower_domain:
+                follower_domain = follower_domain.split('/')[0]
+            if follower_domain in sites_unavailable:
+                result.append(actor)
+                continue
             if is_dormant(base_dir, nickname, domain, actor,
                           dormant_months):
-                result.append(handle)
+                result.append(actor)
     return result
 
 
 def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
                       http_prefix: str, authorized: bool,
                       dormant_months: int,
-                      follows_per_page=12) -> {}:
+                      follows_per_page: int, sites_unavailable: []) -> {}:
     """Returns the inactive accounts feed from GET requests.
     """
     # Don't show inactive accounts to non-authorized viewers
@@ -410,7 +420,8 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
     domain = get_full_domain(domain, port)
 
     lines = _get_inactive_accounts(base_dir, nickname, domain,
-                                   dormant_months)
+                                   dormant_months,
+                                   sites_unavailable)
 
     if header_only:
         first_str = \
