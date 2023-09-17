@@ -1644,14 +1644,11 @@ class PubServer(BaseHTTPRequestHandler):
                                             msg_str)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
-            if self._has_accept(calling_domain):
-                protocol_str = \
-                    get_json_content_from_accept(self.headers.get('Accept'))
-                self._set_headers(protocol_str, msglen,
-                                  None, calling_domain, True)
-            else:
-                self._set_headers('application/ld+json', msglen,
-                                  None, calling_domain, True)
+            protocol_str = \
+                'application/json; profile=' + \
+                '"http://nodeinfo.diaspora.software/ns/schema/2.1#"'
+            self._set_headers(protocol_str, msglen,
+                              None, calling_domain, True)
             self._write(msg)
             if referer_domain:
                 print('nodeinfo sent to ' + referer_domain)
