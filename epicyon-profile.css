@@ -1234,7 +1234,7 @@ h3 {
         margin-right: 0px;
         padding-right: 0px;
         border-radius: 0px;
-        vertical-align: top;
+        vertical-align: middle;
     }
     .profileHeader img.vcard {
         width: var(--vcard-icon-size);
