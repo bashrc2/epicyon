@@ -1227,6 +1227,15 @@ h3 {
         margin: var(--liker-names-margin);
         line-height: var(--liker-names-vertical-spacing1);
     }
+    .likerNames img {
+        float: none;
+        width: 25px;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        vertical-align: top;
+    }
     .profileHeader img.vcard {
         width: var(--vcard-icon-size);
         float: right;
@@ -2022,12 +2031,12 @@ h3 {
         direction: var(--language-direction);
     }
     .container img.attachment {
-	width: 125%;
-	max-width: 145%;
-	margin-left: -2%;
-	margin-right: 2%;
-	padding-bottom: 3%;
-	padding-left: 0%;
+	      width: 125%;
+	      max-width: 145%;
+	      margin-left: -2%;
+	      margin-right: 2%;
+	      padding-bottom: 3%;
+	      padding-left: 0%;
     }
     .container img.postScopeIcon {
         float: none;
@@ -2072,6 +2081,15 @@ h3 {
         font-family: Arial, Helvetica, sans-serif;
         margin: var(--liker-names-margin);
         line-height: var(--liker-names-vertical-spacing2);
+    }
+    .likerNames img {
+        float: none;
+        width: 45px;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        vertical-align: middle;
     }
     .profileHeader img.vcard {
         width: var(--vcard-icon-size-mobile);
@@ -2852,12 +2870,12 @@ h3 {
         direction: var(--language-direction);
     }
     .container img.attachment {
-	width: 125%;
-	max-width: 145%;
-	margin-left: -2%;
-	margin-right: 2%;
-	padding-bottom: 3%;
-	padding-left: 0%;
+	      width: 125%;
+	      max-width: 145%;
+	      margin-left: -2%;
+	      margin-right: 2%;
+	      padding-bottom: 3%;
+	      padding-left: 0%;
     }
     .container img.postScopeIcon {
         float: none;
@@ -2902,6 +2920,15 @@ h3 {
         font-family: 'Arial, Helvetica, sans-serif';
         margin: var(--liker-names-margin);
         line-height: var(--liker-names-vertical-spacing2);
+    }
+    .likerNames img {
+        float: none;
+        width: 45px;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        vertical-align: middle;
     }
     .profileHeader img.vcard {
         width: var(--vcard-icon-size-tiny);
