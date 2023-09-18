@@ -232,6 +232,26 @@ def _event_text_match(content: str, text_match: str) -> bool:
     return False
 
 
+def _sort_todays_events(events: []) -> []:
+    """Returns a list of events sorted in chronological order
+    """
+    events_dict = {}
+
+    # convert the list to a dict indexed on time
+    for tag in events:
+        event_time = \
+            datetime.strptime(tag['startTime'],
+                              "%Y-%m-%dT%H:%M:%S%z")
+        events_dict[event_time] = tag
+
+    # sort the dict
+    new_events = []
+    sorted_events_dict = dict(sorted(events_dict.items()))
+    for _, tag in sorted_events_dict.items():
+        new_events.append(tag)
+    return new_events
+
+
 def get_todays_events(base_dir: str, nickname: str, domain: str,
                       curr_year: int, curr_month_number: int,
                       curr_day_of_month: int,
@@ -322,11 +342,14 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                 else:
                     # tag is a place
                     post_event.append(tag)
+
             if post_event and day_of_month:
                 calendar_post_ids.append(post_id)
                 if not events.get(day_of_month):
                     events[day_of_month] = []
                 events[day_of_month].append(post_event)
+                events[day_of_month] = \
+                    _sort_todays_events(events[day_of_month])
 
     # if some posts have been deleted then regenerate the calendar file
     if recreate_events_file:
