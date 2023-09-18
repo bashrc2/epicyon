@@ -239,6 +239,9 @@ def _sort_todays_events(events: []) -> []:
 
     # convert the list to a dict indexed on time
     for tag in events:
+        # only check events (not places)
+        if tag['type'] != 'Event':
+            continue
         event_time = \
             datetime.strptime(tag['startTime'],
                               "%Y-%m-%dT%H:%M:%S%z")
