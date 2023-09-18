@@ -232,20 +232,21 @@ def _event_text_match(content: str, text_match: str) -> bool:
     return False
 
 
-def _sort_todays_events(events: []) -> []:
+def _sort_todays_events(post_events_list: []) -> []:
     """Returns a list of events sorted in chronological order
     """
     events_dict = {}
 
     # convert the list to a dict indexed on time
-    for tag in events:
-        # only check events (not places)
-        if tag['type'] != 'Event':
-            continue
-        event_time = \
-            datetime.strptime(tag['startTime'],
-                              "%Y-%m-%dT%H:%M:%S%z")
-        events_dict[event_time] = tag
+    for post_event in post_events_list:
+        for tag in post_event:
+            # only check events (not places)
+            if tag['type'] != 'Event':
+                continue
+            event_time = \
+                datetime.strptime(tag['startTime'],
+                                  "%Y-%m-%dT%H:%M:%S%z")
+            events_dict[event_time] = tag
 
     # sort the dict
     new_events = []
