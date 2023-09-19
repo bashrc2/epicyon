@@ -318,8 +318,13 @@ def html_person_options(default_timeline: str,
                 translate['FollowWarning'] + '</b></p>\n'
 
     if follows_you and authorized:
-        options_str += \
-            '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
+        if follow_str != 'Unfollow':
+            options_str += \
+                '  <p class="optionsText">' + \
+                translate['Follows you'] + '</p>\n'
+        else:
+            options_str += \
+                '  <p class="optionsText">' + translate['Mutuals'] + '</p>\n'
     options_str += '  <form method="POST" action="' + \
         origin_path_str + '/personoptions">\n'
     if moved_to:
