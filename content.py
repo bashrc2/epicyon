@@ -432,6 +432,8 @@ def replace_emoji_from_tags(session, base_dir: str,
     """Uses the tags to replace :emoji: with html image markup
     """
     for tag_item in tag:
+        if not isinstance(tag_item, dict):
+            continue
         if not tag_item.get('type'):
             continue
         if tag_item['type'] != 'Emoji':
