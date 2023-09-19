@@ -290,6 +290,10 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         moved_to = remove_html(moved_to)
         display_name += ' ⌂'
 
+    you_follow = \
+        is_following_actor(base_dir,
+                           nickname, domain, person_url)
+
     follows_you = \
         is_follower_of_person(base_dir,
                               nickname, domain,
@@ -379,7 +383,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                          search_nickname,
                                          search_domain_full,
                                          translate,
-                                         display_name, follows_you,
+                                         display_name,
+                                         you_follow, follows_you,
                                          profile_description_short,
                                          featured_hashtags,
                                          avatar_url, image_url,
@@ -419,7 +424,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         profile_str += \
             '      <input type="hidden" name="actor" value="' + \
             person_url + '">\n'
-        if not is_following_actor(base_dir, nickname, domain, person_url):
+        if not you_follow:
             if is_moderator(base_dir, nickname):
                 profile_str += \
                     '      <button type="submit" class="button" ' + \
@@ -694,6 +699,7 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
                                      search_domain_full: str,
                                      translate: {},
                                      display_name: str,
+                                     you_follow: bool,
                                      follows_you: bool,
                                      profile_description_short: str,
                                      featured_hashtags: str,
@@ -757,7 +763,12 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
         html_str += '        <p>' + translate['Joined'] + ' ' + \
             joined_date.split('T')[0] + '</p>\n'
     if follows_you:
-        html_str += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
+        if not you_follow:
+            html_str += '        <p><b>' + \
+                translate['Follows you'] + '</b></p>\n'
+        else:
+            html_str += '        <p><b>' + \
+                translate['Mutuals'] + '</b></p>\n'
     if send_blocks_str:
         html_str += '        <p><b>' + send_blocks_str + '</b></p>\n'
     if moved_to:
