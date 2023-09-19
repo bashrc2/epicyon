@@ -25,6 +25,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import remove_markup_tag
 from utils import ap_proxy_type
 from utils import remove_style_within_html
 from utils import license_link_from_name
@@ -1955,6 +1956,18 @@ def _get_buy_footer(buy_links: {}, translate: {}) -> str:
     return buy_str
 
 
+def _remove_incomplete_code_tags(content: str) -> str:
+    """Remove any uncompleted code tags
+    """
+    tags = ('code', 'pre')
+    for tag_name in tags:
+        if '<' + tag_name not in content:
+            continue
+        if '</' + tag_name not in content:
+            content = remove_markup_tag(content, tag_name)
+    return content
+
+
 def individual_post_as_html(signing_priv_key_pem: str,
                             allow_downloads: bool,
                             recent_posts_cache: {}, max_recent_posts: int,
@@ -2716,6 +2729,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if translate.get(encrypted_str):
             encrypted_str = translate[encrypted_str]
         object_content = '🔒 ' + encrypted_str
+
+    object_content = _remove_incomplete_code_tags(object_content)
 
     object_content = \
         '<article><span itemprop="articleBody">' + \
