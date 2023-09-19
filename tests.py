@@ -7944,6 +7944,13 @@ def _test_html_closing_tag() -> None:
     content = '<p><code>Some code</p>'
     assert not html_tag_has_closing('code', content)
 
+    content = \
+        "<pre><code>a@b1$ c<br>d<br>e<br>f<br>g<br><br>h@i$ j<br>" + \
+        " k<br>l * * *<br>m * * *<br>n * * *<br>×<br></code>" + \
+        " </pre><p>o</p><p>p</p>"
+    assert html_tag_has_closing('code', content)
+    assert html_tag_has_closing('pre', content)
+
 
 def _test_remove_style() -> None:
     print('remove_style')
