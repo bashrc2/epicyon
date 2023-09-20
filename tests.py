@@ -8163,6 +8163,10 @@ def _test_format_mixed_rtl() -> None:
         print('Result:   ' + result)
     assert result == expected
 
+    content = 'هذه عربية'
+    result = format_mixed_right_to_left(content, 'en')
+    expected = '<div dir="rtl">هذه عربية</div>'
+
 
 def run_all_tests():
     base_dir = os.getcwd()
