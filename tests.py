@@ -873,8 +873,10 @@ def create_server_alice(path: str, domain: str, port: int,
     map_format = 'gpx'
     max_hashtags = 20
     max_shares_on_profile = 8
+    public_replies_unlisted = False
     print('Server running: Alice')
-    run_daemon(max_shares_on_profile, max_hashtags, map_format,
+    run_daemon(public_replies_unlisted,
+               max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
@@ -1049,8 +1051,10 @@ def create_server_bob(path: str, domain: str, port: int,
     map_format = 'gpx'
     max_hashtags = 20
     max_shares_on_profile = 8
+    public_replies_unlisted = False
     print('Server running: Bob')
-    run_daemon(max_shares_on_profile, max_hashtags, map_format,
+    run_daemon(public_replies_unlisted,
+               max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
@@ -1136,8 +1140,10 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     map_format = 'gpx'
     max_hashtags = 20
     max_shares_on_profile = 8
+    public_replies_unlisted = False
     print('Server running: Eve')
-    run_daemon(max_shares_on_profile, max_hashtags, map_format,
+    run_daemon(public_replies_unlisted,
+               max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,
@@ -1225,8 +1231,10 @@ def create_server_group(path: str, domain: str, port: int,
     map_format = 'gpx'
     max_hashtags = 20
     max_shares_on_profile = 8
+    public_replies_unlisted = False
     print('Server running: Group')
-    run_daemon(max_shares_on_profile, max_hashtags, map_format,
+    run_daemon(public_replies_unlisted,
+               max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
                crawlers_allowed,

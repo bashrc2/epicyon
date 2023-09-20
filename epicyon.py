@@ -449,6 +449,12 @@ def _command_options() -> None:
                         type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Caldav")
+    parser.add_argument("--public_replies_unlisted",
+                        dest='public_replies_unlisted',
+                        type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Whether replies to public posts " +
+                        "should be unlisted")
     parser.add_argument("--show_publish_as_icon",
                         dest='show_publish_as_icon',
                         type=str2bool, nargs='?',
@@ -837,6 +843,13 @@ def _command_options() -> None:
     if base_dir.endswith('/'):
         print("--path option should not end with '/'")
         sys.exit()
+
+    if not argb.public_replies_unlisted:
+        pub_replies_unlisted = \
+            get_config_param(base_dir, 'publicRepliesUnlisted')
+        if pub_replies_unlisted is not None:
+            if isinstance(pub_replies_unlisted, bool):
+                argb.public_replies_unlisted = pub_replies_unlisted
 
     if argb.setadmin:
         set_config_param(base_dir, 'admin', argb.setadmin)
@@ -3912,7 +3925,8 @@ def _command_options() -> None:
 if __name__ == "__main__":
     argb2, opt2 = _command_options()
     print('allowdeletion: ' + str(argb2.allowdeletion))
-    run_daemon(argb2.max_shares_on_profile,
+    run_daemon(argb2.public_replies_unlisted,
+               argb2.max_shares_on_profile,
                argb2.max_hashtags,
                argb2.mapFormat,
                argb2.clacks,

@@ -20223,7 +20223,11 @@ class PubServer(BaseHTTPRequestHandler):
 #                        if m.startswith('actor='):
 #                            replytoActor = m.replace('actor=', '')
                     in_reply_to_url = mentions_list[0]
-                self.path = self.path.split('?replyto=')[0] + '/newpost'
+                if not self.path.public_replies_unlisted:
+                    self.path = self.path.split('?replyto=')[0] + '/newpost'
+                else:
+                    self.path = \
+                        self.path.split('?replyto=')[0] + '/newunlisted'
                 if self.server.debug:
                     print('DEBUG: replyto path ' + self.path)
 
@@ -23863,7 +23867,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(max_shares_on_profile: int,
+def run_daemon(public_replies_unlisted: int,
+               max_shares_on_profile: int,
                max_hashtags: int,
                map_format: str,
                clacks: str,
@@ -24000,6 +24005,8 @@ def run_daemon(max_shares_on_profile: int,
             httpd.clacks = clacks
         else:
             httpd.clacks = 'GNU Natalie Nguyen'
+
+    httpd.public_replies_unlisted = public_replies_unlisted
 
     # load a list of dogwhistle words
     dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
