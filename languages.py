@@ -381,7 +381,7 @@ def get_reply_language(base_dir: str,
         post_obj = post_json_object['object']
     if not post_obj.get('contentMap'):
         return None
-    for lang, content in post_obj['contentMap'].items():
+    for lang, _ in post_obj['contentMap'].items():
         lang_filename = base_dir + '/translations/' + lang + '.json'
         if not os.path.isfile(lang_filename):
             continue

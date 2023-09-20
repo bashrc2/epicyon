@@ -15,6 +15,8 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import is_right_to_left_text
+from utils import language_right_to_left
 from utils import binary_is_image
 from utils import get_content_from_post
 from utils import get_full_domain
@@ -2195,3 +2197,29 @@ def add_name_emojis_to_tags(base_dir: str, http_prefix: str,
         if updated:
             new_tag['updated'] = updated
         actor_json['tag'].append(new_tag)
+
+
+def format_mixed_right_to_left(content: str,
+                               language: str) -> str:
+    """Adds RTL direction formatting for non-RTL language
+    eg. where some paragraphs are English and others are Arabic
+    """
+    # not a RTL language
+    if language_right_to_left(language):
+        return content
+    paragraphs = content.split('<p>')
+    result = ''
+    changed = False
+    for text_html in paragraphs:
+        if '</p>' not in text_html:
+            continue
+        text_html = '<p>' + text_html
+        text_plain = remove_html(text_html)
+        if is_right_to_left_text(text_plain):
+            text_html = text_html.replace('<p>', '<p><div dir="rtl">', 1)
+            text_html = text_html.replace('</p>', '</div></p>', 1)
+            changed = True
+        result += text_html
+    if not changed:
+        return content
+    return result

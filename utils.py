@@ -4542,6 +4542,19 @@ def language_right_to_left(language: str) -> bool:
     return False
 
 
+def is_right_to_left_text(text: str) -> bool:
+    """Is the given text right to left?
+    Persian \u0600-\u06FF
+    Arabic \u0627-\u064a
+    Hebrew/Yiddish \u0590-\u05FF\uFB2A-\uFB4E
+    """
+    unicode_str = '[\u0627-\u064a]|[\u0600-\u06FF]|' + \
+        '[\u0590-\u05FF\uFB2A-\uFB4E]'
+    pattern = re.compile(unicode_str)
+
+    return len(re.findall(pattern, text)) > (len(text)/2)
+
+
 def binary_is_image(filename: str, media_binary) -> bool:
     """Returns true if the given file binary data contains an image
     """

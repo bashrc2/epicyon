@@ -71,6 +71,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import is_unlisted_post
 from utils import language_right_to_left
+from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
 from content import detect_dogwhistles
 from content import create_edits_html
@@ -2720,6 +2721,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 switch_words(base_dir, nickname, domain, object_content)
             object_content = html_replace_email_quote(object_content)
             object_content = html_replace_quote_marks(object_content)
+            object_content = \
+                format_mixed_right_to_left(object_content, system_language)
             # append any edits
             object_content += edits_str
         else:

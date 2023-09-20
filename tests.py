@@ -56,6 +56,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import is_right_to_left_text
 from utils import remove_markup_tag
 from utils import remove_style_within_html
 from utils import html_tag_has_closing
@@ -142,6 +143,7 @@ from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from inbox import cache_svg_images
 from categories import guess_hashtag_category
+from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
 from content import add_name_emojis_to_tags
 from content import combine_textarea_lines
@@ -8090,6 +8092,63 @@ def _test_remove_tag() -> None:
     assert result == 'This is a test<br>something<br>again'
 
 
+def _test_is_right_to_left() -> None:
+    print('is_right_to_left')
+    text = 'This is a test'
+    assert not is_right_to_left_text(text)
+
+    # arabic
+    text = 'هذا اختبار'
+    assert is_right_to_left_text(text)
+
+    text = 'Das ist ein Test'
+    assert not is_right_to_left_text(text)
+
+    # persian
+    text = 'این یک امتحان است'
+    assert is_right_to_left_text(text)
+
+    # chinese
+    text = '这是一个测试'
+    assert not is_right_to_left_text(text)
+
+    # hebrew
+    text = 'זה מבחן'
+    assert is_right_to_left_text(text)
+
+    # yiddish
+    text = 'דאָס איז אַ פּראָבע'
+    assert is_right_to_left_text(text)
+
+
+def _test_format_mixed_rtl() -> None:
+    print('format_mixed_rtl')
+    content = '<p>This is some English</p>' + \
+        '<p>هذه عربية</p>' + \
+        '<p>And more English</p>'
+    result = format_mixed_right_to_left(content, 'en')
+    expected = '<p>This is some English</p>' + \
+        '<p><div dir="rtl">هذه عربية</div></p>' + \
+        '<p>And more English</p>'
+    assert result == expected
+
+    content = '<p>This is some only English</p>'
+    result = format_mixed_right_to_left(content, 'en')
+    assert result == content
+
+    content = 'This is some only English without markup'
+    result = format_mixed_right_to_left(content, 'en')
+    assert result == content
+
+    content = '<p>هذا عربي فقط</p>'
+    result = format_mixed_right_to_left(content, 'en')
+    expected = '<p><div dir="rtl">هذا عربي فقط</div></p>'
+    assert result == expected
+
+    result = format_mixed_right_to_left(content, 'ar')
+    assert result == content
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -8107,6 +8166,8 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_is_right_to_left()
+    _test_format_mixed_rtl()
     _test_remove_tag()
     _test_featured_tags()
     _test_xor_hashes()
