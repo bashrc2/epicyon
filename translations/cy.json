@@ -639,5 +639,6 @@
     "Memorials": "Cofebau",
     "places": "lleoedd",
     "offline": "all-lein",
-    "Mutuals": "Cydfuddiol"
+    "Mutuals": "Cydfuddiol",
+    "Public replies default to unlisted scope": "Ymatebion cyhoeddus rhagosodedig i gwmpas heb ei restru"
 }

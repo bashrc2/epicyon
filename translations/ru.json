@@ -639,5 +639,6 @@
     "Memorials": "Мемориалы",
     "places": "места",
     "offline": "не в сети",
-    "Mutuals": "Взаимные отношения"
+    "Mutuals": "Взаимные отношения",
+    "Public replies default to unlisted scope": "Публичные ответы по умолчанию имеют скрытую область действия."
 }

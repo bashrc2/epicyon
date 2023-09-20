@@ -639,5 +639,6 @@
     "Memorials": "Anıtlar",
     "places": "yer",
     "offline": "çevrimdışı",
-    "Mutuals": "Karşılıklar"
+    "Mutuals": "Karşılıklar",
+    "Public replies default to unlisted scope": "Genel yanıtlar varsayılan olarak liste dışı kapsama alınır"
 }

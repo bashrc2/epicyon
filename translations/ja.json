@@ -639,5 +639,6 @@
     "Memorials": "記念碑",
     "places": "場所",
     "offline": "オフライン",
-    "Mutuals": "相互作用"
+    "Mutuals": "相互作用",
+    "Public replies default to unlisted scope": "パブリック返信はデフォルトで非公開スコープになります"
 }

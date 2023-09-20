@@ -639,5 +639,6 @@
     "Memorials": "Μνημείων",
     "places": "μέρη",
     "offline": "εκτός σύνδεσης",
-    "Mutuals": "Αμοιβαία"
+    "Mutuals": "Αμοιβαία",
+    "Public replies default to unlisted scope": "Οι δημόσιες απαντήσεις από προεπιλογή στο μη καταχωρισμένο εύρος"
 }

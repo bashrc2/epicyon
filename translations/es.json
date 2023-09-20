@@ -639,5 +639,6 @@
     "Memorials": "Memoriales",
     "places": "lugares",
     "offline": "desconectada",
-    "Mutuals": "Mutuales"
+    "Mutuals": "Mutuales",
+    "Public replies default to unlisted scope": "Las respuestas públicas tienen por defecto un alcance no listado"
 }

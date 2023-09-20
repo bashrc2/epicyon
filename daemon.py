@@ -6808,6 +6808,29 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'closed')
                                 self.server.registration = False
 
+                        # change public replies unlisted
+                        pub_replies_unlisted = False
+                        if self.server.public_replies_unlisted or \
+                           get_config_param(base_dir,
+                                            "publicRepliesUnlisted") is True:
+                            pub_replies_unlisted = True
+                        if fields.get('publicRepliesUnlisted'):
+                            if fields['publicRepliesUnlisted'] != \
+                               pub_replies_unlisted:
+                                pub_replies_unlisted = \
+                                    fields['publicRepliesUnlisted']
+                                set_config_param(base_dir,
+                                                 'publicRepliesUnlisted',
+                                                 True)
+                                self.server.public_replies_unlisted = \
+                                    pub_replies_unlisted
+                        else:
+                            if pub_replies_unlisted:
+                                set_config_param(base_dir,
+                                                 'publicRepliesUnlisted',
+                                                 False)
+                                self.server.public_replies_unlisted = False
+
                         # change registrations remaining
                         reg_str = "registrationsRemaining"
                         remaining = get_config_param(base_dir, reg_str)

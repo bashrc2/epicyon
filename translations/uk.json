@@ -639,5 +639,6 @@
     "Memorials": "Меморіали",
     "places": "місць",
     "offline": "офлайн",
-    "Mutuals": "Мутуали"
+    "Mutuals": "Мутуали",
+    "Public replies default to unlisted scope": "Загальнодоступні відповіді за умовчанням мають приватний обсяг"
 }

@@ -1839,6 +1839,12 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         translate['Instance Logo'] + '</label>' + \
         '  <input type="file" id="instanceLogo" name="instanceLogo"' + \
         '      accept="' + image_formats + '"><br>\n  <br>\n'
+    public_replies_unlisted = False
+    if get_config_param(base_dir, "publicRepliesUnlisted") is True:
+        public_replies_unlisted = True
+    instance_str += \
+        edit_check_box(translate['Public replies default to unlisted scope'],
+                       'publicRepliesUnlisted', public_replies_unlisted)
     registrations_open = False
     if get_config_param(base_dir, "registration") == 'open':
         registrations_open = True

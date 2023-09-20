@@ -639,5 +639,6 @@
     "Memorials": "Pamiętnik",
     "places": "miejsca",
     "offline": "nieaktywny",
-    "Mutuals": "Wzajemne relacje"
+    "Mutuals": "Wzajemne relacje",
+    "Public replies default to unlisted scope": "Odpowiedzi publiczne domyślnie mają zakres niepubliczny"
 }

@@ -639,5 +639,6 @@
     "Memorials": "Denkmäler",
     "places": "setzt",
     "offline": "offline",
-    "Mutuals": "Gegenseitigkeitsgesellschaften"
+    "Mutuals": "Gegenseitigkeitsgesellschaften",
+    "Public replies default to unlisted scope": "Öffentliche Antworten werden standardmäßig auf den nicht aufgeführten Bereich übertragen"
 }

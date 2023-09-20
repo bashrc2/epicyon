@@ -639,5 +639,6 @@
     "Memorials": "النصب التذكارية",
     "places": "أماكن",
     "offline": "غير متصل على الانترنت",
-    "Mutuals": "التعاضد"
+    "Mutuals": "التعاضد",
+    "Public replies default to unlisted scope": "الردود العامة افتراضية للنطاق غير المدرج"
 }
