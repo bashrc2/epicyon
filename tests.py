@@ -8130,6 +8130,9 @@ def _test_format_mixed_rtl() -> None:
     expected = '<p>This is some English</p>' + \
         '<p><div dir="rtl">هذه عربية</div></p>' + \
         '<p>And more English</p>'
+    if result != expected:
+        print('Expected: ' + expected)
+        print('Result:   ' + result)
     assert result == expected
 
     content = '<p>This is some only English</p>'
@@ -8147,6 +8150,18 @@ def _test_format_mixed_rtl() -> None:
 
     result = format_mixed_right_to_left(content, 'ar')
     assert result == content
+
+    content = 'This is some English<br><br>' + \
+        'هذه عربية<br><br>' + \
+        'And more English'
+    result = format_mixed_right_to_left(content, 'en')
+    expected = 'This is some English<br><br>' + \
+        '<div dir="rtl">هذه عربية</div><br><br>' + \
+        'And more English'
+    if result != expected:
+        print('Expected: ' + expected)
+        print('Result:   ' + result)
+    assert result == expected
 
 
 def run_all_tests():

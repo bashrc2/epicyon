@@ -2207,9 +2207,9 @@ def format_mixed_right_to_left(content: str,
     # not a RTL language
     if language_right_to_left(language):
         return content
-    paragraphs = content.split('<p>')
     result = ''
     changed = False
+    paragraphs = content.split('<p>')
     for text_html in paragraphs:
         if '</p>' not in text_html:
             continue
@@ -2220,6 +2220,23 @@ def format_mixed_right_to_left(content: str,
             text_html = text_html.replace('</p>', '</div></p>', 1)
             changed = True
         result += text_html
+    if not changed:
+        paragraphs = content.split('<br><br>')
+        ctr = 0
+        for text_html in paragraphs:
+            ctr += 1
+            if ctr < len(paragraphs):
+                text_html += '<br><br>'
+            text_plain = remove_html(text_html)
+            if is_right_to_left_text(text_plain):
+                text_html = '<div dir="rtl">' + text_html
+                if ctr < len(paragraphs):
+                    text_html = \
+                        text_html.replace('<br><br>', '</div><br><br>', 1)
+                else:
+                    text_html += '</div>'
+                changed = True
+            result += text_html
     if not changed:
         return content
     return result
