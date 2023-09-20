@@ -20246,7 +20246,7 @@ class PubServer(BaseHTTPRequestHandler):
 #                        if m.startswith('actor='):
 #                            replytoActor = m.replace('actor=', '')
                     in_reply_to_url = mentions_list[0]
-                if not self.path.public_replies_unlisted:
+                if not self.server.public_replies_unlisted:
                     self.path = self.path.split('?replyto=')[0] + '/newpost'
                 else:
                     self.path = \
