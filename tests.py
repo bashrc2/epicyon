@@ -8166,6 +8166,7 @@ def _test_format_mixed_rtl() -> None:
     content = 'هذه عربية'
     result = format_mixed_right_to_left(content, 'en')
     expected = '<div dir="rtl">هذه عربية</div>'
+    assert result == expected
 
 
 def run_all_tests():
