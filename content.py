@@ -2221,6 +2221,7 @@ def format_mixed_right_to_left(content: str,
             changed = True
         result += text_html
     if not changed:
+        result = ''
         paragraphs = content.split('<br><br>')
         ctr = 0
         for text_html in paragraphs:
