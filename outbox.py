@@ -436,7 +436,8 @@ def post_message_to_outbox(session, translate: {},
 
     permitted_outbox_types = (
         'Create', 'Announce', 'Like', 'EmojiReact', 'Follow', 'Undo',
-        'Update', 'Add', 'Remove', 'Block', 'Delete', 'Skill', 'Ignore'
+        'Update', 'Add', 'Remove', 'Block', 'Delete', 'Skill', 'Ignore',
+        'Move'
     )
     if message_json['type'] not in permitted_outbox_types:
         if debug:

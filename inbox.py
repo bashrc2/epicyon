@@ -81,6 +81,7 @@ from httpsig import get_digest_algorithm_from_headers
 from httpsig import verify_post_headers
 from session import create_session
 from session import download_image
+from follow import send_follow_request
 from follow import follower_approval_active
 from follow import is_following_actor
 from follow import get_followers_of_actor
@@ -586,7 +587,8 @@ def inbox_message_has_params(message_json: {}) -> bool:
     if not message_json.get('to'):
         allowed_without_to_param = ['Like', 'EmojiReact',
                                     'Follow', 'Join', 'Request',
-                                    'Accept', 'Capability', 'Undo']
+                                    'Accept', 'Capability', 'Undo',
+                                    'Move']
         if message_json['type'] not in allowed_without_to_param:
             return False
     return True
@@ -608,7 +610,7 @@ def inbox_permitted_message(domain: str, message_json: {},
         return False
 
     always_allowed_types = (
-        'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce'
+        'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce', 'Move'
     )
     if message_json['type'] not in always_allowed_types:
         if not has_object_dict(message_json):
@@ -1693,6 +1695,104 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             bold_reading, dogwhistles,
                             minimize_all_images, None,
                             buy_sites)
+    return True
+
+
+def _receive_move_activity(session, base_dir: str,
+                           http_prefix: str, domain: str, port: int,
+                           cached_webfingers: {},
+                           person_cache: {}, message_json: {},
+                           nickname: str, debug: bool,
+                           signing_priv_key_pem: str,
+                           send_threads: [],
+                           post_log: [],
+                           federation_list: [],
+                           onion_domain: str,
+                           i2p_domain: str,
+                           sites_unavailable: [],
+                           blocked_cache: []) -> bool:
+    """Receives a move activity within the POST section of HTTPServer
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/7628/fep-7628.md
+    """
+    if message_json['type'] != 'Move':
+        return False
+    if not has_actor(message_json, debug):
+        if debug:
+            print('INBOX: Move activity has no actor: ' + str(message_json))
+        return False
+    if not has_object_string_type(message_json, debug):
+        if debug:
+            print('INBOX: Move activity object is not a string: ' +
+                  str(message_json))
+        return False
+    if not message_json.get('target'):
+        if debug:
+            print('INBOX: Move activity has no target')
+        return False
+    if not isinstance(message_json['target'], str):
+        if debug:
+            print('INBOX: Move activity target is not a string: ' +
+                  str(message_json['target']))
+        return False
+    previous_actor = None
+    if message_json['object'] == message_json['actor']:
+        print('INBOX: Move activity sent by old actor ' +
+              message_json['actor'] + ' moving to ' + message_json['target'])
+        previous_actor = message_json['actor']
+    elif message_json['target'] == message_json['actor']:
+        print('INBOX: Move activity sent by new actor ' +
+              message_json['actor'] + ' moving from ' +
+              message_json['object'])
+        previous_actor = message_json['object']
+    if not previous_actor:
+        print('INBOX: Move activity previous actor not found: ' +
+              str(message_json))
+    moved_actor = message_json['target']
+    # are we following the previous actor?
+    if not is_following_actor(base_dir, nickname, domain, previous_actor):
+        print('INBOX: Move activity not following previous actor: ' +
+              nickname + ' ' + previous_actor)
+        return False
+    # are we already following the moved actor?
+    if is_following_actor(base_dir, nickname, domain, moved_actor):
+        print('INBOX: Move activity not following previous actor: ' +
+              nickname + ' ' + moved_actor)
+        return False
+    # follow the moved actor
+    moved_nickname = get_nickname_from_actor(moved_actor)
+    if not moved_nickname:
+        print('INBOX: Move activity invalid actor: ' + moved_actor)
+        return False
+    moved_domain, moved_port = get_domain_from_actor(moved_actor)
+    if not moved_domain:
+        print('INBOX: Move activity invalid domain: ' + moved_actor)
+        return False
+    # is the moved actor blocked?
+    if is_blocked(base_dir, nickname, domain,
+                  moved_nickname, moved_domain, blocked_cache):
+        print('INBOX: Move activity actor is blocked: ' + moved_actor)
+        return False
+    print('INBOX: Move activity sending follow request: ' +
+          nickname + ' ' + moved_actor)
+    send_follow_request(session,
+                        base_dir, nickname,
+                        domain, domain, port,
+                        http_prefix,
+                        moved_nickname,
+                        moved_domain,
+                        moved_actor,
+                        moved_port, http_prefix,
+                        False, federation_list,
+                        send_threads,
+                        post_log,
+                        cached_webfingers,
+                        person_cache, debug,
+                        __version__,
+                        signing_priv_key_pem,
+                        domain,
+                        onion_domain,
+                        i2p_domain,
+                        sites_unavailable)
     return True
 
 
@@ -6120,6 +6220,37 @@ def run_inbox_queue(server,
                 queue.pop(0)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'receive_accept_reject',
+                                debug)
+            inbox_start_time = time.time()
+            continue
+
+        if _receive_move_activity(curr_session, base_dir,
+                                  http_prefix, domain, port,
+                                  cached_webfingers,
+                                  person_cache,
+                                  queue_json['post'],
+                                  queue_json['postNickname'],
+                                  debug,
+                                  signing_priv_key_pem,
+                                  send_threads,
+                                  post_log,
+                                  federation_list,
+                                  onion_domain,
+                                  i2p_domain,
+                                  server.sites_unavailable,
+                                  server.blocked_cache):
+            if debug:
+                print('Queue: _receive_move_activity ' + key_id)
+            if os.path.isfile(queue_filename):
+                try:
+                    os.remove(queue_filename)
+                except OSError:
+                    print('EX: run_inbox_queue 8 unable to receive move ' +
+                          str(queue_filename))
+            if len(queue) > 0:
+                queue.pop(0)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', '_receive_move_activity',
                                 debug)
             inbox_start_time = time.time()
             continue

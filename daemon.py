@@ -2263,7 +2263,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # whether to add a 'to' field to the message
         add_to_field_types = (
-            'Follow', 'Like', 'EmojiReact', 'Add', 'Remove', 'Ignore'
+            'Follow', 'Like', 'EmojiReact', 'Add', 'Remove', 'Ignore', 'Move'
         )
         for add_to_type in add_to_field_types:
             message_json, _ = \
