@@ -339,6 +339,31 @@ def get_actor_update_json(actor_json: {}) -> {}:
     }
 
 
+def get_actor_move_json(actor_json: {}) -> {}:
+    """Returns the json for a Move activity after movedTo has been set
+    within the actor
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/7628/fep-7628.md
+    """
+    if not actor_json.get('movedTo'):
+        return None
+    if '://' not in actor_json['movedTo'] or \
+       '.' not in actor_json['movedTo']:
+        return None
+    if actor_json['movedTo'] == actor_json['id']:
+        return None
+    pub_number, _ = get_status_number()
+    return {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        "id": actor_json['id'] + '#moved/' + pub_number,
+        "type": "Move",
+        "actor": actor_json['id'],
+        "object": actor_json['id'],
+        "target": actor_json['movedTo'],
+        "to": ['https://www.w3.org/ns/activitystreams#Public'],
+        "cc": [actor_json['id'] + '/followers']
+    }
+
+
 def get_default_person_context() -> str:
     """Gets the default actor context
     """

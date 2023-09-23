@@ -72,6 +72,7 @@ from person import add_actor_update_timestamp
 from person import set_person_notes
 from person import get_default_person_context
 from person import get_actor_update_json
+from person import get_actor_move_json
 from person import save_person_qrcode
 from person import randomize_actor_images
 from person import person_upgrade_actor
@@ -6312,6 +6313,7 @@ class PubServer(BaseHTTPRequestHandler):
         if boundary:
             # get the various avatar, banner and background images
             actor_changed = True
+            send_move_activity = False
             profile_media_types = (
                 'avatar', 'image',
                 'banner', 'search_banner',
@@ -7229,6 +7231,7 @@ class PubServer(BaseHTTPRequestHandler):
                            '://' in fields['movedTo'] and \
                            '.' in fields['movedTo']:
                             actor_json['movedTo'] = fields['movedTo']
+                            send_move_activity = True
                             actor_changed = True
                     else:
                         if moved_to:
@@ -8414,6 +8417,15 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.project_version,
                                              nickname,
                                              curr_session, proxy_type)
+                        # send move activity if necessary
+                        if send_move_activity:
+                            move_actor_json = get_actor_move_json(actor_json)
+                            print('Sending Move activity: ' +
+                                  str(move_actor_json))
+                            self._post_to_outbox(move_actor_json,
+                                                 self.server.project_version,
+                                                 nickname,
+                                                 curr_session, proxy_type)
 
                     # deactivate the account
                     if fields.get('deactivateThisAccount'):
