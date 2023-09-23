@@ -7228,7 +7228,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['movedTo'] != moved_to and \
                            '://' in fields['movedTo'] and \
                            '.' in fields['movedTo']:
-                            actor_json['movedTo'] = moved_to
+                            actor_json['movedTo'] = fields['movedTo']
                             actor_changed = True
                     else:
                         if moved_to:
