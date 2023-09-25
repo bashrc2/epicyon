@@ -2641,8 +2641,12 @@ def is_followers_post(post_json_object: {}) -> bool:
         return False
     if not post_json_object['object'].get('to'):
         return False
-    for recipient in post_json_object['object']['to']:
-        if recipient.endswith('/followers'):
+    if isinstance(post_json_object['object']['to'], list):
+        for recipient in post_json_object['object']['to']:
+            if recipient.endswith('/followers'):
+                return True
+    elif isinstance(post_json_object['object']['to'], str):
+        if post_json_object['object']['to'].endswith('/followers'):
             return True
     return False
 
@@ -2661,16 +2665,24 @@ def is_unlisted_post(post_json_object: {}) -> bool:
     if not post_json_object['object'].get('cc'):
         return False
     has_followers = False
-    for recipient in post_json_object['object']['to']:
-        if recipient.endswith('/followers'):
+    if isinstance(post_json_object['object']['to'], list):
+        for recipient in post_json_object['object']['to']:
+            if recipient.endswith('/followers'):
+                has_followers = True
+                break
+    elif isinstance(post_json_object['object']['to'], str):
+        if post_json_object['object']['to'].endswith('/followers'):
             has_followers = True
-            break
     if not has_followers:
         return False
-    for recipient in post_json_object['object']['cc']:
-        if recipient.endswith('#Public') or \
-           recipient == 'as:Public' or \
-           recipient == 'Public':
+    if isinstance(post_json_object['object']['cc'], list):
+        for recipient in post_json_object['object']['cc']:
+            if recipient.endswith('#Public') or \
+               recipient == 'as:Public' or \
+               recipient == 'Public':
+                return True
+    elif isinstance(post_json_object['object']['cc'], str):
+        if post_json_object['object']['cc'].endswith('#Public'):
             return True
     return False
 
