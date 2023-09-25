@@ -2279,12 +2279,16 @@ def is_dm(post_json_object: {}) -> bool:
     for field_name in fields:
         if not post_json_object['object'].get(field_name):
             continue
-        for to_address in post_json_object['object'][field_name]:
-            if to_address.endswith('#Public') or \
-               to_address == 'as:Public' or \
-               to_address == 'Public':
-                return False
-            if to_address.endswith('followers'):
+        if isinstance(post_json_object['object'][field_name], list):
+            for to_address in post_json_object['object'][field_name]:
+                if to_address.endswith('#Public') or \
+                   to_address == 'as:Public' or \
+                   to_address == 'Public':
+                    return False
+                if to_address.endswith('followers'):
+                    return False
+        elif isinstance(post_json_object['object'][field_name], str):
+            if post_json_object['object'][field_name].endswith('#Public'):
                 return False
     return True
 
@@ -2614,10 +2618,14 @@ def is_public_post(post_json_object: {}) -> bool:
         return False
     if not post_json_object['object'].get('to'):
         return False
-    for recipient in post_json_object['object']['to']:
-        if recipient.endswith('#Public') or \
-           recipient == 'as:Public' or \
-           recipient == 'Public':
+    if isinstance(post_json_object['object']['to'], list):
+        for recipient in post_json_object['object']['to']:
+            if recipient.endswith('#Public') or \
+               recipient == 'as:Public' or \
+               recipient == 'Public':
+                return True
+    elif isinstance(post_json_object['object']['to'], str):
+        if post_json_object['object']['to'].endswith('#Public'):
             return True
     return False
 
