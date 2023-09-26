@@ -75,6 +75,7 @@ from utils import has_group_type
 from utils import local_actor_url
 from utils import has_object_string_type
 from utils import valid_hash_tag
+from utils import get_attributed_to
 from categories import get_hashtag_categories
 from categories import set_hashtag_category
 from httpsig import get_digest_algorithm_from_headers
@@ -180,7 +181,7 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
     post_id = remove_id_ending(obj['id']).replace('/', '--')
     actor = 'unknown'
     if obj.get('attributedTo'):
-        actor = obj['attributedTo']
+        actor = get_attributed_to(obj['attributedTo'])
     log_filename = base_dir + '/accounts/svg_scripts_log.txt'
     for index in range(len(obj['attachment'])):
         attach = obj['attachment'][index]
@@ -258,8 +259,10 @@ def _store_last_post_id(base_dir: str, nickname: str, domain: str,
     actor = post_id = None
     if has_object_dict(post_json_object):
         if post_json_object['object'].get('attributedTo'):
-            if isinstance(post_json_object['object']['attributedTo'], str):
-                actor = post_json_object['object']['attributedTo']
+            actor_str = \
+                get_attributed_to(post_json_object['object']['attributedTo'])
+            if actor_str:
+                actor = actor_str
                 post_id = remove_id_ending(post_json_object['object']['id'])
     if not actor:
         actor = post_json_object['actor']
@@ -688,7 +691,8 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     if has_object_dict(post_json_object):
         obj_dict_exists = True
         if post_json_object['object'].get('attributedTo'):
-            sending_actor = post_json_object['object']['attributedTo']
+            sending_actor = \
+                get_attributed_to(post_json_object['object']['attributedTo'])
     if not sending_actor:
         if post_json_object.get('actor'):
             sending_actor = post_json_object['actor']
@@ -3198,15 +3202,16 @@ def _receive_announce(recent_posts_cache: {},
         # so that their avatar can be shown
         lookup_actor = None
         if post_json_object.get('attributedTo'):
-            attrib = post_json_object['attributedTo']
-            if isinstance(attrib, str):
+            attrib = get_attributed_to(post_json_object['attributedTo'])
+            if attrib:
                 if not contains_invalid_actor_url_chars(attrib):
                     lookup_actor = attrib
         else:
             if has_object_dict(post_json_object):
                 if post_json_object['object'].get('attributedTo'):
-                    attrib = post_json_object['object']['attributedTo']
-                    if isinstance(attrib, str):
+                    attrib_field = post_json_object['object']['attributedTo']
+                    attrib = get_attributed_to(attrib_field)
+                    if attrib:
                         if not contains_invalid_actor_url_chars(attrib):
                             lookup_actor = attrib
         if lookup_actor:
@@ -4400,8 +4405,8 @@ def _low_frequency_post_notification(base_dir: str, http_prefix: str,
         return
     if not json_obj.get('id'):
         return
-    attributed_to = json_obj['attributedTo']
-    if not isinstance(attributed_to, str):
+    attributed_to = get_attributed_to(json_obj['attributedTo'])
+    if not attributed_to:
         return
     from_nickname = get_nickname_from_actor(attributed_to)
     if not from_nickname:
@@ -4432,8 +4437,8 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
         return 0
     if not json_obj.get('attributedTo'):
         return 0
-    attributed_to = json_obj['attributedTo']
-    if not isinstance(attributed_to, str):
+    attributed_to = get_attributed_to(json_obj['attributedTo'])
+    if not attributed_to:
         return 0
     from_nickname = get_nickname_from_actor(attributed_to)
     if not from_nickname:

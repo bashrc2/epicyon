@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import get_attributed_to
 from utils import contains_statuses
 from utils import contains_invalid_actor_url_chars
 from utils import acct_handle_dir
@@ -5617,7 +5618,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
             return None
         announced_actor = announced_json['id']
         if announced_json.get('attributedTo'):
-            announced_actor = announced_json['attributedTo']
+            announced_actor = get_attributed_to(announced_json['attributedTo'])
         if not announced_json.get('type'):
             print('WARN: announced post does not have a type ' +
                   str(announced_json))
@@ -6289,9 +6290,9 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
         return '', None
     if not post_json_object['object'].get('attributedTo'):
         return '', None
-    if not isinstance(post_json_object['object']['attributedTo'], str):
+    if not get_attributed_to(post_json_object['object']['attributedTo']):
         return '', None
-    actor = post_json_object['object']['attributedTo']
+    actor = get_attributed_to(post_json_object['object']['attributedTo'])
     actor_filename = \
         acct_dir(base_dir, nickname, domain) + '/lastpost/' + \
         actor.replace('/', '#')
@@ -6337,7 +6338,7 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
         return '', None
     if not lastpost_json['object'].get('attributedTo'):
         return '', None
-    if not isinstance(lastpost_json['object']['attributedTo'], str):
+    if not get_attributed_to(lastpost_json['object']['attributedTo']):
         return '', None
     time_diff_seconds = \
         seconds_between_published(lastpost_json['object']['published'],
@@ -6392,9 +6393,11 @@ def get_original_post_from_announce_url(announce_url: str, base_dir: str,
         if orig_post_json:
             if has_object_dict(orig_post_json):
                 if orig_post_json['object'].get('attributedTo'):
-                    attrib = orig_post_json['object']['attributedTo']
-                    if isinstance(attrib, str):
-                        actor = orig_post_json['object']['attributedTo']
+                    attrib_field = \
+                        orig_post_json['object']['attributedTo']
+                    attrib = get_attributed_to(attrib_field)
+                    if attrib:
+                        actor = attrib
                         url = orig_post_id
                 elif orig_post_json['object'].get('actor'):
                     actor = orig_post_json['actor']

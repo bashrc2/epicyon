@@ -299,6 +299,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import get_attributed_to
 from utils import get_memorials
 from utils import set_memorials
 from utils import is_memorial_account
@@ -2055,7 +2056,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('INBOX: checking object fields')
             string_fields = (
                 'id', 'actor', 'type', 'content', 'published',
-                'summary', 'url', 'attributedTo'
+                'summary', 'url'
             )
             for check_field in string_fields:
                 if not message_json['object'].get(check_field):
@@ -2064,6 +2065,16 @@ class PubServer(BaseHTTPRequestHandler):
                     print('INBOX: ' +
                           check_field + ' should be a string ' +
                           str(message_json['object'][check_field]))
+                    self._400()
+                    self.server.postreq_busy = False
+                    return 3
+            if message_json['object'].get('attributedTo'):
+                attrib_field = message_json['object']['attributedTo']
+                if not isinstance(attrib_field, str) and \
+                   not isinstance(attrib_field, list):
+                    print('INBOX: ' +
+                          'attributedTo should be a string or list ' +
+                          str(attrib_field))
                     self._400()
                     self.server.postreq_busy = False
                     return 3
@@ -2140,7 +2151,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.postreq_busy = False
                                 return 3
                     # check that the sender is local
-                    local_actor = message_json['object']['attributedTo']
+                    attrib_field = message_json['object']['attributedTo']
+                    local_actor = get_attributed_to(attrib_field)
                     local_domain, local_port = \
                         get_domain_from_actor(local_actor)
                     if local_domain:

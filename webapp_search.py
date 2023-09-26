@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import get_attributed_to
 from utils import get_actor_from_post_id
 from utils import remove_html
 from utils import harmless_markup
@@ -1350,10 +1351,11 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
                 pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
                 hashtag_feed += '     <item>'
-                hashtag_feed += \
-                    '         <author>' + \
-                    post_json_object['object']['attributedTo'] + \
-                    '</author>'
+                attrib_field = post_json_object['object']['attributedTo']
+                attrib = get_attributed_to(attrib_field)
+                if attrib:
+                    hashtag_feed += \
+                        '         <author>' + attrib + '</author>'
                 if post_json_object['object'].get('summary'):
                     hashtag_feed += \
                         '         <title>' + \

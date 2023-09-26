@@ -12,6 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
+from utils import get_attributed_to
 from utils import local_network_host
 from utils import dangerous_markup
 from utils import acct_handle_dir
@@ -1496,10 +1497,8 @@ def get_post_attachments_as_html(base_dir: str,
                 if minimize_all_images:
                     minimize_images = True
                 if post_json_object['object'].get('attributedTo'):
-                    if isinstance(post_json_object['object']['attributedTo'],
-                                  str):
-                        attributed_actor = \
-                            post_json_object['object']['attributedTo']
+                    attrib_field = post_json_object['object']['attributedTo']
+                    attributed_actor = get_attributed_to(attrib_field)
                 if attributed_actor:
                     following_nickname = \
                         get_nickname_from_actor(attributed_actor)

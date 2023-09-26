@@ -17,6 +17,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
+from utils import get_attributed_to
 from utils import remove_eol
 from utils import text_in_file
 from utils import local_actor_url
@@ -219,8 +220,10 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     # get the handle of the author
     if post_json_object['object'].get('attributedTo'):
         author_nickname = None
-        if isinstance(post_json_object['object']['attributedTo'], str):
-            actor = post_json_object['object']['attributedTo']
+        actor_str = \
+            get_attributed_to(post_json_object['object']['attributedTo'])
+        if actor_str:
+            actor = actor_str
             author_nickname = get_nickname_from_actor(actor)
         if author_nickname:
             author_domain, _ = get_domain_from_actor(actor)

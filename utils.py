@@ -46,6 +46,17 @@ INVALID_ACTOR_URL_CHARACTERS = (
 )
 
 
+def get_attributed_to(field) -> str:
+    """Returns the actor
+    """
+    if isinstance(field, str):
+        return field
+    elif isinstance(field, list):
+        if isinstance(field[0], str):
+            return field[0]
+    return None
+
+
 def _standardize_text_range(text: str,
                             range_start: int, range_end: int,
                             offset: str) -> str:
@@ -2307,7 +2318,7 @@ def is_reminder(post_json_object: {}) -> bool:
     if len(post_json_object['object']['to']) != 1:
         return False
     if post_json_object['object']['to'][0] != \
-       post_json_object['object']['attributedTo']:
+       get_attributed_to(post_json_object['object']['attributedTo']):
         return False
     for tag in post_json_object['object']['tag']:
         if tag['type'] == 'Event':
@@ -2324,8 +2335,9 @@ def _is_remote_dm(domain_full: str, post_json_object: {}) -> bool:
     if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
     if this_post_json.get('attributedTo'):
-        if isinstance(this_post_json['attributedTo'], str):
-            if '://' + domain_full not in this_post_json['attributedTo']:
+        attrib = get_attributed_to(this_post_json['attributedTo'])
+        if attrib:
+            if '://' + domain_full not in attrib:
                 return True
     return False
 

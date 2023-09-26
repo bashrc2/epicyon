@@ -12,6 +12,7 @@ from utils import get_full_domain
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import remove_id_ending
+from utils import get_attributed_to
 from blocking import is_blocked
 from filters import is_filtered
 
@@ -38,7 +39,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
     # who is this attributed to ?
     attributed_to = None
     if isinstance(post_json_object['attributedTo'], str):
-        attributed_to = post_json_object['attributedTo']
+        attributed_to = get_attributed_to(post_json_object['attributedTo'])
     elif isinstance(post_json_object['attributedTo'], list):
         for entity in post_json_object['attributedTo']:
             if not isinstance(entity, dict):

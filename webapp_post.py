@@ -71,6 +71,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import is_unlisted_post
 from utils import language_right_to_left
+from utils import get_attributed_to
 from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
 from content import detect_dogwhistles
@@ -139,8 +140,9 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
         metadata += "    <meta name=\"DC.title\" " + \
             "content=\"" + obj_json['summary'] + "\">\n"
     if obj_json.get('attributedTo'):
-        if isinstance(obj_json['attributedTo'], str):
-            attrib = obj_json['attributedTo']
+        attrib_str = get_attributed_to(obj_json['attributedTo'])
+        if attrib_str:
+            attrib = attrib_str
             actor_nick = get_nickname_from_actor(attrib)
             actor_domain, _ = get_domain_from_actor(attrib)
             if actor_nick and actor_domain:
@@ -527,9 +529,9 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
                 reply_to_link = post_json_object['object']['replyTo']
 
     if post_json_object['object'].get('attributedTo'):
-        if isinstance(post_json_object['object']['attributedTo'], str):
-            reply_to_link += \
-                '?mention=' + post_json_object['object']['attributedTo']
+        attrib = get_attributed_to(post_json_object['object']['attributedTo'])
+        if attrib:
+            reply_to_link += '?mention=' + attrib
     content = get_base_content_from_post(post_json_object, system_language)
     if content:
         mentioned_actors = \
@@ -1299,9 +1301,9 @@ def _get_post_title_announce_html(base_dir: str,
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
-    attributed_to = ''
-    if isinstance(obj_json['attributedTo'], str):
-        attributed_to = obj_json['attributedTo']
+    attributed_to = get_attributed_to(obj_json['attributedTo'])
+    if attributed_to is None:
+        attributed_to = ''
 
     # boosting your own post
     if attributed_to.startswith(post_actor):
@@ -1552,14 +1554,16 @@ def _get_post_title_reply_html(base_dir: str,
                 if has_object_dict(reply_post_json):
                     obj_json = reply_post_json['object']
                 if obj_json.get('attributedTo'):
-                    if isinstance(obj_json['attributedTo'], str):
-                        reply_actor = obj_json['attributedTo']
+                    attrib = get_attributed_to(obj_json['attributedTo'])
+                    if attrib:
+                        reply_actor = attrib
                         in_reply_to = reply_actor
                 elif obj_json != reply_post_json:
                     obj_json = reply_post_json
                     if obj_json.get('attributedTo'):
-                        if isinstance(obj_json['attributedTo'], str):
-                            reply_actor = obj_json['attributedTo']
+                        attrib = get_attributed_to(obj_json['attributedTo'])
+                        if attrib:
+                            reply_actor = attrib
                             in_reply_to = reply_actor
 
         if post_domain and not reply_actor:
@@ -1676,7 +1680,9 @@ def _get_post_title_html(base_dir: str,
     if not is_announced and box_name == 'search' and \
        post_json_object.get('object'):
         if post_json_object['object'].get('attributedTo'):
-            if post_json_object['object']['attributedTo'] != post_actor:
+            attrib = \
+                get_attributed_to(post_json_object['object']['attributedTo'])
+            if attrib != post_actor:
                 is_announced = True
 
     if is_announced:
@@ -2802,7 +2808,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                     map_str = '<center>\n' + map_str + '</center>\n'
         attrib = None
         if post_json_object['object'].get('attributedTo'):
-            attrib = post_json_object['object']['attributedTo']
+            attrib = \
+                get_attributed_to(post_json_object['object']['attributedTo'])
         if map_str and attrib:
             # is this being sent by the author?
             if '://' + domain_full + '/users/' + nickname in attrib:

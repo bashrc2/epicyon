@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import get_attributed_to
 from utils import remove_html
 from utils import safe_system_string
 from utils import text_in_file
@@ -805,11 +806,12 @@ def _read_local_box_post(session, nickname: str, domain: str,
             if has_object_dict(post_json_object2):
                 if post_json_object2['object'].get('attributedTo') and \
                    post_json_object2['object'].get('content'):
-                    attributed_to = post_json_object2['object']['attributedTo']
+                    attrib_field = post_json_object2['object']['attributedTo']
+                    attributed_to = get_attributed_to(attrib_field)
                     content = \
                         get_base_content_from_post(post_json_object2,
                                                    system_language)
-                    if isinstance(attributed_to, str) and content:
+                    if attributed_to and content:
                         actor = attributed_to
                         name_str += ' ' + translate['announces'] + ' ' + \
                             get_nickname_from_actor(actor)
@@ -832,7 +834,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
                         return post_json_object2
         return {}
 
-    attributed_to = post_json_object['object']['attributedTo']
+    attributed_to = \
+        get_attributed_to(post_json_object['object']['attributedTo'])
     if not attributed_to:
         return {}
     content = get_base_content_from_post(post_json_object, system_language)
@@ -958,7 +961,7 @@ def _desktop_show_profile(session, nickname: str,
                     post_json_object['object'].split(nick_str)[0] + \
                     '/' + nickname
     else:
-        actor = post_json_object['object']['attributedTo']
+        actor = get_attributed_to(post_json_object['object']['attributedTo'])
 
     if not actor:
         return {}
@@ -1140,7 +1143,8 @@ def _desktop_show_box(indent: str,
         ctr_str = str(ctr)
         pos_str = _pad_to_width(ctr_str, number_width)
 
-        author_actor = post_json_object['object']['attributedTo']
+        author_actor = \
+            get_attributed_to(post_json_object['object']['attributedTo'])
         content_warning = None
         if post_json_object['object'].get('summary'):
             content_warning = '⚡' + \
@@ -1945,7 +1949,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
                     if post_json_object.get('id'):
-                        like_actor = post_json_object['object']['attributedTo']
+                        attrib_field = \
+                            post_json_object['object']['attributedTo']
+                        like_actor = get_attributed_to(attrib_field)
                         say_str = 'Liking post by ' + \
                             get_nickname_from_actor(like_actor)
                         _say_command(say_str, say_str,
@@ -1986,7 +1992,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
                     if post_json_object.get('id'):
-                        mute_actor = post_json_object['object']['attributedTo']
+                        attrib_field = \
+                            post_json_object['object']['attributedTo']
+                        mute_actor = get_attributed_to(attrib_field)
                         say_str = 'Unmuting post by ' + \
                             get_nickname_from_actor(mute_actor)
                         _say_command(say_str, say_str,
@@ -2020,7 +2028,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
                     if post_json_object.get('id'):
-                        mute_actor = post_json_object['object']['attributedTo']
+                        attrib_field = \
+                            post_json_object['object']['attributedTo']
+                        mute_actor = get_attributed_to(attrib_field)
                         say_str = 'Muting post by ' + \
                             get_nickname_from_actor(mute_actor)
                         _say_command(say_str, say_str,
@@ -2064,7 +2074,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
                     if post_json_object.get('id'):
-                        bm_actor = post_json_object['object']['attributedTo']
+                        attrib_field = \
+                            post_json_object['object']['attributedTo']
+                        bm_actor = get_attributed_to(attrib_field)
                         say_str = 'Unbookmarking post by ' + \
                             get_nickname_from_actor(bm_actor)
                         _say_command(say_str, say_str,
@@ -2098,7 +2110,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
                     if post_json_object.get('id'):
-                        bm_actor = post_json_object['object']['attributedTo']
+                        attrib_field = \
+                            post_json_object['object']['attributedTo']
+                        bm_actor = get_attributed_to(attrib_field)
                         say_str = 'Bookmarking post by ' + \
                             get_nickname_from_actor(bm_actor)
                         _say_command(say_str, say_str,
@@ -2134,8 +2148,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                        post_json_object.get('object'):
                         if has_object_dict(post_json_object):
                             if post_json_object['object'].get('attributedTo'):
-                                block_actor = \
+                                attrib_field = \
                                     post_json_object['object']['attributedTo']
+                                block_actor = get_attributed_to(attrib_field)
                                 say_str = 'Unblocking ' + \
                                     get_nickname_from_actor(block_actor)
                                 _say_command(say_str, say_str,
@@ -2184,8 +2199,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                        post_json_object.get('object'):
                         if has_object_dict(post_json_object):
                             if post_json_object['object'].get('attributedTo'):
-                                block_actor = \
+                                attrib_field = \
                                     post_json_object['object']['attributedTo']
+                                block_actor = get_attributed_to(attrib_field)
                 if block_actor:
                     say_str = 'Blocking ' + \
                         get_nickname_from_actor(block_actor)
@@ -2217,8 +2233,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
                     if post_json_object.get('id'):
-                        unlike_actor = \
+                        attrib_field = \
                             post_json_object['object']['attributedTo']
+                        unlike_actor = get_attributed_to(attrib_field)
                         say_str = \
                             'Undoing like of post by ' + \
                             get_nickname_from_actor(unlike_actor)
@@ -2268,8 +2285,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                              capabilities):
                         if post_json_object.get('id'):
                             post_id = post_json_object['id']
-                            announce_actor = \
+                            attrib_field = \
                                 post_json_object['object']['attributedTo']
+                            announce_actor = get_attributed_to(attrib_field)
                             say_str = 'Announcing post by ' + \
                                 get_nickname_from_actor(announce_actor)
                             _say_command(say_str, say_str,
@@ -2305,8 +2323,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 if post_json_object:
                     if post_json_object.get('id'):
                         post_id = post_json_object['id']
-                        announce_actor = \
+                        attrib_field = \
                             post_json_object['object']['attributedTo']
+                        announce_actor = get_attributed_to(attrib_field)
                         say_str = 'Undoing announce post by ' + \
                             get_nickname_from_actor(announce_actor)
                         _say_command(say_str, say_str,
@@ -2670,7 +2689,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
                     if post_json_object.get('id'):
-                        rm_actor = post_json_object['object']['attributedTo']
+                        attrib_field = \
+                            post_json_object['object']['attributedTo']
+                        rm_actor = get_attributed_to(attrib_field)
                         if rm_actor != your_actor:
                             say_str = 'You can only delete your own posts'
                             _say_command(say_str, say_str,

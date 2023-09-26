@@ -15,6 +15,7 @@ from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
+from utils import get_attributed_to
 from utils import contains_invalid_actor_url_chars
 from utils import get_attachment_property_value
 from utils import get_account_timezone
@@ -284,7 +285,8 @@ def post_message_to_outbox(session, translate: {},
                                   str(message_json))
                             return False
                 # check that the sender is local
-                local_actor = message_json['object']['attributedTo']
+                local_actor = \
+                    get_attributed_to(message_json['object']['attributedTo'])
                 local_domain, local_port = get_domain_from_actor(local_actor)
                 if local_domain:
                     local_domain_full = \

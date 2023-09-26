@@ -15,6 +15,7 @@ from utils import text_in_file
 from utils import locate_post
 from utils import load_json
 from utils import harmless_markup
+from utils import get_attributed_to
 from keys import get_instance_actor_key
 from session import get_json
 from session import get_json_valid
@@ -149,7 +150,8 @@ def download_conversation_posts(authorized: bool, session,
                 if debug:
                     print(post_id + ' has no attributedTo')
                 break
-            if not isinstance(post_json_object['attributedTo'], str):
+            attrib_str = get_attributed_to(post_json_object['attributedTo'])
+            if not attrib_str:
                 break
             if not post_json_object.get('published'):
                 if debug:
@@ -171,7 +173,7 @@ def download_conversation_posts(authorized: bool, session,
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'id': post_id + '/activity',
                 'type': 'Create',
-                'actor': post_json_object['attributedTo'],
+                'actor': attrib_str,
                 'published': post_json_object['published'],
                 'to': post_json_object['to'],
                 'cc': post_json_object['cc'],

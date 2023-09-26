@@ -14,6 +14,7 @@ from utils import has_object_string_type
 from utils import text_in_file
 from utils import get_attachment_property_value
 from utils import remove_html
+from utils import get_attributed_to
 
 
 def _git_format_content(content: str) -> str:
@@ -127,7 +128,7 @@ def convert_post_to_patch(base_dir: str, nickname: str, domain: str,
         return False
     if not post_json_object['object'].get('attributedTo'):
         return False
-    if not isinstance(post_json_object['object']['attributedTo'], str):
+    if get_attributed_to(post_json_object['object']['attributedTo']) is None:
         return False
     if not is_git_patch(base_dir, nickname, domain,
                         post_json_object['object']['type'],
@@ -143,7 +144,7 @@ def convert_post_to_patch(base_dir: str, nickname: str, domain: str,
     # add a commitedBy parameter
     if not post_json_object['object'].get('committedBy'):
         post_json_object['object']['committedBy'] = \
-            post_json_object['object']['attributedTo']
+            get_attributed_to(post_json_object['object']['attributedTo'])
     post_json_object['object']['hash'] = commit_hash
     post_json_object['object']['description'] = {
         "mediaType": "text/plain",
