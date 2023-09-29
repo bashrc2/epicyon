@@ -7,7 +7,51 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-from webapp_utils import get_pwa_theme_colors
+import os
+from utils import remove_html
+
+
+def _get_variable_from_css(css_str: str, variable: str) -> str:
+    """Gets a variable value from the css file text
+    """
+    if '--' + variable + ':' not in css_str:
+        return None
+    value = css_str.split('--' + variable + ':')[1]
+    if ';' in value:
+        value = value.split(';')[0].strip()
+    value = remove_html(value)
+    if ' ' in value:
+        value = None
+    return value
+
+
+def get_pwa_theme_colors(css_filename: str) -> (str, str):
+    """Gets the theme/statusbar color for progressive web apps
+    """
+    default_pwa_theme_color = 'apple-mobile-web-app-status-bar-style'
+    pwa_theme_color = default_pwa_theme_color
+
+    default_pwa_theme_background_color = 'black-translucent'
+    pwa_theme_background_color = default_pwa_theme_background_color
+
+    if not os.path.isfile(css_filename):
+        return pwa_theme_color, pwa_theme_background_color
+
+    css_str = ''
+    with open(css_filename, 'r', encoding='utf-8') as fp_css:
+        css_str = fp_css.read()
+
+    pwa_theme_color = \
+        _get_variable_from_css(css_str, 'pwa-theme-color')
+    if not pwa_theme_color:
+        pwa_theme_color = default_pwa_theme_color
+
+    pwa_theme_background_color = \
+        _get_variable_from_css(css_str, 'pwa-theme-background-color')
+    if not pwa_theme_background_color:
+        pwa_theme_background_color = default_pwa_theme_background_color
+
+    return pwa_theme_color, pwa_theme_background_color
 
 
 def pwa_manifest(base_dir: str) -> {}:
