@@ -201,7 +201,6 @@ from webapp_utils import html_following_list
 from webapp_utils import csv_following_list
 from webapp_utils import set_blog_address
 from webapp_utils import html_show_share
-from webapp_utils import get_pwa_theme_colors
 from webapp_utils import text_mode_browser
 from webapp_calendar import html_calendar_delete_confirm
 from webapp_calendar import html_calendar
@@ -460,6 +459,7 @@ from relationships import get_moved_feed
 from relationships import get_inactive_feed
 from relationships import update_moved_actors
 from git import get_repo_url
+from pwa import pwa_manifest
 
 # maximum number of posts to list in outbox feed
 MAX_POSTS_IN_FEED = 12
@@ -8460,113 +8460,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       getreq_start_time) -> None:
         """gets the PWA manifest
         """
-        css_filename = base_dir + '/epicyon.css'
-        pwa_theme_color, pwa_theme_background_color = \
-            get_pwa_theme_colors(css_filename)
-
-        app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
-        app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
-        app3 = \
-            "https://f-droid.org/en/packages/" + \
-            "com.stoutner.privacybrowser.standard"
-        manifest = {
-            "name": "Epicyon",
-            "short_name": "Epicyon",
-            "start_url": "/index.html",
-            "display": "standalone",
-            "background_color": pwa_theme_background_color,
-            "theme_color": pwa_theme_color,
-            "orientation": "portrait-primary",
-            "categories": ["microblog", "fediverse", "activitypub"],
-            "screenshots": [
-                {
-                    "src": "/mobile.jpg",
-                    "sizes": "418x851",
-                    "type": "image/jpeg"
-                },
-                {
-                    "src": "/mobile_person.jpg",
-                    "sizes": "429x860",
-                    "type": "image/jpeg"
-                },
-                {
-                    "src": "/mobile_search.jpg",
-                    "sizes": "422x861",
-                    "type": "image/jpeg"
-                }
-            ],
-            "icons": [
-                {
-                    "src": "/logo72.png",
-                    "type": "image/png",
-                    "sizes": "72x72"
-                },
-                {
-                    "src": "/logo96.png",
-                    "type": "image/png",
-                    "sizes": "96x96"
-                },
-                {
-                    "src": "/logo128.png",
-                    "type": "image/png",
-                    "sizes": "128x128"
-                },
-                {
-                    "src": "/logo144.png",
-                    "type": "image/png",
-                    "sizes": "144x144"
-                },
-                {
-                    "src": "/logo150.png",
-                    "type": "image/png",
-                    "sizes": "150x150"
-                },
-                {
-                    "src": "/apple-touch-icon.png",
-                    "type": "image/png",
-                    "sizes": "180x180"
-                },
-                {
-                    "src": "/logo192.png",
-                    "type": "image/png",
-                    "sizes": "192x192"
-                },
-                {
-                    "src": "/logo256.png",
-                    "type": "image/png",
-                    "sizes": "256x256"
-                },
-                {
-                    "src": "/logo512.png",
-                    "type": "image/png",
-                    "sizes": "512x512"
-                }
-            ],
-            "related_applications": [
-                {
-                    "platform": "fdroid",
-                    "url": app1
-                },
-                {
-                    "platform": "fdroid",
-                    "url": app2
-                },
-                {
-                    "platform": "fdroid",
-                    "url": app3
-                }
-            ],
-            "protocol_handlers": [
-                {
-                    "protocol": "web+ap",
-                    "url": "?target=%s"
-                },
-                {
-                    "protocol": "web+epicyon",
-                    "url": "?target=%s"
-                }
-            ]
-        }
+        manifest = pwa_manifest(base_dir)
         msg_str = json.dumps(manifest, ensure_ascii=False)
         msg_str = self._convert_domains(calling_domain,
                                         referer_domain,
