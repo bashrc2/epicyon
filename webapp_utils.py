@@ -45,7 +45,7 @@ from posts import is_moderator
 from blocking import is_blocked
 from blocking import allowed_announce
 from shares import vf_proposal_from_share
-from pwa import get_pwa_theme_colors
+from webapp_pwa import get_pwa_theme_colors
 
 
 def minimizing_attached_images(base_dir: str, nickname: str, domain: str,

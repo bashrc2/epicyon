@@ -459,7 +459,7 @@ from relationships import get_moved_feed
 from relationships import get_inactive_feed
 from relationships import update_moved_actors
 from git import get_repo_url
-from pwa import pwa_manifest
+from webapp_pwa import pwa_manifest
 
 # maximum number of posts to list in outbox feed
 MAX_POSTS_IN_FEED = 12
