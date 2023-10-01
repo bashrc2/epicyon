@@ -664,13 +664,29 @@ class PubServer(BaseHTTPRequestHandler):
         print('ERROR: http server error: ' + str(request) + ', ' +
               str(client_address))
 
-    def _send_reply_to_question(self, nickname: str, message_id: str,
+    def _send_reply_to_question(self, base_dir: str,
+                                http_prefix: str,
+                                nickname: str, domain: str,
+                                domain_full: str,
+                                port: int,
+                                message_id: str,
                                 answer: str,
-                                curr_session, proxy_type: str) -> None:
+                                curr_session, proxy_type: str,
+                                city_name: str,
+                                person_cache: {},
+                                debug: bool,
+                                system_language: str,
+                                low_bandwidth: bool,
+                                dm_license_url: str,
+                                content_license_url: str,
+                                translate: {},
+                                max_replies: int,
+                                project_version: str,
+                                recent_posts_cache: {}) -> None:
         """Sends a reply to a question
         """
         votes_filename = \
-            acct_dir(self.server.base_dir, nickname, self.server.domain) + \
+            acct_dir(base_dir, nickname, domain) + \
             '/questions.txt'
 
         if os.path.isfile(votes_filename):
@@ -697,15 +713,11 @@ class PubServer(BaseHTTPRequestHandler):
         conversation_id = None
         buy_url = ''
         chat_url = ''
-        city = get_spoofed_city(self.server.city,
-                                self.server.base_dir,
-                                nickname, self.server.domain)
+        city = get_spoofed_city(city_name, base_dir, nickname, domain)
         languages_understood = \
-            get_understood_languages(self.server.base_dir,
-                                     self.server.http_prefix,
-                                     nickname,
-                                     self.server.domain_full,
-                                     self.server.person_cache)
+            get_understood_languages(base_dir, http_prefix,
+                                     nickname, domain_full,
+                                     person_cache)
         reply_to_nickname = get_nickname_from_actor(in_reply_to)
         reply_to_domain, reply_to_port = get_domain_from_actor(in_reply_to)
         message_json = None
@@ -715,10 +727,8 @@ class PubServer(BaseHTTPRequestHandler):
             mentions_str = '@' + reply_to_nickname + '@' + reply_to_domain_full
 
             message_json = \
-                create_direct_message_post(self.server.base_dir, nickname,
-                                           self.server.domain,
-                                           self.server.port,
-                                           self.server.http_prefix,
+                create_direct_message_post(base_dir, nickname, domain,
+                                           port, http_prefix,
                                            mentions_str + ' ' + answer,
                                            False, False,
                                            comments_enabled,
@@ -726,18 +736,18 @@ class PubServer(BaseHTTPRequestHandler):
                                            media_type, image_description,
                                            video_transcript, city,
                                            in_reply_to, in_reply_to_atom_uri,
-                                           subject, self.server.debug,
+                                           subject, debug,
                                            schedule_post,
                                            event_date, event_time,
                                            event_end_time,
                                            location,
-                                           self.server.system_language,
+                                           system_language,
                                            conversation_id,
-                                           self.server.low_bandwidth,
-                                           self.server.dm_license_url,
-                                           self.server.content_license_url, '',
+                                           low_bandwidth,
+                                           dm_license_url,
+                                           content_license_url, '',
                                            languages_understood, False,
-                                           self.server.translate, buy_url,
+                                           translate, buy_url,
                                            chat_url)
         if message_json:
             # NOTE: content and contentMap are not required, but we will keep
@@ -746,20 +756,19 @@ class PubServer(BaseHTTPRequestHandler):
             # name field contains the answer
             message_json['object']['name'] = answer
             if self._post_to_outbox(message_json,
-                                    self.server.project_version, nickname,
+                                    project_version, nickname,
                                     curr_session, proxy_type):
                 post_filename = \
-                    locate_post(self.server.base_dir, nickname,
-                                self.server.domain, message_id)
+                    locate_post(base_dir, nickname, domain, message_id)
                 if post_filename:
                     post_json_object = load_json(post_filename)
                     if post_json_object:
-                        populate_replies(self.server.base_dir,
-                                         self.server.http_prefix,
-                                         self.server.domain_full,
+                        populate_replies(base_dir,
+                                         http_prefix,
+                                         domain_full,
                                          post_json_object,
-                                         self.server.max_replies,
-                                         self.server.debug)
+                                         max_replies,
+                                         debug)
                         # record the vote
                         try:
                             with open(votes_filename, 'a+',
@@ -772,9 +781,8 @@ class PubServer(BaseHTTPRequestHandler):
                         # ensure that the cached post is removed if it exists,
                         # so that it then will be recreated
                         cached_post_filename = \
-                            get_cached_post_filename(self.server.base_dir,
-                                                     nickname,
-                                                     self.server.domain,
+                            get_cached_post_filename(base_dir,
+                                                     nickname, domain,
                                                      post_json_object)
                         if cached_post_filename:
                             if os.path.isfile(cached_post_filename):
@@ -786,7 +794,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           cached_post_filename)
                         # remove from memory cache
                         remove_post_from_cache(post_json_object,
-                                               self.server.recent_posts_cache)
+                                               recent_posts_cache)
             else:
                 print('ERROR: unable to post vote to outbox')
         else:
@@ -5071,9 +5079,19 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
 
     def _receive_vote(self, calling_domain: str, cookie: str,
-                      path: str, http_prefix: str, domain_full: str,
+                      path: str, http_prefix: str,
+                      domain: str, domain_full: str, port: int,
                       onion_domain: str, i2p_domain: str,
-                      curr_session, proxy_type: str) -> None:
+                      curr_session, proxy_type: str,
+                      base_dir: str, city: str,
+                      person_cache: {}, debug: bool,
+                      system_language: str,
+                      low_bandwidth: bool,
+                      dm_license_url: str,
+                      content_license_url: str,
+                      translate: {}, max_replies: int,
+                      project_version: str,
+                      recent_posts_cache: {}) -> None:
         """Receive a vote via POST
         """
         first_post_id = ''
@@ -5172,8 +5190,18 @@ class PubServer(BaseHTTPRequestHandler):
             if '&' in answer:
                 answer = answer.split('&')[0]
 
-        self._send_reply_to_question(nickname, message_id, answer,
-                                     curr_session, proxy_type)
+        self._send_reply_to_question(base_dir, http_prefix,
+                                     nickname, domain, domain_full, port,
+                                     message_id, answer,
+                                     curr_session, proxy_type, city,
+                                     person_cache, debug,
+                                     system_language,
+                                     low_bandwidth,
+                                     dm_license_url,
+                                     content_license_url,
+                                     translate, max_replies,
+                                     project_version,
+                                     recent_posts_cache)
         if calling_domain.endswith('.onion') and onion_domain:
             actor = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -23074,11 +23102,25 @@ class PubServer(BaseHTTPRequestHandler):
                 self._receive_vote(calling_domain, cookie,
                                    self.path,
                                    self.server.http_prefix,
+                                   self.server.domain,
                                    self.server.domain_full,
+                                   self.server.port,
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
                                    curr_session,
-                                   proxy_type)
+                                   proxy_type,
+                                   self.server.base_dir,
+                                   self.server.city,
+                                   self.server.person_cache,
+                                   self.server.debug,
+                                   self.server.system_language,
+                                   self.server.low_bandwidth,
+                                   self.server.dm_license_url,
+                                   self.server.content_license_url,
+                                   self.server.translate,
+                                   self.server.max_replies,
+                                   self.server.project_version,
+                                   self.server.recent_posts_cache)
                 self.server.postreq_busy = False
                 return
 
