@@ -219,10 +219,10 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
         if account_json['discoverable'] is False:
             discoverable = False
     group = False
+    bot = False
     if account_json['type'] == 'Group':
         group = True
-    bot = False
-    if account_json['type'] == 'Application':
+    elif account_json['type'] != 'Person':
         bot = True
     no_of_statuses = 0
     no_of_followers = 0
