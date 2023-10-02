@@ -52,8 +52,20 @@ def get_nickname_from_masto_api_v1id(masto_id: int) -> str:
     return nickname[::-1]
 
 
+def _lines_in_file(filename: str) -> int:
+    """Returns the number of lines in a file
+    """
+    if os.path.isfile(filename):
+        try:
+            with open(filename, 'r', encoding='utf-8') as fp_lines:
+                return len(fp_lines.read().split('\n'))
+        except OSError:
+            print('EX: _lines_in_file error reading ' + filename)
+    return 0
+
+
 def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
-                             show_accounts: bool) -> {}:
+                             show_accounts: bool, broch_mode: bool) -> {}:
     """See https://github.com/McKael/mastodon-documentation/
     blob/master/Using-the-API/API.md#account
     Authorization has already been performed
@@ -82,7 +94,11 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     if account_json['type'] == 'Group':
         group = True
     no_of_statuses = 0
-    if show_accounts:
+    no_of_followers = 0
+    no_of_following = 0
+    if show_accounts and not broch_mode:
+        no_of_followers = _lines_in_file(account_dir + '/followers.txt')
+        no_of_following = _lines_in_file(account_dir + '/following.txt')
         # count the number of posts
         for _, _, files2 in os.walk(account_dir + '/outbox'):
             no_of_statuses = len(files2)
@@ -94,8 +110,8 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
         "display_name": account_json['name'],
         "locked": account_json['manuallyApprovesFollowers'],
         "created_at": joined_date,
-        "followers_count": 0,
-        "following_count": 0,
+        "followers_count": no_of_followers,
+        "following_count": no_of_following,
         "statuses_count": no_of_statuses,
         "note": account_json['summary'],
         "url": account_json['id'],
@@ -138,7 +154,8 @@ def masto_api_v1_response(path: str, calling_domain: str,
         if path == '/api/v1/accounts/verify_credentials':
             send_json = \
                 _get_masto_api_v1account(base_dir, nickname, domain,
-                                         show_node_info_accounts)
+                                         show_node_info_accounts,
+                                         broch_mode)
             send_json_str = \
                 'masto API account sent for ' + nickname + ' ' + ua_str
 
@@ -193,7 +210,8 @@ def masto_api_v1_response(path: str, calling_domain: str,
             else:
                 send_json = \
                     _get_masto_api_v1account(base_dir, path_nickname, domain,
-                                             show_node_info_accounts)
+                                             show_node_info_accounts,
+                                             broch_mode)
                 send_json_str = \
                     'masto API account sent for ' + nickname + \
                     calling_info
