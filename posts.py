@@ -954,9 +954,14 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
             local_actor_url(http_prefix, nickname, original_domain) + \
             '/statuses/' + status_number
         post_json_object['id'] = post_id + '/activity'
+    published = None
+    if post_json_object.get('published'):
+        published = post_json_object['published']
     if has_object_dict(post_json_object):
         post_json_object['object']['id'] = post_id
         post_json_object['object']['atomUri'] = post_id
+        if post_json_object['object'].get('published'):
+            published = post_json_object['object']['published']
 
     box_dir = create_person_dir(nickname, domain, base_dir, boxname)
     filename = box_dir + '/' + post_id.replace('/', '#') + '.json'
@@ -965,6 +970,17 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
     # if this is an outbox post with a duplicate in the inbox then save to both
     # This happens for edited posts
     if '/outbox/' in filename:
+        if published:
+            published_filename = \
+                acct_dir(base_dir, nickname, domain) + '/.last_published'
+            try:
+                with open(published_filename, 'w+',
+                          encoding='utf-8') as fp_last:
+                    fp_last.write(published)
+            except OSError:
+                print('EX: unable to save last published time ' +
+                      published_filename)
+
         inbox_filename = filename.replace('/outbox/', '/inbox/')
         if os.path.isfile(inbox_filename):
             save_json(post_json_object, inbox_filename)

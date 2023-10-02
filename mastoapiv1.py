@@ -101,6 +101,7 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     no_of_followers = 0
     no_of_following = 0
     fields = []
+    published = None
     if show_accounts and not broch_mode:
         no_of_followers = _lines_in_file(account_dir + '/followers.txt')
         no_of_following = _lines_in_file(account_dir + '/following.txt')
@@ -131,6 +132,16 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
                         "value": tag[prop_value_name],
                         "verified_at": None
                     })
+            published_filename = \
+                acct_dir(base_dir, nickname, domain) + '/.last_published'
+            if os.path.isfile(published_filename):
+                try:
+                    with open(published_filename, 'r',
+                              encoding='utf-8') as fp_pub:
+                        published = fp_pub.read()
+                except OSError:
+                    print('EX: unable to read last published time ' +
+                          published_filename)
 
     masto_account_json = {
         "id": get_masto_api_v1id_from_nickname(nickname),
@@ -156,6 +167,8 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
         "roles": [],
         "fields": fields
     }
+    if published:
+        masto_account_json['last_status_at'] = published
     return masto_account_json
 
 
