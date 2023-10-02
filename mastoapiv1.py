@@ -76,6 +76,9 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
     if 'discoverable' in account_json:
         if account_json['discoverable'] is False:
             discoverable = False
+    group = False
+    if account_json['type'] == 'Group':
+        group = True
     masto_account_json = {
         "id": get_masto_api_v1id_from_nickname(nickname),
         "username": nickname,
@@ -93,7 +96,8 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
         "header": image_url,
         "header_static": image_url,
         "noindex": noindex,
-        "discoverable": discoverable
+        "discoverable": discoverable,
+        "group": group
     }
     return masto_account_json
 
