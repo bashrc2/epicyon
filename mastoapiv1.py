@@ -65,13 +65,17 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
         return {}
     avatar_url = remove_html(account_json['icon']['url'])
     image_url = remove_html(account_json['image']['url'])
+    joined_date = "2016-10-05T10:30:00Z"
+    if account_json.get('published'):
+        if 'T' in account_json['published']:
+            joined_date = remove_html(account_json['published'])
     masto_account_json = {
         "id": get_masto_api_v1id_from_nickname(nickname),
         "username": nickname,
         "acct": nickname,
         "display_name": account_json['name'],
         "locked": account_json['manuallyApprovesFollowers'],
-        "created_at": "2016-10-05T10:30:00Z",
+        "created_at": joined_date,
         "followers_count": 0,
         "following_count": 0,
         "statuses_count": 0,
