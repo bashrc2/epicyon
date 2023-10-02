@@ -937,6 +937,23 @@ def delete_all_posts(base_dir: str,
             print('ERROR: delete_all_posts ' + str(ex))
 
 
+def _save_last_published(base_dir: str, nickname: str, domain: str,
+                         published: str) -> None:
+    """Saves the last published date for the outbox
+    """
+    if not published:
+        return
+
+    published_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.last_published'
+    try:
+        with open(published_filename, 'w+', encoding='utf-8') as fp_last:
+            fp_last.write(published)
+    except OSError:
+        print('EX: unable to save last published time ' +
+              published_filename)
+
+
 def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
                      nickname: str, domain: str, post_json_object: {},
                      boxname: str) -> str:
@@ -970,16 +987,7 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
     # if this is an outbox post with a duplicate in the inbox then save to both
     # This happens for edited posts
     if '/outbox/' in filename:
-        if published:
-            published_filename = \
-                acct_dir(base_dir, nickname, domain) + '/.last_published'
-            try:
-                with open(published_filename, 'w+',
-                          encoding='utf-8') as fp_last:
-                    fp_last.write(published)
-            except OSError:
-                print('EX: unable to save last published time ' +
-                      published_filename)
+        _save_last_published(base_dir, nickname, domain, published)
 
         inbox_filename = filename.replace('/outbox/', '/inbox/')
         if os.path.isfile(inbox_filename):

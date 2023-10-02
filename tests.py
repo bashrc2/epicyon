@@ -1364,6 +1364,9 @@ def test_post_message_between_servers(base_dir: str) -> None:
     is_article = False
     city = 'London, England'
     # nothing in Alice's outbox
+    last_pub_filename = \
+        alice_dir + '/accounts/alice@' + alice_domain + '/.last_published'
+    assert not os.path.isfile(last_pub_filename)
     outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
     assert len([name for name in os.listdir(outbox_path)
                 if os.path.isfile(os.path.join(outbox_path, name))]) == 0
@@ -1411,6 +1414,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                                                                name))]) == 0:
                             break
         time.sleep(1)
+
+    assert os.path.isfile(last_pub_filename)
 
     # check that a news account exists
     news_actor_dir = alice_dir + '/accounts/news@' + alice_domain
