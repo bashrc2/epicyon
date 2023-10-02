@@ -72,6 +72,10 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
     if 'indexable' in account_json:
         if account_json['indexable'] is True:
             noindex = False
+    discoverable = True
+    if 'discoverable' in account_json:
+        if account_json['discoverable'] is False:
+            discoverable = False
     masto_account_json = {
         "id": get_masto_api_v1id_from_nickname(nickname),
         "username": nickname,
@@ -88,7 +92,8 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
         "avatar_static": avatar_url,
         "header": image_url,
         "header_static": image_url,
-        "noindex": noindex
+        "noindex": noindex,
+        "discoverable": discoverable
     }
     return masto_account_json
 
