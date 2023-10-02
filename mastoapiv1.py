@@ -12,6 +12,7 @@ from utils import load_json
 from utils import get_config_param
 from utils import acct_dir
 from utils import remove_html
+from utils import get_attachment_property_value
 from metadata import meta_data_instance
 
 
@@ -99,6 +100,7 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     no_of_statuses = 0
     no_of_followers = 0
     no_of_following = 0
+    fields = []
     if show_accounts and not broch_mode:
         no_of_followers = _lines_in_file(account_dir + '/followers.txt')
         no_of_following = _lines_in_file(account_dir + '/following.txt')
@@ -106,6 +108,30 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
         for _, _, files2 in os.walk(account_dir + '/outbox'):
             no_of_statuses = len(files2)
             break
+        # get account fields from attachments
+        if account_json.get('attachment'):
+            if isinstance(account_json['attachment'], list):
+                for tag in account_json['attachment']:
+                    if not isinstance(tag, dict):
+                        continue
+                    if not tag.get('name'):
+                        continue
+                    if not isinstance(tag['name'], str):
+                        continue
+                    prop_value_name, _ = \
+                        get_attachment_property_value(tag)
+                    if not prop_value_name:
+                        continue
+                    if not tag.get(prop_value_name):
+                        continue
+                    if not isinstance(tag[prop_value_name], str):
+                        continue
+                    fields.append({
+                        "name": tag['name'],
+                        "value": tag[prop_value_name],
+                        "verified_at": None
+                    })
+
     masto_account_json = {
         "id": get_masto_api_v1id_from_nickname(nickname),
         "username": nickname,
@@ -128,7 +154,7 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
         "bot": bot,
         "emojis": [],
         "roles": [],
-        "fields": []
+        "fields": fields
     }
     return masto_account_json
 
