@@ -68,6 +68,10 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
     joined_date = "2016-10-05T10:30:00Z"
     if account_json.get('published'):
         joined_date = account_json['published']
+    noindex = True
+    if 'indexable' in account_json:
+        if account_json['indexable'] is True:
+            noindex = False
     masto_account_json = {
         "id": get_masto_api_v1id_from_nickname(nickname),
         "username": nickname,
@@ -83,7 +87,8 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str) -> {}:
         "avatar": avatar_url,
         "avatar_static": avatar_url,
         "header": image_url,
-        "header_static": image_url
+        "header_static": image_url,
+        "noindex": noindex
     }
     return masto_account_json
 
