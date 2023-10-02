@@ -33,6 +33,7 @@ from webfinger import webfinger_lookup
 from webfinger import wellknown_protocol_handler
 from webfinger import webfinger_update
 from mastoapiv1 import masto_api_v1_response
+from mastoapiv2 import masto_api_v2_response
 from metadata import meta_data_node_info
 from metadata import metadata_custom_emoji
 from enigma import get_enigma_pub_key
@@ -1476,6 +1477,132 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.masto_api_is_active = False
         return True
 
+    def _masto_api_v2(self, path: str, calling_domain: str,
+                      ua_str: str,
+                      authorized: bool,
+                      http_prefix: str,
+                      base_dir: str, nickname: str, domain: str,
+                      domain_full: str,
+                      onion_domain: str, i2p_domain: str,
+                      translate: {},
+                      registration: bool,
+                      system_language: str,
+                      project_version: str,
+                      custom_emoji: [],
+                      show_node_info_accounts: bool,
+                      referer_domain: str,
+                      debug: bool,
+                      calling_site_timeout: int,
+                      known_crawlers: {},
+                      sites_unavailable: []) -> bool:
+        """This is a vestigil mastodon v2 API for the purpose
+        of returning an empty result to sites like
+        https://mastopeek.app-dist.eu
+        """
+        if not path.startswith('/api/v2/'):
+            return False
+
+        if not referer_domain:
+            if not (debug and self.server.unit_test):
+                print('mastodon api v2 request has no referer domain ' +
+                      str(ua_str))
+                self._400()
+                return True
+        if referer_domain == domain_full:
+            print('mastodon api v2 request from self')
+            self._400()
+            return True
+        if self.server.masto_api_is_active:
+            print('mastodon api v2 is busy during request from ' +
+                  referer_domain)
+            self._503()
+            return True
+        self.server.masto_api_is_active = True
+        # is this a real website making the call ?
+        if not debug and not self.server.unit_test and referer_domain:
+            # Does calling_domain look like a domain?
+            if ' ' in referer_domain or \
+               ';' in referer_domain or \
+               '.' not in referer_domain:
+                print('mastodon api v2 ' +
+                      'referer does not look like a domain ' +
+                      referer_domain)
+                self._400()
+                self.server.masto_api_is_active = False
+                return True
+            if not self.server.allow_local_network_access:
+                if local_network_host(referer_domain):
+                    print('mastodon api v2 referer domain is from the ' +
+                          'local network ' + referer_domain)
+                    self._400()
+                    self.server.masto_api_is_active = False
+                    return True
+            if not referer_is_active(http_prefix,
+                                     referer_domain, ua_str,
+                                     calling_site_timeout,
+                                     sites_unavailable):
+                print('mastodon api v2 referer url is not active ' +
+                      referer_domain)
+                self._400()
+                self.server.masto_api_is_active = False
+                return True
+
+        print('mastodon api v2: ' + path)
+        print('mastodon api v2: authorized ' + str(authorized))
+        print('mastodon api v2: nickname ' + str(nickname))
+        print('mastodon api v2: referer ' + str(referer_domain))
+        crawl_time = \
+            update_known_crawlers(ua_str, base_dir,
+                                  known_crawlers,
+                                  self.server.last_known_crawler)
+        if crawl_time is not None:
+            self.server.last_known_crawler = crawl_time
+
+        broch_mode = broch_mode_is_active(base_dir)
+        send_json, send_json_str = \
+            masto_api_v2_response(path,
+                                  calling_domain,
+                                  ua_str,
+                                  authorized,
+                                  http_prefix,
+                                  base_dir,
+                                  nickname, domain,
+                                  domain_full,
+                                  onion_domain,
+                                  i2p_domain,
+                                  translate,
+                                  registration,
+                                  system_language,
+                                  project_version,
+                                  custom_emoji,
+                                  show_node_info_accounts,
+                                  broch_mode)
+
+        if send_json is not None:
+            msg_str = json.dumps(send_json)
+            msg_str = self._convert_domains(calling_domain, referer_domain,
+                                            msg_str)
+            msg = msg_str.encode('utf-8')
+            msglen = len(msg)
+            if self._has_accept(calling_domain):
+                protocol_str = \
+                    get_json_content_from_accept(self.headers.get('Accept'))
+                self._set_headers(protocol_str, msglen,
+                                  None, calling_domain, True)
+            else:
+                self._set_headers('application/ld+json', msglen,
+                                  None, calling_domain, True)
+            self._write(msg)
+            if send_json_str:
+                print(send_json_str)
+            self.server.masto_api_is_active = False
+            return True
+
+        # no api v2 endpoints were matched
+        self._404()
+        self.server.masto_api_is_active = False
+        return True
+
     def _masto_api(self, path: str, calling_domain: str,
                    ua_str: str,
                    authorized: bool, http_prefix: str,
@@ -1491,6 +1618,15 @@ class PubServer(BaseHTTPRequestHandler):
                    referer_domain: str, debug: bool,
                    known_crawlers: {},
                    sites_unavailable: []) -> bool:
+        if self._masto_api_v2(path, calling_domain, ua_str, authorized,
+                              http_prefix, base_dir, nickname, domain,
+                              domain_full, onion_domain, i2p_domain,
+                              translate, registration, system_language,
+                              project_version, custom_emoji,
+                              show_node_info_accounts,
+                              referer_domain, debug, 5,
+                              known_crawlers, sites_unavailable):
+            return True
         return self._masto_api_v1(path, calling_domain, ua_str, authorized,
                                   http_prefix, base_dir, nickname, domain,
                                   domain_full, onion_domain, i2p_domain,

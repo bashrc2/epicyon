@@ -4641,3 +4641,15 @@ def get_status_count(base_dir: str) -> int:
                 break
         break
     return status_ctr
+
+
+def lines_in_file(filename: str) -> int:
+    """Returns the number of lines in a file
+    """
+    if os.path.isfile(filename):
+        try:
+            with open(filename, 'r', encoding='utf-8') as fp_lines:
+                return len(fp_lines.read().split('\n'))
+        except OSError:
+            print('EX: lines_in_file error reading ' + filename)
+    return 0

@@ -15,6 +15,7 @@ from utils import remove_html
 from utils import get_attachment_property_value
 from utils import no_of_accounts
 from utils import get_status_count
+from utils import lines_in_file
 
 
 def _meta_data_instance_v1(show_accounts: bool,
@@ -191,18 +192,6 @@ def get_nickname_from_masto_api_v1id(masto_id: int) -> str:
     return nickname[::-1]
 
 
-def _lines_in_file(filename: str) -> int:
-    """Returns the number of lines in a file
-    """
-    if os.path.isfile(filename):
-        try:
-            with open(filename, 'r', encoding='utf-8') as fp_lines:
-                return len(fp_lines.read().split('\n'))
-        except OSError:
-            print('EX: _lines_in_file error reading ' + filename)
-    return 0
-
-
 def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
                              show_accounts: bool, broch_mode: bool) -> {}:
     """See https://github.com/McKael/mastodon-documentation/
@@ -241,8 +230,8 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     fields = []
     published = None
     if show_accounts and not broch_mode:
-        no_of_followers = _lines_in_file(account_dir + '/followers.txt')
-        no_of_following = _lines_in_file(account_dir + '/following.txt')
+        no_of_followers = lines_in_file(account_dir + '/followers.txt')
+        no_of_following = lines_in_file(account_dir + '/following.txt')
         # count the number of posts
         for _, _, files2 in os.walk(account_dir + '/outbox'):
             no_of_statuses = len(files2)
@@ -270,16 +259,16 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
                         "value": tag[prop_value_name],
                         "verified_at": None
                     })
-            published_filename = \
-                acct_dir(base_dir, nickname, domain) + '/.last_published'
-            if os.path.isfile(published_filename):
-                try:
-                    with open(published_filename, 'r',
-                              encoding='utf-8') as fp_pub:
-                        published = fp_pub.read()
-                except OSError:
-                    print('EX: unable to read last published time ' +
-                          published_filename)
+        published_filename = \
+            acct_dir(base_dir, nickname, domain) + '/.last_published'
+        if os.path.isfile(published_filename):
+            try:
+                with open(published_filename, 'r',
+                          encoding='utf-8') as fp_pub:
+                    published = fp_pub.read()
+            except OSError:
+                print('EX: unable to read last published time 1 ' +
+                      published_filename)
 
     masto_account_json = {
         "id": get_masto_api_v1id_from_nickname(nickname),
@@ -325,7 +314,7 @@ def masto_api_v1_response(path: str, calling_domain: str,
                           show_node_info_accounts: bool,
                           broch_mode: bool) -> ({}, str):
     """This is a vestigil mastodon API for the purpose
-       of returning an empty result to sites like
+       of returning a result to sites like
        https://mastopeek.app-dist.eu
     """
     send_json = None
