@@ -93,6 +93,9 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     group = False
     if account_json['type'] == 'Group':
         group = True
+    bot = False
+    if account_json['type'] == 'Application':
+        bot = True
     no_of_statuses = 0
     no_of_followers = 0
     no_of_following = 0
@@ -121,7 +124,11 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
         "header_static": image_url,
         "noindex": noindex,
         "discoverable": discoverable,
-        "group": group
+        "group": group,
+        "bot": bot,
+        "emojis": [],
+        "roles": [],
+        "fields": []
     }
     return masto_account_json
 
