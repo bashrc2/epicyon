@@ -981,9 +981,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _get_account_pub_key(self, path: str, person_cache: {},
-                             base_dir: str, http_prefix: str,
-                             domain: str, onion_domain: str,
-                             i2p_domain: str,
+                             base_dir: str, domain: str,
                              calling_domain: str) -> str:
         """Returns the public key for an account
         """
@@ -1049,8 +1047,7 @@ class PubServer(BaseHTTPRequestHandler):
         return redirect.replace('/' + last_str, '/' +
                                 urllib.parse.quote_plus(last_str))
 
-    def _logout_redirect(self, redirect: str, cookie: str,
-                         calling_domain: str) -> None:
+    def _logout_redirect(self, redirect: str, calling_domain: str) -> None:
         if '://' not in redirect:
             redirect = self._get_instance_url(calling_domain) + redirect
             print('WARN: redirect was not an absolute url, changed to ' +
@@ -17154,11 +17151,7 @@ class PubServer(BaseHTTPRequestHandler):
         acct_pub_key_json = \
             self._get_account_pub_key(self.path, self.server.person_cache,
                                       self.server.base_dir,
-                                      self.server.http_prefix,
-                                      self.server.domain,
-                                      self.server.onion_domain,
-                                      self.server.i2p_domain,
-                                      calling_domain)
+                                      self.server.domain, calling_domain)
         if acct_pub_key_json:
             msg_str = json.dumps(acct_pub_key_json, ensure_ascii=False)
             msg = msg_str.encode('utf-8')
@@ -17262,7 +17255,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 news_url = \
                     self._get_instance_url(calling_domain) + '/users/news'
-                self._logout_redirect(news_url, None, calling_domain)
+                self._logout_redirect(news_url, calling_domain)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'logout',
                                 self.server.debug)
@@ -19380,7 +19373,7 @@ class PubServer(BaseHTTPRequestHandler):
            not authorized and \
            self.server.news_instance:
             news_url = self._get_instance_url(calling_domain) + '/users/news'
-            self._logout_redirect(news_url, None, calling_domain)
+            self._logout_redirect(news_url, calling_domain)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'news front page shown',
                                 self.server.debug)
