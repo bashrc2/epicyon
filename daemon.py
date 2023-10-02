@@ -1366,7 +1366,8 @@ class PubServer(BaseHTTPRequestHandler):
                       referer_domain: str,
                       debug: bool,
                       calling_site_timeout: int,
-                      known_crawlers: {}) -> bool:
+                      known_crawlers: {},
+                      sites_unavailable: []) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -1380,7 +1381,7 @@ class PubServer(BaseHTTPRequestHandler):
                       str(ua_str))
                 self._400()
                 return True
-        if referer_domain == self.server.domain_full:
+        if referer_domain == domain_full:
             print('mastodon api request from self')
             self._400()
             return True
@@ -1412,7 +1413,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not referer_is_active(http_prefix,
                                      referer_domain, ua_str,
                                      calling_site_timeout,
-                                     self.server.sites_unavailable):
+                                     sites_unavailable):
                 print('mastodon api referer url is not active ' +
                       referer_domain)
                 self._400()
@@ -1425,7 +1426,7 @@ class PubServer(BaseHTTPRequestHandler):
         print('mastodon api v1: referer ' + str(referer_domain))
         crawl_time = \
             update_known_crawlers(ua_str, base_dir,
-                                  self.server.known_crawlers,
+                                  known_crawlers,
                                   self.server.last_known_crawler)
         if crawl_time is not None:
             self.server.last_known_crawler = crawl_time
@@ -1488,7 +1489,8 @@ class PubServer(BaseHTTPRequestHandler):
                    custom_emoji: [],
                    show_node_info_accounts: bool,
                    referer_domain: str, debug: bool,
-                   known_crawlers: {}) -> bool:
+                   known_crawlers: {},
+                   sites_unavailable: []) -> bool:
         return self._masto_api_v1(path, calling_domain, ua_str, authorized,
                                   http_prefix, base_dir, nickname, domain,
                                   domain_full, onion_domain, i2p_domain,
@@ -1496,7 +1498,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   project_version, custom_emoji,
                                   show_node_info_accounts,
                                   referer_domain, debug, 5,
-                                  known_crawlers)
+                                  known_crawlers, sites_unavailable)
 
     def _show_vcard(self, base_dir: str, path: str, calling_domain: str,
                     referer_domain: str, domain: str) -> bool:
@@ -17987,7 +17989,8 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.show_node_info_accounts,
                            referer_domain,
                            self.server.debug,
-                           self.server.known_crawlers):
+                           self.server.known_crawlers,
+                           self.server.sites_unavailable):
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
