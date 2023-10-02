@@ -4624,3 +4624,20 @@ def binary_is_image(filename: str, media_binary) -> bool:
         if '<svg' in str(media_binary):
             bin_is_image = True
     return bin_is_image
+
+
+def get_status_count(base_dir: str) -> int:
+    """Get the total number of posts
+    """
+    status_ctr = 0
+    accounts_dir = base_dir + '/accounts'
+    for _, dirs, _ in os.walk(accounts_dir):
+        for acct in dirs:
+            if not is_account_dir(acct):
+                continue
+            acct_dir = os.path.join(accounts_dir, acct + '/outbox')
+            for _, _, files2 in os.walk(acct_dir):
+                status_ctr += len(files2)
+                break
+        break
+    return status_ctr
