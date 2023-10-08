@@ -128,6 +128,7 @@ from followerSync import update_followers_sync_cache
 from follow import pending_followers_timeline_json
 from follow import follower_approval_active
 from follow import is_following_actor
+from follow import is_follower_of_person
 from follow import get_following_feed
 from follow import send_follow_request
 from follow import unfollow_account
@@ -4971,14 +4972,19 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 profile_path_str = path.replace('/searchhandle', '')
 
-                # are we already following the searched for handle?
-                if not remote_only and \
-                   is_following_actor(base_dir, nickname, domain, search_str):
+                # are we already following or followed by the searched
+                # for handle?
+                search_nickname = get_nickname_from_actor(search_str)
+                search_domain, search_port = \
+                    get_domain_from_actor(search_str)
+                search_follower = \
+                    is_follower_of_person(base_dir, nickname, domain,
+                                          search_nickname, search_domain)
+                search_following = \
+                    is_following_actor(base_dir, nickname, domain, search_str)
+                if not remote_only and (search_follower or search_following):
                     # get the actor
                     if not has_users_path(search_str):
-                        search_nickname = get_nickname_from_actor(search_str)
-                        search_domain, search_port = \
-                            get_domain_from_actor(search_str)
                         if not search_nickname or not search_domain:
                             self.send_response(400)
                             self.end_headers()
