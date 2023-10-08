@@ -100,6 +100,8 @@ def site_is_active(url: str, timeout: int,
     This can be used to check that an instance is online before
     trying to send posts to it.
     """
+    if '<>' in url:
+        url = url.replace('<>', '')
     if not url.startswith('http') and \
        not url.startswith('ipfs') and \
        not url.startswith('ipns'):
