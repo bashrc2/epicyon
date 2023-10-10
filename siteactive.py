@@ -11,8 +11,6 @@ __module_group__ = "Core"
 import http.client
 from urllib.parse import urlparse
 import ssl
-from socket import gaierror
-import errno
 
 
 class Result:
@@ -122,19 +120,20 @@ def site_is_active(url: str, timeout: int,
     try:
         result = _site_active_http_request(loc, timeout)
 
+        if url2 in sites_unavailable:
+            sites_unavailable.remove(url2)
+
         if 400 <= result.status < 500:
+            # the site is available but denying access
             return result
 
         return True
 
-    except gaierror as ex:
-        print('EX: site_is_active gaierror ' + url + ' ' + str(ex))
-        if url2 not in sites_unavailable:
-            sites_unavailable.append(url2)
     except BaseException as ex:
         print('EX: site_is_active ' + url + ' ' + str(ex))
-        if url2 in sites_unavailable:
-            sites_unavailable.remove(url2)
+
+    if url2 not in sites_unavailable:
+        sites_unavailable.append(url2)
     return False
 
 
