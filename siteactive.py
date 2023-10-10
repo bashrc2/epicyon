@@ -12,6 +12,7 @@ import http.client
 from urllib.parse import urlparse
 import ssl
 from socket import gaierror
+import errno
 
 
 class Result:
