@@ -427,6 +427,10 @@ def verify_html(session, url: str, debug: bool,
     if not url_exists(session, url, 3, http_prefix, domain):
         return False
 
+    if '://' not in url:
+        if url.startswith('/'):
+            url = http_prefix + '://' + domain + url
+
     as_header = {
         'Accept': 'text/html'
     }
