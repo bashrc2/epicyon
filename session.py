@@ -436,7 +436,7 @@ def verify_html(session, url: str, debug: bool,
     }
     verification_site_html = \
         download_html(None, session, url,
-                      as_header, None, debug, __version__,
+                      as_header, None, debug, version,
                       http_prefix, domain, timeout_sec, quiet)
     if not verification_site_html:
         if debug:
