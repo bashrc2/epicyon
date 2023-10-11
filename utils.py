@@ -4551,7 +4551,7 @@ def harmless_markup(post_json_object: {}) -> None:
                     post_json_object['object'][map_name][lang] = \
                         remove_markup_tag(content, 'pre')
             else:
-                print('WARN: harmless_markup unkown Map ' + map_name + ' ' +
+                print('WARN: harmless_markup unknown Map ' + map_name + ' ' +
                       str(post_json_object['object'][map_name]))
 
 def ap_proxy_type(json_object: {}) -> str:
