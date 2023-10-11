@@ -75,6 +75,9 @@ def url_exists(session, url: str, timeout_sec: int = 3,
     if domain:
         session_headers['User-Agent'] += \
             '; +' + http_prefix + '://' + domain + '/'
+    if '://' not in url:
+        if url.startswith('/'):
+            url = http_prefix + '://' + domain + url
     if not session:
         print('WARN: url_exists failed, no session specified')
         return True
