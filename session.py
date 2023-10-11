@@ -96,9 +96,9 @@ def url_exists(session, url: str, timeout_sec: int = 3,
     return False
 
 
-def _get_json_request(session, url: str, domain_full: str, session_headers: {},
+def _get_json_request(session, url: str, session_headers: {},
                       session_params: {}, timeout_sec: int,
-                      signing_priv_key_pem: str, quiet: bool, debug: bool,
+                      quiet: bool, debug: bool,
                       return_json: bool) -> {}:
     """http GET for json
     """
@@ -242,8 +242,8 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
     return_json = True
     if 'json' not in content_type:
         return_json = False
-    return _get_json_request(session, url, domain_full, session_headers,
-                             session_params, timeout_sec, None, quiet,
+    return _get_json_request(session, url, session_headers,
+                             session_params, timeout_sec, quiet,
                              debug, return_json)
 
 
@@ -292,9 +292,9 @@ def get_json(signing_priv_key_pem: str,
                                 session_headers, session_params,
                                 timeout_sec, signing_priv_key_pem,
                                 quiet, debug)
-    return _get_json_request(session, url, domain, session_headers,
+    return _get_json_request(session, url, session_headers,
                              session_params, timeout_sec,
-                             None, quiet, debug, True)
+                             quiet, debug, True)
 
 
 def get_vcard(xml_format: bool,
@@ -413,9 +413,9 @@ def download_html(signing_priv_key_pem: str,
                                 session_headers, session_params,
                                 timeout_sec, signing_priv_key_pem,
                                 quiet, debug)
-    return _get_json_request(session, url, domain, session_headers,
+    return _get_json_request(session, url, session_headers,
                              session_params, timeout_sec,
-                             None, quiet, debug, False)
+                             quiet, debug, False)
 
 
 def verify_html(session, url: str, debug: bool,
@@ -550,9 +550,9 @@ def download_ssml(signing_priv_key_pem: str,
                                 session_headers, session_params,
                                 timeout_sec, signing_priv_key_pem,
                                 quiet, debug)
-    return _get_json_request(session, url, domain, session_headers,
+    return _get_json_request(session, url, session_headers,
                              session_params, timeout_sec,
-                             None, quiet, debug, False)
+                             quiet, debug, False)
 
 
 def _set_user_agent(session, http_prefix: str, domain_full: str) -> None:
