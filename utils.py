@@ -4538,18 +4538,21 @@ def harmless_markup(post_json_object: {}) -> None:
                                   'pre')
         map_name = field_name + 'Map'
         if post_json_object['object'].get(map_name):
-            map_dict = post_json_object['object'][map_name].items()
-            for lang, content in map_dict:
-                if not isinstance(content, str):
-                    continue
-                if dangerous_markup(content, False, ['pre']):
-                    content = remove_html(content)
+            if isinstance(post_json_object['object'][map_name], dict):
+                map_dict = post_json_object['object'][map_name].items()
+                for lang, content in map_dict:
+                    if not isinstance(content, str):
+                        continue
+                    if dangerous_markup(content, False, ['pre']):
+                        content = remove_html(content)
+                        post_json_object['object'][map_name][lang] = \
+                            content
+                    content = post_json_object['object'][map_name][lang]
                     post_json_object['object'][map_name][lang] = \
-                        content
-                content = post_json_object['object'][map_name][lang]
-                post_json_object['object'][map_name][lang] = \
-                    remove_markup_tag(content, 'pre')
-
+                        remove_markup_tag(content, 'pre')
+            else:
+                print('WARN: harmless_markup unkown Map ' + map_name + ' ' +
+                      str(post_json_object['object'][map_name]))
 
 def ap_proxy_type(json_object: {}) -> str:
     """Returns a string indicating the proxy for an activitypub post
