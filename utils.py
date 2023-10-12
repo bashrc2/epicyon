@@ -249,31 +249,33 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
     map_dict = content_type + 'Map'
-    if not this_post_json.get(content_type) and \
-       not this_post_json.get(map_dict):
-        return ''
-    content = ''
-    map_dict = content_type + 'Map'
+    has_contentmap_dict = False
     if this_post_json.get(map_dict):
         if isinstance(this_post_json[map_dict], dict):
-            if this_post_json[map_dict].get(system_language):
-                sys_lang = this_post_json[map_dict][system_language]
-                if isinstance(sys_lang, str):
-                    content = sys_lang
-                    content = remove_markup_tag(content, 'pre')
-                    content = content.replace('&amp;', '&')
-                    return standardize_text(content)
-            else:
-                # is there a contentMap/summaryMap entry for one of
-                # the understood languages?
-                for lang in languages_understood:
-                    if this_post_json[map_dict].get(lang):
-                        map_lang = this_post_json[map_dict][lang]
-                        if isinstance(map_lang, str):
-                            content = map_lang
-                            content = remove_markup_tag(content, 'pre')
-                            content = content.replace('&amp;', '&')
-                            return standardize_text(content)
+            has_contentmap_dict = True
+    if not this_post_json.get(content_type) and \
+       not has_contentmap_dict:
+        return ''
+    content = ''
+    if has_contentmap_dict:
+        if this_post_json[map_dict].get(system_language):
+            sys_lang = this_post_json[map_dict][system_language]
+            if isinstance(sys_lang, str):
+                content = sys_lang
+                content = remove_markup_tag(content, 'pre')
+                content = content.replace('&amp;', '&')
+                return standardize_text(content)
+        else:
+            # is there a contentMap/summaryMap entry for one of
+            # the understood languages?
+            for lang in languages_understood:
+                if this_post_json[map_dict].get(lang):
+                    map_lang = this_post_json[map_dict][lang]
+                    if isinstance(map_lang, str):
+                        content = map_lang
+                        content = remove_markup_tag(content, 'pre')
+                        content = content.replace('&amp;', '&')
+                        return standardize_text(content)
     else:
         if isinstance(this_post_json[content_type], str):
             content = this_post_json[content_type]
