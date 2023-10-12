@@ -214,10 +214,6 @@ def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
                 print('get_user_url webfinger activity+json ' +
                       'contains single user instance actor ' +
                       str(source_id) + ' ' + str(link))
-        else:
-            url = link['href']
-            if not contains_invalid_actor_url_chars(url):
-                return remove_html(url)
         url = link['href']
         if not contains_invalid_actor_url_chars(url):
             return remove_html(url)
