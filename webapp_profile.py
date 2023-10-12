@@ -471,7 +471,10 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
         parse_user_feed(signing_priv_key_pem,
                         session, outbox_url, as_header, project_version,
                         http_prefix, from_domain, debug)
-    if user_feed:
+    if not user_feed:
+        if debug:
+            print('DEBUG: no user feed in profile preview')
+    else:
         minimize_all_images = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
@@ -495,6 +498,10 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                         print('DEBUG: resolved public feed announce ' +
                               str(item))
                     if not get_json_valid(item):
+                        if debug:
+                            print('DEBUG: ' +
+                                  'announce json is not valid in timeline ' +
+                                  str(item))
                         continue
             show_item, post_json_object = \
                 _valid_profile_preview_post(item, person_url)
