@@ -881,7 +881,12 @@ def _command_options() -> None:
             print('origin_domain: ' + str(origin_domain))
         if argb.posts.startswith('@'):
             argb.posts = argb.posts[1:]
-        if '@' not in argb.posts or '/@/' in argb.posts:
+        url_with_at = False
+        if '://' in argb.posts and '/@' in argb.posts and \
+           '/@/' not in argb.posts:
+            url_with_at = True
+        if '@' not in argb.posts or '/@/' in argb.posts or \
+           url_with_at:
             posts_nickname = get_nickname_from_actor(argb.posts)
             if not posts_nickname:
                 print('No nickname found ' + argb.posts)
@@ -1151,7 +1156,12 @@ def _command_options() -> None:
             print('origin_domain: ' + str(origin_domain))
         if argb.postsraw.startswith('@'):
             argb.postsraw = argb.postsraw[1:]
-        if '@' not in argb.postsraw or '/@/' in argb.postsraw:
+        url_with_at = False
+        if '://' in argb.postsraw and '/@' in argb.postsraw and \
+           '/@/' not in argb.postsraw:
+            url_with_at = True
+        if '@' not in argb.postsraw or '/@/' in argb.postsraw or \
+           url_with_at:
             posts_nickname = get_nickname_from_actor(argb.postsraw)
             if not posts_nickname:
                 print('No nickname found ' + argb.postsraw)
@@ -1163,6 +1173,8 @@ def _command_options() -> None:
             argb.postsraw = \
                 get_full_domain(posts_nickname + '@' + posts_domain,
                                 posts_port)
+            if argb.debug:
+                print('handle: ' + argb.postsraw)
         if '@' not in argb.postsraw:
             print('Syntax: --postsraw nickname@domain')
             sys.exit()

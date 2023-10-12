@@ -4554,6 +4554,7 @@ def harmless_markup(post_json_object: {}) -> None:
                 print('WARN: harmless_markup unknown Map ' + map_name + ' ' +
                       str(post_json_object['object'][map_name]))
 
+
 def ap_proxy_type(json_object: {}) -> str:
     """Returns a string indicating the proxy for an activitypub post
     or None if not proxied
