@@ -300,6 +300,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import corp_servers
 from utils import get_attributed_to
 from utils import get_memorials
 from utils import set_memorials
@@ -1241,6 +1242,15 @@ class PubServer(BaseHTTPRequestHandler):
                                    ok_str, None)
         else:
             self._http_return_code(401, 'Unauthorized',
+                                   post_msg, None)
+
+    def _402(self, post_msg: str) -> None:
+        if self.server.translate:
+            ok_str = self.server.translate[post_msg]
+            self._http_return_code(402, self.server.translate['Unauthorized'],
+                                   ok_str, None)
+        else:
+            self._http_return_code(402, 'Unauthorized',
                                    post_msg, None)
 
     def _201(self, etag: str) -> None:
@@ -17232,6 +17242,13 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         calling_domain = self.server.domain_full
+
+        if self.headers.get('Server'):
+            if self.headers['Server'] in corp_servers():
+                self._402("If you are a BigTech corp trying to steal " +
+                          "data then it's time to see the color of " +
+                          "your money")
+                return
 
         if self.headers.get('Host'):
             calling_domain = decoded_host(self.headers['Host'])

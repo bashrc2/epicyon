@@ -4657,3 +4657,10 @@ def lines_in_file(filename: str) -> int:
         except OSError:
             print('EX: lines_in_file error reading ' + filename)
     return 0
+
+
+def corp_servers() -> ():
+    """Returns a list of despised corporate thieves
+    """
+    return ('GitHub.com', 'github.com', 'cloudflare', 'microsoft.com',
+            'google.com')
