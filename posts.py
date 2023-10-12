@@ -360,8 +360,6 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     if not person_url:
         return None, None, None, None, None, None, None, None
 
-    print('get_person_box person_url: ' + person_url)
-
     # get the actor json from the url
     person_json = \
         _get_person_box_actor(session, base_dir, person_url,
@@ -5087,7 +5085,8 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
         else:
             print('Signing key missing')
 
-    print('Starting new session for getting public posts')
+    if debug:
+        print('Starting new session for getting public posts')
     session = create_session(proxy_type)
     if not session:
         if debug:

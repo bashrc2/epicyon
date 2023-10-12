@@ -1734,6 +1734,8 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
         person_url = original_actor
     else:
         handle = nickname + '@' + domain
+        if debug:
+            print('get_actor_json webfinger: ' + handle)
         wf_request = webfinger_handle(session, handle,
                                       http_prefix, cached_webfingers,
                                       host_domain, __version__, debug,
@@ -1769,10 +1771,13 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     )
     if not person_url and wf_request:
         person_url = get_user_url(wf_request, 0, debug)
+    if debug and person_url:
+        print('\nget_actor_json getting json for ' + person_url)
     if nickname == domain:
         paths = get_user_paths()
         for user_path in paths:
-            person_url = person_url.replace(user_path, '/actor/')
+            if user_path != '/@':
+                person_url = person_url.replace(user_path, '/actor/')
     if not person_url and group_account:
         person_url = http_prefix + '://' + domain + '/c/' + nickname
     if not person_url:
