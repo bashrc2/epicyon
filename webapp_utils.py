@@ -1669,6 +1669,8 @@ def html_post_separator(base_dir: str, column: str) -> str:
     """Returns the html for a timeline post separator image
     """
     theme = get_config_param(base_dir, 'theme')
+    if not theme:
+        theme = 'default'
     filename = 'separator.png'
     separator_class = "postSeparatorImage"
     if column:
