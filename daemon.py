@@ -17245,6 +17245,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.headers.get('Server'):
             if self.headers['Server'] in corp_servers():
+                if self.server.debug:
+                    print('Corporate leech bounced: ' + self.headers['Server'])
                 self._402("If you are a BigTech corp trying to steal " +
                           "data then it's time to see the color of " +
                           "your money")
