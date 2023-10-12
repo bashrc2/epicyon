@@ -511,8 +511,7 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                           str(item))
                 continue
 
-            profile_str += \
-                text_mode_separator + \
+            profile_post_html = \
                 individual_post_as_html(signing_priv_key_pem,
                                         True, recent_posts_cache,
                                         max_recent_posts,
@@ -537,6 +536,13 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
                                         buy_sites)
+            if not profile_post_html:
+                if debug:
+                    print('DEBUG: no html produced for profile post: ' +
+                          str(item))
+                continue
+
+            profile_str += text_mode_separator + profile_post_html
             i += 1
             if i >= 8:
                 break
