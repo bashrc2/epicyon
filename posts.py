@@ -215,10 +215,7 @@ def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
                       'contains single user instance actor ' +
                       str(source_id) + ' ' + str(link))
         else:
-            if '/@/' not in link['href']:
-                url = link['href'].replace('/@', '/users/')
-            else:
-                url = link['href']
+            url = link['href']
             if not contains_invalid_actor_url_chars(url):
                 return remove_html(url)
         url = link['href']
@@ -366,6 +363,8 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
             person_url = local_actor_url(http_prefix, nickname, domain)
     if not person_url:
         return None, None, None, None, None, None, None, None
+
+    print('get_person_box person_url: ' + person_url)
 
     # get the actor json from the url
     person_json = \
@@ -5122,7 +5121,7 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
         sys.exit()
 
     if debug:
-        print('Getting the outbox for ' + handle)
+        print('\nGetting the outbox for ' + handle)
     (person_url, _, _, person_id, _, _,
      _, _) = get_person_box(signing_priv_key_pem,
                             origin_domain,
