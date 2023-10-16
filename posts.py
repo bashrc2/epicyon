@@ -2821,6 +2821,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
 
     if to_domain not in inbox_url:
         return 7
+
+    # remove the domain to leave the path on its own
     post_path = inbox_url.split(to_domain, 1)[1]
 
     if not post_json_object.get('signature'):
@@ -3256,6 +3258,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
             print('DEBUG: send_signed_json ' +
                   to_domain + ' is not in ' + inbox_url)
         return 7
+
+    # remove the domain to leave the path on its own
     post_path = inbox_url.split(to_domain, 1)[1]
 
     _add_followers_to_public_post(post_json_object)
