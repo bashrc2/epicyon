@@ -2814,7 +2814,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     inbox_url_domain, _ = get_domain_from_actor(inbox_url)
     if inbox_url_domain:
         if inbox_url_domain != to_domain:
-            print('send_signed_json ' +
+            print('send_post ' +
                   'inbox domain is not the same as instance domain ' +
                   inbox_url_domain + ' != ' + to_domain)
             to_domain = inbox_url_domain
