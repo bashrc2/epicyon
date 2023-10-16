@@ -477,23 +477,37 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
         if isinstance(this_item, dict):
             if this_item.get('to'):
                 is_public = False
-                for recipient in this_item['to']:
+                if isinstance(this_item['to'], list):
+                    for recipient in this_item['to']:
+                        if recipient.endswith('#Public') or \
+                           recipient == 'as:Public' or \
+                           recipient == 'Public':
+                            is_public = True
+                            break
+                elif isinstance(this_item['to'], str):
+                    recipient = this_item['to']
                     if recipient.endswith('#Public') or \
                        recipient == 'as:Public' or \
                        recipient == 'Public':
                         is_public = True
-                        break
                 if not is_public:
                     return False
         elif isinstance(this_item, str) or item_is_note:
             if item.get('to'):
                 is_public = False
-                for recipient in item['to']:
+                if isinstance(item['to'], list):
+                    for recipient in item['to']:
+                        if recipient.endswith('#Public') or \
+                           recipient == 'as:Public' or \
+                           recipient == 'Public':
+                            is_public = True
+                            break
+                elif isinstance(item['to'], str):
+                    recipient = item['to']
                     if recipient.endswith('#Public') or \
                        recipient == 'as:Public' or \
                        recipient == 'Public':
                         is_public = True
-                        break
                 if not is_public:
                     return False
     return True
@@ -1906,14 +1920,26 @@ def _post_is_addressed_to_followers(nickname: str, domain: str, port: int,
     if post_json_object['type'] != 'Update' and \
        has_object_dict(post_json_object):
         if post_json_object['object'].get('to'):
-            to_list = post_json_object['object']['to']
+            if isinstance(post_json_object['object']['to'], list):
+                to_list = post_json_object['object']['to']
+            elif isinstance(post_json_object['object']['to'], str):
+                to_list = [post_json_object['object']['to']]
         if post_json_object['object'].get('cc'):
-            cc_list = post_json_object['object']['cc']
+            if isinstance(post_json_object['object']['cc'], list):
+                cc_list = post_json_object['object']['cc']
+            elif isinstance(post_json_object['object']['cc'], str):
+                cc_list = [post_json_object['object']['cc']]
     else:
         if post_json_object.get('to'):
-            to_list = post_json_object['to']
+            if isinstance(post_json_object['to'], list):
+                to_list = post_json_object['to']
+            elif isinstance(post_json_object['to'], str):
+                to_list = [post_json_object['to']]
         if post_json_object.get('cc'):
-            cc_list = post_json_object['cc']
+            if isinstance(post_json_object['cc'], list):
+                cc_list = post_json_object['cc']
+            elif isinstance(post_json_object['cc'], str):
+                cc_list = [post_json_object['cc']]
 
     followers_url = \
         local_actor_url(http_prefix, nickname, domain_full) + '/followers'

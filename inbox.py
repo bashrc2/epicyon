@@ -3846,8 +3846,12 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
     domain = handle.split('@')[1]
     domain_full = get_full_domain(domain, port)
     group_actor = local_actor_url(http_prefix, nickname, domain_full)
-    if group_actor not in post_json_object['to']:
-        return
+    if isinstance(post_json_object['to'], list):
+        if group_actor not in post_json_object['to']:
+            return
+    else:
+        if group_actor != post_json_object['to']:
+            return
     cc_str = ''
     nickname = handle.split('@')[0].replace('!', '')
 

@@ -107,6 +107,11 @@ def _person_receive_update_outbox(base_dir: str, http_prefix: str,
         return
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
+    if not isinstance(message_json['to'], list):
+        if debug:
+            print('DEBUG: c2s actor update - to field is not a list ' +
+                  str(message_json['to']))
+        return
     if len(message_json['to']) != 1:
         if debug:
             print('DEBUG: c2s actor update - to does not contain one actor ' +

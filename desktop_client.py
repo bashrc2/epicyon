@@ -213,18 +213,34 @@ def _post_is_to_you(actor: str, post_json_object: {}) -> bool:
     """
     to_your_actor = False
     if post_json_object.get('to'):
-        if actor in post_json_object['to']:
-            to_your_actor = True
+        if isinstance(post_json_object['to'], list):
+            if actor in post_json_object['to']:
+                to_your_actor = True
+        elif isinstance(post_json_object['to'], str):
+            if actor == post_json_object['to']:
+                to_your_actor = True
     if not to_your_actor and post_json_object.get('cc'):
-        if actor in post_json_object['cc']:
-            to_your_actor = True
+        if isinstance(post_json_object['cc'], list):
+            if actor in post_json_object['cc']:
+                to_your_actor = True
+        elif isinstance(post_json_object['cc'], str):
+            if actor == post_json_object['cc']:
+                to_your_actor = True
     if not to_your_actor and has_object_dict(post_json_object):
         if post_json_object['object'].get('to'):
-            if actor in post_json_object['object']['to']:
-                to_your_actor = True
+            if isinstance(post_json_object['to'], list):
+                if actor in post_json_object['object']['to']:
+                    to_your_actor = True
+            elif isinstance(post_json_object['to'], str):
+                if actor == post_json_object['object']['to']:
+                    to_your_actor = True
         if not to_your_actor and post_json_object['object'].get('cc'):
-            if actor in post_json_object['object']['cc']:
-                to_your_actor = True
+            if isinstance(post_json_object['cc'], list):
+                if actor in post_json_object['object']['cc']:
+                    to_your_actor = True
+            elif isinstance(post_json_object['cc'], str):
+                if actor == post_json_object['object']['cc']:
+                    to_your_actor = True
     return to_your_actor
 
 

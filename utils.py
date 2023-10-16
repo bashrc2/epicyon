@@ -2317,6 +2317,8 @@ def is_reminder(post_json_object: {}) -> bool:
         return False
     if not post_json_object['object'].get('tag'):
         return False
+    if not isinstance(post_json_object['object']['to'], list):
+        return False
     if len(post_json_object['object']['to']) != 1:
         return False
     if post_json_object['object']['to'][0] != \
