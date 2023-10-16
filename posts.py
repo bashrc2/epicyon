@@ -2808,6 +2808,17 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     if len(private_key_pem) == 0:
         return 6
 
+    # NOTE: the inbox domain being sent to isn't always the same
+    # as the destination instance domain. eg public-api.wordpress.com
+    # rather than the wordpress instance domain
+    inbox_url_domain, _ = get_domain_from_actor(inbox_url)
+    if inbox_url_domain:
+        if inbox_url_domain != to_domain:
+            print('send_signed_json ' +
+                  'inbox domain is not the same as instance domain ' +
+                  inbox_url_domain + ' != ' + to_domain)
+            to_domain = inbox_url_domain
+
     if to_domain not in inbox_url:
         return 7
     post_path = inbox_url.split(to_domain, 1)[1]
