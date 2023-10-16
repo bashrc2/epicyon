@@ -42,7 +42,7 @@ from utils import remove_eol
 from petnames import get_pet_name
 from session import download_image
 
-MUSIC_SITES = ('soundcloud.com', 'bandcamp.com')
+MUSIC_SITES = ('soundcloud.com', 'bandcamp.com', 'resonate.coop')
 
 MAX_LINK_LENGTH = 40
 
