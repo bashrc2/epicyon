@@ -63,7 +63,7 @@ from follow import clear_follows
 from follow import add_follower_of_person
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
-# from tests import test_shared_items_federation
+from tests import test_shared_items_federation
 from tests import test_group_follow
 from tests import test_post_message_between_servers
 from tests import test_follow_between_servers
@@ -820,7 +820,7 @@ def _command_options() -> None:
     if argb.testsnetwork:
         print('Network Tests')
         base_dir = os.getcwd()
-        # test_shared_items_federation(base_dir)
+        test_shared_items_federation(base_dir)
         test_group_follow(base_dir)
         test_post_message_between_servers(base_dir)
         test_follow_between_servers(base_dir)

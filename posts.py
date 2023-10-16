@@ -2837,13 +2837,14 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     # NOTE: the inbox domain being sent to isn't always the same
     # as the destination instance domain. eg public-api.wordpress.com
     # rather than the wordpress instance domain
-    inbox_url_domain, _ = get_domain_from_actor(inbox_url)
+    inbox_url_domain, inbox_url_port = get_domain_from_actor(inbox_url)
     if inbox_url_domain:
-        if inbox_url_domain != to_domain:
+        inbox_domain = get_full_domain(inbox_url_domain, inbox_url_port)
+        if inbox_domain != to_domain:
             print('send_post ' +
                   'inbox domain is not the same as instance domain ' +
-                  inbox_url_domain + ' != ' + to_domain)
-            to_domain = inbox_url_domain
+                  inbox_domain + ' != ' + to_domain)
+            to_domain = inbox_domain
 
     if to_domain not in inbox_url:
         return 7
@@ -3271,13 +3272,14 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     # NOTE: the inbox domain being sent to isn't always the same
     # as the destination instance domain. eg public-api.wordpress.com
     # rather than the wordpress instance domain
-    inbox_url_domain, _ = get_domain_from_actor(inbox_url)
+    inbox_url_domain, inbox_url_port = get_domain_from_actor(inbox_url)
     if inbox_url_domain:
-        if inbox_url_domain != to_domain:
+        inbox_domain = get_full_domain(inbox_url_domain, inbox_url_port)
+        if inbox_domain != to_domain:
             print('send_signed_json ' +
                   'inbox domain is not the same as instance domain ' +
-                  inbox_url_domain + ' != ' + to_domain)
-            to_domain = inbox_url_domain
+                  inbox_domain + ' != ' + to_domain)
+            to_domain = inbox_domain
 
     if to_domain not in inbox_url:
         if debug:
