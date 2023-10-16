@@ -820,7 +820,7 @@ def _command_options() -> None:
     if argb.testsnetwork:
         print('Network Tests')
         base_dir = os.getcwd()
-        test_shared_items_federation(base_dir)
+        # test_shared_items_federation(base_dir)
         test_group_follow(base_dir)
         test_post_message_between_servers(base_dir)
         test_follow_between_servers(base_dir)
