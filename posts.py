@@ -2741,7 +2741,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
         tries += 1
 
 
-def _get_inbox_domain(inbox_url: str, to_domain: str) -> str:
+def _get_destination_inbox_domain(inbox_url: str, to_domain: str) -> str:
     """ the inbox domain being sent to isn't always the same
     as the destination instance domain. eg public-api.wordpress.com
     rather than the wordpress instance domain
@@ -2751,7 +2751,7 @@ def _get_inbox_domain(inbox_url: str, to_domain: str) -> str:
         return inbox_url
     inbox_domain = get_full_domain(inbox_url_domain, inbox_url_port)
     if inbox_domain != to_domain:
-        print('_get_inbox_domain ' +
+        print('_get_destination_inbox_domain ' +
               'inbox domain is not the same as instance domain ' +
               inbox_domain + ' != ' + to_domain)
         return inbox_domain
@@ -2854,7 +2854,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     # NOTE: the inbox domain being sent to isn't always the same
     # as the destination instance domain. eg public-api.wordpress.com
     # rather than the wordpress instance domain
-    to_domain = _get_inbox_domain(inbox_url, to_domain)
+    to_domain = _get_destination_inbox_domain(inbox_url, to_domain)
 
     if to_domain not in inbox_url:
         return 7
@@ -3282,7 +3282,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     # NOTE: the inbox domain being sent to isn't always the same
     # as the destination instance domain. eg public-api.wordpress.com
     # rather than the wordpress instance domain
-    to_domain = _get_inbox_domain(inbox_url, to_domain)
+    to_domain = _get_destination_inbox_domain(inbox_url, to_domain)
 
     if to_domain not in inbox_url:
         if debug:
