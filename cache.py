@@ -174,9 +174,9 @@ def get_actor_public_key_from_id(person_json: {}, key_id: str) -> (str, str):
             pub_key = person_json['publicKey']['publicKeyPem']
             if person_json['publicKey'].get('id'):
                 pub_key_id = person_json['publicKey']['id']
-    elif person_json.get('authentication'):
-        if isinstance(person_json['authentication'], list):
-            for key_dict in person_json['authentication']:
+    elif person_json.get('assertionMethod'):
+        if isinstance(person_json['assertionMethod'], list):
+            for key_dict in person_json['assertionMethod']:
                 if not key_dict.get('id') or \
                    not key_dict.get('publicKeyMultibase'):
                     continue
