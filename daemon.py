@@ -1011,7 +1011,7 @@ class PubServer(BaseHTTPRequestHandler):
             store_person_in_cache(base_dir, actor, actor_json,
                                   person_cache, False)
         if not actor_json.get('publicKey') and \
-           not actor_json.get('authentication'):
+           not actor_json.get('assertionMethod'):
             return None
         original_person_url = \
             self._get_instance_url(calling_domain) + path
