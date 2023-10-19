@@ -1724,7 +1724,12 @@ def _receive_move_activity(session, base_dir: str,
         if debug:
             print('INBOX: Move activity has no actor: ' + str(message_json))
         return False
-    if not has_object_string_type(message_json, debug):
+    if not message_json.get('object'):
+        if debug:
+            print('INBOX: Move activity object not found: ' +
+                  str(message_json))
+        return False
+    if not isinstance(message_json['object'], str):
         if debug:
             print('INBOX: Move activity object is not a string: ' +
                   str(message_json))
