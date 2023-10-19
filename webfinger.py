@@ -225,12 +225,18 @@ def create_webfinger_endpoint(nickname: str, domain: str, port: int,
 
 def webfinger_node_info(http_prefix: str, domain_full: str) -> {}:
     """ /.well-known/nodeinfo endpoint
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/2677/fep-2677.md
     """
+    instance_url = http_prefix + '://' + domain_full
     nodeinfo = {
         'links': [
             {
-                'href': http_prefix + '://' + domain_full + '/nodeinfo/2.0',
-                'rel': 'http://nodeinfo.diaspora.software/ns/schema/2.0'
+                'rel': 'http://nodeinfo.diaspora.software/ns/schema/2.0',
+                'href': instance_url + '/nodeinfo/2.0'
+            },
+            {
+                "rel": "https://www.w3.org/ns/activitystreams#Application",
+                "href": instance_url + '/actor'
             }
         ]
     }

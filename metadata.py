@@ -68,7 +68,7 @@ def meta_data_node_info(base_dir: str,
             'chat_enabled': False,
             'postFormats': ['text/plain', 'text/html', 'text/markdown'],
             'FEPs': ['c648', '521a', '8fcf', '4ccd', 'c118', 'fffd',
-                     '1970', '0837', '7628']
+                     '1970', '0837', '7628', '2677']
         },
         'version': '2.1'
     }
