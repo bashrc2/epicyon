@@ -419,16 +419,17 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     if person_json.get('nameMap'):
         if isinstance(person_json['nameMap'], dict):
             if system_language in person_json['nameMap']:
-                display_name = person_json['nameMap'][system_language]
-                if dangerous_markup(display_name, False, []):
-                    display_name = '*ADVERSARY*'
-                elif is_filtered(base_dir,
-                                 nickname, domain,
-                                 display_name, 'en'):
-                    display_name = '*FILTERED*'
-                # have they moved?
-                if person_json.get('movedTo'):
-                    display_name += ' ⌂'
+                if isinstance(person_json['nameMap'][system_language], str):
+                    display_name = person_json['nameMap'][system_language]
+                    if dangerous_markup(display_name, False, []):
+                        display_name = '*ADVERSARY*'
+                    elif is_filtered(base_dir,
+                                     nickname, domain,
+                                     display_name, 'en'):
+                        display_name = '*FILTERED*'
+                    # have they moved?
+                    if person_json.get('movedTo'):
+                        display_name += ' ⌂'
 
     store_person_in_cache(base_dir, person_url, person_json,
                           person_cache, True)
