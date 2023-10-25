@@ -150,7 +150,8 @@ def create_announce(session, base_dir: str, federation_list: [],
                     signing_priv_key_pem: str,
                     curr_domain: str,
                     onion_domain: str, i2p_domain: str,
-                    sites_unavailable: []) -> {}:
+                    sites_unavailable: [],
+                    system_language: str) -> {}:
     """Creates an announce message
     Typically to_url will be https://www.w3.org/ns/activitystreams#Public
     and cc_url might be a specific person favorited or repeated and the
@@ -215,7 +216,8 @@ def create_announce(session, base_dir: str, federation_list: [],
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 639633,
                          curr_domain, onion_domain, i2p_domain,
-                         extra_headers, sites_unavailable)
+                         extra_headers, sites_unavailable,
+                         system_language)
 
     return new_announce
 
@@ -229,7 +231,8 @@ def announce_public(session, base_dir: str, federation_list: [],
                     signing_priv_key_pem: str,
                     curr_domain: str,
                     onion_domain: str, i2p_domain: str,
-                    sites_unavailable: []) -> {}:
+                    sites_unavailable: [],
+                    system_language: str) -> {}:
     """Makes a public announcement
     """
     from_domain = get_full_domain(domain, port)
@@ -245,7 +248,8 @@ def announce_public(session, base_dir: str, federation_list: [],
                            debug, project_version,
                            signing_priv_key_pem, curr_domain,
                            onion_domain, i2p_domain,
-                           sites_unavailable)
+                           sites_unavailable,
+                           system_language)
 
 
 def send_announce_via_server(base_dir: str, session,
@@ -254,7 +258,8 @@ def send_announce_via_server(base_dir: str, session,
                              http_prefix: str, repeat_object_url: str,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
-                             signing_priv_key_pem: str) -> {}:
+                             signing_priv_key_pem: str,
+                             system_language: str) -> {}:
     """Creates an announce message via c2s
     """
     if not session:
@@ -308,7 +313,8 @@ def send_announce_via_server(base_dir: str, session,
                                   person_cache,
                                   project_version, http_prefix,
                                   from_nickname, from_domain,
-                                  post_to_box, 73528)
+                                  post_to_box, 73528,
+                                  system_language)
 
     if not inbox_url:
         if debug:
@@ -345,7 +351,8 @@ def send_undo_announce_via_server(base_dir: str, session,
                                   domain: str, port: int, http_prefix: str,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool, project_version: str,
-                                  signing_priv_key_pem: str) -> {}:
+                                  signing_priv_key_pem: str,
+                                  system_language: str) -> {}:
     """Undo an announce message via c2s
     """
     if not session:
@@ -391,7 +398,8 @@ def send_undo_announce_via_server(base_dir: str, session,
                                   person_cache,
                                   project_version, http_prefix,
                                   nickname, domain,
-                                  post_to_box, 73528)
+                                  post_to_box, 73528,
+                                  system_language)
 
     if not inbox_url:
         if debug:

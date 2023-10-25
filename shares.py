@@ -603,7 +603,8 @@ def send_share_via_server(base_dir, session,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
                           item_price: str, item_currency: str,
-                          signing_priv_key_pem: str) -> {}:
+                          signing_priv_key_pem: str,
+                          system_language: str) -> {}:
     """Creates an item share via c2s
     """
     if not session:
@@ -675,7 +676,7 @@ def send_share_via_server(base_dir, session,
                                        person_cache, project_version,
                                        http_prefix, from_nickname,
                                        from_domain, post_to_box,
-                                       83653)
+                                       83653, system_language)
 
     if not inbox_url:
         if debug:
@@ -724,7 +725,8 @@ def send_undo_share_via_server(base_dir: str, session,
                                http_prefix: str, display_name: str,
                                cached_webfingers: {}, person_cache: {},
                                debug: bool, project_version: str,
-                               signing_priv_key_pem: str) -> {}:
+                               signing_priv_key_pem: str,
+                               system_language: str) -> {}:
     """Undoes a share via c2s
     """
     if not session:
@@ -779,7 +781,7 @@ def send_undo_share_via_server(base_dir: str, session,
                                        person_cache, project_version,
                                        http_prefix, from_nickname,
                                        from_domain, post_to_box,
-                                       12663)
+                                       12663, system_language)
 
     if not inbox_url:
         if debug:
@@ -823,7 +825,8 @@ def send_wanted_via_server(base_dir, session,
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
                            item_max_price: str, item_currency: str,
-                           signing_priv_key_pem: str) -> {}:
+                           signing_priv_key_pem: str,
+                           system_language: str) -> {}:
     """Creates a wanted item via c2s
     """
     if not session:
@@ -896,7 +899,7 @@ def send_wanted_via_server(base_dir, session,
                                        person_cache, project_version,
                                        http_prefix, from_nickname,
                                        from_domain, post_to_box,
-                                       23653)
+                                       23653, system_language)
 
     if not inbox_url:
         if debug:
@@ -945,7 +948,8 @@ def send_undo_wanted_via_server(base_dir: str, session,
                                 http_prefix: str, display_name: str,
                                 cached_webfingers: {}, person_cache: {},
                                 debug: bool, project_version: str,
-                                signing_priv_key_pem: str) -> {}:
+                                signing_priv_key_pem: str,
+                                system_language: str) -> {}:
     """Undoes a wanted item via c2s
     """
     if not session:
@@ -1000,7 +1004,7 @@ def send_undo_wanted_via_server(base_dir: str, session,
                                        person_cache, project_version,
                                        http_prefix, from_nickname,
                                        from_domain, post_to_box,
-                                       12693)
+                                       12693, system_language)
 
     if not inbox_url:
         if debug:

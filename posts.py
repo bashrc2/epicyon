@@ -332,7 +332,9 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
                    project_version: str, http_prefix: str,
                    nickname: str, domain: str,
                    box_name: str = 'inbox',
-                   source_id=0) -> (str, str, str, str, str, str, str, bool):
+                   source_id: int = 0,
+                   system_language: str = 'en') -> (str, str, str, str, str,
+                                                    str, str, bool):
     debug = False
     profile_str = 'https://www.w3.org/ns/activitystreams'
     as_header = {
@@ -414,6 +416,19 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
         # have they moved?
         if person_json.get('movedTo'):
             display_name += ' ⌂'
+    if person_json.get('nameMap'):
+        if isinstance(person_json['nameMap'], dict):
+            if system_language in person_json['nameMap']:
+                display_name = person_json['nameMap'][system_language]
+                if dangerous_markup(display_name, False, []):
+                    display_name = '*ADVERSARY*'
+                elif is_filtered(base_dir,
+                                 nickname, domain,
+                                 display_name, 'en'):
+                    display_name = '*FILTERED*'
+                # have they moved?
+                if person_json.get('movedTo'):
+                    display_name += ' ⌂'
 
     store_person_in_cache(base_dir, person_url, person_json,
                           person_cache, True)
@@ -2818,7 +2833,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, post_to_box,
-                            72533)
+                            72533, system_language)
 
     if not inbox_url:
         return 3
@@ -2995,7 +3010,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain_full, post_to_box,
-                            82796)
+                            82796, system_language)
     if not inbox_url:
         if debug:
             print('DEBUG: post no ' + post_to_box +
@@ -3158,7 +3173,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                      signing_priv_key_pem: str,
                      source_id: int, curr_domain: str,
                      onion_domain: str, i2p_domain: str,
-                     extra_headers: {}, sites_unavailable: []) -> int:
+                     extra_headers: {}, sites_unavailable: [],
+                     system_language: str) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -3234,7 +3250,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, post_to_box,
-                            source_id)
+                            source_id, system_language)
 
     print("send_signed_json inbox_url: " + str(inbox_url))
     print("send_signed_json to_person_id: " + str(to_person_id))
@@ -3477,7 +3493,8 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                              signing_priv_key_pem: str,
                              proxy_type: str,
                              followers_sync_cache: {},
-                             sites_unavailable: []) -> None:
+                             sites_unavailable: [],
+                             system_language: str) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -3674,7 +3691,8 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                          shared_items_token, group_account,
                          signing_priv_key_pem, 34436782,
                          domain, onion_domain, i2p_domain,
-                         extra_headers, sites_unavailable)
+                         extra_headers, sites_unavailable,
+                         system_language)
 
 
 def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
@@ -3691,7 +3709,8 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                    signing_priv_key_pem: str,
                                    proxy_type: str,
                                    followers_sync_cache: {},
-                                   sites_unavailable: []):
+                                   sites_unavailable: [],
+                                   system_language: str):
     """Returns a thread used to send a post to named addresses
     """
     print('THREAD: _send_to_named_addresses')
@@ -3710,7 +3729,8 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                 signing_priv_key_pem,
                                 proxy_type,
                                 followers_sync_cache,
-                                sites_unavailable), daemon=True)
+                                sites_unavailable,
+                                system_language), daemon=True)
     if not begin_thread(send_thread, 'send_to_named_addresses_thread'):
         print('WARN: socket error while starting ' +
               'thread to send to named addresses.')
@@ -3763,7 +3783,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
                       shared_items_federated_domains: [],
                       shared_item_federation_tokens: {},
                       signing_priv_key_pem: str,
-                      sites_unavailable: []) -> None:
+                      sites_unavailable: [],
+                      system_language: str) -> None:
     """sends a post to the followers of the given nickname
     """
     print('send_to_followers')
@@ -3935,7 +3956,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
                              shared_items_token, group_account,
                              signing_priv_key_pem, 639342,
                              domain, onion_domain, i2p_domain,
-                             extra_headers, sites_unavailable)
+                             extra_headers, sites_unavailable,
+                             system_language)
         else:
             # randomize the order of handles, so that we are not
             # favoring any particular account in terms of its delivery time
@@ -3969,7 +3991,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
                                  shared_items_token, group_account,
                                  signing_priv_key_pem, 634219,
                                  domain, onion_domain, i2p_domain,
-                                 extra_headers, sites_unavailable)
+                                 extra_headers, sites_unavailable,
+                                 system_language)
 
         time.sleep(4)
 
@@ -3993,7 +4016,8 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
                              shared_items_federated_domains: [],
                              shared_item_federation_tokens: {},
                              signing_priv_key_pem: str,
-                             sites_unavailable: []):
+                             sites_unavailable: [],
+                             system_language: str):
     """Returns a thread used to send a post to followers
     """
     print('THREAD: send_to_followers')
@@ -4010,7 +4034,8 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
                                 shared_items_federated_domains,
                                 shared_item_federation_tokens,
                                 signing_priv_key_pem,
-                                sites_unavailable), daemon=True)
+                                sites_unavailable,
+                                system_language), daemon=True)
     if not begin_thread(send_thread, 'send_to_followers_thread'):
         print('WARN: error while starting ' +
               'thread to send to followers.')
@@ -5181,7 +5206,7 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, 'outbox',
-                            62524)
+                            62524, system_language)
     if debug:
         print('Actor url: ' + str(person_id))
     if not person_id:
@@ -5232,7 +5257,7 @@ def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, 'outbox',
-                            92522)
+                            92522, system_language)
     post_domains = \
         get_post_domains(session, person_url, 64, debug,
                          project_version, http_prefix, domain,
@@ -5323,7 +5348,7 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, 'outbox',
-                            13863)
+                            13863, system_language)
     max_posts = 64
     post_domains = \
         get_post_domains(session, person_url, max_posts, debug,
@@ -5921,7 +5946,8 @@ def send_block_via_server(base_dir: str, session,
                           http_prefix: str, blocked_url: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
-                          signing_priv_key_pem: str) -> {}:
+                          signing_priv_key_pem: str,
+                          system_language: str) -> {}:
     """Creates a block via c2s
     """
     if not session:
@@ -5970,7 +5996,8 @@ def send_block_via_server(base_dir: str, session,
                             person_cache,
                             project_version, http_prefix,
                             from_nickname,
-                            from_domain, post_to_box, 72652)
+                            from_domain, post_to_box, 72652,
+                            system_language)
 
     if not inbox_url:
         if debug:
@@ -6007,7 +6034,8 @@ def send_mute_via_server(base_dir: str, session,
                          http_prefix: str, muted_url: str,
                          cached_webfingers: {}, person_cache: {},
                          debug: bool, project_version: str,
-                         signing_priv_key_pem: str) -> {}:
+                         signing_priv_key_pem: str,
+                         system_language: str) -> {}:
     """Creates a mute via c2s
     """
     if not session:
@@ -6052,7 +6080,8 @@ def send_mute_via_server(base_dir: str, session,
                             person_cache,
                             project_version, http_prefix,
                             from_nickname,
-                            from_domain, post_to_box, 72652)
+                            from_domain, post_to_box, 72652,
+                            system_language)
 
     if not inbox_url:
         if debug:
@@ -6088,7 +6117,8 @@ def send_undo_mute_via_server(base_dir: str, session,
                               http_prefix: str, muted_url: str,
                               cached_webfingers: {}, person_cache: {},
                               debug: bool, project_version: str,
-                              signing_priv_key_pem: str) -> {}:
+                              signing_priv_key_pem: str,
+                              system_language: str) -> {}:
     """Undoes a mute via c2s
     """
     if not session:
@@ -6138,7 +6168,8 @@ def send_undo_mute_via_server(base_dir: str, session,
                             person_cache,
                             project_version, http_prefix,
                             from_nickname,
-                            from_domain, post_to_box, 72652)
+                            from_domain, post_to_box, 72652,
+                            system_language)
 
     if not inbox_url:
         if debug:
@@ -6175,7 +6206,8 @@ def send_undo_block_via_server(base_dir: str, session,
                                http_prefix: str, blocked_url: str,
                                cached_webfingers: {}, person_cache: {},
                                debug: bool, project_version: str,
-                               signing_priv_key_pem: str) -> {}:
+                               signing_priv_key_pem: str,
+                               system_language: str) -> {}:
     """Creates a block via c2s
     """
     if not session:
@@ -6228,7 +6260,8 @@ def send_undo_block_via_server(base_dir: str, session,
                             person_cache,
                             project_version, http_prefix,
                             from_nickname,
-                            from_domain, post_to_box, 53892)
+                            from_domain, post_to_box, 53892,
+                            system_language)
 
     if not inbox_url:
         if debug:

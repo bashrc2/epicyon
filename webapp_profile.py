@@ -1420,7 +1420,8 @@ def html_profile(signing_priv_key_pem: str,
                                         max_items_per_page,
                                         dormant_months, debug,
                                         signing_priv_key_pem,
-                                        sites_unavailable)
+                                        sites_unavailable,
+                                        system_language)
         if show_moved_accounts and selected == 'moved':
             profile_str += \
                 _html_profile_following(translate, base_dir, http_prefix,
@@ -1434,7 +1435,8 @@ def html_profile(signing_priv_key_pem: str,
                                         max_items_per_page,
                                         dormant_months, debug,
                                         signing_priv_key_pem,
-                                        sites_unavailable)
+                                        sites_unavailable,
+                                        system_language)
     if selected == 'followers':
         profile_str += \
             _html_profile_following(translate, base_dir, http_prefix,
@@ -1445,7 +1447,8 @@ def html_profile(signing_priv_key_pem: str,
                                     project_version, ["block"],
                                     selected, users_path, page_number,
                                     max_items_per_page, dormant_months, debug,
-                                    signing_priv_key_pem, sites_unavailable)
+                                    signing_priv_key_pem, sites_unavailable,
+                                    system_language)
     if authorized and selected == 'inactive':
         profile_str += \
             _html_profile_following(translate, base_dir, http_prefix,
@@ -1456,7 +1459,8 @@ def html_profile(signing_priv_key_pem: str,
                                     project_version, ["block"],
                                     selected, users_path, page_number,
                                     max_items_per_page, dormant_months, debug,
-                                    signing_priv_key_pem, sites_unavailable)
+                                    signing_priv_key_pem, sites_unavailable,
+                                    system_language)
     if not is_group:
         if selected == 'roles':
             profile_str += \
@@ -1588,7 +1592,8 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                             max_items_per_page: int,
                             dormant_months: int, debug: bool,
                             signing_priv_key_pem: str,
-                            sites_unavailable: []) -> str:
+                            sites_unavailable: [],
+                            system_language: str) -> str:
     """Shows following on the profile screen
     """
     profile_str = ''
@@ -1631,7 +1636,7 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                                        authorized, nickname,
                                        http_prefix, project_version,
                                        dormant, offline,
-                                       debug, buttons)
+                                       debug, system_language, buttons)
 
     if authorized and max_items_per_page and page_number:
         if len(following_json['orderedItems']) >= max_items_per_page:
@@ -3149,6 +3154,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                dormant: bool,
                                offline: bool,
                                debug: bool,
+                               system_language: str,
                                buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
@@ -3187,7 +3193,8 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                                   project_version,
                                                   http_prefix,
                                                   follow_url_nickname,
-                                                  domain, 'outbox', 43036)
+                                                  domain, 'outbox', 43036,
+                                                  system_language)
         if avatar_url2:
             avatar_url = avatar_url2
 

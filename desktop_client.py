@@ -1590,7 +1590,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       domain, port, http_prefix,
                                       cached_webfingers, person_cache,
                                       debug, False,
-                                      signing_priv_key_pem)
+                                      signing_priv_key_pem,
+                                      system_language)
                 say_str = indent + 'PGP public key uploaded'
                 _say_command(say_str, say_str, screenreader,
                              system_language, espeak)
@@ -1980,7 +1981,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                              post_json_object['id'],
                                              cached_webfingers, person_cache,
                                              False, __version__,
-                                             signing_priv_key_pem)
+                                             signing_priv_key_pem,
+                                             system_language)
                         refresh_timeline = True
                 print('')
             elif (command_str == 'undo mute' or
@@ -2025,7 +2027,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                   cached_webfingers,
                                                   person_cache,
                                                   False, __version__,
-                                                  signing_priv_key_pem)
+                                                  signing_priv_key_pem,
+                                                  system_language)
                         refresh_timeline = True
                 print('')
             elif (command_str == 'mute' or
@@ -2060,7 +2063,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                              post_json_object['id'],
                                              cached_webfingers, person_cache,
                                              False, __version__,
-                                             signing_priv_key_pem)
+                                             signing_priv_key_pem,
+                                             system_language)
                         refresh_timeline = True
                 print('')
             elif (command_str == 'undo bookmark' or
@@ -2107,7 +2111,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                       cached_webfingers,
                                                       person_cache,
                                                       False, __version__,
-                                                      signing_priv_key_pem)
+                                                      signing_priv_key_pem,
+                                                      system_language)
                         refresh_timeline = True
                 print('')
             elif (command_str == 'bookmark' or
@@ -2142,7 +2147,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                  cached_webfingers,
                                                  person_cache,
                                                  False, __version__,
-                                                 signing_priv_key_pem)
+                                                 signing_priv_key_pem,
+                                                 system_language)
                         refresh_timeline = True
                 print('')
             elif (command_str.startswith('undo block ') or
@@ -2183,7 +2189,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                            cached_webfingers,
                                                            person_cache,
                                                            False, __version__,
-                                                           sign_priv_key_pem)
+                                                           sign_priv_key_pem,
+                                                           system_language)
                 refresh_timeline = True
                 print('')
             elif command_str.startswith('block '):
@@ -2233,7 +2240,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                           cached_webfingers,
                                           person_cache,
                                           False, __version__,
-                                          signing_priv_key_pem)
+                                          signing_priv_key_pem,
+                                          system_language)
                 refresh_timeline = True
                 print('')
             elif command_str in ('unlike', 'undo like'):
@@ -2266,7 +2274,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                   cached_webfingers,
                                                   person_cache,
                                                   False, __version__,
-                                                  signing_priv_key_pem)
+                                                  signing_priv_key_pem,
+                                                  system_language)
                         refresh_timeline = True
                 print('')
             elif (command_str.startswith('announce') or
@@ -2318,7 +2327,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                      cached_webfingers,
                                                      person_cache,
                                                      True, __version__,
-                                                     signing_priv_key_pem)
+                                                     signing_priv_key_pem,
+                                                     system_language)
                     refresh_timeline = True
                 print('')
             elif (command_str.startswith('unannounce') or
@@ -2357,7 +2367,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                       cached_webfingers,
                                                       person_cache,
                                                       True, __version__,
-                                                      signing_priv_key_pem)
+                                                      signing_priv_key_pem,
+                                                      system_language)
                         refresh_timeline = True
                 print('')
             elif (command_str == 'follow requests' or
@@ -2458,7 +2469,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                        cached_webfingers,
                                                        person_cache,
                                                        debug, __version__,
-                                                       signing_priv_key_pem)
+                                                       signing_priv_key_pem,
+                                                       system_language)
                     else:
                         if follow_handle:
                             say_str = follow_handle + ' is not valid'
@@ -2494,7 +2506,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                          cached_webfingers,
                                                          person_cache,
                                                          debug, __version__,
-                                                         signing_priv_key_pem)
+                                                         signing_priv_key_pem,
+                                                         system_language)
                     else:
                         say_str = follow_handle + ' is not valid'
                         _say_command(say_str, say_str,
@@ -2740,7 +2753,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                        cached_webfingers,
                                                        person_cache,
                                                        False, __version__,
-                                                       signing_priv_key_pem)
+                                                       signing_priv_key_pem,
+                                                       system_language)
                                 refresh_timeline = True
                 print('')
 

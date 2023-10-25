@@ -1714,7 +1714,8 @@ def _receive_move_activity(session, base_dir: str,
                            onion_domain: str,
                            i2p_domain: str,
                            sites_unavailable: [],
-                           blocked_cache: []) -> bool:
+                           blocked_cache: [],
+                           system_language: str) -> bool:
     """Receives a move activity within the POST section of HTTPServer
     https://codeberg.org/fediverse/fep/src/branch/main/fep/7628/fep-7628.md
     """
@@ -1801,7 +1802,8 @@ def _receive_move_activity(session, base_dir: str,
                         domain,
                         onion_domain,
                         i2p_domain,
-                        sites_unavailable)
+                        sites_unavailable,
+                        system_language)
     return True
 
 
@@ -3820,7 +3822,8 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                            curr_domain: str,
                            onion_domain: str, i2p_domain: str,
                            signing_priv_key_pem: str,
-                           sites_unavailable: []) -> None:
+                           sites_unavailable: [],
+                           system_language: str) -> None:
     """When a post arrives for a group send it out to the group members
     """
     if debug:
@@ -3877,7 +3880,7 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                         person_cache, cached_webfingers,
                         debug, __version__, signing_priv_key_pem,
                         curr_domain, onion_domain, i2p_domain,
-                        sites_unavailable)
+                        sites_unavailable, system_language)
 
     send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir, nickname, domain,
@@ -3889,7 +3892,7 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                              shared_items_federated_domains,
                              shared_item_federation_tokens,
                              signing_priv_key_pem,
-                             sites_unavailable)
+                             sites_unavailable, system_language)
 
 
 def _inbox_update_calendar(base_dir: str, handle: str,
@@ -4104,7 +4107,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                      person_cache, debug, __version__, None, group_account,
                      signing_priv_key_pem, 7238634,
                      curr_domain, onion_domain, i2p_domain,
-                     extra_headers, sites_unavailable)
+                     extra_headers, sites_unavailable, system_language)
     return True
 
 
@@ -4341,7 +4344,7 @@ def _receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                              shared_items_federated_domains,
                              shared_item_federation_tokens,
                              signing_priv_key_pem,
-                             sites_unavailable)
+                             sites_unavailable, system_language)
 
 
 def _create_reply_notification_file(base_dir: str, nickname: str, domain: str,
@@ -5217,7 +5220,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                        person_cache, debug,
                                        domain, onion_domain, i2p_domain,
                                        signing_priv_key_pem,
-                                       sites_unavailable)
+                                       sites_unavailable,
+                                       system_language)
                 fitness_performance(inbox_start_time,
                                     server.fitness,
                                     'INBOX', '_send_to_group_members',
@@ -5759,7 +5763,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     debug, project_version, True,
                                     signing_priv_key_pem,
                                     this_domain, onion_domain, i2p_domain,
-                                    followers_sync_cache, sites_unavailable)
+                                    followers_sync_cache, sites_unavailable,
+                                    system_language)
 
 
 def run_inbox_queue(server,
@@ -6252,7 +6257,8 @@ def run_inbox_queue(server,
                                   onion_domain,
                                   i2p_domain,
                                   server.sites_unavailable,
-                                  server.blocked_cache):
+                                  server.blocked_cache,
+                                  server.system_language):
             if debug:
                 print('Queue: _receive_move_activity ' + key_id)
             if os.path.isfile(queue_filename):

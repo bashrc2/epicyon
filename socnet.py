@@ -67,7 +67,7 @@ def instances_graph(base_dir: str, handles: str,
                                 person_cache,
                                 project_version, http_prefix,
                                 nickname, domain, 'outbox',
-                                27261)
+                                27261, system_language)
         word_frequency = {}
         post_domains = \
             get_post_domains(session, person_url, 64, debug,

@@ -1508,7 +1508,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                      status_number, False, bob_send_threads, bob_post_log,
                      bob_person_cache, bob_cached_webfingers,
                      True, __version__, signing_priv_key_pem,
-                     bob_domain, None, None, sites_unavailable)
+                     bob_domain, None, None, sites_unavailable,
+                     system_language)
 
     for _ in range(20):
         if text_in_file('likes', outbox_post_filename):
@@ -1532,7 +1533,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                          False, bob_send_threads, bob_post_log,
                          bob_person_cache, bob_cached_webfingers,
                          True, __version__, signing_priv_key_pem,
-                         bob_domain, None, None, sites_unavailable)
+                         bob_domain, None, None, sites_unavailable,
+                         system_language)
 
     for _ in range(20):
         if text_in_file('reactions', outbox_post_filename):
@@ -1570,7 +1572,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                     False, bob_send_threads, bob_post_log,
                     bob_person_cache, bob_cached_webfingers,
                     True, __version__, signing_priv_key_pem,
-                    bob_domain, None, None, sites_unavailable)
+                    bob_domain, None, None, sites_unavailable,
+                    system_language)
     announce_message_arrived = False
     outbox_message_arrived = False
     for _ in range(20):
@@ -1719,7 +1722,8 @@ def test_follow_between_servers(base_dir: str) -> None:
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            alice_domain, None, None, sites_unavailable)
+                            alice_domain, None, None, sites_unavailable,
+                            system_language)
     print('send_result: ' + str(send_result))
 
     for _ in range(16):
@@ -1950,7 +1954,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            alice_domain, None, None, sites_unavailable)
+                            alice_domain, None, None, sites_unavailable,
+                            system_language)
     print('send_result: ' + str(send_result))
 
     for _ in range(16):
@@ -2025,7 +2030,7 @@ def test_shared_items_federation(base_dir: str) -> None:
                               bob_cached_webfingers, bob_person_cache,
                               True, __version__,
                               shared_item_price, shared_item_currency,
-                              signing_priv_key_pem)
+                              signing_priv_key_pem, system_language)
     assert share_json
     assert isinstance(share_json, dict)
     shared_item_name = 'Epicyon T-shirt'
@@ -2051,7 +2056,7 @@ def test_shared_items_federation(base_dir: str) -> None:
                               bob_cached_webfingers, bob_person_cache,
                               True, __version__,
                               shared_item_price, shared_item_currency,
-                              signing_priv_key_pem)
+                              signing_priv_key_pem, system_language)
     assert share_json
     assert isinstance(share_json, dict)
     shared_item_name = 'Soldering iron'
@@ -2077,7 +2082,7 @@ def test_shared_items_federation(base_dir: str) -> None:
                               bob_cached_webfingers, bob_person_cache,
                               True, __version__,
                               shared_item_price, shared_item_currency,
-                              signing_priv_key_pem)
+                              signing_priv_key_pem, system_language)
     assert share_json
     assert isinstance(share_json, dict)
 
@@ -2434,7 +2439,8 @@ def test_group_follow(base_dir: str) -> None:
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            alice_domain, None, None, sites_unavailable)
+                            alice_domain, None, None, sites_unavailable,
+                            system_language)
     print('send_result: ' + str(send_result))
 
     alice_following_filename = \
@@ -2513,7 +2519,8 @@ def test_group_follow(base_dir: str) -> None:
                             bob_send_threads, bob_post_log,
                             bob_cached_webfingers, bob_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            bob_domain, None, None, sites_unavailable)
+                            bob_domain, None, None, sites_unavailable,
+                            system_language)
     print('send_result: ' + str(send_result))
 
     bob_following_filename = \
@@ -3328,7 +3335,8 @@ def test_client_to_server(base_dir: str):
                                    'bob', bob_domain, bob_port,
                                    http_prefix,
                                    cached_webfingers, person_cache,
-                                   True, __version__, signing_priv_key_pem)
+                                   True, __version__, signing_priv_key_pem,
+                                   system_language)
     alice_petnames_filename = alice_dir + '/accounts/' + \
         'alice@' + alice_domain + '/petnames.txt'
     alice_following_filename = \
@@ -3369,7 +3377,8 @@ def test_client_to_server(base_dir: str):
                                    'alice', alice_domain, alice_port,
                                    http_prefix,
                                    cached_webfingers, person_cache,
-                                   True, __version__, signing_priv_key_pem)
+                                   True, __version__, signing_priv_key_pem,
+                                   system_language)
     for _ in range(20):
         if os.path.isfile(alice_dir + '/accounts/alice@' + alice_domain +
                           '/followers.txt'):
@@ -3458,7 +3467,8 @@ def test_client_to_server(base_dir: str):
                          bob_domain, bob_port,
                          http_prefix, outbox_post_id,
                          cached_webfingers, person_cache,
-                         True, __version__, signing_priv_key_pem)
+                         True, __version__, signing_priv_key_pem,
+                         system_language)
     for _ in range(20):
         if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
@@ -3488,7 +3498,8 @@ def test_client_to_server(base_dir: str):
                              bob_domain, bob_port,
                              http_prefix, outbox_post_id, '😃',
                              cached_webfingers, person_cache,
-                             True, __version__, signing_priv_key_pem)
+                             True, __version__, signing_priv_key_pem,
+                             system_language)
     for _ in range(20):
         if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
@@ -3535,7 +3546,8 @@ def test_client_to_server(base_dir: str):
                              http_prefix, outbox_post_id,
                              cached_webfingers,
                              person_cache, True, __version__,
-                             signing_priv_key_pem)
+                             signing_priv_key_pem,
+                             system_language)
     for _ in range(30):
         if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
@@ -3575,7 +3587,8 @@ def test_client_to_server(base_dir: str):
                            alice_domain, alice_port,
                            http_prefix, outbox_post_id,
                            cached_webfingers, person_cache,
-                           True, __version__, signing_priv_key_pem)
+                           True, __version__, signing_priv_key_pem,
+                           system_language)
     for _ in range(30):
         if os.path.isdir(inbox_path):
             test = len([name for name in os.listdir(inbox_path)
@@ -3606,7 +3619,8 @@ def test_client_to_server(base_dir: str):
                                      'bob', bob_domain, bob_port,
                                      http_prefix,
                                      cached_webfingers, person_cache,
-                                     True, __version__, signing_priv_key_pem)
+                                     True, __version__, signing_priv_key_pem,
+                                     system_language)
     for _ in range(10):
         test_str = 'alice@' + alice_domain + ':' + str(alice_port)
         if not text_in_file(test_str, bob_followers_filename):
@@ -6218,6 +6232,7 @@ def test_update_actor(base_dir: str):
     http_prefix = 'http'
     proxy_type = None
     federation_list = []
+    system_language = 'en'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests',
@@ -6299,7 +6314,8 @@ def test_update_actor(base_dir: str):
                               alice_domain, alice_port,
                               http_prefix,
                               cached_webfingers, person_cache,
-                              True, pub_key, signing_priv_key_pem)
+                              True, pub_key, signing_priv_key_pem,
+                              system_language)
     print('actor update result: ' + str(actor_update))
     assert actor_update
 

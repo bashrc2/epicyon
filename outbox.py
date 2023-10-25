@@ -664,7 +664,8 @@ def post_message_to_outbox(session, translate: {},
                                  shared_items_federated_domains,
                                  shared_item_federation_tokens,
                                  signing_priv_key_pem,
-                                 sites_unavailable)
+                                 sites_unavailable,
+                                 system_language)
     followers_threads.append(followers_thread)
 
     if debug:
@@ -799,6 +800,7 @@ def post_message_to_outbox(session, translate: {},
                                        signing_priv_key_pem,
                                        proxy_type,
                                        server.followers_sync_cache,
-                                       server.sites_unavailable)
+                                       server.sites_unavailable,
+                                       server.system_language)
     followers_threads.append(named_addresses_thread)
     return True

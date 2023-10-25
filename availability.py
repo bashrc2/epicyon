@@ -87,7 +87,8 @@ def send_availability_via_server(base_dir: str, session,
                                  status: str,
                                  cached_webfingers: {}, person_cache: {},
                                  debug: bool, project_version: str,
-                                 signing_priv_key_pem: str) -> {}:
+                                 signing_priv_key_pem: str,
+                                 system_language: str) -> {}:
     """Sets the availability for a person via c2s
     """
     if not session:
@@ -133,7 +134,8 @@ def send_availability_via_server(base_dir: str, session,
                             base_dir, session, wf_request,
                             person_cache, project_version,
                             http_prefix, nickname,
-                            domain, post_to_box, 57262)
+                            domain, post_to_box, 57262,
+                            system_language)
 
     if not inbox_url:
         if debug:

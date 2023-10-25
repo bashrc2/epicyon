@@ -2120,7 +2120,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                                project_version,
                                                http_prefix,
                                                nickname, domain,
-                                               'outbox', 72367)
+                                               'outbox', 72367,
+                                               system_language)
 
         _log_post_timing(enable_timing_log, post_start_time, '6')
 

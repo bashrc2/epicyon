@@ -1622,6 +1622,7 @@ def _command_options() -> None:
             session_i2p = create_session('i2p')
         followers_sync_cache = {}
         sites_unavailable = []
+        system_language = argb.language
         manual_approve_follow_request(session, session_onion, session_i2p,
                                       onion_domain, i2p_domain,
                                       base_dir, http_prefix,
@@ -1633,7 +1634,7 @@ def _command_options() -> None:
                                       debug, __version__,
                                       signing_priv_key_pem, proxy_type,
                                       followers_sync_cache,
-                                      sites_unavailable)
+                                      sites_unavailable, system_language)
         sys.exit()
 
     if argb.deny:
@@ -1667,6 +1668,7 @@ def _command_options() -> None:
             session_i2p = create_session('i2p')
         followers_sync_cache = {}
         sites_unavailable = []
+        system_language = argb.language
         manual_deny_follow_request(session, session_onion, session_i2p,
                                    onion_domain, i2p_domain,
                                    base_dir, http_prefix,
@@ -1678,7 +1680,8 @@ def _command_options() -> None:
                                    debug, __version__,
                                    signing_priv_key_pem,
                                    followers_sync_cache,
-                                   sites_unavailable)
+                                   sites_unavailable,
+                                   system_language)
         sys.exit()
 
     if argb.followerspending:
@@ -1882,6 +1885,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending announce/repeat of ' + argb.announce)
 
         send_announce_via_server(base_dir, session,
@@ -1889,7 +1893,8 @@ def _command_options() -> None:
                                  domain, port,
                                  http_prefix, argb.announce,
                                  cached_webfingers, person_cache,
-                                 True, __version__, signing_priv_key_pem)
+                                 True, __version__, signing_priv_key_pem,
+                                 system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -1988,6 +1993,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending shared item: ' + argb.itemName)
 
         send_share_via_server(base_dir, session,
@@ -2005,7 +2011,8 @@ def _command_options() -> None:
                               cached_webfingers, person_cache,
                               debug, __version__,
                               argb.itemPrice, argb.itemCurrency,
-                              signing_priv_key_pem)
+                              signing_priv_key_pem,
+                              system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2031,6 +2038,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending undo of shared item: ' + argb.undoItemName)
 
         send_undo_share_via_server(base_dir, session,
@@ -2039,7 +2047,8 @@ def _command_options() -> None:
                                    http_prefix,
                                    argb.undoItemName,
                                    cached_webfingers, person_cache,
-                                   debug, __version__, signing_priv_key_pem)
+                                   debug, __version__, signing_priv_key_pem,
+                                   system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2094,6 +2103,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending wanted item: ' + argb.wantedItemName)
 
         send_wanted_via_server(base_dir, session,
@@ -2111,7 +2121,8 @@ def _command_options() -> None:
                                cached_webfingers, person_cache,
                                debug, __version__,
                                argb.itemPrice, argb.itemCurrency,
-                               signing_priv_key_pem)
+                               signing_priv_key_pem,
+                               system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2137,6 +2148,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending undo of wanted item: ' + argb.undoWantedItemName)
 
         send_undo_wanted_via_server(base_dir, session,
@@ -2145,7 +2157,8 @@ def _command_options() -> None:
                                     http_prefix,
                                     argb.undoWantedItemName,
                                     cached_webfingers, person_cache,
-                                    debug, __version__, signing_priv_key_pem)
+                                    debug, __version__, signing_priv_key_pem,
+                                    system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2171,6 +2184,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending like of ' + argb.like)
 
         send_like_via_server(base_dir, session,
@@ -2178,7 +2192,8 @@ def _command_options() -> None:
                              domain, port,
                              http_prefix, argb.like,
                              cached_webfingers, person_cache,
-                             True, __version__, signing_priv_key_pem)
+                             True, __version__, signing_priv_key_pem,
+                             system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2210,6 +2225,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending emoji reaction ' + argb.emoji + ' to ' + argb.react)
 
         send_reaction_via_server(base_dir, session,
@@ -2217,7 +2233,8 @@ def _command_options() -> None:
                                  domain, port,
                                  http_prefix, argb.react, argb.emoji,
                                  cached_webfingers, person_cache,
-                                 True, __version__, signing_priv_key_pem)
+                                 True, __version__, signing_priv_key_pem,
+                                 system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2243,6 +2260,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending undo like of ' + argb.undolike)
 
         send_undo_like_via_server(base_dir, session,
@@ -2251,7 +2269,8 @@ def _command_options() -> None:
                                   http_prefix, argb.undolike,
                                   cached_webfingers, person_cache,
                                   True, __version__,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem,
+                                  system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2283,6 +2302,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending undo emoji reaction ' +
               argb.emoji + ' to ' + argb.react)
 
@@ -2292,7 +2312,8 @@ def _command_options() -> None:
                                       http_prefix, argb.undoreact, argb.emoji,
                                       cached_webfingers, person_cache,
                                       True, __version__,
-                                      signing_priv_key_pem)
+                                      signing_priv_key_pem,
+                                      system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2318,6 +2339,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending bookmark of ' + argb.bookmark)
 
         send_bookmark_via_server(base_dir, session,
@@ -2326,7 +2348,8 @@ def _command_options() -> None:
                                  http_prefix, argb.bookmark,
                                  cached_webfingers, person_cache,
                                  True, __version__,
-                                 signing_priv_key_pem)
+                                 signing_priv_key_pem,
+                                 system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2352,6 +2375,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending undo bookmark of ' + argb.unbookmark)
 
         send_undo_bookmark_via_server(base_dir, session,
@@ -2359,7 +2383,8 @@ def _command_options() -> None:
                                       domain, port,
                                       http_prefix, argb.unbookmark,
                                       cached_webfingers, person_cache,
-                                      True, __version__, signing_priv_key_pem)
+                                      True, __version__, signing_priv_key_pem,
+                                      system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2385,6 +2410,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending delete request of ' + argb.delete)
 
         send_delete_via_server(base_dir, session,
@@ -2392,7 +2418,8 @@ def _command_options() -> None:
                                domain, port,
                                http_prefix, argb.delete,
                                cached_webfingers, person_cache,
-                               True, __version__, signing_priv_key_pem)
+                               True, __version__, signing_priv_key_pem,
+                               system_language)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2433,6 +2460,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
 
         send_follow_request_via_server(base_dir, session,
                                        argb.nickname, argb.password,
@@ -2441,7 +2469,8 @@ def _command_options() -> None:
                                        follow_port, follow_http_prefix,
                                        cached_webfingers, person_cache,
                                        debug, __version__,
-                                       signing_priv_key_pem)
+                                       signing_priv_key_pem,
+                                       system_language)
         for _ in range(20):
             time.sleep(1)
             # TODO some method to know if it worked
@@ -2483,6 +2512,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
 
         send_unfollow_request_via_server(base_dir, session,
                                          argb.nickname, argb.password,
@@ -2491,7 +2521,8 @@ def _command_options() -> None:
                                          follow_port, follow_http_prefix,
                                          cached_webfingers, person_cache,
                                          debug, __version__,
-                                         signing_priv_key_pem)
+                                         signing_priv_key_pem,
+                                         system_language)
         for _ in range(20):
             time.sleep(1)
             # TODO some method to know if it worked
@@ -3150,6 +3181,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending ' + argb.skill + ' skill level ' +
               str(argb.skillLevelPercent) + ' for ' + nickname)
 
@@ -3159,7 +3191,8 @@ def _command_options() -> None:
                               http_prefix,
                               argb.skill, argb.skillLevelPercent,
                               cached_webfingers, person_cache,
-                              True, __version__, signing_priv_key_pem)
+                              True, __version__, signing_priv_key_pem,
+                              system_language)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3185,6 +3218,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending availability status of ' + nickname +
               ' as ' + argb.availability)
 
@@ -3193,7 +3227,8 @@ def _command_options() -> None:
                                      domain, port, http_prefix,
                                      argb.availability,
                                      cached_webfingers, person_cache,
-                                     True, __version__, signing_priv_key_pem)
+                                     True, __version__, signing_priv_key_pem,
+                                     system_language)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3300,13 +3335,15 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending block of ' + argb.block)
 
         send_block_via_server(base_dir, session, nickname, argb.password,
                               domain, port,
                               http_prefix, argb.block,
                               cached_webfingers, person_cache,
-                              True, __version__, signing_priv_key_pem)
+                              True, __version__, signing_priv_key_pem,
+                              system_language)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3332,13 +3369,15 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending mute of ' + argb.mute)
 
         send_mute_via_server(base_dir, session, nickname, argb.password,
                              domain, port,
                              http_prefix, argb.mute,
                              cached_webfingers, person_cache,
-                             True, __version__, signing_priv_key_pem)
+                             True, __version__, signing_priv_key_pem,
+                             system_language)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3364,13 +3403,15 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending undo mute of ' + argb.unmute)
 
         send_undo_mute_via_server(base_dir, session, nickname, argb.password,
                                   domain, port,
                                   http_prefix, argb.unmute,
                                   cached_webfingers, person_cache,
-                                  True, __version__, signing_priv_key_pem)
+                                  True, __version__, signing_priv_key_pem,
+                                  system_language)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3408,13 +3449,15 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        system_language = argb.language
         print('Sending undo block of ' + argb.unblock)
 
         send_undo_block_via_server(base_dir, session, nickname, argb.password,
                                    domain, port,
                                    http_prefix, argb.unblock,
                                    cached_webfingers, person_cache,
-                                   True, __version__, signing_priv_key_pem)
+                                   True, __version__, signing_priv_key_pem,
+                                   system_language)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)

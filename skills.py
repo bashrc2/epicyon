@@ -180,7 +180,8 @@ def send_skill_via_server(base_dir: str, session, nickname: str, password: str,
                           skill: str, skill_level_percent: int,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
-                          signing_priv_key_pem: str) -> {}:
+                          signing_priv_key_pem: str,
+                          system_language: str) -> {}:
     """Sets a skill for a person via c2s
     """
     if not session:
@@ -233,7 +234,8 @@ def send_skill_via_server(base_dir: str, session, nickname: str, password: str,
                             base_dir, session, wf_request,
                             person_cache, project_version,
                             http_prefix, nickname, domain,
-                            post_to_box, 76121)
+                            post_to_box, 76121,
+                            system_language)
 
     if not inbox_url:
         if debug:

@@ -74,7 +74,8 @@ def _reactionpost(recent_posts_cache: {},
                   signing_priv_key_pem: str,
                   curr_domain: str,
                   onion_domain: str, i2p_domain: str,
-                  sites_unavailable: []) -> {}:
+                  sites_unavailable: [],
+                  system_language: str) -> {}:
     """Creates an emoji reaction
     actor is the person doing the reacting
     'to' might be a specific person (actor) whose post was reaction
@@ -149,7 +150,8 @@ def _reactionpost(recent_posts_cache: {},
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 7165392,
                          curr_domain, onion_domain, i2p_domain,
-                         extra_headers, sites_unavailable)
+                         extra_headers, sites_unavailable,
+                         system_language)
 
     return new_reaction_json
 
@@ -166,7 +168,7 @@ def reaction_post(recent_posts_cache: {},
                   debug: bool, project_version: str,
                   signing_priv_key_pem: str,
                   curr_domain: str, onion_domain: str, i2p_domain: str,
-                  sites_unavailable: []) -> {}:
+                  sites_unavailable: [], system_language: str) -> {}:
     """Adds a reaction to a given status post. This is only used by unit tests
     """
     reaction_domain = get_full_domain(reaction_domain, reaction_port)
@@ -184,7 +186,7 @@ def reaction_post(recent_posts_cache: {},
                          cached_webfingers,
                          debug, project_version, signing_priv_key_pem,
                          curr_domain, onion_domain, i2p_domain,
-                         sites_unavailable)
+                         sites_unavailable, system_language)
 
 
 def send_reaction_via_server(base_dir: str, session,
@@ -194,7 +196,8 @@ def send_reaction_via_server(base_dir: str, session,
                              emoji_content: str,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
-                             signing_priv_key_pem: str) -> {}:
+                             signing_priv_key_pem: str,
+                             system_language: str) -> {}:
     """Creates a reaction via c2s
     """
     if not session:
@@ -244,7 +247,8 @@ def send_reaction_via_server(base_dir: str, session,
                             person_cache,
                             project_version, http_prefix,
                             from_nickname, from_domain,
-                            post_to_box, 72873)
+                            post_to_box, 72873,
+                            system_language)
 
     if not inbox_url:
         if debug:
@@ -284,7 +288,8 @@ def send_undo_reaction_via_server(base_dir: str, session,
                                   emoji_content: str,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool, project_version: str,
-                                  signing_priv_key_pem: str) -> {}:
+                                  signing_priv_key_pem: str,
+                                  system_language: str) -> {}:
     """Undo a reaction via c2s
     """
     if not session:
@@ -335,7 +340,7 @@ def send_undo_reaction_via_server(base_dir: str, session,
                             person_cache, project_version,
                             http_prefix, from_nickname,
                             from_domain, post_to_box,
-                            72625)
+                            72625, system_language)
 
     if not inbox_url:
         if debug:

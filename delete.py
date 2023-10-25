@@ -32,7 +32,8 @@ def send_delete_via_server(base_dir: str, session,
                            http_prefix: str, delete_object_url: str,
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
-                           signing_priv_key_pem: str) -> {}:
+                           signing_priv_key_pem: str,
+                           system_language: str) -> {}:
     """Creates a delete request message via c2s
     """
     if not session:
@@ -80,7 +81,8 @@ def send_delete_via_server(base_dir: str, session,
                             wf_request, person_cache,
                             project_version, http_prefix,
                             from_nickname,
-                            from_domain, post_to_box, 53036)
+                            from_domain, post_to_box, 53036,
+                            system_language)
 
     if not inbox_url:
         if debug:

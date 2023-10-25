@@ -171,7 +171,8 @@ def _update_import_following(base_dir: str,
                                 httpd.domain,
                                 httpd.onion_domain,
                                 httpd.i2p_domain,
-                                httpd.sites_unavailable)
+                                httpd.sites_unavailable,
+                                httpd.system_language)
 
             # remove the followed handle from the import list
             following_str = following_str.replace(orig_line + '\n', '')

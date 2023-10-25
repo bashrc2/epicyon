@@ -764,7 +764,8 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                              curr_domain: str,
                              onion_domain: str, i2p_domain: str,
                              followers_sync_cache: {},
-                             sites_unavailable: []):
+                             sites_unavailable: [],
+                             system_language: str):
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
@@ -819,7 +820,8 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                             person_cache, debug, project_version, None,
                             group_account, signing_priv_key_pem,
                             7856837, curr_domain, onion_domain, i2p_domain,
-                            extra_headers, sites_unavailable)
+                            extra_headers, sites_unavailable,
+                            system_language)
 
 
 def followed_account_rejects(session, session_onion, session_i2p,
@@ -834,7 +836,8 @@ def followed_account_rejects(session, session_onion, session_i2p,
                              debug: bool, project_version: str,
                              signing_priv_key_pem: str,
                              followers_sync_cache: {},
-                             sites_unavailable: []):
+                             sites_unavailable: [],
+                             system_language: str):
     """The person receiving a follow request rejects the new follower
     and sends back a Reject activity
     """
@@ -903,7 +906,8 @@ def followed_account_rejects(session, session_onion, session_i2p,
                             group_account, signing_priv_key_pem,
                             6393063,
                             domain, onion_domain, i2p_domain,
-                            extra_headers, sites_unavailable)
+                            extra_headers, sites_unavailable,
+                            system_language)
 
 
 def send_follow_request(session, base_dir: str,
@@ -919,7 +923,8 @@ def send_follow_request(session, base_dir: str,
                         project_version: str, signing_priv_key_pem: str,
                         curr_domain: str,
                         onion_domain: str, i2p_domain: str,
-                        sites_unavailable: []) -> {}:
+                        sites_unavailable: [],
+                        system_language: str) -> {}:
     """Gets the json object for sending a follow request
     """
     if not signing_priv_key_pem:
@@ -1003,7 +1008,8 @@ def send_follow_request(session, base_dir: str,
                      debug, project_version, None, group_account,
                      signing_priv_key_pem, 8234389,
                      curr_domain, onion_domain, i2p_domain,
-                     extra_headers, sites_unavailable)
+                     extra_headers, sites_unavailable,
+                     system_language)
 
     return new_follow_json
 
@@ -1016,7 +1022,8 @@ def send_follow_request_via_server(base_dir: str, session,
                                    http_prefix: str,
                                    cached_webfingers: {}, person_cache: {},
                                    debug: bool, project_version: str,
-                                   signing_priv_key_pem: str) -> {}:
+                                   signing_priv_key_pem: str,
+                                   system_language: str) -> {}:
     """Creates a follow request via c2s
     """
     if not session:
@@ -1067,7 +1074,8 @@ def send_follow_request_via_server(base_dir: str, session,
                             person_cache,
                             project_version, http_prefix,
                             from_nickname,
-                            from_domain, post_to_box, 52025)
+                            from_domain, post_to_box, 52025,
+                            system_language)
 
     if not inbox_url:
         if debug:
@@ -1108,7 +1116,8 @@ def send_unfollow_request_via_server(base_dir: str, session,
                                      http_prefix: str,
                                      cached_webfingers: {}, person_cache: {},
                                      debug: bool, project_version: str,
-                                     signing_priv_key_pem: str) -> {}:
+                                     signing_priv_key_pem: str,
+                                     system_language: str) -> {}:
     """Creates a unfollow request via c2s
     """
     if not session:
@@ -1165,7 +1174,7 @@ def send_unfollow_request_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain, post_to_box,
-                            76536)
+                            76536, system_language)
 
     if not inbox_url:
         if debug:

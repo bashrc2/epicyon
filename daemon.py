@@ -4408,7 +4408,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domain,
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
-                                    self.server.sites_unavailable)
+                                    self.server.sites_unavailable,
+                                    self.server.system_language)
 
         if '&submitUnblock=' in follow_confirm_params:
             blocking_actor = \
@@ -10023,7 +10024,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.signing_priv_key_pem,
                             self.server.domain,
                             onion_domain,
-                            i2p_domain, sites_unavailable)
+                            i2p_domain, sites_unavailable,
+                            self.server.system_language)
         announce_filename = None
         if announce_json:
             # save the announce straight to the outbox
@@ -10319,7 +10321,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  signing_priv_key_pem,
                                                  proxy_type,
                                                  followers_sync_cache,
-                                                 self.server.sites_unavailable)
+                                                 self.server.sites_unavailable,
+                                                 self.server.system_language)
         origin_path_str_absolute = \
             http_prefix + '://' + domain_full + origin_path_str
         if calling_domain.endswith('.onion') and onion_domain:
@@ -10481,7 +10484,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.project_version,
                                               self.server.signing_priv_key_pem,
                                               self.server.followers_sync_cache,
-                                              self.server.sites_unavailable)
+                                              self.server.sites_unavailable,
+                                              self.server.system_language)
         origin_path_str_absolute = \
             http_prefix + '://' + domain_full + origin_path_str
         if calling_domain.endswith('.onion') and onion_domain:

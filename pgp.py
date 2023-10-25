@@ -542,7 +542,8 @@ def pgp_public_key_upload(base_dir: str, session,
                           http_prefix: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, test: str,
-                          signing_priv_key_pem: str) -> {}:
+                          signing_priv_key_pem: str,
+                          system_language: str) -> {}:
     if debug:
         print('pgp_public_key_upload')
 
@@ -664,7 +665,8 @@ def pgp_public_key_upload(base_dir: str, session,
                             base_dir, session, wf_request,
                             person_cache,
                             __version__, http_prefix, nickname,
-                            domain, post_to_box, 35725)
+                            domain, post_to_box, 35725,
+                            system_language)
 
     if not inbox_url:
         if debug:

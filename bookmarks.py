@@ -381,7 +381,8 @@ def send_bookmark_via_server(base_dir: str, session,
                              http_prefix: str, bookmark_url: str,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
-                             signing_priv_key_pem: str) -> {}:
+                             signing_priv_key_pem: str,
+                             system_language: str) -> {}:
     """Creates a bookmark via c2s
     """
     if not session:
@@ -433,7 +434,8 @@ def send_bookmark_via_server(base_dir: str, session,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain,
-                            post_to_box, 58391)
+                            post_to_box, 58391,
+                            system_language)
 
     if not inbox_url:
         if debug:
@@ -472,7 +474,8 @@ def send_undo_bookmark_via_server(base_dir: str, session,
                                   http_prefix: str, bookmark_url: str,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool, project_version: str,
-                                  signing_priv_key_pem: str) -> {}:
+                                  signing_priv_key_pem: str,
+                                  system_language: str) -> {}:
     """Removes a bookmark via c2s
     """
     if not session:
@@ -524,7 +527,8 @@ def send_undo_bookmark_via_server(base_dir: str, session,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain,
-                            post_to_box, 52594)
+                            post_to_box, 52594,
+                            system_language)
 
     if not inbox_url:
         if debug:
