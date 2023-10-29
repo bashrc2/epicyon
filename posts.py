@@ -629,6 +629,8 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                         continue
 
         content = get_base_content_from_post(this_item, system_language)
+        if not content:
+            continue
         content = content.replace('&apos;', "'")
 
         mentions = []
