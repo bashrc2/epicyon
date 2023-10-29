@@ -14,6 +14,7 @@ from utils import get_domain_from_actor
 from utils import remove_id_ending
 from utils import get_attributed_to
 from utils import get_content_from_post
+from utils import dangerous_markup
 from blocking import is_blocked
 from filters import is_filtered
 
@@ -24,6 +25,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                           languages_understood: []) -> {}:
     """Converts a PeerTube Video ActivityPub(ish) object into
     a Note, so that it can then be displayed in a timeline
+    https://docs.joinpeertube.org/api/activitypub#video
     """
     # check that the required fields are present
     required_fields = (
@@ -173,5 +175,10 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
             }
         }
     }
+
+    if post_json_object.get('support'):
+        if isinstance(post_json_object['support'], str):
+            if not dangerous_markup(post_json_object['support'], False, []):
+                new_post['object']['support'] = post_json_object['support']
 
     return new_post
