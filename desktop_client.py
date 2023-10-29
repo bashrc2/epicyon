@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import get_actor_languages_list
 from utils import get_attributed_to
 from utils import remove_html
 from utils import safe_system_string
@@ -64,6 +65,7 @@ from bookmarks import send_bookmark_via_server
 from bookmarks import send_undo_bookmark_via_server
 from delete import send_delete_via_server
 from person import get_actor_json
+from cache import get_person_from_cache
 
 
 def _desktop_help() -> None:
@@ -803,6 +805,12 @@ def _read_local_box_post(session, nickname: str, domain: str,
         yt_replace_domain = None
         twitter_replacement_domain = None
         show_vote_posts = False
+        languages_understood = []
+        person_url = local_actor_url(http_prefix, nickname, domain_full)
+        actor_json = \
+            get_person_from_cache(base_dir, person_url, person_cache)
+        if actor_json:
+            languages_understood = get_actor_languages_list(actor_json)
         post_json_object2 = \
             download_announce(session, base_dir,
                               http_prefix,
@@ -817,7 +825,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
                               domain_full, person_cache,
                               signing_priv_key_pem,
                               blocked_cache, bold_reading,
-                              show_vote_posts)
+                              show_vote_posts,
+                              languages_understood)
         if post_json_object2:
             if has_object_dict(post_json_object2):
                 if post_json_object2['object'].get('attributedTo') and \
@@ -2661,7 +2670,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               signing_priv_key_pem,
                                               blocked_cache,
                                               bold_reading,
-                                              show_vote_posts)
+                                              show_vote_posts,
+                                              languages_understood)
                         if post_json_object2:
                             post_json_object = post_json_object2
                 if post_json_object:

@@ -3001,7 +3001,8 @@ def _receive_announce(recent_posts_cache: {},
                       lists_enabled: str, bold_reading: bool,
                       dogwhistles: {}, mitm: bool,
                       min_images_for_accounts: [],
-                      buy_sites: {}) -> bool:
+                      buy_sites: {},
+                      languages_understood: []) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -3183,7 +3184,8 @@ def _receive_announce(recent_posts_cache: {},
                                          domain_full, person_cache,
                                          signing_priv_key_pem,
                                          blocked_cache, bold_reading,
-                                         show_vote_posts)
+                                         show_vote_posts,
+                                         languages_understood)
     if not post_json_object:
         print('WARN: unable to download announce: ' + str(message_json))
         not_in_onion = True
@@ -4757,7 +4759,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          max_like_count, cw_lists, lists_enabled,
                          bold_reading, dogwhistles, mitm,
                          server.min_images_for_accounts,
-                         server.buy_sites):
+                         server.buy_sites,
+                         languages_understood):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4973,7 +4976,8 @@ def _inbox_after_initial(server, inbox_start_time,
                               allow_local_network_access,
                               recent_posts_cache, debug, system_language,
                               domain_full, person_cache, signing_priv_key_pem,
-                              bold_reading, show_vote_posts):
+                              bold_reading, show_vote_posts,
+                              languages_understood):
                 # media index will be updated
                 update_index_list.append('tlmedia')
             fitness_performance(inbox_start_time, server.fitness,

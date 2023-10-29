@@ -2162,6 +2162,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if is_public_post(post_json_object):
                 is_public_repeat = True
 
+    person_url = local_actor_url(http_prefix, nickname, domain_full)
+    actor_json = \
+        get_person_from_cache(base_dir, person_url, person_cache)
+    languages_understood = []
+    if actor_json:
+        languages_understood = get_actor_languages_list(actor_json)
+
     title_str = ''
     gallery_str = ''
     is_announced = False
@@ -2185,7 +2192,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                               domain_full, person_cache,
                               signing_priv_key_pem,
                               blocked_cache, bold_reading,
-                              show_vote_posts)
+                              show_vote_posts,
+                              languages_understood)
         if not post_json_announce:
             # if the announce could not be downloaded then mark it as rejected
             announced_post_id = remove_id_ending(post_json_object['id'])
@@ -2514,13 +2522,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
     title_str += title_str2
 
     _log_post_timing(enable_timing_log, post_start_time, '14')
-
-    person_url = local_actor_url(http_prefix, nickname, domain_full)
-    actor_json = \
-        get_person_from_cache(base_dir, person_url, person_cache)
-    languages_understood = []
-    if actor_json:
-        languages_understood = get_actor_languages_list(actor_json)
 
     edits_filename = account_dir + box_name + '/' + edits_post_url
     edits_str = ''

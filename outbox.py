@@ -543,7 +543,7 @@ def post_message_to_outbox(session, translate: {},
                     acct_dir(base_dir, post_to_nickname, domain) + '/.noVotes'
                 if os.path.isfile(show_vote_file):
                     show_vote_posts = False
-
+                languages_understood = []
                 if is_image_media(session, base_dir, http_prefix,
                                   post_to_nickname, domain,
                                   message_json,
@@ -555,7 +555,8 @@ def post_message_to_outbox(session, translate: {},
                                   domain_full, person_cache,
                                   signing_priv_key_pem,
                                   bold_reading,
-                                  show_vote_posts):
+                                  show_vote_posts,
+                                  languages_understood):
                     inbox_update_index('tlmedia', base_dir,
                                        post_to_nickname + '@' + domain,
                                        saved_filename, debug)

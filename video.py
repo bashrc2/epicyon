@@ -13,13 +13,15 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import remove_id_ending
 from utils import get_attributed_to
+from utils import get_content_from_post
 from blocking import is_blocked
 from filters import is_filtered
 
 
 def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                           system_language: str,
-                          post_json_object: {}, blocked_cache: {}) -> {}:
+                          post_json_object: {}, blocked_cache: {},
+                          languages_understood: []) -> {}:
     """Converts a PeerTube Video ActivityPub(ish) object into
     a Note, so that it can then be displayed in a timeline
     """
@@ -92,10 +94,9 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                                system_language):
                     return None
                 content += '<p>' + post_json_object['license']['name'] + '</p>'
-    post_content = post_json_object['content']
-    if 'contentMap' in post_json_object:
-        if post_json_object['contentMap'].get(system_language):
-            post_content = post_json_object['contentMap'][system_language]
+    post_content = \
+        get_content_from_post(post_json_object, system_language,
+                              languages_understood, "content")
     content += post_content
 
     conversation_id = remove_id_ending(post_json_object['id'])

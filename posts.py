@@ -4212,7 +4212,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                    domain_full: str, person_cache: {},
                    signing_priv_key_pem: str,
                    bold_reading: bool,
-                   show_vote_posts: bool) -> bool:
+                   show_vote_posts: bool,
+                   languages_understood: []) -> bool:
     """Returns true if the given post has attached image media
     """
     if post_json_object['type'] == 'Announce':
@@ -4229,7 +4230,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                               domain_full, person_cache,
                               signing_priv_key_pem,
                               blocked_cache, bold_reading,
-                              show_vote_posts)
+                              show_vote_posts,
+                              languages_understood)
         if post_json_announce:
             post_json_object = post_json_announce
     if post_json_object['type'] != 'Create':
@@ -5597,7 +5599,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       domain_full: str, person_cache: {},
                       signing_priv_key_pem: str,
                       blocked_cache: {}, bold_reading: bool,
-                      show_vote_posts: bool) -> {}:
+                      show_vote_posts: bool,
+                      languages_understood: []) -> {}:
     """Download the post referenced by an announce
     """
     if not post_json_object.get('object'):
@@ -5726,7 +5729,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
             converted_json = \
                 convert_video_to_note(base_dir, nickname, domain,
                                       system_language,
-                                      announced_json, blocked_cache)
+                                      announced_json, blocked_cache,
+                                      languages_understood)
             if converted_json:
                 announced_json = converted_json
         if not contains_statuses(announced_json['id']):
