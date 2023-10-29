@@ -15,6 +15,7 @@ from utils import remove_id_ending
 from utils import get_attributed_to
 from utils import get_content_from_post
 from utils import dangerous_markup
+from utils import license_link_from_name
 from blocking import is_blocked
 from filters import is_filtered
 
@@ -194,6 +195,20 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                             'href': support_str,
                             'rel': 'support',
                             'name': 'Support'
+                        })
+
+    if post_json_object.get('license'):
+        if isinstance(post_json_object['license'], dict):
+            if post_json_object['license'].get('name'):
+                if isinstance(post_json_object['license']['name'], str):
+                    license_str = post_json_object['license']['name']
+                    content_license_url = \
+                        license_link_from_name(license_str)
+                    if content_license_url:
+                        new_post['object']['attachment'].append({
+                            "type": "PropertyValue",
+                            "name": "license",
+                            "value": content_license_url
                         })
 
     return new_post
