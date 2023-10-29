@@ -52,6 +52,15 @@ def get_attributed_to(field) -> str:
     if isinstance(field, str):
         return field
     elif isinstance(field, list):
+        for attrib in field:
+            if isinstance(attrib, dict):
+                if attrib.get('type') and attrib.get('id'):
+                    if isinstance(attrib['type'], str) and \
+                       isinstance(attrib['id'], str):
+                        if attrib['type'] == 'Person' and \
+                           '://' in attrib['id'] and \
+                           '.' in attrib['id']:
+                            return attrib['id']
         if isinstance(field[0], str):
             return field[0]
     return None
