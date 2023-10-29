@@ -229,11 +229,10 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                 for understood in languages_understood:
                     if understood in lang['identifier']:
                         new_post['object']['attachment'].append({
-                            "type": "PropertyValue",
-                            "name": "Subtitles",
+                            "type": "Document",
+                            "name": understood,
                             "mediaType": "text/vtt",
-                            "url": lang['url'],
-                            "hreflang": understood
+                            "url": lang['url']
                         })
                         break
 
