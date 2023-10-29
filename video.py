@@ -42,18 +42,6 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
     attributed_to = None
     if isinstance(post_json_object['attributedTo'], str):
         attributed_to = get_attributed_to(post_json_object['attributedTo'])
-    elif isinstance(post_json_object['attributedTo'], list):
-        for entity in post_json_object['attributedTo']:
-            if not isinstance(entity, dict):
-                continue
-            if not entity.get('type'):
-                continue
-            if entity['type'] != 'Person':
-                continue
-            if not entity.get('id'):
-                continue
-            attributed_to = entity['id']
-            break
     if not attributed_to:
         return None
 
