@@ -177,13 +177,23 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
     }
 
     if post_json_object.get('support'):
-        if isinstance(post_json_object['support'], str):
-            if not dangerous_markup(post_json_object['support'],
-                                    False, []):
-                if not is_filtered(base_dir, nickname, domain,
-                                   post_json_object['support'],
+        support_str = post_json_object['support']
+        if isinstance(support_str, str):
+            if not dangerous_markup(support_str, False, []):
+                if not is_filtered(base_dir, nickname, domain, support_str,
                                    system_language):
-                    new_post['object']['support'] = \
-                        post_json_object['support']
+                    new_post['object']['support'] = support_str
+                    # if this is a link
+                    if ' ' not in support_str and \
+                       '://' in support_str and \
+                       '.' in support_str:
+                        # add a buy link
+                        new_post['object']['attachment'].append({
+                            'type': 'Link',
+                            'mediaType': 'html',
+                            'href': support_str,
+                            'rel': 'support',
+                            'name': 'Support'
+                        })
 
     return new_post
