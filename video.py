@@ -211,4 +211,30 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                             "value": content_license_url
                         })
 
+    if post_json_object.get('subtitleLanguage'):
+        if isinstance(post_json_object['subtitleLanguage'], list):
+            for lang in post_json_object['subtitleLanguage']:
+                if not isinstance(lang, dict):
+                    continue
+                if not lang.get('identifier'):
+                    continue
+                if not isinstance(lang['identifier'], str):
+                    continue
+                if not lang.get('url'):
+                    continue
+                if not isinstance(lang['url'], str):
+                    continue
+                if not lang['url'].endswith('.vtt'):
+                    continue
+                for understood in languages_understood:
+                    if understood in lang['identifier']:
+                        new_post['object']['attachment'].append({
+                            "type": "PropertyValue",
+                            "name": "Subtitles",
+                            "mediaType": "text/vtt",
+                            "url": lang['url'],
+                            "hreflang": understood
+                        })
+                        break
+
     return new_post
