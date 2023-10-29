@@ -12,6 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
+from utils import get_media_url_from_video
 from utils import get_attributed_to
 from utils import local_network_host
 from utils import dangerous_markup
@@ -1245,15 +1246,37 @@ def get_post_attachments_as_html(base_dir: str,
     """Returns a string representing any attachments
     """
     attachment_str = ''
+    attachment_ctr = 0
     gallery_str = ''
+    attachment_dict = []
+
+    # handle peertube-style video posts, where the media links
+    # are stored in the url field
+    if post_json_object.get('object'):
+        media_type, media_url, _, _ = \
+            get_media_url_from_video(post_json_object['object'])
+    else:
+        media_type, media_url, _, _ = \
+            get_media_url_from_video(post_json_object)
+    if media_url and media_type:
+        attachment_dict = [{
+            'mediaType': media_type,
+            'name': content,
+            'type': 'Document',
+            'url': media_url
+        }]
+        if not post_json_object['object'].get('attachment'):
+            post_json_object['object']['attachment'] = \
+                attachment_dict
+
     if not post_json_object['object'].get('attachment'):
         return attachment_str, gallery_str
 
     if not isinstance(post_json_object['object']['attachment'], list):
         return attachment_str, gallery_str
 
-    attachment_ctr = 0
-    attachment_str = ''
+    attachment_dict += post_json_object['object']['attachment']
+
     media_style_added = False
     post_id = None
     if post_json_object['object'].get('id'):
@@ -1262,7 +1285,7 @@ def get_post_attachments_as_html(base_dir: str,
 
     # chat links
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/1970/fep-1970.md
-    for attach in post_json_object['object']['attachment']:
+    for attach in attachment_dict:
         if not attach.get('type') or \
            not attach.get('name') or \
            not attach.get('href') or \
@@ -1299,7 +1322,7 @@ def get_post_attachments_as_html(base_dir: str,
 
     # obtain transcripts
     transcripts = {}
-    for attach in post_json_object['object']['attachment']:
+    for attach in attachment_dict:
         if not attach.get('mediaType'):
             continue
         if attach['mediaType'] != 'text/vtt':
@@ -1323,7 +1346,7 @@ def get_post_attachments_as_html(base_dir: str,
         if name and url:
             transcripts[name] = remove_html(url)
 
-    for attach in post_json_object['object']['attachment']:
+    for attach in attachment_dict:
         if not (attach.get('mediaType') and attach.get('url')):
             continue
         media_license = ''
