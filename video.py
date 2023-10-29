@@ -190,7 +190,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                         # add a buy link
                         new_post['object']['attachment'].append({
                             'type': 'Link',
-                            'mediaType': 'html',
+                            'mediaType': 'text/html',
                             'href': support_str,
                             'rel': 'support',
                             'name': 'Support'
