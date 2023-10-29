@@ -1539,9 +1539,10 @@ def get_post_attachments_as_html(base_dir: str,
                             for transcript_name, transcript_url in \
                               transcripts.items():
                                 gallery_str += \
-                                    '<track src=”' + transcript_url + \
-                                    '” label=”' + transcript_name + \
-                                    '” kind=”captions” >\n'
+                                    '<track src=”' + transcript_url + '" ' + \
+                                    'label=”' + transcript_name + '" ' + \
+                                    'srclang=”' + transcript_name + '" ' + \
+                                    'kind=”captions” >\n'
                         idx = 'Your browser does not support the video tag.'
                         gallery_str += translate[idx] + '\n'
                         gallery_str += '    </video>\n'
@@ -1585,9 +1586,10 @@ def get_post_attachments_as_html(base_dir: str,
                     for transcript_name, transcript_url in \
                       transcripts.items():
                         attachment_str += \
-                            '      <track src=”' + transcript_url + \
-                            '” label=”' + transcript_name + \
-                            '” kind=”captions” >\n'
+                            '      <track src=”' + transcript_url + '" ' + \
+                            'label=”' + transcript_name + '" ' + \
+                            'srclang=”' + transcript_name + '" ' + \
+                            'kind=”captions” >\n'
                 attachment_str += \
                     translate['Your browser does not support the video tag.']
                 attachment_str += '\n    </video></figure></center>'
