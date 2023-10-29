@@ -178,7 +178,12 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
 
     if post_json_object.get('support'):
         if isinstance(post_json_object['support'], str):
-            if not dangerous_markup(post_json_object['support'], False, []):
-                new_post['object']['support'] = post_json_object['support']
+            if not dangerous_markup(post_json_object['support'],
+                                    False, []):
+                if not is_filtered(base_dir, nickname, domain,
+                                   post_json_object['support'],
+                                   system_language):
+                    new_post['object']['support'] = \
+                        post_json_object['support']
 
     return new_post
