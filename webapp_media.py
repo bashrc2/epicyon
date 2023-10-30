@@ -55,8 +55,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     channel + '&parent=' + domain + '" ' + \
                     'frameborder="0" allowfullscreen="true" ' + \
                     'scrolling="no" height="' + str(height) + \
-                    '" width="' + str(width) + '"></iframe>' + \
-                    '</span>\n</center>\n'
+                    '" width="' + str(width) + '" sandbox>' + \
+                    '</iframe></span>\n</center>\n'
                 return content
 
     if '>vimeo.com/' in content:
@@ -72,7 +72,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"" + \
                     "fullscreen\" allowfullscreen " + \
-                    "tabindex=\"10\"></iframe>\n" + \
+                    "tabindex=\"10\" sandbox></iframe>\n" + \
                     "</span>\n</center>\n"
                 return content
 
@@ -96,8 +96,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen tabindex=\"10\"></iframe>\n" + \
-                    "</span></center>\n"
+                    "allowfullscreen tabindex=\"10\" sandbox>" + \
+                    "</iframe>\n</span></center>\n"
                 return content
 
     video_site = 'https://youtu.be/'
@@ -119,8 +119,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen tabindex=\"10\"></iframe>\n" + \
-                    "</span></center>\n"
+                    "allowfullscreen tabindex=\"10\" sandbox>" + \
+                    "</iframe>\n</span></center>\n"
                 return content
 
     invidious_sites = (
@@ -169,7 +169,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + \
                     str(width) + "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen tabindex=\"10\"></iframe>\n" + \
+                    "allowfullscreen tabindex=\"10\" sandbox></iframe>\n" + \
                     "</span>\n</center>\n"
                 return content
 
@@ -193,7 +193,7 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + \
                     str(width) + "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen tabindex=\"10\"></iframe>\n" + \
+                    "allowfullscreen tabindex=\"10\" sandbox></iframe>\n" + \
                     "</span>\n</center>\n"
                 return content
 
@@ -273,9 +273,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 site + url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"" + \
-                "fullscreen\" allowfullscreen tabindex=\"10\">' + \
-                '</iframe>\n" + \
-                "</span>\n</center>\n"
+                "fullscreen\" allowfullscreen tabindex=\"10\" sandbox>" + \
+                "</iframe>\n</span>\n</center>\n"
             return content
     return content
 

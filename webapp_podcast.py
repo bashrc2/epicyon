@@ -394,7 +394,7 @@ def html_podcast_episode(translate: {},
                 "  <iframe loading=\"lazy\" decoding=\"async\" src=\"" + \
                 url + "\" width=\"400\" height=\"300\" " + \
                 "frameborder=\"0\" allow=\"fullscreen\" " + \
-                "allowfullscreen>\n  </iframe>\n  </span>\n"
+                "allowfullscreen sandbox>\n  </iframe>\n  </span>\n"
         elif 'video' in podcast_properties['linkMimeType']:
             video_mime_type = podcast_properties['linkMimeType']
             video_msg = 'Your browser does not support the video element.'

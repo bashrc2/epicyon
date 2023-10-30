@@ -1285,6 +1285,7 @@ def get_post_attachments_as_html(base_dir: str,
 
     # chat links
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/1970/fep-1970.md
+    attached_urls = []
     for attach in attachment_dict:
         if not attach.get('type') or \
            not attach.get('name') or \
@@ -1305,6 +1306,9 @@ def get_post_attachments_as_html(base_dir: str,
         # get the domain for the chat link
         chat_domain_str = ''
         attach_url = remove_html(attach['href'])
+        if attach_url in attached_urls:
+            continue
+        attached_urls.append(attach_url)
         chat_domain, _ = get_domain_from_actor(attach_url)
         if chat_domain:
             if local_network_host(chat_domain):
@@ -1543,6 +1547,14 @@ def get_post_attachments_as_html(base_dir: str,
                     attachment_str += '<br>'
                 if box_name == 'tlmedia':
                     gallery_str += '<div class="gallery">\n'
+                    if post_json_object['object'].get('url'):
+                        video_post_url = post_json_object['object']['url']
+                    else:
+                        video_post_url = post_json_object['object']['id']
+                    video_post_url = remove_html(video_post_url)
+                    if video_post_url in attached_urls:
+                        continue
+                    attached_urls.append(video_post_url)
                     if not is_muted:
                         gallery_str += \
                             '  <a href="' + video_url + \
@@ -1571,11 +1583,6 @@ def get_post_attachments_as_html(base_dir: str,
                         gallery_str += '    </video>\n'
                         gallery_str += '    </figure>\n'
                         gallery_str += '  </a>\n'
-                    if post_json_object['object'].get('url'):
-                        video_post_url = post_json_object['object']['url']
-                    else:
-                        video_post_url = post_json_object['object']['id']
-                    video_post_url = remove_html(video_post_url)
                     if image_description and not is_muted:
                         gallery_str += \
                             '  <a href="' + video_post_url + \
