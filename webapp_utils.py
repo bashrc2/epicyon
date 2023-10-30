@@ -1398,6 +1398,9 @@ def get_post_attachments_as_html(base_dir: str,
             image_description = remove_html(image_description)
         if _is_image_mime_type(media_type):
             image_url = remove_html(attach['url'])
+            if image_url in attached_urls:
+                continue
+            attached_urls.append(image_url)
 
             # display svg images if they have first been rendered harmless
             svg_harmless = True
@@ -1541,6 +1544,9 @@ def get_post_attachments_as_html(base_dir: str,
                 attachment_ctr += 1
         elif _is_video_mime_type(media_type):
             video_url = remove_html(attach['url'])
+            if video_url in attached_urls:
+                continue
+            attached_urls.append(video_url)
             if _is_attached_video(video_url):
                 extension = video_url.split('.')[-1]
                 if attachment_ctr > 0:
@@ -1552,9 +1558,6 @@ def get_post_attachments_as_html(base_dir: str,
                     else:
                         video_post_url = post_json_object['object']['id']
                     video_post_url = remove_html(video_post_url)
-                    if video_post_url in attached_urls:
-                        continue
-                    attached_urls.append(video_post_url)
                     if not is_muted:
                         gallery_str += \
                             '  <a href="' + video_url + \
@@ -1627,6 +1630,9 @@ def get_post_attachments_as_html(base_dir: str,
         elif _is_audio_mime_type(media_type):
             extension = '.mp3'
             audio_url = remove_html(attach['url'])
+            if audio_url in attached_urls:
+                continue
+            attached_urls.append(audio_url)
             if audio_url.endswith('.ogg'):
                 extension = '.ogg'
             elif audio_url.endswith('.wav'):
