@@ -55,7 +55,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     channel + '&parent=' + domain + '" ' + \
                     'frameborder="0" allowfullscreen="true" ' + \
                     'scrolling="no" height="' + str(height) + \
-                    '" width="' + str(width) + '" sandbox>' + \
+                    '" width="' + str(width) + \
+                    '" sandbox="allow-scripts allow-same-origin">' + \
                     '</iframe></span>\n</center>\n'
                 return content
 
@@ -72,8 +73,9 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"" + \
                     "fullscreen\" allowfullscreen " + \
-                    "tabindex=\"10\" sandbox></iframe>\n" + \
-                    "</span>\n</center>\n"
+                    "tabindex=\"10\" " + \
+                    "sandbox=\"allow-scripts allow-same-origin\">" + \
+                    "</iframe>\n</span>\n</center>\n"
                 return content
 
     video_site = 'https://www.youtube.com'
@@ -96,7 +98,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen tabindex=\"10\" sandbox>" + \
+                    "allowfullscreen tabindex=\"10\" " + \
+                    "sandbox=\"allow-scripts allow-same-origin\">" + \
                     "</iframe>\n</span></center>\n"
                 return content
 
@@ -119,7 +122,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + str(width) + \
                     "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen tabindex=\"10\" sandbox>" + \
+                    "allowfullscreen tabindex=\"10\" " + \
+                    "sandbox=\"allow-scripts allow-same-origin\">" + \
                     "</iframe>\n</span></center>\n"
                 return content
 
@@ -169,8 +173,9 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + \
                     str(width) + "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen tabindex=\"10\" sandbox></iframe>\n" + \
-                    "</span>\n</center>\n"
+                    "allowfullscreen tabindex=\"10\" " + \
+                    "sandbox=\"allow-scripts allow-same-origin\">" + \
+                    "</iframe>\n</span>\n</center>\n"
                 return content
 
     video_site = 'https://media.ccc.de'
@@ -193,8 +198,9 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                     video_site + url + "\" width=\"" + \
                     str(width) + "\" height=\"" + str(height) + \
                     "\" frameborder=\"0\" allow=\"fullscreen\" " + \
-                    "allowfullscreen tabindex=\"10\" sandbox></iframe>\n" + \
-                    "</span>\n</center>\n"
+                    "allowfullscreen tabindex=\"10\" " + \
+                    "sandbox=\"allow-scripts allow-same-origin\">" + \
+                    "</iframe>\n</span>\n</center>\n"
                 return content
 
     if '"https://' in content:
@@ -273,7 +279,8 @@ def _add_embedded_video_from_sites(translate: {}, content: str,
                 site + url + "\" width=\"" + str(width) + \
                 "\" height=\"" + str(height) + \
                 "\" frameborder=\"0\" allow=\"" + \
-                "fullscreen\" allowfullscreen tabindex=\"10\" sandbox>" + \
+                "fullscreen\" allowfullscreen tabindex=\"10\" " + \
+                "sandbox=\"allow-scripts allow-same-origin\">" + \
                 "</iframe>\n</span>\n</center>\n"
             return content
     return content
