@@ -4686,22 +4686,25 @@ def get_media_url_from_video(post_json_object: {}) -> (str, str, str, str):
     media_url = None
     media_torrent = None
     media_magnet = None
-    if isinstance(post_json_object['url'], list):
-        for media_link in post_json_object['url']:
-            if not isinstance(media_link, dict):
-                continue
-            if not media_link.get('mediaType'):
-                continue
-            if not media_link.get('href'):
-                continue
-            if media_link['mediaType'] == 'application/x-bittorrent':
-                media_torrent = remove_html(media_link['href'])
-            if media_link['href'].startswith('magnet:'):
-                media_magnet = remove_html(media_link['href'])
-            if media_link['mediaType'] != 'video/mp4' and \
-               media_link['mediaType'] != 'video/ogv':
-                continue
-            if not media_url:
-                media_type = media_link['mediaType']
-                media_url = remove_html(media_link['href'])
+    if post_json_object.get('url'):
+        if isinstance(post_json_object['url'], list):
+            for media_link in post_json_object['url']:
+                if not isinstance(media_link, dict):
+                    continue
+                if not media_link.get('mediaType'):
+                    continue
+                if not media_link.get('href'):
+                    continue
+                if media_link['mediaType'] == 'application/x-bittorrent':
+                    media_torrent = remove_html(media_link['href'])
+                if media_link['href'].startswith('magnet:'):
+                    media_magnet = remove_html(media_link['href'])
+                if media_link['mediaType'] != 'video/mp4' and \
+                   media_link['mediaType'] != 'video/ogv':
+                    continue
+                if not media_url:
+                    media_type = media_link['mediaType']
+                    media_url = remove_html(media_link['href'])
+    else:
+        print('WARN: video url does not exist ' + str(post_json_object))
     return media_type, media_url, media_torrent, media_magnet
