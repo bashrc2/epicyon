@@ -13,10 +13,10 @@ import time
 import shutil
 import datetime
 import json
-import idna
 import locale
-from dateutil.tz import tz
 from pprint import pprint
+import idna
+from dateutil.tz import tz
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from followingCalendar import add_person_to_calendar
