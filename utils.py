@@ -4462,12 +4462,12 @@ def is_quote_toot(post_json_object: str, content: str) -> bool:
     return False
 
 
-def license_link_from_name(license: str) -> str:
+def license_link_from_name(license_name: str) -> str:
     """Returns the license link from its name
     """
-    if '://' in license:
-        return license
-    value_upper = license.upper()
+    if '://' in license_name:
+        return license_name
+    value_upper = license_name.upper()
     if 'CC-BY-SA-NC' in value_upper or \
        'CC-BY-NC-SA' in value_upper or \
        'CC BY SA NC' in value_upper or \
