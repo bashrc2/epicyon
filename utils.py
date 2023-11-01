@@ -3440,7 +3440,7 @@ def load_translations_from_file(base_dir: str, language: str) -> ({}, str):
         print('ERROR: translations directory not found')
         return None, None
     if not language:
-        system_language = locale.getdefaultlocale()[0]
+        system_language = locale.getlocale()[0]
     else:
         system_language = language
     if not system_language:
