@@ -1951,7 +1951,7 @@ def _get_buy_footer(buy_links: {}, translate: {}) -> str:
     icon_filename = 'buy.png'
     description = translate['Buy']
     buy_str = ''
-    for buy_title, buy_url in buy_links.items():
+    for _, buy_url in buy_links.items():
         buy_str = \
             '        ' + \
             '<a class="imageAnchor" href="' + buy_url + \
