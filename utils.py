@@ -4705,6 +4705,4 @@ def get_media_url_from_video(post_json_object: {}) -> (str, str, str, str):
                 if not media_url:
                     media_type = media_link['mediaType']
                     media_url = remove_html(media_link['href'])
-    else:
-        print('WARN: video url does not exist ' + str(post_json_object))
     return media_type, media_url, media_torrent, media_magnet
