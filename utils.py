@@ -51,7 +51,7 @@ def get_attributed_to(field) -> str:
     """
     if isinstance(field, str):
         return field
-    elif isinstance(field, list):
+    if isinstance(field, list):
         for attrib in field:
             if isinstance(attrib, dict):
                 if attrib.get('type') and attrib.get('id'):
