@@ -4695,6 +4695,23 @@ def get_media_url_from_video(post_json_object: {}) -> (str, str, str, str):
                     continue
                 if not media_link.get('href'):
                     continue
+                if media_link.get('tag'):
+                    media_tags = media_link['tag']
+                    if isinstance(media_tags, list):
+                        for tag_link in media_tags:
+                            if not isinstance(tag_link, dict):
+                                continue
+                            if not tag_link.get('mediaType'):
+                                continue
+                            if not tag_link.get('href'):
+                                continue
+                            if tag_link['mediaType'] == 'video/mp4' or \
+                               tag_link['mediaType'] == 'video/ogv':
+                                media_type = tag_link['mediaType']
+                                media_url = remove_html(tag_link['href'])
+                                break
+                        if media_type and media_url:
+                            continue
                 if media_link['mediaType'] == 'application/x-bittorrent':
                     media_torrent = remove_html(media_link['href'])
                 if media_link['href'].startswith('magnet:'):
