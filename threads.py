@@ -10,13 +10,13 @@ __module_group__ = "Core"
 import threading
 import sys
 import time
-import datetime
 from socket import error as SocketError
+from utils import date_utcnow
 
 
 class thread_with_trace(threading.Thread):
     def __init__(self, *args, **keywords):
-        self.start_time = datetime.datetime.utcnow()
+        self.start_time = date_utcnow()
         self.is_started = False
         tries = 0
         while tries < 3:
@@ -96,7 +96,7 @@ def remove_dormant_threads(base_dir: str, threads_list: [], debug: bool,
 
     timeout_secs = int(timeout_mins * 60)
     dormant_threads = []
-    curr_time = datetime.datetime.utcnow()
+    curr_time = date_utcnow()
     changed = False
 
     # which threads are dormant?

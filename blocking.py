@@ -10,8 +10,9 @@ __module_group__ = "Core"
 import os
 import json
 import time
-from datetime import datetime
 from session import get_json_valid
+from utils import date_from_string_format
+from utils import date_utcnow
 from utils import remove_eol
 from utils import has_object_string
 from utils import has_object_string_object
@@ -1540,16 +1541,12 @@ def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
     if not os.path.isfile(allow_filename):
         return False
     last_modified = file_last_modified(allow_filename)
-    modified_date = None
-    try:
-        modified_date = \
-            datetime.strptime(last_modified, "%Y-%m-%dT%H:%M:%SZ")
-    except BaseException:
+    modified_date = \
+        date_from_string_format(last_modified, ["%Y-%m-%dT%H:%M:%S%z"])
+    if not modified_date:
         print('EX: broch_modeLapses date not parsed ' + str(last_modified))
         return False
-    if not modified_date:
-        return False
-    curr_time = datetime.datetime.utcnow()
+    curr_time = date_utcnow()
     days_since_broch = (curr_time - modified_date).days
     if days_since_broch >= lapseDays:
         removed = False

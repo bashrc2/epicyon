@@ -21,11 +21,13 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import utils as hazutils
 import base64
 from time import gmtime, strftime
-import datetime
 from utils import get_full_domain
 from utils import get_sha_256
 from utils import get_sha_512
 from utils import local_actor_url
+from utils import date_utcnow
+from utils import date_epoch
+from utils import date_from_string_format
 
 
 def message_content_digest(message_body_json_str: str,
@@ -167,9 +169,9 @@ def sign_post_headers_new(date_str: str, private_key_pem: str,
         curr_time = gmtime()
         date_str = strftime(time_format, curr_time)
     else:
-        curr_time = datetime.datetime.strptime(date_str, time_format)
+        curr_time = date_from_string_format(date_str, [time_format])
     seconds_since_epoch = \
-        int((curr_time - datetime.datetime(1970, 1, 1)).total_seconds())
+        int((curr_time - date_epoch()).total_seconds())
     key_id = local_actor_url(http_prefix, nickname, domain) + '#main-key'
     if not message_body_json_str:
         headers = {
@@ -299,19 +301,13 @@ def _verify_recent_signature(signed_date_str: str) -> bool:
     """Checks whether the given time taken from the header is within
     12 hours of the current time
     """
-    curr_date = datetime.datetime.utcnow()
+    curr_date = date_utcnow()
     formats = ("%a, %d %b %Y %H:%M:%S %Z",
                "%a, %d %b %Y %H:%M:%S %z")
-    signed_date = None
-    for date_format in formats:
-        try:
-            signed_date = \
-                datetime.datetime.strptime(signed_date_str, date_format)
-        except BaseException:
-            continue
-        break
+    signed_date = date_from_string_format(signed_date_str, formats)
     if not signed_date:
         return False
+
     time_diff_sec = (curr_date - signed_date).total_seconds()
     # 12 hours tollerance
     if time_diff_sec > 43200:

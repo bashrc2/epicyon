@@ -23,6 +23,7 @@ from session import post_json
 from session import post_image
 from session import create_session
 from session import get_json_valid
+from utils import date_utcnow
 from utils import dangerous_markup
 from utils import remove_html
 from utils import get_media_extensions
@@ -1303,7 +1304,7 @@ def shares_catalog_account_endpoint(base_dir: str, http_prefix: str,
         "DFC:supplies": []
     }
 
-    curr_date = datetime.datetime.utcnow()
+    curr_date = date_utcnow()
     curr_date_str = curr_date.strftime("%Y-%m-%d")
 
     shares_filename = \
@@ -1340,7 +1341,8 @@ def shares_catalog_account_endpoint(base_dir: str, http_prefix: str,
             if not re.match(match_pattern, description):
                 continue
 
-        expire_date = datetime.datetime.fromtimestamp(item['expire'])
+        expire_date = datetime.datetime.fromtimestamp(item['expire'],
+                                                      datetime.timezone.utc)
         expire_date_str = expire_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         share_id = _get_valid_shared_item_id(owner, item['displayName'])
@@ -1390,7 +1392,7 @@ def shares_catalog_endpoint(base_dir: str, http_prefix: str,
         "DFC:supplies": []
     }
 
-    curr_date = datetime.datetime.utcnow()
+    curr_date = date_utcnow()
     curr_date_str = curr_date.strftime("%Y-%m-%d")
 
     for _, dirs, _ in os.walk(base_dir + '/accounts'):

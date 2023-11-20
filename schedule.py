@@ -9,7 +9,8 @@ __module_group__ = "Calendar"
 
 import os
 import time
-import datetime
+from utils import date_from_string_format
+from utils import date_epoch
 from utils import acct_handle_dir
 from utils import has_object_dict
 from utils import get_status_number
@@ -17,6 +18,7 @@ from utils import load_json
 from utils import is_account_dir
 from utils import acct_dir
 from utils import remove_eol
+from utils import date_utcnow
 from outbox import post_message_to_outbox
 from session import create_session
 from threads import begin_thread
@@ -34,8 +36,8 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
         return
 
     # get the current time as an int
-    curr_time = datetime.datetime.utcnow()
-    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
+    curr_time = date_utcnow()
+    days_since_epoch = (curr_time - date_epoch()).days
 
     schedule_dir = acct_handle_dir(base_dir, handle) + '/scheduled/'
     index_lines = []
@@ -64,10 +66,10 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
             index_lines.append(line)
             # convert string date to int
             post_time = \
-                datetime.datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S%z")
+                date_from_string_format(date_str, ["%Y-%m-%dT%H:%M:%S%z"])
             post_time = post_time.replace(tzinfo=None)
             post_days_since_epoch = \
-                (post_time - datetime.datetime(1970, 1, 1)).days
+                (post_time - date_epoch()).days
             if days_since_epoch < post_days_since_epoch:
                 continue
             if days_since_epoch == post_days_since_epoch:

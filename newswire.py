@@ -14,12 +14,12 @@ import random
 import time
 from socket import error as SocketError
 import errno
-from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import date_from_string_format
 from utils import acct_handle_dir
 from utils import remove_eol
 from utils import get_domain_from_actor
@@ -314,8 +314,8 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
                "%a, %d %b %Y %H:%M:%S AKST",
                "%a, %d %b %Y %H:%M:%S HST",
                "%a, %d %b %Y %H:%M:%S UT",
-               "%Y-%m-%dT%H:%M:%SZ",
-               "%Y-%m-%dT%H:%M:%S%z")
+               "%Y-%m-%dT%H:%M:%S%z",
+               "%Y-%m-%dT%H:%M:%S%Z")
     published_date = None
     for date_format in formats:
         if ',' in pub_date and ',' not in date_format:
@@ -348,7 +348,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
                 timezone_str = '-' + ending.split('-')[1]
             pub_date2 = pub_date2.split('.')[0] + timezone_str
         try:
-            published_date = datetime.strptime(pub_date2, date_format)
+            published_date = date_from_string_format(pub_date2, [date_format])
         except BaseException:
             continue
 
@@ -1420,10 +1420,11 @@ def get_rs_sfrom_dict(base_dir: str, newswire: {},
             published = published.replace(' ', 'T')
         else:
             published_with_offset = \
-                datetime.strptime(published, "%Y-%m-%d %H:%M:%S%z")
-            published = published_with_offset.strftime("%Y-%m-%dT%H:%M:%SZ")
+                date_from_string_format(published, ["%Y-%m-%d %H:%M:%S%z"])
+            published = published_with_offset.strftime("%Y-%m-%dT%H:%M:%S%z")
         try:
-            pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+            pub_date = date_from_string_format(published,
+                                               ["%Y-%m-%dT%H:%M:%S%z"])
         except BaseException as ex:
             print('WARN: Unable to convert date ' + published + ' ' + str(ex))
             continue

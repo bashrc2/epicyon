@@ -15,6 +15,8 @@ import random
 from random import randint
 from hashlib import sha1
 from auth import create_password
+from utils import date_epoch
+from utils import date_utcnow
 from utils import safe_system_string
 from utils import get_base_content_from_post
 from utils import get_full_domain
@@ -336,7 +338,7 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + output_filename + ' using exiftool')
         curr_time_adjusted = \
-            datetime.datetime.utcnow() - \
+            date_utcnow() - \
             datetime.timedelta(minutes=randint(2, 120))
         published = curr_time_adjusted.strftime("%Y:%m:%d %H:%M:%S+00:00")
         (latitude, longitude, latitude_ref, longitude_ref,
@@ -491,9 +493,9 @@ def create_media_dirs(base_dir: str, media_path: str) -> None:
 def get_media_path() -> str:
     """Returns the path for stored media
     """
-    curr_time = datetime.datetime.utcnow()
+    curr_time = date_utcnow()
     weeks_since_epoch = \
-        int((curr_time - datetime.datetime(1970, 1, 1)).days / 7)
+        int((curr_time - date_epoch()).days / 7)
     return 'media/' + str(weeks_since_epoch)
 
 
@@ -676,8 +678,8 @@ def archive_media(base_dir: str, archive_directory: str,
     if max_weeks == 0:
         return
 
-    curr_time = datetime.datetime.utcnow()
-    weeks_since_epoch = int((curr_time - datetime.datetime(1970, 1, 1)).days/7)
+    curr_time = date_utcnow()
+    weeks_since_epoch = int((curr_time - date_epoch()).days/7)
     min_week = weeks_since_epoch - max_weeks
 
     if archive_directory:

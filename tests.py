@@ -56,6 +56,8 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import date_from_string_format
+from utils import date_utcnow
 from utils import is_right_to_left_text
 from utils import remove_markup_tag
 from utils import remove_style_within_html
@@ -6415,7 +6417,7 @@ def _test_spoofed_geolocation() -> None:
     assert not point_in_nogo(test_square, -5, -5)
     assert not point_in_nogo(test_square, -5, 5)
     nogo_list = []
-    curr_time = datetime.datetime.utcnow()
+    curr_time = date_utcnow()
     decoy_seed = 7634681
     city_radius = 0.1
     coords = spoof_geolocation('', 'los angeles', curr_time,
@@ -6459,7 +6461,7 @@ def _test_spoofed_geolocation() -> None:
         if hour < 10:
             hour_str = '0' + hour_str
         date_time_str = "2021-05-" + str(day_number) + " " + hour_str + ":14"
-        curr_time = datetime.datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
+        curr_time = date_from_string_format(date_time_str, ["%Y-%m-%d %H:%M"])
         coords = spoof_geolocation('', 'new york, usa', curr_time,
                                    decoy_seed, cities_list, nogo_list)
         longitude = coords[1]
@@ -6496,7 +6498,7 @@ def _test_spoofed_geolocation() -> None:
         if hour < 10:
             hour_str = '0' + hour_str
         date_time_str = "2021-05-" + str(day_number) + " " + hour_str + ":14"
-        curr_time = datetime.datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
+        curr_time = date_from_string_format(date_time_str, ["%Y-%m-%d %H:%M"])
         coords = spoof_geolocation('', 'london, england', curr_time,
                                    decoy_seed, cities_list, nogo_list)
         longitude = coords[1]
@@ -6546,7 +6548,7 @@ def _test_spoofed_geolocation() -> None:
         if hour < 10:
             hour_str = '0' + hour_str
         date_time_str = "2021-05-" + str(day_number) + " " + hour_str + ":14"
-        curr_time = datetime.datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
+        curr_time = date_from_string_format(date_time_str, ["%Y-%m-%d %H:%M"])
         coords = spoof_geolocation('', 'SAN FRANCISCO, USA', curr_time,
                                    decoy_seed, cities_list, nogo_list)
         longitude = coords[1]
@@ -6600,7 +6602,7 @@ def _test_spoofed_geolocation() -> None:
         if hour < 10:
             hour_str = '0' + hour_str
         date_time_str = "2021-05-" + str(day_number) + " " + hour_str + ":14"
-        curr_time = datetime.datetime.strptime(date_time_str, "%Y-%m-%d %H:%M")
+        curr_time = date_from_string_format(date_time_str, ["%Y-%m-%d %H:%M"])
         coords = spoof_geolocation('', 'SEATTLE, USA', curr_time,
                                    decoy_seed, cities_list, nogo_list)
         longitude = coords[1]
@@ -6847,7 +6849,15 @@ def _test_date_conversions() -> None:
     print('test_date_conversions')
     date_str = "2021-05-16T14:37:41Z"
     date_sec = date_string_to_seconds(date_str)
+    date_str2 = "2021-05-16T14:38:44Z"
+    date_sec2 = date_string_to_seconds(date_str2)
+    sec_diff = date_sec2 - date_sec
+    if sec_diff != 63:
+        print('seconds diff = ' + str(sec_diff))
+    assert sec_diff == 63
     date_str2 = date_seconds_to_string(date_sec)
+    if date_str != date_str2:
+        print(str(date_sec) + ' ' + str(date_str) + ' != ' + str(date_str2))
     assert date_str == date_str2
 
 
@@ -7443,7 +7453,7 @@ def _test_published_to_local_timezone() -> None:
     published_str = '2022-02-25T20:15:00Z'
     timezone = 'Europe/Berlin'
     published = \
-        datetime.datetime.strptime(published_str, "%Y-%m-%dT%H:%M:%SZ")
+        date_from_string_format(published_str, ["%Y-%m-%dT%H:%M:%S%z"])
     datetime_object = \
         convert_published_to_local_timezone(published, timezone)
     local_time_str = datetime_object.strftime("%a %b %d, %H:%M")
@@ -7451,7 +7461,7 @@ def _test_published_to_local_timezone() -> None:
 
     timezone = 'Asia/Seoul'
     published = \
-        datetime.datetime.strptime(published_str, "%Y-%m-%dT%H:%M:%SZ")
+        date_from_string_format(published_str, ["%Y-%m-%dT%H:%M:%S%z"])
     datetime_object = \
         convert_published_to_local_timezone(published, timezone)
     local_time_str = datetime_object.strftime("%a %b %d, %H:%M")
@@ -8200,6 +8210,16 @@ def _test_format_mixed_rtl() -> None:
     assert result == expected
 
 
+def _test_dateformat():
+    print('dateformat')
+    date_str = 'Mon, 20 Nov 2023 16:51:15 GMT'
+    formats = ("%a, %d %b %Y %H:%M:%S %Z",
+               "%a, %d %b %Y %H:%M:%S %z")
+    dtime = date_from_string_format(date_str, formats)
+    print(str(dtime))
+    assert dtime.tzinfo
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -8217,6 +8237,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_dateformat()
     _test_is_right_to_left()
     _test_format_mixed_rtl()
     _test_remove_tag()

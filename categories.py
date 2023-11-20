@@ -9,6 +9,8 @@ __module_group__ = "RSS Feeds"
 
 import os
 import datetime
+from utils import date_utcnow
+from utils import date_epoch
 
 MAX_TAG_LENGTH = 42
 
@@ -117,8 +119,8 @@ def get_hashtag_categories(base_dir: str,
     hashtag_categories = {}
 
     if recent:
-        curr_time = datetime.datetime.utcnow()
-        days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
+        curr_time = date_utcnow()
+        days_since_epoch = (curr_time - date_epoch()).days
         recently = days_since_epoch - 1
 
     for _, _, files in os.walk(base_dir + '/tags'):
@@ -151,10 +153,10 @@ def get_hashtag_categories(base_dir: str,
                 mod_time_since_epoc = \
                     os.path.getmtime(tags_filename)
                 last_modified_date = \
-                    datetime.datetime.fromtimestamp(mod_time_since_epoc)
+                    datetime.datetime.fromtimestamp(mod_time_since_epoc,
+                                                    datetime.timezone.utc)
                 file_days_since_epoch = \
-                    (last_modified_date -
-                     datetime.datetime(1970, 1, 1)).days
+                    (last_modified_date - date_epoch()).days
                 if file_days_since_epoch < recently:
                     continue
 

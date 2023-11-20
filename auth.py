@@ -12,12 +12,12 @@ import hashlib
 import binascii
 import os
 import secrets
-import datetime
 from utils import is_system_account
 from utils import is_memorial_account
 from utils import has_users_path
 from utils import text_in_file
 from utils import remove_eol
+from utils import date_utcnow
 
 
 def _hash_password(password: str) -> str:
@@ -295,7 +295,7 @@ def record_login_failure(base_dir: str, ip_address: str,
     write_type = 'a+'
     if not os.path.isfile(failure_log):
         write_type = 'w+'
-    curr_time = datetime.datetime.utcnow()
+    curr_time = date_utcnow()
     curr_time_str = curr_time.strftime("%Y-%m-%d %H:%M:%SZ")
     try:
         with open(failure_log, write_type, encoding='utf-8') as fp_fail:

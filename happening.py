@@ -13,6 +13,7 @@ from hashlib import md5
 from datetime import datetime
 from datetime import timedelta
 
+from utils import date_from_string_format
 from utils import acct_handle_dir
 from utils import is_public_post
 from utils import load_json
@@ -103,8 +104,8 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         os.mkdir(calendar_path)
 
     # get the year, month and day from the event
-    event_time = datetime.strptime(event_json['startTime'],
-                                   "%Y-%m-%dT%H:%M:%S%z")
+    event_time = date_from_string_format(event_json['startTime'],
+                                         ["%Y-%m-%dT%H:%M:%S%z"])
     event_year = int(event_time.strftime("%Y"))
     if event_year < 2020 or event_year >= 2100:
         return False
@@ -243,8 +244,8 @@ def _sort_todays_events(post_events_list: []) -> []:
             # only check events (not places)
             if tag['type'] == 'Event':
                 event_time = \
-                    datetime.strptime(tag['startTime'],
-                                      "%Y-%m-%dT%H:%M:%S%z")
+                    date_from_string_format(tag['startTime'],
+                                            ["%Y-%m-%dT%H:%M:%S%z"])
                 post_events_dict[event_time] = post_event
                 break
 
@@ -327,8 +328,8 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                     if not tag.get('startTime'):
                         continue
                     event_time = \
-                        datetime.strptime(tag['startTime'],
-                                          "%Y-%m-%dT%H:%M:%S%z")
+                        date_from_string_format(tag['startTime'],
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
                     if int(event_time.strftime("%Y")) == year and \
                        int(event_time.strftime("%m")) == month_number and \
                        int(event_time.strftime("%d")) == day_number:
@@ -407,12 +408,12 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
                     post_id = evnt['id']
                 if evnt.get('startTime'):
                     event_start = \
-                        datetime.strptime(evnt['startTime'],
-                                          "%Y-%m-%dT%H:%M:%S%z")
+                        date_from_string_format(evnt['startTime'],
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
                 if evnt.get('endTime'):
                     event_end = \
-                        datetime.strptime(evnt['startTime'],
-                                          "%Y-%m-%dT%H:%M:%S%z")
+                        date_from_string_format(evnt['startTime'],
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
                 if 'public' in evnt:
                     if evnt['public'] is True:
                         event_is_public = True
@@ -608,8 +609,8 @@ def day_events_check(base_dir: str, nickname: str, domain: str,
                 if not tag.get('startTime'):
                     continue
                 event_time = \
-                    datetime.strptime(tag['startTime'],
-                                      "%Y-%m-%dT%H:%M:%S%z")
+                    date_from_string_format(tag['startTime'],
+                                            ["%Y-%m-%dT%H:%M:%S%z"])
                 if int(event_time.strftime("%d")) != day_number:
                     continue
                 if int(event_time.strftime("%m")) != month_number:
@@ -666,8 +667,8 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
                     if not tag.get('startTime'):
                         continue
                     event_time = \
-                        datetime.strptime(tag['startTime'],
-                                          "%Y-%m-%dT%H:%M:%S%z")
+                        date_from_string_format(tag['startTime'],
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
                     if now <= event_time <= end_of_week:
                         week_day_index = (event_time - now).days()
                         post_event.append(tag)
@@ -742,8 +743,8 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
                     if not tag.get('startTime'):
                         continue
                     event_time = \
-                        datetime.strptime(tag['startTime'],
-                                          "%Y-%m-%dT%H:%M:%S%z")
+                        date_from_string_format(tag['startTime'],
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
                     if int(event_time.strftime("%Y")) == year and \
                        int(event_time.strftime("%m")) == month_number:
                         day_of_month = str(int(event_time.strftime("%d")))

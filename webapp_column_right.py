@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
 import os
-from datetime import datetime
 from content import remove_long_words
 from content import limit_repeated_words
 from utils import get_fav_filename_from_url
@@ -22,6 +21,7 @@ from utils import is_editor
 from utils import get_config_param
 from utils import remove_domain_port
 from utils import acct_dir
+from utils import date_from_string_format
 from posts import is_moderator
 from newswire import get_newswire_favicon_url
 from webapp_utils import get_right_image_file
@@ -234,10 +234,10 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             item[0] = item[0].split('CDATA[')[1]
             if ']' in item[0]:
                 item[0] = item[0].split(']')[0]
-        try:
-            published_date = \
-                datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S%z")
-        except BaseException:
+
+        published_date = \
+            date_from_string_format(date_str, ["%Y-%m-%d %H:%M:%S%z"])
+        if not published_date:
             print('EX: _html_newswire bad date format ' + date_str)
             continue
         date_shown = published_date.strftime("%Y-%m-%d %H:%M")
@@ -448,7 +448,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
                 selected_str = ' checked'
 
             published_date = \
-                datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S%z")
+                date_from_string_format(date_str, ["%Y-%m-%d %H:%M:%S%z"])
             date_shown = published_date.strftime("%Y-%m-%d %H:%M")
 
             title = remove_long_words(item[0], 16, []).replace('\n', '<br>')

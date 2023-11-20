@@ -12,6 +12,7 @@ from datetime import datetime
 from utils import get_nickname_from_actor
 from utils import get_config_param
 from utils import escape_text
+from utils import date_utcnow
 from categories import get_hashtag_categories
 from categories import get_hashtag_category
 from webapp_utils import set_custom_background
@@ -37,7 +38,7 @@ def get_hashtag_categories_feed(base_dir: str,
         '    <title>#categories</title>\n'
 
     rss_date_str = \
-        datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UT")
+        date_utcnow().strftime("%a, %d %b %Y %H:%M:%S UT")
 
     for category_str, hashtag_list in hashtag_categories.items():
         rss_str += \
@@ -67,7 +68,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     """Returns a tag swarm of today's hashtags
     """
     max_tag_length = 42
-    curr_time = datetime.utcnow()
+    curr_time = date_utcnow()
     days_since_epoch = (curr_time - datetime(1970, 1, 1)).days
     days_since_epoch_str = str(days_since_epoch) + ' '
     days_since_epoch_str2 = str(days_since_epoch - 1) + ' '
@@ -95,7 +96,9 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
 
             # get last modified datetime
             mod_time_since_epoc = os.path.getmtime(tags_filename)
-            last_modified_date = datetime.fromtimestamp(mod_time_since_epoc)
+            last_modified_date = \
+                datetime.fromtimestamp(mod_time_since_epoc,
+                                       datetime.timezone.utc)
             file_days_since_epoch = \
                 (last_modified_date - datetime(1970, 1, 1)).days
 

@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
-import datetime
 from session import url_exists
 from session import get_json
 from session import get_json_valid
@@ -16,6 +15,8 @@ from utils import load_json
 from utils import save_json
 from utils import get_file_case_insensitive
 from utils import get_user_paths
+from utils import date_utcnow
+from utils import date_from_string_format
 
 
 def remove_person_from_cache(base_dir: str, person_url: str,
@@ -85,7 +86,7 @@ def store_person_in_cache(base_dir: str, person_url: str,
         # This is not an actor or person account
         return
 
-    curr_time = datetime.datetime.utcnow()
+    curr_time = date_utcnow()
     person_cache[person_url] = {
         "actor": person_json,
         "timestamp": curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -124,7 +125,7 @@ def get_person_from_cache(base_dir: str, person_url: str,
     if person_cache.get(person_url):
         if not loaded_from_file:
             # update the timestamp for the last time the actor was retrieved
-            curr_time = datetime.datetime.utcnow()
+            curr_time = date_utcnow()
             curr_time_str = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
             person_cache[person_url]['timestamp'] = curr_time_str
         return person_cache[person_url]['actor']
@@ -134,11 +135,11 @@ def get_person_from_cache(base_dir: str, person_url: str,
 def expire_person_cache(person_cache: {}):
     """Expires old entries from the cache in memory
     """
-    curr_time = datetime.datetime.utcnow()
+    curr_time = date_utcnow()
     removals = []
     for person_url, cache_json in person_cache.items():
-        cache_time = datetime.datetime.strptime(cache_json['timestamp'],
-                                                "%Y-%m-%dT%H:%M:%SZ")
+        cache_time = date_from_string_format(cache_json['timestamp'],
+                                             ["%Y-%m-%dT%H:%M:%S%z"])
         days_since_cached = (curr_time - cache_time).days
         if days_since_cached > 2:
             removals.append(person_url)

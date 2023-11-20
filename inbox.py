@@ -18,6 +18,9 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import date_from_string_format
+from utils import date_epoch
+from utils import date_utcnow
 from utils import contains_statuses
 from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
@@ -295,12 +298,12 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
         modified_date = None
         try:
             modified_date = \
-                datetime.datetime.strptime(last_modified, "%Y-%m-%dT%H:%M:%SZ")
+                date_from_string_format(last_modified, ["%Y-%m-%dT%H:%M:%S%z"])
         except BaseException:
             print('EX: unable to parse last modified cache date ' +
                   str(last_modified))
         if modified_date:
-            curr_date = datetime.datetime.utcnow()
+            curr_date = date_utcnow()
             time_diff = curr_date - modified_date
             diff_mins = int(time_diff.total_seconds() / 60)
             if diff_mins < 30:
@@ -391,7 +394,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         if not valid_hash_tag(tag_name):
             continue
         tags_filename = tags_dir + '/' + tag_name + '.txt'
-        days_diff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
+        days_diff = date_utcnow() - date_epoch()
         days_since_epoch = days_diff.days
         tag_line = \
             str(days_since_epoch) + '  ' + nickname + '  ' + post_url + '\n'
@@ -804,7 +807,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             return None
         original_post_id = remove_id_ending(post_json_object['id'])
 
-    curr_time = datetime.datetime.utcnow()
+    curr_time = date_utcnow()
 
     post_id = None
     if post_json_object.get('id'):
@@ -3999,8 +4002,8 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
         os.mkdir(last_seen_path)
     last_seen_filename = \
         last_seen_path + '/' + actor.replace('/', '#') + '.txt'
-    curr_time = datetime.datetime.utcnow()
-    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
+    curr_time = date_utcnow()
+    days_since_epoch = (curr_time - date_epoch()).days
     # has the value changed?
     if os.path.isfile(last_seen_filename):
         with open(last_seen_filename, 'r',

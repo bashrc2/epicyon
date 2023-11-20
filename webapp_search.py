@@ -10,7 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 import urllib.parse
-from datetime import datetime
+from utils import date_from_string_format
 from utils import get_attributed_to
 from utils import get_actor_from_post_id
 from utils import remove_html
@@ -1348,7 +1348,8 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
                post_json_object['object'].get('attributedTo') and \
                post_json_object['object'].get('published'):
                 published = post_json_object['object']['published']
-                pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+                pub_date = date_from_string_format(published,
+                                                   ["%Y-%m-%dT%H:%M:%S%z"])
                 rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
                 hashtag_feed += '     <item>'
                 attrib_field = post_json_object['object']['attributedTo']

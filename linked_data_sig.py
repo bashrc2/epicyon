@@ -12,7 +12,6 @@ __module_group__ = "Security"
 import random
 import base64
 import hashlib
-from datetime import datetime
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
@@ -22,6 +21,7 @@ from cryptography.hazmat.primitives.asymmetric import utils as hazutils
 from pyjsonld import normalize
 from context import has_valid_context
 from utils import get_sha_256
+from utils import date_utcnow
 
 
 def _options_hash(doc: {}) -> str:
@@ -103,7 +103,7 @@ def generate_json_signature(doc: {}, private_key_pem: str) -> None:
         "type": "RsaSignature2017",
         "nonce": '%030x' % random.randrange(16**64),
         "creator": doc["actor"] + "#main-key",
-        "created": datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+        "created": date_utcnow().replace(microsecond=0).isoformat() + "Z",
     }
     doc["signature"] = options
     to_be_signed = _options_hash(doc) + _doc_hash(doc)

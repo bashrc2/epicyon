@@ -15,7 +15,6 @@ __module_group__ = "Web Interface Columns"
 
 import os
 import time
-import datetime
 import html
 from shutil import rmtree
 from subprocess import Popen
@@ -24,6 +23,8 @@ from newswire import get_dict_from_newswire
 # from posts import send_signed_json
 from posts import create_news_post
 from posts import archive_posts_for_person
+from utils import date_from_string_format
+from utils import date_utcnow
 from utils import valid_hash_tag
 from utils import get_base_content_from_post
 from utils import remove_html
@@ -572,7 +573,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         else:
             try:
                 date_str_with_offset = \
-                    datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S%z")
+                    date_from_string_format(date_str, ["%Y-%m-%d %H:%M:%S%z"])
             except BaseException:
                 print('EX: Newswire strptime failed ' + str(date_str))
                 continue
@@ -667,7 +668,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         blog['news'] = True
 
         # note the time of arrival
-        curr_time = datetime.datetime.utcnow()
+        curr_time = date_utcnow()
         blog['object']['arrived'] = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # change the id, based upon the published time

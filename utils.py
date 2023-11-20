@@ -46,6 +46,64 @@ INVALID_ACTOR_URL_CHARACTERS = (
 )
 
 
+def _utc_mktime(utc_tuple):
+    """Returns number of seconds elapsed since epoch
+    Note that no timezone are taken into consideration.
+    utc tuple must be: (year, month, day, hour, minute, second)
+    """
+
+    if len(utc_tuple) == 6:
+        utc_tuple += (0, 0, 0)
+    return time.mktime(utc_tuple) - time.mktime((1970, 1, 1, 0, 0, 0, 0, 0, 0))
+
+
+def _datetime_to_timestamp(dtime):
+    """Converts a datetime object to UTC timestamp"""
+    return int(_utc_mktime(dtime.timetuple()))
+
+
+def date_utcnow():
+    """returns the time now
+    """
+    return datetime.datetime.now(datetime.timezone.utc)
+
+
+def _date_from_numbers(year: int, month: int, day: int,
+                       hour: int, mins: int):
+    """returns an offset-aware datetime
+    """
+    return datetime.datetime(year, month, day, hour, mins, 0,
+                             tzinfo=datetime.timezone.utc)
+
+
+def date_from_string_format(date_str: str, formats: []):
+    """returns an offset-aware datetime from a string date
+    """
+    if not formats:
+        formats = ("%a, %d %b %Y %H:%M:%S %Z",
+                   "%a, %d %b %Y %H:%M:%S %z",
+                   "%Y-%m-%dT%H:%M:%S%z")
+    dtime = None
+    for date_format in formats:
+        try:
+            dtime = \
+                datetime.datetime.strptime(date_str, date_format)
+        except BaseException:
+            continue
+        break
+    if not dtime:
+        return None
+    if not dtime.tzinfo:
+        dtime = dtime.replace(tzinfo=datetime.timezone.utc)
+    return dtime
+
+
+def date_epoch():
+    """returns an offset-aware version of epoch
+    """
+    return _date_from_numbers(1970, 1, 1, 0, 0)
+
+
 def get_attributed_to(field) -> str:
     """Returns the actor
     """
@@ -461,15 +519,14 @@ def has_users_path(path_str: str) -> bool:
 def valid_post_date(published: str, max_age_days: int, debug: bool) -> bool:
     """Returns true if the published date is recent and is not in the future
     """
-    baseline_time = datetime.datetime(1970, 1, 1)
+    baseline_time = date_epoch()
 
-    days_diff = datetime.datetime.utcnow() - baseline_time
+    days_diff = date_utcnow() - baseline_time
     now_days_since_epoch = days_diff.days
 
-    try:
-        post_time_object = \
-            datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-    except BaseException:
+    post_time_object = \
+        date_from_string_format(published, ["%Y-%m-%dT%H:%M:%S%z"])
+    if not post_time_object:
         if debug:
             print('EX: valid_post_date invalid published date ' +
                   str(published))
@@ -524,9 +581,9 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
 
     if days_since_epoch_str:
         days_since_epoch = int(days_since_epoch_str)
-        curr_time = datetime.datetime.utcnow()
+        curr_time = date_utcnow()
         curr_days_since_epoch = \
-            (curr_time - datetime.datetime(1970, 1, 1)).days
+            (curr_time - date_epoch()).days
         time_diff_months = \
             int((curr_days_since_epoch - days_since_epoch) / 30)
         if time_diff_months >= dormant_months:
@@ -1066,11 +1123,11 @@ def get_status_number(published_str: str = None) -> (str, str):
     """Returns the status number and published date
     """
     if not published_str:
-        curr_time = datetime.datetime.utcnow()
+        curr_time = date_utcnow()
     else:
         curr_time = \
-            datetime.datetime.strptime(published_str, '%Y-%m-%dT%H:%M:%SZ')
-    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
+            date_from_string_format(published_str, ['%Y-%m-%dT%H:%M:%S%z'])
+    days_since_epoch = (curr_time - date_epoch()).days
     # status is the number of seconds since epoch
     status_number = \
         str(((days_since_epoch * 24 * 60 * 60) +
@@ -1806,8 +1863,8 @@ def locate_news_arrival(base_dir: str, domain: str,
             arrival = arrival_file.read()
             if arrival:
                 arrival_date = \
-                    datetime.datetime.strptime(arrival,
-                                               "%Y-%m-%dT%H:%M:%SZ")
+                    date_from_string_format(arrival,
+                                            ["%Y-%m-%dT%H:%M:%S%z"])
                 return arrival_date
 
     return None
@@ -1958,18 +2015,17 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
     published = _get_published_date(post_json_object)
     if not published:
         return False
-    try:
-        pub_date = datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ')
-    except BaseException:
+
+    pub_date = date_from_string_format(published, ['%Y-%m-%dT%H:%M:%S%z'])
+    if not pub_date:
         print('EX: can_reply_to unrecognized published date ' + str(published))
         return False
     if not curr_date_str:
-        curr_date = datetime.datetime.utcnow()
+        curr_date = date_utcnow()
     else:
-        try:
-            curr_date = \
-                datetime.datetime.strptime(curr_date_str, '%Y-%m-%dT%H:%M:%SZ')
-        except BaseException:
+        curr_date = \
+            date_from_string_format(curr_date_str, ['%Y-%m-%dT%H:%M:%S%z'])
+        if not curr_date:
             print('EX: can_reply_to unrecognized current date ' +
                   str(curr_date_str))
             return False
@@ -2786,7 +2842,8 @@ def file_last_modified(filename: str) -> str:
     """Returns the date when a file was last modified
     """
     time_val = os.path.getmtime(filename)
-    modified_time = datetime.datetime.fromtimestamp(time_val)
+    modified_time = \
+        datetime.datetime.fromtimestamp(time_val, datetime.timezone.utc)
     return modified_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -3219,7 +3276,7 @@ def week_day_of_month_start(month_number: int, year: int) -> int:
     """Gets the day number of the first day of the month
     1=sun, 7=sat
     """
-    first_day_of_month = datetime.datetime(year, month_number, 1, 0, 0)
+    first_day_of_month = _date_from_numbers(year, month_number, 1, 0, 0)
     return int(first_day_of_month.strftime("%w")) + 1
 
 
@@ -3267,24 +3324,24 @@ def is_recent_post(post_json_object: {}, max_days: int) -> bool:
         return False
     if not isinstance(post_json_object['object']['published'], str):
         return False
-    curr_time = datetime.datetime.utcnow()
-    days_since_epoch = (curr_time - datetime.datetime(1970, 1, 1)).days
+    curr_time = date_utcnow()
+    days_since_epoch = (curr_time - date_epoch()).days
     recently = days_since_epoch - max_days
 
     published_date_str = post_json_object['object']['published']
     if '.' in published_date_str:
         published_date_str = published_date_str.split('.')[0] + 'Z'
-    try:
-        published_date = \
-            datetime.datetime.strptime(published_date_str,
-                                       "%Y-%m-%dT%H:%M:%SZ")
-    except BaseException:
+
+    published_date = \
+        date_from_string_format(published_date_str,
+                                ["%Y-%m-%dT%H:%M:%S%z"])
+    if not published_date:
         print('EX: is_recent_post unrecognized published date ' +
               str(published_date_str))
         return False
 
     published_days_since_epoch = \
-        (published_date - datetime.datetime(1970, 1, 1)).days
+        (published_date - date_epoch()).days
     if published_days_since_epoch < recently:
         return False
     return True
@@ -3725,21 +3782,24 @@ def is_float(value) -> bool:
 def date_string_to_seconds(date_str: str) -> int:
     """Converts a date string (eg "published") into seconds since epoch
     """
-    try:
-        expiry_time = \
-            datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%SZ')
-    except BaseException:
+    expiry_time = \
+        date_from_string_format(date_str, ['%Y-%m-%dT%H:%M:%S%z'])
+    if not expiry_time:
         print('EX: date_string_to_seconds unable to parse date ' +
               str(date_str))
         return None
-    return int(datetime.datetime.timestamp(expiry_time))
+    return _datetime_to_timestamp(expiry_time)
 
 
 def date_seconds_to_string(date_sec: int) -> str:
     """Converts a date in seconds since epoch to a string
     """
-    this_date = datetime.datetime.fromtimestamp(date_sec)
-    return this_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+    this_date = \
+        datetime.datetime.fromtimestamp(date_sec, datetime.timezone.utc)
+    if not this_date.tzinfo:
+        this_date = this_date.replace(tzinfo=datetime.timezone.utc)
+    this_date_tz = this_date.astimezone(datetime.timezone.utc)
+    return this_date_tz.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def has_group_type(base_dir: str, actor: str, person_cache: {},

@@ -20,6 +20,7 @@ from utils import locate_post
 from utils import delete_post
 from utils import remove_moderation_post_from_index
 from utils import local_actor_url
+from utils import date_utcnow
 from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
@@ -182,7 +183,7 @@ def remove_old_hashtags(base_dir: str, max_months: int) -> str:
     """
     max_months = min(max_months, 11)
     max_days_since_epoch = \
-        (datetime.utcnow() - datetime(1970, 1 + max_months, 1)).days
+        (date_utcnow() - datetime(1970, 1 + max_months, 1)).days
     remove_hashtags = []
 
     for _, _, files in os.walk(base_dir + '/tags'):
@@ -192,7 +193,9 @@ def remove_old_hashtags(base_dir: str, max_months: int) -> str:
                 continue
             # get last modified datetime
             mod_time_since_epoc = os.path.getmtime(tags_filename)
-            last_modified_date = datetime.fromtimestamp(mod_time_since_epoc)
+            last_modified_date = \
+                datetime.fromtimestamp(mod_time_since_epoc,
+                                       datetime.timezone.utc)
             file_days_since_epoch = \
                 (last_modified_date - datetime(1970, 1, 1)).days
 

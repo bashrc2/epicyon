@@ -9,7 +9,6 @@ __module_group__ = "Core"
 
 
 import os
-import datetime
 from utils import is_float
 from utils import acct_dir
 from utils import load_json
@@ -17,6 +16,9 @@ from utils import save_json
 from utils import locate_post
 from utils import remove_html
 from utils import has_object_dict
+from utils import date_utcnow
+from utils import date_epoch
+from utils import date_from_string_format
 
 
 def _geocoords_to_osm_link(osm_domain: str, zoom: int,
@@ -490,8 +492,8 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
 
     # combine map links with the existing list
     secs_since_epoch = \
-        int((datetime.datetime.strptime(published, '%Y-%m-%dT%H:%M:%SZ') -
-             datetime.datetime(1970, 1, 1)).total_seconds())
+        int((date_from_string_format(published, ['%Y-%m-%dT%H:%M:%S%z']) -
+             date_epoch()).total_seconds())
     links_changed = False
     for link in map_links:
         line = str(secs_since_epoch) + ' ' + link + ' ' + post_url
@@ -633,8 +635,8 @@ def _hashtag_map_within_hours(base_dir: str, tag_name: str,
     last number of hours
     """
     secs_since_epoch = \
-        int((datetime.datetime.utcnow() -
-             datetime.datetime(1970, 1, 1)).total_seconds())
+        int((date_utcnow() -
+             date_epoch()).total_seconds())
     curr_hours_since_epoch = int(secs_since_epoch / (60 * 60))
     start_hours_since_epoch = curr_hours_since_epoch - abs(hours)
     end_hours_since_epoch = curr_hours_since_epoch + 2

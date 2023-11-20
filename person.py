@@ -11,7 +11,6 @@ import time
 import os
 import subprocess
 import shutil
-import datetime
 import pyqrcode
 from random import randint
 from pathlib import Path
@@ -38,6 +37,7 @@ from roles import set_role
 from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import date_utcnow
 from utils import get_memorials
 from utils import is_account_dir
 from utils import valid_hash_tag
@@ -1852,7 +1852,7 @@ def get_person_avatar_url(base_dir: str, person_url: str,
 def add_actor_update_timestamp(actor_json: {}) -> None:
     """Adds 'updated' fields with a timestamp
     """
-    updated_time = datetime.datetime.utcnow()
+    updated_time = date_utcnow()
     curr_date_str = updated_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     actor_json['updated'] = curr_date_str
     # add updated timestamp to avatar and banner

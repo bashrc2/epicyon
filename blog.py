@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
-from datetime import datetime
 
 from content import replace_emoji_from_tags
 from webapp_utils import html_header_with_external_style
@@ -17,6 +16,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
+from utils import date_from_string_format
 from utils import get_attributed_to
 from utils import remove_eol
 from utils import text_in_file
@@ -381,7 +381,8 @@ def _html_blog_post_rss2(domain: str, post_json_object: {},
             if post_json_object['object'].get('summary') and \
                post_json_object['object'].get('published'):
                 published = post_json_object['object']['published']
-                pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+                pub_date = date_from_string_format(published,
+                                                   ["%Y-%m-%dT%H:%M:%S%z"])
                 title_str = escape_text(post_json_object['object']['summary'])
                 rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \
@@ -414,7 +415,8 @@ def _html_blog_post_rss3(domain: str, post_json_object: {},
             if post_json_object['object'].get('summary') and \
                post_json_object['object'].get('published'):
                 published = post_json_object['object']['published']
-                pub_date = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+                pub_date = date_from_string_format(published,
+                                                   ["%Y-%m-%dT%H:%M:%S%z"])
                 title_str = post_json_object['object']['summary']
                 rss_date_str = pub_date.strftime("%a, %d %b %Y %H:%M:%S UT")
                 content = \

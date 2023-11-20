@@ -24,6 +24,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import replace_users_with_at
 from utils import language_right_to_left
+from utils import date_from_string_format
 from happening import get_todays_events
 from happening import get_calendar_events
 from happening import get_todays_events_icalendar
@@ -197,14 +198,14 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     if evnt.get('startTime'):
                         start_time_str = evnt['startTime']
                         event_date = \
-                            datetime.strptime(start_time_str,
-                                              "%Y-%m-%dT%H:%M:%S%z")
+                            date_from_string_format(start_time_str,
+                                                    ["%Y-%m-%dT%H:%M:%S%z"])
                         event_time = event_date.strftime("%H:%M").strip()
                     if evnt.get('endTime'):
                         end_time_str = evnt['endTime']
                         event_end_date = \
-                            datetime.strptime(end_time_str,
-                                              "%Y-%m-%dT%H:%M:%S%z")
+                            date_from_string_format(end_time_str,
+                                                    ["%Y-%m-%dT%H:%M:%S%z"])
                         event_end_time = \
                             event_end_date.strftime("%H:%M").strip()
                     if 'public' in evnt:

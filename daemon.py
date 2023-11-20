@@ -300,6 +300,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import date_from_string_format
 from utils import corp_servers
 from utils import get_attributed_to
 from utils import get_memorials
@@ -6396,8 +6397,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # update newswire
                     pub_date = post_json_object['object']['published']
                     published_date = \
-                        datetime.datetime.strptime(pub_date,
-                                                   "%Y-%m-%dT%H:%M:%SZ")
+                        date_from_string_format(pub_date,
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
                     if self.server.newswire.get(str(published_date)):
                         self.server.newswire[published_date][0] = \
                             news_post_title
@@ -9305,7 +9306,9 @@ class PubServer(BaseHTTPRequestHandler):
                 media_file_type = media_file_mime_type(media_filename)
 
                 media_tm = os.path.getmtime(media_filename)
-                last_modified_time = datetime.datetime.fromtimestamp(media_tm)
+                last_modified_time = \
+                    datetime.datetime.fromtimestamp(media_tm,
+                                                    datetime.timezone.utc)
                 last_modified_time_str = \
                     last_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
@@ -16743,7 +16746,8 @@ class PubServer(BaseHTTPRequestHandler):
             return True
 
         avatar_tm = os.path.getmtime(avatar_filename)
-        last_modified_time = datetime.datetime.fromtimestamp(avatar_tm)
+        last_modified_time = \
+            datetime.datetime.fromtimestamp(avatar_tm, datetime.timezone.utc)
         last_modified_time_str = \
             last_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
@@ -21490,7 +21494,8 @@ class PubServer(BaseHTTPRequestHandler):
                     file_length = os.path.getsize(media_filename)
                     media_tm = os.path.getmtime(media_filename)
                     last_modified_time = \
-                        datetime.datetime.fromtimestamp(media_tm)
+                        datetime.datetime.fromtimestamp(media_tm,
+                                                        datetime.timezone.utc)
                     time_format_str = '%a, %d %b %Y %H:%M:%S GMT'
                     last_modified_time_str = \
                         last_modified_time.strftime(time_format_str)

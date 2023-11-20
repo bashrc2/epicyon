@@ -13,7 +13,6 @@ import urllib.parse
 from dateutil.parser import parse
 from auth import create_password
 from git import is_git_patch
-from datetime import datetime
 from cache import get_person_from_cache
 from bookmarks import bookmarked_by_person
 from announce import announced_by_person
@@ -25,6 +24,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import date_from_string_format
 from utils import remove_markup_tag
 from utils import ap_proxy_type
 from utils import remove_style_within_html
@@ -1146,11 +1146,12 @@ def _get_published_date_str(post_json_object: {},
     if '.' not in published_str:
         if '+' not in published_str:
             datetime_object = \
-                datetime.strptime(published_str, "%Y-%m-%dT%H:%M:%SZ")
+                date_from_string_format(published_str, ["%Y-%m-%dT%H:%M:%S%z"])
         else:
+            pub_str = published_str.split('+')[0] + 'Z'
             datetime_object = \
-                datetime.strptime(published_str.split('+')[0] + 'Z',
-                                  "%Y-%m-%dT%H:%M:%SZ")
+                date_from_string_format(pub_str,
+                                        ["%Y-%m-%dT%H:%M:%S%z"])
     else:
         published_str = \
             published_str.replace('T', ' ').split('.')[0]

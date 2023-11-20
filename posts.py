@@ -34,6 +34,9 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import date_from_string_format
+from utils import date_epoch
+from utils import date_utcnow
 from utils import get_attributed_to
 from utils import contains_statuses
 from utils import contains_invalid_actor_url_chars
@@ -1050,7 +1053,7 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
     new_post_id = new_post_id.replace('/', '#')
 
     if not os.path.isfile(tags_filename):
-        days_diff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
+        days_diff = date_utcnow() - date_epoch()
         days_since_epoch = days_diff.days
         tag_line = \
             str(days_since_epoch) + '  ' + nickname + '  ' + \
@@ -1065,8 +1068,7 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
     else:
         # prepend to tags index file
         if not text_in_file(new_post_id, tags_filename):
-            days_diff = \
-                datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
+            days_diff = date_utcnow() - date_epoch()
             days_since_epoch = days_diff.days
             tag_line = \
                 str(days_since_epoch) + '  ' + nickname + '  ' + \
@@ -2287,10 +2289,10 @@ def create_question_post(base_dir: str,
     message_json['object']['type'] = 'Question'
     message_json['object']['oneOf'] = []
     message_json['object']['votersCount'] = 0
-    curr_time = datetime.datetime.utcnow()
+    curr_time = date_utcnow()
     days_since_epoch = \
-        int((curr_time - datetime.datetime(1970, 1, 1)).days + duration_days)
-    end_time = datetime.datetime(1970, 1, 1) + \
+        int((curr_time - date_epoch()).days + duration_days)
+    end_time = date_epoch() + \
         datetime.timedelta(days_since_epoch)
     message_json['object']['endTime'] = end_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     for question_option in q_options:
@@ -3812,7 +3814,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
     elif domain.endswith('.i2p'):
         curr_proxy_type = 'i2p'
 
-    sending_start_time = datetime.datetime.utcnow()
+    sending_start_time = date_utcnow()
     print('Sending post to followers begins ' +
           sending_start_time.strftime("%Y-%m-%dT%H:%M:%SZ"))
     sending_ctr = 0
@@ -3997,7 +3999,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
     if debug:
         print('DEBUG: End of send_to_followers')
 
-    sending_end_time = datetime.datetime.utcnow()
+    sending_end_time = date_utcnow()
     sending_mins = \
         int((sending_end_time - sending_start_time).total_seconds() / 60)
     print('Sending post to followers ends ' + str(sending_mins) + ' mins')
@@ -4380,7 +4382,7 @@ def _passed_newswire_voting(newswire_votes_threshold: int,
     if not arrival_date:
         return True
     # how long has elapsed since this post arrived?
-    curr_date = datetime.datetime.utcnow()
+    curr_date = date_utcnow()
     time_diff_mins = \
         int((curr_date - arrival_date).total_seconds() / 60)
     # has the voting time elapsed?
@@ -6363,17 +6365,15 @@ def c2s_box_json(session, nickname: str, password: str,
 def seconds_between_published(published1: str, published2: str) -> int:
     """Returns the number of seconds between two published dates
     """
-    try:
-        published1_time = \
-            datetime.datetime.strptime(published1, '%Y-%m-%dT%H:%M:%SZ')
-    except BaseException:
+    published1_time = \
+        date_from_string_format(published1, ['%Y-%m-%dT%H:%M:%S%z'])
+    if not published1_time:
         print('EX: seconds_between_published unable to parse date 1 ' +
               str(published1))
         return -1
-    try:
-        published2_time = \
-            datetime.datetime.strptime(published2, '%Y-%m-%dT%H:%M:%SZ')
-    except BaseException:
+    published2_time = \
+        date_from_string_format(published2, ['%Y-%m-%dT%H:%M:%S%z'])
+    if not published2_time:
         print('EX: seconds_between_published unable to parse date 2 ' +
               str(published2))
         return -1
