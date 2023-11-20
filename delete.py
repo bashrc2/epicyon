@@ -21,6 +21,7 @@ from utils import delete_post
 from utils import remove_moderation_post_from_index
 from utils import local_actor_url
 from utils import date_utcnow
+from utils import date_epoch
 from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
@@ -196,8 +197,9 @@ def remove_old_hashtags(base_dir: str, max_months: int) -> str:
             last_modified_date = \
                 datetime.fromtimestamp(mod_time_since_epoc,
                                        datetime.timezone.utc)
+            prev_date_epoch = date_epoch()
             file_days_since_epoch = \
-                (last_modified_date - datetime(1970, 1, 1)).days
+                (last_modified_date - prev_date_epoch).days
 
             # check of the file is too old
             if file_days_since_epoch < max_days_since_epoch:

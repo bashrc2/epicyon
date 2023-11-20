@@ -13,6 +13,7 @@ from utils import get_nickname_from_actor
 from utils import get_config_param
 from utils import escape_text
 from utils import date_utcnow
+from utils import date_epoch
 from categories import get_hashtag_categories
 from categories import get_hashtag_category
 from webapp_utils import set_custom_background
@@ -69,7 +70,8 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     """
     max_tag_length = 42
     curr_time = date_utcnow()
-    days_since_epoch = (curr_time - datetime(1970, 1, 1)).days
+    prev_time_epoch = date_epoch()
+    days_since_epoch = (curr_time - prev_time_epoch).days
     days_since_epoch_str = str(days_since_epoch) + ' '
     days_since_epoch_str2 = str(days_since_epoch - 1) + ' '
     recently = days_since_epoch - 1
@@ -100,7 +102,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
                 datetime.fromtimestamp(mod_time_since_epoc,
                                        datetime.timezone.utc)
             file_days_since_epoch = \
-                (last_modified_date - datetime(1970, 1, 1)).days
+                (last_modified_date - prev_time_epoch).days
 
             # check if the file was last modified within the previous
             # two days
