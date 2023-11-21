@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 from datetime import datetime
+from utils import date_from_numbers
 from utils import has_object_string
 from utils import remove_domain_port
 from utils import has_users_path
@@ -183,8 +184,8 @@ def remove_old_hashtags(base_dir: str, max_months: int) -> str:
     """Remove old hashtags
     """
     max_months = min(max_months, 11)
-    max_days_since_epoch = \
-        (date_utcnow() - datetime(1970, 1 + max_months, 1)).days
+    prev_date = date_from_numbers(1970, 1 + max_months, 1, 0, 0)
+    max_days_since_epoch = (date_utcnow() - prev_date).days
     remove_hashtags = []
 
     for _, _, files in os.walk(base_dir + '/tags'):

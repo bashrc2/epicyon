@@ -68,8 +68,8 @@ def date_utcnow():
     return datetime.datetime.now(datetime.timezone.utc)
 
 
-def _date_from_numbers(year: int, month: int, day: int,
-                       hour: int, mins: int):
+def date_from_numbers(year: int, month: int, day: int,
+                      hour: int, mins: int):
     """returns an offset-aware datetime
     """
     return datetime.datetime(year, month, day, hour, mins, 0,
@@ -101,7 +101,7 @@ def date_from_string_format(date_str: str, formats: []):
 def date_epoch():
     """returns an offset-aware version of epoch
     """
-    return _date_from_numbers(1970, 1, 1, 0, 0)
+    return date_from_numbers(1970, 1, 1, 0, 0)
 
 
 def get_attributed_to(field) -> str:
@@ -3276,7 +3276,7 @@ def week_day_of_month_start(month_number: int, year: int) -> int:
     """Gets the day number of the first day of the month
     1=sun, 7=sat
     """
-    first_day_of_month = _date_from_numbers(year, month_number, 1, 0, 0)
+    first_day_of_month = date_from_numbers(year, month_number, 1, 0, 0)
     return int(first_day_of_month.strftime("%w")) + 1
 
 

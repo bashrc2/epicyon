@@ -12,7 +12,7 @@ from uuid import UUID
 from hashlib import md5
 from datetime import datetime
 from datetime import timedelta
-
+from utils import date_from_numbers
 from utils import date_from_string_format
 from utils import acct_handle_dir
 from utils import is_public_post
@@ -1138,9 +1138,8 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
             if query_start_day == query_end_day:
                 # calendar for one day
                 search_date = \
-                    datetime(year=query_start_year,
-                             month=query_start_month,
-                             day=query_start_day)
+                    date_from_numbers(query_start_year, query_start_month,
+                                      query_start_day, 0, 0)
                 ical_events = \
                     get_todays_events_icalendar(base_dir, nickname, domain,
                                                 search_date.year,
