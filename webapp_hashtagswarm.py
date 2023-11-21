@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from utils import get_nickname_from_actor
 from utils import get_config_param
 from utils import escape_text
@@ -100,7 +100,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
             mod_time_since_epoc = os.path.getmtime(tags_filename)
             last_modified_date = \
                 datetime.fromtimestamp(mod_time_since_epoc,
-                                       datetime.timezone.utc)
+                                       timezone.utc)
             file_days_since_epoch = \
                 (last_modified_date - prev_time_epoch).days
 

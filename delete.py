@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from utils import date_from_numbers
 from utils import has_object_string
 from utils import remove_domain_port
@@ -197,7 +197,7 @@ def remove_old_hashtags(base_dir: str, max_months: int) -> str:
             mod_time_since_epoc = os.path.getmtime(tags_filename)
             last_modified_date = \
                 datetime.fromtimestamp(mod_time_since_epoc,
-                                       datetime.timezone.utc)
+                                       timezone.utc)
             prev_date_epoch = date_epoch()
             file_days_since_epoch = \
                 (last_modified_date - prev_date_epoch).days
