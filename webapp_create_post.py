@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import dangerous_markup
 from utils import remove_html
 from utils import get_content_from_post
 from utils import has_object_dict
@@ -25,6 +26,7 @@ from utils import get_category_types
 from utils import get_account_timezone
 from utils import get_supported_languages
 from utils import text_in_file
+from utils import get_attributed_to
 from webapp_utils import edit_check_box
 from webapp_utils import get_buy_links
 from webapp_utils import html_following_data_list
@@ -41,6 +43,7 @@ from webapp_post import individual_post_as_html
 from maps import get_map_preferences_url
 from maps import get_map_preferences_coords
 from maps import get_location_from_post
+from cache import get_person_from_cache
 
 
 def _html_new_post_drop_down(scope_icon: str, scope_description: str,
@@ -435,6 +438,38 @@ def html_new_post(edit_post_params: {},
                                                     bold_reading, dogwhistles,
                                                     minimize_all_images, None,
                                                     buy_sites)
+                        # about the author
+                        if has_object_dict(post_json_object):
+                            if post_json_object['object'].get('attributedTo'):
+                                attrib_field = \
+                                    post_json_object['object']['attributedTo']
+                                attrib_url = get_attributed_to(attrib_field)
+                                if attrib_url:
+                                    reply_to_actor = \
+                                        get_person_from_cache(base_dir,
+                                                              attrib_url,
+                                                              person_cache)
+                                    if reply_to_actor:
+                                        summary = \
+                                            reply_to_actor['summary']
+                                        if summary:
+                                            if not dangerous_markup(summary,
+                                                                    False, []):
+                                                reply_to_description = \
+                                                    summary
+                                            else:
+                                                reply_to_description = \
+                                                    remove_html(summary)
+                                            about_author_str = \
+                                                translate['About the author']
+                                            new_post_text += \
+                                                '<div class="container">\n' + \
+                                                '  <div class=' + \
+                                                '"post-title">\n' + \
+                                                '    ' + about_author_str + \
+                                                '\n  </div>\n' + \
+                                                '  ' + reply_to_description + \
+                                                '\n</div>\n'
 
                 reply_str = '<input type="hidden" ' + \
                     'name="replyTo" value="' + in_reply_to + '">\n'
