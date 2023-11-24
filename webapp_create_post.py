@@ -27,6 +27,7 @@ from utils import get_account_timezone
 from utils import get_supported_languages
 from utils import text_in_file
 from utils import get_attributed_to
+from utils import get_full_domain
 from webapp_utils import edit_check_box
 from webapp_utils import get_buy_links
 from webapp_utils import html_following_data_list
@@ -444,7 +445,11 @@ def html_new_post(edit_post_params: {},
                                 attrib_field = \
                                     post_json_object['object']['attributedTo']
                                 attrib_url = get_attributed_to(attrib_field)
-                                if attrib_url:
+                                domain_full = get_full_domain(domain, port)
+                                this_account_url = \
+                                    '://' + domain_full + '/users/' + nickname
+                                if attrib_url and \
+                                   not attrib_url.endswith(this_account_url):
                                     reply_to_actor = \
                                         get_person_from_cache(base_dir,
                                                               attrib_url,
