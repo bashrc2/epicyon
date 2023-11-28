@@ -30,6 +30,10 @@ Being hostile towards the common notion of scaling means that this system will b
 
 This system should however be able to scale rhizomatically with the deployment of many small instances federated together. Instead of scaling up, scale out. In a network of many small instances nobody has overall control and corporate capture is far less feasible. Small instances also minimize the bureaucratic requirements for governance processes, which at medium to large scale eventually becomes tyrannical.
 
+### Discourage public instances
+
+That is, public instances containing large numbers of users. People using this system should be self-hosting, or very small scale hosting with typically less than ten users. At larger scales this system should simply cease to be practical, due to the design choices made. This is not a system for constructing empires or personality cults.
+
 ### Roles
 
 The roles within an instance are comparable to the crew roles onboard a ship, with the admin being its captain. Delegation is minimal, with the admin assigning roles to particular user accounts. Avoiding delegation prevents a hierarchy of roles from forming. Social organization should be as horizontal as possible. Roles could be rotated - even including that of admin - although there is no technical mechanism requiring that.
