@@ -70,7 +70,7 @@ Where Json linked data signatures are supported there should not be arbitrary sc
 
 ### Avoid Web Frameworks
 
-In general avoid using web frameworks and instead use local modules which are prefixed with *webapp_*. Web frameworks are built for conventional software engineering by large companies who are designing for scale. They typically have database dependencies and contain a lot of hardcoded Google stuff or other things which will leak metadata or be incompatible with onion routing. Keeping up with web frameworks is a constant firefight. They also create a massive attack surface requiring constant vigilance. Another common attack vector is via deserialization functions buried within common web frameworks.
+In general avoid using web frameworks and instead use local modules which are prefixed with *webapp_*. Web frameworks are built for conventional software engineering by large companies who are designing for scale. They typically have database dependencies and contain a lot of hardcoded Google stuff or other things which will leak metadata or be incompatible with onion routing. Keeping up with web frameworks is a constant firefight. They also create a massive attack surface requiring constant vigilance. Another attack vector is via deserialization functions buried within common web frameworks.
 
 ## High Level Architecture
 
