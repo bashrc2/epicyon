@@ -1374,11 +1374,11 @@ def get_rss(base_dir: str, domain: str, session, url: str,
                         timeout=timeout_sec,
                         allow_redirects=True)
         if result:
-            result.text = remove_zero_length_strings(result.text)
-            if int(len(result.text) / 1024) >= max_feed_size_kb:
+            result_str = remove_zero_length_strings(result.text)
+            if int(len(result_str) / 1024) >= max_feed_size_kb:
                 print('WARN: feed is too large: ' + url)
-            elif not contains_invalid_chars(result.text):
-                return _xml_str_to_dict(base_dir, domain, result.text,
+            elif not contains_invalid_chars(result_str):
+                return _xml_str_to_dict(base_dir, domain, result_str,
                                         moderated, mirrored,
                                         max_posts_per_source,
                                         max_feed_item_size_kb,
