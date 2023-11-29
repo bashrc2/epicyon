@@ -19,6 +19,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import remove_zero_length_strings
 from utils import date_from_string_format
 from utils import acct_handle_dir
 from utils import remove_eol
@@ -1373,6 +1374,7 @@ def get_rss(base_dir: str, domain: str, session, url: str,
                         timeout=timeout_sec,
                         allow_redirects=True)
         if result:
+            result.text = remove_zero_length_strings(result.text)
             if int(len(result.text) / 1024) >= max_feed_size_kb:
                 print('WARN: feed is too large: ' + url)
             elif not contains_invalid_chars(result.text):

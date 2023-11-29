@@ -46,6 +46,12 @@ INVALID_ACTOR_URL_CHARACTERS = (
 )
 
 
+def remove_zero_length_strings(text: str) -> str:
+    """removes zero length strings from text
+    """
+    return text.replace('​', '')
+
+
 def _utc_mktime(utc_tuple):
     """Returns number of seconds elapsed since epoch
     Note that no timezone are taken into consideration.
