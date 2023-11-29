@@ -2265,6 +2265,8 @@ def actor_attached_shares(actor_json: {}) -> []:
     """
     if not actor_json.get('attachment'):
         return []
+    if not isinstance(actor_json['attachment'], list):
+        return []
 
     attached_shares = []
     for attach_item in actor_json['attachment']:

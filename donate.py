@@ -35,6 +35,8 @@ def get_donation_url(actor_json: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
+    if not isinstance(actor_json['attachment'], list):
+        return ''
     donation_type = _get_donation_types()
     for property_value in actor_json['attachment']:
         name_value = None

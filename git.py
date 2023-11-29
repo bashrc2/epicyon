@@ -230,6 +230,8 @@ def get_repo_url(actor_json: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
+    if not isinstance(actor_json['attachment'], list):
+        return ''
     repo_type = ('github', 'gitlab', 'codeberg', 'launchpad',
                  'sourceforge', 'bitbucket', 'gitea')
     for property_value in actor_json['attachment']:

@@ -39,6 +39,8 @@ def get_email_address(actor_json: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
+    if not isinstance(actor_json['attachment'], list):
+        return ''
     for property_value in actor_json['attachment']:
         name_value = None
         if property_value.get('name'):
