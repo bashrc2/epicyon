@@ -389,6 +389,8 @@ def get_media_descriptions_from_post(post_json_object: {}) -> str:
         return ''
     descriptions = ''
     for attach in this_post_json['attachment']:
+        if not isinstance(attach, dict):
+            continue
         if not attach.get('name'):
             continue
         descriptions += attach['name'] + ' '
