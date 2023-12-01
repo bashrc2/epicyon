@@ -62,7 +62,7 @@
     "post-bg-color": "#000000ff",
     "timeline-posts-background-color": "#000000ff",
     "header-bg-color": "#000000ff",
-    "column-left-color": "#29ffffff",
+    "column-left-color": "black",
     "text-entry-background": "#0f0d10",
     "link-bg-color": "#0f0d10",
     "main-link-color": "#29ffffff",
