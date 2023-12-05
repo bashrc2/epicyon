@@ -419,6 +419,11 @@ def html_podcast_episode(translate: {},
             '<span itemprop="headline">' + \
             podcast_title + \
             '</span></label></p>\n'
+
+    if podcast_properties.get('author'):
+        author = podcast_properties['author']
+        podcast_str += '<p>' + author + '</p>\n'
+
     transcripts = _html_podcast_transcripts(podcast_properties, translate)
     if transcripts:
         podcast_str += '<p>' + transcripts + '</p>\n'

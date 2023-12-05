@@ -478,6 +478,30 @@ def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
     return podcast_categories
 
 
+def _get_podcast_author(xml_item: str, xml_str: str) -> str:
+    """ get podcast author if specified.
+    """
+    author = None
+    episode_author_tags = ['<itunes:author', '<author']
+
+    for author_tag in episode_author_tags:
+        item_str = xml_item
+        if author_tag not in xml_item:
+            if author_tag not in xml_str:
+                continue
+            item_str = xml_str
+        author_str = item_str.split(author_tag)[1]
+        if '>' not in author_str:
+            continue
+        author_str = author_str.split('>')[1]
+        if '<' not in author_str:
+            continue
+        author = item_str.split('>')[0]
+        return remove_html(author).strip()
+
+    return author
+
+
 def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
     """Is the given podcast namespace entry valid?
     https://github.com/Podcastindex-org/podcast-namespace/
@@ -622,6 +646,11 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
 
     # get categories if they exist. These can be turned into hashtags
     podcast_categories = _get_podcast_categories(xml_item, xml_str)
+
+    # get the author name
+    podcast_author = _get_podcast_author(xml_item, xml_str)
+    if podcast_author:
+        podcast_properties['author'] = podcast_author
 
     if podcast_episode_image:
         podcast_properties['image'] = podcast_episode_image
