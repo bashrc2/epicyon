@@ -475,9 +475,10 @@ def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
                     episode_category = \
                         episode_category.lower().replace(' ', '')
                     episode_category = episode_category.replace('#', '')
-                    if episode_category not in podcast_categories:
+                    episode_category_hashtag = '#' + episode_category
+                    if episode_category_hashtag not in podcast_categories:
                         if valid_hash_tag(episode_category):
-                            podcast_categories.append('#' + episode_category)
+                            podcast_categories.append(episode_category_hashtag)
                 continue
 
             if '>' in episode_category:
@@ -487,9 +488,10 @@ def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
                     episode_category = \
                         episode_category.lower().replace(' ', '')
                     episode_category = episode_category.replace('#', '')
-                    if episode_category not in podcast_categories:
+                    episode_category_hashtag = '#' + episode_category
+                    if episode_category_hashtag not in podcast_categories:
                         if valid_hash_tag(episode_category):
-                            podcast_categories.append('#' + episode_category)
+                            podcast_categories.append(episode_category_hashtag)
 
     return podcast_categories
 
