@@ -434,10 +434,26 @@ def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
 
 def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
     """ get podcast categories if they exist. These can be turned into hashtags
+    See https://podcast-standard.org/itunes_tags
     """
     podcast_categories = []
-    episode_category_tags = ['<itunes:category', '<category']
 
+    # convert keywords to hashtags
+    if '<itunes:keywords' in xml_item:
+        keywords_str = xml_item.split('<itunes:keywords')[1]
+        if '>' in keywords_str:
+            keywords_str = keywords_str.split('>')[1]
+            if '<' in keywords_str:
+                keywords_str = keywords_str.split('<')[0]
+                keywords_str = remove_html(keywords_str)
+                keywords_list = keywords_str.split(',')
+                for keyword in keywords_list:
+                    keyword_hashtag = '#' + keyword.strip()
+                    if keyword_hashtag not in podcast_categories:
+                        if valid_hash_tag(keyword):
+                            podcast_categories.append(keyword_hashtag)
+
+    episode_category_tags = ['<itunes:category', '<category']
     for category_tag in episode_category_tags:
         item_str = xml_item
         if category_tag not in xml_item:
