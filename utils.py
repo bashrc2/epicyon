@@ -3473,11 +3473,9 @@ def is_reply(post_json_object: {}, actor: str) -> bool:
         return False
     if post_json_object['object'].get('moderationStatus'):
         return False
-    if post_json_object['object']['type'] != 'Note' and \
-       post_json_object['object']['type'] != 'Page' and \
-       post_json_object['object']['type'] != 'EncryptedMessage' and \
-       post_json_object['object']['type'] != 'ChatMessage' and \
-       post_json_object['object']['type'] != 'Article':
+    if post_json_object['object']['type'] not in ('Note', 'Page',
+                                                  'EncryptedMessage',
+                                                  'ChatMessage', 'Article'):
         return False
     if post_json_object['object'].get('inReplyTo'):
         if isinstance(post_json_object['object']['inReplyTo'], str):
