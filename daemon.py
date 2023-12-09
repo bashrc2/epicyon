@@ -2210,12 +2210,17 @@ class PubServer(BaseHTTPRequestHandler):
         if has_object_dict(message_json):
             if debug:
                 print('INBOX: checking object fields')
-            # check that url is a string or list
-            if message_json['object'].get('url'):
-                if not isinstance(message_json['object']['url'], str) and \
-                   not isinstance(message_json['object']['url'], list):
-                    print('INBOX: url should be a string or list ' +
-                          str(message_json['object']['url']))
+            # check that some fields are a string or list
+            string_or_list_fields = ('url', 'attributedTo')
+            for check_field in string_or_list_fields:
+                if not message_json['object'].get(check_field):
+                    continue
+                field_value = message_json['object'][check_field]
+                if not isinstance(field_value, str) and \
+                   not isinstance(field_value, list):
+                    print('INBOX: ' +
+                          check_field + ' should be a string or list ' +
+                          str(message_json['object'][check_field]))
                     self._400()
                     self.server.postreq_busy = False
                     return 3
@@ -2231,16 +2236,6 @@ class PubServer(BaseHTTPRequestHandler):
                     print('INBOX: ' +
                           check_field + ' should be a string ' +
                           str(message_json['object'][check_field]))
-                    self._400()
-                    self.server.postreq_busy = False
-                    return 3
-            if message_json['object'].get('attributedTo'):
-                attrib_field = message_json['object']['attributedTo']
-                if not isinstance(attrib_field, str) and \
-                   not isinstance(attrib_field, list):
-                    print('INBOX: ' +
-                          'attributedTo should be a string or list ' +
-                          str(attrib_field))
                     self._400()
                     self.server.postreq_busy = False
                     return 3
