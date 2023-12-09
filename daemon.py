@@ -2153,7 +2153,8 @@ class PubServer(BaseHTTPRequestHandler):
             print('INBOX: checking valid context')
         if not has_valid_context(message_json):
             print('INBOX: ' +
-                  'message arriving at inbox queue has no valid context')
+                  'message arriving at inbox queue has no valid context ' +
+                  str(message_json))
             self._400()
             self.server.postreq_busy = False
             return 3
