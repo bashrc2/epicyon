@@ -19,6 +19,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import get_url_from_post
 from utils import remove_zero_length_strings
 from utils import date_from_string_format
 from utils import acct_handle_dir
@@ -1143,7 +1144,8 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
             continue
         if not json_feed_item.get('url'):
             continue
-        if not isinstance(json_feed_item['url'], str):
+        url_str = get_url_from_post(json_feed_item['url'])
+        if not url_str:
             continue
         if not json_feed_item.get('date_published'):
             if not json_feed_item.get('date_modified'):
@@ -1182,7 +1184,7 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
                         if tag_name not in description:
                             description += ' ' + tag_name
 
-        link = remove_html(json_feed_item['url'])
+        link = remove_html(url_str)
         if '://' not in link:
             continue
         if len(link) > max_bytes:
@@ -1602,7 +1604,9 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                     description = remove_html(description)
                     tags_from_post = _get_hashtags_from_post(post_json_object)
                     summary = post_json_object['object']['summary']
-                    url2 = remove_html(post_json_object['object']['url'])
+                    url_str = \
+                        get_url_from_post(post_json_object['object']['url'])
+                    url2 = remove_html(url_str)
                     _add_newswire_dict_entry(base_dir, domain,
                                              newswire, published,
                                              summary, url2,

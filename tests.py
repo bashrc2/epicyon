@@ -56,6 +56,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import date_utcnow
 from utils import is_right_to_left_text
@@ -1470,10 +1471,11 @@ def test_post_message_between_servers(base_dir: str) -> None:
         assert attached.get('type')
         assert attached.get('url')
         assert attached['mediaType'] == 'image/png'
-        if '/system/media_attachments/files/' not in attached['url']:
-            print(attached['url'])
-        assert '/system/media_attachments/files/' in attached['url']
-        assert attached['url'].endswith('.png')
+        url_str = get_url_from_post(attached['url'])
+        if '/system/media_attachments/files/' not in url_str:
+            print(str(attached['url']))
+        assert '/system/media_attachments/files/' in url_str
+        assert url_str.endswith('.png')
         assert attached.get('width')
         assert attached.get('height')
         assert attached['width'] > 0
@@ -4255,7 +4257,7 @@ def _test_danger_svg(base_dir: str) -> None:
                             federation_list, debug,
                             svg_image_filename)
 
-    url = post_json_object['object']['attachment'][0]['url']
+    url = get_url_from_post(post_json_object['object']['attachment'][0]['url'])
     assert url == 'https://ratsratsrats.live/media/1234_wibble.svg'
 
     with open(svg_image_filename, 'rb') as fp_svg:
@@ -7317,8 +7319,8 @@ def _test_xml_podcast_dict(base_dir: str) -> None:
     assert podcast_properties.get('funding')
     assert int(podcast_properties['episode']) == 5
     assert podcast_properties['funding']['text'] == "Support the show"
-    assert podcast_properties['funding']['url'] == \
-        "https://whoframed.rodger/donate"
+    url_str = get_url_from_post(podcast_properties['funding']['url'])
+    assert url_str == "https://whoframed.rodger/donate"
     assert len(podcast_properties['transcripts']) == 3
     assert len(podcast_properties['valueRecipients']) == 2
     assert len(podcast_properties['persons']) == 5

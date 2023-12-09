@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import get_url_from_post
 from utils import is_right_to_left_text
 from utils import language_right_to_left
 from utils import binary_is_image
@@ -446,11 +447,14 @@ def replace_emoji_from_tags(session, base_dir: str,
             continue
         if not tag_item['icon'].get('url'):
             continue
-        if '/' not in tag_item['icon']['url']:
+        url_str = get_url_from_post(tag_item['icon']['url'])
+        if '/' not in url_str:
             continue
         if tag_item['name'] not in content:
             continue
-        tag_url = remove_html(tag_item['icon']['url'])
+        tag_url = remove_html(url_str)
+        if not tag_url:
+            continue
         icon_name = tag_url.split('/')[-1]
         if icon_name:
             if len(icon_name) > 1:
@@ -532,7 +536,8 @@ def replace_emoji_from_tags(session, base_dir: str,
             emoji_tag_name = tag_item['name'].replace(':', '')
         else:
             emoji_tag_name = ''
-        tag_url = remove_html(tag_item['icon']['url'])
+        url_str = get_url_from_post(tag_item['icon']['url'])
+        tag_url = remove_html(url_str)
         emoji_html = "<img src=\"" + tag_url + "\" alt=\"" + \
             emoji_tag_name + \
             "\" align=\"middle\" class=\"" + html_class + "\"/>"

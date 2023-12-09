@@ -12,6 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
+from utils import get_url_from_post
 from utils import get_media_url_from_video
 from utils import get_attributed_to
 from utils import local_network_host
@@ -857,7 +858,8 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
     domain_full = actor_json['id'].split('://')[1].split('/')[0]
     handle = actor_json['preferredUsername'] + '@' + domain_full
 
-    icon_url = remove_html(actor_json['icon']['url'])
+    url_str = get_url_from_post(actor_json['icon']['url'])
+    icon_url = remove_html(url_str)
     person_markup = \
         '      "about": {\n' + \
         '        "@type" : "Person",\n' + \
@@ -893,7 +895,8 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
         '    </script>\n'
 
     description = remove_html(description)
-    actor2_url = remove_html(actor_json['url'])
+    url_str = get_url_from_post(actor_json['url'])
+    actor2_url = remove_html(url_str)
     og_metadata = \
         "    <meta content=\"profile\" property=\"og:type\" />\n" + \
         "    <meta content=\"" + description + \
@@ -1344,7 +1347,7 @@ def get_post_attachments_as_html(base_dir: str,
             name = attach['hreflang']
         url = None
         if attach.get('url'):
-            url = attach['url']
+            url = get_url_from_post(attach['url'])
         elif attach.get('href'):
             url = attach['href']
         if name and url:
@@ -1397,7 +1400,8 @@ def get_post_attachments_as_html(base_dir: str,
             image_description = attach['name'].replace('"', "'")
             image_description = remove_html(image_description)
         if _is_image_mime_type(media_type):
-            image_url = remove_html(attach['url'])
+            url_str = get_url_from_post(attach['url'])
+            image_url = remove_html(url_str)
             if image_url in attached_urls:
                 continue
             attached_urls.append(image_url)
@@ -1452,7 +1456,8 @@ def get_post_attachments_as_html(base_dir: str,
                                 '   ' + license_str + \
                                 '</figcaption></figure>\n'
                     if post_json_object['object'].get('url'):
-                        image_post_url = post_json_object['object']['url']
+                        url_str = post_json_object['object']['url']
+                        image_post_url = get_url_from_post(url_str)
                     else:
                         image_post_url = post_json_object['object']['id']
                     image_post_url = remove_html(image_post_url)
@@ -1554,7 +1559,8 @@ def get_post_attachments_as_html(base_dir: str,
                 if box_name == 'tlmedia':
                     gallery_str += '<div class="gallery">\n'
                     if post_json_object['object'].get('url'):
-                        video_post_url = post_json_object['object']['url']
+                        url_str = post_json_object['object']['url']
+                        video_post_url = get_url_from_post(url_str)
                     else:
                         video_post_url = post_json_object['object']['id']
                     video_post_url = remove_html(video_post_url)
@@ -1629,7 +1635,8 @@ def get_post_attachments_as_html(base_dir: str,
                 attachment_ctr += 1
         elif _is_audio_mime_type(media_type):
             extension = '.mp3'
-            audio_url = remove_html(attach['url'])
+            url_str = get_url_from_post(attach['url'])
+            audio_url = remove_html(url_str)
             if audio_url in attached_urls:
                 continue
             attached_urls.append(audio_url)
@@ -1664,7 +1671,8 @@ def get_post_attachments_as_html(base_dir: str,
                         gallery_str += '    </audio>\n'
                         gallery_str += '  </a>\n'
                     if post_json_object['object'].get('url'):
-                        audio_post_url = post_json_object['object']['url']
+                        url_str = post_json_object['object']['url']
+                        audio_post_url = get_url_from_post(url_str)
                     else:
                         audio_post_url = post_json_object['object']['id']
                     audio_post_url = remove_html(audio_post_url)

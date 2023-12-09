@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "API"
 
 import os
+from utils import get_url_from_post
 from utils import load_json
 from utils import get_config_param
 from utils import acct_dir
@@ -85,8 +86,10 @@ def _meta_data_instance_v2(show_accounts: bool,
     if admin_actor.get('published'):
         created_at = admin_actor['published']
 
-    icon_url = remove_html(admin_actor['icon']['url'])
-    image_url = remove_html(admin_actor['image']['url'])
+    url_str = get_url_from_post(admin_actor['icon']['url'])
+    icon_url = remove_html(url_str)
+    url_str = get_url_from_post(admin_actor['image']['url'])
+    image_url = remove_html(url_str)
     thumbnail_url = http_prefix + '://' + domain_full + '/login.png'
     admin_email = None
     noindex = True

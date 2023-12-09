@@ -37,6 +37,7 @@ from roles import set_role
 from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import get_url_from_post
 from utils import date_utcnow
 from utils import get_memorials
 from utils import is_account_dir
@@ -200,7 +201,8 @@ def randomize_actor_images(person_json: {}) -> None:
     This causes other instances to update their cached avatar image
     """
     person_id = person_json['id']
-    last_part_of_filename = person_json['icon']['url'].split('/')[-1]
+    url_str = get_url_from_post(person_json['icon']['url'])
+    last_part_of_filename = url_str.split('/')[-1]
     existing_extension = last_part_of_filename.split('.')[1]
     # NOTE: these files don't need to have cryptographically
     # secure names
@@ -210,7 +212,8 @@ def randomize_actor_images(person_json: {}) -> None:
     person_json['icon']['url'] = \
         base_url + '/system/accounts/avatars/' + nickname + \
         '/avatar' + rand_str + '.' + existing_extension
-    last_part_of_filename = person_json['image']['url'].split('/')[-1]
+    url_str = get_url_from_post(person_json['image']['url'])
+    last_part_of_filename = url_str.split('/')[-1]
     existing_extension = last_part_of_filename.split('.')[1]
     rand_str = str(randint(10000000000000, 99999999999999))  # nosec
     person_json['image']['url'] = \
@@ -229,6 +232,9 @@ def get_actor_update_json(actor_json: {}) -> {}:
     indexable = False
     if actor_json.get('indexable'):
         indexable = True
+    actor_url = get_url_from_post(actor_json['url'])
+    icon_url = get_url_from_post(actor_json['icon']['url'])
+    image_url = get_url_from_post(actor_json['image']['url'])
     return {
         '@context': [
             "https://www.w3.org/ns/activitystreams",
@@ -311,11 +317,11 @@ def get_actor_update_json(actor_json: {}) -> {}:
             'type': actor_json['type'],
             'icon': {
                 'type': 'Image',
-                'url': actor_json['icon']['url']
+                'url': icon_url
             },
             'image': {
                 'type': 'Image',
-                'url': actor_json['image']['url']
+                'url': image_url
             },
             'attachment': actor_json['attachment'],
             'following': actor_json['id'] + '/following',
@@ -327,7 +333,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
             'preferredUsername': actor_json['preferredUsername'],
             'name': actor_json['name'],
             'summary': actor_json['summary'],
-            'url': actor_json['url'],
+            'url': actor_url,
             'manuallyApprovesFollowers': manually_approves_followers,
             'discoverable': actor_json['discoverable'],
             'memorial': memorial,
@@ -1844,8 +1850,9 @@ def get_person_avatar_url(base_dir: str, person_url: str,
 
     if person_json.get('icon'):
         if person_json['icon'].get('url'):
-            if '.svg' not in person_json['icon']['url'].lower():
-                return remove_html(person_json['icon']['url'])
+            url_str = get_url_from_post(person_json['icon']['url'])
+            if '.svg' not in url_str.lower():
+                return remove_html(url_str)
     return None
 
 

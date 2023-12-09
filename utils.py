@@ -110,6 +110,31 @@ def date_epoch():
     return date_from_numbers(1970, 1, 1, 0, 0)
 
 
+def get_url_from_post(url_field) -> str:
+    """Returns a url from a post object
+    """
+    if isinstance(url_field, str):
+        return url_field
+    if isinstance(url_field, list):
+        for url_dict in url_field:
+            if not isinstance(url_dict, dict):
+                continue
+            if 'href' not in url_dict:
+                continue
+            if 'mediaType' not in url_dict:
+                continue
+            if not isinstance(url_dict['href'], str):
+                continue
+            if not isinstance(url_dict['mediaType'], str):
+                continue
+            if url_dict['mediaType'] != 'text/html':
+                continue
+            if '://' not in url_dict['href']:
+                continue
+            return url_dict['href']
+    return ''
+
+
 def get_attributed_to(field) -> str:
     """Returns the actor
     """
@@ -404,7 +429,7 @@ def get_media_descriptions_from_post(post_json_object: {}) -> str:
             continue
         descriptions += attach['name'] + ' '
         if attach.get('url'):
-            descriptions += attach['url'] + ' '
+            descriptions += get_url_from_post(attach['url']) + ' '
     return descriptions.strip()
 
 
@@ -2056,7 +2081,7 @@ def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
         return
     if not post_json['attachment'][0].get('url'):
         return
-    attachment_url = post_json['attachment'][0]['url']
+    attachment_url = get_url_from_post(post_json['attachment'][0]['url'])
     if not attachment_url:
         return
     attachment_url = remove_html(attachment_url)

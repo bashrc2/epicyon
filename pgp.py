@@ -12,6 +12,7 @@ import base64
 import subprocess
 from pathlib import Path
 from person import get_actor_json
+from utils import get_url_from_post
 from utils import safe_system_string
 from utils import contains_pgp_public_key
 from utils import is_pgp_encrypted
@@ -712,18 +713,20 @@ def pgp_public_key_upload(base_dir: str, session,
 def actor_to_vcard(actor: {}, domain: str) -> str:
     """Returns a vcard for a given actor
     """
+    actor_url_str = get_url_from_post(actor['url'])
     vcard_str = 'BEGIN:VCARD\n'
     vcard_str += 'VERSION:4.0\n'
     vcard_str += 'REV:' + actor['published'] + '\n'
     vcard_str += 'FN:' + remove_html(actor['name']) + '\n'
     vcard_str += 'NICKNAME:' + actor['preferredUsername'] + '\n'
-    vcard_str += 'URL;TYPE=profile:' + actor['url'] + '\n'
+    vcard_str += 'URL;TYPE=profile:' + actor_url_str + '\n'
     blog_address = get_blog_address(actor)
     if blog_address:
         vcard_str += 'URL;TYPE=blog:' + blog_address + '\n'
     vcard_str += 'NOTE:' + remove_html(actor['summary']) + '\n'
-    if actor['icon']['url']:
-        vcard_str += 'PHOTO:' + actor['icon']['url'] + '\n'
+    url_str = get_url_from_post(actor['icon']['url'])
+    if url_str:
+        vcard_str += 'PHOTO:' + url_str + '\n'
     pgp_key = get_pgp_pub_key(actor)
     if pgp_key:
         vcard_str += 'KEY:data:application/pgp-keys;base64,' + \
@@ -801,18 +804,20 @@ def actor_to_vcard_xml(actor: {}, domain: str) -> str:
         vcard_str += '    <impp>' + \
             '<parameters><type><text>cwtch</text></type></parameters>' + \
             '<text>' + cwtch_address + '</text></impp>\n'
+    url_str = get_url_from_post(actor['url'])
     vcard_str += '    <url>' + \
         '<parameters><type><text>profile</text></type></parameters>' + \
-        '<uri>' + actor['url'] + '</uri></url>\n'
+        '<uri>' + url_str + '</uri></url>\n'
     blog_address = get_blog_address(actor)
     if blog_address:
         vcard_str += '    <url>' + \
             '<parameters><type><text>blog</text></type></parameters>' + \
             '<uri>' + blog_address + '</uri></url>\n'
     vcard_str += '    <rev>' + actor['published'] + '</rev>\n'
-    if actor['icon']['url']:
+    url_str = get_url_from_post(actor['icon']['url'])
+    if url_str:
         vcard_str += \
-            '    <photo><uri>' + actor['icon']['url'] + '</uri></photo>\n'
+            '    <photo><uri>' + url_str + '</uri></photo>\n'
     pgp_key = get_pgp_pub_key(actor)
     if pgp_key:
         pgp_key_encoded = \

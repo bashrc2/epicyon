@@ -11,6 +11,7 @@ import os
 from pprint import pprint
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
+from utils import get_url_from_post
 from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
@@ -603,7 +604,8 @@ def outbox_bookmark(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s bookmark Add request arrived in outbox')
 
-    message_url = remove_id_ending(message_json['object']['url'])
+    url_str = get_url_from_post(message_json['object']['url'])
+    message_url = remove_id_ending(url_str)
     message_url = remove_html(message_url)
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, message_url)
@@ -661,7 +663,8 @@ def outbox_undo_bookmark(recent_posts_cache: {},
     if debug:
         print('DEBUG: c2s unbookmark Remove request arrived in outbox')
 
-    message_url = remove_id_ending(message_json['object']['url'])
+    url_str = get_url_from_post(message_json['object']['url'])
+    message_url = remove_id_ending(url_str)
     message_url = remove_html(message_url)
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, message_url)

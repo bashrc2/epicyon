@@ -13,6 +13,7 @@ from session import get_json
 from session import get_json_valid
 from cache import store_webfinger_in_cache
 from cache import get_webfinger_from_cache
+from utils import get_url_from_post
 from utils import remove_html
 from utils import acct_handle_dir
 from utils import get_attachment_property_value
@@ -433,7 +434,8 @@ def _webfinger_update_avatar(wf_json: {}, actor_json: {}) -> bool:
     """Updates the avatar image link
     """
     found = False
-    avatar_url = remove_html(actor_json['icon']['url'])
+    url_str = get_url_from_post(actor_json['icon']['url'])
+    avatar_url = remove_html(url_str)
     media_type = actor_json['icon']['mediaType']
     for link in wf_json['links']:
         if not link.get('rel'):
@@ -463,7 +465,8 @@ def _webfinger_update_vcard(wf_json: {}, actor_json: {}) -> bool:
         if link.get('type'):
             if link['type'] == 'text/vcard':
                 return False
-    actor_url = remove_html(actor_json['url'])
+    url_str = get_url_from_post(actor_json['url'])
+    actor_url = remove_html(url_str)
     wf_json['links'].append({
         "href": actor_url,
         "rel": "http://webfinger.net/rel/profile-page",

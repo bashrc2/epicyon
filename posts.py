@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import date_epoch
 from utils import date_utcnow
@@ -406,7 +407,8 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     avatar_url = None
     if person_json.get('icon'):
         if person_json['icon'].get('url'):
-            avatar_url = remove_html(person_json['icon']['url'])
+            url_str = get_url_from_post(person_json['icon']['url'])
+            avatar_url = remove_html(url_str)
     display_name = None
     possible_display_name = None
     if person_json.get('name'):
@@ -652,16 +654,16 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                         if tag_item.get('name') and tag_item.get('icon'):
                             if tag_item['icon'].get('url'):
                                 # No emoji from non-permitted domains
-                                if url_permitted(tag_item['icon']['url'],
+                                url_str = \
+                                    get_url_from_post(tag_item['icon']['url'])
+                                if url_permitted(url_str,
                                                  federation_list):
                                     emoji_name = tag_item['name']
-                                    emoji_icon = \
-                                        remove_html(tag_item['icon']['url'])
+                                    emoji_icon = remove_html(url_str)
                                     emoji[emoji_name] = emoji_icon
                                 else:
                                     if debug:
-                                        print('url not permitted ' +
-                                              tag_item['icon']['url'])
+                                        print('url not permitted ' + url_str)
                     if tag_type == 'mention':
                         if tag_item.get('name'):
                             if tag_item['name'] not in mentions:
@@ -703,15 +705,15 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                     for attach in this_item['attachment']:
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
-                            attach_url = remove_html(attach['url'])
+                            url_str = get_url_from_post(attach['url'])
+                            attach_url = remove_html(url_str)
                             if url_permitted(attach_url,
                                              federation_list):
                                 attachment.append([attach['name'],
                                                    attach_url])
                             else:
                                 if debug:
-                                    print('url not permitted ' +
-                                          attach['url'])
+                                    print('url not permitted ' + url_str)
 
             sensitive = False
             if this_item.get('sensitive'):
@@ -906,9 +908,9 @@ def _get_posts_for_blocked_domains(base_dir: str,
                     continue
                 if is_blocked_domain(base_dir, post_domain):
                     if item['object'].get('url'):
-                        url = item['object']['url']
+                        url = get_url_from_post(item['object']['url'])
                     else:
-                        url = item['object']['id']
+                        url = get_url_from_post(item['object']['id'])
                     url = remove_html(url)
                     if not blocked_posts.get(post_domain):
                         blocked_posts[post_domain] = [url]
@@ -929,9 +931,9 @@ def _get_posts_for_blocked_domains(base_dir: str,
                         continue
                     if is_blocked_domain(base_dir, post_domain):
                         if item['object'].get('url'):
-                            url = item['object']['url']
+                            url = get_url_from_post(item['object']['url'])
                         else:
-                            url = item['object']['id']
+                            url = get_url_from_post(item['object']['id'])
                         url = remove_html(url)
                         if not blocked_posts.get(post_domain):
                             blocked_posts[post_domain] = [url]
@@ -2206,7 +2208,8 @@ def create_blog_post(base_dir: str,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url)
-    obj_url = remove_html(blog_json['object']['url'])
+    url_str = get_url_from_post(blog_json['object']['url'])
+    obj_url = remove_html(url_str)
     if '/@/' not in obj_url:
         blog_json['object']['url'] = obj_url.replace('/@', '/users/')
     _append_citations_to_blog_post(base_dir, nickname, domain, blog_json)

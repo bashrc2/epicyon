@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 import urllib.parse
+from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import get_attributed_to
 from utils import get_actor_from_post_id
@@ -571,7 +572,8 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
                         skill_level_str = '0' + skill_level_str
                     if skill_level < 10:
                         skill_level_str = '0' + skill_level_str
-                    icon_url = remove_html(actor_json['icon']['url'])
+                    url_str = get_url_from_post(actor_json['icon']['url'])
+                    icon_url = remove_html(url_str)
                     index_str = \
                         skill_level_str + ';' + actor + ';' + \
                         actor_json['name'] + \
@@ -611,7 +613,9 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
                                 skill_level_str = '0' + skill_level_str
                             if skill_level < 10:
                                 skill_level_str = '0' + skill_level_str
-                            icon_url = remove_html(actor_json['icon']['url'])
+                            url_str = \
+                                get_url_from_post(actor_json['icon']['url'])
+                            icon_url = remove_html(url_str)
                             index_str = \
                                 skill_level_str + ';' + actor + ';' + \
                                 actor_json['name'] + \
@@ -1375,7 +1379,8 @@ def rss_hashtag_search(nickname: str, domain: str, port: int,
                     for attach in post_json_object['object']['attachment']:
                         if not attach.get('url'):
                             continue
-                        attach_url = remove_html(attach['url'])
+                        url_str = get_url_from_post(attach['url'])
+                        attach_url = remove_html(url_str)
                         hashtag_feed += \
                             '         <link>' + attach_url + '</link>'
                 hashtag_feed += '     </item>'

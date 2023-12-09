@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
+from utils import get_url_from_post
 from utils import remove_html
 from utils import get_full_domain
 from utils import get_nickname_from_actor
@@ -204,9 +205,10 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                     continue
                 if not lang.get('url'):
                     continue
-                if not isinstance(lang['url'], str):
+                url_str = get_url_from_post(lang['url'])
+                if not url_str:
                     continue
-                if not lang['url'].endswith('.vtt'):
+                if not url_str.endswith('.vtt'):
                     continue
                 for understood in languages_understood:
                     if understood in lang['identifier']:
@@ -214,7 +216,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                             "type": "Document",
                             "name": understood,
                             "mediaType": "text/vtt",
-                            "url": lang['url']
+                            "url": url_str
                         })
                         break
 

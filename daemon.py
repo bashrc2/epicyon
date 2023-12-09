@@ -300,6 +300,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import corp_servers
 from utils import get_attributed_to
@@ -2209,9 +2210,19 @@ class PubServer(BaseHTTPRequestHandler):
         if has_object_dict(message_json):
             if debug:
                 print('INBOX: checking object fields')
+            # check that url is a string or list
+            if message_json['object'].get('url'):
+                if not isinstance(message_json['object']['url'], str) and \
+                   not isinstance(message_json['object']['url'], list):
+                    print('INBOX: url should be a string or list ' +
+                          str(message_json['object']['url']))
+                    self._400()
+                    self.server.postreq_busy = False
+                    return 3
+            # check that some fields are strings
             string_fields = (
                 'id', 'actor', 'type', 'content', 'published',
-                'summary', 'url'
+                'summary'
             )
             for check_field in string_fields:
                 if not message_json['object'].get(check_field):
@@ -6696,7 +6707,9 @@ class PubServer(BaseHTTPRequestHandler):
                     for m_type, last_part in uploads:
                         rep_str = '/' + last_part
                         if m_type == 'avatar':
-                            actor_url = remove_html(actor_json['icon']['url'])
+                            url_str = \
+                                get_url_from_post(actor_json['icon']['url'])
+                            actor_url = remove_html(url_str)
                             last_part_of_url = actor_url.split('/')[-1]
                             srch_str = '/' + last_part_of_url
                             actor_url = actor_url.replace(srch_str, rep_str)
@@ -6709,8 +6722,10 @@ class PubServer(BaseHTTPRequestHandler):
                                 actor_json['icon']['mediaType'] = \
                                     'image/' + img_ext
                         elif m_type == 'image':
+                            url_str = \
+                                get_url_from_post(actor_json['image']['url'])
                             im_url = \
-                                remove_html(actor_json['image']['url'])
+                                remove_html(url_str)
                             last_part_of_url = im_url.split('/')[-1]
                             srch_str = '/' + last_part_of_url
                             actor_json['image']['url'] = \

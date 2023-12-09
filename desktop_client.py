@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import get_url_from_post
 from utils import get_actor_languages_list
 from utils import get_attributed_to
 from utils import remove_html
@@ -761,7 +762,8 @@ def _show_replies_on_post(post_json_object: {}, max_replies: int) -> None:
     print('')
     ctr = 0
     for item in object_replies['items']:
-        item_url = remove_html(item['url'])
+        url_str = get_url_from_post(item['url'])
+        item_url = remove_html(url_str)
         print('  ↰ ' + str(item_url))
         ctr += 1
         if ctr >= max_replies:

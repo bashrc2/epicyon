@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import date_epoch
 from utils import date_utcnow
@@ -192,9 +193,10 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
             continue
         if not attach.get('url'):
             continue
-        if attach['url'].endswith('.svg') or \
+        url_str = get_url_from_post(attach['url'])
+        if url_str.endswith('.svg') or \
            'svg' in attach['mediaType']:
-            url = remove_html(attach['url'])
+            url = remove_html(url_str)
             if not url_permitted(url, federation_list):
                 continue
             # if this is a local image then it has already been
@@ -1209,7 +1211,8 @@ def _person_receive_update(base_dir: str,
                            debug: bool, http_prefix: str) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
-    person_url = remove_html(person_json['url'])
+    url_str = get_url_from_post(person_json['url'])
+    person_url = remove_html(url_str)
     if debug:
         print('Receiving actor update for ' + person_url +
               ' ' + str(person_json))
@@ -1901,7 +1904,7 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                     print('Person Update: ' + str(message_json))
                     if debug:
                         print('DEBUG: Profile update was received for ' +
-                              message_json['object']['url'])
+                              str(message_json['object']['url']))
                         return True
     return False
 
@@ -2714,14 +2717,15 @@ def _receive_bookmark(recent_posts_cache: {},
         if debug:
             print('DEBUG: inbox bookmark Add missing url')
         return False
-    if '/statuses/' not in message_json['object']['url']:
+    url_str = get_url_from_post(message_json['object']['url'])
+    if '/statuses/' not in url_str:
         if debug:
             print('DEBUG: inbox bookmark Add missing statuses un url')
         return False
     if debug:
         print('DEBUG: c2s inbox bookmark Add request arrived in outbox')
 
-    message_url2 = remove_html(message_json['object']['url'])
+    message_url2 = remove_html(url_str)
     message_url = remove_id_ending(message_url2)
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, message_url)
@@ -2840,7 +2844,8 @@ def _receive_undo_bookmark(recent_posts_cache: {},
         if debug:
             print('DEBUG: inbox undo bookmark Remove missing url')
         return False
-    if '/statuses/' not in message_json['object']['url']:
+    url_str = get_url_from_post(message_json['object']['url'])
+    if '/statuses/' not in url_str:
         if debug:
             print('DEBUG: inbox undo bookmark Remove missing statuses un url')
         return False
@@ -2848,7 +2853,7 @@ def _receive_undo_bookmark(recent_posts_cache: {},
         print('DEBUG: c2s inbox Remove bookmark ' +
               'request arrived in outbox')
 
-    message_url2 = remove_html(message_json['object']['url'])
+    message_url2 = remove_html(url_str)
     message_url = remove_id_ending(message_url2)
     domain = remove_domain_port(domain)
     post_filename = locate_post(base_dir, nickname, domain, message_url)

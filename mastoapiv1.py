@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "API"
 
 import os
+from utils import get_url_from_post
 from utils import load_json
 from utils import get_config_param
 from utils import acct_dir
@@ -79,8 +80,10 @@ def _meta_data_instance_v1(show_accounts: bool,
     if admin_actor.get('published'):
         created_at = admin_actor['published']
 
-    icon_url = remove_html(admin_actor['icon']['url'])
-    image_url = remove_html(admin_actor['image']['url'])
+    url_str = get_url_from_post(admin_actor['icon']['url'])
+    icon_url = remove_html(url_str)
+    url_str = get_url_from_post(admin_actor['image']['url'])
+    image_url = remove_html(url_str)
     instance = {
         'approval_required': False,
         'invites_enabled': False,
@@ -205,8 +208,10 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     account_json = load_json(account_filename)
     if not account_json:
         return {}
-    avatar_url = remove_html(account_json['icon']['url'])
-    image_url = remove_html(account_json['image']['url'])
+    url_str = get_url_from_post(account_json['icon']['url'])
+    avatar_url = remove_html(url_str)
+    url_str = get_url_from_post(account_json['image']['url'])
+    image_url = remove_html(url_str)
     joined_date = "2016-10-05T10:30:00Z"
     if account_json.get('published'):
         joined_date = account_json['published']

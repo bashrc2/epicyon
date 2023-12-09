@@ -24,6 +24,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import remove_markup_tag
 from utils import ap_proxy_type
@@ -155,7 +156,8 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
                     "    <meta content=\"@" + actor_handle + \
                     "\" property=\"og:title\" />\n"
     if obj_json.get('url'):
-        obj_url = remove_html(obj_json['url'])
+        url_str = get_url_from_post(obj_json['url'])
+        obj_url = remove_html(url_str)
         metadata += \
             "    <meta content=\"" + obj_url + \
             "\" property=\"og:url\" />\n"
@@ -211,7 +213,8 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
             metadata += \
                 "    <meta content=\"" + description + \
                 "\" name=\"og:description\">\n"
-            attach_url = remove_html(attach_json['url'])
+            url_str = get_url_from_post(attach_json['url'])
+            attach_url = remove_html(url_str)
             metadata += \
                 "    <meta content=\"" + attach_url + \
                 "\" property=\"og:image\" />\n"
@@ -1197,7 +1200,8 @@ def _get_blog_citations_html(box_name: str,
             continue
         if not tag_json.get('url'):
             continue
-        citation_url = remove_html(tag_json['url'])
+        url_str = get_url_from_post(tag_json['url'])
+        citation_url = remove_html(url_str)
         citation_name = remove_html(tag_json['name'])
         citations_str += \
             '<li><a href="' + citation_url + '" tabindex="10">' + \

@@ -9,6 +9,7 @@ __module_group__ = "Core"
 
 
 import os
+from utils import get_url_from_post
 from utils import is_float
 from utils import acct_dir
 from utils import load_json
@@ -400,7 +401,8 @@ def get_map_preferences_url(base_dir: str, nickname: str, domain: str) -> str:
     if os.path.isfile(maps_filename):
         maps_json = load_json(maps_filename)
         if maps_json.get('url'):
-            return remove_html(maps_json['url'])
+            url_str = get_url_from_post(maps_json['url'])
+            return remove_html(url_str)
     return None
 
 

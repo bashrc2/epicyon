@@ -16,6 +16,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
+from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import get_attributed_to
 from utils import remove_eol
@@ -314,7 +315,8 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                 continue
             if not tag_json.get('url'):
                 continue
-            citation_url = remove_html(tag_json['url'])
+            url_str = get_url_from_post(tag_json['url'])
+            citation_url = remove_html(url_str)
             citation_name = remove_html(tag_json['name'])
             citations_str += \
                 '<li><a href="' + citation_url + '">' + \
@@ -482,7 +484,8 @@ def html_blog_post(session, authorized: bool,
     title = post_json_object['object']['summary']
     url = ''
     if post_json_object['object'].get('url'):
-        url = remove_html(post_json_object['object']['url'])
+        url_str = get_url_from_post(post_json_object['object']['url'])
+        url = remove_html(url_str)
     snippet = _get_snippet_from_blog_content(post_json_object,
                                              system_language)
     blog_str = html_header_with_blog_markup(css_filename, instance_title,
