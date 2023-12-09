@@ -988,8 +988,7 @@ def html_timeline(default_timeline: str,
         # show each post in the timeline
         tl_items_str = ''
         for item in timeline_json['orderedItems']:
-            if item['type'] == 'Create' or \
-               item['type'] == 'Announce':
+            if item['type'] in ('Create', 'Announce'):
                 # is the actor who sent this post snoozed?
                 if is_person_snoozed(base_dir, nickname, domain,
                                      item['actor']):
