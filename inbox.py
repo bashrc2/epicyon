@@ -3355,7 +3355,11 @@ def json_post_allows_comments(post_json_object: {}) -> bool:
     if 'capabilities' in post_json_object:
         if isinstance(post_json_object['capabilities'], dict):
             if 'reply' in post_json_object['capabilities']:
-                reply_control = post_json_object['capabilities']['reply']
+                if isinstance(post_json_object['capabilities']['reply'], str):
+                    reply_control = post_json_object['capabilities']['reply']
+            else:
+                # capabilities exist but there is no reply field
+                reply_control = 'noreply'
     obj_dict_exists = False
     if has_object_dict(post_json_object):
         obj_dict_exists = True
@@ -3365,9 +3369,15 @@ def json_post_allows_comments(post_json_object: {}) -> bool:
         if 'capabilities' in post_obj:
             if isinstance(post_obj['capabilities'], dict):
                 if 'reply' in post_obj['capabilities']:
-                    reply_control = post_obj['capabilities']['reply']
+                    if isinstance(post_obj['capabilities']['reply'], str):
+                        reply_control = post_obj['capabilities']['reply']
+                else:
+                    # capabilities exist but there is no reply field
+                    reply_control = 'noreply'
     if reply_control:
         if isinstance(reply_control, str):
+            if reply_control == 'noreply':
+                return False
             if not reply_control.endswith('#Public'):
                 # TODO handle non-public reply permissions
                 print('CAPABILITIES: replies ' + str(reply_control))

@@ -4237,12 +4237,16 @@ def disallow_announce(content: str, attachment: [], capabilities: {}) -> bool:
     """Are announces/boosts not allowed for the given post?
     """
     # pixelfed style capabilities
-    if capabilities.get('announce'):
-        if isinstance(capabilities['announce'], str):
-            if not capabilities['announce'].endswith('#Public'):
-                # TODO handle non-public announce permissions
-                print('CAPABILITIES: announce ' + capabilities['announce'])
-                return True
+    if capabilities:
+        if 'announce' in capabilities:
+            if isinstance(capabilities['announce'], str):
+                if not capabilities['announce'].endswith('#Public'):
+                    # TODO handle non-public announce permissions
+                    print('CAPABILITIES: announce ' + capabilities['announce'])
+                    return True
+        else:
+            # capabilities exist but with no announce defined
+            return True
 
     # emojis
     disallow_strings = (
