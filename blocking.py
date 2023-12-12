@@ -1791,17 +1791,24 @@ def save_blocked_military(base_dir: str, block_military: {}) -> None:
 
 
 def get_mil_domains_list() -> []:
-    """returns a list of military top level domains
+    """returns a list of military domains
     """
-    return ('army', 'navy', 'airforce', 'mil')
+    return ('army', 'navy', 'airforce', 'mil',
+            'sncorp.com', 'sierranevadacorp.us', 'ncontext.com')
 
 
 def contains_military_domain(message_str: str) -> bool:
     """Returns true if the given string contains a military domain
     """
     mil_domains = get_mil_domains_list()
-    for tld in mil_domains:
-        if '.' + tld + '"' in message_str or \
-           '.' + tld + '/' in message_str:
-            return True
+    for domain_str in mil_domains:
+        if '.' not in domain_str:
+            tld = domain_str
+            if '.' + tld + '"' in message_str or \
+               '.' + tld + '/' in message_str:
+                return True
+        else:
+            if domain_str + '"' in message_str or \
+               domain_str + '/' in message_str:
+                return True
     return False

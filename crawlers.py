@@ -192,11 +192,19 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             # does this account block military domains?
             if block_military.get(nickname):
                 mil_domains = get_mil_domains_list()
-                for tld in mil_domains:
-                    if agent_domain.endswith('.' + tld):
-                        blocked_ua = True
-                        print('BLOCK: Blocked military user agent: ' +
-                              agent_domain)
-                        break
+                for domain_str in mil_domains:
+                    if '.' not in domain_str:
+                        tld = domain_str
+                        if agent_domain.endswith('.' + tld):
+                            blocked_ua = True
+                            print('BLOCK: Blocked military tld user agent: ' +
+                                  agent_domain)
+                            break
+                    else:
+                        if agent_domain.endswith(domain_str):
+                            blocked_ua = True
+                            print('BLOCK: Blocked military user agent: ' +
+                                  agent_domain)
+                            break
 
     return blocked_ua, blocked_cache_last_updated
