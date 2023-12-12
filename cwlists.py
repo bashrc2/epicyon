@@ -79,6 +79,19 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
         # match domains within the content
         if item.get('domains'):
             for domain in item['domains']:
+                if '.' in domain:
+                    first_section = domain.split('.')[0]
+                    if len(first_section) < 4:
+                        if '.' + domain in content or \
+                           '/' + domain in content:
+                            if cw_text:
+                                cw_text = warning + ' / ' + cw_text
+                            else:
+                                cw_text = warning
+                            matched = True
+                            break
+                        continue
+
                 if domain in content:
                     if cw_text:
                         cw_text = warning + ' / ' + cw_text
