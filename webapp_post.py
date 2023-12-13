@@ -313,7 +313,8 @@ def replace_link_variable(link: str, variable_name: str, value: str,
     return result + curr_str
 
 
-def _prepare_video_post_from_html_cache(post_html: str) -> str:
+def _prepare_video_post_from_html_cache(post_html: str,
+                                        translate: {}) -> str:
     """ replaces the <video> tag to make it more friendly for
     text mode browsers
     """
@@ -339,7 +340,7 @@ def _prepare_video_post_from_html_cache(post_html: str) -> str:
                 if '"' in description:
                     description = description.split('"')[0]
             if not description:
-                description = '[VIDEO]'
+                description = '[' + translate['Media'].upper() + ']'
             new_post_html += \
                 '<a href="' + url + '" target="_blank" ' + \
                 'rel="nofollow noopener noreferrer">' + \
@@ -350,7 +351,8 @@ def _prepare_video_post_from_html_cache(post_html: str) -> str:
     return new_post_html
 
 
-def _prepare_audio_post_from_html_cache(post_html: str) -> str:
+def _prepare_audio_post_from_html_cache(post_html: str,
+                                        translate: {}) -> str:
     """ replaces the <audio> tag to make it more friendly for
     text mode browsers
     """
@@ -376,7 +378,7 @@ def _prepare_audio_post_from_html_cache(post_html: str) -> str:
                 if '"' in description:
                     description = description.split('"')[0]
             if not description:
-                description = '[AUDIO]'
+                description = '[' + translate['Media'].upper() + ']'
             new_post_html += \
                 '<a href="' + url + '" target="_blank" ' + \
                 'rel="nofollow noopener noreferrer">' + \
@@ -389,16 +391,18 @@ def _prepare_audio_post_from_html_cache(post_html: str) -> str:
 
 def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
                                  page_number: int, first_post_id: str,
-                                 ua_str: str) -> str:
+                                 ua_str: str, translate: {}) -> str:
     """Sets the page number on a cached html post
     """
 
     # ensure that media is playable from a text mode browser
     if text_mode_browser(ua_str):
         if '<video' in post_html:
-            post_html = _prepare_video_post_from_html_cache(post_html)
+            post_html = _prepare_video_post_from_html_cache(post_html,
+                                                            translate)
         if '<audio' in post_html:
-            post_html = _prepare_audio_post_from_html_cache(post_html)
+            post_html = _prepare_audio_post_from_html_cache(post_html,
+                                                            translate)
 
     # if on the bookmarks timeline then remain there
     if box_name in ('tlbookmarks', 'bookmarks'):
@@ -484,7 +488,8 @@ def _get_post_from_recent_cache(session,
                                 max_recent_posts: int,
                                 signing_priv_key_pem: str,
                                 first_post_id: str,
-                                ua_str: str) -> str:
+                                ua_str: str,
+                                translate: {}) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if box_name == 'tlmedia':
@@ -524,7 +529,7 @@ def _get_post_from_recent_cache(session,
     post_html = \
         prepare_post_from_html_cache(nickname, post_html,
                                      box_name, page_number, first_post_id,
-                                     ua_str)
+                                     ua_str, translate)
     update_recent_posts_cache(recent_posts_cache, max_recent_posts,
                               post_json_object, post_html)
     _log_post_timing(enable_timing_log, post_start_time, '3')
@@ -2167,7 +2172,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                     recent_posts_cache,
                                     max_recent_posts,
                                     signing_priv_key_pem,
-                                    first_post_id, ua_str)
+                                    first_post_id, ua_str,
+                                    translate)
     if post_html:
         return post_html
     if use_cache_only and post_json_object['type'] != 'Announce':
@@ -2315,7 +2321,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                         recent_posts_cache,
                                         max_recent_posts,
                                         signing_priv_key_pem,
-                                        first_post_id, ua_str)
+                                        first_post_id, ua_str,
+                                        translate)
         if post_html:
             return post_html
 
