@@ -313,28 +313,31 @@ def replace_link_variable(link: str, variable_name: str, value: str,
     return result + curr_str
 
 
-def _prepare_video_post_from_html_cache(post_html: str,
-                                        translate: {}) -> str:
-    """ replaces the <video> tag to make it more friendly for
-    text mode browsers
+def _prepare_media_post_from_html_cache(post_html: str,
+                                        translate: {},
+                                        media_type: str) -> str:
+    """ replaces the <video> or <audio> tag to make it more friendly for
+    text mode browsers, so that Lynx doesn't just say something like
+    'this tag is not supported in your browser'
     """
-    sections = post_html.split('<video')
+    sections = post_html.split('<' + media_type)
     new_post_html = ''
     for section_str in sections:
-        if '</video>' not in section_str:
+        ending_tag = '</' + media_type + '>'
+        if ending_tag not in section_str:
             new_post_html += section_str
             continue
-        markup = section_str.split('</video>')[0]
-        ending = section_str.split('</video>')[1]
+        markup = section_str.split(ending_tag)[0]
+        ending = section_str.split(ending_tag)[1]
         url = ''
         description = ''
-        # get the video url if it exists
+        # get the video/audio url if it exists
         if ' src="' in markup:
             url = markup.split(' src="')[1]
             if '"' in url:
                 url = url.split('"')[0]
         if url:
-            # get the video description if it exists
+            # get the video/audio description if it exists
             if ' alt="' in markup:
                 description = markup.split(' alt="')[1]
                 if '"' in description:
@@ -346,45 +349,7 @@ def _prepare_video_post_from_html_cache(post_html: str,
                 'rel="nofollow noopener noreferrer">' + \
                 description + '</a><br>'
         else:
-            new_post_html += '<video' + markup
-        new_post_html += ending
-    return new_post_html
-
-
-def _prepare_audio_post_from_html_cache(post_html: str,
-                                        translate: {}) -> str:
-    """ replaces the <audio> tag to make it more friendly for
-    text mode browsers
-    """
-    sections = post_html.split('<audio')
-    new_post_html = ''
-    for section_str in sections:
-        if '</audio>' not in section_str:
-            new_post_html += section_str
-            continue
-        markup = section_str.split('</audio>')[0]
-        ending = section_str.split('</audio>')[1]
-        url = ''
-        description = ''
-        # get the audio url if it exists
-        if ' src="' in markup:
-            url = markup.split(' src="')[1]
-            if '"' in url:
-                url = url.split('"')[0]
-        if url:
-            # get the audio description if it exists
-            if ' alt="' in markup:
-                description = markup.split(' alt="')[1]
-                if '"' in description:
-                    description = description.split('"')[0]
-            if not description:
-                description = '[' + translate['Media'].upper() + ']'
-            new_post_html += \
-                '<a href="' + url + '" target="_blank" ' + \
-                'rel="nofollow noopener noreferrer">' + \
-                description + '</a><br>'
-        else:
-            new_post_html += '<audio' + markup
+            new_post_html += '<' + media_type + markup
         new_post_html += ending
     return new_post_html
 
@@ -398,11 +363,13 @@ def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
     # ensure that media is playable from a text mode browser
     if text_mode_browser(ua_str):
         if '<video' in post_html:
-            post_html = _prepare_video_post_from_html_cache(post_html,
-                                                            translate)
+            post_html = _prepare_media_post_from_html_cache(post_html,
+                                                            translate,
+                                                            'video')
         if '<audio' in post_html:
-            post_html = _prepare_audio_post_from_html_cache(post_html,
-                                                            translate)
+            post_html = _prepare_media_post_from_html_cache(post_html,
+                                                            translate,
+                                                            'audio')
 
     # if on the bookmarks timeline then remain there
     if box_name in ('tlbookmarks', 'bookmarks'):
