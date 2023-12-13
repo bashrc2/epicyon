@@ -88,6 +88,7 @@ from content import get_mentions_from_html
 from content import switch_words
 from person import is_person_snoozed
 from person import get_person_avatar_url
+from webapp_utils import text_mode_browser
 from webapp_utils import get_buy_links
 from webapp_utils import get_banner_file
 from webapp_utils import get_avatar_image_url
@@ -312,10 +313,93 @@ def replace_link_variable(link: str, variable_name: str, value: str,
     return result + curr_str
 
 
+def _prepare_video_post_from_html_cache(post_html: str) -> str:
+    """ replaces the <video> tag to make it more friendly for
+    text mode browsers
+    """
+    sections = post_html.split('<video')
+    new_post_html = ''
+    for section_str in sections:
+        if '</video>' not in section_str:
+            new_post_html += section_str
+            continue
+        markup = section_str.split('</video>')[0]
+        ending = section_str.split('</video>')[1]
+        url = ''
+        description = ''
+        # get the video url if it exists
+        if ' src="' in markup:
+            url = markup.split(' src="')[1]
+            if '"' in url:
+                url = url.split('"')[0]
+        if url:
+            # get the video description if it exists
+            if ' alt="' in markup:
+                description = markup.split(' alt="')[1]
+                if '"' in description:
+                    description = description.split('"')[0]
+            if not description:
+                description = '[VIDEO]'
+            new_post_html += \
+                '<a href="' + url + '" target="_blank" ' + \
+                'rel="nofollow noopener noreferrer">' + \
+                description + '</a><br>'
+        else:
+            new_post_html += '<video' + markup
+        new_post_html += ending
+    return new_post_html
+
+
+def _prepare_audio_post_from_html_cache(post_html: str) -> str:
+    """ replaces the <audio> tag to make it more friendly for
+    text mode browsers
+    """
+    sections = post_html.split('<audio')
+    new_post_html = ''
+    for section_str in sections:
+        if '</audio>' not in section_str:
+            new_post_html += section_str
+            continue
+        markup = section_str.split('</audio>')[0]
+        ending = section_str.split('</audio>')[1]
+        url = ''
+        description = ''
+        # get the audio url if it exists
+        if ' src="' in markup:
+            url = markup.split(' src="')[1]
+            if '"' in url:
+                url = url.split('"')[0]
+        if url:
+            # get the audio description if it exists
+            if ' alt="' in markup:
+                description = markup.split(' alt="')[1]
+                if '"' in description:
+                    description = description.split('"')[0]
+            if not description:
+                description = '[AUDIO]'
+            new_post_html += \
+                '<a href="' + url + '" target="_blank" ' + \
+                'rel="nofollow noopener noreferrer">' + \
+                description + '</a><br>'
+        else:
+            new_post_html += '<audio' + markup
+        new_post_html += ending
+    return new_post_html
+
+
 def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
-                                 page_number: int, first_post_id: str) -> str:
+                                 page_number: int, first_post_id: str,
+                                 ua_str: str) -> str:
     """Sets the page number on a cached html post
     """
+
+    # ensure that media is playable from a text mode browser
+    if text_mode_browser(ua_str):
+        if '<video' in post_html:
+            post_html = _prepare_video_post_from_html_cache(post_html)
+        if '<audio' in post_html:
+            post_html = _prepare_audio_post_from_html_cache(post_html)
+
     # if on the bookmarks timeline then remain there
     if box_name in ('tlbookmarks', 'bookmarks'):
         post_html = post_html.replace('?tl=inbox', '?tl=tlbookmarks')
@@ -399,7 +483,8 @@ def _get_post_from_recent_cache(session,
                                 recent_posts_cache: {},
                                 max_recent_posts: int,
                                 signing_priv_key_pem: str,
-                                first_post_id: str) -> str:
+                                first_post_id: str,
+                                ua_str: str) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if box_name == 'tlmedia':
@@ -438,7 +523,8 @@ def _get_post_from_recent_cache(session,
 
     post_html = \
         prepare_post_from_html_cache(nickname, post_html,
-                                     box_name, page_number, first_post_id)
+                                     box_name, page_number, first_post_id,
+                                     ua_str)
     update_recent_posts_cache(recent_posts_cache, max_recent_posts,
                               post_json_object, post_html)
     _log_post_timing(enable_timing_log, post_start_time, '3')
@@ -2059,6 +2145,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if page_number:
         page_number_param = '?page=' + str(page_number)
 
+    # NOTE at the time when the post is generated we don't know what
+    # browser will be used to access it
+    ua_str = ''
+
     # get the html post from the recent posts cache if it exists there
     post_html = \
         _get_post_from_recent_cache(session, base_dir,
@@ -2077,7 +2167,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                     recent_posts_cache,
                                     max_recent_posts,
                                     signing_priv_key_pem,
-                                    first_post_id)
+                                    first_post_id, ua_str)
     if post_html:
         return post_html
     if use_cache_only and post_json_object['type'] != 'Announce':
@@ -2225,7 +2315,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                         recent_posts_cache,
                                         max_recent_posts,
                                         signing_priv_key_pem,
-                                        first_post_id)
+                                        first_post_id, ua_str)
         if post_html:
             return post_html
 

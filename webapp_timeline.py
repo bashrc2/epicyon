@@ -1013,7 +1013,8 @@ def html_timeline(default_timeline: str,
                                                          curr_tl_str,
                                                          box_name,
                                                          page_number,
-                                                         first_post_id)
+                                                         first_post_id,
+                                                         ua_str)
                         _log_timeline_timing(enable_timing_log,
                                              timeline_start_time,
                                              box_name, '10')
