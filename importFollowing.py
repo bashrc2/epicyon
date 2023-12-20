@@ -11,7 +11,6 @@ import os
 import time
 import random
 from utils import get_full_domain
-from utils import acct_dir
 from utils import is_account_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -20,6 +19,7 @@ from follow import send_follow_request
 from session import create_session
 from session import set_session_for_sender
 from threads import begin_thread
+from person import set_person_notes
 
 
 def _establish_import_session(httpd,
@@ -89,16 +89,8 @@ def _update_import_following(base_dir: str,
                 get_full_domain(following_domain, following_port)
             if notes:
                 notes = notes.replace('<br>', '\n')
-                person_notes_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/notes/' + following_handle + '.txt'
-                try:
-                    with open(person_notes_filename, 'w+',
-                              encoding='utf-8') as fp_notes:
-                        fp_notes.write(notes)
-                except OSError:
-                    print('EX: Unable to import notes for ' +
-                          following_handle)
+                set_person_notes(base_dir, nickname, domain,
+                                 following_handle, notes)
             if is_following_actor(base_dir, nickname, domain,
                                   following_handle_full):
                 # remove the followed handle from the import list

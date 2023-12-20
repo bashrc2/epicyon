@@ -43,6 +43,7 @@ from cache import store_person_in_cache
 from content import add_html_tags
 from content import replace_emoji_from_tags
 from person import get_person_avatar_url
+from person import get_person_notes
 from posts import is_moderator
 from blocking import is_blocked
 from blocking import allowed_announce
@@ -137,18 +138,15 @@ def csv_following_list(following_filename: str,
                                      following_domain)
                 notify_on_new = 'false'
                 languages = ''
-                person_notes = ''
-                person_notes_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/notes/' + following_address + '.txt'
-                if os.path.isfile(person_notes_filename):
-                    with open(person_notes_filename, 'r',
-                              encoding='utf-8') as fp_notes:
-                        person_notes = fp_notes.read()
-                        person_notes = person_notes.replace(',', ' ')
-                        person_notes = person_notes.replace('"', "'")
-                        person_notes = person_notes.replace('\n', '<br>')
-                        person_notes = person_notes.replace('  ', ' ')
+                person_notes = \
+                    get_person_notes(base_dir, nickname, domain,
+                                     following_address)
+                if person_notes:
+                    # make notes suitable for csv file
+                    person_notes = person_notes.replace(',', ' ')
+                    person_notes = person_notes.replace('"', "'")
+                    person_notes = person_notes.replace('\n', '<br>')
+                    person_notes = person_notes.replace('  ', ' ')
                 if not following_list_csv:
                     following_list_csv = \
                         'Account address,Show boosts,' + \

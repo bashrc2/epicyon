@@ -27,6 +27,7 @@ from follow import is_follower_of_person
 from follow import is_following_actor
 from followingCalendar import receiving_calendar_events
 from notifyOnPost import notify_when_person_posts
+from person import get_person_notes
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_broken_link_substitute
@@ -628,13 +629,8 @@ def html_person_options(default_timeline: str,
 
         person_notes = ''
         if origin_path_str == '/users/' + nickname:
-            person_notes_filename = \
-                acct_dir(base_dir, nickname, domain) + \
-                '/notes/' + handle + '.txt'
-            if os.path.isfile(person_notes_filename):
-                with open(person_notes_filename, 'r',
-                          encoding='utf-8') as fp_notes:
-                    person_notes = fp_notes.read()
+            person_notes = \
+                get_person_notes(base_dir, nickname, domain, handle)
 
         options_str += \
             '    <br><br>' + translate['Notes'] + ': \n'

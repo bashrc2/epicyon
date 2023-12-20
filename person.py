@@ -1600,6 +1600,21 @@ def set_person_notes(base_dir: str, nickname: str, domain: str,
     return True
 
 
+def get_person_notes(base_dir: str, nickname: str, domain: str,
+                     handle: str) -> str:
+    """Returns notes about a person
+    """
+    person_notes = ''
+    person_notes_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/notes/' + handle + '.txt'
+    if os.path.isfile(person_notes_filename):
+        with open(person_notes_filename, 'r',
+                  encoding='utf-8') as fp_notes:
+            person_notes = fp_notes.read()
+    return person_notes
+
+
 def _detect_users_path(url: str) -> str:
     """Tries to detect the /users/ path
     """
