@@ -46,6 +46,7 @@ from person import get_featured_hashtags
 from person import person_box_json
 from person import get_actor_json
 from person import get_person_avatar_url
+from person import get_person_notes
 from posts import get_post_expiry_keep_dms
 from posts import get_post_expiry_days
 from posts import get_person_box
@@ -379,7 +380,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
             send_blocks_str = translate['FollowWarning']
 
     profile_str = \
-        _get_profile_header_after_search(nickname, default_timeline,
+        _get_profile_header_after_search(base_dir, nickname, domain,
+                                         default_timeline,
                                          search_nickname,
                                          search_domain_full,
                                          translate,
@@ -707,7 +709,9 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     return html_str
 
 
-def _get_profile_header_after_search(nickname: str, default_timeline: str,
+def _get_profile_header_after_search(base_dir: str,
+                                     nickname: str, domain: str,
+                                     default_timeline: str,
                                      search_nickname: str,
                                      search_domain_full: str,
                                      translate: {},
@@ -839,6 +843,15 @@ def _get_profile_header_after_search(nickname: str, default_timeline: str,
         html_str += \
             _profile_shared_items_list(attached_shared_items,
                                        translate)
+    # show any notes about this account
+    handle = search_nickname + '@' + search_domain_full
+    person_notes = \
+        get_person_notes(base_dir, nickname, domain, handle)
+    if person_notes:
+        html_str += '        <p><b>' + \
+            translate['Notes'] + ': ' + \
+            person_notes + '</b></p>\n'
+
     return html_str
 
 
