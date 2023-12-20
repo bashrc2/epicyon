@@ -836,13 +836,7 @@ def _get_profile_header_after_search(base_dir: str,
             repo_url + '</a></p>\n'
     html_str += \
         '        <p>' + profile_description_short + '</p>\n' + \
-        featured_hashtags + \
-        '      </figcaption>\n' + \
-        '    </figure>\n\n'
-    if attached_shared_items:
-        html_str += \
-            _profile_shared_items_list(attached_shared_items,
-                                       translate)
+        featured_hashtags
     # show any notes about this account
     handle = search_nickname + '@' + search_domain_full
     person_notes = \
@@ -851,6 +845,13 @@ def _get_profile_header_after_search(base_dir: str,
         html_str += '        <p><b>' + \
             translate['Notes'] + ': ' + \
             person_notes + '</b></p>\n'
+    html_str += \
+        '      </figcaption>\n' + \
+        '    </figure>\n\n'
+    if attached_shared_items:
+        html_str += \
+            _profile_shared_items_list(attached_shared_items,
+                                       translate)
 
     return html_str
 
