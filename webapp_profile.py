@@ -842,9 +842,10 @@ def _get_profile_header_after_search(base_dir: str,
     person_notes = \
         get_person_notes(base_dir, nickname, domain, handle)
     if person_notes:
+        person_notes_html = person_notes.replace('\n', '<br>')
         html_str += '        <p><b>' + \
             translate['Notes'] + ': ' + \
-            person_notes + '</b></p>\n'
+            person_notes_html + '</b></p>\n'
     html_str += \
         '      </figcaption>\n' + \
         '    </figure>\n\n'
