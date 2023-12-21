@@ -182,7 +182,8 @@ def _valid_profile_preview_post(post_json_object: {},
     return True, post_json_object
 
 
-def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
+def html_profile_after_search(authorized: bool,
+                              recent_posts_cache: {}, max_recent_posts: int,
                               translate: {},
                               base_dir: str, path: str, http_prefix: str,
                               nickname: str, domain: str, port: int,
@@ -395,7 +396,8 @@ def html_profile_after_search(recent_posts_cache: {}, max_recent_posts: int,
                                          joined_date, actor_proxied,
                                          attached_shared_items,
                                          website_url, repo_url,
-                                         send_blocks_str)
+                                         send_blocks_str,
+                                         authorized)
 
     domain_full = get_full_domain(domain, port)
 
@@ -729,7 +731,8 @@ def _get_profile_header_after_search(base_dir: str,
                                      attached_shared_items: str,
                                      website_url: str,
                                      repo_url: str,
-                                     send_blocks_str: str) -> str:
+                                     send_blocks_str: str,
+                                     authorized: bool) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -838,14 +841,15 @@ def _get_profile_header_after_search(base_dir: str,
         '        <p>' + profile_description_short + '</p>\n' + \
         featured_hashtags
     # show any notes about this account
-    handle = search_nickname + '@' + search_domain_full
-    person_notes = \
-        get_person_notes(base_dir, nickname, domain, handle)
-    if person_notes:
-        person_notes_html = person_notes.replace('\n', '<br>')
-        html_str += '        <p><b>' + \
-            translate['Notes'].upper() + ': ' + \
-            person_notes_html + '</b></p>\n'
+    if authorized:
+        handle = search_nickname + '@' + search_domain_full
+        person_notes = \
+            get_person_notes(base_dir, nickname, domain, handle)
+        if person_notes:
+            person_notes_html = person_notes.replace('\n', '<br>')
+            html_str += '        <p><b>' + \
+                translate['Notes'].upper() + ': ' + \
+                person_notes_html + '</b></p>\n'
     html_str += \
         '      </figcaption>\n' + \
         '    </figure>\n\n'

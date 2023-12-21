@@ -3278,7 +3278,8 @@ class PubServer(BaseHTTPRequestHandler):
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
-                        debug: bool, curr_session) -> None:
+                        debug: bool, curr_session,
+                        authorized: bool) -> None:
         """Receive POST from person options screen
         """
         page_number = 1
@@ -3469,7 +3470,8 @@ class PubServer(BaseHTTPRequestHandler):
             max_shares_on_profile = \
                 self.server.max_shares_on_profile
             profile_str = \
-                html_profile_after_search(recent_posts_cache,
+                html_profile_after_search(authorized,
+                                          recent_posts_cache,
                                           self.server.max_recent_posts,
                                           self.server.translate,
                                           base_dir,
@@ -5108,7 +5110,8 @@ class PubServer(BaseHTTPRequestHandler):
                     max_shares_on_profile = \
                         self.server.max_shares_on_profile
                     profile_str = \
-                        html_profile_after_search(recent_posts_cache,
+                        html_profile_after_search(authorized,
+                                                  recent_posts_cache,
                                                   self.server.max_recent_posts,
                                                   self.server.translate,
                                                   base_dir,
@@ -23447,7 +23450,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.onion_domain,
                                      self.server.i2p_domain,
                                      self.server.debug,
-                                     curr_session)
+                                     curr_session,
+                                     authorized)
                 self.server.postreq_busy = False
                 return
 
