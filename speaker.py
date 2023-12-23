@@ -32,7 +32,8 @@ from content import html_replace_quote_marks
 SPEAKER_REMOVE_CHARS = ('.\n', '. ', ',', ';', '?', '!')
 
 
-def get_speaker_pitch(display_name: str, screenreader: str, gender) -> int:
+def get_speaker_pitch(display_name: str, screenreader: str,
+                      gender: str) -> int:
     """Returns the speech synthesis pitch for the given name
     """
     random.seed(display_name)
