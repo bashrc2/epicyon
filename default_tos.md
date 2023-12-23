@@ -19,6 +19,8 @@ Publication of private information (aka doxxing), such as home address, without 
 
 Violent or abusive content will be subject to moderation and is likely to be removed.
 
+Genocide denial or apologia are not permitted.
+
 Content of a sexual nature may be published providing that only consenting adults (aged 18 or over) are depicted and an appropriate content warning message is added. Posting sexual content without a content warning is a terms of service violation. Sexual content is defined both as photographs of real people and also artistic or fictional depictions, edited/generated photos or narratives.
 
 Moderators rely upon your reports. Don't assume that something of concern has already been reported. It's better for there to be duplicate reports than for something potentially damaging to go unreported.
