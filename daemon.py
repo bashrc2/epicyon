@@ -8067,7 +8067,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 with open(hide_follows_filename, 'w+',
                                           encoding='utf-8') as rfile:
                                     rfile.write('\n')
-                                    print('hide follows 3')
+                                    print('hide follows 3 ' +
+                                          hide_follows_filename)
                             except OSError:
                                 print('EX: unable to write hideFollows ' +
                                       hide_follows_filename)
