@@ -8055,20 +8055,16 @@ class PubServer(BaseHTTPRequestHandler):
                     # hide follows checkbox
                     hide_follows_filename = \
                         acct_dir(base_dir, nickname, domain) + \
-                        '/.bideFollows'
+                        '/.hideFollows'
                     hide_follows = False
-                    print('hide follows 1 ' + str(fields))
                     if fields.get('hideFollows'):
                         if fields['hideFollows'] == 'on':
                             hide_follows = True
                             self.server.hide_follows[nickname] = True
-                            print('hide follows 2')
                             try:
                                 with open(hide_follows_filename, 'w+',
                                           encoding='utf-8') as rfile:
                                     rfile.write('\n')
-                                    print('hide follows 3 ' +
-                                          hide_follows_filename)
                             except OSError:
                                 print('EX: unable to write hideFollows ' +
                                       hide_follows_filename)
