@@ -8061,6 +8061,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['hideFollows'] == 'on':
                             hide_follows = True
                             self.server.hide_follows[nickname] = True
+                            actor_json['hideFollows'] = True
+                            actor_changed = True
                             try:
                                 with open(hide_follows_filename, 'w+',
                                           encoding='utf-8') as rfile:
@@ -8069,8 +8071,10 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: unable to write hideFollows ' +
                                       hide_follows_filename)
                     if not hide_follows:
+                        actor_json['hideFollows'] = False
                         if self.server.hide_follows.get(nickname):
                             del self.server.hide_follows[nickname]
+                            actor_changed = True
                         if os.path.isfile(hide_follows_filename):
                             try:
                                 os.remove(hide_follows_filename)
