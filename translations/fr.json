@@ -641,5 +641,6 @@
     "offline": "hors ligne",
     "Mutuals": "Mutuelles",
     "Public replies default to unlisted scope": "Les réponses publiques ont par défaut une portée non répertoriée",
-    "About the author": "A propos de l'auteur"
+    "About the author": "A propos de l'auteur",
+    "Do not show follows on your profile": "Ne pas afficher les suivis sur votre profil"
 }

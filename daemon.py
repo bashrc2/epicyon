@@ -347,6 +347,7 @@ from utils import get_occupation_name
 from utils import set_occupation_name
 from utils import load_translations_from_file
 from utils import load_bold_reading
+from utils import load_hide_follows
 from utils import get_local_network_addresses
 from utils import decoded_host
 from utils import is_public_post
@@ -8051,6 +8052,33 @@ class PubServer(BaseHTTPRequestHandler):
                                       'repliesFromMutualsOnly file ' +
                                       show_replies_mutuals_file)
 
+                    # hide follows checkbox
+                    hide_follows_filename = \
+                        acct_dir(base_dir, nickname, domain) + \
+                        '/.bideFollows'
+                    hide_follows = False
+                    if fields.get('hideFollows'):
+                        if fields['hideFollows'] == 'on':
+                            hide_follows = True
+                            self.server.hide_follows[nickname] = True
+                            try:
+                                with open(hide_follows_filename, 'w+',
+                                          encoding='utf-8') as rfile:
+                                    rfile.write('\n')
+                            except OSError:
+                                print('EX: unable to write hideFollows ' +
+                                      hide_follows_filename)
+                    if not hide_follows:
+                        if self.server.hide_follows.get(nickname):
+                            del self.server.hide_follows[nickname]
+                        if os.path.isfile(hide_follows_filename):
+                            try:
+                                os.remove(hide_follows_filename)
+                            except OSError:
+                                print('EX: _profile_edit ' +
+                                      'unable to delete ' +
+                                      hide_follows_filename)
+
                     # block military instances
                     block_mil_instances = False
                     if fields.get('blockMilitary'):
@@ -15483,6 +15511,9 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    if not authorized and \
+                       self.server.hide_follows.get(nickname):
+                        following = {}
                     max_shares_on_profile = \
                         self.server.max_shares_on_profile
                     sites_unavailable = \
@@ -15538,6 +15569,14 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
             else:
                 if self._secure_mode(curr_session, proxy_type):
+                    if '/users/' in path:
+                        nickname = path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if nickname and not authorized and \
+                           self.server.hide_follows.get(nickname):
+                            following = {}
+
                     msg_str = json.dumps(following,
                                          ensure_ascii=False)
                     msg_str = self._convert_domains(calling_domain,
@@ -15925,6 +15964,9 @@ class PubServer(BaseHTTPRequestHandler):
                     bold_reading = False
                     if self.server.bold_reading.get(nickname):
                         bold_reading = True
+                    if not authorized and \
+                       self.server.hide_follows.get(nickname):
+                        followers = {}
                     max_shares_on_profile = \
                         self.server.max_shares_on_profile
                     sites_unavailable = \
@@ -15981,6 +16023,14 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
             else:
                 if self._secure_mode(curr_session, proxy_type):
+                    if '/users/' in path:
+                        nickname = path.split('/users/')[1]
+                        if '/' in nickname:
+                            nickname = nickname.split('/')[0]
+                        if nickname and not authorized and \
+                           self.server.hide_follows.get(nickname):
+                            followers = {}
+
                     msg_str = json.dumps(followers,
                                          ensure_ascii=False)
                     msg_str = self._convert_domains(calling_domain,
@@ -24182,6 +24232,9 @@ def run_daemon(public_replies_unlisted: int,
 
     # for each account, whether bold reading is enabled
     httpd.bold_reading = load_bold_reading(base_dir)
+
+    # whether to hide follows on profile screen for each account
+    httpd.hide_follows = load_hide_follows(base_dir)
 
     httpd.account_timezone = load_account_timezones(base_dir)
 

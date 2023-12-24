@@ -641,5 +641,6 @@
     "offline": "nieaktywny",
     "Mutuals": "Wzajemne relacje",
     "Public replies default to unlisted scope": "Odpowiedzi publiczne domyślnie mają zakres niepubliczny",
-    "About the author": "O autorze"
+    "About the author": "O autorze",
+    "Do not show follows on your profile": "Nie pokazuj obserwujących w swoim profilu"
 }

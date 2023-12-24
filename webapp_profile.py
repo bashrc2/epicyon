@@ -1632,6 +1632,11 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                 translate['Page up'] + '"></a>\n' + \
                 '  </center>\n'
 
+    if not following_json:
+        following_json = {
+            'orderedItems': []
+        }
+
     for following_actor in following_json['orderedItems']:
         # is this a dormant followed account?
         dormant = False
@@ -2623,7 +2628,8 @@ def _html_edit_profile_options(is_admin: bool,
                                reverse_sequence: [],
                                show_vote_posts: bool,
                                show_replies_followers: bool,
-                               show_replies_mutuals: bool) -> str:
+                               show_replies_mutuals: bool,
+                               hide_follows: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2685,6 +2691,9 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(show_replies_mutuals_str, 'repliesFromMutualsOnly',
                        show_replies_mutuals)
+    hide_follows_str = translate['Do not show follows on your profile']
+    edit_profile_form += \
+        edit_check_box(hide_follows_str, 'hideFollows', hide_follows)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -3070,6 +3079,11 @@ def html_edit_profile(server, translate: {},
     if os.path.isfile(account_dir + '/.repliesFromMutualsOnly'):
         show_replies_mutuals = True
 
+    # don't show follows on profile
+    hide_follows = False
+    if os.path.isfile(account_dir + '/.hideFollows'):
+        hide_follows = True
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -3082,7 +3096,7 @@ def html_edit_profile(server, translate: {},
                                    nickname, min_images_for_accounts,
                                    reverse_sequence, show_vote_posts,
                                    show_replies_followers,
-                                   show_replies_mutuals)
+                                   show_replies_mutuals, hide_follows)
 
     # Contact information
     edit_profile_form += \

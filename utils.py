@@ -4173,6 +4173,25 @@ def load_bold_reading(base_dir: str) -> {}:
     return bold_reading
 
 
+def load_hide_follows(base_dir: str) -> {}:
+    """Returns a dictionary containing the hide follows status for each account
+    """
+    hide_follows = {}
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if acct.startswith('inbox@') or acct.startswith('Actor@'):
+                continue
+            hide_follows_filename = \
+                base_dir + '/accounts/' + acct + '/.hideFollows'
+            if os.path.isfile(hide_follows_filename):
+                nickname = acct.split('@')[0]
+                hide_follows[nickname] = True
+        break
+    return hide_follows
+
+
 def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the timezone for the given account
     """

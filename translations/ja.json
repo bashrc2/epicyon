@@ -641,5 +641,6 @@
     "offline": "オフライン",
     "Mutuals": "相互作用",
     "Public replies default to unlisted scope": "パブリック返信はデフォルトで非公開スコープになります",
-    "About the author": "著者について"
+    "About the author": "著者について",
+    "Do not show follows on your profile": "プロフィールにフォローを表示しない"
 }

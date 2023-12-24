@@ -521,6 +521,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         'discoverable': True,
         'indexable': False,
         'memorial': False,
+        'hideFollows': False,
         'name': person_name,
         'outbox': person_id + '/outbox',
         'preferredUsername': person_name,
@@ -848,6 +849,10 @@ def person_upgrade_actor(base_dir: str, person_json: {},
 
     if not person_json.get('memorial'):
         person_json['memorial'] = False
+        update_actor = True
+
+    if not person_json.get('hideFollows'):
+        person_json['hideFollows'] = False
         update_actor = True
 
     if not person_json.get('indexable'):

@@ -641,5 +641,6 @@
     "offline": "غير متصل على الانترنت",
     "Mutuals": "التعاضد",
     "Public replies default to unlisted scope": "الردود العامة افتراضية للنطاق غير المدرج",
-    "About the author": "عن المؤلف"
+    "About the author": "عن المؤلف",
+    "Do not show follows on your profile": "لا تظهر المتابعات في ملفك الشخصي"
 }

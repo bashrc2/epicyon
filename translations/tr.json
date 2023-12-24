@@ -641,5 +641,6 @@
     "offline": "çevrimdışı",
     "Mutuals": "Karşılıklar",
     "Public replies default to unlisted scope": "Genel yanıtlar varsayılan olarak liste dışı kapsama alınır",
-    "About the author": "Yazar hakkında"
+    "About the author": "Yazar hakkında",
+    "Do not show follows on your profile": "Takip edilenleri profilinizde gösterme"
 }
