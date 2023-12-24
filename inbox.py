@@ -80,6 +80,7 @@ from utils import local_actor_url
 from utils import has_object_string_type
 from utils import valid_hash_tag
 from utils import get_attributed_to
+from utils import get_reply_to
 from categories import get_hashtag_categories
 from categories import set_hashtag_category
 from httpsig import get_digest_algorithm_from_headers
@@ -623,8 +624,9 @@ def inbox_permitted_message(domain: str, message_json: {},
     if message_json['type'] not in always_allowed_types:
         if not has_object_dict(message_json):
             return True
-        if message_json['object'].get('inReplyTo'):
-            in_reply_to = message_json['object']['inReplyTo']
+        reply_id = get_reply_to(message_json['object'])
+        if reply_id:
+            in_reply_to = reply_id
             if not isinstance(in_reply_to, str):
                 return False
             if not url_permitted(in_reply_to, federation_list):
@@ -737,10 +739,10 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             return None
 
         # is this a reply to a blocked domain or account?
-        if post_json_object['object'].get('inReplyTo'):
-            if isinstance(post_json_object['object']['inReplyTo'], str):
-                in_reply_to = \
-                    post_json_object['object']['inReplyTo']
+        reply_id = get_reply_to(post_json_object['object'])
+        if reply_id:
+            if isinstance(reply_id, str):
+                in_reply_to = reply_id
                 reply_domain, _ = \
                     get_domain_from_actor(in_reply_to)
                 if reply_domain:
@@ -1528,9 +1530,10 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         if message_json.get('id'):
             print('REJECT: content filtered ' + str(message_json['id']))
         return False
-    if message_json['object'].get('inReplyTo'):
-        if isinstance(message_json['object']['inReplyTo'], str):
-            original_post_id = message_json['object']['inReplyTo']
+    reply_id = get_reply_to(message_json['object'])
+    if reply_id:
+        if isinstance(reply_id, str):
+            original_post_id = reply_id
             post_post_filename = locate_post(base_dir, nickname, domain,
                                              original_post_id)
             if post_post_filename:
@@ -2370,7 +2373,8 @@ def _receive_zot_reaction(recent_posts_cache: {},
             print('DEBUG: ' + message_json['object']['type'] +
                   ' has no "content"')
         return False
-    if not message_json['object'].get('inReplyTo'):
+    reply_id = get_reply_to(message_json['object'])
+    if not reply_id:
         if debug:
             print('DEBUG: ' + message_json['object']['type'] +
                   ' has no "inReplyTo"')
@@ -2384,7 +2388,7 @@ def _receive_zot_reaction(recent_posts_cache: {},
         if debug:
             print('DEBUG: content is too long to be an emoji reaction')
         return False
-    if not isinstance(message_json['object']['inReplyTo'], str):
+    if not isinstance(reply_id, str):
         if debug:
             print('DEBUG: ' + message_json['object']['type'] +
                   ' inReplyTo is not string')
@@ -2399,7 +2403,7 @@ def _receive_zot_reaction(recent_posts_cache: {},
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['object']['type'])
         return False
-    if '/statuses/' not in message_json['object']['inReplyTo']:
+    if '/statuses/' not in reply_id:
         if debug:
             print('DEBUG: "statuses" missing from inReplyTo in ' +
                   message_json['object']['type'])
@@ -2415,7 +2419,7 @@ def _receive_zot_reaction(recent_posts_cache: {},
     handle_name = handle.split('@')[0]
     handle_dom = handle.split('@')[1]
 
-    post_reaction_id = message_json['object']['inReplyTo']
+    post_reaction_id = get_reply_to(message_json['object'])
     emoji_content = remove_html(message_json['object']['content'])
     if not emoji_content:
         if debug:
@@ -3417,11 +3421,11 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
         return False
     if not has_object_dict(message_json):
         return False
-    if not message_json['object'].get('inReplyTo'):
+    reply_to = get_reply_to(message_json['object'])
+    if not reply_to:
         return False
     if not message_json['object'].get('to'):
         return False
-    reply_to = message_json['object']['inReplyTo']
     if not isinstance(reply_to, str):
         return False
     if debug:
@@ -3509,10 +3513,11 @@ def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
     if not has_object_dict(post_json_object):
         return
 
-    if not post_json_object['object'].get('inReplyTo'):
+    reply_id = get_reply_to(post_json_object['object'])
+    if not reply_id:
         return
 
-    lookup_actor = post_json_object['object']['inReplyTo']
+    lookup_actor = reply_id
     if not lookup_actor:
         return
 
@@ -4225,7 +4230,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                     # replies to bounce messages
                     obj = post_json_object['object']
                     if obj_has_dict and \
-                       not obj.get('inReplyTo'):
+                       not get_reply_to(obj):
                         bounced_id = \
                             remove_id_ending(post_json_object['id'])
                         bounce_chat = False
@@ -4392,9 +4397,7 @@ def _create_reply_notification_file(base_dir: str, nickname: str, domain: str,
     elif post_json_object['object'].get('context'):
         conversation_id = post_json_object['object']['context']
 
-    if not post_json_object['object'].get('inReplyTo'):
-        return is_reply_to_muted_post
-    in_reply_to = post_json_object['object']['inReplyTo']
+    in_reply_to = get_reply_to(post_json_object['object'])
     if not in_reply_to:
         return is_reply_to_muted_post
     if not isinstance(in_reply_to, str):

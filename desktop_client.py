@@ -33,6 +33,7 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import is_pgp_encrypted
 from utils import local_actor_url
+from utils import get_reply_to
 from session import create_session
 from speaker import speakable_text
 from speaker import get_speaker_pitch
@@ -897,8 +898,9 @@ def _read_local_box_post(session, nickname: str, domain: str,
                  system_language, espeak, name_str, gender)
     print('')
 
-    if post_json_object['object'].get('inReplyTo'):
-        print('Replying to ' + post_json_object['object']['inReplyTo'] + '\n')
+    reply_id = get_reply_to(post_json_object['object'])
+    if reply_id:
+        print('Replying to ' + reply_id + '\n')
 
     if screenreader:
         time.sleep(2)
@@ -1181,7 +1183,8 @@ def _desktop_show_box(indent: str,
 
         # append icons to the end of the name
         space_added = False
-        if post_json_object['object'].get('inReplyTo'):
+        reply_id = get_reply_to(post_json_object['object'])
+        if reply_id:
             if not space_added:
                 space_added = True
                 name += ' '

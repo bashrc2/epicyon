@@ -2138,15 +2138,16 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
     """
     if not has_object_dict(post_json_object):
         return False
-    if not post_json_object['object'].get('inReplyTo'):
+    reply_id = get_reply_to(post_json_object['object'])
+    if not reply_id:
         return False
-    if not isinstance(post_json_object['object']['inReplyTo'], str):
+    if not isinstance(reply_id, str):
         return False
     blogs_index_filename = \
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogs_index_filename):
         return False
-    post_id = remove_id_ending(post_json_object['object']['inReplyTo'])
+    post_id = remove_id_ending(reply_id)
     post_id = post_id.replace('/', '#')
     if text_in_file(post_id, blogs_index_filename):
         return True
@@ -3477,9 +3478,10 @@ def is_reply(post_json_object: {}, actor: str) -> bool:
                                                   'EncryptedMessage',
                                                   'ChatMessage', 'Article'):
         return False
-    if post_json_object['object'].get('inReplyTo'):
-        if isinstance(post_json_object['object']['inReplyTo'], str):
-            if post_json_object['object']['inReplyTo'].startswith(actor):
+    reply_id = get_reply_to(post_json_object['object'])
+    if reply_id:
+        if isinstance(reply_id, str):
+            if reply_id.startswith(actor):
                 return True
     if not post_json_object['object'].get('tag'):
         return False
@@ -4840,3 +4842,13 @@ def get_media_url_from_video(post_json_object: {}) -> (str, str, str, str):
                     media_type = media_link['mediaType']
                     media_url = remove_html(media_link['href'])
     return media_type, media_url, media_torrent, media_magnet
+
+
+def get_reply_to(post_json_object: {}) -> str:
+    """Returns the reply to link from a post
+    """
+    if post_json_object.get('inReplyTo'):
+        return post_json_object['inReplyTo']
+    if post_json_object.get('inReplyToBook'):
+        return post_json_object['inReplyToBook']
+    return ''

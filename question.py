@@ -14,6 +14,7 @@ from utils import save_json
 from utils import has_object_dict
 from utils import text_in_file
 from utils import dangerous_markup
+from utils import get_reply_to
 
 
 def is_vote(base_dir: str, nickname: str, domain: str,
@@ -24,9 +25,10 @@ def is_vote(base_dir: str, nickname: str, domain: str,
     if has_object_dict(post_json_object):
         post_obj = post_json_object['object']
 
-    if not post_obj.get('inReplyTo'):
+    reply_id = get_reply_to(post_obj)
+    if not reply_id:
         return False
-    if not isinstance(post_obj['inReplyTo'], str):
+    if not isinstance(reply_id, str):
         return False
     if not post_obj.get('name'):
         return False
@@ -35,7 +37,7 @@ def is_vote(base_dir: str, nickname: str, domain: str,
         print('VOTE: ' + str(post_obj))
 
     # is the replied to post a Question?
-    in_reply_to = post_obj['inReplyTo']
+    in_reply_to = reply_id
     question_post_filename = \
         locate_post(base_dir, nickname, domain, in_reply_to)
     if not question_post_filename:
@@ -105,7 +107,7 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
         post_obj = reply_json['object']
     reply_vote = post_obj['name']
 
-    in_reply_to = post_obj['inReplyTo']
+    in_reply_to = get_reply_to(post_obj)
     question_post_filename = \
         locate_post(base_dir, nickname, domain, in_reply_to)
     if not question_post_filename:

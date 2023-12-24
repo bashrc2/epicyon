@@ -73,6 +73,7 @@ from utils import local_actor_url
 from utils import is_unlisted_post
 from utils import language_right_to_left
 from utils import get_attributed_to
+from utils import get_reply_to
 from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
 from content import detect_dogwhistles
@@ -678,8 +679,9 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
             return edit_str
 
         reply_to = ''
-        if post_json_object['object'].get('inReplyTo'):
-            reply_to = ';replyTo=' + post_json_object['object']['inReplyTo']
+        reply_id = get_reply_to(post_json_object['object'])
+        if reply_id:
+            reply_to = ';replyTo=' + reply_id
 
         first_post_str = ''
         if first_post_id:
@@ -1482,7 +1484,7 @@ def _reply_to_unknown_html(translate: {},
     """Returns the html title for a reply to an unknown handle
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
-    post_id = post_json_object['object']['inReplyTo']
+    post_id = get_reply_to(post_json_object['object'])
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('/', '--')
     return '        <img loading="lazy" decoding="async" title="' + \
@@ -1512,7 +1514,7 @@ def _reply_with_unknown_path_html(translate: {},
     eg. does not contain /statuses/
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
-    post_id = post_json_object['object']['inReplyTo']
+    post_id = get_reply_to(post_json_object['object'])
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('/', '--')
     return '        <img loading="lazy" decoding="async" title="' + \
@@ -1577,7 +1579,8 @@ def _get_post_title_reply_html(base_dir: str,
     obj_json = post_json_object['object']
 
     # not a reply
-    if not obj_json.get('inReplyTo'):
+    reply_id = get_reply_to(obj_json)
+    if not reply_id:
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
@@ -1585,7 +1588,7 @@ def _get_post_title_reply_html(base_dir: str,
     container_class = 'container darker'
 
     # reply to self
-    if obj_json['inReplyTo'].startswith(post_actor):
+    if reply_id.startswith(post_actor):
         title_str += _reply_to_yourself_html(translate)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
@@ -1593,8 +1596,8 @@ def _get_post_title_reply_html(base_dir: str,
     # has a reply
     reply_actor = None
     in_reply_to = None
-    if '/statuses/' not in obj_json['inReplyTo']:
-        reply_url = obj_json['inReplyTo']
+    if '/statuses/' not in reply_id:
+        reply_url = reply_id
         post_domain = reply_url
         prefixes = get_protocol_prefixes()
         for prefix in prefixes:
@@ -1637,9 +1640,10 @@ def _get_post_title_reply_html(base_dir: str,
             return (title_str, reply_avatar_image_in_post,
                     container_class_icons, container_class)
 
-    if obj_json.get('inReplyTo'):
-        if isinstance(obj_json['inReplyTo'], str):
-            in_reply_to = obj_json['inReplyTo']
+    reply_id = get_reply_to(obj_json)
+    if reply_id:
+        if isinstance(reply_id, str):
+            in_reply_to = reply_id
     if in_reply_to and not reply_actor:
         reply_actor = in_reply_to.split('/statuses/')[0]
     reply_nickname = get_nickname_from_actor(reply_actor)
@@ -3081,10 +3085,15 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
 
     # show the previous posts
     if has_object_dict(post_json_object):
-        while post_json_object['object'].get('inReplyTo'):
+        post_id = True
+        while post_id:
+            if not post_json_object:
+                break
+            post_id = get_reply_to(post_json_object['object'])
+            if not post_id:
+                break
             post_filename = \
-                locate_post(base_dir, nickname, domain,
-                            post_json_object['object']['inReplyTo'])
+                locate_post(base_dir, nickname, domain, post_id)
             if not post_filename:
                 break
             post_json_object = load_json(post_filename)

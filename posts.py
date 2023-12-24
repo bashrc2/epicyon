@@ -86,6 +86,7 @@ from utils import remove_html
 from utils import dangerous_markup
 from utils import acct_dir
 from utils import local_actor_url
+from utils import get_reply_to
 from media import get_music_metadata
 from media import attach_media
 from media import replace_you_tube
@@ -684,17 +685,17 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                 if this_item['summary']:
                     summary = this_item['summary']
 
-            if this_item.get('inReplyTo'):
-                if this_item['inReplyTo']:
-                    if isinstance(this_item['inReplyTo'], str):
-                        # No replies to non-permitted domains
-                        if not url_permitted(this_item['inReplyTo'],
-                                             federation_list):
-                            if debug:
-                                print('url not permitted ' +
-                                      this_item['inReplyTo'])
-                            continue
-                        in_reply_to = this_item['inReplyTo']
+            reply_id = get_reply_to(this_item)
+            if reply_id:
+                if isinstance(reply_id, str):
+                    # No replies to non-permitted domains
+                    if not url_permitted(reply_id,
+                                         federation_list):
+                        if debug:
+                            print('url not permitted ' +
+                                  reply_id)
+                        continue
+                    in_reply_to = reply_id
 
             if this_item.get('attachment'):
                 if len(this_item['attachment']) > max_attachments:
@@ -836,10 +837,11 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
         content_str = get_base_content_from_post(item, system_language)
         if content_str:
             _update_word_frequency(content_str, word_frequency)
-        if item['object'].get('inReplyTo'):
-            if isinstance(item['object']['inReplyTo'], str):
+        reply_id = get_reply_to(item['object'])
+        if reply_id:
+            if isinstance(reply_id, str):
                 post_domain, _ = \
-                    get_domain_from_actor(item['object']['inReplyTo'])
+                    get_domain_from_actor(reply_id)
                 if post_domain:
                     if post_domain not in post_domains:
                         post_domains.append(post_domain)
@@ -900,10 +902,11 @@ def _get_posts_for_blocked_domains(base_dir: str,
             break
         if not has_object_dict(item):
             continue
-        if item['object'].get('inReplyTo'):
-            if isinstance(item['object']['inReplyTo'], str):
+        reply_id = get_reply_to(item['object'])
+        if reply_id:
+            if isinstance(reply_id, str):
                 post_domain, _ = \
-                    get_domain_from_actor(item['object']['inReplyTo'])
+                    get_domain_from_actor(reply_id)
                 if not post_domain:
                     continue
                 if is_blocked_domain(base_dir, post_domain):

@@ -16,6 +16,7 @@ from utils import locate_post
 from utils import load_json
 from utils import harmless_markup
 from utils import get_attributed_to
+from utils import get_reply_to
 from keys import get_instance_actor_key
 from session import get_json
 from session import get_json_valid
@@ -190,11 +191,11 @@ def download_conversation_posts(authorized: bool, session,
         if not authorized:
             # only show a single post to non-authorized viewers
             break
-        if not post_json_object['object'].get('inReplyTo'):
+        post_id = get_reply_to(post_json_object['object'])
+        if not post_id:
             if debug:
                 print(post_id + ' is not a reply')
             break
-        post_id = post_json_object['object']['inReplyTo']
         post_id = remove_id_ending(post_id)
         post_filename = \
             locate_post(base_dir, nickname, domain, post_id)
