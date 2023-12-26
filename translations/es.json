@@ -642,5 +642,8 @@
     "Mutuals": "Mutuales",
     "Public replies default to unlisted scope": "Las respuestas públicas tienen por defecto un alcance no listado",
     "About the author": "Sobre el Autor",
-    "Do not show follows on your profile": "No mostrar seguidores en tu perfil"
+    "Do not show follows on your profile": "No mostrar seguidores en tu perfil",
+    "rated": "clasificado",
+    "wants to read": "quiere leer",
+    "finished reading": "lectura terminada"
 }

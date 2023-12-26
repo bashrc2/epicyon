@@ -642,5 +642,8 @@
     "Mutuals": "Взаимные отношения",
     "Public replies default to unlisted scope": "Публичные ответы по умолчанию имеют скрытую область действия.",
     "About the author": "Об авторе",
-    "Do not show follows on your profile": "Не показывать подписчиков в своем профиле"
+    "Do not show follows on your profile": "Не показывать подписчиков в своем профиле",
+    "rated": "рейтинг",
+    "wants to read": "хочет прочитать",
+    "finished reading": "закончил читать"
 }

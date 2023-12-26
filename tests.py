@@ -214,6 +214,9 @@ from webapp_theme_designer import color_contrast
 from maps import get_map_links_from_post_content
 from maps import geocoords_from_map_link
 from followerSync import get_followers_sync_hash
+from reading import get_book_link_from_content
+from reading import get_book_from_post
+from reading import get_reading_status
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -8222,6 +8225,154 @@ def _test_dateformat():
     assert dtime.tzinfo
 
 
+def _test_book_link():
+    print('book_link')
+    content = 'Not a link'
+    result = get_book_link_from_content(content)
+    assert result is None
+
+    book_url = 'https://bookwyrm.instance/book/1234567'
+    content = 'xyz wants to read <a ' + \
+        'href="' + book_url + '"><i>Title</i></a>'
+    result = get_book_link_from_content(content)
+    assert result == book_url
+
+    book_url = 'bookwyrm.instance/book/1234567'
+    content = 'xyz wants to read <a ' + \
+        'href="' + book_url + '"><i>Title</i></a>'
+    result = get_book_link_from_content(content)
+    assert result is None
+
+    book_url = 'https://bookwyrm.instance/other/1234567'
+    content = 'xyz wants to read <a ' + \
+        'href="' + book_url + '"><i>Title</i></a>'
+    result = get_book_link_from_content(content)
+    assert result is None
+
+    title = 'Tedious Tome'
+    image_url = 'https://bookwyrm.instance/images/previews/covers/1234.jpg'
+    book_url = 'https://bookwyrm.instance/book/56789'
+    content = 'xyz wants to read <a href="' + book_url + \
+        '"><i>' + title + '</i></a>'
+    actor = 'https://bookwyrm.instance/user/xyz'
+    id_str = actor + '/generatednote/63472854'
+    published = '2024-01-01T10:30:00.2+00:00'
+    post_json_object = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'attachment': [{'@context': 'https://www.w3.org/ns/activitystreams',
+                        'name': title,
+                        'type': 'Document',
+                        'url': image_url}],
+        'attributedTo': actor,
+        'cc': [actor + '/followers'],
+        'content': content,
+        'id': id_str,
+        'published': published,
+        'sensitive': False,
+        'tag': [{'href': book_url,
+                 'name': title,
+                 'type': 'Edition'}],
+        'to': ['https://www.w3.org/ns/activitystreams#Public'],
+        'type': 'Note'}
+    languages_understood = []
+    translate = {}
+
+    book_dict = get_book_from_post(post_json_object)
+    assert book_dict
+    assert book_dict['name'] == title
+    assert book_dict['href'] == book_url
+
+    result = get_reading_status(post_json_object, 'en',
+                                languages_understood,
+                                translate)
+    assert result.get('type')
+    assert result['actor'] == actor
+    assert result['published'] == published
+    assert result['type'] == 'want'
+    assert result['href'] == book_url
+    assert result['name'] == title
+    assert result['id'] == id_str
+
+    title = 'The Rise of the Meritocracy'
+    image_url = 'https://bookwyrm.instance/images/previews/covers/6735.jpg'
+    book_url = 'https://bookwyrm.instance/book/7235'
+    content = 'abc finished reading <a href="' + book_url + \
+        '"><i>' + title + '</i></a>'
+    actor = 'https://bookwyrm.instance/user/abc'
+    id_str = actor + '/generatednote/366458384'
+    published = '2024-01-02T11:30:00.2+00:00'
+    post_json_object = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'attachment': [{'@context': 'https://www.w3.org/ns/activitystreams',
+                        'name': title,
+                        'type': 'Document',
+                        'url': image_url}],
+        'attributedTo': actor,
+        'cc': [actor + '/followers'],
+        'content': content,
+        'id': id_str,
+        'published': published,
+        'sensitive': False,
+        'tag': [{'href': book_url,
+                 'name': title,
+                 'type': 'Edition'}],
+        'to': ['https://www.w3.org/ns/activitystreams#Public'],
+        'type': 'Note'}
+    book_dict = get_book_from_post(post_json_object)
+    assert book_dict
+    assert book_dict['name'] == title
+    assert book_dict['href'] == book_url
+
+    result = get_reading_status(post_json_object, 'en',
+                                languages_understood,
+                                translate)
+    assert result.get('type')
+    assert result['actor'] == actor
+    assert result['published'] == published
+    assert result['type'] == 'finished'
+    assert result['href'] == book_url
+    assert result['name'] == title
+    assert result['id'] == id_str
+
+    title = 'Pirate Enlightenment, or the Real Libertalia'
+    image_url = 'https://bookwyrm.instance/images/previews/covers/5283.jpg'
+    book_url = 'https://bookwyrm.instance/book/78252'
+    content = 'rated <a href="' + book_url + \
+        '"><i>' + title + '</i></a>'
+    actor = 'https://bookwyrm.instance/user/ghi'
+    rating = 3.5
+    id_str = actor + '/generatednote/73467834576'
+    published = '2024-01-03T12:30:00.2+00:00'
+    post_json_object = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'attachment': [{'@context': 'https://www.w3.org/ns/activitystreams',
+                        'name': title,
+                        'type': 'Document',
+                        'url': image_url}],
+        'attributedTo': actor,
+        'cc': [actor + '/followers'],
+        'content': content,
+        'rating': rating,
+        'id': id_str,
+        'published': published,
+        'sensitive': False,
+        'to': ['https://www.w3.org/ns/activitystreams#Public'],
+        'type': 'Note'}
+    book_dict = get_book_from_post(post_json_object)
+    assert not book_dict
+
+    result = get_reading_status(post_json_object, 'en',
+                                languages_understood,
+                                translate)
+    assert result.get('type')
+    assert result['actor'] == actor
+    assert result['published'] == published
+    assert result['type'] == 'rated'
+    assert result['href'] == book_url
+    assert result['rating'] == rating
+    assert result['id'] == id_str
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -8239,6 +8390,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_book_link()
     _test_dateformat()
     _test_is_right_to_left()
     _test_format_mixed_rtl()

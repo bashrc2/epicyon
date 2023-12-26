@@ -642,5 +642,8 @@
     "Mutuals": "상호",
     "Public replies default to unlisted scope": "공개 답글은 기본적으로 비공개 범위로 설정됩니다.",
     "About the author": "저자에 대해",
-    "Do not show follows on your profile": "프로필에 팔로우를 표시하지 않습니다."
+    "Do not show follows on your profile": "프로필에 팔로우를 표시하지 않습니다.",
+    "rated": "평가됨",
+    "wants to read": "읽고 싶어",
+    "finished reading": "다 읽었다"
 }

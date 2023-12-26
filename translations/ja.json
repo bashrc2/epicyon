@@ -642,5 +642,8 @@
     "Mutuals": "相互作用",
     "Public replies default to unlisted scope": "パブリック返信はデフォルトで非公開スコープになります",
     "About the author": "著者について",
-    "Do not show follows on your profile": "プロフィールにフォローを表示しない"
+    "Do not show follows on your profile": "プロフィールにフォローを表示しない",
+    "rated": "評価された",
+    "wants to read": "読みたい",
+    "finished reading": "読み終わった"
 }

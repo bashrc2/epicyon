@@ -162,6 +162,7 @@ from maps import get_map_links_from_post_content
 from maps import get_location_from_post
 from maps import add_tag_map_links
 from maps import geocoords_from_map_link
+from reading import store_book_events
 
 
 def cache_svg_images(session, base_dir: str, http_prefix: str,
@@ -4758,6 +4759,14 @@ def _inbox_after_initial(server, inbox_start_time,
                         'INBOX', 'is_create_inside_announce',
                         debug)
     inbox_start_time = time.time()
+
+    # store any bookwyrm type notes
+    store_book_events(base_dir,
+                      message_json,
+                      system_language,
+                      languages_understood,
+                      translate, debug,
+                      1000)
 
     if _receive_announce(recent_posts_cache,
                          session, handle, is_group,

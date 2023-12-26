@@ -642,5 +642,8 @@
     "Mutuals": "পারস্পরিক",
     "Public replies default to unlisted scope": "অতালিকাভুক্ত সুযোগে সর্বজনীন উত্তর ডিফল্ট",
     "About the author": "লেখক সম্পর্কে",
-    "Do not show follows on your profile": "আপনার প্রোফাইলে অনুসরণ দেখাবেন না"
+    "Do not show follows on your profile": "আপনার প্রোফাইলে অনুসরণ দেখাবেন না",
+    "rated": "রেট করা",
+    "wants to read": "পড়তে চায়",
+    "finished reading": "পড়া শেষ"
 }

@@ -642,5 +642,8 @@
     "Mutuals": "Αμοιβαία",
     "Public replies default to unlisted scope": "Οι δημόσιες απαντήσεις από προεπιλογή στο μη καταχωρισμένο εύρος",
     "About the author": "Σχετικά με τον Συγγραφέα",
-    "Do not show follows on your profile": "Μην εμφανίζονται οι ακόλουθοι στο προφίλ σας"
+    "Do not show follows on your profile": "Μην εμφανίζονται οι ακόλουθοι στο προφίλ σας",
+    "rated": "Βαθμολογήθηκε",
+    "wants to read": "θέλει να διαβάσει",
+    "finished reading": "τελείωσε την ανάγνωση"
 }
