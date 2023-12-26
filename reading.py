@@ -16,6 +16,7 @@ from utils import get_attributed_to
 from utils import load_json
 from utils import save_json
 from utils import remove_html
+from utils import get_image_extensions
 
 
 def get_book_link_from_content(content: str) -> str:
@@ -63,6 +64,27 @@ def get_book_from_post(post_json_object: {}) -> {}:
     return {}
 
 
+def get_book_image_from_post(post_json_object: {}) -> str:
+    """ Returns a book image from the given post
+    """
+    if 'attachment' not in post_json_object:
+        return ''
+    if not isinstance(post_json_object['attachment'], list):
+        return ''
+    extensions = get_image_extensions()
+    for attach_dict in post_json_object['attachment']:
+        if not isinstance(attach_dict, dict):
+            continue
+        if 'url' not in attach_dict:
+            continue
+        if not isinstance(attach_dict['url'], str):
+            continue
+        for ext in extensions:
+            if attach_dict['url'].endswith('.' + ext):
+                return attach_dict['url']
+    return ''
+
+
 def get_reading_status(post_json_object: {},
                        system_language: str,
                        languages_understood: [],
@@ -103,6 +125,8 @@ def get_reading_status(post_json_object: {},
     if not actor:
         return {}
 
+    book_image_url = get_book_image_from_post(post_obj)
+
     # rating of a book
     if post_obj.get('rating'):
         rating = post_obj['rating']
@@ -112,7 +136,7 @@ def get_reading_status(post_json_object: {},
                 translated_str = translate['rated']
             if translated_str in content or \
                'rated' in content:
-                return {
+                book_dict = {
                     'id': remove_id_ending(post_obj['id']),
                     'actor': actor,
                     'type': 'rated',
@@ -120,6 +144,9 @@ def get_reading_status(post_json_object: {},
                     'rating': rating,
                     'published': published
                 }
+                if book_image_url:
+                    book_dict['image_url'] = book_image_url
+                return book_dict
 
     # get the book details from a post tag
     book_dict = get_book_from_post(post_json_object)
@@ -136,6 +163,8 @@ def get_reading_status(post_json_object: {},
         book_dict['actor'] = actor
         book_dict['type'] = 'want'
         book_dict['published'] = published
+        if book_image_url:
+            book_dict['image_url'] = book_image_url
         return book_dict
 
     translated_str = 'finished reading'
@@ -147,6 +176,8 @@ def get_reading_status(post_json_object: {},
         book_dict['actor'] = actor
         book_dict['type'] = 'finished'
         book_dict['published'] = published
+        if book_image_url:
+            book_dict['image_url'] = book_image_url
         return book_dict
 
     return {}
