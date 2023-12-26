@@ -182,6 +182,84 @@ def _add_reader_to_book(book_json: {}, book_dict: {}) -> None:
         book_json['title'] = remove_html(book_dict['name'])
 
 
+def _update_recent_books_list(base_dir: str, book_id: str,
+                              debug: bool) -> None:
+    """prepend a book to the recent books list
+    """
+    recent_books_filename = base_dir + '/accounts/recent_books.txt'
+    if os.path.isfile(recent_books_filename):
+        try:
+            with open(recent_books_filename, 'r+',
+                      encoding='utf-8') as recent_file:
+                content = recent_file.read()
+                if book_id + '\n' not in content:
+                    recent_file.seek(0, 0)
+                    recent_file.write(book_id + '\n' + content)
+                    if debug:
+                        print('DEBUG: recent book added')
+        except OSError as ex:
+            print('WARN: Failed to write entry to recent books ' +
+                  recent_books_filename + ' ' + str(ex))
+    else:
+        try:
+            with open(recent_books_filename, 'w+',
+                      encoding='utf-8') as recent_file:
+                recent_file.write(book_id + '\n')
+        except OSError:
+            print('EX: unable to write recent books ' +
+                  recent_books_filename)
+
+
+def _deduplicate_recent_books_list(base_dir: str,
+                                   max_recent_books: int) -> None:
+    """ Deduplicate and limit the length of the recent books list
+    """
+    recent_books_filename = base_dir + '/accounts/recent_books.txt'
+    if not os.path.isfile(recent_books_filename):
+        return
+
+    # load recent books as a list
+    recent_lines = []
+    try:
+        with open(recent_books_filename, 'r',
+                  encoding='utf-8') as recent_file:
+            recent_lines = recent_file.read().split('\n')
+    except OSError as ex:
+        print('WARN: Failed to read recent books trim ' +
+              recent_books_filename + ' ' + str(ex))
+
+    # deduplicate the list
+    new_recent_lines = []
+    for line in recent_lines:
+        if line not in new_recent_lines:
+            new_recent_lines.append(line)
+    if len(new_recent_lines) < len(recent_lines):
+        recent_lines = new_recent_lines
+        result = ''
+        for line in recent_lines:
+            result += line + '\n'
+        try:
+            with open(recent_books_filename, 'w+',
+                      encoding='utf-8') as recent_file:
+                recent_file.write(result)
+        except OSError:
+            print('EX: unable to deduplicate recent books ' +
+                  recent_books_filename)
+
+    # remove excess lines from the list
+    if len(recent_lines) > max_recent_books:
+        result = ''
+        for ctr in range(max_recent_books):
+            result += recent_lines[ctr] + '\n'
+        try:
+            with open(recent_books_filename, 'w+',
+                      encoding='utf-8') as recent_file:
+                recent_file.write(result)
+        except OSError:
+            print('EX: unable to trim recent books ' +
+                  recent_books_filename)
+
+
 def store_book_events(base_dir: str,
                       post_json_object: {},
                       system_language: str,
@@ -229,66 +307,7 @@ def store_book_events(base_dir: str,
     if not save_json(book_json, book_filename):
         return False
 
-    # prepend to the recent books list
-    recent_books_filename = base_dir + '/accounts/recent_books.txt'
-    if os.path.isfile(recent_books_filename):
-        try:
-            with open(recent_books_filename, 'r+',
-                      encoding='utf-8') as recent_file:
-                content = recent_file.read()
-                if book_id + '\n' not in content:
-                    recent_file.seek(0, 0)
-                    recent_file.write(book_id + '\n' + content)
-                    if debug:
-                        print('DEBUG: recent book added')
-        except OSError as ex:
-            print('WARN: Failed to write entry to recent books ' +
-                  recent_books_filename + ' ' + str(ex))
-    else:
-        try:
-            with open(recent_books_filename, 'w+',
-                      encoding='utf-8') as recent_file:
-                recent_file.write(book_id + '\n')
-        except OSError:
-            print('EX: unable to write recent books ' +
-                  recent_books_filename)
+    _update_recent_books_list(base_dir, book_id, debug)
+    _deduplicate_recent_books_list(base_dir, max_recent_books)
 
-    # deduplicate and limit the length of the recent books list
-    if os.path.isfile(recent_books_filename):
-        # load recent books as a list
-        recent_lines = []
-        try:
-            with open(recent_books_filename, 'r',
-                      encoding='utf-8') as recent_file:
-                recent_lines = recent_file.read().split('\n')
-        except OSError as ex:
-            print('WARN: Failed to read recent books trim ' +
-                  recent_books_filename + ' ' + str(ex))
-
-        # deduplicate the list
-        new_recent_lines = []
-        for line in recent_lines:
-            if line not in new_recent_lines:
-                new_recent_lines.append(line)
-        if len(new_recent_lines) < len(recent_lines):
-            recent_lines = new_recent_lines
-            try:
-                with open(recent_books_filename, 'w+',
-                          encoding='utf-8') as recent_file:
-                    for line in recent_lines:
-                        recent_file.write(line + '\n')
-            except OSError:
-                print('EX: unable to deduplicate recent books ' +
-                      recent_books_filename)
-
-        # remove excess lines from the list
-        if len(recent_lines) > max_recent_books:
-            try:
-                with open(recent_books_filename, 'w+',
-                          encoding='utf-8') as recent_file:
-                    for ctr in range(max_recent_books):
-                        recent_file.write(recent_lines[ctr] + '\n')
-            except OSError:
-                print('EX: unable to trim recent books ' +
-                      recent_books_filename)
     return True
