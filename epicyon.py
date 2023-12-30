@@ -634,6 +634,9 @@ def _command_options() -> None:
                         default=1,
                         help='Minimum number of votes to remove or add' +
                         ' a newswire item')
+    parser.add_argument('--no_of_books', dest='no_of_books', type=int,
+                        default=10,
+                        help='Number of book events shown on profile screens')
     parser.add_argument('--max_like_count', dest='max_like_count', type=int,
                         default=10,
                         help='Maximum number of likes displayed on a post')
@@ -3738,6 +3741,10 @@ def _command_options() -> None:
     if minimumvotes:
         argb.minimumvotes = int(minimumvotes)
 
+    no_of_books = get_config_param(base_dir, 'noOfBooks')
+    if no_of_books:
+        argb.no_of_books = int(no_of_books)
+
     content_license_url = ''
     if argb.content_license_url:
         content_license_url = argb.content_license_url
@@ -3980,7 +3987,8 @@ def _command_options() -> None:
 if __name__ == "__main__":
     argb2, opt2 = _command_options()
     print('allowdeletion: ' + str(argb2.allowdeletion))
-    run_daemon(argb2.public_replies_unlisted,
+    run_daemon(argb2.no_of_books,
+               argb2.public_replies_unlisted,
                argb2.max_shares_on_profile,
                argb2.max_hashtags,
                argb2.mapFormat,

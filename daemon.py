@@ -24093,7 +24093,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(public_replies_unlisted: int,
+def run_daemon(no_of_books: int,
+               public_replies_unlisted: int,
                max_shares_on_profile: int,
                max_hashtags: int,
                map_format: str,
@@ -24193,7 +24194,7 @@ def run_daemon(public_replies_unlisted: int,
     httpd.starting_daemon = True
 
     # number of book events which show on profile screens
-    httpd.no_of_books = 10
+    httpd.no_of_books = no_of_books
 
     # list of websites which are currently down
     httpd.sites_unavailable = load_unavailable_sites(base_dir)
