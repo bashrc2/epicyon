@@ -3507,7 +3507,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.dogwhistles,
                                           min_images_for_accounts,
                                           self.server.buy_sites,
-                                          max_shares_on_profile)
+                                          max_shares_on_profile,
+                                          self.server.no_of_books)
             if profile_str:
                 msg = profile_str.encode('utf-8')
                 msglen = len(msg)
@@ -5147,7 +5148,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.dogwhistles,
                                                   min_images_for_accounts,
                                                   self.server.buy_sites,
-                                                  max_shares_on_profile)
+                                                  max_shares_on_profile,
+                                                  self.server.no_of_books)
                 if profile_str:
                     msg = profile_str.encode('utf-8')
                     msglen = len(msg)
@@ -12625,7 +12627,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      timezone, bold_reading,
                                      self.server.buy_sites, None,
                                      self.server.max_shares_on_profile,
-                                     self.server.sites_unavailable)
+                                     self.server.sites_unavailable,
+                                     self.server.no_of_books)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12757,7 +12760,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.buy_sites,
                                                  None,
                                                  max_shares_on_profile,
-                                                 self.server.sites_unavailable)
+                                                 self.server.sites_unavailable,
+                                                 self.server.no_of_books)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -15408,7 +15412,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.buy_sites,
                                      None,
                                      self.server.max_shares_on_profile,
-                                     self.server.sites_unavailable)
+                                     self.server.sites_unavailable,
+                                     self.server.no_of_books)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -15561,7 +15566,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.buy_sites,
                                      None,
                                      max_shares_on_profile,
-                                     sites_unavailable).encode('utf-8')
+                                     sites_unavailable,
+                                     self.server.no_of_books).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15713,7 +15719,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.buy_sites,
                                      None,
                                      max_shares_on_profile,
-                                     sites_unavailable).encode('utf-8')
+                                     sites_unavailable,
+                                     self.server.no_of_books).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15863,7 +15870,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.buy_sites,
                                      None,
                                      max_shares_on_profile,
-                                     sites_unavailable).encode('utf-8')
+                                     sites_unavailable,
+                                     self.server.no_of_books).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -16015,7 +16023,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.buy_sites,
                                      None,
                                      max_shares_on_profile,
-                                     sites_unavailable).encode('utf-8')
+                                     sites_unavailable,
+                                     self.server.no_of_books).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
                                       cookie, calling_domain, False)
@@ -16197,7 +16206,8 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.buy_sites,
                              None,
                              max_shares_on_profile,
-                             sites_unavailable).encode('utf-8')
+                             sites_unavailable,
+                             self.server.no_of_books).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -24181,6 +24191,9 @@ def run_daemon(public_replies_unlisted: int,
         return False
 
     httpd.starting_daemon = True
+
+    # number of book events which show on profile screens
+    httpd.no_of_books = 10
 
     # list of websites which are currently down
     httpd.sites_unavailable = load_unavailable_sites(base_dir)

@@ -208,7 +208,8 @@ def html_profile_after_search(authorized: bool,
                               bold_reading: bool, dogwhistles: {},
                               min_images_for_accounts: [],
                               buy_sites: {},
-                              max_shares_on_profile: int) -> str:
+                              max_shares_on_profile: int,
+                              no_of_books: int) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -399,7 +400,7 @@ def html_profile_after_search(authorized: bool,
                                          website_url, repo_url,
                                          send_blocks_str,
                                          authorized,
-                                         person_url)
+                                         person_url, no_of_books)
 
     domain_full = get_full_domain(domain, port)
 
@@ -583,7 +584,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         joined_date: str,
                         occupation_name: str,
                         actor_proxied: str,
-                        person_url: str) -> str:
+                        person_url: str,
+                        no_of_books: int) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -713,7 +715,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         '    </figure>\n\n'
 
     # book events for this actor
-    html_str += html_profile_book_list(base_dir, person_url, 5, translate)
+    html_str += html_profile_book_list(base_dir, person_url, no_of_books,
+                                       translate)
     return html_str
 
 
@@ -739,7 +742,8 @@ def _get_profile_header_after_search(base_dir: str,
                                      repo_url: str,
                                      send_blocks_str: str,
                                      authorized: bool,
-                                     person_url: str) -> str:
+                                     person_url: str,
+                                     no_of_books: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -865,7 +869,8 @@ def _get_profile_header_after_search(base_dir: str,
             _profile_shared_items_list(attached_shared_items,
                                        translate)
     # book events for this actor
-    html_str += html_profile_book_list(base_dir, person_url, 5, translate)
+    html_str += html_profile_book_list(base_dir, person_url, no_of_books,
+                                       translate)
 
     return html_str
 
@@ -897,7 +902,8 @@ def html_profile(signing_priv_key_pem: str,
                  buy_sites: {},
                  actor_proxied: str,
                  max_shares_on_profile: int,
-                 sites_unavailable: []) -> str:
+                 sites_unavailable: [],
+                 no_of_books: int) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -1257,7 +1263,8 @@ def html_profile(signing_priv_key_pem: str,
                             attached_shared_items,
                             access_keys, joined_date,
                             occupation_name,
-                            actor_proxied, actor)
+                            actor_proxied, actor,
+                            no_of_books)
 
     # keyboard navigation
     user_path_str = '/users/' + nickname
