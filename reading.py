@@ -17,6 +17,8 @@ from utils import load_json
 from utils import save_json
 from utils import remove_html
 from utils import get_image_extensions
+from utils import date_epoch
+from utils import date_from_string_format
 
 
 def get_book_link_from_content(content: str) -> str:
@@ -64,7 +66,7 @@ def get_book_from_post(post_json_object: {}) -> {}:
     return {}
 
 
-def get_book_image_from_post(post_json_object: {}) -> str:
+def _get_book_image_from_post(post_json_object: {}) -> str:
     """ Returns a book image from the given post
     """
     if 'attachment' not in post_json_object:
@@ -125,7 +127,7 @@ def get_reading_status(post_json_object: {},
     if not actor:
         return {}
 
-    book_image_url = get_book_image_from_post(post_obj)
+    book_image_url = _get_book_image_from_post(post_obj)
 
     # rating of a book
     if post_obj.get('rating'):
@@ -194,6 +196,17 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> None:
         }
         return
     reader_books_json[book_url][book_event_type] = book_dict
+    if book_dict.get('published'):
+        if 'timeline' not in reader_books_json:
+            reader_books_json['timeline'] = {}
+        published = book_dict['published']
+        post_time_object = \
+            date_from_string_format(published, ["%Y-%m-%dT%H:%M:%S%z"])
+        if post_time_object:
+            baseline_time = date_epoch()
+            days_diff = post_time_object - baseline_time
+            post_days_since_epoch = days_diff.days
+            reader_books_json['timeline'][post_days_since_epoch] = book_url
 
 
 def _add_reader_to_book(book_json: {}, book_dict: {}) -> None:
