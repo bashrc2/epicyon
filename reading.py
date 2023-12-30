@@ -200,6 +200,8 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> None:
         if 'timeline' not in reader_books_json:
             reader_books_json['timeline'] = {}
         published = book_dict['published']
+        if book_dict.get('updated'):
+            published = book_dict['updated']
         post_time_object = \
             date_from_string_format(published, ["%Y-%m-%dT%H:%M:%S%z"])
         if post_time_object:
