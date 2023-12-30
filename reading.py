@@ -9,6 +9,7 @@ __module_group__ = "Core"
 
 
 import os
+from collections import OrderedDict
 from utils import get_content_from_post
 from utils import has_object_dict
 from utils import remove_id_ending
@@ -196,19 +197,20 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> None:
         }
         return
     reader_books_json[book_url][book_event_type] = book_dict
-    if book_dict.get('published'):
-        if 'timeline' not in reader_books_json:
-            reader_books_json['timeline'] = {}
-        published = book_dict['published']
-        if book_dict.get('updated'):
-            published = book_dict['updated']
-        post_time_object = \
-            date_from_string_format(published, ["%Y-%m-%dT%H:%M:%S%z"])
-        if post_time_object:
-            baseline_time = date_epoch()
-            days_diff = post_time_object - baseline_time
-            post_days_since_epoch = days_diff.days
-            reader_books_json['timeline'][post_days_since_epoch] = book_url
+    if not book_dict.get('published'):
+        return
+    if 'timeline' not in reader_books_json:
+        reader_books_json['timeline'] = {}
+    published = book_dict['published']
+    if book_dict.get('updated'):
+        published = book_dict['updated']
+    post_time_object = \
+        date_from_string_format(published, ["%Y-%m-%dT%H:%M:%S%z"])
+    if post_time_object:
+        baseline_time = date_epoch()
+        days_diff = post_time_object - baseline_time
+        post_days_since_epoch = days_diff.days
+        reader_books_json['timeline'][post_days_since_epoch] = book_url
 
 
 def _add_reader_to_book(book_json: {}, book_dict: {}) -> None:
@@ -357,3 +359,88 @@ def store_book_events(base_dir: str,
     _deduplicate_recent_books_list(base_dir, max_recent_books)
 
     return True
+
+
+def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
+                           translate: {}) -> str:
+    """Returns html for displaying a list of books on a profile screen
+    """
+    reading_path = base_dir + '/accounts/reading'
+    readers_path = reading_path + '/readers'
+    reader_books_filename = \
+        readers_path + '/' + actor.replace('/', '#') + '.json'
+    reader_books_json = {}
+    if not os.path.isfile(reader_books_filename):
+        return ''
+    reader_books_json = load_json(reader_books_filename)
+    if not reader_books_json.get('timeline'):
+        return ''
+    # sort the timeline in descending order
+    recent_books_json = \
+        OrderedDict(sorted(reader_books_json['timeline'].items(),
+                           reverse=True))
+    html_str = '<div class="book_list_section">\n'
+    html_str += '  <ul class="book_list">\n'
+    ctr = 0
+    for _, book_url in recent_books_json.items():
+        if not reader_books_json.get(book_url):
+            continue
+        book_rating = None
+        book_wanted = False
+        book_finished = False
+        for event_type in ('want', 'finished', 'rated'):
+            if not reader_books_json[book_url].get(event_type):
+                continue
+            book_dict = reader_books_json[book_url][event_type]
+            if book_dict.get('name'):
+                book_title = book_dict['name']
+            if book_dict.get('image_url'):
+                book_image_url = book_dict['image_url']
+            if event_type == 'rated':
+                book_rating = book_dict['rating']
+            elif event_type == 'want':
+                book_wanted = True
+            elif event_type == 'finished':
+                book_finished = True
+        if book_title and book_image_url:
+            book_title = remove_html(book_title)
+            html_str += '    <li class="book_event">\n'
+            html_str += '      <span class="book_span">\n'
+            html_str += '        <div class="book_span_div">\n'
+
+            # book image
+            html_str += '          <a href="' + book_url + \
+                '" target="_blank" rel="nofollow noopener noreferrer">\n'
+            html_str += '            <div class="book_image_div">\n'
+            html_str += '              <img src="' + book_image_url + '" ' + \
+                'alt="' + book_title + '">\n'
+            html_str += '            </div>\n'
+            html_str += '          </a>\n'
+
+            # book details
+            html_str += '          <div class="book_details_div">\n'
+            html_str += '            <a href="' + book_url + \
+                '" target="_blank" rel="nofollow noopener noreferrer">\n'
+            html_str += '              <b>' + book_title.title() + '</b></a>\n'
+            if book_finished:
+                html_str += '            <br>' + \
+                    translate['finished reading'].title() + '\n'
+            if book_wanted:
+                html_str += '            <br>' + \
+                    translate['Wanted'] + '\n'
+            if book_rating is not None:
+                html_str += '            <br>'
+                for _ in range(int(book_rating)):
+                    html_str += '⭐'
+                html_str += ' (' + str(book_rating) + ')'
+            html_str += '          </div>\n'
+
+            html_str += '        </div>\n'
+            html_str += '      </span>\n'
+            html_str += '    </li>\n'
+        ctr += 1
+        if ctr >= no_of_books:
+            break
+    html_str += '  </ul>\n'
+    html_str += '</div>\n'
+    return html_str

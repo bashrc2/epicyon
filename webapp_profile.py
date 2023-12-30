@@ -103,6 +103,7 @@ from session import site_is_verified
 from session import get_json
 from shares import actor_attached_shares_as_html
 from git import get_repo_url
+from reading import html_profile_book_list
 
 THEME_FORMATS = '.zip, .gz'
 BLOCKFILE_FORMATS = '.csv'
@@ -397,7 +398,8 @@ def html_profile_after_search(authorized: bool,
                                          attached_shared_items,
                                          website_url, repo_url,
                                          send_blocks_str,
-                                         authorized)
+                                         authorized,
+                                         person_url)
 
     domain_full = get_full_domain(domain, port)
 
@@ -580,7 +582,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         access_keys: {},
                         joined_date: str,
                         occupation_name: str,
-                        actor_proxied: str) -> str:
+                        actor_proxied: str,
+                        person_url: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -708,6 +711,9 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     html_str += \
         '      </figcaption>\n' + \
         '    </figure>\n\n'
+
+    # book events for this actor
+    html_str += html_profile_book_list(base_dir, person_url, 5, translate)
     return html_str
 
 
@@ -732,7 +738,8 @@ def _get_profile_header_after_search(base_dir: str,
                                      website_url: str,
                                      repo_url: str,
                                      send_blocks_str: str,
-                                     authorized: bool) -> str:
+                                     authorized: bool,
+                                     person_url: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -857,6 +864,8 @@ def _get_profile_header_after_search(base_dir: str,
         html_str += \
             _profile_shared_items_list(attached_shared_items,
                                        translate)
+    # book events for this actor
+    html_str += html_profile_book_list(base_dir, person_url, 5, translate)
 
     return html_str
 
@@ -1248,7 +1257,7 @@ def html_profile(signing_priv_key_pem: str,
                             attached_shared_items,
                             access_keys, joined_date,
                             occupation_name,
-                            actor_proxied)
+                            actor_proxied, actor)
 
     # keyboard navigation
     user_path_str = '/users/' + nickname
