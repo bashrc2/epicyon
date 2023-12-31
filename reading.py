@@ -225,8 +225,6 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
     # has this book event already been stored?
     if reader_books_json[book_url].get(book_event_type):
         prev_book_dict = reader_books_json[book_url][book_event_type]
-        if prev_book_dict['published'] == book_dict['published']:
-            return False
         if book_dict.get('updated'):
             if prev_book_dict.get('updated'):
                 if prev_book_dict['updated'] == book_dict['updated']:
@@ -234,6 +232,8 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
             else:
                 if prev_book_dict['published'] == book_dict['updated']:
                     return False
+        if prev_book_dict['published'] == book_dict['published']:
+            return False
     # store the book event
     reader_books_json[book_url][book_event_type] = book_dict
     if 'timeline' not in reader_books_json:
