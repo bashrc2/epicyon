@@ -8237,9 +8237,11 @@ def _test_book_link(base_dir: str):
     max_recent_books = 1000
     max_cached_readers = 10
 
+    base_dir += '/.testbookevents'
+    if os.path.isdir(base_dir):
+        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
+    os.mkdir(base_dir)
     reading_dir = base_dir + '/accounts/reading'
-    if os.path.isdir(reading_dir):
-        shutil.rmtree(reading_dir, ignore_errors=False, onerror=None)
 
     content = 'Not a link'
     result = get_book_link_from_content(content)
@@ -8421,6 +8423,9 @@ def _test_book_link(base_dir: str):
     assert len(books_cache['reader_list']) == 3
     assert books_cache['reader_list'][2] == actor
     assert books_cache['readers'].get(actor)
+
+    if os.path.isdir(base_dir):
+        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
 def run_all_tests():

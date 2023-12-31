@@ -369,6 +369,8 @@ def store_book_events(base_dir: str,
             print('DEBUG: no book event')
         return False
     reading_path = base_dir + '/accounts/reading'
+    if not os.path.isdir(base_dir + '/accounts'):
+        os.mkdir(base_dir + '/accounts')
     if not os.path.isdir(reading_path):
         os.mkdir(reading_path)
     books_path = reading_path + '/books'
