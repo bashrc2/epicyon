@@ -4766,7 +4766,9 @@ def _inbox_after_initial(server, inbox_start_time,
                       system_language,
                       languages_understood,
                       translate, debug,
-                      1000)
+                      server.max_recent_books,
+                      server.books_cache,
+                      server.max_cached_readers)
 
     if _receive_announce(recent_posts_cache,
                          session, handle, is_group,

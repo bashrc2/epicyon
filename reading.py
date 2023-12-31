@@ -186,19 +186,32 @@ def get_reading_status(post_json_object: {},
     return {}
 
 
-def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> None:
+def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
     """Updates reader books
     """
+    if not book_dict.get('published'):
+        return False
     book_url = book_dict['href']
     book_event_type = book_dict['type']
     if not reader_books_json.get(book_url):
         reader_books_json[book_url] = {
             book_event_type: book_dict
         }
-        return
+        return True
+    # has this book event already been stored?
+    if reader_books_json[book_url].get(book_event_type):
+        prev_book_dict = reader_books_json[book_url][book_event_type]
+        if prev_book_dict['published'] == book_dict['published']:
+            return False
+        if book_dict.get('updated'):
+            if prev_book_dict.get('updated'):
+                if prev_book_dict['updated'] == book_dict['updated']:
+                    return False
+            else:
+                if prev_book_dict['published'] == book_dict['updated']:
+                    return False
+    # store the book event
     reader_books_json[book_url][book_event_type] = book_dict
-    if not book_dict.get('published'):
-        return
     if 'timeline' not in reader_books_json:
         reader_books_json['timeline'] = {}
     published = book_dict['published']
@@ -211,6 +224,8 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> None:
         days_diff = post_time_object - baseline_time
         post_days_since_epoch = days_diff.days
         reader_books_json['timeline'][post_days_since_epoch] = book_url
+        return True
+    return False
 
 
 def _add_reader_to_book(book_json: {}, book_dict: {}) -> None:
@@ -314,7 +329,9 @@ def store_book_events(base_dir: str,
                       languages_understood: [],
                       translate: {},
                       debug: bool,
-                      max_recent_books: int) -> bool:
+                      max_recent_books: int,
+                      books_cache: {},
+                      max_cached_readers: int) -> bool:
     """Saves book events to file under accounts/reading/books
     and accounts/reading/readers
     """
@@ -340,11 +357,31 @@ def store_book_events(base_dir: str,
     reader_books_filename = \
         readers_path + '/' + actor.replace('/', '#') + '.json'
     reader_books_json = {}
-    if os.path.isfile(reader_books_filename):
+
+    # get the reader from cache if possible
+    if 'readers' not in books_cache:
+        books_cache['readers'] = {}
+    if books_cache['readers'].get(actor):
+        reader_books_json = books_cache['readers'][actor]
+    elif os.path.isfile(reader_books_filename):
+        # if not in cache then load from file
         reader_books_json = load_json(reader_books_filename)
-    _add_book_to_reader(reader_books_json, book_dict)
-    if not save_json(reader_books_json, reader_books_filename):
-        return False
+    if _add_book_to_reader(reader_books_json, book_dict):
+        if not save_json(reader_books_json, reader_books_filename):
+            return False
+
+        # update the cache for this reader
+        books_cache['readers'][actor] = reader_books_json
+        if 'reader_list' not in books_cache:
+            books_cache['reader_list'] = []
+        if actor in books_cache['reader_list']:
+            books_cache['reader_list'].remove(actor)
+        books_cache['reader_list'].append(actor)
+        # avoid too much caching
+        if len(books_cache['reader_list']) > max_cached_readers:
+            first_actor = books_cache['reader_list'][0]
+            books_cache['reader_list'].remove(first_actor)
+            del books_cache['readers'][actor]
 
     book_id = book_url.replace('/', '#')
     book_filename = books_path + '/' + book_id + '.json'

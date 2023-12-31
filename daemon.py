@@ -24196,6 +24196,11 @@ def run_daemon(no_of_books: int,
     # number of book events which show on profile screens
     httpd.no_of_books = no_of_books
 
+    # cache storing recent book events
+    httpd.books_cache = {}
+    httpd.max_recent_books = 1000
+    httpd.max_cached_readers = 24
+
     # list of websites which are currently down
     httpd.sites_unavailable = load_unavailable_sites(base_dir)
 
