@@ -217,6 +217,7 @@ from followerSync import get_followers_sync_hash
 from reading import get_book_link_from_content
 from reading import get_book_from_post
 from reading import get_reading_status
+from reading import store_book_events
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -8229,8 +8230,17 @@ def _test_dateformat():
     assert dtime.tzinfo
 
 
-def _test_book_link():
+def _test_book_link(base_dir: str):
     print('book_link')
+    system_language = 'en'
+    books_cache = {}
+    max_recent_books = 1000
+    max_cached_readers = 10
+
+    reading_dir = base_dir + '/accounts/reading'
+    if os.path.isdir(reading_dir):
+        shutil.rmtree(reading_dir, ignore_errors=False, onerror=None)
+
     content = 'Not a link'
     result = get_book_link_from_content(content)
     assert result is None
@@ -8281,14 +8291,14 @@ def _test_book_link():
     languages_understood = []
     translate = {}
 
-    book_dict = get_book_from_post(post_json_object)
+    book_dict = get_book_from_post(post_json_object, True)
     assert book_dict
     assert book_dict['name'] == title
     assert book_dict['href'] == book_url
 
-    result = get_reading_status(post_json_object, 'en',
+    result = get_reading_status(post_json_object, system_language,
                                 languages_understood,
-                                translate)
+                                translate, True)
     assert result.get('type')
     assert result['actor'] == actor
     assert result['published'] == published
@@ -8296,6 +8306,15 @@ def _test_book_link():
     assert result['href'] == book_url
     assert result['name'] == title
     assert result['id'] == id_str
+
+    assert store_book_events(base_dir,
+                             post_json_object,
+                             system_language,
+                             languages_understood,
+                             translate, True,
+                             max_recent_books,
+                             books_cache,
+                             max_cached_readers)
 
     title = 'The Rise of the Meritocracy'
     image_url = 'https://bookwyrm.instance/images/previews/covers/6735.jpg'
@@ -8322,14 +8341,14 @@ def _test_book_link():
                  'type': 'Edition'}],
         'to': ['https://www.w3.org/ns/activitystreams#Public'],
         'type': 'Note'}
-    book_dict = get_book_from_post(post_json_object)
+    book_dict = get_book_from_post(post_json_object, True)
     assert book_dict
     assert book_dict['name'] == title
     assert book_dict['href'] == book_url
 
-    result = get_reading_status(post_json_object, 'en',
+    result = get_reading_status(post_json_object, system_language,
                                 languages_understood,
-                                translate)
+                                translate, True)
     assert result.get('type')
     assert result['actor'] == actor
     assert result['published'] == published
@@ -8337,6 +8356,15 @@ def _test_book_link():
     assert result['href'] == book_url
     assert result['name'] == title
     assert result['id'] == id_str
+
+    assert store_book_events(base_dir,
+                             post_json_object,
+                             system_language,
+                             languages_understood,
+                             translate, True,
+                             max_recent_books,
+                             books_cache,
+                             max_cached_readers)
 
     title = 'Pirate Enlightenment, or the Real Libertalia'
     image_url = 'https://bookwyrm.instance/images/previews/covers/5283.jpg'
@@ -8362,12 +8390,12 @@ def _test_book_link():
         'sensitive': False,
         'to': ['https://www.w3.org/ns/activitystreams#Public'],
         'type': 'Note'}
-    book_dict = get_book_from_post(post_json_object)
+    book_dict = get_book_from_post(post_json_object, True)
     assert not book_dict
 
-    result = get_reading_status(post_json_object, 'en',
+    result = get_reading_status(post_json_object, system_language,
                                 languages_understood,
-                                translate)
+                                translate, True)
     assert result.get('type')
     assert result['actor'] == actor
     assert result['published'] == published
@@ -8375,6 +8403,24 @@ def _test_book_link():
     assert result['href'] == book_url
     assert result['rating'] == rating
     assert result['id'] == id_str
+
+    assert store_book_events(base_dir,
+                             post_json_object,
+                             system_language,
+                             languages_understood,
+                             translate, True,
+                             max_recent_books,
+                             books_cache,
+                             max_cached_readers)
+
+    assert books_cache
+    assert 'reader_list' in books_cache
+    if len(books_cache['reader_list']) != 3:
+        pprint(books_cache)
+        print('reader_list: ' + str(books_cache['reader_list']))
+    assert len(books_cache['reader_list']) == 3
+    assert books_cache['reader_list'][2] == actor
+    assert books_cache['readers'].get(actor)
 
 
 def run_all_tests():
@@ -8394,7 +8440,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
-    _test_book_link()
+    _test_book_link(base_dir)
     _test_dateformat()
     _test_is_right_to_left()
     _test_format_mixed_rtl()

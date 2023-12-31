@@ -40,12 +40,16 @@ def get_book_link_from_content(content: str) -> str:
     return book_url
 
 
-def get_book_from_post(post_json_object: {}) -> {}:
+def get_book_from_post(post_json_object: {}, debug: bool) -> {}:
     """ Returns a book details from the given post
     """
     if 'tag' not in post_json_object:
+        if debug:
+            print('DEBUG: get_book_from_post no tag in post')
         return {}
     if not isinstance(post_json_object['tag'], list):
+        if debug:
+            print('DEBUG: get_book_from_post tag is not a list')
         return {}
     for tag_dict in post_json_object['tag']:
         if 'type' not in tag_dict:
@@ -63,7 +67,7 @@ def get_book_from_post(post_json_object: {}) -> {}:
         if not isinstance(tag_dict['name'], str):
             continue
         tag_dict['name'] = tag_dict['name'].replace('@', '')
-        return tag_dict
+        return tag_dict.copy()
     return {}
 
 
@@ -91,7 +95,8 @@ def _get_book_image_from_post(post_json_object: {}) -> str:
 def get_reading_status(post_json_object: {},
                        system_language: str,
                        languages_understood: [],
-                       translate: {}) -> {}:
+                       translate: {},
+                       debug: bool) -> {}:
     """Returns any reading status from the content of a post
     """
     post_obj = post_json_object
@@ -102,20 +107,32 @@ def get_reading_status(post_json_object: {},
                                     languages_understood,
                                     "content")
     if not content:
+        if debug:
+            print('DEBUG: get_reading_status no content')
         return {}
     book_url = get_book_link_from_content(content)
     if not book_url:
+        if debug:
+            print('DEBUG: get_reading_status no book url')
         return {}
 
     if not post_obj.get('id'):
+        if debug:
+            print('DEBUG: get_reading_status no id')
         return {}
     if not isinstance(post_obj['id'], str):
+        if debug:
+            print('DEBUG: get_reading_status id is not a string')
         return {}
 
     # get the published date
     if not post_obj.get('published'):
+        if debug:
+            print('DEBUG: get_reading_status no published')
         return {}
     if not isinstance(post_obj['published'], str):
+        if debug:
+            print('DEBUG: get_reading_status published is not a string')
         return {}
     published = post_obj['published']
     if post_obj.get('updated'):
@@ -123,9 +140,13 @@ def get_reading_status(post_json_object: {},
             published = post_obj['updated']
 
     if not post_obj.get('attributedTo'):
+        if debug:
+            print('DEBUG: get_reading_status no attributedTo')
         return {}
     actor = get_attributed_to(post_obj['attributedTo'])
     if not actor:
+        if debug:
+            print('DEBUG: get_reading_status no actor')
         return {}
 
     book_image_url = _get_book_image_from_post(post_obj)
@@ -152,8 +173,11 @@ def get_reading_status(post_json_object: {},
                 return book_dict
 
     # get the book details from a post tag
-    book_dict = get_book_from_post(post_json_object)
+    book_dict = get_book_from_post(post_json_object, debug)
     if not book_dict:
+        if debug:
+            print('DEBUG: get_reading_status no book_dict ' +
+                  str(post_json_object))
         return {}
 
     # want to read a book
@@ -225,6 +249,7 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
         post_days_since_epoch = days_diff.days
         reader_books_json['timeline'][post_days_since_epoch] = book_url
         return True
+    print('test8')
     return False
 
 
@@ -338,8 +363,10 @@ def store_book_events(base_dir: str,
     book_dict = get_reading_status(post_json_object,
                                    system_language,
                                    languages_understood,
-                                   translate)
+                                   translate, debug)
     if not book_dict:
+        if debug:
+            print('DEBUG: no book event')
         return False
     reading_path = base_dir + '/accounts/reading'
     if not os.path.isdir(reading_path):
@@ -356,6 +383,8 @@ def store_book_events(base_dir: str,
 
     reader_books_filename = \
         readers_path + '/' + actor.replace('/', '#') + '.json'
+    if debug:
+        print('reader_books_filename: ' + reader_books_filename)
     reader_books_json = {}
 
     # get the reader from cache if possible
@@ -368,6 +397,8 @@ def store_book_events(base_dir: str,
         reader_books_json = load_json(reader_books_filename)
     if _add_book_to_reader(reader_books_json, book_dict):
         if not save_json(reader_books_json, reader_books_filename):
+            if debug:
+                print('DEBUG: unable to save reader book event')
             return False
 
         # update the cache for this reader
@@ -390,6 +421,8 @@ def store_book_events(base_dir: str,
         book_json = load_json(book_filename)
     _add_reader_to_book(book_json, book_dict)
     if not save_json(book_json, book_filename):
+        if debug:
+            print('DEBUG: unable to save book reader')
         return False
 
     _update_recent_books_list(base_dir, book_id, debug)
