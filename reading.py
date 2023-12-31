@@ -249,7 +249,6 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
         post_days_since_epoch = days_diff.days
         reader_books_json['timeline'][post_days_since_epoch] = book_url
         return True
-    print('test8')
     return False
 
 
