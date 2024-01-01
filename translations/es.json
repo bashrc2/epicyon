@@ -645,5 +645,7 @@
     "Do not show follows on your profile": "No mostrar seguidores en tu perfil",
     "rated": "clasificado",
     "wants to read": "quiere leer",
-    "finished reading": "lectura terminada"
+    "finished reading": "lectura terminada",
+    "Reading Status": "Estado de lectura",
+    "Book reading updates": "Actualizaciones de lectura de libros"
 }

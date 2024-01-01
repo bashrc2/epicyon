@@ -157,6 +157,14 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
             'icons/scope_wanted.png"/><b>' + \
             translate['Wanted'] + '</b><br>' + \
             translate['Describe something wanted'] + '</a></li>\n'
+        drop_down_content += \
+            '<li><a href="' + path_base + \
+            '/newreadingstatus" accesskey="' + \
+            access_keys['menuReadingStatus'] + '">' + \
+            '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
+            'icons/scope_readingstatus.png"/><b>' + \
+            translate['Reading Status'] + '</b><br>' + \
+            translate['Book reading updates'] + '</a></li>\n'
 
     # whether to show votes
     show_vote_file = account_dir + '/.noVotes'

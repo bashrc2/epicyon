@@ -645,5 +645,7 @@
     "Do not show follows on your profile": "プロフィールにフォローを表示しない",
     "rated": "評価された",
     "wants to read": "読みたい",
-    "finished reading": "読み終わった"
+    "finished reading": "読み終わった",
+    "Reading Status": "ステータスの読み取り",
+    "Book reading updates": "本の読書の更新情報"
 }

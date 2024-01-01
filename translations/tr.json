@@ -645,5 +645,7 @@
     "Do not show follows on your profile": "Takip edilenleri profilinizde gösterme",
     "rated": "oy",
     "wants to read": "okumak istiyor",
-    "finished reading": "okumayı bitirdim"
+    "finished reading": "okumayı bitirdim",
+    "Reading Status": "Okuma Durumu",
+    "Book reading updates": "Kitap okuma güncellemeleri"
 }
