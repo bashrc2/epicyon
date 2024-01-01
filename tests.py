@@ -8241,7 +8241,6 @@ def _test_book_link(base_dir: str):
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
     os.mkdir(base_dir)
-    reading_dir = base_dir + '/accounts/reading'
 
     content = 'Not a link'
     result = get_book_link_from_content(content)

@@ -647,5 +647,10 @@
     "wants to read": "想读书",
     "finished reading": "读完",
     "Reading Status": "阅读状态",
-    "Book reading updates": "书籍阅读更新"
+    "Book reading updates": "书籍阅读更新",
+    "want to read": "想读",
+    "am reading": "正在阅读",
+    "Update type": "更新类型",
+    "add a rating": "添加评级",
+    "Rating": "评分"
 }

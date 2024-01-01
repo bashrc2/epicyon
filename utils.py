@@ -4085,7 +4085,7 @@ def get_new_post_endpoints() -> []:
     return (
         'newpost', 'newblog', 'newunlisted', 'newfollowers', 'newdm',
         'newreminder', 'newreport', 'newquestion', 'newshare', 'newwanted',
-        'editblogpost'
+        'editblogpost', 'newreadingstatus'
     )
 
 

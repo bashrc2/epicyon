@@ -647,5 +647,10 @@
     "wants to read": "okumak istiyor",
     "finished reading": "okumayı bitirdim",
     "Reading Status": "Okuma Durumu",
-    "Book reading updates": "Kitap okuma güncellemeleri"
+    "Book reading updates": "Kitap okuma güncellemeleri",
+    "want to read": "okumak istemek",
+    "am reading": "Okuyorum",
+    "Update type": "Güncelleme türü",
+    "add a rating": "derecelendirme ekle",
+    "Rating": "Değerlendirme"
 }

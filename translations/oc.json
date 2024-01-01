@@ -643,5 +643,10 @@
     "wants to read": "wants to read",
     "finished reading": "finished reading",
     "Reading Status": "Reading Status",
-    "Book reading updates": "Book reading updates"
+    "Book reading updates": "Book reading updates",
+    "want to read": "want to read",
+    "am reading": "am reading",
+    "Update type": "Update type",
+    "add a rating": "add a rating",
+    "Rating": "Rating"
 }

@@ -647,5 +647,10 @@
     "wants to read": "يريد أن يقرأ",
     "finished reading": "قراءة الانتهاء",
     "Reading Status": "حالة القراءة",
-    "Book reading updates": "تحديثات قراءة الكتب"
+    "Book reading updates": "تحديثات قراءة الكتب",
+    "want to read": "تريد أن تقرأ",
+    "am reading": "أنا أقرأ",
+    "Update type": "نوع التحديث",
+    "add a rating": "إضافة تقييم",
+    "Rating": "تقييم"
 }

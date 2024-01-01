@@ -647,5 +647,10 @@
     "wants to read": "vol llegir",
     "finished reading": "acabat de llegir",
     "Reading Status": "Estat de lectura",
-    "Book reading updates": "Actualitzacions de lectura de llibres"
+    "Book reading updates": "Actualitzacions de lectura de llibres",
+    "want to read": "volen llegir",
+    "am reading": "estic llegint",
+    "Update type": "Tipus d'actualització",
+    "add a rating": "afegir una qualificació",
+    "Rating": "Valoració"
 }

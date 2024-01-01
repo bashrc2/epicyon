@@ -647,5 +647,10 @@
     "wants to read": "ag iarraidh a léamh",
     "finished reading": "léamh críochnaithe",
     "Reading Status": "Stádas Léitheoireachta",
-    "Book reading updates": "Nuashonruithe le haghaidh léamh leabhair"
+    "Book reading updates": "Nuashonruithe le haghaidh léamh leabhair",
+    "want to read": "ag iarraidh a léamh",
+    "am reading": "táim ag léamh",
+    "Update type": "Cineál nuashonraithe",
+    "add a rating": "cuir rátáil",
+    "Rating": "Rátáil"
 }

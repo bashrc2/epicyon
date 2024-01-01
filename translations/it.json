@@ -647,5 +647,10 @@
     "wants to read": "vuole leggere",
     "finished reading": "finito di leggere",
     "Reading Status": "Stato di lettura",
-    "Book reading updates": "Aggiornamenti sulla lettura dei libri"
+    "Book reading updates": "Aggiornamenti sulla lettura dei libri",
+    "want to read": "voler leggere",
+    "am reading": "sto leggendo",
+    "Update type": "Tipo di aggiornamento",
+    "add a rating": "aggiungi una valutazione",
+    "Rating": "Valutazione"
 }

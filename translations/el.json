@@ -647,5 +647,10 @@
     "wants to read": "θέλει να διαβάσει",
     "finished reading": "τελείωσε την ανάγνωση",
     "Reading Status": "Κατάσταση ανάγνωσης",
-    "Book reading updates": "Ενημερώσεις για την ανάγνωση βιβλίων"
+    "Book reading updates": "Ενημερώσεις για την ανάγνωση βιβλίων",
+    "want to read": "θέλω να διαβάσω",
+    "am reading": "διαβάζω",
+    "Update type": "Τύπος ενημέρωσης",
+    "add a rating": "προσθέστε μια βαθμολογία",
+    "Rating": "Εκτίμηση"
 }

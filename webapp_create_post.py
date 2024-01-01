@@ -810,6 +810,39 @@ def html_new_post(edit_post_params: {},
         extra_fields += '  </select>\n'
 
         extra_fields += '</div>\n'
+    elif path.endswith('/newreadingstatus'):
+        scope_icon = 'scope_readingstatus.png'
+        scope_description = translate['Reading Status']
+        endpoint = 'newreadingstatus'
+
+        extra_fields = '<div class="container">\n'
+        cat_str = translate['Update type']
+        extra_fields += '<label class="labels">' + cat_str + '</label><br>\n'
+
+        extra_fields += '  <select id="readingUpdateTypeDropdown" ' + \
+            'name="readingupdatetype" class="theme">\n'
+        extra_fields += '    <option value="readingupdatewant">' + \
+            translate['want to read'] + '</option>\n'
+        extra_fields += '    <option value="readingupdateread" ' + \
+            'selected="selected">' + \
+            translate['am reading'] + '</option>\n'
+        extra_fields += '    <option value="readingupdatefinished">' + \
+            translate['finished reading'] + '</option>\n'
+        extra_fields += '    <option value="readingupdatefinished">' + \
+            translate['add a rating'] + '</option>\n'
+        extra_fields += '  </select><br>\n'
+
+        extra_fields += '<br>' + \
+            edit_text_field(translate['Title'] + ':',
+                            'booktitle', '', '', True)
+        extra_fields += '<br>' + \
+            edit_text_field('URL:',
+                            'bookurl', '', 'https://...', True)
+        extra_fields += '<br>' + \
+            edit_number_field(translate['Rating'],
+                              'bookrating', '', 1, 5, None)
+        # TODO reading status
+        extra_fields += '</div>\n'
 
     citations_str = ''
     if endpoint == 'newblog':
@@ -839,7 +872,8 @@ def html_new_post(edit_post_params: {},
 
     replies_section = ''
     date_and_location = ''
-    if endpoint not in ('newshare', 'newwanted', 'newreport', 'newquestion'):
+    if endpoint not in ('newshare', 'newwanted', 'newreport',
+                        'newquestion', 'newreadingstatus'):
 
         if not is_new_reminder:
             replies_section = \

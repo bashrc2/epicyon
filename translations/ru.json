@@ -647,5 +647,10 @@
     "wants to read": "хочет прочитать",
     "finished reading": "закончил читать",
     "Reading Status": "Статус чтения",
-    "Book reading updates": "Обновления для чтения книг"
+    "Book reading updates": "Обновления для чтения книг",
+    "want to read": "хочу почитать",
+    "am reading": "читаю",
+    "Update type": "Тип обновления",
+    "add a rating": "добавить оценку",
+    "Rating": "Рейтинг"
 }

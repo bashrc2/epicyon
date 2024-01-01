@@ -647,5 +647,10 @@
     "wants to read": "読みたい",
     "finished reading": "読み終わった",
     "Reading Status": "ステータスの読み取り",
-    "Book reading updates": "本の読書の更新情報"
+    "Book reading updates": "本の読書の更新情報",
+    "want to read": "読みたい",
+    "am reading": "読んでいます",
+    "Update type": "更新タイプ",
+    "add a rating": "評価を追加する",
+    "Rating": "評価"
 }

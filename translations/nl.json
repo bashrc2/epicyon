@@ -647,5 +647,10 @@
     "wants to read": "wil lezen",
     "finished reading": "klaar met lezen",
     "Reading Status": "Leesstatus",
-    "Book reading updates": "Updates voor het lezen van boeken"
+    "Book reading updates": "Updates voor het lezen van boeken",
+    "want to read": "wil lezen",
+    "am reading": "aan het lezen",
+    "Update type": "Updatetype",
+    "add a rating": "een beoordeling toevoegen",
+    "Rating": "Beoordeling"
 }

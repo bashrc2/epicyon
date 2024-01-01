@@ -22826,6 +22826,17 @@ class PubServer(BaseHTTPRequestHandler):
                                             curr_session, proxy_type):
                         return 1
                 return -1
+            elif post_type in ('newreadingstatus'):
+                if not fields.get('readingupdatetype'):
+                    print(post_type + ' no readingupdatetype')
+                    return -1
+                if not fields.get('booktitle'):
+                    print(post_type + ' no booktitle')
+                    return -1
+                if not fields.get('bookurl'):
+                    print(post_type + ' no bookurl')
+                    return -1
+                # TODO reading status
             elif post_type in ('newshare', 'newwanted'):
                 if not fields.get('itemQty'):
                     print(post_type + ' no itemQty')
@@ -24326,6 +24337,7 @@ def run_daemon(no_of_books: int,
         'menuBookmarks': 'q',
         'menuShares': 'h',
         'menuWanted': 'w',
+        'menuReadingStatus': '=',
         'menuBlogs': 'b',
         'menuNewswire': '#',
         'menuLinks': 'l',
