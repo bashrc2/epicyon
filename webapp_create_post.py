@@ -1184,8 +1184,9 @@ def html_new_post(edit_post_params: {},
         new_post_form += ''
         selected_str = ''
 
-    new_post_form += \
-        '    <br><label class="labels">' + placeholder_message + '</label>'
+    if endpoint != 'newreadingstatus':
+        new_post_form += \
+            '    <br><label class="labels">' + placeholder_message + '</label>'
     if media_instance:
         message_box_height = 200
 
