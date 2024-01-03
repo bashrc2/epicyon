@@ -828,7 +828,7 @@ def html_new_post(edit_post_params: {},
             translate['am reading'] + '</option>\n'
         extra_fields += '    <option value="readingupdatefinished">' + \
             translate['finished reading'] + '</option>\n'
-        extra_fields += '    <option value="readingupdatefinished">' + \
+        extra_fields += '    <option value="readingupdaterating">' + \
             translate['add a rating'] + '</option>\n'
         extra_fields += '  </select><br>\n'
 

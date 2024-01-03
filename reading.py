@@ -473,20 +473,22 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
                 book_wanted = True
             elif event_type == 'finished':
                 book_finished = True
-        if book_title and book_image_url:
+        if book_title:
             book_title = remove_html(book_title)
             html_str += '    <li class="book_event">\n'
             html_str += '      <span class="book_span">\n'
             html_str += '        <div class="book_span_div">\n'
 
             # book image
-            html_str += '          <a href="' + book_url + \
-                '" target="_blank" rel="nofollow noopener noreferrer">\n'
-            html_str += '            <div class="book_image_div">\n'
-            html_str += '              <img src="' + book_image_url + '" ' + \
-                'alt="' + book_title + '">\n'
-            html_str += '            </div>\n'
-            html_str += '          </a>\n'
+            if book_image_url:
+                html_str += '          <a href="' + book_url + \
+                    '" target="_blank" rel="nofollow noopener noreferrer">\n'
+                html_str += '            <div class="book_image_div">\n'
+                html_str += '              <img src="' + \
+                    book_image_url + '" ' + \
+                    'alt="' + book_title + '">\n'
+                html_str += '            </div>\n'
+                html_str += '          </a>\n'
 
             # book details
             html_str += '          <div class="book_details_div">\n'

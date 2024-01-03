@@ -2152,6 +2152,74 @@ def create_public_post(base_dir: str,
                              chat_url)
 
 
+def create_reading_post(base_dir: str,
+                        nickname: str, domain: str, port: int,
+                        http_prefix: str,
+                        mentions_str: str, reading_update_type: str,
+                        book_title: str, book_url: str, book_rating: float,
+                        save_to_file: bool,
+                        client_to_server: bool, comments_enabled: bool,
+                        attach_image_filename: str, media_type: str,
+                        image_description: str, video_transcript: str,
+                        city: str, in_reply_to: str,
+                        in_reply_to_atom_uri: str, subject: str,
+                        schedule_post: bool,
+                        event_date: str, event_time: str, event_end_time: str,
+                        location: str, is_article: bool, system_language: str,
+                        conversation_id: str, low_bandwidth: bool,
+                        content_license_url: str,
+                        media_license_url: str, media_creator: str,
+                        languages_understood: [], translate: {},
+                        buy_url: str, chat_url: str) -> {}:
+    """ TODO reading status post
+    """
+    content = ''
+    if mentions_str:
+        if not mentions_str.endswith(' '):
+            mentions_str += ' '
+    if reading_update_type == 'readingupdatewant':
+        content = mentions_str + translate['wants to read'] + \
+            ' <a href="' + book_url + \
+            '"><i>' + book_title + '</i></a>'
+    elif reading_update_type == 'readingupdateread':
+        content = mentions_str + translate['reading'] + \
+            ' <a href="' + book_url + \
+            '"><i>' + book_title + '</i></a>'
+    elif reading_update_type == 'readingupdatefinished':
+        content = mentions_str + translate['finished reading'] + \
+            ' <a href="' + book_url + \
+            '"><i>' + book_title + '</i></a>'
+    elif reading_update_type == 'readingupdaterating' and book_rating > 0:
+        content = translate['rated'] + ' <a href="' + book_url + \
+            '"><i>' + book_title + '</i></a>'
+    if not content:
+        return None
+    post_json_object = \
+        create_public_post(base_dir,
+                           nickname, domain, port, http_prefix,
+                           content, save_to_file,
+                           client_to_server, comments_enabled,
+                           attach_image_filename, media_type,
+                           image_description, video_transcript,
+                           city, in_reply_to,
+                           in_reply_to_atom_uri, subject,
+                           schedule_post,
+                           event_date, event_time, event_end_time,
+                           location, is_article, system_language,
+                           conversation_id, low_bandwidth,
+                           content_license_url,
+                           media_license_url, media_creator,
+                           languages_understood, translate,
+                           buy_url, chat_url)
+    if post_json_object:
+        post_json_object['tag'] = [{
+            'href': book_url,
+            'name': book_title,
+            'type': 'Edition'
+        }]
+    return post_json_object
+
+
 def _append_citations_to_blog_post(base_dir: str,
                                    nickname: str, domain: str,
                                    blog_json: {}) -> None:

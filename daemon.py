@@ -108,6 +108,7 @@ from posts import undo_pinned_post
 from posts import is_moderator
 from posts import create_question_post
 from posts import create_public_post
+from posts import create_reading_post
 from posts import create_blog_post
 from posts import create_report_post
 from posts import create_unlisted_post
@@ -22830,13 +22831,127 @@ class PubServer(BaseHTTPRequestHandler):
                 if not fields.get('readingupdatetype'):
                     print(post_type + ' no readingupdatetype')
                     return -1
+                if fields['readingupdatetype'] not in ('readingupdatewant',
+                                                       'readingupdateread',
+                                                       'readingupdatefinished',
+                                                       'readingupdaterating'):
+                    print(post_type + ' not recognised ' +
+                          fields['readingupdatetype'])
+                    return -1
                 if not fields.get('booktitle'):
                     print(post_type + ' no booktitle')
                     return -1
                 if not fields.get('bookurl'):
                     print(post_type + ' no bookurl')
                     return -1
+                book_rating = 0.0
+                if fields.get('bookrating'):
+                    if isinstance(fields['bookrating'], float) or \
+                       isinstance(fields['bookrating'], int):
+                        book_rating = fields['bookrating']
                 # TODO reading status
+                msg_str = fields['readingupdatetype']
+                message_json = \
+                    create_reading_post(self.server.base_dir,
+                                        nickname,
+                                        self.server.domain,
+                                        self.server.port,
+                                        self.server.http_prefix,
+                                        mentions_str, msg_str,
+                                        fields['booktitle'],
+                                        fields['bookurl'],
+                                        book_rating,
+                                        False, False, comments_enabled,
+                                        filename, attachment_media_type,
+                                        fields['imageDescription'],
+                                        video_transcript,
+                                        city, None, None,
+                                        fields['subject'],
+                                        fields['schedulePost'],
+                                        fields['eventDate'],
+                                        fields['eventTime'],
+                                        fields['eventEndTime'],
+                                        fields['location'], False,
+                                        fields['languagesDropdown'],
+                                        conversation_id,
+                                        self.server.low_bandwidth,
+                                        self.server.content_license_url,
+                                        media_license_url, media_creator,
+                                        languages_understood,
+                                        self.server.translate, buy_url,
+                                        chat_url)
+                if message_json:
+                    if edited_postid:
+                        recent_posts_cache = self.server.recent_posts_cache
+                        allow_local_network_access = \
+                            self.server.allow_local_network_access
+                        signing_priv_key_pem = \
+                            self.server.signing_priv_key_pem
+                        twitter_replacement_domain = \
+                            self.server.twitter_replacement_domain
+                        show_published_date_only = \
+                            self.server.show_published_date_only
+                        min_images_for_accounts = \
+                            self.server.min_images_for_accounts
+                        peertube_instances = \
+                            self.server.peertube_instances
+                        self._update_edited_post(self.server.base_dir,
+                                                 nickname, self.server.domain,
+                                                 message_json,
+                                                 edited_published,
+                                                 edited_postid,
+                                                 recent_posts_cache,
+                                                 'outbox',
+                                                 self.server.max_mentions,
+                                                 self.server.max_emoji,
+                                                 allow_local_network_access,
+                                                 self.server.debug,
+                                                 self.server.system_language,
+                                                 self.server.http_prefix,
+                                                 self.server.domain_full,
+                                                 self.server.person_cache,
+                                                 signing_priv_key_pem,
+                                                 self.server.max_recent_posts,
+                                                 self.server.translate,
+                                                 curr_session,
+                                                 self.server.cached_webfingers,
+                                                 self.server.port,
+                                                 self.server.allow_deletion,
+                                                 self.server.yt_replace_domain,
+                                                 twitter_replacement_domain,
+                                                 show_published_date_only,
+                                                 peertube_instances,
+                                                 self.server.theme_name,
+                                                 self.server.max_like_count,
+                                                 self.server.cw_lists,
+                                                 self.server.dogwhistles,
+                                                 min_images_for_accounts,
+                                                 self.server.max_hashtags,
+                                                 self.server.buy_sites)
+                        print('DEBUG: sending edited reading status post ' +
+                              str(message_json))
+                    if fields['schedulePost']:
+                        return 1
+                    if pin_to_profile:
+                        sys_language = self.server.system_language
+                        content_str = \
+                            get_base_content_from_post(message_json,
+                                                       sys_language)
+                        pin_post(self.server.base_dir,
+                                 nickname, self.server.domain, content_str)
+                        return 1
+                    if self._post_to_outbox(message_json,
+                                            self.server.project_version,
+                                            nickname,
+                                            curr_session, proxy_type):
+                        populate_replies(self.server.base_dir,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         message_json,
+                                         self.server.max_replies,
+                                         self.server.debug)
+                        return 1
+                    return -1
             elif post_type in ('newshare', 'newwanted'):
                 if not fields.get('itemQty'):
                     print(post_type + ' no itemQty')
