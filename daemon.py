@@ -2073,7 +2073,10 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.dogwhistles,
                                       self.server.min_images_for_accounts,
                                       self.server.buy_sites,
-                                      self.server.sites_unavailable)
+                                      self.server.sites_unavailable,
+                                      self.server.max_recent_books,
+                                      self.server.books_cache,
+                                      self.server.max_cached_readers)
 
     def _get_outbox_thread_index(self, nickname: str,
                                  max_outbox_threads_per_account: int) -> int:

@@ -62,6 +62,7 @@ from shares import outbox_share_upload
 from shares import outbox_undo_share_upload
 from webapp_post import individual_post_as_html
 from speaker import update_speaker
+from reading import store_book_events
 
 
 def _person_receive_update_outbox(base_dir: str, http_prefix: str,
@@ -246,7 +247,10 @@ def post_message_to_outbox(session, translate: {},
                            dogwhistles: {},
                            min_images_for_accounts: [],
                            buy_sites: {},
-                           sites_unavailable: []) -> bool:
+                           sites_unavailable: [],
+                           max_recent_books: int,
+                           books_cache: {},
+                           max_cached_readers: int) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -497,6 +501,14 @@ def post_message_to_outbox(session, translate: {},
                    translate, message_json['actor'],
                    theme, system_language,
                    outbox_name)
+
+    store_book_events(base_dir,
+                      message_json,
+                      system_language, [],
+                      translate, debug,
+                      max_recent_books,
+                      books_cache,
+                      max_cached_readers)
 
     # save all instance blogs to the news actor
     if post_to_nickname != 'news' and outbox_name == 'tlblogs':
