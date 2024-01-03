@@ -1157,9 +1157,10 @@ def html_new_post(edit_post_params: {},
         new_post_form += date_and_time_str
         new_post_form += '</div>\n'
 
-    new_post_form += \
-        edit_text_field(placeholder_subject, 'subject', default_subject)
-    new_post_form += ''
+    if endpoint != 'newreadingstatus':
+        new_post_form += \
+            edit_text_field(placeholder_subject, 'subject', default_subject)
+        new_post_form += ''
 
     selected_str = ' selected'
     if in_reply_to or endpoint == 'newdm':
@@ -1204,11 +1205,12 @@ def html_new_post(edit_post_params: {},
             default_message = \
                 _remove_initial_mentions_from_content(default_message)
 
-    new_post_form += \
-        '    <textarea id="message" name="message" style="height:' + \
-        str(message_box_height) + 'px"' + selected_str + \
-        ' spellcheck="true" autocomplete="on">' + \
-        default_message + '</textarea>\n'
+    if endpoint != 'newreadingstatus':
+        new_post_form += \
+            '    <textarea id="message" name="message" style="height:' + \
+            str(message_box_height) + 'px"' + selected_str + \
+            ' spellcheck="true" autocomplete="on">' + \
+            default_message + '</textarea>\n'
     new_post_form += \
         extra_fields + citations_str + replies_section + date_and_location
     if not media_instance or reply_str:
