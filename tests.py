@@ -8328,6 +8328,121 @@ def _test_book_link(base_dir: str):
                              books_cache,
                              max_cached_readers)
 
+    actor = "https://some.instance/users/hiw"
+    id_str = actor + "/statuses/6293"
+    book_url = "https://en.wikipedia.org/wiki/The_Arasaka_Brainworm"
+    title = "The Arasaka Brainworm"
+    content = "<p>wants to read <a href=\"" + book_url + \
+        "\"><i>" + title + "</i></a></p>"
+    published = "2024-01-04T19:14:26Z"
+    post_json_object = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            {
+                "ostatus": "http://ostatus.org#",
+                "atomUri": "ostatus:atomUri",
+                "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+                "conversation": "ostatus:conversation",
+                "sensitive": "as:sensitive",
+                "toot": "http://joinmastodon.org/ns#",
+                "votersCount": "toot:votersCount",
+                "blurhash": "toot:blurhash"
+            }
+        ],
+        "id": id_str + "/activity",
+        "type": "Create",
+        "actor": actor,
+        "published": published,
+        "to": [
+            "https://www.w3.org/ns/activitystreams#Public"
+        ],
+        "cc": [
+            actor + "/followers"
+        ],
+        "object": {
+            "id": id_str,
+            "conversation": actor + "/statuses/6293",
+            "context": actor + "/statuses/6293",
+            "type": "Note",
+            "summary": None,
+            "inReplyTo": None,
+            "published": published,
+            "url": "https://some.instance/@hiw/6293",
+            "attributedTo": actor + "",
+            "to": [
+                "https://www.w3.org/ns/activitystreams#Public"
+            ],
+            "cc": [
+                actor + "/followers"
+            ],
+            "sensitive": False,
+            "atomUri": actor + "/statuses/6293",
+            "inReplyToAtomUri": None,
+            "commentsEnabled": False,
+            "rejectReplies": True,
+            "mediaType": "text/html",
+            "content": content,
+            "contentMap": {
+                "en": content
+            },
+            "attachment": [
+                {
+                    "mediaType": "image/jpeg",
+                    "name": "Book cover test",
+                    "type": "Document",
+                    "url": "https://some.instance/808b.jpg",
+                    "@context": [
+                        "https://www.w3.org/ns/activitystreams",
+                        {
+                            "schema": "https://schema.org#"
+                        }
+                    ],
+                    "blurhash": "UcHU%#4n_ND%?bxatRWBIU%MazxtNaRjs:of",
+                    "width": 174,
+                    "height": 225
+                },
+                {
+                    "type": "PropertyValue",
+                    "name": "license",
+                    "value": "https://creativecommons.org/licenses/by-nc/4.0"
+                }
+            ],
+            "tag": [
+                {
+                    "href": book_url,
+                    "name": title,
+                    "type": "Edition"
+                }
+            ],
+            "crawlable": False
+        }
+    }
+
+    book_dict = get_book_from_post(post_json_object['object'], True)
+    assert book_dict
+    assert book_dict['name'] == title
+    assert book_dict['href'] == book_url
+
+    result = get_reading_status(post_json_object, system_language,
+                                languages_understood,
+                                translate, True)
+    assert result.get('type')
+    assert result['actor'] == actor
+    assert result['published'] == published
+    assert result['type'] == 'want'
+    assert result['href'] == book_url
+    assert result['name'] == title
+    assert result['id'] == id_str
+
+    assert store_book_events(base_dir,
+                             post_json_object,
+                             system_language,
+                             languages_understood,
+                             translate, True,
+                             max_recent_books,
+                             books_cache,
+                             max_cached_readers)
+
     title = 'The Rise of the Meritocracy'
     image_url = 'https://bookwyrm.instance/images/previews/covers/6735.jpg'
     book_url = 'https://bookwyrm.instance/book/7235'
@@ -8430,8 +8545,8 @@ def _test_book_link(base_dir: str):
     if len(books_cache['reader_list']) != 3:
         pprint(books_cache)
         print('reader_list: ' + str(books_cache['reader_list']))
-    assert len(books_cache['reader_list']) == 3
-    assert books_cache['reader_list'][2] == actor
+    assert len(books_cache['reader_list']) == 4
+    assert books_cache['reader_list'][3] == actor
     assert books_cache['readers'].get(actor)
 
     if os.path.isdir(base_dir):

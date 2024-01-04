@@ -197,7 +197,7 @@ def get_reading_status(post_json_object: {},
         return {}
 
     # get the book details from a post tag
-    book_dict = get_book_from_post(post_json_object, debug)
+    book_dict = get_book_from_post(post_obj, debug)
     if not book_dict:
         if debug:
             print('DEBUG: get_reading_status no book_dict ' +
