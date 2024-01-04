@@ -22871,6 +22871,9 @@ class PubServer(BaseHTTPRequestHandler):
                                              nickname,
                                              self.server.domain_full,
                                              self.server.person_cache)
+                city = get_spoofed_city(self.server.city,
+                                        self.server.base_dir,
+                                        nickname, self.server.domain)
                 msg_str = fields['readingupdatetype']
                 # TODO reading status
                 message_json = \
@@ -22954,6 +22957,10 @@ class PubServer(BaseHTTPRequestHandler):
                               str(message_json))
                     if fields['schedulePost']:
                         return 1
+                    if not fields.get('pinToProfile'):
+                        pin_to_profile = False
+                    else:
+                        pin_to_profile = True
                     if pin_to_profile:
                         sys_language = self.server.system_language
                         content_str = \
