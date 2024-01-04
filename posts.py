@@ -2212,7 +2212,7 @@ def create_reading_post(base_dir: str,
                            languages_understood, translate,
                            buy_url, chat_url)
     if post_json_object:
-        post_json_object['tag'] = [{
+        post_json_object['object']['tag'] = [{
             'href': book_url,
             'name': book_title,
             'type': 'Edition'
