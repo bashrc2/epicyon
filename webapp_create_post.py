@@ -836,8 +836,11 @@ def html_new_post(edit_post_params: {},
         extra_fields += '<br>' + \
             edit_text_field(translate['Title'] + ':',
                             'booktitle', '', '', True)
+        books_url = 'https://en.wikipedia.org/wiki/Lists_of_books'
         extra_fields += '<br>' + \
-            edit_text_field('URL:',
+            edit_text_field('<a href="' + books_url +
+                            ' target="_blank" ' +
+                            'rel="nofollow noopener noreferrer">URL</a>:',
                             'bookurl', '', 'https://...', True)
         extra_fields += '<br>' + \
             edit_number_field(translate['Rating'],
