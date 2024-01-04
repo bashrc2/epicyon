@@ -22852,8 +22852,27 @@ class PubServer(BaseHTTPRequestHandler):
                     if isinstance(fields['bookrating'], float) or \
                        isinstance(fields['bookrating'], int):
                         book_rating = fields['bookrating']
-                # TODO reading status
+                media_license_url = self.server.content_license_url
+                if fields.get('mediaLicense'):
+                    media_license_url = fields['mediaLicense']
+                    if '://' not in media_license_url:
+                        media_license_url = \
+                            license_link_from_name(media_license_url)
+                media_creator = ''
+                if fields.get('mediaCreator'):
+                    media_creator = fields['mediaCreator']
+                video_transcript = ''
+                if fields.get('videoTranscript'):
+                    video_transcript = fields['videoTranscript']
+                conversation_id = None
+                languages_understood = \
+                    get_understood_languages(self.server.base_dir,
+                                             self.server.http_prefix,
+                                             nickname,
+                                             self.server.domain_full,
+                                             self.server.person_cache)
                 msg_str = fields['readingupdatetype']
+                # TODO reading status
                 message_json = \
                     create_reading_post(self.server.base_dir,
                                         nickname,
