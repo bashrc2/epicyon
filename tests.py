@@ -8252,6 +8252,12 @@ def _test_book_link(base_dir: str):
     result = get_book_link_from_content(content)
     assert result == book_url
 
+    book_url = 'https://bookwyrm.instance/user/hj/1234567'
+    content = 'xyz wants to read <a ' + \
+        'href="' + book_url + '"><i>Title</i></a>'
+    result = get_book_link_from_content(content)
+    assert result == book_url
+
     book_url = 'bookwyrm.instance/book/1234567'
     content = 'xyz wants to read <a ' + \
         'href="' + book_url + '"><i>Title</i></a>'
@@ -8259,8 +8265,7 @@ def _test_book_link(base_dir: str):
     assert result is None
 
     book_url = 'https://bookwyrm.instance/other/1234567'
-    content = 'xyz wants to read <a ' + \
-        'href="' + book_url + '"><i>Title</i></a>'
+    content = 'xyz wants to read ' + book_url + '"><i>Title</i></a>'
     result = get_book_link_from_content(content)
     assert result is None
 

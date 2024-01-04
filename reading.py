@@ -25,18 +25,15 @@ from utils import date_from_string_format
 def get_book_link_from_content(content: str) -> str:
     """ Returns a book link from the given content
     """
-    if '/book/' not in content or \
-       '://' not in content or \
+    if '://' not in content or \
        '"' not in content:
         return None
-    sections = content.split('/book/')
+    sections = content.split('://')
     if '"' not in sections[0] or '"' not in sections[1]:
         return None
     previous_str = sections[0].split('"')[-1]
-    if '://' not in previous_str:
-        return None
     next_str = sections[1].split('"')[0]
-    book_url = previous_str + '/book/' + next_str
+    book_url = previous_str + '://' + next_str
     return book_url
 
 
