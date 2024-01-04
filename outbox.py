@@ -63,6 +63,7 @@ from shares import outbox_undo_share_upload
 from webapp_post import individual_post_as_html
 from speaker import update_speaker
 from reading import store_book_events
+from reading import has_edition_tag
 
 
 def _person_receive_update_outbox(base_dir: str, http_prefix: str,
@@ -502,13 +503,14 @@ def post_message_to_outbox(session, translate: {},
                    theme, system_language,
                    outbox_name)
 
-    store_book_events(base_dir,
-                      message_json,
-                      system_language, [],
-                      translate, debug,
-                      max_recent_books,
-                      books_cache,
-                      max_cached_readers)
+    if has_edition_tag(message_json):
+        store_book_events(base_dir,
+                          message_json,
+                          system_language, [],
+                          translate, debug,
+                          max_recent_books,
+                          books_cache,
+                          max_cached_readers)
 
     # save all instance blogs to the news actor
     if post_to_nickname != 'news' and outbox_name == 'tlblogs':

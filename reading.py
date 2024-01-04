@@ -89,6 +89,30 @@ def _get_book_image_from_post(post_json_object: {}) -> str:
     return ''
 
 
+def has_edition_tag(post_json_object: {}) -> bool:
+    """Checks whether the given post has an Edition tag
+    indicating that it contains a book event
+    """
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+
+    if not post_obj.get('tag'):
+        return False
+    if not isinstance(post_obj['tag'], list):
+        return False
+    for tag in post_obj['tag']:
+        if not isinstance(tag, dict):
+            continue
+        if not tag.get('type'):
+            continue
+        if not isinstance(tag['type'], str):
+            continue
+        if tag['type'] == 'Edition':
+            return True
+    return False
+
+
 def get_reading_status(post_json_object: {},
                        system_language: str,
                        languages_understood: [],
@@ -168,6 +192,9 @@ def get_reading_status(post_json_object: {},
                 if book_image_url:
                     book_dict['image_url'] = book_image_url
                 return book_dict
+
+    if not has_edition_tag(post_json_object):
+        return {}
 
     # get the book details from a post tag
     book_dict = get_book_from_post(post_json_object, debug)
