@@ -231,6 +231,21 @@ def get_reading_status(post_json_object: {},
             book_dict['image_url'] = book_image_url
         return book_dict
 
+    translated_str = 'am reading'
+    if translate.get('am reading'):
+        translated_str = translate['am reading']
+    if translated_str in content or \
+       'am reading' in content or \
+       'currently reading' in content or \
+       'is reading' in content:
+        book_dict['id'] = remove_id_ending(post_obj['id'])
+        book_dict['actor'] = actor
+        book_dict['type'] = 'reading'
+        book_dict['published'] = published
+        if book_image_url:
+            book_dict['image_url'] = book_image_url
+        return book_dict
+
     return {}
 
 
@@ -242,22 +257,20 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
     book_url = book_dict['href']
     book_event_type = book_dict['type']
     if not reader_books_json.get(book_url):
-        reader_books_json[book_url] = {
-            book_event_type: book_dict
-        }
-        return True
-    # has this book event already been stored?
-    if reader_books_json[book_url].get(book_event_type):
-        prev_book_dict = reader_books_json[book_url][book_event_type]
-        if book_dict.get('updated'):
-            if prev_book_dict.get('updated'):
-                if prev_book_dict['updated'] == book_dict['updated']:
-                    return False
-            else:
-                if prev_book_dict['published'] == book_dict['updated']:
-                    return False
-        if prev_book_dict['published'] == book_dict['published']:
-            return False
+        reader_books_json[book_url] = {}
+    else:
+        # has this book event already been stored?
+        if reader_books_json[book_url].get(book_event_type):
+            prev_book_dict = reader_books_json[book_url][book_event_type]
+            if book_dict.get('updated'):
+                if prev_book_dict.get('updated'):
+                    if prev_book_dict['updated'] == book_dict['updated']:
+                        return False
+                else:
+                    if prev_book_dict['published'] == book_dict['updated']:
+                        return False
+            if prev_book_dict['published'] == book_dict['published']:
+                return False
     # store the book event
     reader_books_json[book_url][book_event_type] = book_dict
     if 'timeline' not in reader_books_json:
@@ -270,7 +283,7 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
     if post_time_object:
         baseline_time = date_epoch()
         days_diff = post_time_object - baseline_time
-        post_days_since_epoch = days_diff.days
+        post_days_since_epoch = days_diff.total_seconds()
         reader_books_json['timeline'][post_days_since_epoch] = book_url
         return True
     return False
@@ -482,6 +495,7 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
             continue
         book_rating = None
         book_wanted = False
+        book_reading = False
         book_finished = False
         for event_type in ('want', 'finished', 'rated'):
             if not reader_books_json[book_url].get(event_type):
@@ -495,6 +509,8 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
                 book_rating = book_dict['rating']
             elif event_type == 'want':
                 book_wanted = True
+            elif event_type == 'reading':
+                book_reading = True
             elif event_type == 'finished':
                 book_finished = True
         if book_title:
@@ -525,6 +541,9 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
             if book_wanted:
                 html_str += '            <br>' + \
                     translate['Wanted'] + '\n'
+            if book_reading:
+                html_str += '            <br>' + \
+                    translate['reading'].title() + '\n'
             if book_rating is not None:
                 html_str += '            <br>'
                 for _ in range(int(book_rating)):
