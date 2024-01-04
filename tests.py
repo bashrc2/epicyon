@@ -8252,6 +8252,12 @@ def _test_book_link(base_dir: str):
     result = get_book_link_from_content(content)
     assert result == book_url
 
+    book_url = 'https://en.wikipedia.org/wiki/The_Arasaka_Brainworm'
+    content = "<p>wants to read <a href=\"" + book_url + \
+        "\"><i>Title</i></a></p>"
+    result = get_book_link_from_content(content)
+    assert result == book_url
+
     book_url = 'https://bookwyrm.instance/user/hj/1234567'
     content = 'xyz wants to read <a ' + \
         'href="' + book_url + '"><i>Title</i></a>'
@@ -8272,8 +8278,8 @@ def _test_book_link(base_dir: str):
     title = 'Tedious Tome'
     image_url = 'https://bookwyrm.instance/images/previews/covers/1234.jpg'
     book_url = 'https://bookwyrm.instance/book/56789'
-    content = 'xyz wants to read <a href="' + book_url + \
-        '"><i>' + title + '</i></a>'
+    content = '<p>xyz wants to read <a href="' + book_url + \
+        '"><i>' + title + '</i></a></p>'
     actor = 'https://bookwyrm.instance/user/xyz'
     id_str = actor + '/generatednote/63472854'
     published = '2024-01-01T10:30:00.2+00:00'
