@@ -265,6 +265,8 @@ def remove_reading_event(base_dir: str,
         readers_path + '/' + actor.replace('/', '#') + '.json'
 
     reader_books_json = {}
+    if 'readers' not in books_cache:
+        books_cache['readers'] = {}
     if books_cache['readers'].get(actor):
         reader_books_json = books_cache['readers'][actor]
     elif os.path.isfile(reader_books_filename):
