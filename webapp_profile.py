@@ -585,7 +585,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         occupation_name: str,
                         actor_proxied: str,
                         person_url: str,
-                        no_of_books: int) -> str:
+                        no_of_books: int,
+                        authorized: bool) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -716,7 +717,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
 
     # book events for this actor
     html_str += html_profile_book_list(base_dir, person_url, no_of_books,
-                                       translate)
+                                       translate, nickname, domain,
+                                       authorized)
     return html_str
 
 
@@ -870,7 +872,8 @@ def _get_profile_header_after_search(base_dir: str,
                                        translate)
     # book events for this actor
     html_str += html_profile_book_list(base_dir, person_url, no_of_books,
-                                       translate)
+                                       translate,
+                                       nickname, domain, authorized)
 
     return html_str
 
@@ -1264,7 +1267,7 @@ def html_profile(signing_priv_key_pem: str,
                             access_keys, joined_date,
                             occupation_name,
                             actor_proxied, actor,
-                            no_of_books)
+                            no_of_books, authorized)
 
     # keyboard navigation
     user_path_str = '/users/' + nickname

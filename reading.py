@@ -249,15 +249,20 @@ def get_reading_status(post_json_object: {},
     return {}
 
 
-def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
+def _add_book_to_reader(reader_books_json: {}, book_dict: {},
+                        debug: bool) -> bool:
     """Updates reader books
     """
     if not book_dict.get('published'):
+        if debug:
+            print('_add_book_to_reader no published field')
         return False
     book_url = book_dict['href']
     book_event_type = book_dict['type']
     if not reader_books_json.get(book_url):
         reader_books_json[book_url] = {}
+        if debug:
+            print('_add_book_to_reader first book')
     else:
         # has this book event already been stored?
         if reader_books_json[book_url].get(book_event_type):
@@ -265,11 +270,18 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
             if book_dict.get('updated'):
                 if prev_book_dict.get('updated'):
                     if prev_book_dict['updated'] == book_dict['updated']:
+                        if debug:
+                            print('_add_book_to_reader ' +
+                                  'updated date already seen')
                         return False
                 else:
                     if prev_book_dict['published'] == book_dict['updated']:
+                        if debug:
+                            print('_add_book_to_reader ' +
+                                  'published date already seen')
                         return False
             if prev_book_dict['published'] == book_dict['published']:
+
                 return False
     # store the book event
     reader_books_json[book_url][book_event_type] = book_dict
@@ -278,14 +290,19 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {}) -> bool:
     published = book_dict['published']
     if book_dict.get('updated'):
         published = book_dict['updated']
+    if '.' in published:
+        published = published.split('.')[0] + 'Z'
     post_time_object = \
-        date_from_string_format(published, ["%Y-%m-%dT%H:%M:%S%z"])
+        date_from_string_format(published, ["%Y-%m-%dT%H:%M:%S%z",
+                                            "%Y-%m-%dT%H:%M:%S%Z"])
     if post_time_object:
         baseline_time = date_epoch()
         days_diff = post_time_object - baseline_time
         post_days_since_epoch = days_diff.total_seconds()
         reader_books_json['timeline'][post_days_since_epoch] = book_url
         return True
+    elif debug:
+        print('_add_book_to_reader published date not recognised ' + published)
     return False
 
 
@@ -433,7 +450,7 @@ def store_book_events(base_dir: str,
     elif os.path.isfile(reader_books_filename):
         # if not in cache then load from file
         reader_books_json = load_json(reader_books_filename)
-    if _add_book_to_reader(reader_books_json, book_dict):
+    if _add_book_to_reader(reader_books_json, book_dict, debug):
         if not save_json(reader_books_json, reader_books_filename):
             if debug:
                 print('DEBUG: unable to save reader book event')
@@ -451,6 +468,8 @@ def store_book_events(base_dir: str,
             first_actor = books_cache['reader_list'][0]
             books_cache['reader_list'].remove(first_actor)
             del books_cache['readers'][actor]
+    elif debug:
+        print('_add_book_to_reader failed ' + str(book_dict))
 
     book_id = book_url.replace('/', '#')
     book_filename = books_path + '/' + book_id + '.json'
@@ -470,7 +489,9 @@ def store_book_events(base_dir: str,
 
 
 def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
-                           translate: {}) -> str:
+                           translate: {},
+                           nickname: str, domain: str,
+                           authorized: bool) -> str:
     """Returns html for displaying a list of books on a profile screen
     """
     reading_path = base_dir + '/accounts/reading'
@@ -544,11 +565,28 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
             if book_reading:
                 html_str += '            <br>' + \
                     translate['reading'].title() + '\n'
+            # book star rating
             if book_rating is not None:
                 html_str += '            <br>'
                 for _ in range(int(book_rating)):
                     html_str += '⭐'
-                html_str += ' (' + str(book_rating) + ')'
+                html_str += ' (' + str(book_rating) + ')\n'
+            # remove button
+            if authorized:
+                if actor.endswith('/users/' + nickname) and \
+                   '://' + domain in actor:
+                    html_str += \
+                        '            <br>' + \
+                        '            <form method="POST" action="' + \
+                        '/users/' + nickname + '/removereadingstatus">\n' + \
+                        '              ' + \
+                        '<input type="hidden" name="actor" value="' + \
+                        actor + '">\n' + \
+                        '              ' + \
+                        '<button type="submit" class="button" ' + \
+                        'name="submitRemoveReadingStatus">' + \
+                        translate['Remove'] + '</button>\n' + \
+                        '            </form>\n'
             html_str += '          </div>\n'
 
             html_str += '        </div>\n'

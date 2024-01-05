@@ -8327,6 +8327,8 @@ def _test_book_link(base_dir: str):
                              max_recent_books,
                              books_cache,
                              max_cached_readers)
+    expected_readers = 1
+    print('reader_list 1: ' + str(books_cache['reader_list']))
 
     actor = "https://some.instance/users/hiw"
     id_str = actor + "/statuses/6293"
@@ -8442,6 +8444,8 @@ def _test_book_link(base_dir: str):
                              max_recent_books,
                              books_cache,
                              max_cached_readers)
+    expected_readers += 1
+    print('reader_list 2: ' + str(books_cache['reader_list']))
 
     title = 'The Rise of the Meritocracy'
     image_url = 'https://bookwyrm.instance/images/previews/covers/6735.jpg'
@@ -8492,6 +8496,8 @@ def _test_book_link(base_dir: str):
                              max_recent_books,
                              books_cache,
                              max_cached_readers)
+    expected_readers += 1
+    print('reader_list 3: ' + str(books_cache['reader_list']))
 
     title = 'Pirate Enlightenment, or the Real Libertalia'
     image_url = 'https://bookwyrm.instance/images/previews/covers/5283.jpg'
@@ -8539,14 +8545,16 @@ def _test_book_link(base_dir: str):
                              max_recent_books,
                              books_cache,
                              max_cached_readers)
+    expected_readers += 1
+    print('reader_list 4: ' + str(books_cache['reader_list']))
 
     assert books_cache
     assert 'reader_list' in books_cache
-    if len(books_cache['reader_list']) != 3:
+    if len(books_cache['reader_list']) != expected_readers:
         pprint(books_cache)
         print('reader_list: ' + str(books_cache['reader_list']))
-    assert len(books_cache['reader_list']) == 4
-    assert books_cache['reader_list'][3] == actor
+    assert len(books_cache['reader_list']) == expected_readers
+    assert books_cache['reader_list'][expected_readers - 1] == actor
     assert books_cache['readers'].get(actor)
 
     if os.path.isdir(base_dir):
