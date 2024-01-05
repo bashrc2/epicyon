@@ -306,6 +306,7 @@ def remove_reading_event(base_dir: str,
         if debug:
             print('DEBUG: unable to save reader book event')
         return False
+    print('reading status removed by ' + actor)
     return True
 
 
