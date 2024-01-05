@@ -4486,7 +4486,6 @@ class PubServer(BaseHTTPRequestHandler):
                                books_cache: {}) -> None:
         """Remove a reading status from the profile screen
         """
-        print('DEBUG: removereadingstatus 3')
         users_path = path.split('/removereadingstatus')[0]
         origin_path_str = http_prefix + '://' + domain_full + users_path
         reader_nickname = get_nickname_from_actor(origin_path_str)
@@ -4494,7 +4493,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(400)
             self.end_headers()
             self.server.postreq_busy = False
-            print('DEBUG: removereadingstatus 4 ' + origin_path_str)
             return
 
         length = int(self.headers['Content-length'])
@@ -4520,17 +4518,13 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.postreq_busy = False
             return
 
-        print('DEBUG: removereadingstatus 5 ' + remove_reading_status_params)
         if '&submitRemoveReadingStatus=' in remove_reading_status_params:
-            print('DEBUG: removereadingstatus 6')
             reading_actor = \
                 urllib.parse.unquote_plus(remove_reading_status_params)
             reading_actor = reading_actor.split('actor=')[1]
             if '&' in reading_actor:
                 reading_actor = reading_actor.split('&')[0]
 
-            print('DEBUG: removereadingstatus 7 ' +
-                  reading_actor + ' ' + origin_path_str)
             if reading_actor == origin_path_str:
                 post_secs_since_epoch = \
                     urllib.parse.unquote_plus(remove_reading_status_params)
@@ -4546,12 +4540,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in book_event_type:
                     book_event_type = book_event_type.split('&')[0]
 
-                print('DEBUG: removereadingstatus 8')
                 remove_reading_event(base_dir,
                                      reading_actor, post_secs_since_epoch,
                                      book_event_type, books_cache, debug)
 
-        print('DEBUG: removereadingstatus 9')
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
@@ -23679,9 +23671,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.debug)
 
             # remove a reading status from the profile screen
-            print('DEBUG: removereadingstatus 1')
             if self.path.endswith('/removereadingstatus'):
-                print('DEBUG: removereadingstatus 2')
                 self._remove_reading_status(calling_domain, cookie,
                                             self.path,
                                             self.server.base_dir,
