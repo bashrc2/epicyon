@@ -467,6 +467,7 @@ from relationships import get_inactive_feed
 from relationships import update_moved_actors
 from git import get_repo_url
 from webapp_pwa import pwa_manifest
+from reading import remove_reading_event
 
 # maximum number of posts to list in outbox feed
 MAX_POSTS_IN_FEED = 12
@@ -4469,6 +4470,80 @@ class PubServer(BaseHTTPRequestHandler):
                         update_blocked_cache(self.server.base_dir,
                                              self.server.blocked_cache,
                                              blocked_cache_last_updated, 0)
+
+        if calling_domain.endswith('.onion') and onion_domain:
+            origin_path_str = 'http://' + onion_domain + users_path
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
+            origin_path_str = 'http://' + i2p_domain + users_path
+        self._redirect_headers(origin_path_str, cookie, calling_domain)
+        self.server.postreq_busy = False
+
+    def _remove_reading_status(self, calling_domain: str, cookie: str,
+                               path: str, base_dir: str, http_prefix: str,
+                               domain: str, domain_full: str,
+                               onion_domain: str, i2p_domain: str,
+                               debug: bool,
+                               books_cache: {}) -> None:
+        """Remove a reading status from the profile screen
+        """
+        users_path = path.split('/removereadingstatus')[0]
+        origin_path_str = http_prefix + '://' + domain_full + users_path
+        reader_nickname = get_nickname_from_actor(origin_path_str)
+        if not reader_nickname:
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            remove_reading_status_params = \
+                self.rfile.read(length).decode('utf-8')
+        except SocketError as ex:
+            if ex.errno == errno.ECONNRESET:
+                print('EX: POST remove_reading_status_params ' +
+                      'connection was reset')
+            else:
+                print('EX: POST remove_reading_status_params socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
+        except ValueError as ex:
+            print('EX: POST remove_reading_status_params rfile.read failed, ' +
+                  str(ex))
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
+
+        if '&submitRemoveReadingStatus=' in remove_reading_status_params:
+            reader_actor = \
+                urllib.parse.unquote_plus(remove_reading_status_params)
+            reading_actor = reader_actor.split('actor=')[1]
+            if '&' in reader_actor:
+                reading_actor = reader_actor.split('&')[0]
+
+            if reader_actor == origin_path_str:
+                post_secs_since_epoch = \
+                    urllib.parse.unquote_plus(remove_reading_status_params)
+                post_secs_since_epoch = \
+                    post_secs_since_epoch.split('publishedtimesec=')[1]
+                if '&' in post_secs_since_epoch:
+                    post_secs_since_epoch = post_secs_since_epoch.split('&')[0]
+                post_secs_since_epoch = float(post_secs_since_epoch)
+
+                book_event_type = \
+                    urllib.parse.unquote_plus(remove_reading_status_params)
+                book_event_type = \
+                    book_event_type.split('bookeventtype=')[1]
+                if '&' in book_event_type:
+                    book_event_type = book_event_type.split('&')[0]
+
+                remove_reading_event(base_dir,
+                                     reading_actor, post_secs_since_epoch,
+                                     book_event_type, books_cache, debug)
 
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str = 'http://' + onion_domain + users_path
@@ -23594,6 +23669,25 @@ class PubServer(BaseHTTPRequestHandler):
 
             fitness_performance(postreq_start_time, self.server.fitness,
                                 '_POST', '_follow_confirm',
+                                self.server.debug)
+
+            # remove a reading status from the profile screen
+            if self.path.endswith('/removereadingstatus'):
+                self._remove_reading_status(calling_domain, cookie,
+                                            self.path,
+                                            self.server.base_dir,
+                                            self.server.http_prefix,
+                                            self.server.domain,
+                                            self.server.domain_full,
+                                            self.server.onion_domain,
+                                            self.server.i2p_domain,
+                                            self.server.debug,
+                                            self.server.books_cache)
+                self.server.postreq_busy = False
+                return
+
+            fitness_performance(postreq_start_time, self.server.fitness,
+                                '_POST', '_remove_reading_status',
                                 self.server.debug)
 
             # decision to unfollow in the web interface is confirmed

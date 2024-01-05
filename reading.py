@@ -249,6 +249,66 @@ def get_reading_status(post_json_object: {},
     return {}
 
 
+def remove_reading_event(base_dir: str,
+                         actor: str, post_secs_since_epoch: str,
+                         book_event_type: str,
+                         books_cache: {},
+                         debug: bool) -> bool:
+    """Removes a reading status for the given actor
+    """
+    if not book_event_type:
+        print('remove_reading_event no book event')
+        return False
+    reading_path = base_dir + '/accounts/reading'
+    readers_path = reading_path + '/readers'
+    reader_books_filename = \
+        readers_path + '/' + actor.replace('/', '#') + '.json'
+
+    reader_books_json = {}
+    if books_cache['readers'].get(actor):
+        reader_books_json = books_cache['readers'][actor]
+    elif os.path.isfile(reader_books_filename):
+        # if not in cache then load from file
+        reader_books_json = load_json(reader_books_filename)
+    if not reader_books_json:
+        if debug:
+            print('remove_reading_event reader_books_json does not exist')
+        return False
+    if not reader_books_json.get('timeline'):
+        if debug:
+            print('remove_reading_event ' +
+                  'reader_books_json timeline does not exist')
+        return False
+    if not reader_books_json['timeline'].get(post_secs_since_epoch):
+        if debug:
+            print('remove_reading_event ' +
+                  'reader_books_json timeline event does not exist ' +
+                  str(post_secs_since_epoch))
+        return False
+    book_url = reader_books_json['timeline'][post_secs_since_epoch]
+    if not book_url:
+        if debug:
+            print('remove_reading_event no book_url')
+        return False
+    if not reader_books_json.get(book_url):
+        if debug:
+            print('remove_reading_event ' +
+                  'book_url not found in reader_books_json ' + book_url)
+        return False
+    if not reader_books_json[book_url].get(book_event_type):
+        if debug:
+            print('remove_reading_event ' +
+                  'book event not found in reader_books_json ' +
+                  book_url + ' ' + book_event_type)
+        return False
+    del reader_books_json[book_url][book_event_type]
+    if not save_json(reader_books_json, reader_books_filename):
+        if debug:
+            print('DEBUG: unable to save reader book event')
+        return False
+    return True
+
+
 def _add_book_to_reader(reader_books_json: {}, book_dict: {},
                         debug: bool) -> bool:
     """Updates reader books
@@ -298,8 +358,8 @@ def _add_book_to_reader(reader_books_json: {}, book_dict: {},
     if post_time_object:
         baseline_time = date_epoch()
         days_diff = post_time_object - baseline_time
-        post_days_since_epoch = days_diff.total_seconds()
-        reader_books_json['timeline'][post_days_since_epoch] = book_url
+        post_secs_since_epoch = days_diff.total_seconds()
+        reader_books_json['timeline'][post_secs_since_epoch] = book_url
         return True
     elif debug:
         print('_add_book_to_reader published date not recognised ' + published)
@@ -511,13 +571,14 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
     html_str = '<div class="book_list_section">\n'
     html_str += '  <ul class="book_list">\n'
     ctr = 0
-    for _, book_url in recent_books_json.items():
+    for published_time_sec, book_url in recent_books_json.items():
         if not reader_books_json.get(book_url):
             continue
         book_rating = None
         book_wanted = False
         book_reading = False
         book_finished = False
+        book_event_type = ''
         for event_type in ('want', 'finished', 'rated'):
             if not reader_books_json[book_url].get(event_type):
                 continue
@@ -528,12 +589,16 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
                 book_image_url = book_dict['image_url']
             if event_type == 'rated':
                 book_rating = book_dict['rating']
+                book_event_type = event_type
             elif event_type == 'want':
                 book_wanted = True
+                book_event_type = event_type
             elif event_type == 'reading':
                 book_reading = True
+                book_event_type = event_type
             elif event_type == 'finished':
                 book_finished = True
+                book_event_type = event_type
         if book_title:
             book_title = remove_html(book_title)
             html_str += '    <li class="book_event">\n'
@@ -582,6 +647,14 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
                         '              ' + \
                         '<input type="hidden" name="actor" value="' + \
                         actor + '">\n' + \
+                        '              ' + \
+                        '<input type="hidden" ' + \
+                        'name="publishedtimesec" value="' + \
+                        str(published_time_sec) + '">\n' + \
+                        '              ' + \
+                        '<input type="hidden" ' + \
+                        'name="bookeventtype" value="' + \
+                        book_event_type + '">\n' + \
                         '              ' + \
                         '<button type="submit" class="button" ' + \
                         'name="submitRemoveReadingStatus">' + \
