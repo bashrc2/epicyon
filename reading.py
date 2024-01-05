@@ -304,7 +304,8 @@ def remove_reading_event(base_dir: str,
     del reader_books_json[book_url][book_event_type]
     if not save_json(reader_books_json, reader_books_filename):
         if debug:
-            print('DEBUG: unable to save reader book event')
+            print('DEBUG: ' +
+                  'remove_reading_event unable to save reader book event')
         return False
     print('reading status removed by ' + actor)
     return True
@@ -642,7 +643,7 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
                 if actor.endswith('/users/' + nickname) and \
                    '://' + domain in actor:
                     html_str += \
-                        '            <br>' + \
+                        '            <br>\n' + \
                         '            <form method="POST" action="' + \
                         '/users/' + nickname + '/removereadingstatus">\n' + \
                         '              ' + \
