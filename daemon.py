@@ -4530,7 +4530,7 @@ class PubServer(BaseHTTPRequestHandler):
                 reading_actor = reading_actor.split('&')[0]
 
             print('DEBUG: removereadingstatus 7 ' +
-                  reader_actor + ' ' + origin_path_str)
+                  reading_actor + ' ' + origin_path_str)
             if reading_actor == origin_path_str:
                 post_secs_since_epoch = \
                     urllib.parse.unquote_plus(remove_reading_status_params)
