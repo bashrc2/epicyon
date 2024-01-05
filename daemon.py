@@ -4523,15 +4523,15 @@ class PubServer(BaseHTTPRequestHandler):
         print('DEBUG: removereadingstatus 5 ' + remove_reading_status_params)
         if '&submitRemoveReadingStatus=' in remove_reading_status_params:
             print('DEBUG: removereadingstatus 6')
-            reader_actor = \
+            reading_actor = \
                 urllib.parse.unquote_plus(remove_reading_status_params)
-            reading_actor = reader_actor.split('actor=')[1]
-            if '&' in reader_actor:
-                reading_actor = reader_actor.split('&')[0]
+            reading_actor = reading_actor.split('actor=')[1]
+            if '&' in reading_actor:
+                reading_actor = reading_actor.split('&')[0]
 
             print('DEBUG: removereadingstatus 7 ' +
                   reader_actor + ' ' + origin_path_str)
-            if reader_actor == origin_path_str:
+            if reading_actor == origin_path_str:
                 post_secs_since_epoch = \
                     urllib.parse.unquote_plus(remove_reading_status_params)
                 post_secs_since_epoch = \
