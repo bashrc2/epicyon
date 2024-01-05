@@ -4538,7 +4538,6 @@ class PubServer(BaseHTTPRequestHandler):
                     post_secs_since_epoch.split('publishedtimesec=')[1]
                 if '&' in post_secs_since_epoch:
                     post_secs_since_epoch = post_secs_since_epoch.split('&')[0]
-                post_secs_since_epoch = float(post_secs_since_epoch)
 
                 book_event_type = \
                     urllib.parse.unquote_plus(remove_reading_status_params)
