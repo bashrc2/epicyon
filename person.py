@@ -232,6 +232,10 @@ def get_actor_update_json(actor_json: {}) -> {}:
     indexable = False
     if actor_json.get('indexable'):
         indexable = True
+    searchable_by = []
+    if actor_json.get('searchableBy'):
+        if isinstance(actor_json['searchableBy'], list):
+            searchable_by = actor_json['searchableBy']
     actor_url = get_url_from_post(actor_json['url'])
     icon_url = get_url_from_post(actor_json['icon']['url'])
     image_url = get_url_from_post(actor_json['image']['url'])
@@ -242,6 +246,10 @@ def get_actor_update_json(actor_json: {}) -> {}:
             {
                 "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
                 "indexable": "toot:indexable",
+                "searchableBy": {
+                    "@id": "fedibird:searchableBy",
+                    "@type": "@id"
+                },
                 "memorial": "toot:memorial",
                 "toot": "http://joinmastodon.org/ns#",
                 "featured":
@@ -339,6 +347,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
             'memorial': memorial,
             'indexable': indexable,
             'published': actor_json['published'],
+            'searchableBy': searchable_by,
             'devices': actor_json['devices'],
             "publicKey": actor_json['publicKey']
         }
@@ -394,6 +403,10 @@ def get_default_person_context() -> str:
         'identityKey': {'@id': 'toot:identityKey', '@type': '@id'},
         'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
         'indexable': 'toot:indexable',
+        'searchableBy': {
+            '@id': 'fedibird:searchableBy',
+            '@type': '@id'
+        },
         'memorial': 'toot:memorial',
         'messageFranking': 'toot:messageFranking',
         'messageType': 'toot:messageType',
@@ -520,6 +533,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         'manuallyApprovesFollowers': approve_followers,
         'discoverable': True,
         'indexable': False,
+        'searchableBy': [],
         'memorial': False,
         'hideFollows': False,
         'name': person_name,
@@ -847,16 +861,20 @@ def person_upgrade_actor(base_dir: str, person_json: {},
             person_json['moderators'] = person_id + '/moderators'
             update_actor = True
 
-    if not person_json.get('memorial'):
+    if 'memorial' not in person_json:
         person_json['memorial'] = False
         update_actor = True
 
-    if not person_json.get('hideFollows'):
+    if 'hideFollows' not in person_json:
         person_json['hideFollows'] = False
         update_actor = True
 
-    if not person_json.get('indexable'):
+    if 'indexable' not in person_json:
         person_json['indexable'] = False
+        update_actor = True
+
+    if 'searchableBy' not in person_json:
+        person_json['searchableBy'] = []
         update_actor = True
 
     # add a speaker endpoint
