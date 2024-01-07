@@ -2755,6 +2755,20 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
         edit_text_area(translate['Your bio'], None, 'bio', bio_str,
                        200, '', True)
 
+    birth_date = ''
+    birth_date_field = 'vcard:bday'
+    if actor_json.get(birth_date_field):
+        if '-' in actor_json[birth_date_field]:
+            if len(actor_json[birth_date_field].split('-')) == 3:
+                if 'T' in actor_json[birth_date_field]:
+                    actor_json[birth_date_field] = \
+                        actor_json[birth_date_field].split('T')[0]
+                birth_date = actor_json[birth_date_field]
+    edit_profile_form += '<br><br>\n<label class="labels">' + \
+        translate['Birthday'] + ': </label>\n'
+    edit_profile_form += \
+        '<input type="date" name="birthDate" value="' + birth_date + '">\n'
+
     edit_profile_form += \
         edit_text_field(translate['Featured hashtags'], 'featuredHashtags',
                         featured_hashtags, '#tag1 #tag2')
@@ -2834,20 +2848,6 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
         edit_number_field(translate['Preview posts on profile screen'],
                           'maxRecentProfilePosts', max_profile_posts,
                           1, 20, max_recent_posts)
-
-    birth_date = ''
-    birth_date_field = 'vcard:bday'
-    if actor_json.get(birth_date_field):
-        if '-' in actor_json[birth_date_field]:
-            if len(actor_json[birth_date_field].split('-')) == 3:
-                if 'T' in actor_json[birth_date_field]:
-                    actor_json[birth_date_field] = \
-                        actor_json[birth_date_field].split('T')[0]
-                birth_date = actor_json[birth_date_field]
-    edit_profile_form += '<br><br>\n<label class="labels">' + \
-        translate['Birthday'] + ': </label>\n'
-    edit_profile_form += \
-        '<input type="date" name="birthDate" value="' + birth_date + '">\n'
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
