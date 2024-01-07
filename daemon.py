@@ -7362,6 +7362,24 @@ class PubServer(BaseHTTPRequestHandler):
                         set_max_profile_posts(base_dir, nickname, domain,
                                               20)
 
+                    # birthday on edit profile screen
+                    birth_date = ''
+                    if actor_json.get('vcard:bday'):
+                        birth_date = actor_json['vcard:bday']
+                    if fields.get('birthDate'):
+                        if fields['birthDate'] != birth_date:
+                            new_birth_date = fields['birthDate']
+                            if '-' in new_birth_date and \
+                               len(new_birth_date.split('-')) == 3:
+                                # set birth date
+                                actor_json['vcard:bday'] = new_birth_date
+                                actor_changed = True
+                    else:
+                        # set birth date
+                        if birth_date:
+                            actor_json['vcard:bday'] = ''
+                            actor_changed = True
+
                     # change tox address
                     current_tox_address = get_tox_address(actor_json)
                     if fields.get('toxAddress'):
