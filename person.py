@@ -342,6 +342,8 @@ def get_actor_update_json(actor_json: {}) -> {}:
             'name': actor_json['name'],
             'summary': actor_json['summary'],
             'url': actor_url,
+            'vcard:Address': '',
+            'vcard:bday': '',
             'manuallyApprovesFollowers': manually_approves_followers,
             'discoverable': actor_json['discoverable'],
             'memorial': memorial,
@@ -547,7 +549,9 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         },
         'tag': [],
         'type': person_type,
-        'url': person_url
+        'url': person_url,
+        'vcard:Address': '',
+        'vcard:bday': ''
     }
 
     # extra fields used only by groups
@@ -871,6 +875,14 @@ def person_upgrade_actor(base_dir: str, person_json: {},
 
     if 'indexable' not in person_json:
         person_json['indexable'] = False
+        update_actor = True
+
+    if 'vcard:Address' not in person_json:
+        person_json['vcard:Address'] = ''
+        update_actor = True
+
+    if 'vcard:bday' not in person_json:
+        person_json['vcard:bday'] = ''
         update_actor = True
 
     if 'searchableBy' not in person_json:
