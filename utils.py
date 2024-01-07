@@ -4852,3 +4852,33 @@ def get_reply_to(post_json_object: {}) -> str:
     if post_json_object.get('inReplyToBook'):
         return post_json_object['inReplyToBook']
     return ''
+
+
+def is_valid_date(date_str: str) -> bool:
+    """is the given date valid?
+    """
+    if not isinstance(date_str, str):
+        return False
+    if '-' not in date_str:
+        return False
+    date_sections = date_str.split('-')
+    if len(date_sections) != 3:
+        return False
+    date_sect_ctr = 0
+    for section_str in date_sections:
+        if not section_str.isdigit():
+            return False
+        if date_sect_ctr == 0:
+            date_year = int(section_str)
+            if date_year < 1920 or date_year > 3000:
+                return False
+        elif date_sect_ctr == 1:
+            date_month = int(section_str)
+            if date_month < 1 or date_month > 12:
+                return False
+        elif date_sect_ctr == 2:
+            date_day = int(section_str)
+            if date_day < 1 or date_day > 31:
+                return False
+        date_sect_ctr += 1
+    return True

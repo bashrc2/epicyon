@@ -38,6 +38,7 @@ from utils import local_actor_url
 from utils import get_reply_interval_hours
 from utils import get_account_timezone
 from utils import remove_eol
+from utils import is_valid_date
 from languages import get_actor_languages
 from skills import get_skills
 from theme import get_themes_list
@@ -382,6 +383,10 @@ def html_profile_after_search(authorized: bool,
                           send_block_filename, False):
             send_blocks_str = translate['FollowWarning']
 
+    birth_date = ''
+    if profile_json.get('vcard:bday'):
+        birth_date = profile_json['vcard:bday']
+
     profile_str = \
         _get_profile_header_after_search(base_dir, nickname, domain,
                                          default_timeline,
@@ -400,7 +405,8 @@ def html_profile_after_search(authorized: bool,
                                          website_url, repo_url,
                                          send_blocks_str,
                                          authorized,
-                                         person_url, no_of_books)
+                                         person_url, no_of_books,
+                                         birth_date)
 
     domain_full = get_full_domain(domain, port)
 
@@ -586,7 +592,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         actor_proxied: str,
                         person_url: str,
                         no_of_books: int,
-                        authorized: bool) -> str:
+                        authorized: bool,
+                        birth_date: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -686,6 +693,11 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         other_accounts_html += '</p>\n'
         if ctr > 0:
             html_str += other_accounts_html
+    if is_valid_date(birth_date):
+        birth_date = remove_html(birth_date)
+        html_str += \
+            '    <p>' + translate['Birthday'] + ': ' + \
+            birth_date + '</p>\n'
     if featured_hashtags:
         featured_hashtags += '\n'
     html_str += \
@@ -745,7 +757,8 @@ def _get_profile_header_after_search(base_dir: str,
                                      send_blocks_str: str,
                                      authorized: bool,
                                      person_url: str,
-                                     no_of_books: str) -> str:
+                                     no_of_books: str,
+                                     birth_date: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -841,7 +854,11 @@ def _get_profile_header_after_search(base_dir: str,
         other_accounts_html += '</p>\n'
         if ctr > 0:
             html_str += other_accounts_html
-
+    if is_valid_date(birth_date):
+        birth_date = remove_html(birth_date)
+        html_str += \
+            '    <p>' + translate['Birthday'] + ': ' + \
+            birth_date + '</p>\n'
     if featured_hashtags:
         featured_hashtags += '\n'
     if website_url:
@@ -1253,6 +1270,10 @@ def html_profile(signing_priv_key_pem: str,
     attached_shared_items = \
         actor_attached_shares_as_html(profile_json, max_shares_on_profile)
 
+    birth_date = ''
+    if profile_json.get('vcard:bday'):
+        birth_date = profile_json['vcard:bday']
+
     profile_header_str = \
         _get_profile_header(base_dir, http_prefix,
                             nickname,
@@ -1267,7 +1288,8 @@ def html_profile(signing_priv_key_pem: str,
                             access_keys, joined_date,
                             occupation_name,
                             actor_proxied, actor,
-                            no_of_books, authorized)
+                            no_of_books, authorized,
+                            birth_date)
 
     # keyboard navigation
     user_path_str = '/users/' + nickname
