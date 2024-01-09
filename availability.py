@@ -21,6 +21,7 @@ from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
+from utils import get_actor_from_post
 
 
 def set_availability(base_dir: str, nickname: str, domain: str,
@@ -67,12 +68,13 @@ def outbox_availability(base_dir: str, nickname: str, message_json: {},
     if not has_object_string(message_json, debug):
         return False
 
-    actor_nickname = get_nickname_from_actor(message_json['actor'])
+    actor_url = get_actor_from_post(message_json)
+    actor_nickname = get_nickname_from_actor(actor_url)
     if not actor_nickname:
         return False
     if actor_nickname != nickname:
         return False
-    domain, _ = get_domain_from_actor(message_json['actor'])
+    domain, _ = get_domain_from_actor(actor_url)
     if not domain:
         return False
     status = message_json['object'].replace('"', '')

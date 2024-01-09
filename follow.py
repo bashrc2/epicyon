@@ -33,6 +33,7 @@ from utils import has_group_type
 from utils import local_actor_url
 from utils import text_in_file
 from utils import remove_eol
+from utils import get_actor_from_post
 from acceptreject import create_accept
 from acceptreject import create_reject
 from webfinger import webfinger_handle
@@ -803,7 +804,8 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
     group_account = False
     if follow_json:
         if follow_json.get('actor'):
-            if has_group_type(base_dir, follow_json['actor'], person_cache):
+            actor_url = get_actor_from_post(follow_json)
+            if has_group_type(base_dir, actor_url, person_cache):
                 group_account = True
 
     extra_headers = {}
@@ -858,7 +860,7 @@ def followed_account_rejects(session, session_onion, session_i2p,
               follow_activity_filename)
         return None
     # actor who made the follow request
-    person_url = follow_json['actor']
+    person_url = get_actor_from_post(follow_json)
 
     # create the reject activity
     reject_json = \
@@ -1474,17 +1476,15 @@ def outbox_undo_follow(base_dir: str, message_json: {}, debug: bool) -> None:
     if debug:
         print('DEBUG: undo follow arrived in outbox')
 
-    nickname_follower = \
-        get_nickname_from_actor(message_json['object']['actor'])
+    actor_url = get_actor_from_post(message_json['object'])
+    nickname_follower = get_nickname_from_actor(actor_url)
     if not nickname_follower:
         print('WARN: unable to find nickname in ' +
-              message_json['object']['actor'])
+              actor_url)
         return
-    domain_follower, port_follower = \
-        get_domain_from_actor(message_json['object']['actor'])
+    domain_follower, port_follower = get_domain_from_actor(actor_url)
     if not domain_follower:
-        print('WARN: unable to find domain in ' +
-              message_json['object']['actor'])
+        print('WARN: unable to find domain in ' + actor_url)
         return
     domain_follower_full = get_full_domain(domain_follower, port_follower)
 

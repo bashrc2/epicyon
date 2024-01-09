@@ -87,6 +87,7 @@ from utils import dangerous_markup
 from utils import acct_dir
 from utils import local_actor_url
 from utils import get_reply_to
+from utils import get_actor_from_post
 from media import get_music_metadata
 from media import attach_media
 from media import replace_you_tube
@@ -3218,7 +3219,8 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
                     return
         if post_json_object.get('cc'):
             return
-        post_json_object['cc'] = post_json_object['actor'] + '/followers'
+        actor_url = get_actor_from_post(post_json_object)
+        post_json_object['cc'] = actor_url + '/followers'
     elif has_object_dict(post_json_object):
         if not post_json_object['object'].get('to'):
             return
@@ -3232,8 +3234,9 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
                     return
         if post_json_object['object'].get('cc'):
             return
+        actor_url = get_actor_from_post(post_json_object)
         post_json_object['object']['cc'] = \
-            post_json_object['actor'] + '/followers'
+            actor_url + '/followers'
 
 
 def send_signed_json(post_json_object: {}, session, base_dir: str,
@@ -3507,10 +3510,9 @@ def add_to_field(activity_type: str, post_json_object: {},
                 if post_json_object['type'] == 'Add' or \
                    post_json_object['type'] == 'Remove':
                     if post_json_object['object']['type'] == 'Document':
-                        post_json_object['to'] = \
-                            [post_json_object['actor']]
-                        post_json_object['object']['to'] = \
-                            [post_json_object['actor']]
+                        actor_url = get_actor_from_post(post_json_object)
+                        post_json_object['to'] = [actor_url]
+                        post_json_object['object']['to'] = [actor_url]
                         to_field_added = True
 
             if not to_field_added and \
@@ -5683,7 +5685,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
     if not isinstance(post_json_object['object'], str):
         return None
     # ignore self-boosts
-    if post_json_object['actor'] in post_json_object['object']:
+    actor_url = get_actor_from_post(post_json_object)
+    if actor_url in post_json_object['object']:
         return None
 
     # get the announced post
@@ -5716,24 +5719,24 @@ def download_announce(session, base_dir: str, http_prefix: str,
         as_header = {
             'Accept': accept_str
         }
-        if '/channel/' in post_json_object['actor'] or \
-           '/accounts/' in post_json_object['actor']:
+        if '/channel/' in actor_url or \
+           '/accounts/' in actor_url:
             accept_str = \
                 'application/ld+json; ' + \
                 'profile="' + profile_str + '"'
             as_header = {
                 'Accept': accept_str
             }
-        actor_nickname = get_nickname_from_actor(post_json_object['actor'])
+        actor_nickname = get_nickname_from_actor(actor_url)
         if not actor_nickname:
             print('WARN: download_announce no actor_nickname')
             return None
         actor_domain, actor_port = \
-            get_domain_from_actor(post_json_object['actor'])
+            get_domain_from_actor(actor_url)
         if not actor_domain:
             print('Announce actor does not contain a ' +
                   'valid domain or port number: ' +
-                  str(post_json_object['actor']))
+                  actor_url)
             return None
         if is_blocked(base_dir, nickname, domain,
                       actor_nickname, actor_domain):
@@ -6581,7 +6584,7 @@ def get_original_post_from_announce_url(announce_url: str, base_dir: str,
                         actor = attrib
                         url = orig_post_id
                 elif orig_post_json['object'].get('actor'):
-                    actor = orig_post_json['actor']
+                    actor = get_actor_from_post(orig_post_json)
                     url = orig_post_id
     else:
         # we don't have the original post

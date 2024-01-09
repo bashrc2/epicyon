@@ -23,6 +23,7 @@ from utils import remove_moderation_post_from_index
 from utils import local_actor_url
 from utils import date_utcnow
 from utils import date_epoch
+from utils import get_actor_from_post
 from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
@@ -138,9 +139,10 @@ def outbox_delete(base_dir: str, http_prefix: str,
     if debug:
         print('DEBUG: c2s delete request arrived in outbox')
     delete_prefix = http_prefix + '://' + domain
+    actor_url = get_actor_from_post(message_json)
     if (not allow_deletion and
         (not message_json['object'].startswith(delete_prefix) or
-         not message_json['actor'].startswith(delete_prefix))):
+         not actor_url.startswith(delete_prefix))):
         if debug:
             print('DEBUG: delete not permitted from other instances')
         return

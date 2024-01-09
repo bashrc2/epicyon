@@ -20,6 +20,7 @@ from utils import acct_dir
 from utils import is_float
 from utils import local_actor_url
 from utils import remove_eol
+from utils import get_actor_from_post
 from follow import follower_approval_active
 from person import is_person_snoozed
 from markdown import markdown_to_html
@@ -1188,7 +1189,7 @@ def html_individual_share(domain: str, share_id: str,
                 contact_title_str = translate['Request to stay']
                 button_style_str = 'contactbutton'
 
-            contact_actor = shared_item['actor']
+            contact_actor = get_actor_from_post(shared_item)
             profile_str += \
                 '<p>' + \
                 '<a href="' + actor + \
@@ -1263,11 +1264,12 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
 
     for _, shared_item in shares_json.items():
         show_contact_button = False
-        if shared_item['actor'] != actor:
+        actor_url = get_actor_from_post(shared_item)
+        if actor_url != actor:
             show_contact_button = True
         show_remove_button = False
         if '___' + domain in shared_item['shareId']:
-            if shared_item['actor'] == actor or \
+            if actor_url == actor or \
                is_admin_account or is_moderator_account:
                 show_remove_button = True
         timeline_str += \

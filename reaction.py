@@ -32,6 +32,7 @@ from utils import remove_post_from_cache
 from utils import get_cached_post_filename
 from utils import contains_invalid_chars
 from utils import remove_eol
+from utils import get_actor_from_post
 from posts import send_signed_json
 from session import post_json
 from webfinger import webfinger_handle
@@ -133,9 +134,10 @@ def _reactionpost(recent_posts_cache: {},
             print('DEBUG: reaction object_url: ' + object_url)
             return None
 
+        actor_url = get_actor_from_post(new_reaction_json)
         update_reaction_collection(recent_posts_cache,
                                    base_dir, post_filename, object_url,
-                                   new_reaction_json['actor'],
+                                   actor_url,
                                    nickname, domain, debug, None,
                                    emoji_content)
 
@@ -408,9 +410,10 @@ def outbox_reaction(recent_posts_cache: {},
             print('DEBUG: c2s reaction post not found in inbox or outbox')
             print(message_id)
         return True
+    actor_url = get_actor_from_post(message_json)
     update_reaction_collection(recent_posts_cache,
                                base_dir, post_filename, message_id,
-                               message_json['actor'],
+                               actor_url,
                                nickname, domain, debug, None, emoji_content)
     if debug:
         print('DEBUG: post reaction via c2s - ' + post_filename)
@@ -449,8 +452,9 @@ def outbox_undo_reaction(recent_posts_cache: {},
             print('DEBUG: c2s undo reaction post not found in inbox or outbox')
             print(message_id)
         return True
+    actor_url = get_actor_from_post(message_json)
     undo_reaction_collection_entry(recent_posts_cache, base_dir, post_filename,
-                                   message_id, message_json['actor'],
+                                   message_id, actor_url,
                                    domain, debug, None, emoji_content)
     if debug:
         print('DEBUG: post undo reaction via c2s - ' + post_filename)
@@ -642,7 +646,8 @@ def html_emoji_reactions(post_json_object: {}, interactive: bool,
             base_url = actor + '?react=' + react_by
         else:
             base_url = actor + '?unreact=' + react_by
-        base_url += '?actor=' + post_json_object['actor']
+        actor_url = get_actor_from_post(post_json_object)
+        base_url += '?actor=' + actor_url
         base_url += '?tl=' + box_name
         base_url += '?page=' + str(page_number)
         base_url += '?emojreact='

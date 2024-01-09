@@ -34,6 +34,7 @@ from utils import get_domain_from_actor
 from utils import is_pgp_encrypted
 from utils import local_actor_url
 from utils import get_reply_to
+from utils import get_actor_from_post
 from session import create_session
 from speaker import speakable_text
 from speaker import get_speaker_pitch
@@ -801,7 +802,7 @@ def _read_local_box_post(session, nickname: str, domain: str,
     print('')
 
     if post_json_object['type'] == 'Announce':
-        actor = post_json_object['actor']
+        actor = get_actor_from_post(post_json_object)
         name_str = get_nickname_from_actor(actor)
         recent_posts_cache = {}
         allow_local_network_access = False
@@ -1142,7 +1143,8 @@ def _desktop_show_box(indent: str,
             if post_json_object.get('actor') and \
                post_json_object.get('object'):
                 if isinstance(post_json_object['object'], str):
-                    author_actor = post_json_object['actor']
+                    author_actor = \
+                        get_actor_from_post(post_json_object)
                     name = get_nickname_from_actor(author_actor) + ' ⮌'
                     name = _pad_to_width(name, name_width)
                     ctr_str = str(ctr)

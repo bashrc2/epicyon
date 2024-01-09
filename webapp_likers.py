@@ -15,6 +15,7 @@ from utils import get_display_name
 from utils import get_nickname_from_actor
 from utils import has_object_dict
 from utils import load_json
+from utils import get_actor_from_post
 from person import get_person_avatar_url
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -139,7 +140,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
     for like_item in obj[dict_name]['items']:
         if not like_item.get('actor'):
             continue
-        liker_actor = like_item['actor']
+        actor_url = get_actor_from_post(like_item)
+        liker_actor = actor_url
         liker_display_name = \
             get_display_name(base_dir, liker_actor, person_cache)
         if liker_display_name:

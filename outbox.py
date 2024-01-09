@@ -34,6 +34,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
 from utils import is_quote_toot
+from utils import get_actor_from_post
 from blocking import is_blocked_domain
 from blocking import outbox_block
 from blocking import outbox_undo_block
@@ -355,30 +356,31 @@ def post_message_to_outbox(session, translate: {},
             return False
 
         # actor should be a string
-        if not isinstance(message_json['actor'], str):
+        actor_url = get_actor_from_post(message_json)
+        if not actor_url:
             return False
 
         # actor should look like a url
-        if '://' not in message_json['actor'] or \
-           '.' not in message_json['actor']:
+        if '://' not in actor_url or \
+           '.' not in actor_url:
             return False
 
-        if contains_invalid_actor_url_chars(message_json['actor']):
+        if contains_invalid_actor_url_chars(actor_url):
             return False
 
         # sent by an actor on a local network address?
         if not allow_local_network_access:
             local_network_pattern_list = get_local_network_addresses()
             for local_network_pattern in local_network_pattern_list:
-                if local_network_pattern in message_json['actor']:
+                if local_network_pattern in actor_url:
                     return False
 
-        test_domain, test_port = get_domain_from_actor(message_json['actor'])
+        test_domain, test_port = get_domain_from_actor(actor_url)
         if test_domain:
             test_domain = get_full_domain(test_domain, test_port)
             if is_blocked_domain(base_dir, test_domain):
                 if debug:
-                    print('DEBUG: domain is blocked: ' + message_json['actor'])
+                    print('DEBUG: domain is blocked: ' + actor_url)
                 return False
         # replace youtube, so that google gets less tracking data
         replace_you_tube(message_json, yt_replace_domain, system_language)
@@ -387,7 +389,7 @@ def post_message_to_outbox(session, translate: {},
         replace_twitter(message_json, twitter_replacement_domain,
                         system_language)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
-        message_json['object']['attributedTo'] = message_json['actor']
+        message_json['object']['attributedTo'] = actor_url
         if message_json['object'].get('attachment'):
             attachment_index = 0
             attach = message_json['object']['attachment'][attachment_index]
@@ -496,10 +498,11 @@ def post_message_to_outbox(session, translate: {},
         print('WARN: post not saved to outbox ' + outbox_name)
         return False
 
+    actor_url = get_actor_from_post(message_json)
     update_speaker(base_dir, http_prefix,
                    post_to_nickname, domain, domain_full,
                    message_json, person_cache,
-                   translate, message_json['actor'],
+                   translate, actor_url,
                    theme, system_language,
                    outbox_name)
 

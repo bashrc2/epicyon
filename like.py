@@ -28,6 +28,7 @@ from utils import load_json
 from utils import save_json
 from utils import remove_post_from_cache
 from utils import get_cached_post_filename
+from utils import get_actor_from_post
 from posts import send_signed_json
 from session import post_json
 from webfinger import webfinger_handle
@@ -134,9 +135,10 @@ def _create_like(recent_posts_cache: {},
             print('DEBUG: like object_url: ' + object_url)
             return None
 
+        actor_url = get_actor_from_post(new_like_json)
         update_likes_collection(recent_posts_cache,
                                 base_dir, post_filename, object_url,
-                                new_like_json['actor'],
+                                actor_url,
                                 nickname, domain, debug, None)
         extra_headers = {}
         send_signed_json(new_like_json, session, base_dir,
@@ -388,9 +390,10 @@ def outbox_like(recent_posts_cache: {},
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(message_id)
         return True
+    actor_url = get_actor_from_post(message_json)
     update_likes_collection(recent_posts_cache,
                             base_dir, post_filename, message_id,
-                            message_json['actor'],
+                            actor_url,
                             nickname, domain, debug, None)
     if debug:
         print('DEBUG: post liked via c2s - ' + post_filename)
@@ -424,8 +427,9 @@ def outbox_undo_like(recent_posts_cache: {},
             print('DEBUG: c2s undo like post not found in inbox or outbox')
             print(message_id)
         return True
+    actor_url = get_actor_from_post(message_json)
     undo_likes_collection_entry(recent_posts_cache, base_dir, post_filename,
-                                message_id, message_json['actor'],
+                                message_id, actor_url,
                                 domain, debug, None)
     if debug:
         print('DEBUG: post undo liked via c2s - ' + post_filename)

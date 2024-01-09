@@ -27,6 +27,7 @@ from utils import is_pgp_encrypted
 from utils import has_object_dict
 from utils import acct_dir
 from utils import local_actor_url
+from utils import get_actor_from_post
 from content import html_replace_quote_marks
 
 SPEAKER_REMOVE_CHARS = ('.\n', '. ', ',', ';', '?', '!')
@@ -492,14 +493,16 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
                 urllib.parse.unquote_plus(post_json_object_summary)
             summary = html.unescape(summary)
 
+    actor_url = get_actor_from_post(post_json_object)
     speaker_name = \
-        get_display_name(base_dir, post_json_object['actor'], person_cache)
+        get_display_name(base_dir, actor_url, person_cache)
     if not speaker_name:
         return
     speaker_name = _remove_emoji_from_text(speaker_name)
     speaker_name = speaker_name.replace('_', ' ')
     speaker_name = camel_case_split(speaker_name)
-    gender = get_gender_from_bio(base_dir, post_json_object['actor'],
+    actor_url = get_actor_from_post(post_json_object)
+    gender = get_gender_from_bio(base_dir, actor_url,
                                  person_cache, translate)
     if announcing_actor:
         announced_nickname = get_nickname_from_actor(announcing_actor)

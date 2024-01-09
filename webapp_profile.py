@@ -39,6 +39,7 @@ from utils import get_reply_interval_hours
 from utils import get_account_timezone
 from utils import remove_eol
 from utils import is_valid_date
+from utils import get_actor_from_post
 from languages import get_actor_languages
 from skills import get_skills
 from theme import get_themes_list
@@ -167,8 +168,9 @@ def _valid_profile_preview_post(post_json_object: {},
         return False, None
     # convert actor back to id
     if isinstance(post_json_object['actor'], dict):
-        if post_json_object['actor'].get('id'):
-            post_json_object['actor'] = post_json_object['actor']['id']
+        actor_url = get_actor_from_post(post_json_object)
+        if actor_url:
+            post_json_object['actor'] = actor_url
     if has_object_dict(post_json_object):
         # convert attributedTo actor back to id
         if post_json_object['object'].get('attributedTo'):
@@ -178,7 +180,8 @@ def _valid_profile_preview_post(post_json_object: {},
                     post_json_object['object']['attributedTo'] = \
                         post_json_object['object']['attributedTo']['id']
         if not is_announced_feed_item:
-            if post_json_object['actor'] != person_url and \
+            actor_url = get_actor_from_post(post_json_object)
+            if actor_url != person_url and \
                post_json_object['object']['type'] != 'Page':
                 return False, None
     return True, post_json_object

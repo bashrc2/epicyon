@@ -387,6 +387,7 @@ from utils import refresh_newswire
 from utils import is_image_file
 from utils import has_group_type
 from utils import binary_is_image
+from utils import get_actor_from_post
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread
 from announce import create_announce
@@ -2178,9 +2179,10 @@ class PubServer(BaseHTTPRequestHandler):
         # actor should be a string
         if debug:
             print('INBOX: checking that actor is string')
-        if not isinstance(message_json['actor'], str):
+        actor_url = get_actor_from_post(message_json)
+        if not isinstance(actor_url, str):
             print('INBOX: ' +
-                  'actor should be a string ' + str(message_json['actor']))
+                  'actor should be a string ' + str(actor_url))
             self._400()
             self.server.postreq_busy = False
             return 3
@@ -2262,8 +2264,9 @@ class PubServer(BaseHTTPRequestHandler):
             if message_json['object'].get('content'):
                 content_str = message_json['object']['content']
                 if not valid_url_lengths(content_str, 2048):
+                    actor_url = get_actor_from_post(message_json)
                     print('INBOX: content contains urls which are too long ' +
-                          message_json['actor'])
+                          actor_url)
                     self._400()
                     self.server.postreq_busy = False
                     return 3
@@ -2274,23 +2277,26 @@ class PubServer(BaseHTTPRequestHandler):
                    message_json['object']['type'] != 'Application' and \
                    message_json['object']['type'] != 'Group':
                     if len(message_json['object']['summary']) > 1024:
+                        actor_url = get_actor_from_post(message_json)
                         print('INBOX: summary is too long ' +
-                              message_json['actor'] + ' ' +
+                              actor_url + ' ' +
                               message_json['object']['summary'])
                         self._400()
                         self.server.postreq_busy = False
                         return 3
                     if '://' in message_json['object']['summary']:
+                        actor_url = get_actor_from_post(message_json)
                         print('INBOX: summary should not contain links ' +
-                              message_json['actor'] + ' ' +
+                              actor_url + ' ' +
                               message_json['object']['summary'])
                         self._400()
                         self.server.postreq_busy = False
                         return 3
                 else:
                     if len(message_json['object']['summary']) > 4096:
+                        actor_url = get_actor_from_post(message_json)
                         print('INBOX: person summary is too long ' +
-                              message_json['actor'] + ' ' +
+                              actor_url + ' ' +
                               message_json['object']['summary'])
                         self._400()
                         self.server.postreq_busy = False
@@ -2335,10 +2341,11 @@ class PubServer(BaseHTTPRequestHandler):
         # actor should look like a url
         if debug:
             print('INBOX: checking that actor looks like a url')
-        if '://' not in message_json['actor'] or \
-           '.' not in message_json['actor']:
+        actor_url = get_actor_from_post(message_json)
+        if '://' not in actor_url or \
+           '.' not in actor_url:
             print('INBOX: POST actor does not look like a url ' +
-                  message_json['actor'])
+                  actor_url)
             self._400()
             self.server.postreq_busy = False
             return 3
@@ -2348,18 +2355,19 @@ class PubServer(BaseHTTPRequestHandler):
             print('INBOX: checking for local network access')
         if not self.server.allow_local_network_access:
             local_network_pattern_list = get_local_network_addresses()
+            actor_url = get_actor_from_post(message_json)
             for local_network_pattern in local_network_pattern_list:
-                if local_network_pattern in message_json['actor']:
+                if local_network_pattern in actor_url:
                     print('INBOX: POST actor contains local network address ' +
-                          message_json['actor'])
+                          actor_url)
                     self._400()
                     self.server.postreq_busy = False
                     return 3
 
-        message_domain, _ = \
-            get_domain_from_actor(message_json['actor'])
+        actor_url = get_actor_from_post(message_json)
+        message_domain, _ = get_domain_from_actor(actor_url)
         if not message_domain:
-            print('INBOX: POST from unknown domain ' + message_json['actor'])
+            print('INBOX: POST from unknown domain ' + actor_url)
             self._400()
             self.server.postreq_busy = False
             return 3
@@ -2379,10 +2387,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.postreq_busy = False
             return 3
 
-        message_nickname = \
-            get_nickname_from_actor(message_json['actor'])
+        message_nickname = get_nickname_from_actor(actor_url)
         if not message_nickname:
-            print('INBOX: POST from unknown nickname ' + message_json['actor'])
+            print('INBOX: POST from unknown nickname ' + actor_url)
             self._400()
             self.server.postreq_busy = False
             return 3
@@ -2402,7 +2409,7 @@ class PubServer(BaseHTTPRequestHandler):
             if message_domain:
                 print('INBOX: Queue: ' +
                       'Inbox queue is full. Incoming post from ' +
-                      message_json['actor'])
+                      actor_url)
             else:
                 print('INBOX: Queue: Inbox queue is full')
             self._503()

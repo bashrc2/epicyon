@@ -4013,7 +4013,8 @@ def has_actor(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an actor?
     """
     if post_json_object.get('actor'):
-        if '#' in post_json_object['actor']:
+        actor_url = get_actor_from_post(post_json_object)
+        if '#' in actor_url or not actor_url:
             return False
         return True
     if debug:
@@ -4881,3 +4882,17 @@ def is_valid_date(date_str: str) -> bool:
                 return False
         date_sect_ctr += 1
     return True
+
+
+def get_actor_from_post(post_json_object: {}) -> str:
+    """Gets the actor url from the given post
+    """
+    if not post_json_object.get('actor'):
+        return ''
+    if isinstance(post_json_object['actor'], str):
+        return post_json_object['actor']
+    if isinstance(post_json_object['actor'], dict):
+        if post_json_object['actor'].get('id'):
+            if isinstance(post_json_object['actor']['id'], str):
+                return post_json_object['actor']['id']
+    return ''

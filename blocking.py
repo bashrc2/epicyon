@@ -37,6 +37,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
 from utils import text_in_file
+from utils import get_actor_from_post
 from conversation import mute_conversation
 from conversation import unmute_conversation
 from auth import create_basic_auth_header
@@ -1364,7 +1365,8 @@ def outbox_mute(base_dir: str, http_prefix: str,
     if not has_actor(message_json, debug):
         return
     domain_full = get_full_domain(domain, port)
-    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
+    actor_url = get_actor_from_post(message_json)
+    if not actor_url.endswith(domain_full + '/users/' + nickname):
         return
     if not message_json['type'] == 'Ignore':
         return
@@ -1413,7 +1415,8 @@ def outbox_undo_mute(base_dir: str, http_prefix: str,
     if not has_actor(message_json, debug):
         return
     domain_full = get_full_domain(domain, port)
-    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
+    actor_url = get_actor_from_post(message_json)
+    if not actor_url.endswith(domain_full + '/users/' + nickname):
         return
     if not message_json['type'] == 'Undo':
         return

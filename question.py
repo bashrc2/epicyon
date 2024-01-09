@@ -15,6 +15,7 @@ from utils import has_object_dict
 from utils import text_in_file
 from utils import dangerous_markup
 from utils import get_reply_to
+from utils import get_actor_from_post
 
 
 def is_vote(base_dir: str, nickname: str, domain: str,
@@ -120,23 +121,24 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
     # update the voters file
     voters_file_separator = ';;;'
     voters_filename = question_post_filename.replace('.json', '.voters')
+    actor_url = get_actor_from_post(reply_json)
     if not os.path.isfile(voters_filename):
         # create a new voters file
         try:
             with open(voters_filename, 'w+',
                       encoding='utf-8') as voters_file:
-                voters_file.write(reply_json['actor'] +
+                voters_file.write(actor_url +
                                   voters_file_separator +
                                   reply_vote + '\n')
         except OSError:
             print('EX: unable to write voters file ' + voters_filename)
     else:
-        if not text_in_file(reply_json['actor'], voters_filename):
+        if not text_in_file(actor_url, voters_filename):
             # append to the voters file
             try:
                 with open(voters_filename, 'a+',
                           encoding='utf-8') as voters_file:
-                    voters_file.write(reply_json['actor'] +
+                    voters_file.write(actor_url +
                                       voters_file_separator +
                                       reply_vote + '\n')
             except OSError:
@@ -149,9 +151,9 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
                 newlines = []
                 save_voters_file = False
                 for vote_line in lines:
-                    if vote_line.startswith(reply_json['actor'] +
+                    if vote_line.startswith(actor_url +
                                             voters_file_separator):
-                        new_vote_line = reply_json['actor'] + \
+                        new_vote_line = actor_url + \
                             voters_file_separator + reply_vote + '\n'
                         if vote_line == new_vote_line:
                             break

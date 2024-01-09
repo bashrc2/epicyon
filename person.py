@@ -71,6 +71,7 @@ from utils import local_actor_url
 from utils import dangerous_svg
 from utils import text_in_file
 from utils import contains_statuses
+from utils import get_actor_from_post
 from session import get_json_valid
 from session import create_session
 from session import get_json
@@ -1928,7 +1929,7 @@ def valid_sending_actor(session, base_dir: str,
     the sending actor is valid
     """
     # who sent this post?
-    sending_actor = post_json_object['actor']
+    sending_actor = get_actor_from_post(post_json_object)
 
     if not isinstance(sending_actor, str):
         return False

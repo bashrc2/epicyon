@@ -32,6 +32,7 @@ from utils import has_object_string_type
 from utils import text_in_file
 from utils import remove_eol
 from utils import remove_html
+from utils import get_actor_from_post
 from posts import get_person_box
 from session import post_json
 
@@ -614,9 +615,10 @@ def outbox_bookmark(recent_posts_cache: {},
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(message_url)
         return True
+    actor_url = get_actor_from_post(message_json)
     update_bookmarks_collection(recent_posts_cache,
                                 base_dir, post_filename, message_url,
-                                message_json['actor'], domain, debug)
+                                actor_url, domain, debug)
     if debug:
         print('DEBUG: post bookmarked via c2s - ' + post_filename)
 
@@ -673,8 +675,9 @@ def outbox_undo_bookmark(recent_posts_cache: {},
             print('DEBUG: c2s unbookmark post not found in inbox or outbox')
             print(message_url)
         return True
+    actor_url = get_actor_from_post(message_json)
     update_bookmarks_collection(recent_posts_cache,
                                 base_dir, post_filename, message_url,
-                                message_json['actor'], domain, debug)
+                                actor_url, domain, debug)
     if debug:
         print('DEBUG: post unbookmarked via c2s - ' + post_filename)

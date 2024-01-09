@@ -22,6 +22,7 @@ from utils import has_group_type
 from utils import local_actor_url
 from utils import has_actor
 from utils import has_object_string_type
+from utils import get_actor_from_post
 
 
 def _create_accept_reject(base_dir: str, federation_list: [],
@@ -37,7 +38,8 @@ def _create_accept_reject(base_dir: str, federation_list: [],
     if not object_json.get('actor'):
         return None
 
-    if not url_permitted(object_json['actor'], federation_list):
+    actor_url = get_actor_from_post(object_json)
+    if not url_permitted(actor_url, federation_list):
         return None
 
     domain = get_full_domain(domain, port)
@@ -101,7 +103,7 @@ def _accept_follow(base_dir: str, message_json: {},
         return
     if debug:
         print('DEBUG: follow Accept received ' + str(message_json))
-    this_actor = message_json['object']['actor']
+    this_actor = get_actor_from_post(message_json['object'])
     nickname = get_nickname_from_actor(this_actor)
     if not nickname:
         print('WARN: no nickname found in ' + this_actor)
@@ -205,17 +207,18 @@ def receive_accept_reject(base_dir: str, domain: str, message_json: {},
         return False
     if not has_actor(message_json, debug):
         return False
-    if not has_users_path(message_json['actor']):
+    actor_url = get_actor_from_post(message_json)
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + '. Assuming single user instance.')
-    domain, _ = get_domain_from_actor(message_json['actor'])
+    domain, _ = get_domain_from_actor(actor_url)
     if not domain_permitted(domain, federation_list):
         if debug:
             print('DEBUG: ' + message_json['type'] +
                   ' from domain not permitted - ' + domain)
         return False
-    nickname = get_nickname_from_actor(message_json['actor'])
+    nickname = get_nickname_from_actor(actor_url)
     if not nickname:
         # single user instance
         nickname = 'dev'

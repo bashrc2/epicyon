@@ -27,6 +27,7 @@ from utils import local_actor_url
 from utils import replace_users_with_at
 from utils import has_actor
 from utils import has_object_string_type
+from utils import get_actor_from_post
 from posts import send_signed_json
 from posts import get_person_box
 from session import post_json
@@ -61,11 +62,12 @@ def is_self_announce(post_json_object: {}) -> bool:
         return False
     if not post_json_object.get('object'):
         return False
-    if not isinstance(post_json_object['actor'], str):
+    actor_url = get_actor_from_post(post_json_object)
+    if not isinstance(actor_url, str):
         return False
     if not isinstance(post_json_object['object'], str):
         return False
-    return post_json_object['actor'] in post_json_object['object']
+    return actor_url in post_json_object['object']
 
 
 def outbox_announce(recent_posts_cache: {},
@@ -86,20 +88,21 @@ def outbox_announce(recent_posts_cache: {},
             return False
         if is_self_announce(message_json):
             return False
-        nickname = get_nickname_from_actor(message_json['actor'])
+        actor_url = get_actor_from_post(message_json)
+        nickname = get_nickname_from_actor(actor_url)
         if not nickname:
-            print('WARN: no nickname found in ' + message_json['actor'])
+            print('WARN: no nickname found in ' + actor_url)
             return False
-        domain, _ = get_domain_from_actor(message_json['actor'])
+        domain, _ = get_domain_from_actor(actor_url)
         if not domain:
-            print('WARN: no domain found in ' + message_json['actor'])
+            print('WARN: no domain found in ' + actor_url)
             return False
         post_filename = locate_post(base_dir, nickname, domain,
                                     message_json['object'])
         if post_filename:
             update_announce_collection(recent_posts_cache,
                                        base_dir, post_filename,
-                                       message_json['actor'],
+                                       actor_url,
                                        nickname, domain, debug)
             return True
     elif message_json['type'] == 'Undo':
@@ -108,20 +111,21 @@ def outbox_announce(recent_posts_cache: {},
         if message_json['object']['type'] == 'Announce':
             if not isinstance(message_json['object']['object'], str):
                 return False
-            nickname = get_nickname_from_actor(message_json['actor'])
+            actor_url = get_actor_from_post(message_json)
+            nickname = get_nickname_from_actor(actor_url)
             if not nickname:
-                print('WARN: no nickname found in ' + message_json['actor'])
+                print('WARN: no nickname found in ' + actor_url)
                 return False
-            domain, _ = get_domain_from_actor(message_json['actor'])
+            domain, _ = get_domain_from_actor(actor_url)
             if not domain:
-                print('WARN: no domain found in ' + message_json['actor'])
+                print('WARN: no domain found in ' + actor_url)
                 return False
             post_filename = locate_post(base_dir, nickname, domain,
                                         message_json['object']['object'])
             if post_filename:
                 undo_announce_collection_entry(recent_posts_cache,
                                                base_dir, post_filename,
-                                               message_json['actor'],
+                                               actor_url,
                                                domain, debug)
                 return True
     return False
@@ -458,7 +462,8 @@ def outbox_undo_announce(recent_posts_cache: {},
             print('DEBUG: c2s undo announce post not found in inbox or outbox')
             print(message_id)
         return True
+    actor_url = get_actor_from_post(message_json)
     undo_announce_collection_entry(recent_posts_cache, base_dir, post_filename,
-                                   message_json['actor'], domain, debug)
+                                   actor_url, domain, debug)
     if debug:
         print('DEBUG: post undo announce via c2s - ' + post_filename)

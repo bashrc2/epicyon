@@ -45,6 +45,7 @@ from utils import is_float
 from utils import get_category_types
 from utils import get_shares_files_list
 from utils import local_actor_url
+from utils import get_actor_from_post
 from media import process_meta_data
 from media import convert_image_to_low_bandwidth
 from filters import is_filtered_globally
@@ -2088,6 +2089,7 @@ def vf_proposal_from_share(shared_item: {},
         "http://www.ontology-of-units-of-measure.org/resource/om-2/"
     share_id = _vf_share_id(shared_item['shareId'])
     published = date_seconds_to_string(shared_item['published'])
+    actor_url = get_actor_from_post(shared_item)
     offer_item = {
         "@context": [
             "https://www.w3.org/ns/activitystreams",
@@ -2111,7 +2113,7 @@ def vf_proposal_from_share(shared_item: {},
         ],
         "type": share_type,
         "id": share_id,
-        "attributedTo": shared_item['actor'],
+        "attributedTo": actor_url,
         "name": shared_item['displayName'],
         "content": shared_item['summary'],
         "published": published,
@@ -2123,7 +2125,7 @@ def vf_proposal_from_share(shared_item: {},
                 "hasUnit": "one",
                 "hasNumericalValue": str(shared_item['itemQty'])
             },
-            publishes_direction: shared_item['actor']
+            publishes_direction: actor_url
         },
         "attachment": [],
         "unitBased": False,
@@ -2176,7 +2178,7 @@ def vf_proposal_from_share(shared_item: {},
                 "hasUnit": "one",
                 "hasNumericalValue": str(shared_item['itemPrice'])
             },
-            reciprocal_direction: shared_item['actor']
+            reciprocal_direction: actor_url
         }
     return offer_item
 

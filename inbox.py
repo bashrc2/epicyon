@@ -81,6 +81,7 @@ from utils import has_object_string_type
 from utils import valid_hash_tag
 from utils import get_attributed_to
 from utils import get_reply_to
+from utils import get_actor_from_post
 from categories import get_hashtag_categories
 from categories import set_hashtag_category
 from httpsig import get_digest_algorithm_from_headers
@@ -272,7 +273,7 @@ def _store_last_post_id(base_dir: str, nickname: str, domain: str,
                 actor = actor_str
                 post_id = remove_id_ending(post_json_object['object']['id'])
     if not actor:
-        actor = post_json_object['actor']
+        actor = get_actor_from_post(post_json_object)
         post_id = remove_id_ending(post_json_object['id'])
     if not actor:
         return
@@ -573,15 +574,16 @@ def inbox_message_has_params(message_json: {}) -> bool:
             return False
 
     # actor should be a string
-    if not isinstance(message_json['actor'], str):
+    actor_url = get_actor_from_post(message_json)
+    if not actor_url:
         print('WARN: actor should be a string, but is actually: ' +
-              str(message_json['actor']))
+              actor_url)
         pprint(message_json)
         return False
 
     # type should be a string
     if not isinstance(message_json['type'], str):
-        print('WARN: type from ' + str(message_json['actor']) +
+        print('WARN: type from ' + actor_url +
               ' should be a string, but is actually: ' +
               str(message_json['type']))
         return False
@@ -589,7 +591,7 @@ def inbox_message_has_params(message_json: {}) -> bool:
     # object should be a dict or a string
     if not has_object_dict(message_json):
         if not isinstance(message_json['object'], str):
-            print('WARN: object from ' + str(message_json['actor']) +
+            print('WARN: object from ' + actor_url +
                   ' should be a dict or string, but is actually: ' +
                   str(message_json['object']))
             return False
@@ -611,7 +613,7 @@ def inbox_permitted_message(domain: str, message_json: {},
     if not has_actor(message_json, False):
         return False
 
-    actor = message_json['actor']
+    actor = get_actor_from_post(message_json)
     # always allow the local domain
     if domain in actor:
         return True
@@ -703,7 +705,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                 get_attributed_to(post_json_object['object']['attributedTo'])
     if not sending_actor:
         if post_json_object.get('actor'):
-            sending_actor = post_json_object['actor']
+            sending_actor = get_actor_from_post(post_json_object)
 
     # check that the sender is valid
     if sending_actor:
@@ -948,7 +950,7 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
     domain = get_full_domain(domain, port)
     domain_match = '/' + domain + '/users/'
 
-    actor = post_json_object['actor']
+    actor = get_actor_from_post(post_json_object)
     # first get any specific people which the post is addressed to
 
     follower_recipients = False
@@ -1062,13 +1064,13 @@ def _receive_undo_follow(base_dir: str, message_json: {},
         if debug:
             print('DEBUG: undo follow request has no actor within object')
         return False
-    actor = message_json['object']['actor']
+    actor = get_actor_from_post(message_json['object'])
     if not has_users_path(actor):
         if debug:
             print('DEBUG: undo follow request "users" or "profile" missing ' +
                   'from actor within object')
         return False
-    if actor != message_json['actor']:
+    if actor != get_actor_from_post(message_json):
         if debug:
             print('DEBUG: undo follow request actors do not match')
         return False
@@ -1146,7 +1148,8 @@ def _receive_undo(base_dir: str, message_json: {}, debug: bool,
         print('DEBUG: Undo activity received')
     if not has_actor(message_json, debug):
         return False
-    if not has_users_path(message_json['actor']):
+    actor_url = get_actor_from_post(message_json)
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')
         return False
@@ -1366,7 +1369,9 @@ def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
     if dangerous_question(post_json_object, allow_local_network_access):
         return False
     # does the actor match?
-    if post_json_object['actor'] != message_json['actor']:
+    actor_url = get_actor_from_post(post_json_object)
+    actor_url2 = get_actor_from_post(message_json)
+    if actor_url != actor_url2:
         return False
     save_json(message_json, post_filename)
     # ensure that the cached post is removed if it exists, so
@@ -1616,9 +1621,11 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     if 'content' not in message_json['object']:
         return False
     # does the actor match?
-    if post_json_object['actor'] != message_json['actor']:
+    actor_url = get_actor_from_post(post_json_object)
+    actor_url2 = get_actor_from_post(message_json)
+    if actor_url != actor_url2:
         print('EDITPOST: actors do not match ' +
-              post_json_object['actor'] + ' != ' + message_json['actor'])
+              actor_url + ' != ' + actor_url2)
         return False
     # has the content changed?
     if post_json_object['object']['content'] == \
@@ -1755,13 +1762,14 @@ def _receive_move_activity(session, base_dir: str,
                   str(message_json['target']))
         return False
     previous_actor = None
-    if message_json['object'] == message_json['actor']:
+    actor_url = get_actor_from_post(message_json)
+    if message_json['object'] == actor_url:
         print('INBOX: Move activity sent by old actor ' +
-              message_json['actor'] + ' moving to ' + message_json['target'])
-        previous_actor = message_json['actor']
-    elif message_json['target'] == message_json['actor']:
+              actor_url + ' moving to ' + message_json['target'])
+        previous_actor = actor_url
+    elif message_json['target'] == actor_url:
         print('INBOX: Move activity sent by new actor ' +
-              message_json['actor'] + ' moving from ' +
+              actor_url + ' moving from ' +
               message_json['object'])
         previous_actor = message_json['object']
     if not previous_actor:
@@ -1846,7 +1854,8 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
         return False
     if not has_object_string_type(message_json, debug):
         return False
-    if not has_users_path(message_json['actor']):
+    actor_url = get_actor_from_post(message_json)
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'])
@@ -1895,9 +1904,10 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
            message_json['object'].get('id'):
             if debug:
                 print('Request to update actor: ' + str(message_json))
-            update_nickname = get_nickname_from_actor(message_json['actor'])
+            actor_url = get_actor_from_post(message_json)
+            update_nickname = get_nickname_from_actor(actor_url)
             update_domain, update_port = \
-                get_domain_from_actor(message_json['actor'])
+                get_domain_from_actor(actor_url)
             if update_nickname and update_domain:
                 if _person_receive_update(base_dir,
                                           domain, port,
@@ -1945,7 +1955,8 @@ def _receive_like(recent_posts_cache: {},
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not has_users_path(message_json['actor']):
+    actor_url = get_actor_from_post(message_json)
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'])
@@ -1972,7 +1983,7 @@ def _receive_like(recent_posts_cache: {},
     if debug:
         print('DEBUG: liked post found in inbox')
 
-    like_actor = message_json['actor']
+    like_actor = get_actor_from_post(message_json)
     handle_name = handle.split('@')[0]
     handle_dom = handle.split('@')[1]
     if not _already_liked(base_dir,
@@ -2081,7 +2092,8 @@ def _receive_undo_like(recent_posts_cache: {},
         return False
     if not has_object_string_object(message_json, debug):
         return False
-    if not has_users_path(message_json['actor']):
+    actor_url = get_actor_from_post(message_json)
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + ' like')
@@ -2107,7 +2119,7 @@ def _receive_undo_like(recent_posts_cache: {},
         return True
     if debug:
         print('DEBUG: liked post found in inbox. Now undoing.')
-    like_actor = message_json['actor']
+    like_actor = get_actor_from_post(message_json)
     post_liked_id = message_json['object']
     undo_likes_collection_entry(recent_posts_cache, base_dir, post_filename,
                                 post_liked_id, like_actor, domain, debug, None)
@@ -2213,11 +2225,12 @@ def _receive_reaction(recent_posts_cache: {},
         if debug:
             print('DEBUG: ' + message_json['type'] + ' content is not string')
         return False
+    actor_url = get_actor_from_post(message_json)
     if not valid_emoji_content(message_json['content']):
         print('_receive_reaction: Invalid emoji reaction: "' +
-              message_json['content'] + '" from ' + message_json['actor'])
+              message_json['content'] + '" from ' + actor_url)
         return False
-    if not has_users_path(message_json['actor']):
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'])
@@ -2254,7 +2267,7 @@ def _receive_reaction(recent_posts_cache: {},
     if debug:
         print('DEBUG: emoji reaction post found in inbox')
 
-    reaction_actor = message_json['actor']
+    reaction_actor = get_actor_from_post(message_json)
     handle_name = handle.split('@')[0]
     handle_dom = handle.split('@')[1]
     if not _already_reacted(base_dir,
@@ -2394,12 +2407,13 @@ def _receive_zot_reaction(recent_posts_cache: {},
             print('DEBUG: ' + message_json['object']['type'] +
                   ' inReplyTo is not string')
         return False
+    actor_url = get_actor_from_post(message_json)
     if not valid_emoji_content(message_json['object']['content']):
         print('_receive_zot_reaction: Invalid emoji reaction: "' +
               message_json['object']['content'] + '" from ' +
-              message_json['actor'])
+              actor_url)
         return False
-    if not has_users_path(message_json['actor']):
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['object']['type'])
@@ -2437,7 +2451,7 @@ def _receive_zot_reaction(recent_posts_cache: {},
     if debug:
         print('DEBUG: zot emoji reaction post found in inbox')
 
-    reaction_actor = message_json['actor']
+    reaction_actor = get_actor_from_post(message_json)
     handle_name = handle.split('@')[0]
     handle_dom = handle.split('@')[1]
     if not _already_reacted(base_dir,
@@ -2560,7 +2574,8 @@ def _receive_undo_reaction(recent_posts_cache: {},
         if debug:
             print('DEBUG: ' + message_json['type'] + ' content is not string')
         return False
-    if not has_users_path(message_json['actor']):
+    actor_url = get_actor_from_post(message_json)
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + ' reaction')
@@ -2586,7 +2601,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
         return True
     if debug:
         print('DEBUG: reaction post found in inbox. Now undoing.')
-    reaction_actor = message_json['actor']
+    reaction_actor = actor_url
     post_reaction_id = message_json['object']
     emoji_content = remove_html(message_json['object']['content'])
     if not emoji_content:
@@ -2704,11 +2719,12 @@ def _receive_bookmark(recent_posts_cache: {},
         return False
     domain_full = get_full_domain(domain, port)
     nickname = handle.split('@')[0]
-    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
+    actor_url = get_actor_from_post(message_json)
+    if not actor_url.endswith(domain_full + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox bookmark Add unexpected actor')
         return False
-    if not message_json['target'].endswith(message_json['actor'] +
+    if not message_json['target'].endswith(actor_url +
                                            '/tlbookmarks'):
         if debug:
             print('DEBUG: inbox bookmark Add target invalid ' +
@@ -2741,8 +2757,7 @@ def _receive_bookmark(recent_posts_cache: {},
         return True
 
     update_bookmarks_collection(recent_posts_cache, base_dir, post_filename,
-                                message_url2,
-                                message_json['actor'], domain, debug)
+                                message_url2, actor_url, domain, debug)
     # regenerate the html
     bookmarked_post_json = load_json(post_filename, 0, 1)
     if bookmarked_post_json:
@@ -2831,11 +2846,12 @@ def _receive_undo_bookmark(recent_posts_cache: {},
         return False
     domain_full = get_full_domain(domain, port)
     nickname = handle.split('@')[0]
-    if not message_json['actor'].endswith(domain_full + '/users/' + nickname):
+    actor_url = get_actor_from_post(message_json)
+    if not actor_url.endswith(domain_full + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox undo bookmark Remove unexpected actor')
         return False
-    if not message_json['target'].endswith(message_json['actor'] +
+    if not message_json['target'].endswith(actor_url +
                                            '/tlbookmarks'):
         if debug:
             print('DEBUG: inbox undo bookmark Remove target invalid ' +
@@ -2870,7 +2886,7 @@ def _receive_undo_bookmark(recent_posts_cache: {},
 
     undo_bookmarks_collection_entry(recent_posts_cache, base_dir,
                                     post_filename,
-                                    message_json['actor'], domain, debug)
+                                    actor_url, domain, debug)
     # regenerate the html
     bookmarked_post_json = load_json(post_filename, 0, 1)
     if bookmarked_post_json:
@@ -2936,9 +2952,10 @@ def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
         return False
     domain_full = get_full_domain(domain, port)
     delete_prefix = http_prefix + '://' + domain_full + '/'
+    actor_url = get_actor_from_post(message_json)
     if (not allow_deletion and
         (not message_json['object'].startswith(delete_prefix) or
-         not message_json['actor'].startswith(delete_prefix))):
+         not actor_url.startswith(delete_prefix))):
         if debug:
             print('DEBUG: delete not permitted from other instances')
         return False
@@ -2946,7 +2963,7 @@ def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not has_users_path(message_json['actor']):
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
@@ -2957,7 +2974,7 @@ def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
             print('DEBUG: "statuses" missing from object in ' +
                   message_json['type'])
         return False
-    if message_json['actor'] not in message_json['object']:
+    if actor_url not in message_json['object']:
         if debug:
             print('DEBUG: actor is not the owner of the post to be deleted')
     handle_dir = acct_handle_dir(base_dir, handle)
@@ -3034,7 +3051,8 @@ def _receive_announce(recent_posts_cache: {},
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "to" list')
         return False
-    if not has_users_path(message_json['actor']):
+    actor_url = get_actor_from_post(message_json)
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
@@ -3069,11 +3087,11 @@ def _receive_announce(recent_posts_cache: {},
 
     # is the announce actor blocked?
     nickname = handle.split('@')[0]
-    actor_nickname = get_nickname_from_actor(message_json['actor'])
+    actor_nickname = get_nickname_from_actor(actor_url)
     if not actor_nickname:
         print('WARN: _receive_announce no actor_nickname')
         return False
-    actor_domain, _ = get_domain_from_actor(message_json['actor'])
+    actor_domain, _ = get_domain_from_actor(actor_url)
     if not actor_domain:
         print('WARN: _receive_announce no actor_domain')
         return False
@@ -3117,10 +3135,11 @@ def _receive_announce(recent_posts_cache: {},
             print(message_json['object'])
         return True
     # add actor to the list of announcers for a post
+    actor_url = get_actor_from_post(message_json)
     update_announce_collection(recent_posts_cache, base_dir, post_filename,
-                               message_json['actor'], nickname, domain, debug)
+                               actor_url, nickname, domain, debug)
     if debug:
-        print('DEBUG: Downloading announce post ' + message_json['actor'] +
+        print('DEBUG: Downloading announce post ' + actor_url +
               ' -> ' + message_json['object'])
     domain_full = get_full_domain(domain, port)
 
@@ -3215,8 +3234,9 @@ def _receive_announce(recent_posts_cache: {},
                           str(post_filename))
     else:
         if debug:
+            actor_url = get_actor_from_post(message_json)
             print('DEBUG: Announce post downloaded for ' +
-                  message_json['actor'] + ' -> ' + message_json['object'])
+                  actor_url + ' -> ' + message_json['object'])
         store_hash_tags(base_dir, nickname, domain,
                         http_prefix, domain_full,
                         post_json_object, translate)
@@ -3309,7 +3329,8 @@ def _receive_undo_announce(recent_posts_cache: {},
         return False
     if message_json['object']['type'] != 'Announce':
         return False
-    if not has_users_path(message_json['actor']):
+    actor_url = get_actor_from_post(message_json)
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   message_json['type'] + ' announce')
@@ -3339,7 +3360,7 @@ def _receive_undo_announce(recent_posts_cache: {},
                           "which isn't an announcement")
                 return False
     undo_announce_collection_entry(recent_posts_cache, base_dir, post_filename,
-                                   message_json['actor'], domain, debug)
+                                   actor_url, domain, debug)
     if os.path.isfile(post_filename):
         try:
             os.remove(post_filename)
@@ -3936,7 +3957,7 @@ def _inbox_update_calendar_from_tag(base_dir: str, handle: str,
     if not isinstance(post_json_object['object']['tag'], list):
         return
 
-    actor = post_json_object['actor']
+    actor = get_actor_from_post(post_json_object)
     actor_nickname = get_nickname_from_actor(actor)
     if not actor_nickname:
         return
@@ -3981,7 +4002,7 @@ def _inbox_update_calendar_from_event(base_dir: str, handle: str,
     if not isinstance(post_json_object['object']['startTime'], str):
         return
 
-    actor = post_json_object['actor']
+    actor = get_actor_from_post(post_json_object)
     actor_nickname = get_nickname_from_actor(actor)
     if not actor_nickname:
         return
@@ -4210,7 +4231,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
     # who is sending a DM?
     if not post_json_object.get('actor'):
         return False
-    sending_actor = post_json_object['actor']
+    sending_actor = get_actor_from_post(post_json_object)
     sending_actor_nickname = \
         get_nickname_from_actor(sending_actor)
     if not sending_actor_nickname:
@@ -5573,16 +5594,17 @@ def _receive_follow_request(session, session_onion, session_i2p,
     print('Receiving follow request')
     if not has_actor(message_json, debug):
         return True
-    if not has_users_path(message_json['actor']):
+    actor_url = get_actor_from_post(message_json)
+    if not has_users_path(actor_url):
         if debug:
             print('DEBUG: ' +
                   'users/profile/author/accounts/channel missing from actor')
         return True
-    domain, temp_port = get_domain_from_actor(message_json['actor'])
+    domain, temp_port = get_domain_from_actor(actor_url)
     if not domain:
         if debug:
             print('DEBUG: receive follow request actor without domain ' +
-                  message_json['actor'])
+                  actor_url)
         return True
     from_port = port
     domain_full = get_full_domain(domain, temp_port)
@@ -5592,7 +5614,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
         if debug:
             print('DEBUG: follower from domain not permitted - ' + domain)
         return True
-    nickname = get_nickname_from_actor(message_json['actor'])
+    nickname = get_nickname_from_actor(actor_url)
     if not nickname:
         # single user instance
         nickname = 'dev'
@@ -5723,10 +5745,10 @@ def _receive_follow_request(session, session_onion, session_i2p,
         # Get the actor for the follower and add it to the cache.
         # Getting their public key has the same result
         if debug:
-            print('Obtaining the following actor: ' + message_json['actor'])
+            print('Obtaining the following actor: ' + actor_url)
         pubkey_result = \
             get_person_pub_key(base_dir, curr_session,
-                               message_json['actor'],
+                               actor_url,
                                person_cache, debug, project_version,
                                curr_http_prefix,
                                this_domain, onion_domain,
@@ -5734,14 +5756,14 @@ def _receive_follow_request(session, session_onion, session_i2p,
         if not pubkey_result:
             if debug:
                 print('Unable to obtain following actor: ' +
-                      message_json['actor'])
+                      actor_url)
         elif isinstance(pubkey_result, dict):
             if debug:
                 print('http error code trying to obtain following actor: ' +
-                      message_json['actor'] + ' ' + str(pubkey_result))
+                      actor_url + ' ' + str(pubkey_result))
 
         group_account = \
-            has_group_type(base_dir, message_json['actor'], person_cache)
+            has_group_type(base_dir, actor_url, person_cache)
         if group_account and is_group_account(base_dir, nickname, domain):
             print('Group cannot follow a group')
             return True
@@ -5750,7 +5772,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
         return store_follow_request(base_dir,
                                     nickname_to_follow, domain_to_follow, port,
                                     nickname, domain, from_port,
-                                    message_json, debug, message_json['actor'],
+                                    message_json, debug, actor_url,
                                     group_account)
     else:
         if is_already_follower:
@@ -5767,17 +5789,17 @@ def _receive_follow_request(session, session_onion, session_i2p,
 
             # for actors which don't follow the mastodon
             # /users/ path convention store the full actor
-            if '/users/' not in message_json['actor']:
-                approve_handle = message_json['actor']
+            if '/users/' not in actor_url:
+                approve_handle = actor_url
 
             # Get the actor for the follower and add it to the cache.
             # Getting their public key has the same result
             if debug:
                 print('Obtaining the following actor: ' +
-                      message_json['actor'])
+                      actor_url)
             pubkey_result = \
                 get_person_pub_key(base_dir, curr_session,
-                                   message_json['actor'],
+                                   actor_url,
                                    person_cache, debug, project_version,
                                    curr_http_prefix, this_domain,
                                    onion_domain, i2p_domain,
@@ -5785,11 +5807,11 @@ def _receive_follow_request(session, session_onion, session_i2p,
             if not pubkey_result:
                 if debug:
                     print('Unable to obtain following actor: ' +
-                          message_json['actor'])
+                          actor_url)
             elif isinstance(pubkey_result, dict):
                 if debug:
                     print('http error code trying to obtain ' +
-                          'following actor: ' + message_json['actor'] +
+                          'following actor: ' + actor_url +
                           ' ' + str(pubkey_result))
 
             print('Updating followers file: ' +
@@ -5798,9 +5820,9 @@ def _receive_follow_request(session, session_onion, session_i2p,
                 if not text_in_file(approve_handle, followers_filename):
                     group_account = \
                         has_group_type(base_dir,
-                                       message_json['actor'], person_cache)
+                                       actor_url, person_cache)
                     if debug:
-                        print(approve_handle + ' / ' + message_json['actor'] +
+                        print(approve_handle + ' / ' + actor_url +
                               ' is Group: ' + str(group_account))
                     if group_account and \
                        is_group_account(base_dir, nickname, domain):
@@ -5837,7 +5859,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
     return followed_account_accepts(curr_session, base_dir, curr_http_prefix,
                                     nickname_to_follow, domain_to_follow, port,
                                     nickname, curr_domain, curr_port,
-                                    message_json['actor'], federation_list,
+                                    actor_url, federation_list,
                                     message_json, send_threads, post_log,
                                     cached_webfingers, person_cache,
                                     debug, project_version, True,

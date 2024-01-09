@@ -19,6 +19,7 @@ from utils import get_user_paths
 from utils import acct_dir
 from utils import text_in_file
 from utils import remove_eol
+from utils import get_actor_from_post
 from threads import thread_with_trace
 from threads import begin_thread
 from session import create_session
@@ -276,6 +277,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                             print('Manual follow accept: Sending Accept for ' +
                                   handle + ' follow request from ' +
                                   approve_nickname + '@' + approve_domain)
+                            actor_url = get_actor_from_post(follow_json)
                             followed_account_accepts(curr_session, base_dir,
                                                      curr_http_prefix,
                                                      nickname,
@@ -283,7 +285,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                                      approve_nickname,
                                                      approve_domain,
                                                      approve_port,
-                                                     follow_json['actor'],
+                                                     actor_url,
                                                      federation_list,
                                                      follow_json,
                                                      send_threads, post_log,

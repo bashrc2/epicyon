@@ -74,6 +74,7 @@ from utils import is_unlisted_post
 from utils import language_right_to_left
 from utils import get_attributed_to
 from utils import get_reply_to
+from utils import get_actor_from_post
 from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
 from content import detect_dogwhistles
@@ -615,17 +616,19 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
     if conversation_id:
         conversation_str = '?conversationId=' + conversation_id
     if is_public_reply:
+        actor_url = get_actor_from_post(post_json_object)
         reply_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?replyto=' + reply_to_link + \
-            '?actor=' + post_json_object['actor'] + \
+            '?actor=' + actor_url + \
             conversation_str + \
             '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
     elif is_unlisted_reply:
+        actor_url = get_actor_from_post(post_json_object)
         reply_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?replyunlisted=' + reply_to_link + \
-            '?actor=' + post_json_object['actor'] + \
+            '?actor=' + actor_url + \
             conversation_str + \
             '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
     else:
@@ -633,19 +636,21 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
             reply_type = 'replydm'
             if is_chat_message(post_json_object):
                 reply_type = 'replychat'
+            actor_url = get_actor_from_post(post_json_object)
             reply_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?' + reply_type + '=' + reply_to_link + \
-                '?actor=' + post_json_object['actor'] + \
+                '?actor=' + actor_url + \
                 conversation_str + \
                 '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
         else:
+            actor_url = get_actor_from_post(post_json_object)
             reply_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?replyfollowers=' + reply_to_link + \
-                '?actor=' + post_json_object['actor'] + \
+                '?actor=' + actor_url + \
                 conversation_str + \
                 '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
 
@@ -664,7 +669,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
     """Returns html for the edit icon/button
     """
     edit_str = ''
-    actor = post_json_object['actor']
+    actor = get_actor_from_post(post_json_object)
     # This should either be a post which you created,
     # or it could be generated from the newswire (see
     # _add_blogs_to_newswire) in which case anyone with
@@ -892,10 +897,11 @@ def _get_announce_icon_html(is_announced: bool,
 
     announce_link_str = '?' + \
         announce_link + '=' + announce_post_id + page_number_param
+    actor_url = get_actor_from_post(post_json_object)
     announce_str += \
         '        <a class="imageAnchor" href="/users/' + \
         nickname + announce_link_str + unannounce_link_str + \
-        '?actor=' + post_json_object['actor'] + \
+        '?actor=' + actor_url + \
         '?bm=' + timeline_post_bookmark + first_post_str + \
         '?tl=' + box_name + '" title="' + announce_title + '" tabindex="10">\n'
 
@@ -976,11 +982,12 @@ def _get_like_icon_html(nickname: str, domain_full: str,
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
+    actor_url = get_actor_from_post(post_json_object)
     like_str += \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         like_link + '=' + like_post_id + \
         page_number_param + \
-        '?actor=' + post_json_object['actor'] + \
+        '?actor=' + actor_url + \
         '?bm=' + timeline_post_bookmark + first_post_str + \
         '?tl=' + box_name + '" title="' + like_title + like_count_str + \
         '" tabindex="10">\n'
@@ -1037,11 +1044,12 @@ def _get_bookmark_icon_html(base_dir: str,
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
+    actor_url = get_actor_from_post(post_json_object)
     bookmark_str = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         bookmark_link + '=' + bookmark_post_id + \
         page_number_param + \
-        '?actor=' + post_json_object['actor'] + \
+        '?actor=' + actor_url + \
         '?bm=' + timeline_post_bookmark + first_post_str + \
         '?tl=' + box_name + '" title="' + bookmark_title + \
         '" tabindex="10">\n'
@@ -1083,10 +1091,11 @@ def _get_reaction_icon_html(nickname: str, post_json_object: {},
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
+    actor_url = get_actor_from_post(post_json_object)
     reaction_str = \
         '        <a class="imageAnchor" href="/users/' + nickname + \
         '?selreact=' + reaction_post_id + page_number_param + \
-        '?actor=' + post_json_object['actor'] + \
+        '?actor=' + actor_url + \
         '?bm=' + timeline_post_reaction + first_post_str + \
         '?tl=' + box_name + '" title="' + reaction_title + \
         '" tabindex="10">\n'
@@ -2086,7 +2095,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     # benchmark
     post_start_time = time.time()
 
-    post_actor = post_json_object['actor']
+    post_actor = get_actor_from_post(post_json_object)
 
     # ZZZzzz
     if is_person_snoozed(base_dir, nickname, domain, post_actor):
@@ -2309,10 +2318,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if is_recent_post(post_json_object, 3):
                 if post_json_object.get('actor'):
                     if not os.path.isfile(announce_filename + '.tts'):
+                        actor_url = get_actor_from_post(post_json_object)
                         update_speaker(base_dir, http_prefix,
                                        nickname, domain, domain_full,
                                        post_json_object, person_cache,
-                                       translate, post_json_object['actor'],
+                                       translate, actor_url,
                                        theme_name, system_language,
                                        box_name)
                         try:
@@ -3303,13 +3313,14 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
     emoji_picks_str = ''
     base_url = '/users/' + nickname
     post_id = remove_id_ending(post_json_object['id'])
+    actor_url = get_actor_from_post(post_json_object)
     for _, item in reactions_json.items():
         emoji_picks_str += '<div class="container">\n'
         for emoji_content in item:
             emoji_content_encoded = urllib.parse.quote_plus(emoji_content)
             emoji_url = \
                 base_url + '?react=' + post_id + \
-                '?actor=' + post_json_object['actor'] + \
+                '?actor=' + actor_url + \
                 '?tl=' + box_name + \
                 '?page=' + str(page_number) + \
                 '?emojreact=' + emoji_content_encoded
