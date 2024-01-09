@@ -1337,7 +1337,7 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         }
     }
 
-    # pixelfed style location representation
+    # pixelfed/friendica style location representation
     location = get_location_dict_from_tags(tags)
     if location:
         if location.get('name') and \
@@ -1430,7 +1430,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         "crawlable": False
     }
 
-    # pixelfed style location representation
+    # pixelfed/friendica style location representation
     location = get_location_dict_from_tags(tags)
     if location:
         if location.get('name') and \
