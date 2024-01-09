@@ -3921,8 +3921,8 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                              sites_unavailable, system_language)
 
 
-def _inbox_update_calendar(base_dir: str, handle: str,
-                           post_json_object: {}) -> None:
+def _inbox_update_calendar_from_tag(base_dir: str, handle: str,
+                                    post_json_object: {}) -> None:
     """Detects whether the tag list on a post contains calendar events
     and if so saves the post id to a file in the calendar directory
     for the account
@@ -3961,6 +3961,42 @@ def _inbox_update_calendar(base_dir: str, handle: str,
         if not tag_dict.get('startTime'):
             continue
         save_event_post(base_dir, handle, post_id, tag_dict)
+
+
+def _inbox_update_calendar_from_event(base_dir: str, handle: str,
+                                      post_json_object: {}) -> None:
+    """Detects whether the post contains calendar events
+    and if so saves the post id to a file in the calendar directory
+    for the account
+    This is for Friendica-style calendar events
+    """
+    if not post_json_object.get('actor'):
+        return
+    if not has_object_dict(post_json_object):
+        return
+    if post_json_object['object']['type'] != 'Event':
+        return
+    if not post_json_object['object'].get('startTime'):
+        return
+    if not isinstance(post_json_object['object']['startTime'], str):
+        return
+
+    actor = post_json_object['actor']
+    actor_nickname = get_nickname_from_actor(actor)
+    if not actor_nickname:
+        return
+    actor_domain, _ = get_domain_from_actor(actor)
+    if not actor_domain:
+        return
+    handle_nickname = handle.split('@')[0]
+    handle_domain = handle.split('@')[1]
+    if not receiving_calendar_events(base_dir,
+                                     handle_nickname, handle_domain,
+                                     actor_nickname, actor_domain):
+        return
+
+    post_id = remove_id_ending(post_json_object['id']).replace('/', '#')
+    save_event_post(base_dir, handle, post_id, post_json_object['object'])
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -5228,10 +5264,18 @@ def _inbox_after_initial(server, inbox_start_time,
                                 debug)
             inbox_start_time = time.time()
 
-            _inbox_update_calendar(base_dir, handle, post_json_object)
+            _inbox_update_calendar_from_tag(base_dir, handle, post_json_object)
             fitness_performance(inbox_start_time,
                                 server.fitness,
-                                'INBOX', '_inbox_update_calendar',
+                                'INBOX', '_inbox_update_calendar_from_tag',
+                                debug)
+            inbox_start_time = time.time()
+
+            _inbox_update_calendar_from_event(base_dir, handle,
+                                              post_json_object)
+            fitness_performance(inbox_start_time,
+                                server.fitness,
+                                'INBOX', '_inbox_update_calendar_from_event',
                                 debug)
             inbox_start_time = time.time()
 
