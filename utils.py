@@ -2382,11 +2382,10 @@ def is_dm(post_json_object: {}) -> bool:
     if not has_object_dict(post_json_object):
         return False
     if post_json_object['object']['type'] != 'ChatMessage':
-        if post_json_object['object']['type'] != 'Note' and \
-           post_json_object['object']['type'] != 'Page' and \
-           post_json_object['object']['type'] != 'Patch' and \
-           post_json_object['object']['type'] != 'EncryptedMessage' and \
-           post_json_object['object']['type'] != 'Article':
+        if post_json_object['object']['type'] not in ('Note', 'Event',
+                                                      'Page', 'Patch',
+                                                      'EncryptedMessage',
+                                                      'Article'):
             return False
     if post_json_object['object'].get('moderationStatus'):
         return False
@@ -3474,7 +3473,7 @@ def is_reply(post_json_object: {}, actor: str) -> bool:
         return False
     if post_json_object['object'].get('moderationStatus'):
         return False
-    if post_json_object['object']['type'] not in ('Note', 'Page',
+    if post_json_object['object']['type'] not in ('Note', 'Event', 'Page',
                                                   'EncryptedMessage',
                                                   'ChatMessage', 'Article'):
         return False

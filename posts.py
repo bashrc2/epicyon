@@ -455,7 +455,7 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
         if debug:
             print('No type')
         return False
-    allowed_post_types = ('Create', 'Announce', 'Page', 'Note')
+    allowed_post_types = ('Create', 'Announce', 'Page', 'Note', 'Event')
     if item['type'] not in allowed_post_types:
         if debug:
             print('Not a Create/Note/Announce type')
@@ -476,7 +476,7 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
             if debug:
                 print('object is not a dict or string')
             return False
-    elif item['type'] == 'Note' or item['type'] == 'Page':
+    elif item['type'] in ('Note', 'Event', 'Page'):
         if not item.get('published'):
             if debug:
                 print('No published attribute 3')
@@ -488,7 +488,7 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
         # check that this is a public post
         # #Public should appear in the "to" list
         item_is_note = False
-        if item['type'] == 'Note' or item['type'] == 'Page':
+        if item['type'] in ('Note', 'Event', 'Page'):
             item_is_note = True
 
         if isinstance(this_item, dict):
@@ -617,7 +617,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
 
         this_item = item
         this_item_type = item['type']
-        if this_item_type not in ('Note', 'Page'):
+        if this_item_type not in ('Note', 'Event', 'Page'):
             this_item = item['object']
             if isinstance(this_item, str):
                 if '://' in this_item:
@@ -4318,11 +4318,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
         return False
     if post_json_object['object'].get('moderationStatus'):
         return False
-    if post_json_object['object']['type'] != 'Note' and \
-       post_json_object['object']['type'] != 'Page' and \
-       post_json_object['object']['type'] != 'Event' and \
-       post_json_object['object']['type'] != 'ChatMessage' and \
-       post_json_object['object']['type'] != 'Article':
+    if post_json_object['object']['type'] not in ('Note', 'Page', 'Event',
+                                                  'ChatMessage', 'Article'):
         return False
     if not post_json_object['object'].get('attachment'):
         return False
@@ -5825,7 +5822,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
-        if announced_json['type'] not in ('Note', 'Page',
+        if announced_json['type'] not in ('Note', 'Event', 'Page',
                                           'Question', 'Article'):
             print('WARN: announced post is not Note/Page/Article/Question ' +
                   str(announced_json))

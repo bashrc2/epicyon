@@ -1860,7 +1860,7 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
             if debug:
                 print('DEBUG: Question update was received')
             return True
-    elif message_json['object']['type'] == 'Note':
+    elif message_json['object']['type'] in ('Note', 'Event'):
         if message_json['object'].get('id'):
             domain_full = get_full_domain(domain, port)
             if receive_edit_to_post(recent_posts_cache, message_json,

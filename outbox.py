@@ -469,7 +469,7 @@ def post_message_to_outbox(session, translate: {},
 
     is_edited_post = False
     if message_json['type'] == 'Update' and \
-       message_json['object']['type'] == 'Note':
+       message_json['object']['type'] in ('Note', 'Event'):
         is_edited_post = True
         message_json['type'] = 'Create'
 
@@ -539,7 +539,7 @@ def post_message_to_outbox(session, translate: {},
 
     # The following activity types get added to the index files
     indexed_activities = (
-        'Create', 'Question', 'Note', 'EncryptedMessage', 'Article',
+        'Create', 'Question', 'Note', 'Event', 'EncryptedMessage', 'Article',
         'Patch', 'Announce', 'ChatMessage'
     )
     if message_json['type'] in indexed_activities:
