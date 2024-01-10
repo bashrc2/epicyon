@@ -262,11 +262,12 @@ def set_hashtag_category(base_dir: str, hashtag: str, category: str,
     return False
 
 
-def guess_hashtag_category(tag_name: str, hashtag_categories: {}) -> str:
+def guess_hashtag_category(tag_name: str, hashtag_categories: {},
+                           min_tag_length: int) -> str:
     """Tries to guess a category for the given hashtag.
     This works by trying to find the longest similar hashtag
     """
-    if len(tag_name) < 6:
+    if len(tag_name) < min_tag_length:
         return ''
 
     category_matched = ''
@@ -274,7 +275,7 @@ def guess_hashtag_category(tag_name: str, hashtag_categories: {}) -> str:
 
     for category_str, hashtag_list in hashtag_categories.items():
         for hashtag in hashtag_list:
-            if len(hashtag) < 6:
+            if len(hashtag) < min_tag_length:
                 # avoid matching very small strings which often
                 # lead to spurious categories
                 continue

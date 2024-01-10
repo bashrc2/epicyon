@@ -4838,10 +4838,10 @@ def _test_guess_tag_category() -> None:
         "foo": ["swan", "goose"],
         "bar": ["cats", "mouse"]
     }
-    guess = guess_hashtag_category("unspecifiedgoose", hashtag_categories)
+    guess = guess_hashtag_category("unspecifiedgoose", hashtag_categories, 4)
     assert guess == "foo"
 
-    guess = guess_hashtag_category("mastocats", hashtag_categories)
+    guess = guess_hashtag_category("mastocats", hashtag_categories, 4)
     assert guess == "bar"
 
 

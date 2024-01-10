@@ -440,7 +440,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
             if not os.path.isfile(category_filename):
                 hashtag_categories = get_hashtag_categories(base_dir)
                 category_str = \
-                    guess_hashtag_category(tag_name, hashtag_categories)
+                    guess_hashtag_category(tag_name, hashtag_categories, 6)
                 if category_str:
                     set_hashtag_category(base_dir, tag_name,
                                          category_str, False)
