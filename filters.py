@@ -112,7 +112,7 @@ def _is_twitter_post(content: str) -> bool:
     """Returns true if the given post content is a retweet or twitter crosspost
     """
     features = (
-        '/twitter.', '/nitter.', '@twitter.', '@nitter.',
+        '/x.com', '/twitter.', '/nitter.', '@twitter.', '@nitter.',
         '>RT <', '_tw<', '_tw@', 'tweet', 'Tweet', '🐦🔗'
     )
     for feat in features:
