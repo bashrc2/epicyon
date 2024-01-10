@@ -272,9 +272,17 @@ def guess_hashtag_category(tag_name: str, hashtag_categories: {},
 
     category_matched = ''
     tag_matched_len = 0
+    finished = False
 
     for category_str, hashtag_list in hashtag_categories.items():
+        if finished:
+            break
         for hashtag in hashtag_list:
+            if hashtag == tag_name:
+                # exact match
+                category_matched = category_str
+                finished = True
+                break
             if len(hashtag) < min_tag_length:
                 # avoid matching very small strings which often
                 # lead to spurious categories
