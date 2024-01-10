@@ -4009,6 +4009,30 @@ def replace_users_with_at(actor: str) -> str:
     return actor
 
 
+def get_actor_from_post(post_json_object: {}) -> str:
+    """Gets the actor url from the given post
+    """
+    if not post_json_object.get('actor'):
+        return ''
+
+    actor_id = None
+    if isinstance(post_json_object['actor'], str):
+        # conventionally the actor is just a string url
+        actor_id = post_json_object['actor']
+    elif isinstance(post_json_object['actor'], dict):
+        # in pixelfed/friendica the actor is sometimes a dict
+        # with a lot of properties
+        if post_json_object['actor'].get('id'):
+            if isinstance(post_json_object['actor']['id'], str):
+                actor_id = post_json_object['actor']['id']
+
+    if actor_id:
+        # looks vaguely like a url
+        if '://' in actor_id and '.' in actor_id:
+            return actor_id
+    return ''
+
+
 def has_actor(post_json_object: {}, debug: bool) -> bool:
     """Does the given post have an actor?
     """
@@ -4882,17 +4906,3 @@ def is_valid_date(date_str: str) -> bool:
                 return False
         date_sect_ctr += 1
     return True
-
-
-def get_actor_from_post(post_json_object: {}) -> str:
-    """Gets the actor url from the given post
-    """
-    if not post_json_object.get('actor'):
-        return ''
-    if isinstance(post_json_object['actor'], str):
-        return post_json_object['actor']
-    if isinstance(post_json_object['actor'], dict):
-        if post_json_object['actor'].get('id'):
-            if isinstance(post_json_object['actor']['id'], str):
-                return post_json_object['actor']['id']
-    return ''
