@@ -2734,6 +2734,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if content_str:
         summary_str = get_summary_from_post(post_json_object, system_language,
                                             languages_understood)
+        if summary_str == 'null':
+            summary_str = ''
+
         # add dogwhistle warnings to summary
         summary_str = _add_dogwhistle_warnings(summary_str, content_str,
                                                dogwhistles, translate)
@@ -2789,6 +2792,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if not summary_str:
         summary_str = get_summary_from_post(post_json_object, system_language,
                                             languages_understood)
+        if summary_str == 'null':
+            summary_str = ''
         if content_str:
             # add dogwhistle warnings to summary
             summary_str = _add_dogwhistle_warnings(summary_str, content_str,
@@ -2796,6 +2801,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             # add automatic content warnings
             summary_str = add_auto_cw(base_dir, nickname, domain,
                                       summary_str, content_str)
+
+    if summary_str and not post_is_sensitive:
+        post_is_sensitive = True
 
     _log_post_timing(enable_timing_log, post_start_time, '16')
 
