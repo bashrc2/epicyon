@@ -1137,14 +1137,14 @@ def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
     """Loads automatic CWs file and returns a list containing
     the lines of the file
     """
-    filename = acct_dir(base_dir, nickname, domain) + '/autocw.txt'
-    if not os.path.isfile(filename):
+    auto_cw_filename = acct_dir(base_dir, nickname, domain) + '/autocw.txt'
+    if not os.path.isfile(auto_cw_filename):
         return []
     try:
-        with open(filename, 'r', encoding='utf-8') as fp_auto:
+        with open(auto_cw_filename, 'r', encoding='utf-8') as fp_auto:
             return fp_auto.readlines()
     except OSError:
-        print('EX: unable to load auto cw file ' + filename)
+        print('EX: unable to load auto cw file ' + auto_cw_filename)
     return []
 
 
