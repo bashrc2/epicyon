@@ -2274,19 +2274,15 @@ def add_auto_cw(base_dir: str, nickname: str, domain: str,
     and returns the new subject line
     """
     new_subject = subject
-    print('add_auto_cw: subject ' + subject)
     auto_cw_list = _load_auto_cw(base_dir, nickname, domain)
     for cw_rule in auto_cw_list:
-        print('add_auto_cw: ' + cw_rule)
         if '->' not in cw_rule:
             continue
         sections = cw_rule.split('->')
         rulematch = sections[0].strip()
-        print('add_auto_cw: rulematch ' + rulematch + ' ' + content)
         if rulematch not in content:
             continue
         cw_str = sections[1].strip()
-        print('add_auto_cw: cw_str ' + cw_str)
         if not cw_str:
             continue
         if new_subject:
@@ -2294,5 +2290,4 @@ def add_auto_cw(base_dir: str, nickname: str, domain: str,
                 new_subject += ', ' + cw_str
         else:
             new_subject = cw_str
-    print('add_auto_cw: new_subject ' + new_subject)
     return new_subject
