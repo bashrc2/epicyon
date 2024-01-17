@@ -88,6 +88,7 @@ from content import remove_text_formatting
 from content import remove_long_words
 from content import get_mentions_from_html
 from content import switch_words
+from content import add_auto_cw
 from person import is_person_snoozed
 from person import get_person_avatar_url
 from webapp_utils import text_mode_browser
@@ -2736,6 +2737,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
         # add dogwhistle warnings to summary
         summary_str = _add_dogwhistle_warnings(summary_str, content_str,
                                                dogwhistles, translate)
+        # add automatic content warnings
+        summary_str = add_auto_cw(base_dir, nickname, domain,
+                                  summary_str, content_str)
 
         content_all_str = str(summary_str) + ' ' + content_str
         # does an emoji or lack of alt text on an image indicate a
