@@ -2262,7 +2262,7 @@ def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
         return []
     try:
         with open(auto_cw_filename, 'r', encoding='utf-8') as fp_auto:
-            return fp_auto.readlines()
+            return fp_auto.read().split('\n')
     except OSError:
         print('EX: unable to load auto cw file ' + auto_cw_filename)
     return []
@@ -2278,10 +2278,13 @@ def add_auto_cw(base_dir: str, nickname: str, domain: str,
     for cw_rule in auto_cw_list:
         if '->' not in cw_rule:
             continue
-        rulematch = cw_rule.split('->')[0].strip()
+        sections = cw_rule.split('->')
+        rulematch = sections[0].strip()
         if rulematch not in content:
             continue
-        cw_str = cw_rule.split('->')[1].strip()
+        cw_str = sections[1].strip()
+        if not cw_str:
+            continue
         if new_subject:
             if cw_str not in new_subject:
                 new_subject += ', ' + cw_str
