@@ -100,6 +100,7 @@ from content import remove_long_words
 from content import add_html_tags
 from content import replace_emoji_from_tags
 from content import remove_text_formatting
+from content import add_auto_cw
 from auth import create_basic_auth_header
 from blocking import is_blocked_hashtag
 from blocking import is_blocked
@@ -1133,43 +1134,6 @@ def valid_content_warning(cw: str) -> str:
     return remove_invalid_chars(cw)
 
 
-def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
-    """Loads automatic CWs file and returns a list containing
-    the lines of the file
-    """
-    auto_cw_filename = acct_dir(base_dir, nickname, domain) + '/autocw.txt'
-    if not os.path.isfile(auto_cw_filename):
-        return []
-    try:
-        with open(auto_cw_filename, 'r', encoding='utf-8') as fp_auto:
-            return fp_auto.readlines()
-    except OSError:
-        print('EX: unable to load auto cw file ' + auto_cw_filename)
-    return []
-
-
-def _add_auto_cw(base_dir: str, nickname: str, domain: str,
-                 subject: str, content: str) -> str:
-    """Appends any automatic CW to the subject line
-    and returns the new subject line
-    """
-    new_subject = subject
-    auto_cw_list = _load_auto_cw(base_dir, nickname, domain)
-    for cw_rule in auto_cw_list:
-        if '->' not in cw_rule:
-            continue
-        rulematch = cw_rule.split('->')[0].strip()
-        if rulematch not in content:
-            continue
-        cw_str = cw_rule.split('->')[1].strip()
-        if new_subject:
-            if cw_str not in new_subject:
-                new_subject += ', ' + cw_str
-        else:
-            new_subject = cw_str
-    return new_subject
-
-
 def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
                                in_reply_to: str,
                                sensitive: bool, summary: str,
@@ -1685,7 +1649,7 @@ def _create_post_base(base_dir: str,
     """
     content = remove_invalid_chars(content)
 
-    subject = _add_auto_cw(base_dir, nickname, domain, subject, content)
+    subject = add_auto_cw(base_dir, nickname, domain, subject, content)
 
     if nickname != 'news':
         mentioned_recipients = \

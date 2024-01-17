@@ -2251,3 +2251,40 @@ def format_mixed_right_to_left(content: str,
     if not changed:
         return content
     return result
+
+
+def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
+    """Loads automatic CWs file and returns a list containing
+    the lines of the file
+    """
+    auto_cw_filename = acct_dir(base_dir, nickname, domain) + '/autocw.txt'
+    if not os.path.isfile(auto_cw_filename):
+        return []
+    try:
+        with open(auto_cw_filename, 'r', encoding='utf-8') as fp_auto:
+            return fp_auto.readlines()
+    except OSError:
+        print('EX: unable to load auto cw file ' + auto_cw_filename)
+    return []
+
+
+def add_auto_cw(base_dir: str, nickname: str, domain: str,
+                subject: str, content: str) -> str:
+    """Appends any automatic CW to the subject line
+    and returns the new subject line
+    """
+    new_subject = subject
+    auto_cw_list = _load_auto_cw(base_dir, nickname, domain)
+    for cw_rule in auto_cw_list:
+        if '->' not in cw_rule:
+            continue
+        rulematch = cw_rule.split('->')[0].strip()
+        if rulematch not in content:
+            continue
+        cw_str = cw_rule.split('->')[1].strip()
+        if new_subject:
+            if cw_str not in new_subject:
+                new_subject += ', ' + cw_str
+        else:
+            new_subject = cw_str
+    return new_subject
