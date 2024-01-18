@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import is_account_dir
 from utils import get_url_from_post
 from utils import is_right_to_left_text
 from utils import language_right_to_left
@@ -2268,10 +2269,26 @@ def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
     return []
 
 
+def load_auto_cw_cache(base_dir: str) -> {}:
+    """Returns a dictionary containing the automatic content warning lists
+    for each account
+    """
+    auto_cw_cache = {}
+    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for handle in dirs:
+            if not is_account_dir(handle):
+                continue
+            nickname = handle.split('@')[0]
+            domain = handle.split('@')[1]
+            auto_cw_cache[nickname] = _load_auto_cw(base_dir, nickname, domain)
+        break
+    return auto_cw_cache
+
+
 def add_auto_cw(base_dir: str, nickname: str, domain: str,
                 subject: str, content: str,
                 auto_cw_cache: {}) -> str:
-    """Appends any automatic CW to the subject line
+    """Appends any automatic content warnings to the subject line
     and returns the new subject line
     """
     new_subject = subject

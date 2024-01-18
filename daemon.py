@@ -391,6 +391,7 @@ from utils import get_actor_from_post
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread
 from announce import create_announce
+from content import load_auto_cw_cache
 from content import add_name_emojis_to_tags
 from content import load_dogwhistles
 from content import valid_url_lengths
@@ -24543,7 +24544,7 @@ def run_daemon(no_of_books: int,
     httpd.max_cached_readers = 24
 
     # cache for automatic content warnings
-    httpd.auto_cw_cache = {}
+    httpd.auto_cw_cache = load_auto_cw_cache(base_dir)
 
     # list of websites which are currently down
     httpd.sites_unavailable = load_unavailable_sites(base_dir)
