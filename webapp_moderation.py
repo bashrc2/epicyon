@@ -64,7 +64,8 @@ def html_moderation(default_timeline: str,
                     dogwhistles: {}, ua_str: str,
                     min_images_for_accounts: [],
                     reverse_sequence: bool,
-                    buy_sites: {}) -> str:
+                    buy_sites: {},
+                    auto_cw_cache: {}) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -92,7 +93,7 @@ def html_moderation(default_timeline: str,
                          signing_priv_key_pem, cw_lists, lists_enabled,
                          timezone, bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts, reverse_sequence, None,
-                         buy_sites)
+                         buy_sites, auto_cw_cache)
 
 
 def html_account_info(translate: {},

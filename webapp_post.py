@@ -2084,7 +2084,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             dogwhistles: {},
                             minimize_all_images: bool,
                             first_post_id: str,
-                            buy_sites: {}) -> str:
+                            buy_sites: {},
+                            auto_cw_cache: {}) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2742,7 +2743,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                                dogwhistles, translate)
         # add automatic content warnings
         summary_str = add_auto_cw(base_dir, nickname, domain,
-                                  summary_str, content_str)
+                                  summary_str, content_str,
+                                  auto_cw_cache)
 
         content_all_str = str(summary_str) + ' ' + content_str
         # does an emoji or lack of alt text on an image indicate a
@@ -2800,7 +2802,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                                    dogwhistles, translate)
             # add automatic content warnings
             summary_str = add_auto_cw(base_dir, nickname, domain,
-                                      summary_str, content_str)
+                                      summary_str, content_str,
+                                      auto_cw_cache)
 
     if summary_str and not post_is_sensitive:
         post_is_sensitive = True
@@ -3023,7 +3026,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          timezone: str, mitm: bool,
                          bold_reading: bool, dogwhistles: {},
                          min_images_for_accounts: [],
-                         buy_sites: {}) -> str:
+                         buy_sites: {},
+                         auto_cw_cache: {}) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -3109,7 +3113,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 False, authorized, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
-                                minimize_all_images, None, buy_sites)
+                                minimize_all_images, None, buy_sites,
+                                auto_cw_cache)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -3158,7 +3163,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             bold_reading,
                                             dogwhistles,
                                             minimize_all_images,
-                                            None, buy_sites) + post_str
+                                            None, buy_sites,
+                                            auto_cw_cache) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -3199,7 +3205,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             timezone, False,
                                             bold_reading, dogwhistles,
                                             minimize_all_images, None,
-                                            buy_sites)
+                                            buy_sites, auto_cw_cache)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -3231,7 +3237,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       timezone: str, bold_reading: bool,
                       dogwhistles: {},
                       min_images_for_accounts: [],
-                      buy_sites: {}) -> str:
+                      buy_sites: {},
+                      auto_cw_cache: {}) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -3263,7 +3270,7 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         timezone, False,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
-                                        buy_sites)
+                                        buy_sites, auto_cw_cache)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -3295,7 +3302,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                timezone: str, bold_reading: bool,
                                dogwhistles: {},
                                min_images_for_accounts: [],
-                               buy_sites: {}) -> str:
+                               buy_sites: {},
+                               auto_cw_cache: {}) -> str:
     """Returns the emoji picker screen
     """
     minimize_all_images = False
@@ -3323,7 +3331,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 False, False, False, False, False, False,
                                 cw_lists, lists_enabled, timezone, False,
                                 bold_reading, dogwhistles,
-                                minimize_all_images, None, buy_sites)
+                                minimize_all_images, None, buy_sites,
+                                auto_cw_cache)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

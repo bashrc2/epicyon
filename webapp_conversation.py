@@ -48,7 +48,8 @@ def html_conversation_view(authorized: bool, post_id: str,
                            dogwhistles: {}, access_keys: {},
                            min_images_for_accounts: [],
                            debug: bool, buy_sites: {},
-                           blocked_cache: []) -> str:
+                           blocked_cache: [],
+                           auto_cw_cache: {}) -> str:
     """Show a page containing a conversation thread
     """
     conv_posts = \
@@ -119,7 +120,7 @@ def html_conversation_view(authorized: bool, post_id: str,
                                     timezone, False, bold_reading,
                                     dogwhistles,
                                     minimize_all_images, None,
-                                    buy_sites)
+                                    buy_sites, auto_cw_cache)
         if post_str:
             conv_str += text_mode_separator + separator_str + post_str
 

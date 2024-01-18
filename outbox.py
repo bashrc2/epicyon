@@ -252,7 +252,8 @@ def post_message_to_outbox(session, translate: {},
                            sites_unavailable: [],
                            max_recent_books: int,
                            books_cache: {},
-                           max_cached_readers: int) -> bool:
+                           max_cached_readers: int,
+                           auto_cw_cache: {}) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -634,7 +635,7 @@ def post_message_to_outbox(session, translate: {},
                                         timezone, mitm,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
-                                        buy_sites)
+                                        buy_sites, auto_cw_cache)
 
     if is_edited_post:
         message_json['type'] = 'Update'

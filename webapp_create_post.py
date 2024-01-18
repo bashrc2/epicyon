@@ -261,7 +261,8 @@ def html_new_post(edit_post_params: {},
                   default_month: int, default_year: int,
                   default_post_language: str,
                   buy_sites: {},
-                  default_buy_site: str) -> str:
+                  default_buy_site: str,
+                  auto_cw_cache: {}) -> str:
     """New post screen
     """
     # get the json if this is an edited post
@@ -446,7 +447,7 @@ def html_new_post(edit_post_params: {},
                                                     timezone, False,
                                                     bold_reading, dogwhistles,
                                                     minimize_all_images, None,
-                                                    buy_sites)
+                                                    buy_sites, auto_cw_cache)
                         # about the author
                         if has_object_dict(post_json_object):
                             if post_json_object['object'].get('attributedTo'):

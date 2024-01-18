@@ -2269,12 +2269,17 @@ def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
 
 
 def add_auto_cw(base_dir: str, nickname: str, domain: str,
-                subject: str, content: str) -> str:
+                subject: str, content: str,
+                auto_cw_cache: {}) -> str:
     """Appends any automatic CW to the subject line
     and returns the new subject line
     """
     new_subject = subject
-    auto_cw_list = _load_auto_cw(base_dir, nickname, domain)
+    if auto_cw_cache.get(nickname):
+        auto_cw_list = auto_cw_cache[nickname]
+    else:
+        auto_cw_list = _load_auto_cw(base_dir, nickname, domain)
+        auto_cw_cache[nickname] = auto_cw_list
     for cw_rule in auto_cw_list:
         if '->' not in cw_rule:
             continue

@@ -155,7 +155,8 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                                           httpd.sites_unavailable,
                                           httpd.max_recent_books,
                                           httpd.books_cache,
-                                          httpd.max_cached_readers):
+                                          httpd.max_cached_readers,
+                                          httpd.auto_cw_cache):
                 index_lines.remove(line)
                 try:
                     os.remove(post_filename)

@@ -213,7 +213,8 @@ def html_profile_after_search(authorized: bool,
                               min_images_for_accounts: [],
                               buy_sites: {},
                               max_shares_on_profile: int,
-                              no_of_books: int) -> str:
+                              no_of_books: int,
+                              auto_cw_cache: {}) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -551,7 +552,7 @@ def html_profile_after_search(authorized: bool,
                                         timezone, False,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
-                                        buy_sites)
+                                        buy_sites, auto_cw_cache)
             if not profile_post_html:
                 if debug:
                     print('DEBUG: no html produced for profile post: ' +
@@ -926,7 +927,8 @@ def html_profile(signing_priv_key_pem: str,
                  actor_proxied: str,
                  max_shares_on_profile: int,
                  sites_unavailable: [],
-                 no_of_books: int) -> str:
+                 no_of_books: int,
+                 auto_cw_cache: {}) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -958,7 +960,8 @@ def html_profile(signing_priv_key_pem: str,
                                  shared_items_federated_domains, None,
                                  page_number, max_items_per_page, cw_lists,
                                  lists_enabled, {},
-                                 min_images_for_accounts, buy_sites)
+                                 min_images_for_accounts, buy_sites,
+                                 auto_cw_cache)
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
@@ -1469,7 +1472,8 @@ def html_profile(signing_priv_key_pem: str,
                                 timezone, bold_reading, {},
                                 min_images_for_accounts,
                                 max_profile_posts,
-                                buy_sites) + license_str
+                                buy_sites,
+                                auto_cw_cache) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1576,7 +1580,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         dogwhistles: {},
                         min_images_for_accounts: [],
                         max_profile_posts: int,
-                        buy_sites: {}) -> str:
+                        buy_sites: {},
+                        auto_cw_cache: {}) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1635,7 +1640,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             timezone, False,
                                             bold_reading, dogwhistles,
                                             minimize_all_images, None,
-                                            buy_sites)
+                                            buy_sites, auto_cw_cache)
                 if post_str and item_id not in shown_items:
                     profile_str += post_str + separator_str
                     shown_items.append(item_id)

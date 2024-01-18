@@ -554,6 +554,7 @@ def _desktop_reply_to_post(session, post_id: str,
     buy_url = ''
     chat_url = ''
     video_transcript = None
+    auto_cw_cache = {}
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -568,7 +569,7 @@ def _desktop_reply_to_post(session, post_id: str,
                             low_bandwidth, content_license_url,
                             media_license_url, media_creator,
                             event_date, event_time, event_end_time, location,
-                            translate, buy_url, chat_url,
+                            translate, buy_url, chat_url, auto_cw_cache,
                             debug, post_id, post_id,
                             conversation_id, subject) == 0:
         say_str = 'Reply sent'
@@ -635,6 +636,7 @@ def _desktop_new_post(session,
     buy_url = ''
     chat_url = ''
     video_transcript = None
+    auto_cw_cache = {}
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -648,7 +650,8 @@ def _desktop_new_post(session,
                             low_bandwidth, content_license_url,
                             media_license_url, media_creator,
                             event_date, event_time, event_end_time, location,
-                            translate, buy_url, chat_url, debug, None, None,
+                            translate, buy_url, chat_url, auto_cw_cache,
+                            debug, None, None,
                             conversation_id, subject) == 0:
         say_str = 'Post sent'
     else:
@@ -1404,6 +1407,7 @@ def _desktop_new_dm_base(session, to_handle: str,
     video_transcript = None
 
     say_str = 'Sending'
+    auto_cw_cache = {}
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -1417,7 +1421,8 @@ def _desktop_new_dm_base(session, to_handle: str,
                             low_bandwidth, content_license_url,
                             media_license_url, media_creator,
                             event_date, event_time, event_end_time, location,
-                            translate, buy_url, chat_url, debug, None, None,
+                            translate, buy_url, chat_url, auto_cw_cache,
+                            debug, None, None,
                             conversation_id, subject) == 0:
         say_str = 'Direct message sent'
     else:

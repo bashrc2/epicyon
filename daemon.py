@@ -521,7 +521,8 @@ class PubServer(BaseHTTPRequestHandler):
                             cw_lists: {}, dogwhistles: {},
                             min_images_for_accounts: [],
                             max_hashtags: int,
-                            buy_sites: {}) -> None:
+                            buy_sites: {},
+                            auto_cw_cache: {}) -> None:
         """When an edited post is created this assigns
         a published and updated date to it, and uses
         the previous id
@@ -569,7 +570,8 @@ class PubServer(BaseHTTPRequestHandler):
                              theme_name, max_like_count,
                              cw_lists, dogwhistles,
                              min_images_for_accounts,
-                             max_hashtags, buy_sites)
+                             max_hashtags, buy_sites,
+                             auto_cw_cache)
 
         # update the index
         id_str = edited_postid.split('/')[-1]
@@ -757,7 +759,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            content_license_url, '',
                                            languages_understood, False,
                                            translate, buy_url,
-                                           chat_url)
+                                           chat_url,
+                                           self.server.auto_cw_cache)
         if message_json:
             # NOTE: content and contentMap are not required, but we will keep
             # them in there so that the post does not get filtered out by
@@ -2078,7 +2081,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.sites_unavailable,
                                       self.server.max_recent_books,
                                       self.server.books_cache,
-                                      self.server.max_cached_readers)
+                                      self.server.max_cached_readers,
+                                      self.server.auto_cw_cache)
 
     def _get_outbox_thread_index(self, nickname: str,
                                  max_outbox_threads_per_account: int) -> int:
@@ -3520,7 +3524,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           min_images_for_accounts,
                                           self.server.buy_sites,
                                           max_shares_on_profile,
-                                          self.server.no_of_books)
+                                          self.server.no_of_books,
+                                          self.server.auto_cw_cache)
             if profile_str:
                 msg = profile_str.encode('utf-8')
                 msglen = len(msg)
@@ -3994,7 +3999,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.min_images_for_accounts,
                               None, None, default_post_language,
                               self.server.buy_sites,
-                              default_buy_site)
+                              default_buy_site,
+                              self.server.auto_cw_cache)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -4157,7 +4163,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.min_images_for_accounts,
                               None, None, default_post_language,
                               self.server.buy_sites,
-                              default_buy_site)
+                              default_buy_site,
+                              self.server.auto_cw_cache)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -4848,7 +4855,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.access_keys,
                                         'search',
                                         self.server.min_images_for_accounts,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
                 if hashtag_str:
                     msg = hashtag_str.encode('utf-8')
                     msglen = len(msg)
@@ -4960,7 +4968,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.dogwhistles,
                                         self.server.access_keys,
                                         self.server.min_images_for_accounts,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
                 if history_str:
                     msg = history_str.encode('utf-8')
                     msglen = len(msg)
@@ -5044,7 +5053,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.dogwhistles,
                                         self.server.access_keys,
                                         self.server.min_images_for_accounts,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
                 if bookmarks_str:
                     msg = bookmarks_str.encode('utf-8')
                     msglen = len(msg)
@@ -5234,7 +5244,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   min_images_for_accounts,
                                                   self.server.buy_sites,
                                                   max_shares_on_profile,
-                                                  self.server.no_of_books)
+                                                  self.server.no_of_books,
+                                                  self.server.auto_cw_cache)
                 if profile_str:
                     msg = profile_str.encode('utf-8')
                     msglen = len(msg)
@@ -8439,6 +8450,8 @@ class PubServer(BaseHTTPRequestHandler):
                         except OSError:
                             print('EX: unable to write auto CW ' +
                                   auto_cw_filename)
+                        self.server.auto_cw_cache[nickname] = \
+                            fields['autoCW'].split('\n')
                     else:
                         if os.path.isfile(auto_cw_filename):
                             try:
@@ -8447,6 +8460,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: _profile_edit ' +
                                       'unable to delete ' +
                                       auto_cw_filename)
+                            self.server.auto_cw_cache[nickname] = []
 
                     # save blocked accounts list
                     if fields.get('blocked'):
@@ -9942,7 +9956,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.access_keys,
                                 'search',
                                 self.server.min_images_for_accounts,
-                                self.server.buy_sites)
+                                self.server.buy_sites,
+                                self.server.auto_cw_cache)
         if hashtag_str:
             msg = hashtag_str.encode('utf-8')
             msglen = len(msg)
@@ -10265,7 +10280,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     timezone, mitm, bold_reading,
                                     self.server.dogwhistles,
                                     minimize_all_images, None,
-                                    self.server.buy_sites)
+                                    self.server.buy_sites,
+                                    self.server.auto_cw_cache)
 
         actor_absolute = \
             self._get_instance_url(calling_domain) + \
@@ -10844,7 +10860,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
                                         minimize_all_images, None,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
             else:
                 print('WARN: Liked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
@@ -11051,7 +11068,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
                                         minimize_all_images, None,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
             else:
                 print('WARN: Unliked post not found: ' + liked_post_filename)
             # clear the icon from the cache so that it gets updated
@@ -11287,7 +11305,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
                                         minimize_all_images, None,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
             else:
                 print('WARN: Emoji reaction post not found: ' +
                       reaction_post_filename)
@@ -11513,7 +11532,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
                                         minimize_all_images, None,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
             else:
                 print('WARN: Unreaction post not found: ' +
                       reaction_post_filename)
@@ -11625,7 +11645,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        timezone, bold_reading,
                                        self.server.dogwhistles,
                                        self.server.min_images_for_accounts,
-                                       self.server.buy_sites)
+                                       self.server.buy_sites,
+                                       self.server.auto_cw_cache)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         self._set_headers('text/html', msglen,
@@ -11785,7 +11806,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
                                         minimize_all_images, None,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
             else:
                 print('WARN: Bookmarked post not found: ' + bookmark_filename)
         # self._post_to_outbox(bookmark_json,
@@ -11956,7 +11978,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
                                         minimize_all_images, None,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
             else:
                 print('WARN: Unbookmarked post not found: ' +
                       bookmark_filename)
@@ -12073,7 +12096,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.lists_enabled,
                                     self.server.dogwhistles,
                                     self.server.min_images_for_accounts,
-                                    self.server.buy_sites)
+                                    self.server.buy_sites,
+                                    self.server.auto_cw_cache)
             if delete_str:
                 delete_str_len = len(delete_str)
                 self._set_headers('text/html', delete_str_len,
@@ -12215,7 +12239,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
                                         minimize_all_images, None,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
             else:
                 print('WARN: Muted post not found: ' + mute_filename)
 
@@ -12360,7 +12385,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         timezone, mitm, bold_reading,
                                         self.server.dogwhistles,
                                         minimize_all_images, None,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
             else:
                 print('WARN: Unmuted post not found: ' + mute_filename)
         if calling_domain.endswith('.onion') and onion_domain:
@@ -12492,7 +12518,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       timezone, bold_reading,
                                       self.server.dogwhistles,
                                       self.server.min_images_for_accounts,
-                                      self.server.buy_sites)
+                                      self.server.buy_sites,
+                                      self.server.auto_cw_cache)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -12607,7 +12634,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       timezone, bold_reading,
                                       self.server.dogwhistles,
                                       self.server.min_images_for_accounts,
-                                      self.server.buy_sites)
+                                      self.server.buy_sites,
+                                      self.server.auto_cw_cache)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -12731,7 +12759,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.buy_sites, None,
                                      self.server.max_shares_on_profile,
                                      self.server.sites_unavailable,
-                                     self.server.no_of_books)
+                                     self.server.no_of_books,
+                                     self.server.auto_cw_cache)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -12864,7 +12893,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  None,
                                                  max_shares_on_profile,
                                                  self.server.sites_unavailable,
-                                                 self.server.no_of_books)
+                                                 self.server.no_of_books,
+                                                 self.server.auto_cw_cache)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -12968,7 +12998,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.min_images_for_accounts,
                                    self.server.debug,
                                    self.server.buy_sites,
-                                   self.server.blocked_cache)
+                                   self.server.blocked_cache,
+                                   self.server.auto_cw_cache)
         if conv_str:
             msg = conv_str.encode('utf-8')
             msglen = len(msg)
@@ -13137,7 +13168,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 bold_reading,
                                 self.server.dogwhistles,
                                 self.server.min_images_for_accounts,
-                                self.server.buy_sites)
+                                self.server.buy_sites,
+                                self.server.auto_cw_cache)
         if not msg:
             self._404()
             return True
@@ -13204,6 +13236,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 bold_reading, self.server.dogwhistles,
                                 self.server.min_images_for_accounts,
                                 self.server.buy_sites,
+                                self.server.auto_cw_cache,
                                 'shares')
         if not msg:
             self._404()
@@ -13294,7 +13327,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      timezone, mitm, bold_reading,
                                      self.server.dogwhistles,
                                      self.server.min_images_for_accounts,
-                                     self.server.buy_sites)
+                                     self.server.buy_sites,
+                                     self.server.auto_cw_cache)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -13621,7 +13655,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        ua_str,
                                        self.server.min_images_for_accounts,
                                        reverse_sequence, last_post_id,
-                                       self.server.buy_sites)
+                                       self.server.buy_sites,
+                                       self.server.auto_cw_cache)
                         if getreq_start_time:
                             fitness_performance(getreq_start_time,
                                                 self.server.fitness,
@@ -13805,7 +13840,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.dogwhistles, ua_str,
                                            self.server.min_images_for_accounts,
                                            reverse_sequence, last_post_id,
-                                           self.server.buy_sites)
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -13980,7 +14016,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            ua_str,
                                            self.server.min_images_for_accounts,
                                            reverse_sequence, last_post_id,
-                                           self.server.buy_sites)
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -14151,7 +14188,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.dogwhistles, ua_str,
                                          self.server.min_images_for_accounts,
                                          reverse_sequence, last_post_id,
-                                         self.server.buy_sites)
+                                         self.server.buy_sites,
+                                         self.server.auto_cw_cache)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -14322,7 +14360,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.dogwhistles, ua_str,
                                          self.server.min_images_for_accounts,
                                          reverse_sequence, last_post_id,
-                                         self.server.buy_sites)
+                                         self.server.buy_sites,
+                                         self.server.auto_cw_cache)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -14496,7 +14535,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.dogwhistles, ua_str,
                                         self.server.min_images_for_accounts,
                                         reverse_sequence,
-                                        self.server.buy_sites)
+                                        self.server.buy_sites,
+                                        self.server.auto_cw_cache)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -14674,7 +14714,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.dogwhistles, ua_str,
                                             min_images_for_accounts,
                                             reverse_sequence,
-                                            self.server.buy_sites)
+                                            self.server.buy_sites,
+                                            self.server.auto_cw_cache)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -14803,7 +14844,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     ua_str,
                                     self.server.min_images_for_accounts,
                                     reverse_sequence,
-                                    self.server.buy_sites)
+                                    self.server.buy_sites,
+                                    self.server.auto_cw_cache)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -14905,7 +14947,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dogwhistles, ua_str,
                                     self.server.min_images_for_accounts,
                                     reverse_sequence,
-                                    self.server.buy_sites)
+                                    self.server.buy_sites,
+                                    self.server.auto_cw_cache)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -15048,7 +15091,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.dogwhistles, ua_str,
                                            self.server.min_images_for_accounts,
                                            reverse_sequence,
-                                           self.server.buy_sites)
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -15209,7 +15253,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.dogwhistles, ua_str,
                                 self.server.min_images_for_accounts,
                                 reverse_sequence,
-                                self.server.buy_sites)
+                                self.server.buy_sites,
+                                self.server.auto_cw_cache)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -15367,7 +15412,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             ua_str,
                                             min_images_for_accounts,
                                             reverse_sequence,
-                                            self.server.buy_sites)
+                                            self.server.buy_sites,
+                                            self.server.auto_cw_cache)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -15516,7 +15562,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      None,
                                      self.server.max_shares_on_profile,
                                      self.server.sites_unavailable,
-                                     self.server.no_of_books)
+                                     self.server.no_of_books,
+                                     self.server.auto_cw_cache)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -15670,7 +15717,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      None,
                                      max_shares_on_profile,
                                      sites_unavailable,
-                                     self.server.no_of_books).encode('utf-8')
+                                     self.server.no_of_books,
+                                     self.server.auto_cw_cache).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15823,7 +15871,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      None,
                                      max_shares_on_profile,
                                      sites_unavailable,
-                                     self.server.no_of_books).encode('utf-8')
+                                     self.server.no_of_books,
+                                     self.server.auto_cw_cache).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -15974,7 +16023,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      None,
                                      max_shares_on_profile,
                                      sites_unavailable,
-                                     self.server.no_of_books).encode('utf-8')
+                                     self.server.no_of_books,
+                                     self.server.auto_cw_cache).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html',
                                       msglen, cookie, calling_domain, False)
@@ -16127,7 +16177,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      None,
                                      max_shares_on_profile,
                                      sites_unavailable,
-                                     self.server.no_of_books).encode('utf-8')
+                                     self.server.no_of_books,
+                                     self.server.auto_cw_cache).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
                                       cookie, calling_domain, False)
@@ -16310,7 +16361,8 @@ class PubServer(BaseHTTPRequestHandler):
                              None,
                              max_shares_on_profile,
                              sites_unavailable,
-                             self.server.no_of_books).encode('utf-8')
+                             self.server.no_of_books,
+                             self.server.auto_cw_cache).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, calling_domain, False)
@@ -17140,7 +17192,8 @@ class PubServer(BaseHTTPRequestHandler):
                               new_post_month, new_post_year,
                               default_post_language,
                               self.server.buy_sites,
-                              default_buy_site)
+                              default_buy_site,
+                              self.server.auto_cw_cache)
             if not msg:
                 print('Error replying to ' + in_reply_to_url)
                 self._404()
@@ -19875,7 +19928,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.dogwhistles,
                                            self.server.min_images_for_accounts,
                                            self.server.debug,
-                                           self.server.buy_sites)
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -21995,7 +22049,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        media_license_url, media_creator,
                                        languages_understood,
                                        self.server.translate, buy_url,
-                                       chat_url)
+                                       chat_url,
+                                       self.server.auto_cw_cache)
                 if message_json:
                     if edited_postid:
                         recent_posts_cache = self.server.recent_posts_cache
@@ -22043,7 +22098,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.dogwhistles,
                                                  min_images_for_accounts,
                                                  self.server.max_hashtags,
-                                                 self.server.buy_sites)
+                                                 self.server.buy_sites,
+                                                 self.server.auto_cw_cache)
                         print('DEBUG: sending edited public post ' +
                               str(message_json))
                     if fields['schedulePost']:
@@ -22344,7 +22400,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          media_license_url, media_creator,
                                          languages_understood,
                                          self.server.translate, buy_url,
-                                         chat_url)
+                                         chat_url,
+                                         self.server.auto_cw_cache)
                 if message_json:
                     if edited_postid:
                         recent_posts_cache = self.server.recent_posts_cache
@@ -22392,7 +22449,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.dogwhistles,
                                                  min_images_for_accounts,
                                                  self.server.max_hashtags,
-                                                 self.server.buy_sites)
+                                                 self.server.buy_sites,
+                                                 self.server.auto_cw_cache)
                         print('DEBUG: sending edited unlisted post ' +
                               str(message_json))
 
@@ -22471,7 +22529,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                media_creator,
                                                languages_understood,
                                                self.server.translate,
-                                               buy_url, chat_url)
+                                               buy_url, chat_url,
+                                               self.server.auto_cw_cache)
                 if message_json:
                     if edited_postid:
                         recent_posts_cache = self.server.recent_posts_cache
@@ -22519,7 +22578,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.dogwhistles,
                                                  min_images_for_accounts,
                                                  self.server.max_hashtags,
-                                                 self.server.buy_sites)
+                                                 self.server.buy_sites,
+                                                 self.server.auto_cw_cache)
                         print('DEBUG: sending edited followers post ' +
                               str(message_json))
 
@@ -22611,7 +22671,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                    languages_understood,
                                                    reply_is_chat,
                                                    self.server.translate,
-                                                   buy_url, chat_url)
+                                                   buy_url, chat_url,
+                                                   self.server.auto_cw_cache)
                 if message_json:
                     print('DEBUG: posting DM edited_postid ' +
                           str(edited_postid))
@@ -22661,7 +22722,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.dogwhistles,
                                                  min_images_for_accounts,
                                                  self.server.max_hashtags,
-                                                 self.server.buy_sites)
+                                                 self.server.buy_sites,
+                                                 self.server.auto_cw_cache)
                         print('DEBUG: sending edited dm post ' +
                               str(message_json))
 
@@ -22743,7 +22805,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                media_creator,
                                                languages_understood,
                                                False, self.server.translate,
-                                               buy_url, chat_url)
+                                               buy_url, chat_url,
+                                               self.server.auto_cw_cache)
                 if message_json:
                     if fields['schedulePost']:
                         return 1
@@ -22796,7 +22859,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.dogwhistles,
                                                  min_images_for_accounts,
                                                  self.server.max_hashtags,
-                                                 self.server.buy_sites)
+                                                 self.server.buy_sites,
+                                                 self.server.auto_cw_cache)
                         print('DEBUG: sending edited reminder post ' +
                               str(message_json))
                     if self._post_to_outbox(message_json,
@@ -22852,7 +22916,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.content_license_url,
                                        media_license_url, media_creator,
                                        languages_understood,
-                                       self.server.translate)
+                                       self.server.translate,
+                                       self.server.auto_cw_cache)
                 if message_json:
                     if self._post_to_outbox(message_json,
                                             self.server.project_version,
@@ -22919,7 +22984,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.content_license_url,
                                          media_license_url, media_creator,
                                          languages_understood,
-                                         self.server.translate)
+                                         self.server.translate,
+                                         self.server.auto_cw_cache)
                 if message_json:
                     if self.server.debug:
                         print('DEBUG: new Question')
@@ -22974,7 +23040,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.base_dir,
                                         nickname, self.server.domain)
                 msg_str = fields['readingupdatetype']
-                # TODO reading status
+                # reading status
                 message_json = \
                     create_reading_post(self.server.base_dir,
                                         nickname,
@@ -23003,7 +23069,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         media_license_url, media_creator,
                                         languages_understood,
                                         self.server.translate, buy_url,
-                                        chat_url)
+                                        chat_url,
+                                        self.server.auto_cw_cache)
                 if message_json:
                     if edited_postid:
                         recent_posts_cache = self.server.recent_posts_cache
@@ -23051,7 +23118,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.dogwhistles,
                                                  min_images_for_accounts,
                                                  self.server.max_hashtags,
-                                                 self.server.buy_sites)
+                                                 self.server.buy_sites,
+                                                 self.server.auto_cw_cache)
                         print('DEBUG: sending edited reading status post ' +
                               str(message_json))
                     if fields['schedulePost']:
@@ -24473,6 +24541,9 @@ def run_daemon(no_of_books: int,
     httpd.books_cache = {}
     httpd.max_recent_books = 1000
     httpd.max_cached_readers = 24
+
+    # cache for automatic content warnings
+    httpd.auto_cw_cache = {}
 
     # list of websites which are currently down
     httpd.sites_unavailable = load_unavailable_sites(base_dir)
