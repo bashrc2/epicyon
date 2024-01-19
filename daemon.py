@@ -21462,7 +21462,16 @@ class PubServer(BaseHTTPRequestHandler):
             except OSError:
                 print('EX: unable to read file ' + filename)
             if content:
-                content_json = json.loads(content)
+                try:
+                    content_json = json.loads(content)
+                except json.decoder.JSONDecodeError as ex:
+                    self._400()
+                    print('EX: json decode error ' + str(ex) +
+                          ' from GET content_json ' +
+                          str(content))
+                    self.server.getreq_busy = False
+                    return
+
                 msg_str = json.dumps(content_json, ensure_ascii=False)
                 msg_str = self._convert_domains(calling_domain,
                                                 referer_domain,

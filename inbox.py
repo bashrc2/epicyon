@@ -4608,11 +4608,25 @@ def _inbox_after_initial(server, inbox_start_time,
         if onion_domain:
             if onion_domain in message_str:
                 message_str = message_str.replace(onion_domain, domain)
-                message_json = json.loads(message_str)
+                try:
+                    message_json = json.loads(message_str)
+                except json.decoder.JSONDecodeError as ex:
+                    print('EX: json decode error ' + str(ex) +
+                          ' from _inbox_after_initial onion ' +
+                          str(message_str))
+                    inbox_start_time = time.time()
+                    return False
         if i2p_domain:
             if i2p_domain in message_str:
                 message_str = message_str.replace(i2p_domain, domain)
-                message_json = json.loads(message_str)
+                try:
+                    message_json = json.loads(message_str)
+                except json.decoder.JSONDecodeError as ex:
+                    print('EX: json decode error ' + str(ex) +
+                          ' from _inbox_after_initial i2p ' +
+                          str(message_str))
+                    inbox_start_time = time.time()
+                    return False
 
     actor = key_id
     if '#' in actor:

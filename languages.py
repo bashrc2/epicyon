@@ -168,7 +168,13 @@ def libretranslate_languages(url: str, api_key: str = None) -> []:
     with request.urlopen(req) as response:
         response_str = response.read().decode()
 
-    result = json.loads(response_str)
+    try:
+        result = json.loads(response_str)
+    except json.decoder.JSONDecodeError as ex:
+        print('EX: json decode error ' + str(ex) +
+              ' from libretranslate_languages ' +
+              str(response_str))
+        return []
     if not result:
         return []
     if not isinstance(result, list):
@@ -283,8 +289,14 @@ def libretranslate(url: str, text: str,
     if not response_str:
         return original_text
 
-    translated_text = \
-        '<p>' + json.loads(response_str)['translatedText'] + '</p>'
+    try:
+        translated_text = \
+            '<p>' + json.loads(response_str)['translatedText'] + '</p>'
+    except json.decoder.JSONDecodeError as ex:
+        print('EX: json decode error ' + str(ex) +
+              ' from libretranslate ' +
+              str(response_str))
+        return original_text
 
     # append links form the original text
     if links:
