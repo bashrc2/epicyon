@@ -24212,7 +24212,14 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
         # convert the raw bytes to json
-        message_json = json.loads(message_bytes)
+        try:
+            message_json = json.loads(message_bytes)
+        except json.decoder.JSONDecodeError as ex:
+            self._400()
+            print('EX: json decode error ' + str(ex) +
+                  ' from POST ' + str(message_bytes))
+            self.server.postreq_busy = False
+            return
 
         fitness_performance(postreq_start_time, self.server.fitness,
                             '_POST', 'load json',
