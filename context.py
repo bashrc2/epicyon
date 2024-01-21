@@ -22,8 +22,9 @@ VALID_CONTEXTS = (
     "*/socialweb/webfinger.jsonld",
     "https://www.w3.org/ns/did/v1",
     "https://w3id.org/security/multikey/v1",
-    "https://w3c.github.io/vc-data-integrity/contexts/multikey/v1.jsonld",
-    "https://w3id.org/security/data-integrity/v1"
+    "*/vc-data-integrity/contexts/multikey/v1.jsonld",
+    "https://w3id.org/security/data-integrity/v1",
+    "*/contexts/data-integrity/v1.jsonld"
 )
 
 
@@ -83,6 +84,87 @@ def has_valid_context(post_json_object: {}) -> bool:
         # not a list or string
         return False
     return True
+
+
+def get_data_integrity_v1_schema() -> {}:
+    """ https://w3id.org/security/data-integrity/v1
+    */contexts/data-integrity/v1.jsonld
+    """
+    proof_purpose_json = {
+        "@id": "https://w3id.org/security#proofPurpose",
+        "@type": "@vocab",
+        "@context": {
+            "@protected": True,
+            "id": "@id",
+            "type": "@type",
+            "assertionMethod": {
+                "@id": "https://w3id.org/security#assertionMethod",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "authentication": {
+                "@id": "https://w3id.org/security#authenticationMethod",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "capabilityInvocation": {
+                "@id": "https://w3id.org/security#capabilityInvocationMethod",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "capabilityDelegation": {
+                "@id": "https://w3id.org/security#capabilityDelegationMethod",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "keyAgreement": {
+                "@id": "https://w3id.org/security#keyAgreementMethod",
+                "@type": "@id",
+                "@container": "@set"
+            }
+        }
+    }
+    return {
+        "@context": {
+            "id": "@id",
+            "type": "@type",
+            "@protected": True,
+            "proof": {
+                "@id": "https://w3id.org/security#proof",
+                "@type": "@id",
+                "@container": "@graph"
+            },
+            "DataIntegrityProof": {
+                "@id": "https://w3id.org/security#DataIntegrityProof",
+                "@context": {
+                    "@protected": True,
+                    "id": "@id",
+                    "type": "@type",
+                    "challenge": "https://w3id.org/security#challenge",
+                    "created": {
+                        "@id": "http://purl.org/dc/terms/created",
+                        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+                    },
+                    "domain": "https://w3id.org/security#domain",
+                    "expires": {
+                        "@id": "https://w3id.org/security#expiration",
+                        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+                    },
+                    "nonce": "https://w3id.org/security#nonce",
+                    "proofPurpose": proof_purpose_json,
+                    "cryptosuite": "https://w3id.org/security#cryptosuite",
+                    "proofValue": {
+                        "@id": "https://w3id.org/security#proofValue",
+                        "@type": "https://w3id.org/security#multibase"
+                    },
+                    "verificationMethod": {
+                        "@id": "https://w3id.org/security#verificationMethod",
+                        "@type": "@id"
+                    }
+                }
+            }
+        }
+    }
 
 
 def get_multikey_v1_schema() -> {}:
