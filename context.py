@@ -84,6 +84,67 @@ def has_valid_context(post_json_object: {}) -> bool:
     return True
 
 
+def get_did_v1_schema() -> {}:
+    # https://www.w3.org/ns/did/v1
+    return {
+        "@context": {
+            "@protected": True,
+            "id": "@id",
+            "type": "@type",
+            "alsoKnownAs": {
+                "@id": "https://www.w3.org/ns/activitystreams#alsoKnownAs",
+                "@type": "@id"
+            },
+            "assertionMethod": {
+                "@id": "https://w3id.org/security#assertionMethod",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "authentication": {
+                "@id": "https://w3id.org/security#authenticationMethod",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "capabilityDelegation": {
+                "@id": "https://w3id.org/security#capabilityDelegationMethod",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "capabilityInvocation": {
+                "@id": "https://w3id.org/security#capabilityInvocationMethod",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "controller": {
+                "@id": "https://w3id.org/security#controller",
+                "@type": "@id"
+            },
+            "keyAgreement": {
+                "@id": "https://w3id.org/security#keyAgreementMethod",
+                "@type": "@id",
+                "@container": "@set"
+            },
+            "service": {
+                "@id": "https://www.w3.org/ns/did#service",
+                "@type": "@id",
+                "@context": {
+                    "@protected": True,
+                    "id": "@id",
+                    "type": "@type",
+                    "serviceEndpoint": {
+                        "@id": "https://www.w3.org/ns/did#serviceEndpoint",
+                        "@type": "@id"
+                    }
+                }
+            },
+            "verificationMethod": {
+                "@id": "https://w3id.org/security#verificationMethod",
+                "@type": "@id"
+            }
+        }
+    }
+
+
 def getApschemaV1_9() -> {}:
     # https://domain/apschema/v1.9
     return {
@@ -163,7 +224,7 @@ def getApschemaV1_20() -> {}:
     }
 
 
-def get_webfinger_context() -> {}:
+def get_webfinger_schema() -> {}:
     # https://domain/socialweb/webfinger.jsonld
     # https://domain/socialweb/webfinger
     return {
