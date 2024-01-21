@@ -1,7 +1,7 @@
 __filename__ = "utils.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -362,6 +362,9 @@ def get_content_from_post(post_json_object: {}, system_language: str,
                 content = sys_lang
                 content = remove_markup_tag(content, 'pre')
                 content = content.replace('&amp;', '&')
+                # remove underlines
+                content = content.replace('<u>', '')
+                content = content.replace('</u>', '')
                 return standardize_text(content)
         else:
             # is there a contentMap/summaryMap entry for one of
@@ -373,11 +376,17 @@ def get_content_from_post(post_json_object: {}, system_language: str,
                         content = map_lang
                         content = remove_markup_tag(content, 'pre')
                         content = content.replace('&amp;', '&')
+                        # remove underlines
+                        content = content.replace('<u>', '')
+                        content = content.replace('</u>', '')
                         return standardize_text(content)
     else:
         if isinstance(this_post_json[content_type], str):
             content = this_post_json[content_type]
             content = content.replace('&amp;', '&')
+            # remove underlines
+            content = content.replace('<u>', '')
+            content = content.replace('</u>', '')
             content = remove_markup_tag(content, 'pre')
     return standardize_text(content)
 
