@@ -17,7 +17,8 @@ VALID_CONTEXTS = (
     "*/apschema/v1.21",
     "*/apschema/v1.20",
     "*/litepub-0.1.jsonld",
-    "https://litepub.social/litepub/context.jsonld"
+    "https://litepub.social/litepub/context.jsonld",
+    "*/socialweb/webfinger"
 )
 
 
@@ -49,6 +50,7 @@ def has_valid_context(post_json_object: {}) -> bool:
             if not isinstance(url, str):
                 continue
             if url not in VALID_CONTEXTS:
+                # is this a wildcard context?
                 wildcard_found = False
                 for cont in VALID_CONTEXTS:
                     if cont.startswith('*'):
