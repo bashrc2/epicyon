@@ -49,6 +49,7 @@ from context import get_v1security_schema
 from context import get_activitystreams_schema
 from context import get_webfinger_schema
 from context import get_did_v1_schema
+from context import get_multikey_v1_schema
 
 try:
     from functools import cmp_to_key
@@ -447,6 +448,14 @@ def load_document(url):
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': get_webfinger_schema()
+            }
+            return doc
+        elif (url == "https://w3id.org/security/multikey/v1" or
+              url.endswith("/vc-data-integrity/contexts/multikey/v1.jsonld")):
+            doc = {
+                'contextUrl': None,
+                'documentUrl': url,
+                'document': get_multikey_v1_schema()
             }
             return doc
         elif url == 'https://litepub.social/litepub/context.jsonld':
