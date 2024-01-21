@@ -19,7 +19,10 @@ VALID_CONTEXTS = (
     "*/litepub-0.1.jsonld",
     "https://litepub.social/litepub/context.jsonld",
     "*/socialweb/webfinger",
-    "*/socialweb/webfinger.jsonld"
+    "*/socialweb/webfinger.jsonld",
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/multikey/v1",
+    "https://w3id.org/security/data-integrity/v1"
 )
 
 
@@ -156,6 +159,21 @@ def getApschemaV1_20() -> {}:
             "value": "schema:value",
             "discoverable": "toot:discoverable",
             "wall": "sm:wall"
+        }
+    }
+
+
+def get_webfinger_context() -> {}:
+    # https://domain/socialweb/webfinger.jsonld
+    # https://domain/socialweb/webfinger
+    return {
+        "@context": {
+            "wf": "https://purl.archive.org/socialweb/webfinger#",
+            "xsd": "http://www.w3.org/2001/XMLSchema#",
+            "webfinger": {
+                "@id": "wf:webfinger",
+                "@type": "xsd:string"
+            }
         }
     }
 

@@ -47,6 +47,7 @@ from context import get_litepub_social
 from context import get_v1schema
 from context import get_v1security_schema
 from context import get_activitystreams_schema
+from context import get_webfinger_context
 
 try:
     from functools import cmp_to_key
@@ -437,6 +438,14 @@ def load_document(url):
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': getLitepubV0_1()
+            }
+            return doc
+        elif (url.endswith('/socialweb/webfinger') or
+              url.endswith('/socialweb/webfinger.jsonld')):
+            doc = {
+                'contextUrl': None,
+                'documentUrl': url,
+                'document': get_webfinger_context()
             }
             return doc
         elif url == 'https://litepub.social/litepub/context.jsonld':
