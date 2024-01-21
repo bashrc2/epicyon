@@ -48,6 +48,7 @@ from context import get_v1schema
 from context import get_v1security_schema
 from context import get_activitystreams_schema
 from context import get_webfinger_context
+from context import get_did_v1_context
 
 try:
     from functools import cmp_to_key
@@ -453,6 +454,13 @@ def load_document(url):
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': get_litepub_social()
+            }
+            return doc
+        elif url == 'https://www.w3.org/ns/did/v1':
+            doc = {
+                'contextUrl': None,
+                'documentUrl': url,
+                'document': get_did_v1_context()
             }
             return doc
         return None
