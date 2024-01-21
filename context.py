@@ -18,7 +18,8 @@ VALID_CONTEXTS = (
     "*/apschema/v1.20",
     "*/litepub-0.1.jsonld",
     "https://litepub.social/litepub/context.jsonld",
-    "*/socialweb/webfinger"
+    "*/socialweb/webfinger",
+    "*/socialweb/webfinger.jsonld"
 )
 
 
