@@ -633,7 +633,6 @@ def html_calendar(person_cache: {}, translate: {},
         html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys,
                                  month_name)
 
-    # '?month=' + str(month_number) + ';year=' + str(year) + \
     if not only_show_reminders:
         show_reminders_link = \
             '<a href="' + cal_actor + '/calendar?year=' + str(year) + \
