@@ -640,20 +640,20 @@ def html_calendar(person_cache: {}, translate: {},
             '?month=' + str(month_number) + \
             '?onlyShowReminders=true" ' + \
             'tabindex="2" class="imageAnchor">' + \
-            translate['Only show reminders'] + '</a>\n'
+            translate['Only show reminders'] + '</a>'
     else:
         show_reminders_link = \
             '<a href="' + cal_actor + '/calendar?year=' + str(year) + \
             '?month=' + str(month_number) + \
             '?onlyShowReminders=false" ' + \
             'tabindex="2" class="imageAnchor">' + \
-            translate['Show all events'] + '</a>\n'
+            translate['Show all events'] + '</a>'
 
     new_event_str = \
         '<br><center>\n<p>\n' + \
         '<a href="' + cal_actor + '/newreminder' + \
         '" tabindex="2">➕ ' + \
-        translate['Add to the calendar'] + '</a>\n' + \
+        translate['Add to the calendar'] + '</a></p>\n<p>' + \
         show_reminders_link + '</p>\n</center>\n'
 
     calendar_icon_str = \
