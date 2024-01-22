@@ -654,5 +654,7 @@
     "add a rating": "derecelendirme ekle",
     "Rating": "Değerlendirme",
     "reading": "okuma",
-    "Birthday": "Doğum günü"
+    "Birthday": "Doğum günü",
+    "Only show reminders": "Yalnızca hatırlatıcıları göster",
+    "Show all events": "Tüm etkinlikleri göster"
 }

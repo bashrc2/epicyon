@@ -654,5 +654,7 @@
     "add a rating": "afegir una qualificació",
     "Rating": "Valoració",
     "reading": "lectura",
-    "Birthday": "Aniversari"
+    "Birthday": "Aniversari",
+    "Only show reminders": "Mostra només recordatoris",
+    "Show all events": "Mostra tots els esdeveniments"
 }

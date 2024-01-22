@@ -654,5 +654,7 @@
     "add a rating": "добавить оценку",
     "Rating": "Рейтинг",
     "reading": "чтение",
-    "Birthday": "День рождения"
+    "Birthday": "День рождения",
+    "Only show reminders": "Показывать только напоминания",
+    "Show all events": "Показать все события"
 }

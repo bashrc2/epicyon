@@ -28,6 +28,7 @@ from utils import get_status_number
 from utils import get_full_domain
 from utils import text_in_file
 from utils import remove_eol
+from utils import is_reminder
 from filters import is_filtered
 from context import get_individual_post_context
 from session import get_method
@@ -548,9 +549,11 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
                                text_match: str) -> str:
     """Returns today's events in icalendar format
     """
+    only_show_reminders = False
     month_events = \
         get_calendar_events(base_dir, nickname, domain, year,
-                            month_number, text_match)
+                            month_number, text_match,
+                            only_show_reminders)
 
     ical_str = \
         'BEGIN:VCALENDAR\n' + \
@@ -697,7 +700,8 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
 
 def get_calendar_events(base_dir: str, nickname: str, domain: str,
                         year: int, month_number: int,
-                        text_match: str) -> {}:
+                        text_match: str,
+                        only_show_reminders: bool) -> {}:
     """Retrieves calendar events
     Returns a dictionary indexed by day number of lists containing
     Event and Place activities
@@ -725,6 +729,9 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
                 continue
             if not _is_happening_post(post_json_object):
                 continue
+            if only_show_reminders:
+                if not is_reminder(post_json_object):
+                    continue
 
             if post_json_object.get('object'):
                 if post_json_object['object'].get('content'):

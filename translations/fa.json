@@ -654,5 +654,7 @@
     "add a rating": "امتیاز اضافه کنید",
     "Rating": "رتبه بندی",
     "reading": "خواندن",
-    "Birthday": "روز تولد"
+    "Birthday": "روز تولد",
+    "Only show reminders": "فقط یادآوری ها را نشان دهید",
+    "Show all events": "نمایش همه رویدادها"
 }

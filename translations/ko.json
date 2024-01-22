@@ -654,5 +654,7 @@
     "add a rating": "평점 추가",
     "Rating": "평가",
     "reading": "독서",
-    "Birthday": "생일"
+    "Birthday": "생일",
+    "Only show reminders": "알림만 표시",
+    "Show all events": "모든 이벤트 표시"
 }

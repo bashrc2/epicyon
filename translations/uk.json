@@ -654,5 +654,7 @@
     "add a rating": "додати оцінку",
     "Rating": "Рейтинг",
     "reading": "читання",
-    "Birthday": "день народження"
+    "Birthday": "день народження",
+    "Only show reminders": "Показувати лише нагадування",
+    "Show all events": "Показати всі події"
 }

@@ -654,5 +654,7 @@
     "add a rating": "添加评级",
     "Rating": "评分",
     "reading": "阅读",
-    "Birthday": "生日"
+    "Birthday": "生日",
+    "Only show reminders": "只显示提醒",
+    "Show all events": "显示所有活动"
 }

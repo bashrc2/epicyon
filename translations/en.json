@@ -654,5 +654,7 @@
     "add a rating": "add a rating",
     "Rating": "Rating",
     "reading": "reading",
-    "Birthday": "Birthday"
+    "Birthday": "Birthday",
+    "Only show reminders": "Only show reminders",
+    "Show all events": "Show all events"
 }

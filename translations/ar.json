@@ -654,5 +654,7 @@
     "add a rating": "إضافة تقييم",
     "Rating": "تقييم",
     "reading": "قراءة",
-    "Birthday": "عيد ميلاد"
+    "Birthday": "عيد ميلاد",
+    "Only show reminders": "عرض التذكيرات فقط",
+    "Show all events": "عرض كافة الأحداث"
 }

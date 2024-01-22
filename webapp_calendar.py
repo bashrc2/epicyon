@@ -364,6 +364,7 @@ def html_calendar(person_cache: {}, translate: {},
     day_number = None
     year = default_year
     actor = http_prefix + '://' + domain_full + path.replace('/calendar', '')
+    only_show_reminders = False
     if '?' in actor:
         first = True
         for part in actor.split('?'):
@@ -388,6 +389,10 @@ def html_calendar(person_cache: {}, translate: {},
                         bool_str = part.split('=')[1]
                         if bool_str.lower().startswith('t'):
                             icalendar = True
+                    elif part.split('=')[0] == 'onlyShowReminders':
+                        bool_str = part.split('=')[1]
+                        if bool_str.lower().startswith('t'):
+                            only_show_reminders = True
             first = False
         actor = actor.split('?')[0]
 
@@ -441,7 +446,7 @@ def html_calendar(person_cache: {}, translate: {},
 
     events = \
         get_calendar_events(base_dir, nickname, domain, year, month_number,
-                            text_match)
+                            text_match, only_show_reminders)
 
     prev_year = year
     prev_month_number = month_number - 1
@@ -500,7 +505,8 @@ def html_calendar(person_cache: {}, translate: {},
     # previous month
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(prev_year) + \
-        '?month=' + str(prev_month_number) + '" ' + \
+        '?month=' + str(prev_month_number) + \
+        '?onlyShowReminders=' + str(only_show_reminders) + '" ' + \
         'accesskey="' + access_keys['Page up'] + \
         '" tabindex="2" class="imageAnchor">'
     calendar_str += \
@@ -521,7 +527,8 @@ def html_calendar(person_cache: {}, translate: {},
     # next month
     calendar_str += \
         '  <a href="' + cal_actor + '/calendar?year=' + str(next_year) + \
-        '?month=' + str(next_month_number) + '" ' + \
+        '?month=' + str(next_month_number) + \
+        '?onlyShowReminders=' + str(only_show_reminders) + '" ' + \
         'accesskey="' + access_keys['Page down'] + \
         '" tabindex="2" class="imageAnchor">'
     calendar_str += \
@@ -627,11 +634,27 @@ def html_calendar(person_cache: {}, translate: {},
                                  month_name)
 
     # '?month=' + str(month_number) + ';year=' + str(year) + \
+    if not only_show_reminders:
+        show_reminders_link = \
+            '<a href="' + cal_actor + '/calendar?year=' + str(year) + \
+            '?month=' + str(month_number) + \
+            '?onlyShowReminders=true" ' + \
+            'tabindex="2" class="imageAnchor">' + \
+            translate['Only show reminders'] + '</a>\n'
+    else:
+        show_reminders_link = \
+            '<a href="' + cal_actor + '/calendar?year=' + str(year) + \
+            '?month=' + str(month_number) + \
+            '?onlyShowReminders=false" ' + \
+            'tabindex="2" class="imageAnchor">' + \
+            translate['Show all events'] + '</a>\n'
+
     new_event_str = \
         '<br><center>\n<p>\n' + \
         '<a href="' + cal_actor + '/newreminder' + \
         '" tabindex="2">➕ ' + \
-        translate['Add to the calendar'] + '</a>\n</p>\n</center>\n'
+        translate['Add to the calendar'] + '</a>\n' + \
+        show_reminders_link + '</p>\n</center>\n'
 
     calendar_icon_str = \
         '    <a href="' + path + '?ical=true" ' + \

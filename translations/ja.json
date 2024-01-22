@@ -654,5 +654,7 @@
     "add a rating": "評価を追加する",
     "Rating": "評価",
     "reading": "読む",
-    "Birthday": "誕生日"
+    "Birthday": "誕生日",
+    "Only show reminders": "リマインダーのみを表示",
+    "Show all events": "すべてのイベントを表示"
 }

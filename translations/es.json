@@ -654,5 +654,7 @@
     "add a rating": "agregar una calificación",
     "Rating": "Clasificación",
     "reading": "lectura",
-    "Birthday": "Cumpleaños"
+    "Birthday": "Cumpleaños",
+    "Only show reminders": "Mostrar solo recordatorios",
+    "Show all events": "Mostrar todos los eventos"
 }

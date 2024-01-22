@@ -654,5 +654,7 @@
     "add a rating": "Fügen Sie eine Bewertung hinzu",
     "Rating": "Bewertung",
     "reading": "lektüre",
-    "Birthday": "Geburtstag"
+    "Birthday": "Geburtstag",
+    "Only show reminders": "Nur Erinnerungen anzeigen",
+    "Show all events": "Alle Veranstaltungen anzeigen"
 }
