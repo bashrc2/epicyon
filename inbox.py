@@ -1451,7 +1451,8 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
             return False
         if dangerous_markup(summary, allow_local_network_access, []):
             if message_json['object'].get('id'):
-                print('REJECT ARBITRARY HTML: ' + message_json['object']['id'])
+                print('REJECT ARBITRARY HTML 1: ' +
+                      message_json['object']['id'])
             print('REJECT ARBITRARY HTML: bad string in summary - ' +
                   summary)
             return False
@@ -1475,7 +1476,8 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     content_str = get_base_content_from_post(message_json, system_language)
     if dangerous_markup(content_str, allow_local_network_access, ['pre']):
         if message_json['object'].get('id'):
-            print('REJECT ARBITRARY HTML: ' + message_json['object']['id'])
+            print('REJECT ARBITRARY HTML 2: ' +
+                  message_json['object']['id'])
         if debug:
             print('REJECT ARBITRARY HTML: bad string in post - ' +
                   content_str)
