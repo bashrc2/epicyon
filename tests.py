@@ -2241,7 +2241,6 @@ def test_shared_items_federation(base_dir: str) -> None:
     assert bob_tokens.get(bob_address)
     print("Check that Bob now has Alice's token")
     pprint(bob_tokens)
-    # TODO
     assert bob_tokens.get(alice_address)
     print('Bob tokens')
     pprint(bob_tokens)
