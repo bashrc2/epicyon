@@ -1566,8 +1566,9 @@ def test_post_message_between_servers(base_dir: str) -> None:
     if alice_post_json:
         pprint(alice_post_json)
 
-    # TODO: fix reactions unit test
-#    assert text_in_file('reactions', outbox_post_filename)
+    if not text_in_file('reactions', outbox_post_filename):
+        pprint(alice_post_json)
+    assert text_in_file('reactions', outbox_post_filename)
 
     print('\n\n*******************************************************')
     print("Bob repeats Alice's post")
