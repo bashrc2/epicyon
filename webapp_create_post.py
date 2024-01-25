@@ -846,7 +846,6 @@ def html_new_post(edit_post_params: {},
         extra_fields += '<br>' + \
             edit_number_field(translate['Rating'],
                               'bookrating', '', 1, 5, None)
-        # TODO reading status
         extra_fields += '</div>\n'
 
     citations_str = ''
