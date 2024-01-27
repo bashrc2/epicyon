@@ -4925,3 +4925,37 @@ def resembles_url(text: str) -> bool:
        '<' not in text:
         return True
     return False
+
+
+def local_only_is_local(message_json: {}, domain_full: str) -> bool:
+    """Returns True if the given json post is verified as local only
+    """
+    if message_json['object']['localOnly'] is True:
+        # check that the to addresses are local
+        if isinstance(message_json['object']['to'], list):
+            for to_actor in message_json['object']['to']:
+                to_domain, to_port = \
+                    get_domain_from_actor(to_actor)
+                if not to_domain:
+                    continue
+                to_domain_full = \
+                    get_full_domain(to_domain, to_port)
+                if domain_full != to_domain_full:
+                    print("REJECT: inbox " +
+                          "local only post isn't local " +
+                          str(message_json))
+                    return False
+        # check that the sender is local
+        attrib_field = message_json['object']['attributedTo']
+        local_actor = get_attributed_to(attrib_field)
+        local_domain, local_port = \
+            get_domain_from_actor(local_actor)
+        if local_domain:
+            local_domain_full = \
+                get_full_domain(local_domain, local_port)
+            if domain_full != local_domain_full:
+                print("REJECT: " +
+                      "inbox local only post isn't local " +
+                      str(message_json))
+                return False
+    return True

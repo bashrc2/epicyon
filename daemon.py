@@ -305,7 +305,6 @@ from utils import resembles_url
 from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import corp_servers
-from utils import get_attributed_to
 from utils import get_memorials
 from utils import set_memorials
 from utils import is_memorial_account
@@ -389,6 +388,7 @@ from utils import is_image_file
 from utils import has_group_type
 from utils import binary_is_image
 from utils import get_actor_from_post
+from utils import local_only_is_local
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread
 from announce import create_announce
@@ -2311,38 +2311,11 @@ class PubServer(BaseHTTPRequestHandler):
             if 'localOnly' in message_json['object'] and \
                message_json['object'].get('to') and \
                message_json['object'].get('attributedTo'):
-                if message_json['object']['localOnly'] is True:
-                    # check that the to addresses are local
-                    if isinstance(message_json['object']['to'], list):
-                        for to_actor in message_json['object']['to']:
-                            to_domain, to_port = \
-                                get_domain_from_actor(to_actor)
-                            if not to_domain:
-                                continue
-                            to_domain_full = \
-                                get_full_domain(to_domain, to_port)
-                            if self.server.domain_full != to_domain_full:
-                                print("REJECT: inbox " +
-                                      "local only post isn't local " +
-                                      str(message_json))
-                                self._400()
-                                self.server.postreq_busy = False
-                                return 3
-                    # check that the sender is local
-                    attrib_field = message_json['object']['attributedTo']
-                    local_actor = get_attributed_to(attrib_field)
-                    local_domain, local_port = \
-                        get_domain_from_actor(local_actor)
-                    if local_domain:
-                        local_domain_full = \
-                            get_full_domain(local_domain, local_port)
-                        if self.server.domain_full != local_domain_full:
-                            print("REJECT: " +
-                                  "inbox local only post isn't local " +
-                                  str(message_json))
-                            self._400()
-                            self.server.postreq_busy = False
-                            return 3
+                if not local_only_is_local(message_json,
+                                           self.server.domain_full):
+                    self._400()
+                    self.server.postreq_busy = False
+                    return 3
 
         # actor should look like a url
         if debug:
