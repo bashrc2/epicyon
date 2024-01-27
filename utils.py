@@ -4959,3 +4959,33 @@ def local_only_is_local(message_json: {}, domain_full: str) -> bool:
                       str(message_json))
                 return False
     return True
+
+
+def post_summary_contains_links(message_json: {}) -> bool:
+    """check if the json post summary contains links
+    """
+    if message_json['object'].get('type') and \
+       message_json['object'].get('summary'):
+        if message_json['object']['type'] != 'Person' and \
+           message_json['object']['type'] != 'Application' and \
+           message_json['object']['type'] != 'Group':
+            if len(message_json['object']['summary']) > 1024:
+                actor_url = get_actor_from_post(message_json)
+                print('INBOX: summary is too long ' +
+                      actor_url + ' ' +
+                      message_json['object']['summary'])
+                return True
+            if '://' in message_json['object']['summary']:
+                actor_url = get_actor_from_post(message_json)
+                print('INBOX: summary should not contain links ' +
+                      actor_url + ' ' +
+                      message_json['object']['summary'])
+                return True
+        else:
+            if len(message_json['object']['summary']) > 4096:
+                actor_url = get_actor_from_post(message_json)
+                print('INBOX: person summary is too long ' +
+                      actor_url + ' ' +
+                      message_json['object']['summary'])
+                return True
+    return False

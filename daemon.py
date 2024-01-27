@@ -301,6 +301,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import post_summary_contains_links
 from utils import resembles_url
 from utils import get_url_from_post
 from utils import date_from_string_format
@@ -2277,36 +2278,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.postreq_busy = False
                     return 3
             # check that the summary does not contain links
-            if message_json['object'].get('type') and \
-               message_json['object'].get('summary'):
-                if message_json['object']['type'] != 'Person' and \
-                   message_json['object']['type'] != 'Application' and \
-                   message_json['object']['type'] != 'Group':
-                    if len(message_json['object']['summary']) > 1024:
-                        actor_url = get_actor_from_post(message_json)
-                        print('INBOX: summary is too long ' +
-                              actor_url + ' ' +
-                              message_json['object']['summary'])
-                        self._400()
-                        self.server.postreq_busy = False
-                        return 3
-                    if '://' in message_json['object']['summary']:
-                        actor_url = get_actor_from_post(message_json)
-                        print('INBOX: summary should not contain links ' +
-                              actor_url + ' ' +
-                              message_json['object']['summary'])
-                        self._400()
-                        self.server.postreq_busy = False
-                        return 3
-                else:
-                    if len(message_json['object']['summary']) > 4096:
-                        actor_url = get_actor_from_post(message_json)
-                        print('INBOX: person summary is too long ' +
-                              actor_url + ' ' +
-                              message_json['object']['summary'])
-                        self._400()
-                        self.server.postreq_busy = False
-                        return 3
+            if post_summary_contains_links(message_json):
+                self._400()
+                self.server.postreq_busy = False
+                return 3
             # if this is a local only post, is it really local?
             if 'localOnly' in message_json['object'] and \
                message_json['object'].get('to') and \
