@@ -40,6 +40,7 @@ from utils import get_account_timezone
 from utils import remove_eol
 from utils import is_valid_date
 from utils import get_actor_from_post
+from utils import resembles_url
 from languages import get_actor_languages
 from skills import get_skills
 from theme import get_themes_list
@@ -633,7 +634,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         actor_proxied = ''
     else:
         actor_proxied = remove_html(actor_proxied)
-        if '://' in actor_proxied:
+        if resembles_url(actor_proxied):
             proxy_str = 'Proxy'
             if translate.get(proxy_str):
                 proxy_str = translate[proxy_str]
@@ -792,7 +793,7 @@ def _get_profile_header_after_search(base_dir: str,
         actor_proxied = ''
     else:
         actor_proxied = remove_html(actor_proxied)
-        if '://' in actor_proxied:
+        if resembles_url(actor_proxied):
             proxy_str = 'Proxy'
             if translate.get(proxy_str):
                 proxy_str = translate[proxy_str]

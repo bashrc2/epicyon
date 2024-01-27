@@ -37,6 +37,7 @@ from utils import local_actor_url
 from utils import text_in_file
 from utils import remove_eol
 from utils import binary_is_image
+from utils import resembles_url
 from filters import is_filtered
 from cache import get_actor_public_key_from_id
 from cache import store_person_in_cache
@@ -1442,7 +1443,7 @@ def get_post_attachments_as_html(base_dir: str,
                         license_str = ''
                         if media_license and media_creator:
                             media_license = remove_html(media_license)
-                            if '://' in media_license:
+                            if resembles_url(media_license):
                                 license_str += \
                                     '<a href="' + media_license + \
                                     '" target="_blank" ' + \
@@ -1531,7 +1532,7 @@ def get_post_attachments_as_html(base_dir: str,
                     license_str = ''
                     attachment_str += '<figcaption>'
                     media_license = remove_html(media_license)
-                    if '://' in media_license:
+                    if resembles_url(media_license):
                         license_str += \
                             '<a href="' + media_license + \
                             '" target="_blank" ' + \

@@ -147,8 +147,7 @@ def get_attributed_to(field) -> str:
                     if isinstance(attrib['type'], str) and \
                        isinstance(attrib['id'], str):
                         if attrib['type'] == 'Person' and \
-                           '://' in attrib['id'] and \
-                           '.' in attrib['id']:
+                           resembles_url(attrib['id']):
                             return attrib['id']
         if isinstance(field[0], str):
             return field[0]
@@ -4037,7 +4036,7 @@ def get_actor_from_post(post_json_object: {}) -> str:
 
     if actor_id:
         # looks vaguely like a url
-        if '://' in actor_id and '.' in actor_id:
+        if resembles_url(actor_id):
             return actor_id
     return ''
 
@@ -4915,3 +4914,14 @@ def is_valid_date(date_str: str) -> bool:
                 return False
         date_sect_ctr += 1
     return True
+
+
+def resembles_url(text: str) -> bool:
+    """Does the given text look like a url?
+    """
+    if '://' in text and \
+       '.' in text and \
+       ' ' not in text and \
+       '<' not in text:
+        return True
+    return False

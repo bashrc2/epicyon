@@ -75,6 +75,7 @@ from utils import language_right_to_left
 from utils import get_attributed_to
 from utils import get_reply_to
 from utils import get_actor_from_post
+from utils import resembles_url
 from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
 from content import detect_dogwhistles
@@ -2364,7 +2365,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     post_proxied = ap_proxy_type(post_json_object['object'])
     if post_proxied:
         post_proxied = remove_html(post_proxied)
-        if '://' in post_proxied:
+        if resembles_url(post_proxied):
             proxy_str = 'Proxy'
             if translate.get(proxy_str):
                 proxy_str = translate[proxy_str]
@@ -2905,7 +2906,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         # show embedded map if the location contains a map url
         location_str = get_location_from_post(post_json_object)
         if location_str:
-            if '://' in location_str and '.' in location_str:
+            if resembles_url(location_str):
                 bounding_box_degrees = 0.001
                 map_str = \
                     html_open_street_map(location_str,

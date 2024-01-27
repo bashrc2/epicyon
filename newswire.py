@@ -19,6 +19,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import resembles_url
 from utils import get_url_from_post
 from utils import remove_zero_length_strings
 from utils import date_from_string_format
@@ -659,7 +660,7 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
             episode_image = episode_image.split('>')[1]
             if '<' in episode_image:
                 episode_image = episode_image.split('<')[0]
-                if '://' in episode_image and '.' in episode_image:
+                if resembles_url(episode_image):
                     podcast_episode_image = episode_image
                     break
 
@@ -756,7 +757,7 @@ def get_link_from_rss_item(rss_item: str,
                 link_str = enclosure.split('url="')[1]
                 if '"' in link_str:
                     link = link_str.split('"')[0]
-                    if '://' in link:
+                    if resembles_url(link):
                         return link, mime_type
 
     if '<link>' in rss_item and '</link>' in rss_item:

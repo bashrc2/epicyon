@@ -87,6 +87,7 @@ from utils import follow_person
 from utils import valid_nickname
 from utils import get_protocol_prefixes
 from utils import acct_dir
+from utils import resembles_url
 from media import archive_media
 from media import get_attachment_media_type
 from delete import send_delete_via_server
@@ -867,8 +868,7 @@ def _command_options() -> None:
 
     # automatic translations
     if argb.libretranslateUrl:
-        if '://' in argb.libretranslateUrl and \
-           '.' in argb.libretranslateUrl:
+        if resembles_url(argb.libretranslateUrl):
             set_config_param(base_dir, 'libretranslateUrl',
                              argb.libretranslateUrl)
     if argb.libretranslateApiKey:

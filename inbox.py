@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import resembles_url
 from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import date_epoch
@@ -371,7 +372,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
     # get geolocation from tags
     location_str = get_location_from_post(post_json_object)
     if location_str:
-        if '://' in location_str and '.' in location_str:
+        if resembles_url(location_str):
             zoom, latitude, longitude = geocoords_from_map_link(location_str)
             if latitude and longitude and zoom and \
                location_str not in map_links:

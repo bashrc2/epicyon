@@ -23,6 +23,7 @@ from session import post_json
 from session import post_image
 from session import create_session
 from session import get_json_valid
+from utils import resembles_url
 from utils import date_utcnow
 from utils import dangerous_markup
 from utils import remove_html
@@ -2147,7 +2148,7 @@ def vf_proposal_from_share(shared_item: {},
             "name": shared_item['location'].title()
         }
     if shared_item['imageUrl']:
-        if '://' in shared_item['imageUrl']:
+        if resembles_url(shared_item['imageUrl']):
             file_extension = None
             accepted_types = get_media_extensions()
             for mtype in accepted_types:

@@ -17,6 +17,7 @@ from utils import remove_html
 from utils import has_object_dict
 from utils import get_config_param
 from utils import local_actor_url
+from utils import resembles_url
 from cache import get_person_from_cache
 
 
@@ -209,7 +210,7 @@ def get_links_from_content(content: str) -> {}:
         if '"' not in subsection:
             continue
         url = subsection.split('"')[1].strip()
-        if '://' in url and '.' in url and \
+        if resembles_url(url) and \
            '>' in subsection:
             if url not in links:
                 link_text = subsection.split('>')[1]

@@ -159,7 +159,7 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
     curr_page = 1
     page_ctr = 0
     total_ctr = 0
-    for handle, new_handle in lines.items():
+    for handle, _ in lines.items():
         # nickname@domain
         page_ctr += 1
         total_ctr += 1

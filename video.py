@@ -18,6 +18,7 @@ from utils import get_content_from_post
 from utils import dangerous_markup
 from utils import license_link_from_name
 from utils import get_media_url_from_video
+from utils import resembles_url
 from blocking import is_blocked
 from filters import is_filtered
 
@@ -168,9 +169,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                                    system_language):
                     new_post['object']['support'] = support_str
                     # if this is a link
-                    if ' ' not in support_str and \
-                       '://' in support_str and \
-                       '.' in support_str:
+                    if resembles_url(support_str):
                         # add a buy link
                         new_post['object']['attachment'].append({
                             'type': 'Link',

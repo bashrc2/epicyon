@@ -301,6 +301,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import resembles_url
 from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import corp_servers
@@ -2347,8 +2348,7 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('INBOX: checking that actor looks like a url')
         actor_url = get_actor_from_post(message_json)
-        if '://' not in actor_url or \
-           '.' not in actor_url:
+        if not resembles_url(actor_url):
             print('INBOX: POST actor does not look like a url ' +
                   actor_url)
             self._400()
@@ -7159,8 +7159,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['libretranslateUrl'] != \
                                curr_libretranslate_url:
                                 lt_url = fields['libretranslateUrl']
-                                if '://' in lt_url and \
-                                   '.' in lt_url:
+                                if resembles_url(lt_url):
                                     set_config_param(base_dir,
                                                      'libretranslateUrl',
                                                      lt_url)
@@ -7551,8 +7550,7 @@ class PubServer(BaseHTTPRequestHandler):
                         moved_to = actor_json['movedTo']
                     if fields.get('movedTo'):
                         if fields['movedTo'] != moved_to and \
-                           '://' in fields['movedTo'] and \
-                           '.' in fields['movedTo']:
+                           resembles_url(fields['movedTo']):
                             actor_json['movedTo'] = fields['movedTo']
                             send_move_activity = True
                             actor_changed = True
@@ -7615,7 +7613,7 @@ class PubServer(BaseHTTPRequestHandler):
                             also_known_as = []
                             for alt_actor in new_also_known_as:
                                 alt_actor = alt_actor.strip()
-                                if '://' in alt_actor and '.' in alt_actor:
+                                if resembles_url(alt_actor):
                                     if alt_actor not in also_known_as:
                                         also_known_as.append(alt_actor)
                             actor_json['alsoKnownAs'] = also_known_as
