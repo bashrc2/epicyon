@@ -2713,7 +2713,7 @@ def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
                       encoding='utf-8') as last_used_file:
                 last_used = last_used_file.read()
                 if last_used.isdigit():
-                    time_diff = (curr_time - int(last_used))
+                    time_diff = curr_time - int(last_used)
                     if time_diff < month_seconds:
                         account_ctr += 1
         break
