@@ -1561,28 +1561,28 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
-                         base_dir: str,
-                         nickname: str, domain: str,
-                         max_mentions: int, max_emoji: int,
-                         allow_local_network_access: bool,
-                         debug: bool,
-                         system_language: str, http_prefix: str,
-                         domain_full: str, person_cache: {},
-                         signing_priv_key_pem: str,
-                         max_recent_posts: int, translate: {},
-                         session, cached_webfingers: {}, port: int,
-                         allow_deletion: bool,
-                         yt_replace_domain: str,
-                         twitter_replacement_domain: str,
-                         show_published_date_only: bool,
-                         peertube_instances: [],
-                         theme_name: str, max_like_count: int,
-                         cw_lists: {}, dogwhistles: {},
-                         min_images_for_accounts: [],
-                         max_hashtags: int,
-                         buy_sites: {},
-                         auto_cw_cache: {}) -> bool:
+def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
+                          base_dir: str,
+                          nickname: str, domain: str,
+                          max_mentions: int, max_emoji: int,
+                          allow_local_network_access: bool,
+                          debug: bool,
+                          system_language: str, http_prefix: str,
+                          domain_full: str, person_cache: {},
+                          signing_priv_key_pem: str,
+                          max_recent_posts: int, translate: {},
+                          session, cached_webfingers: {}, port: int,
+                          allow_deletion: bool,
+                          yt_replace_domain: str,
+                          twitter_replacement_domain: str,
+                          show_published_date_only: bool,
+                          peertube_instances: [],
+                          theme_name: str, max_like_count: int,
+                          cw_lists: {}, dogwhistles: {},
+                          min_images_for_accounts: [],
+                          max_hashtags: int,
+                          buy_sites: {},
+                          auto_cw_cache: {}) -> bool:
     """A post was edited
     """
     if not has_object_dict(message_json):
@@ -1722,6 +1722,99 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             minimize_all_images, None,
                             buy_sites, auto_cw_cache)
     return True
+
+
+def update_edited_post(base_dir: str,
+                       nickname: str, domain: str,
+                       message_json: {},
+                       edited_published: str,
+                       edited_postid: str,
+                       recent_posts_cache: {},
+                       box_name: str,
+                       max_mentions: int, max_emoji: int,
+                       allow_local_network_access: bool,
+                       debug: bool,
+                       system_language: str, http_prefix: str,
+                       domain_full: str, person_cache: {},
+                       signing_priv_key_pem: str,
+                       max_recent_posts: int, translate: {},
+                       session, cached_webfingers: {}, port: int,
+                       allow_deletion: bool,
+                       yt_replace_domain: str,
+                       twitter_replacement_domain: str,
+                       show_published_date_only: bool,
+                       peertube_instances: [],
+                       theme_name: str, max_like_count: int,
+                       cw_lists: {}, dogwhistles: {},
+                       min_images_for_accounts: [],
+                       max_hashtags: int,
+                       buy_sites: {},
+                       auto_cw_cache: {}) -> None:
+    """ When an edited post is created this assigns
+    a published and updated date to it, and uses
+    the previous id
+    """
+    edited_updated = \
+        message_json['object']['published']
+    if edited_published:
+        message_json['published'] = \
+            edited_published
+        message_json['object']['published'] = \
+            edited_published
+    message_json['id'] = \
+        edited_postid + '/activity'
+    message_json['object']['id'] = \
+        edited_postid
+    message_json['object']['url'] = \
+        edited_postid
+    message_json['updated'] = \
+        edited_updated
+    message_json['object']['updated'] = \
+        edited_updated
+    message_json['type'] = 'Update'
+
+    message_json2 = message_json.copy()
+    _receive_edit_to_post(recent_posts_cache,
+                          message_json2,
+                          base_dir,
+                          nickname, domain,
+                          max_mentions, max_emoji,
+                          allow_local_network_access,
+                          debug,
+                          system_language, http_prefix,
+                          domain_full, person_cache,
+                          signing_priv_key_pem,
+                          max_recent_posts,
+                          translate,
+                          session,
+                          cached_webfingers,
+                          port,
+                          allow_deletion,
+                          yt_replace_domain,
+                          twitter_replacement_domain,
+                          show_published_date_only,
+                          peertube_instances,
+                          theme_name, max_like_count,
+                          cw_lists, dogwhistles,
+                          min_images_for_accounts,
+                          max_hashtags, buy_sites,
+                          auto_cw_cache)
+
+    # update the index
+    id_str = edited_postid.split('/')[-1]
+    index_filename = \
+        acct_dir(base_dir, nickname, domain) + '/' + box_name + '.index'
+    if not text_in_file(id_str, index_filename):
+        try:
+            with open(index_filename, 'r+',
+                      encoding='utf-8') as fp_index:
+                content = fp_index.read()
+                if id_str + '\n' not in content:
+                    fp_index.seek(0, 0)
+                    fp_index.write(id_str + '\n' + content)
+        except OSError as ex:
+            print('WARN: Failed to write index after edit ' +
+                  index_filename + ' ' + str(ex))
 
 
 def _receive_move_activity(session, base_dir: str,
@@ -1878,25 +1971,25 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
     elif message_json['object']['type'] in ('Note', 'Event'):
         if message_json['object'].get('id'):
             domain_full = get_full_domain(domain, port)
-            if receive_edit_to_post(recent_posts_cache, message_json,
-                                    base_dir, nickname, domain,
-                                    max_mentions, max_emoji,
-                                    allow_local_network_access,
-                                    debug, system_language, http_prefix,
-                                    domain_full, person_cache,
-                                    signing_priv_key_pem,
-                                    max_recent_posts, translate,
-                                    session, cached_webfingers, port,
-                                    allow_deletion,
-                                    yt_replace_domain,
-                                    twitter_replacement_domain,
-                                    show_published_date_only,
-                                    peertube_instances,
-                                    theme_name, max_like_count,
-                                    cw_lists, dogwhistles,
-                                    min_images_for_accounts,
-                                    max_hashtags, buy_sites,
-                                    auto_cw_cache):
+            if _receive_edit_to_post(recent_posts_cache, message_json,
+                                     base_dir, nickname, domain,
+                                     max_mentions, max_emoji,
+                                     allow_local_network_access,
+                                     debug, system_language, http_prefix,
+                                     domain_full, person_cache,
+                                     signing_priv_key_pem,
+                                     max_recent_posts, translate,
+                                     session, cached_webfingers, port,
+                                     allow_deletion,
+                                     yt_replace_domain,
+                                     twitter_replacement_domain,
+                                     show_published_date_only,
+                                     peertube_instances,
+                                     theme_name, max_like_count,
+                                     cw_lists, dogwhistles,
+                                     min_images_for_accounts,
+                                     max_hashtags, buy_sites,
+                                     auto_cw_cache):
                 print('EDITPOST: received ' + message_json['object']['id'])
                 return True
         else:

@@ -117,6 +117,7 @@ from posts import create_direct_message_post
 from posts import populate_replies_json
 from posts import add_to_field
 from posts import expire_cache
+from inbox import update_edited_post
 from inbox import clear_queue_items
 from inbox import inbox_permitted_message
 from inbox import inbox_message_has_params
@@ -124,7 +125,6 @@ from inbox import run_inbox_queue
 from inbox import run_inbox_queue_watchdog
 from inbox import save_post_to_inbox_queue
 from inbox import populate_replies
-from inbox import receive_edit_to_post
 from followerSync import update_followers_sync_cache
 from follow import pending_followers_timeline_json
 from follow import follower_approval_active
@@ -499,98 +499,6 @@ SHARES_PER_PAGE = 12
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
-
-    def _update_edited_post(self, base_dir: str,
-                            nickname: str, domain: str,
-                            message_json: {},
-                            edited_published: str,
-                            edited_postid: str,
-                            recent_posts_cache: {},
-                            box_name: str,
-                            max_mentions: int, max_emoji: int,
-                            allow_local_network_access: bool,
-                            debug: bool,
-                            system_language: str, http_prefix: str,
-                            domain_full: str, person_cache: {},
-                            signing_priv_key_pem: str,
-                            max_recent_posts: int, translate: {},
-                            session, cached_webfingers: {}, port: int,
-                            allow_deletion: bool,
-                            yt_replace_domain: str,
-                            twitter_replacement_domain: str,
-                            show_published_date_only: bool,
-                            peertube_instances: [],
-                            theme_name: str, max_like_count: int,
-                            cw_lists: {}, dogwhistles: {},
-                            min_images_for_accounts: [],
-                            max_hashtags: int,
-                            buy_sites: {},
-                            auto_cw_cache: {}) -> None:
-        """When an edited post is created this assigns
-        a published and updated date to it, and uses
-        the previous id
-        """
-        edited_updated = \
-            message_json['object']['published']
-        if edited_published:
-            message_json['published'] = \
-                edited_published
-            message_json['object']['published'] = \
-                edited_published
-        message_json['id'] = \
-            edited_postid + '/activity'
-        message_json['object']['id'] = \
-            edited_postid
-        message_json['object']['url'] = \
-            edited_postid
-        message_json['updated'] = \
-            edited_updated
-        message_json['object']['updated'] = \
-            edited_updated
-        message_json['type'] = 'Update'
-
-        message_json2 = message_json.copy()
-        receive_edit_to_post(recent_posts_cache,
-                             message_json2,
-                             base_dir,
-                             nickname, domain,
-                             max_mentions, max_emoji,
-                             allow_local_network_access,
-                             debug,
-                             system_language, http_prefix,
-                             domain_full, person_cache,
-                             signing_priv_key_pem,
-                             max_recent_posts,
-                             translate,
-                             session,
-                             cached_webfingers,
-                             port,
-                             allow_deletion,
-                             yt_replace_domain,
-                             twitter_replacement_domain,
-                             show_published_date_only,
-                             peertube_instances,
-                             theme_name, max_like_count,
-                             cw_lists, dogwhistles,
-                             min_images_for_accounts,
-                             max_hashtags, buy_sites,
-                             auto_cw_cache)
-
-        # update the index
-        id_str = edited_postid.split('/')[-1]
-        index_filename = \
-            acct_dir(base_dir, nickname, domain) + '/' + box_name + '.index'
-        if not text_in_file(id_str, index_filename):
-            try:
-                with open(index_filename, 'r+',
-                          encoding='utf-8') as fp_index:
-                    content = fp_index.read()
-                    if id_str + '\n' not in content:
-                        fp_index.seek(0, 0)
-                        fp_index.write(id_str + '\n' + content)
-            except OSError as ex:
-                print('WARN: Failed to write index after edit ' +
-                      index_filename + ' ' + str(ex))
 
     def _convert_domains(self, calling_domain, referer_domain,
                          msg_str: str) -> str:
@@ -22022,40 +21930,40 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.min_images_for_accounts
                         peertube_instances = \
                             self.server.peertube_instances
-                        self._update_edited_post(self.server.base_dir,
-                                                 nickname, self.server.domain,
-                                                 message_json,
-                                                 edited_published,
-                                                 edited_postid,
-                                                 recent_posts_cache,
-                                                 'outbox',
-                                                 self.server.max_mentions,
-                                                 self.server.max_emoji,
-                                                 allow_local_network_access,
-                                                 self.server.debug,
-                                                 self.server.system_language,
-                                                 self.server.http_prefix,
-                                                 self.server.domain_full,
-                                                 self.server.person_cache,
-                                                 signing_priv_key_pem,
-                                                 self.server.max_recent_posts,
-                                                 self.server.translate,
-                                                 curr_session,
-                                                 self.server.cached_webfingers,
-                                                 self.server.port,
-                                                 self.server.allow_deletion,
-                                                 self.server.yt_replace_domain,
-                                                 twitter_replacement_domain,
-                                                 show_published_date_only,
-                                                 peertube_instances,
-                                                 self.server.theme_name,
-                                                 self.server.max_like_count,
-                                                 self.server.cw_lists,
-                                                 self.server.dogwhistles,
-                                                 min_images_for_accounts,
-                                                 self.server.max_hashtags,
-                                                 self.server.buy_sites,
-                                                 self.server.auto_cw_cache)
+                        update_edited_post(self.server.base_dir,
+                                           nickname, self.server.domain,
+                                           message_json,
+                                           edited_published,
+                                           edited_postid,
+                                           recent_posts_cache,
+                                           'outbox',
+                                           self.server.max_mentions,
+                                           self.server.max_emoji,
+                                           allow_local_network_access,
+                                           self.server.debug,
+                                           self.server.system_language,
+                                           self.server.http_prefix,
+                                           self.server.domain_full,
+                                           self.server.person_cache,
+                                           signing_priv_key_pem,
+                                           self.server.max_recent_posts,
+                                           self.server.translate,
+                                           curr_session,
+                                           self.server.cached_webfingers,
+                                           self.server.port,
+                                           self.server.allow_deletion,
+                                           self.server.yt_replace_domain,
+                                           twitter_replacement_domain,
+                                           show_published_date_only,
+                                           peertube_instances,
+                                           self.server.theme_name,
+                                           self.server.max_like_count,
+                                           self.server.cw_lists,
+                                           self.server.dogwhistles,
+                                           min_images_for_accounts,
+                                           self.server.max_hashtags,
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
                         print('DEBUG: sending edited public post ' +
                               str(message_json))
                     if fields['schedulePost']:
@@ -22373,40 +22281,40 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.min_images_for_accounts
                         peertube_instances = \
                             self.server.peertube_instances
-                        self._update_edited_post(self.server.base_dir,
-                                                 nickname, self.server.domain,
-                                                 message_json,
-                                                 edited_published,
-                                                 edited_postid,
-                                                 recent_posts_cache,
-                                                 'outbox',
-                                                 self.server.max_mentions,
-                                                 self.server.max_emoji,
-                                                 allow_local_network_access,
-                                                 self.server.debug,
-                                                 self.server.system_language,
-                                                 self.server.http_prefix,
-                                                 self.server.domain_full,
-                                                 self.server.person_cache,
-                                                 signing_priv_key_pem,
-                                                 self.server.max_recent_posts,
-                                                 self.server.translate,
-                                                 curr_session,
-                                                 self.server.cached_webfingers,
-                                                 self.server.port,
-                                                 self.server.allow_deletion,
-                                                 self.server.yt_replace_domain,
-                                                 twitter_replacement_domain,
-                                                 show_published_date_only,
-                                                 peertube_instances,
-                                                 self.server.theme_name,
-                                                 self.server.max_like_count,
-                                                 self.server.cw_lists,
-                                                 self.server.dogwhistles,
-                                                 min_images_for_accounts,
-                                                 self.server.max_hashtags,
-                                                 self.server.buy_sites,
-                                                 self.server.auto_cw_cache)
+                        update_edited_post(self.server.base_dir,
+                                           nickname, self.server.domain,
+                                           message_json,
+                                           edited_published,
+                                           edited_postid,
+                                           recent_posts_cache,
+                                           'outbox',
+                                           self.server.max_mentions,
+                                           self.server.max_emoji,
+                                           allow_local_network_access,
+                                           self.server.debug,
+                                           self.server.system_language,
+                                           self.server.http_prefix,
+                                           self.server.domain_full,
+                                           self.server.person_cache,
+                                           signing_priv_key_pem,
+                                           self.server.max_recent_posts,
+                                           self.server.translate,
+                                           curr_session,
+                                           self.server.cached_webfingers,
+                                           self.server.port,
+                                           self.server.allow_deletion,
+                                           self.server.yt_replace_domain,
+                                           twitter_replacement_domain,
+                                           show_published_date_only,
+                                           peertube_instances,
+                                           self.server.theme_name,
+                                           self.server.max_like_count,
+                                           self.server.cw_lists,
+                                           self.server.dogwhistles,
+                                           min_images_for_accounts,
+                                           self.server.max_hashtags,
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
                         print('DEBUG: sending edited unlisted post ' +
                               str(message_json))
 
@@ -22502,40 +22410,40 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.min_images_for_accounts
                         peertube_instances = \
                             self.server.peertube_instances
-                        self._update_edited_post(self.server.base_dir,
-                                                 nickname, self.server.domain,
-                                                 message_json,
-                                                 edited_published,
-                                                 edited_postid,
-                                                 recent_posts_cache,
-                                                 'outbox',
-                                                 self.server.max_mentions,
-                                                 self.server.max_emoji,
-                                                 allow_local_network_access,
-                                                 self.server.debug,
-                                                 self.server.system_language,
-                                                 self.server.http_prefix,
-                                                 self.server.domain_full,
-                                                 self.server.person_cache,
-                                                 signing_priv_key_pem,
-                                                 self.server.max_recent_posts,
-                                                 self.server.translate,
-                                                 curr_session,
-                                                 self.server.cached_webfingers,
-                                                 self.server.port,
-                                                 self.server.allow_deletion,
-                                                 self.server.yt_replace_domain,
-                                                 twitter_replacement_domain,
-                                                 show_published_date_only,
-                                                 peertube_instances,
-                                                 self.server.theme_name,
-                                                 self.server.max_like_count,
-                                                 self.server.cw_lists,
-                                                 self.server.dogwhistles,
-                                                 min_images_for_accounts,
-                                                 self.server.max_hashtags,
-                                                 self.server.buy_sites,
-                                                 self.server.auto_cw_cache)
+                        update_edited_post(self.server.base_dir,
+                                           nickname, self.server.domain,
+                                           message_json,
+                                           edited_published,
+                                           edited_postid,
+                                           recent_posts_cache,
+                                           'outbox',
+                                           self.server.max_mentions,
+                                           self.server.max_emoji,
+                                           allow_local_network_access,
+                                           self.server.debug,
+                                           self.server.system_language,
+                                           self.server.http_prefix,
+                                           self.server.domain_full,
+                                           self.server.person_cache,
+                                           signing_priv_key_pem,
+                                           self.server.max_recent_posts,
+                                           self.server.translate,
+                                           curr_session,
+                                           self.server.cached_webfingers,
+                                           self.server.port,
+                                           self.server.allow_deletion,
+                                           self.server.yt_replace_domain,
+                                           twitter_replacement_domain,
+                                           show_published_date_only,
+                                           peertube_instances,
+                                           self.server.theme_name,
+                                           self.server.max_like_count,
+                                           self.server.cw_lists,
+                                           self.server.dogwhistles,
+                                           min_images_for_accounts,
+                                           self.server.max_hashtags,
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
                         print('DEBUG: sending edited followers post ' +
                               str(message_json))
 
@@ -22646,40 +22554,40 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.min_images_for_accounts
                         peertube_instances = \
                             self.server.peertube_instances
-                        self._update_edited_post(self.server.base_dir,
-                                                 nickname, self.server.domain,
-                                                 message_json,
-                                                 edited_published,
-                                                 edited_postid,
-                                                 recent_posts_cache,
-                                                 'outbox',
-                                                 self.server.max_mentions,
-                                                 self.server.max_emoji,
-                                                 allow_local_network_access,
-                                                 self.server.debug,
-                                                 self.server.system_language,
-                                                 self.server.http_prefix,
-                                                 self.server.domain_full,
-                                                 self.server.person_cache,
-                                                 signing_priv_key_pem,
-                                                 self.server.max_recent_posts,
-                                                 self.server.translate,
-                                                 curr_session,
-                                                 self.server.cached_webfingers,
-                                                 self.server.port,
-                                                 self.server.allow_deletion,
-                                                 self.server.yt_replace_domain,
-                                                 twitter_replacement_domain,
-                                                 show_published_date_only,
-                                                 peertube_instances,
-                                                 self.server.theme_name,
-                                                 self.server.max_like_count,
-                                                 self.server.cw_lists,
-                                                 self.server.dogwhistles,
-                                                 min_images_for_accounts,
-                                                 self.server.max_hashtags,
-                                                 self.server.buy_sites,
-                                                 self.server.auto_cw_cache)
+                        update_edited_post(self.server.base_dir,
+                                           nickname, self.server.domain,
+                                           message_json,
+                                           edited_published,
+                                           edited_postid,
+                                           recent_posts_cache,
+                                           'outbox',
+                                           self.server.max_mentions,
+                                           self.server.max_emoji,
+                                           allow_local_network_access,
+                                           self.server.debug,
+                                           self.server.system_language,
+                                           self.server.http_prefix,
+                                           self.server.domain_full,
+                                           self.server.person_cache,
+                                           signing_priv_key_pem,
+                                           self.server.max_recent_posts,
+                                           self.server.translate,
+                                           curr_session,
+                                           self.server.cached_webfingers,
+                                           self.server.port,
+                                           self.server.allow_deletion,
+                                           self.server.yt_replace_domain,
+                                           twitter_replacement_domain,
+                                           show_published_date_only,
+                                           peertube_instances,
+                                           self.server.theme_name,
+                                           self.server.max_like_count,
+                                           self.server.cw_lists,
+                                           self.server.dogwhistles,
+                                           min_images_for_accounts,
+                                           self.server.max_hashtags,
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
                         print('DEBUG: sending edited dm post ' +
                               str(message_json))
 
@@ -22783,40 +22691,40 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.min_images_for_accounts
                         peertube_instances = \
                             self.server.peertube_instances
-                        self._update_edited_post(self.server.base_dir,
-                                                 nickname, self.server.domain,
-                                                 message_json,
-                                                 edited_published,
-                                                 edited_postid,
-                                                 recent_posts_cache,
-                                                 'dm',
-                                                 self.server.max_mentions,
-                                                 self.server.max_emoji,
-                                                 allow_local_network_access,
-                                                 self.server.debug,
-                                                 self.server.system_language,
-                                                 self.server.http_prefix,
-                                                 self.server.domain_full,
-                                                 self.server.person_cache,
-                                                 signing_priv_key_pem,
-                                                 self.server.max_recent_posts,
-                                                 self.server.translate,
-                                                 curr_session,
-                                                 self.server.cached_webfingers,
-                                                 self.server.port,
-                                                 self.server.allow_deletion,
-                                                 self.server.yt_replace_domain,
-                                                 twitter_replacement_domain,
-                                                 show_published_date_only,
-                                                 peertube_instances,
-                                                 self.server.theme_name,
-                                                 self.server.max_like_count,
-                                                 self.server.cw_lists,
-                                                 self.server.dogwhistles,
-                                                 min_images_for_accounts,
-                                                 self.server.max_hashtags,
-                                                 self.server.buy_sites,
-                                                 self.server.auto_cw_cache)
+                        update_edited_post(self.server.base_dir,
+                                           nickname, self.server.domain,
+                                           message_json,
+                                           edited_published,
+                                           edited_postid,
+                                           recent_posts_cache,
+                                           'dm',
+                                           self.server.max_mentions,
+                                           self.server.max_emoji,
+                                           allow_local_network_access,
+                                           self.server.debug,
+                                           self.server.system_language,
+                                           self.server.http_prefix,
+                                           self.server.domain_full,
+                                           self.server.person_cache,
+                                           signing_priv_key_pem,
+                                           self.server.max_recent_posts,
+                                           self.server.translate,
+                                           curr_session,
+                                           self.server.cached_webfingers,
+                                           self.server.port,
+                                           self.server.allow_deletion,
+                                           self.server.yt_replace_domain,
+                                           twitter_replacement_domain,
+                                           show_published_date_only,
+                                           peertube_instances,
+                                           self.server.theme_name,
+                                           self.server.max_like_count,
+                                           self.server.cw_lists,
+                                           self.server.dogwhistles,
+                                           min_images_for_accounts,
+                                           self.server.max_hashtags,
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
                         print('DEBUG: sending edited reminder post ' +
                               str(message_json))
                     if self._post_to_outbox(message_json,
@@ -23042,40 +22950,40 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.min_images_for_accounts
                         peertube_instances = \
                             self.server.peertube_instances
-                        self._update_edited_post(self.server.base_dir,
-                                                 nickname, self.server.domain,
-                                                 message_json,
-                                                 edited_published,
-                                                 edited_postid,
-                                                 recent_posts_cache,
-                                                 'outbox',
-                                                 self.server.max_mentions,
-                                                 self.server.max_emoji,
-                                                 allow_local_network_access,
-                                                 self.server.debug,
-                                                 self.server.system_language,
-                                                 self.server.http_prefix,
-                                                 self.server.domain_full,
-                                                 self.server.person_cache,
-                                                 signing_priv_key_pem,
-                                                 self.server.max_recent_posts,
-                                                 self.server.translate,
-                                                 curr_session,
-                                                 self.server.cached_webfingers,
-                                                 self.server.port,
-                                                 self.server.allow_deletion,
-                                                 self.server.yt_replace_domain,
-                                                 twitter_replacement_domain,
-                                                 show_published_date_only,
-                                                 peertube_instances,
-                                                 self.server.theme_name,
-                                                 self.server.max_like_count,
-                                                 self.server.cw_lists,
-                                                 self.server.dogwhistles,
-                                                 min_images_for_accounts,
-                                                 self.server.max_hashtags,
-                                                 self.server.buy_sites,
-                                                 self.server.auto_cw_cache)
+                        update_edited_post(self.server.base_dir,
+                                           nickname, self.server.domain,
+                                           message_json,
+                                           edited_published,
+                                           edited_postid,
+                                           recent_posts_cache,
+                                           'outbox',
+                                           self.server.max_mentions,
+                                           self.server.max_emoji,
+                                           allow_local_network_access,
+                                           self.server.debug,
+                                           self.server.system_language,
+                                           self.server.http_prefix,
+                                           self.server.domain_full,
+                                           self.server.person_cache,
+                                           signing_priv_key_pem,
+                                           self.server.max_recent_posts,
+                                           self.server.translate,
+                                           curr_session,
+                                           self.server.cached_webfingers,
+                                           self.server.port,
+                                           self.server.allow_deletion,
+                                           self.server.yt_replace_domain,
+                                           twitter_replacement_domain,
+                                           show_published_date_only,
+                                           peertube_instances,
+                                           self.server.theme_name,
+                                           self.server.max_like_count,
+                                           self.server.cw_lists,
+                                           self.server.dogwhistles,
+                                           min_images_for_accounts,
+                                           self.server.max_hashtags,
+                                           self.server.buy_sites,
+                                           self.server.auto_cw_cache)
                         print('DEBUG: sending edited reading status post ' +
                               str(message_json))
                     if fields['schedulePost']:
