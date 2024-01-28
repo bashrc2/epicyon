@@ -4250,8 +4250,8 @@ def set_account_timezone(base_dir: str, nickname: str, domain: str,
         fp_timezone.write(timezone)
 
 
-def is_onion_request(calling_domain: str, referer_domain: str,
-                     domain: str, onion_domain: str) -> bool:
+def _is_onion_request(calling_domain: str, referer_domain: str,
+                      domain: str, onion_domain: str) -> bool:
     """Do the given domains indicate that this is a request
     from an onion instance
     """
@@ -4268,8 +4268,8 @@ def is_onion_request(calling_domain: str, referer_domain: str,
     return False
 
 
-def is_i2p_request(calling_domain: str, referer_domain: str,
-                   domain: str, i2p_domain: str) -> bool:
+def _is_i2p_request(calling_domain: str, referer_domain: str,
+                    domain: str, i2p_domain: str) -> bool:
     """Do the given domains indicate that this is a request
     from an i2p instance
     """
@@ -4989,3 +4989,28 @@ def post_summary_contains_links(message_json: {}) -> bool:
                       message_json['object']['summary'])
                 return True
     return False
+
+
+def convert_domains(calling_domain: str, referer_domain: str,
+                    msg_str: str, http_prefix: str,
+                    domain: str,
+                    onion_domain: str,
+                    i2p_domain: str) -> str:
+    """Convert domains to onion or i2p, depending upon who is asking
+    """
+    curr_http_prefix = http_prefix + '://'
+    if _is_onion_request(calling_domain, referer_domain,
+                         domain,
+                         onion_domain):
+        msg_str = msg_str.replace(curr_http_prefix +
+                                  domain,
+                                  'http://' +
+                                  onion_domain)
+    elif _is_i2p_request(calling_domain, referer_domain,
+                         domain,
+                         i2p_domain):
+        msg_str = msg_str.replace(curr_http_prefix +
+                                  domain,
+                                  'http://' +
+                                  i2p_domain)
+    return msg_str

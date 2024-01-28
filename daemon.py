@@ -301,6 +301,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import convert_domains
 from utils import post_summary_contains_links
 from utils import resembles_url
 from utils import get_url_from_post
@@ -319,8 +320,6 @@ from utils import set_minimize_all_images
 from utils import get_json_content_from_accept
 from utils import remove_eol
 from utils import text_in_file
-from utils import is_onion_request
-from utils import is_i2p_request
 from utils import get_account_timezone
 from utils import set_account_timezone
 from utils import load_account_timezones
@@ -499,27 +498,6 @@ SHARES_PER_PAGE = 12
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
-
-    def _convert_domains(self, calling_domain, referer_domain,
-                         msg_str: str) -> str:
-        """Convert domains to onion or i2p, depending upon who is asking
-        """
-        curr_http_prefix = self.server.http_prefix + '://'
-        if is_onion_request(calling_domain, referer_domain,
-                            self.server.domain,
-                            self.server.onion_domain):
-            msg_str = msg_str.replace(curr_http_prefix +
-                                      self.server.domain,
-                                      'http://' +
-                                      self.server.onion_domain)
-        elif is_i2p_request(calling_domain, referer_domain,
-                            self.server.domain,
-                            self.server.i2p_domain):
-            msg_str = msg_str.replace(curr_http_prefix +
-                                      self.server.domain,
-                                      'http://' +
-                                      self.server.i2p_domain)
-        return msg_str
 
     def _detect_mitm(self) -> bool:
         """Detect if a request contains a MiTM
@@ -1385,8 +1363,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         if send_json is not None:
             msg_str = json.dumps(send_json)
-            msg_str = self._convert_domains(calling_domain, referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain, referer_domain,
+                                      msg_str, http_prefix, domain,
+                                      onion_domain, i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if self._has_accept(calling_domain):
@@ -1511,8 +1490,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         if send_json is not None:
             msg_str = json.dumps(send_json)
-            msg_str = self._convert_domains(calling_domain, referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain, referer_domain,
+                                      msg_str, http_prefix, domain,
+                                      onion_domain, i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if self._has_accept(calling_domain):
@@ -1716,8 +1696,11 @@ class PubServer(BaseHTTPRequestHandler):
                                    show_node_info_accounts)
         if info:
             msg_str = json.dumps(info)
-            msg_str = self._convert_domains(calling_domain, referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain, referer_domain,
+                                      msg_str, http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             protocol_str = \
@@ -1883,9 +1866,13 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domain_full)
             if wf_result:
                 msg_str = json.dumps(wf_result)
-                msg_str = self._convert_domains(calling_domain,
-                                                referer_domain,
-                                                msg_str)
+                msg_str = convert_domains(calling_domain,
+                                          referer_domain,
+                                          msg_str,
+                                          self.server.http_prefix,
+                                          self.server.domain,
+                                          self.server.onion_domain,
+                                          self.server.i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 if self._has_accept(calling_domain):
@@ -1913,9 +1900,13 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.port, self.server.debug)
         if wf_result:
             msg_str = json.dumps(wf_result)
-            msg_str = self._convert_domains(calling_domain,
-                                            referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain,
+                                      referer_domain,
+                                      msg_str,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/jrd+json', msglen,
@@ -8661,9 +8652,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         manifest = pwa_manifest(base_dir)
         msg_str = json.dumps(manifest, ensure_ascii=False)
-        msg_str = self._convert_domains(calling_domain,
-                                        referer_domain,
-                                        msg_str)
+        msg_str = convert_domains(calling_domain,
+                                  referer_domain,
+                                  msg_str,
+                                  self.server.http_prefix,
+                                  self.server.domain,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain)
         msg = msg_str.encode('utf-8')
 
         msglen = len(msg)
@@ -8695,9 +8690,13 @@ class PubServer(BaseHTTPRequestHandler):
             '</browserconfig>'
 
         msg_str = json.dumps(xml_str, ensure_ascii=False)
-        msg_str = self._convert_domains(calling_domain,
-                                        referer_domain,
-                                        msg_str)
+        msg_str = convert_domains(calling_domain,
+                                  referer_domain,
+                                  msg_str,
+                                  self.server.http_prefix,
+                                  self.server.domain,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         self._set_headers('application/xrd+xml', msglen,
@@ -8805,9 +8804,13 @@ class PubServer(BaseHTTPRequestHandler):
 
         speaker_json = load_json(speaker_filename)
         msg_str = json.dumps(speaker_json, ensure_ascii=False)
-        msg_str = self._convert_domains(calling_domain,
-                                        referer_domain,
-                                        msg_str)
+        msg_str = convert_domains(calling_domain,
+                                  referer_domain,
+                                  msg_str,
+                                  self.server.http_prefix,
+                                  domain,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         protocol_str = \
@@ -9924,8 +9927,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 http_prefix)
         if hashtag_json:
             msg_str = json.dumps(hashtag_json)
-            msg_str = self._convert_domains(calling_domain, referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain, referer_domain,
+                                      msg_str, http_prefix, domain,
+                                      onion_domain, i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             self._set_headers('application/json', msglen,
@@ -12386,9 +12390,12 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 if self._secure_mode(curr_session, proxy_type):
                     msg_str = json.dumps(replies_json, ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     protocol_str = \
                         get_json_content_from_accept(self.headers['Accept'])
@@ -12502,9 +12509,12 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 if self._secure_mode(curr_session, proxy_type):
                     msg_str = json.dumps(replies_json, ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     protocol_str = \
                         get_json_content_from_accept(self.headers['Accept'])
@@ -12627,9 +12637,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._secure_mode(curr_session, proxy_type):
                     roles_list = get_actor_roles_list(actor_json)
                     msg_str = json.dumps(roles_list, ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     protocol_str = \
@@ -12769,9 +12782,15 @@ class PubServer(BaseHTTPRequestHandler):
                                     get_skills_from_list(actor_skills_list)
                                 msg_str = json.dumps(skills,
                                                      ensure_ascii=False)
-                                msg_str = self._convert_domains(calling_domain,
-                                                                referer_domain,
-                                                                msg_str)
+                                onion_domain = self.server.onion_domain
+                                i2p_domain = self.server.i2p_domain
+                                msg_str = convert_domains(calling_domain,
+                                                          referer_domain,
+                                                          msg_str,
+                                                          http_prefix,
+                                                          domain,
+                                                          onion_domain,
+                                                          i2p_domain)
                                 msg = msg_str.encode('utf-8')
                                 msglen = len(msg)
                                 accept_str = self.headers['Accept']
@@ -13205,9 +13224,12 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     msg_str = json.dumps(post_json_object,
                                          ensure_ascii=False)
-                msg_str = self._convert_domains(calling_domain,
-                                                referer_domain,
-                                                msg_str)
+                msg_str = convert_domains(calling_domain,
+                                          referer_domain,
+                                          msg_str, http_prefix,
+                                          domain,
+                                          self.server.onion_domain,
+                                          self.server.i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 protocol_str = \
@@ -13519,9 +13541,15 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.debug)
                         if msg:
                             msg_str = msg
-                            msg_str = self._convert_domains(calling_domain,
-                                                            referer_domain,
-                                                            msg_str)
+                            onion_domain = self.server.onion_domain
+                            i2p_domain = self.server.i2p_domain
+                            msg_str = convert_domains(calling_domain,
+                                                      referer_domain,
+                                                      msg_str,
+                                                      http_prefix,
+                                                      domain,
+                                                      onion_domain,
+                                                      i2p_domain)
                             msg = msg_str.encode('utf-8')
                             msglen = len(msg)
                             self._set_headers('text/html', msglen,
@@ -13536,10 +13564,16 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authorized fetch here because
                         # there is already the authorization check
+                        onion_domain = self.server.onion_domain
+                        i2p_domain = self.server.i2p_domain
                         msg_str = json.dumps(inbox_feed, ensure_ascii=False)
-                        msg_str = self._convert_domains(calling_domain,
-                                                        referer_domain,
-                                                        msg_str)
+                        msg_str = convert_domains(calling_domain,
+                                                  referer_domain,
+                                                  msg_str,
+                                                  http_prefix,
+                                                  domain,
+                                                  onion_domain,
+                                                  i2p_domain)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
                         accept_str = self.headers['Accept']
@@ -13709,11 +13743,16 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authorized fetch here because
                         # there is already the authorization check
+                        onion_domain = self.server.onion_domain
+                        i2p_domain = self.server.i2p_domain
                         msg_str = \
                             json.dumps(inbox_dm_feed, ensure_ascii=False)
-                        msg_str = self._convert_domains(calling_domain,
-                                                        referer_domain,
-                                                        msg_str)
+                        msg_str = convert_domains(calling_domain,
+                                                  referer_domain,
+                                                  msg_str, http_prefix,
+                                                  domain,
+                                                  onion_domain,
+                                                  i2p_domain)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
                         accept_str = self.headers['Accept']
@@ -13885,11 +13924,15 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
+                    onion_domain = self.server.onion_domain
+                    i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(inbox_replies_feed,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              onion_domain, i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -14057,11 +14100,15 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
+                    onion_domain = self.server.onion_domain
+                    i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(inbox_media_feed,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              onion_domain, i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -14229,11 +14276,15 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
+                    onion_domain = self.server.onion_domain
+                    i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(inbox_blogs_feed,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              onion_domain, i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -14404,11 +14455,15 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
+                    onion_domain = self.server.onion_domain
+                    i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(inbox_news_feed,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              onion_domain, i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -14583,11 +14638,16 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # don't need authorized fetch here because there is
                     # already the authorization check
+                    onion_domain = self.server.onion_domain
+                    i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(inbox_features_feed,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str,
+                                              http_prefix,
+                                              domain,
+                                              onion_domain, i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -14960,11 +15020,16 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authorized fetch here because
                         # there is already the authorization check
+                        onion_domain = self.server.onion_domain
+                        i2p_domain = self.server.i2p_domain
                         msg_str = json.dumps(bookmarks_feed,
                                              ensure_ascii=False)
-                        msg_str = self._convert_domains(calling_domain,
-                                                        referer_domain,
-                                                        msg_str)
+                        msg_str = convert_domains(calling_domain,
+                                                  referer_domain,
+                                                  msg_str, http_prefix,
+                                                  domain,
+                                                  onion_domain,
+                                                  i2p_domain)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
                         accept_str = self.headers['Accept']
@@ -15121,11 +15186,16 @@ class PubServer(BaseHTTPRequestHandler):
                                     debug)
             else:
                 if self._secure_mode(curr_session, proxy_type):
+                    onion_domain = self.server.onion_domain
+                    i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(outbox_feed,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              onion_domain,
+                                              i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -15281,11 +15351,16 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authorized fetch here because
                         # there is already the authorization check
+                        onion_domain = self.server.onion_domain
+                        i2p_domain = self.server.i2p_domain
                         msg_str = json.dumps(moderation_feed,
                                              ensure_ascii=False)
-                        msg_str = self._convert_domains(calling_domain,
-                                                        referer_domain,
-                                                        msg_str)
+                        msg_str = convert_domains(calling_domain,
+                                                  referer_domain,
+                                                  msg_str, http_prefix,
+                                                  domain,
+                                                  onion_domain,
+                                                  i2p_domain)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
                         accept_str = self.headers['Accept']
@@ -15432,11 +15507,16 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
             else:
                 if self._secure_mode(curr_session, proxy_type):
+                    onion_domain = self.server.onion_domain
+                    i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(shares,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              onion_domain,
+                                              i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -15595,9 +15675,12 @@ class PubServer(BaseHTTPRequestHandler):
 
                     msg_str = json.dumps(following,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -15741,9 +15824,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._secure_mode(curr_session, proxy_type):
                     msg_str = json.dumps(following,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -15893,9 +15979,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if self._secure_mode(curr_session, proxy_type):
                     msg_str = json.dumps(following,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -16055,9 +16144,12 @@ class PubServer(BaseHTTPRequestHandler):
 
                     msg_str = json.dumps(followers,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -16090,9 +16182,12 @@ class PubServer(BaseHTTPRequestHandler):
                           nickname, domain, domain_full, system_language)
         msg_str = json.dumps(featured_collection,
                              ensure_ascii=False)
-        msg_str = self._convert_domains(calling_domain,
-                                        referer_domain,
-                                        msg_str)
+        msg_str = convert_domains(calling_domain,
+                                  referer_domain,
+                                  msg_str, http_prefix,
+                                  domain,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -16106,7 +16201,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       referer_domain: str,
                                       path: str,
                                       http_prefix: str,
-                                      domain_full: str):
+                                      domain_full: str,
+                                      domain: str):
         """Returns the featured tags collections in
         actor/collections/featuredTags
         """
@@ -16120,9 +16216,12 @@ class PubServer(BaseHTTPRequestHandler):
         }
         msg_str = json.dumps(featured_tags_collection,
                              ensure_ascii=False)
-        msg_str = self._convert_domains(calling_domain,
-                                        referer_domain,
-                                        msg_str)
+        msg_str = convert_domains(calling_domain,
+                                  referer_domain,
+                                  msg_str, http_prefix,
+                                  domain,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -16232,9 +16331,12 @@ class PubServer(BaseHTTPRequestHandler):
             if self._secure_mode(curr_session, proxy_type):
                 accept_str = self.headers['Accept']
                 msg_str = json.dumps(actor_json, ensure_ascii=False)
-                msg_str = self._convert_domains(calling_domain,
-                                                referer_domain,
-                                                msg_str)
+                msg_str = convert_domains(calling_domain,
+                                          referer_domain,
+                                          msg_str, http_prefix,
+                                          domain,
+                                          self.server.onion_domain,
+                                          self.server.i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 if 'application/ld+json' in accept_str:
@@ -16306,9 +16408,12 @@ class PubServer(BaseHTTPRequestHandler):
         actor_json['followers'] = actor_url + '/followers'
         actor_json['following'] = actor_url + '/following'
         msg_str = json.dumps(actor_json, ensure_ascii=False)
-        msg_str = self._convert_domains(calling_domain,
-                                        referer_domain,
-                                        msg_str)
+        msg_str = convert_domains(calling_domain,
+                                  referer_domain,
+                                  msg_str, http_prefix,
+                                  domain,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         if 'application/ld+json' in accept_str:
@@ -17263,9 +17368,12 @@ class PubServer(BaseHTTPRequestHandler):
             return
         msg_str = json.dumps(following_json,
                              ensure_ascii=False)
-        msg_str = self._convert_domains(calling_domain,
-                                        referer_domain,
-                                        msg_str)
+        msg_str = convert_domains(calling_domain,
+                                  referer_domain,
+                                  msg_str, http_prefix,
+                                  domain,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -17467,8 +17575,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                 calling_domain,
                                                 sync_cache)
                 msg_str = json.dumps(sync_json, ensure_ascii=False)
-                msg_str = self._convert_domains(calling_domain, referer_domain,
-                                                msg_str)
+                msg_str = convert_domains(calling_domain, referer_domain,
+                                          msg_str,
+                                          self.server.http_prefix,
+                                          self.server.domain,
+                                          self.server.onion_domain,
+                                          self.server.i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/json', msglen,
@@ -17742,9 +17854,13 @@ class PubServer(BaseHTTPRequestHandler):
                                         actor)
                 if share_json:
                     msg_str = json.dumps(share_json)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str,
+                                              self.server.http_prefix,
+                                              self.server.domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
@@ -17821,9 +17937,13 @@ class PubServer(BaseHTTPRequestHandler):
                                           'shares')
             msg_str = json.dumps(offers_json,
                                  ensure_ascii=False)
-            msg_str = self._convert_domains(calling_domain,
-                                            referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain,
+                                      referer_domain,
+                                      msg_str,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             accept_str = self.headers['Accept']
@@ -17876,9 +17996,13 @@ class PubServer(BaseHTTPRequestHandler):
                                           nickname, self.server.domain)
             msg_str = json.dumps(blocked_json,
                                  ensure_ascii=False)
-            msg_str = self._convert_domains(calling_domain,
-                                            referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain,
+                                      referer_domain,
+                                      msg_str,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             accept_str = self.headers['Accept']
@@ -17930,9 +18054,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.domain)
             msg_str = json.dumps(pending_json,
                                  ensure_ascii=False)
-            msg_str = self._convert_domains(calling_domain,
-                                            referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain,
+                                      referer_domain,
+                                      msg_str,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             accept_str = self.headers['Accept']
@@ -18011,9 +18139,13 @@ class PubServer(BaseHTTPRequestHandler):
                                           'wanted')
             msg_str = json.dumps(wanted_json,
                                  ensure_ascii=False)
-            msg_str = self._convert_domains(calling_domain,
-                                            referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain,
+                                      referer_domain,
+                                      msg_str,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             accept_str = self.headers['Accept']
@@ -18095,9 +18227,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                             'shares')
                     msg_str = json.dumps(catalog_json,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str,
+                                              self.server.http_prefix,
+                                              self.server.domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -18197,9 +18333,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                             'wanted')
                     msg_str = json.dumps(catalog_json,
                                          ensure_ascii=False)
-                    msg_str = self._convert_domains(calling_domain,
-                                                    referer_domain,
-                                                    msg_str)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str,
+                                              self.server.http_prefix,
+                                              self.server.domain,
+                                              self.server.onion_domain,
+                                              self.server.i2p_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -18561,9 +18701,13 @@ class PubServer(BaseHTTPRequestHandler):
                 message_json['object']['atomUri'] = post_id
             msg_str = json.dumps(message_json,
                                  ensure_ascii=False)
-            msg_str = self._convert_domains(calling_domain,
-                                            referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain,
+                                      referer_domain,
+                                      msg_str,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             accept_str = self.headers['Accept']
@@ -18593,7 +18737,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._get_featured_tags_collection(calling_domain, referer_domain,
                                                self.path,
                                                self.server.http_prefix,
-                                               self.server.domain_full)
+                                               self.server.domain_full,
+                                               self.server.domain)
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -18633,9 +18778,13 @@ class PubServer(BaseHTTPRequestHandler):
                 sorted_watch_points(self.server.fitness, graph)
             msg_str = json.dumps(watch_points_json,
                                  ensure_ascii=False)
-            msg_str = self._convert_domains(calling_domain,
-                                            referer_domain,
-                                            msg_str)
+            msg_str = convert_domains(calling_domain,
+                                      referer_domain,
+                                      msg_str,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             accept_str = self.headers['Accept']
@@ -21327,9 +21476,13 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
                 msg_str = json.dumps(content_json, ensure_ascii=False)
-                msg_str = self._convert_domains(calling_domain,
-                                                referer_domain,
-                                                msg_str)
+                msg_str = convert_domains(calling_domain,
+                                          referer_domain,
+                                          msg_str,
+                                          self.server.http_prefix,
+                                          self.server.domain,
+                                          self.server.onion_domain,
+                                          self.server.i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
