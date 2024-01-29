@@ -5014,3 +5014,22 @@ def convert_domains(calling_domain: str, referer_domain: str,
                                   'http://' +
                                   i2p_domain)
     return msg_str
+
+
+def get_instance_url(calling_domain: str,
+                     http_prefix: str,
+                     domain_full: str,
+                     onion_domain: str,
+                     i2p_domain: str) -> str:
+    """Returns the URL for this instance
+    """
+    if calling_domain.endswith('.onion') and \
+       onion_domain:
+        instance_url = 'http://' + onion_domain
+    elif (calling_domain.endswith('.i2p') and
+          i2p_domain):
+        instance_url = 'http://' + i2p_domain
+    else:
+        instance_url = \
+            http_prefix + '://' + domain_full
+    return instance_url

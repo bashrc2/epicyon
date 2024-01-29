@@ -300,6 +300,7 @@ from languages import set_actor_languages
 from languages import get_understood_languages
 from like import update_likes_collection
 from reaction import update_reaction_collection
+from utils import get_instance_url
 from utils import convert_domains
 from utils import post_summary_contains_links
 from utils import resembles_url
@@ -534,20 +535,6 @@ class PubServer(BaseHTTPRequestHandler):
                       self.headers[header_name.lower()])
                 return True
         return False
-
-    def _get_instance_url(self, calling_domain: str) -> str:
-        """Returns the URL for this instance
-        """
-        if calling_domain.endswith('.onion') and \
-           self.server.onion_domain:
-            instance_url = 'http://' + self.server.onion_domain
-        elif (calling_domain.endswith('.i2p') and
-              self.server.i2p_domain):
-            instance_url = 'http://' + self.server.i2p_domain
-        else:
-            instance_url = \
-                self.server.http_prefix + '://' + self.server.domain_full
-        return instance_url
 
     def handle_error(self, request, client_address):
         """HTTP server error handling
@@ -826,7 +813,14 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = nickname.split('#/publicKey')[0]
         else:
             return None
-        actor = self._get_instance_url(calling_domain) + '/users/' + nickname
+
+        actor = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            '/users/' + nickname
         actor_json = get_person_from_cache(base_dir, actor, person_cache)
         if not actor_json:
             actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
@@ -841,7 +835,12 @@ class PubServer(BaseHTTPRequestHandler):
            not actor_json.get('assertionMethod'):
             return None
         original_person_url = \
-            self._get_instance_url(calling_domain) + path
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            path
         pub_key, _ = \
             get_actor_public_key_from_id(actor_json, original_person_url)
         return pub_key
@@ -879,7 +878,12 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _logout_redirect(self, redirect: str, calling_domain: str) -> None:
         if '://' not in redirect:
-            redirect = self._get_instance_url(calling_domain) + redirect
+            redirect = get_instance_url(calling_domain,
+                                        self.server.http_prefix,
+                                        self.server.domain_full,
+                                        self.server.onion_domain,
+                                        self.server.i2p_domain) + \
+                                        redirect
             print('WARN: redirect was not an absolute url, changed to ' +
                   redirect)
 
@@ -1003,7 +1007,12 @@ class PubServer(BaseHTTPRequestHandler):
                           calling_domain: str,
                           code: int = 303) -> None:
         if '://' not in redirect:
-            redirect = self._get_instance_url(calling_domain) + redirect
+            redirect = get_instance_url(calling_domain,
+                                        self.server.http_prefix,
+                                        self.server.domain_full,
+                                        self.server.onion_domain,
+                                        self.server.i2p_domain) + \
+                                        redirect
             print('WARN: redirect was not an absolute url, changed to ' +
                   redirect)
 
@@ -1615,7 +1624,11 @@ class PubServer(BaseHTTPRequestHandler):
         if broch_mode:
             show_node_info_accounts = False
 
-        instance_url = self._get_instance_url(calling_domain)
+        instance_url = get_instance_url(calling_domain,
+                                        self.server.http_prefix,
+                                        self.server.domain_full,
+                                        self.server.onion_domain,
+                                        self.server.i2p_domain)
         about_url = instance_url + '/about'
         terms_of_service_url = instance_url + '/terms'
         info = meta_data_node_info(self.server.base_dir,
@@ -2417,7 +2430,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if not valid_password(login_password):
                     self.server.postreq_busy = False
                     login_url = \
-                        self._get_instance_url(calling_domain) + '/login'
+                        get_instance_url(calling_domain,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         self.server.onion_domain,
+                                         self.server.i2p_domain) + \
+                        '/login'
                     self._redirect_headers(login_url, cookie, calling_domain)
                     return
 
@@ -2426,7 +2444,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.manual_follower_approval):
                     self.server.postreq_busy = False
                     login_url = \
-                        self._get_instance_url(calling_domain) + '/login'
+                        get_instance_url(calling_domain,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         self.server.onion_domain,
+                                         self.server.i2p_domain) + \
+                        '/login'
                     self._redirect_headers(login_url, cookie, calling_domain)
                     return
             auth_header = \
@@ -2517,8 +2540,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.tokens_lookup[index] = login_nickname
                 cookie_str = 'SET:epicyon=' + \
                     self.server.tokens[login_nickname] + '; SameSite=Strict'
-                tl_url = self._get_instance_url(calling_domain) + '/users/' + \
-                    login_nickname + '/' + self.server.default_timeline
+                tl_url = \
+                    get_instance_url(calling_domain,
+                                     self.server.http_prefix,
+                                     self.server.domain_full,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain) + \
+                    '/users/' + login_nickname + '/' + \
+                    self.server.default_timeline
                 self._redirect_headers(tl_url, cookie_str, calling_domain)
                 self.server.postreq_busy = False
                 return
@@ -2559,7 +2588,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         users_path = path.replace('/moderationaction', '')
         nickname = users_path.replace('/users/', '')
-        actor_str = self._get_instance_url(calling_domain) + users_path
+        actor_str = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            users_path
         if not is_moderator(self.server.base_dir, nickname):
             self._redirect_headers(actor_str + '/moderation',
                                    cookie, calling_domain)
@@ -4550,7 +4585,13 @@ class PubServer(BaseHTTPRequestHandler):
             path = path.split('?page=')[0]
 
         users_path = path.replace('/searchhandle', '')
-        actor_str = self._get_instance_url(calling_domain) + users_path
+        actor_str = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            users_path
         length = int(self.headers['Content-length'])
         try:
             search_params = self.rfile.read(length).decode('utf-8')
@@ -4851,7 +4892,12 @@ class PubServer(BaseHTTPRequestHandler):
                    search_str.endswith(';') or \
                    search_str.endswith('.'):
                     actor_str = \
-                        self._get_instance_url(calling_domain) + users_path
+                        get_instance_url(calling_domain,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         self.server.onion_domain,
+                                         self.server.i2p_domain) + \
+                        users_path
                     self._redirect_headers(actor_str + '/search',
                                            cookie, calling_domain)
                     self.server.postreq_busy = False
@@ -5032,7 +5078,12 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.postreq_busy = False
                     return
                 actor_str = \
-                    self._get_instance_url(calling_domain) + users_path
+                    get_instance_url(calling_domain,
+                                     self.server.http_prefix,
+                                     self.server.domain_full,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain) + \
+                    users_path
                 self._redirect_headers(actor_str + '/search',
                                        cookie, calling_domain)
                 self.server.postreq_busy = False
@@ -5109,7 +5160,13 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.postreq_busy = False
                     return
-        actor_str = self._get_instance_url(calling_domain) + users_path
+        actor_str = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            users_path
         self._redirect_headers(actor_str + '/' +
                                self.server.default_timeline,
                                cookie, calling_domain)
@@ -5379,7 +5436,11 @@ class PubServer(BaseHTTPRequestHandler):
                     # https://codeberg.org/fediverse/fep/
                     # src/branch/main/fep/0837/fep-0837.md
                     actor = \
-                        self._get_instance_url(calling_domain) + \
+                        get_instance_url(calling_domain,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         self.server.onion_domain,
+                                         self.server.i2p_domain) + \
                         '/users/' + share_nickname
                     person_cache = self.server.person_cache
                     actor_json = get_person_from_cache(base_dir,
@@ -5626,7 +5687,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         users_path = path.replace('/linksdata', '')
         users_path = users_path.replace('/editlinks', '')
-        actor_str = self._get_instance_url(calling_domain) + users_path
+        actor_str = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            users_path
 
         boundary = None
         if ' boundary=' in self.headers['Content-type']:
@@ -5813,7 +5880,13 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         users_path = users_path.split('/tags/')[0]
-        actor_str = self._get_instance_url(calling_domain) + users_path
+        actor_str = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            users_path
         tag_screen_str = actor_str + '/tags/' + hashtag
 
         boundary = None
@@ -5905,7 +5978,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         users_path = path.replace('/newswiredata', '')
         users_path = users_path.replace('/editnewswire', '')
-        actor_str = self._get_instance_url(calling_domain) + users_path
+        actor_str = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            users_path
 
         boundary = None
         if ' boundary=' in self.headers['Content-type']:
@@ -6092,7 +6171,13 @@ class PubServer(BaseHTTPRequestHandler):
         update button on the citations screen
         """
         users_path = path.replace('/citationsdata', '')
-        actor_str = self._get_instance_url(calling_domain) + users_path
+        actor_str = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            users_path
         nickname = get_nickname_from_actor(actor_str)
         if not nickname:
             self.server.postreq_busy = False
@@ -6182,7 +6267,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         users_path = path.replace('/newseditdata', '')
         users_path = users_path.replace('/editnewspost', '')
-        actor_str = self._get_instance_url(calling_domain) + users_path
+        actor_str = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            users_path
 
         boundary = None
         if ' boundary=' in self.headers['Content-type']:
@@ -6330,7 +6421,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         users_path = path.replace('/profiledata', '')
         users_path = users_path.replace('/editprofile', '')
-        actor_str = self._get_instance_url(calling_domain) + users_path
+        actor_str = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            users_path
 
         boundary = None
         if ' boundary=' in self.headers['Content-type']:
@@ -9233,7 +9330,12 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         origin_path_str_absolute = \
-            self._get_instance_url(calling_domain) + origin_path_str
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            origin_path_str
         self._redirect_headers(origin_path_str_absolute, cookie,
                                calling_domain)
 
@@ -9930,7 +10032,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number)
@@ -10072,7 +10180,11 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.auto_cw_cache)
 
         actor_absolute = \
-            self._get_instance_url(calling_domain) + \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
             '/users/' + self.post_to_nickname
 
         actor_path_str = \
@@ -10133,7 +10245,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + '?page=' + \
                 str(page_number)
@@ -10200,7 +10318,11 @@ class PubServer(BaseHTTPRequestHandler):
                              curr_session, proxy_type)
 
         actor_absolute = \
-            self._get_instance_url(calling_domain) + \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
             '/users/' + self.post_to_nickname
 
         actor_path_str = \
@@ -10505,7 +10627,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number) + timeline_bookmark
@@ -10660,7 +10788,11 @@ class PubServer(BaseHTTPRequestHandler):
                   like_url)
 
         actor_absolute = \
-            self._get_instance_url(calling_domain) + \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
             '/users/' + self.post_to_nickname
 
         actor_path_str = \
@@ -10721,7 +10853,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number)
@@ -10864,7 +11002,11 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
         actor_absolute = \
-            self._get_instance_url(calling_domain) + \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
             '/users/' + self.post_to_nickname
 
         actor_path_str = \
@@ -10931,7 +11073,13 @@ class PubServer(BaseHTTPRequestHandler):
                 emoji_content_encoded = emoji_content_encoded.split('?')[0]
         if not emoji_content_encoded:
             print('WARN: no emoji reaction ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number) + timeline_bookmark
@@ -10942,7 +11090,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number) + timeline_bookmark
@@ -11103,7 +11257,11 @@ class PubServer(BaseHTTPRequestHandler):
                   reaction_url)
 
         actor_absolute = \
-            self._get_instance_url(calling_domain) + \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
             '/users/' + self.post_to_nickname
 
         actor_path_str = \
@@ -11164,7 +11322,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number)
@@ -11178,7 +11342,13 @@ class PubServer(BaseHTTPRequestHandler):
                 emoji_content_encoded = emoji_content_encoded.split('?')[0]
         if not emoji_content_encoded:
             print('WARN: no emoji reaction ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number) + timeline_bookmark
@@ -11327,7 +11497,11 @@ class PubServer(BaseHTTPRequestHandler):
                       reaction_post_filename)
 
         actor_absolute = \
-            self._get_instance_url(calling_domain) + \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
             '/users/' + self.post_to_nickname
 
         actor_path_str = \
@@ -11375,7 +11549,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number) + timeline_bookmark
@@ -11390,7 +11570,13 @@ class PubServer(BaseHTTPRequestHandler):
             post_json_object = load_json(reaction_post_filename)
         if not reaction_post_filename or not post_json_object:
             print('WARN: unable to locate reaction post ' + reaction_url)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number) + timeline_bookmark
@@ -11494,7 +11680,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number)
@@ -11602,7 +11794,11 @@ class PubServer(BaseHTTPRequestHandler):
         # self.server.project_version, None,
         # curr_session, proxy_type)
         actor_absolute = \
-            self._get_instance_url(calling_domain) + \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
             '/users/' + self.post_to_nickname
 
         actor_path_str = \
@@ -11663,7 +11859,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
             print('WARN: unable to find nickname in ' + actor)
-            actor_absolute = self._get_instance_url(calling_domain) + actor
+            actor_absolute = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                actor
             actor_path_str = \
                 actor_absolute + '/' + timeline_str + \
                 '?page=' + str(page_number)
@@ -11772,7 +11974,11 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: Unbookmarked post not found: ' +
                       bookmark_filename)
         actor_absolute = \
-            self._get_instance_url(calling_domain) + \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
             '/users/' + self.post_to_nickname
 
         actor_path_str = \
@@ -12737,7 +12943,13 @@ class PubServer(BaseHTTPRequestHandler):
                                 self._404()
                         return True
         actor = path.replace('/skills', '')
-        actor_absolute = self._get_instance_url(calling_domain) + actor
+        actor_absolute = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + \
+            actor
         self._redirect_headers(actor_absolute, cookie, calling_domain)
         return True
 
@@ -12756,7 +12968,11 @@ class PubServer(BaseHTTPRequestHandler):
         post_id = path.split('?convthread=')[1].strip()
         post_id = post_id.replace('--', '/')
         if post_id.startswith('/users/'):
-            instance_url = self._get_instance_url(calling_domain)
+            instance_url = get_instance_url(calling_domain,
+                                            self.server.http_prefix,
+                                            self.server.domain_full,
+                                            self.server.onion_domain,
+                                            self.server.i2p_domain)
             post_id = instance_url + post_id
         nickname = path.split('/users/')[1]
         if '?convthread=' in nickname:
@@ -16309,7 +16525,11 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return False
         accept_str = self.headers['Accept']
-        actor_domain_url = self._get_instance_url(calling_domain)
+        actor_domain_url = get_instance_url(calling_domain,
+                                            self.server.http_prefix,
+                                            self.server.domain_full,
+                                            self.server.onion_domain,
+                                            self.server.i2p_domain)
         actor_url = actor_domain_url + '/users/Actor'
         remove_fields = (
             'icon', 'image', 'tts', 'shares',
@@ -16472,7 +16692,13 @@ class PubServer(BaseHTTPRequestHandler):
                       str(divert_to_login_screen))
                 print('DEBUG: authorized=' + str(authorized))
                 print('DEBUG: path=' + path)
-            redirect_url = self._get_instance_url(calling_domain) + divert_path
+            redirect_url = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                divert_path
             self._redirect_headers(redirect_url, None, calling_domain)
             fitness_performance(getreq_start_time,
                                 self.server.fitness,
@@ -17553,7 +17779,12 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
             else:
                 news_url = \
-                    self._get_instance_url(calling_domain) + '/users/news'
+                    get_instance_url(calling_domain,
+                                     self.server.http_prefix,
+                                     self.server.domain_full,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain) + \
+                    '/users/news'
                 self._logout_redirect(news_url, calling_domain)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'logout',
@@ -17716,7 +17947,12 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             # get the actor from the cache
             actor = \
-                self._get_instance_url(calling_domain) + '/users/' + nickname
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                '/users/' + nickname
             actor_json = get_person_from_cache(self.server.base_dir, actor,
                                                self.server.person_cache)
             if not actor_json:
@@ -19715,7 +19951,12 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/' and \
            not authorized and \
            self.server.news_instance:
-            news_url = self._get_instance_url(calling_domain) + '/users/news'
+            news_url = get_instance_url(calling_domain,
+                                        self.server.http_prefix,
+                                        self.server.domain_full,
+                                        self.server.onion_domain,
+                                        self.server.i2p_domain) + \
+                                        '/users/news'
             self._logout_redirect(news_url, calling_domain)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'news front page shown',
@@ -19885,7 +20126,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(tags_filename):
                     # redirect to the local hashtag screen
                     self.server.getreq_busy = False
-                    ht_url = self._get_instance_url(calling_domain) + \
+                    ht_url = \
+                        get_instance_url(calling_domain,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         self.server.onion_domain,
+                                         self.server.i2p_domain) + \
                         '/users/' + nickname + '/tags/' + hashtag
                     self._redirect_headers(ht_url, cookie, calling_domain)
                 else:
@@ -23175,7 +23421,11 @@ class PubServer(BaseHTTPRequestHandler):
                     # add shareOnProfile items to the actor attachments
                     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
                     actor = \
-                        self._get_instance_url(calling_domain) + \
+                        get_instance_url(calling_domain,
+                                         self.server.http_prefix,
+                                         self.server.domain_full,
+                                         self.server.onion_domain,
+                                         self.server.i2p_domain) + \
                         '/users/' + nickname
                     person_cache = self.server.person_cache
                     actor_json = get_person_from_cache(self.server.base_dir,
