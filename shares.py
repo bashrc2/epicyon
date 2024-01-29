@@ -2096,7 +2096,7 @@ def vf_proposal_from_share(shared_item: {},
             "https://www.w3.org/ns/activitystreams",
             {
                 "om2": om2_link,
-                "vf": "https://w3id.org/valueflows/",
+                "vf": "https://w3id.org/valueflows/ont/vf/",
                 "Proposal": "vf:Proposal",
                 "Intent": "vf:Intent",
                 "receiver": "vf:receiver",
@@ -2350,7 +2350,7 @@ def add_shares_to_actor(base_dir: str,
             "name": shared_item['displayName'],
             "mediaType": media_type,
             "href": share_id,
-            "rel": ["payment", "https://w3id.org/valueflows/Proposal"]
+            "rel": ["payment", "https://w3id.org/valueflows/ont/vf#Proposal"]
         })
         changed = True
         ctr += 1
