@@ -567,3 +567,19 @@ def verify_post_headers(http_prefix: str,
         if debug:
             print('EX: verify_post_headers pkcs1_15 verify failure')
     return False
+
+
+def getheader_signature_input(headers: {}):
+    """There are different versions of http signatures with
+    different header styles
+    """
+    if headers.get('Signature-Input'):
+        # https://tools.ietf.org/html/
+        # draft-ietf-httpbis-message-signatures-01
+        return headers['Signature-Input']
+    if headers.get('signature-input'):
+        return headers['signature-input']
+    if headers.get('signature'):
+        # Ye olde Masto http sig
+        return headers['signature']
+    return None

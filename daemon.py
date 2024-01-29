@@ -409,6 +409,7 @@ from cache import check_for_changed_actor
 from cache import store_person_in_cache
 from cache import get_person_from_cache
 from cache import get_person_pub_key
+from httpsig import getheader_signature_input
 from httpsig import verify_post_headers
 from theme import reset_theme_designer_settings
 from theme import set_theme_from_designer
@@ -547,21 +548,6 @@ class PubServer(BaseHTTPRequestHandler):
             instance_url = \
                 self.server.http_prefix + '://' + self.server.domain_full
         return instance_url
-
-    def _getheader_signature_input(self):
-        """There are different versions of http signatures with
-        different header styles
-        """
-        if self.headers.get('Signature-Input'):
-            # https://tools.ietf.org/html/
-            # draft-ietf-httpbis-message-signatures-01
-            return self.headers['Signature-Input']
-        if self.headers.get('signature-input'):
-            return self.headers['signature-input']
-        if self.headers.get('signature'):
-            # Ye olde Masto http sig
-            return self.headers['signature']
-        return None
 
     def handle_error(self, request, client_address):
         """HTTP server error handling
@@ -24240,7 +24226,7 @@ class PubServer(BaseHTTPRequestHandler):
                             '_POST', 'inbox_message_has_params',
                             self.server.debug)
 
-        header_signature = self._getheader_signature_input()
+        header_signature = getheader_signature_input(self.headers)
 
         if header_signature:
             if 'keyId=' not in header_signature:
