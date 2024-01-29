@@ -31,6 +31,7 @@ from webapp_utils import get_banner_file
 from webapp_utils import html_post_separator
 from webapp_utils import header_buttons_front_screen
 from webapp_utils import edit_text_field
+from webapp_utils import text_mode_browser
 
 
 def _votes_indicator(total_votes: int, positive_voting: bool) -> str:
@@ -483,7 +484,8 @@ def html_newswire_mobile(base_dir: str, nickname: str,
                          icons_as_buttons: bool,
                          default_timeline: str,
                          theme: str,
-                         access_keys: {}) -> str:
+                         access_keys: {},
+                         ua_str: str) -> str:
     """Shows the mobile version of the newswire right column
     """
     html_str = ''
@@ -507,7 +509,9 @@ def html_newswire_mobile(base_dir: str, nickname: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    metadata = '<meta http-equiv="refresh" content="1800" >\n'
+    metadata = None
+    if text_mode_browser(ua_str):
+        metadata = '<meta http-equiv="refresh" content="1800" >\n'
     html_str = \
         html_header_with_external_style(css_filename, instance_title, metadata)
 

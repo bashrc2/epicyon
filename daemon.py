@@ -19778,7 +19778,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          icons_as_buttons,
                                          default_timeline,
                                          self.server.theme_name,
-                                         access_keys).encode('utf-8')
+                                         access_keys,
+                                         ua_str).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
                                   cookie, calling_domain, False)
