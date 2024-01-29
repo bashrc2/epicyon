@@ -507,8 +507,9 @@ def html_newswire_mobile(base_dir: str, nickname: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    metadata = '<meta http-equiv="refresh" content="1800" >\n'
     html_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, metadata)
 
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
