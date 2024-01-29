@@ -204,7 +204,6 @@ from webapp_utils import html_following_list
 from webapp_utils import csv_following_list
 from webapp_utils import set_blog_address
 from webapp_utils import html_show_share
-from webapp_utils import text_mode_browser
 from webapp_calendar import html_calendar_delete_confirm
 from webapp_calendar import html_calendar
 from webapp_about import html_about
@@ -471,6 +470,10 @@ from relationships import update_moved_actors
 from git import get_repo_url
 from webapp_pwa import pwa_manifest
 from reading import remove_reading_event
+from httprequests import request_csv
+from httprequests import request_ssml
+from httprequests import request_http
+from httprequests import request_icalendar
 
 # maximum number of posts to list in outbox feed
 MAX_POSTS_IN_FEED = 12
@@ -702,68 +705,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('ERROR: unable to post vote to outbox')
         else:
             print('ERROR: unable to create vote')
-
-    def _request_csv(self) -> bool:
-        """Should a csv response be given?
-        """
-        if not self.headers.get('Accept'):
-            return False
-        accept_str = self.headers['Accept']
-        if 'text/csv' in accept_str:
-            return True
-        return False
-
-    def _request_ssml(self) -> bool:
-        """Should a ssml response be given?
-        """
-        if not self.headers.get('Accept'):
-            return False
-        accept_str = self.headers['Accept']
-        if 'application/ssml' in accept_str:
-            if 'text/html' not in accept_str:
-                return True
-        return False
-
-    def _request_http(self) -> bool:
-        """Should a http response be given?
-        """
-        if not self.headers.get('Accept'):
-            return False
-        accept_str = self.headers['Accept']
-        if self.server.debug:
-            print('ACCEPT: ' + accept_str)
-        if 'application/ssml' in accept_str:
-            if 'text/html' not in accept_str:
-                return False
-        if 'image/' in accept_str:
-            if 'text/html' not in accept_str:
-                return False
-        if 'video/' in accept_str:
-            if 'text/html' not in accept_str:
-                return False
-        if 'audio/' in accept_str:
-            if 'text/html' not in accept_str:
-                return False
-        if accept_str.startswith('*') or 'text/html' in accept_str:
-            if self.headers.get('User-Agent'):
-                ua_str = self.headers['User-Agent']
-                if text_mode_browser(ua_str) or 'NetSurf/' in ua_str:
-                    return True
-            if 'text/html' not in accept_str:
-                return False
-        if 'json' in accept_str:
-            return False
-        return True
-
-    def _request_icalendar(self) -> bool:
-        """Should an icalendar response be given?
-        """
-        if not self.headers.get('Accept'):
-            return False
-        accept_str = self.headers['Accept']
-        if 'text/calendar' in accept_str:
-            return True
-        return False
 
     def _signed_get_key_id(self) -> str:
         """Returns the actor from the signed GET key_id
@@ -12327,7 +12268,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'type': 'OrderedCollection'
             }
 
-            if self._request_http():
+            if request_http(self.headers, debug):
                 curr_session = \
                     self._establish_session("showRepliesToPost",
                                             curr_session, proxy_type)
@@ -12446,7 +12387,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   authorized, replies_json)
 
             # send the replies json
-            if self._request_http():
+            if request_http(self.headers, debug):
                 curr_session = \
                     self._establish_session("showRepliesToPost2",
                                             curr_session, proxy_type)
@@ -12554,7 +12495,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         if actor_json.get('hasOccupation'):
-            if self._request_http():
+            if request_http(self.headers, debug):
                 get_person = \
                     person_lookup(domain, path.replace('/roles', ''),
                                   base_dir)
@@ -12674,7 +12615,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actor_json = load_json(actor_filename)
                 if actor_json:
                     if no_of_actor_skills(actor_json) > 0:
-                        if self._request_http():
+                        if request_http(self.headers, self.server.debug):
                             get_person = \
                                 person_lookup(domain,
                                               path.replace('/skills', ''),
@@ -13160,7 +13101,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.getreq_busy = False
                 return True
             remove_post_interactions(pjo, True)
-        if self._request_http():
+        if request_http(self.headers, debug):
             timezone = None
             if self.server.account_timezone.get(nickname):
                 timezone = \
@@ -13428,7 +13369,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.fitness,
                                             '_GET', '_show_inbox',
                                             self.server.debug)
-                    if self._request_http():
+                    if request_http(self.headers, debug):
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/inbox', '')
                         page_number = 1
@@ -13627,7 +13568,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     0, self.server.positive_voting,
                                     self.server.voting_time_mins)
                 if inbox_dm_feed:
-                    if self._request_http():
+                    if request_http(self.headers, debug):
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/dm', '')
                         page_number = 1
@@ -13808,7 +13749,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.voting_time_mins)
                 if not inbox_replies_feed:
                     inbox_replies_feed = []
-                if self._request_http():
+                if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlreplies', '')
                     page_number = 1
@@ -13987,7 +13928,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.voting_time_mins)
                 if not inbox_media_feed:
                     inbox_media_feed = []
-                if self._request_http():
+                if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlmedia', '')
                     page_number = 1
@@ -14163,7 +14104,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.voting_time_mins)
                 if not inbox_blogs_feed:
                     inbox_blogs_feed = []
-                if self._request_http():
+                if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlblogs', '')
                     page_number = 1
@@ -14340,7 +14281,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.voting_time_mins)
                 if not inbox_news_feed:
                     inbox_news_feed = []
-                if self._request_http():
+                if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlnews', '')
                     page_number = 1
@@ -14517,7 +14458,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.voting_time_mins)
                 if not inbox_features_feed:
                     inbox_features_feed = []
-                if self._request_http():
+                if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlfeatures', '')
                     page_number = 1
@@ -14687,7 +14628,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if '/users/' in path:
             if authorized:
-                if self._request_http():
+                if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlshares', '')
                     page_number = 1
@@ -14791,7 +14732,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if '/users/' in path:
             if authorized:
-                if self._request_http():
+                if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlwanted', '')
                     page_number = 1
@@ -14907,7 +14848,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     0, self.server.positive_voting,
                                     self.server.voting_time_mins)
                 if bookmarks_feed:
-                    if self._request_http():
+                    if request_http(self.headers, debug):
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/tlbookmarks', '')
                         nickname = nickname.replace('/bookmarks', '')
@@ -15095,7 +15036,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     page_number = 1
             else:
-                if self._request_http():
+                if request_http(self.headers, debug):
                     page_number = 1
             if authorized and page_number >= 1:
                 # if a page wasn't specified then show the first one
@@ -15113,7 +15054,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 page_number = 1
 
-            if self._request_http():
+            if request_http(self.headers, debug):
                 full_width_tl_button_header = \
                     self.server.full_width_tl_button_header
                 minimal_nick = is_minimal(base_dir, domain, nickname)
@@ -15237,7 +15178,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     0, self.server.positive_voting,
                                     self.server.voting_time_mins)
                 if moderation_feed:
-                    if self._request_http():
+                    if request_http(self.headers, debug):
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/moderation', '')
                         page_number = 1
@@ -15402,7 +15343,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        http_prefix, shares_file_type,
                                        SHARES_PER_PAGE)
         if shares:
-            if self._request_http():
+            if request_http(self.headers, debug):
                 page_number = 1
                 if '?page=' not in path:
                     search_path = path
@@ -15549,7 +15490,7 @@ class PubServer(BaseHTTPRequestHandler):
                                http_prefix, authorized, FOLLOWS_PER_PAGE,
                                'following')
         if following:
-            if self._request_http():
+            if request_http(self.headers, debug):
                 page_number = 1
                 if '?page=' not in path:
                     search_path = path
@@ -15712,7 +15653,7 @@ class PubServer(BaseHTTPRequestHandler):
             get_moved_feed(base_dir, domain, port, path,
                            http_prefix, authorized, FOLLOWS_PER_PAGE)
         if following:
-            if self._request_http():
+            if request_http(self.headers, debug):
                 page_number = 1
                 if '?page=' not in path:
                     search_path = path
@@ -15865,7 +15806,7 @@ class PubServer(BaseHTTPRequestHandler):
                               dormant_months,
                               FOLLOWS_PER_PAGE, sites_unavailable)
         if following:
-            if self._request_http():
+            if request_http(self.headers, debug):
                 page_number = 1
                 if '?page=' not in path:
                     search_path = path
@@ -16016,7 +15957,7 @@ class PubServer(BaseHTTPRequestHandler):
             get_following_feed(base_dir, domain, port, path, http_prefix,
                                authorized, FOLLOWS_PER_PAGE, 'followers')
         if followers:
-            if self._request_http():
+            if request_http(self.headers, debug):
                 page_number = 1
                 if '?page=' not in path:
                     search_path = path
@@ -16250,7 +16191,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not actor_json:
             return False
         add_alternate_domains(actor_json, domain, onion_domain, i2p_domain)
-        if self._request_http():
+        if request_http(self.headers, debug):
             curr_session = \
                 self._establish_session("showPersonProfile",
                                         curr_session, proxy_type)
@@ -16373,7 +16314,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if debug:
             print('Instance actor requested by ' + calling_domain)
-        if self._request_http():
+        if request_http(self.headers, debug):
             self._404()
             return False
         actor_json = person_lookup(domain, path, base_dir)
@@ -17699,7 +17640,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if '/manifest.json' in self.path:
             if self._has_accept(calling_domain):
-                if not self._request_http():
+                if not request_http(self.headers, self.server.debug):
                     self._progressive_web_app_manifest(self.server.base_dir,
                                                        calling_domain,
                                                        referer_domain,
@@ -17822,7 +17763,7 @@ class PubServer(BaseHTTPRequestHandler):
             # show the shared item
             print('DEBUG: shareditems 5 ' + share_id)
             shares_file_type = 'shares'
-            if self._request_http():
+            if request_http(self.headers, self.server.debug):
                 # get the category for share_id
                 share_category = \
                     get_share_category(self.server.base_dir,
@@ -18192,9 +18133,12 @@ class PubServer(BaseHTTPRequestHandler):
             # show shared items catalog for federation
             if self._has_accept(calling_domain) and catalog_authorized:
                 catalog_type = 'json'
-                if self.path.endswith('.csv') or self._request_csv():
+                headers = self.headers
+                debug = self.server.debug
+                if self.path.endswith('.csv') or request_csv(headers):
                     catalog_type = 'csv'
-                elif self.path.endswith('.json') or not self._request_http():
+                elif (self.path.endswith('.json') or
+                      not request_http(headers, debug)):
                     catalog_type = 'json'
                 if self.server.debug:
                     print('Preparing DFC catalog in format ' + catalog_type)
@@ -18297,9 +18241,12 @@ class PubServer(BaseHTTPRequestHandler):
             # show wanted items catalog for federation
             if self._has_accept(calling_domain) and catalog_authorized:
                 catalog_type = 'json'
-                if self.path.endswith('.csv') or self._request_csv():
+                headers = self.headers
+                debug = self.server.debug
+                if self.path.endswith('.csv') or request_csv(headers):
                     catalog_type = 'csv'
-                elif self.path.endswith('.json') or not self._request_http():
+                elif (self.path.endswith('.json') or
+                      not request_http(headers, debug)):
                     catalog_type = 'json'
                 if self.server.debug:
                     print('Preparing DFC wanted catalog in format ' +
@@ -18416,13 +18363,13 @@ class PubServer(BaseHTTPRequestHandler):
         ssml_getreq = False
         icalendar_getreq = False
         if self._has_accept(calling_domain):
-            if self._request_http():
+            if request_http(self.headers, self.server.debug):
                 html_getreq = True
-            elif self._request_csv():
+            elif request_csv(self.headers):
                 csv_getreq = True
-            elif self._request_ssml():
+            elif request_ssml(self.headers):
                 ssml_getreq = True
-            elif self._request_icalendar():
+            elif request_icalendar(self.headers):
                 icalendar_getreq = True
         else:
             if self.headers.get('Connection'):
