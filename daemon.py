@@ -561,6 +561,8 @@ class PubServer(BaseHTTPRequestHandler):
         return None
 
     def handle_error(self, request, client_address):
+        """HTTP server error handling
+        """
         print('ERROR: http server error: ' + str(request) + ', ' +
               str(client_address))
 
