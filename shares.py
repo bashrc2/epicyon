@@ -2126,7 +2126,6 @@ def vf_proposal_from_share(shared_item: {}, share_type: str) -> {}:
         "attachment": [],
         "unitBased": False,
         "to": "https://www.w3.org/ns/activitystreams#Public"
-
     }
     if shared_item.get('dfcId'):
         offer_item['publishes']['resourceConformsTo'] = \
