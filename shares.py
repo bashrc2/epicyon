@@ -2078,10 +2078,7 @@ def _vf_share_id(share_id: str) -> str:
     return share_id.replace('--', '/')
 
 
-def vf_proposal_from_share(shared_item: {},
-                           share_type: str,
-                           publishes_direction: str,
-                           reciprocal_direction: str) -> {}:
+def vf_proposal_from_share(shared_item: {}, share_type: str) -> {}:
     """Returns a ValueFlows proposal from a shared item
     """
     if not shared_item.get('shareId'):
@@ -2096,12 +2093,11 @@ def vf_proposal_from_share(shared_item: {},
             "https://www.w3.org/ns/activitystreams",
             {
                 "om2": om2_link,
-                "vf": "https://w3id.org/valueflows/ont/vf/",
+                "vf": "https://w3id.org/valueflows/ont/vf#",
                 "Proposal": "vf:Proposal",
                 "Intent": "vf:Intent",
-                "receiver": "vf:receiver",
-                "provider": "vf:provider",
                 "action": "vf:action",
+                "purpose": "vf:purpose",
                 "unitBased": "vf:unitBased",
                 "publishes": "vf:publishes",
                 "reciprocal": "vf:reciprocal",
@@ -2111,7 +2107,8 @@ def vf_proposal_from_share(shared_item: {},
                 "hasNumericalValue": "om2:hasNumericalValue"
             }
         ],
-        "type": share_type,
+        "type": "Proposal",
+        "purpose": share_type,
         "id": share_id,
         "attributedTo": actor_url,
         "name": shared_item['displayName'],
@@ -2125,7 +2122,6 @@ def vf_proposal_from_share(shared_item: {},
                 "hasUnit": "one",
                 "hasNumericalValue": str(shared_item['itemQty'])
             },
-            publishes_direction: actor_url
         },
         "attachment": [],
         "unitBased": False,
@@ -2177,8 +2173,7 @@ def vf_proposal_from_share(shared_item: {},
             "resourceQuantity": {
                 "hasUnit": "one",
                 "hasNumericalValue": str(shared_item['itemPrice'])
-            },
-            reciprocal_direction: actor_url
+            }
         }
     return offer_item
 
@@ -2221,19 +2216,13 @@ def vf_proposal_from_id(base_dir: str, nickname: str, domain: str,
         print('DEBUG: vf_proposal_from_id does not contain id ' + share_id)
         return {}
     if shares_file_type == 'shares':
-        share_type = 'Proposal'
-        publishes_direction = "provider"
-        reciprocal_direction = "receiver"
+        share_type = 'offer'
     else:
-        share_type = 'Want'
-        publishes_direction = "receiver"
-        reciprocal_direction = "provider"
+        share_type = 'request'
     shares_json[share_id]['shareId'] = share_id
     shares_json[share_id]['actor'] = actor
     return vf_proposal_from_share(shares_json[share_id],
-                                  share_type,
-                                  publishes_direction,
-                                  reciprocal_direction)
+                                  share_type)
 
 
 def _is_valueflows_attachment(attach_item: {}) -> bool:

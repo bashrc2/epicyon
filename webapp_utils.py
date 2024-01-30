@@ -587,23 +587,16 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
                              shared_items_federated_domains, shares_file_type)
 
     if shares_file_type == 'shares':
-        share_type = 'Proposal'
-        publishes_direction = "provider"
-        reciprocal_direction = "receiver"
+        share_type = 'offer'
         collection_name = nickname + "'s Shared Items"
     else:
-        share_type = 'Want'
-        publishes_direction = "receiver"
-        reciprocal_direction = "provider"
+        share_type = 'request'
         collection_name = nickname + "'s Wanted Items"
 
     for share_id, shared_item in shares_json.items():
         shared_item['shareId'] = share_id
         shared_item['actor'] = actor
-        offer_item = vf_proposal_from_share(shared_item,
-                                            share_type,
-                                            publishes_direction,
-                                            reciprocal_direction)
+        offer_item = vf_proposal_from_share(shared_item, share_type)
         if offer_item:
             shares_collection.append(offer_item)
 
