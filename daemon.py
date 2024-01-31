@@ -698,33 +698,46 @@ class PubServer(BaseHTTPRequestHandler):
         return None
 
     def _secure_mode(self, curr_session, proxy_type: str,
-                     force: bool) -> bool:
+                     force: bool, secure_mode: bool,
+                     debug: bool, headers: {},
+                     federation_list: [],
+                     onion_domain: str,
+                     i2p_domain: str,
+                     session_onion, session_i2p,
+                     base_dir: str,
+                     person_cache: {},
+                     project_version: str,
+                     http_prefix: str,
+                     domain: str,
+                     domain_full: str,
+                     signing_priv_key_pem: str,
+                     path: str) -> bool:
         """http authentication of GET requests for json
         aka authorized fetch
         """
-        if not self.server.secure_mode and not force:
+        if not secure_mode and not force:
             return True
 
-        key_id = signed_get_key_id(self.headers, self.server.debug)
+        key_id = signed_get_key_id(headers, debug)
         if not key_id:
-            if self.server.debug:
+            if debug:
                 print('AUTH: secure mode, ' +
                       'failed to obtain key_id from signature')
             return False
 
         # is the key_id (actor) valid?
-        if not url_permitted(key_id, self.server.federation_list):
-            if self.server.debug:
+        if not url_permitted(key_id, federation_list):
+            if debug:
                 print('AUTH: Secure mode GET request not permitted: ' + key_id)
             return False
 
-        if self.server.onion_domain:
+        if onion_domain:
             if '.onion/' in key_id:
-                curr_session = self.server.session_onion
+                curr_session = session_onion
                 proxy_type = 'tor'
-        if self.server.i2p_domain:
+        if i2p_domain:
             if '.i2p/' in key_id:
-                curr_session = self.server.session_i2p
+                curr_session = session_i2p
                 proxy_type = 'i2p'
 
         curr_session = \
@@ -735,37 +748,37 @@ class PubServer(BaseHTTPRequestHandler):
 
         # obtain the public key. key_id is the actor
         pub_key = \
-            get_person_pub_key(self.server.base_dir,
+            get_person_pub_key(base_dir,
                                curr_session, key_id,
-                               self.server.person_cache, self.server.debug,
-                               self.server.project_version,
-                               self.server.http_prefix,
-                               self.server.domain,
-                               self.server.onion_domain,
-                               self.server.i2p_domain,
-                               self.server.signing_priv_key_pem)
+                               person_cache, debug,
+                               project_version,
+                               http_prefix,
+                               domain,
+                               onion_domain,
+                               i2p_domain,
+                               signing_priv_key_pem)
         if not pub_key:
-            if self.server.debug:
+            if debug:
                 print('AUTH: secure mode failed to ' +
                       'obtain public key for ' + key_id)
             return False
 
         # was an error http code returned?
         if isinstance(pub_key, dict):
-            if self.server.debug:
+            if debug:
                 print('AUTH: failed to ' +
                       'obtain public key for ' + key_id +
                       ' ' + str(pub_key))
             return False
 
         # verify the GET request without any digest
-        if verify_post_headers(self.server.http_prefix,
-                               self.server.domain_full,
-                               pub_key, self.headers,
-                               self.path, True, None, '', self.server.debug):
+        if verify_post_headers(http_prefix,
+                               domain_full,
+                               pub_key, headers,
+                               path, True, None, '', debug):
             return True
 
-        if self.server.debug:
+        if debug:
             print('AUTH: secure mode authorization failed for ' + key_id)
         return False
 
@@ -12447,7 +12460,23 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', '_show_replies_to_post',
                                     debug)
             else:
-                if self._secure_mode(curr_session, proxy_type, False):
+                if self._secure_mode(curr_session, proxy_type, False,
+                                     self.server.secure_mode,
+                                     self.server.debug,
+                                     self.server.headers,
+                                     self.server.federation_list,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.session_onion,
+                                     self.server.session_i2p,
+                                     self.server.base_dir,
+                                     self.server.person_cache,
+                                     self.server.project_version,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.domain_full,
+                                     self.server.signing_priv_key_pem,
+                                     self.path):
                     msg_str = json.dumps(replies_json, ensure_ascii=False)
                     msg_str = convert_domains(calling_domain,
                                               referer_domain,
@@ -12566,7 +12595,23 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', '_show_replies_to_post',
                                     debug)
             else:
-                if self._secure_mode(curr_session, proxy_type, False):
+                if self._secure_mode(curr_session, proxy_type, False,
+                                     self.server.secure_mode,
+                                     self.server.debug,
+                                     self.server.headers,
+                                     self.server.federation_list,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.session_onion,
+                                     self.server.session_i2p,
+                                     self.server.base_dir,
+                                     self.server.person_cache,
+                                     self.server.project_version,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.domain_full,
+                                     self.server.signing_priv_key_pem,
+                                     self.path):
                     msg_str = json.dumps(replies_json, ensure_ascii=False)
                     msg_str = convert_domains(calling_domain,
                                               referer_domain,
@@ -12693,7 +12738,23 @@ class PubServer(BaseHTTPRequestHandler):
                     fitness_performance(getreq_start_time, self.server.fitness,
                                         '_GET', '_show_roles', debug)
             else:
-                if self._secure_mode(curr_session, proxy_type, False):
+                if self._secure_mode(curr_session, proxy_type, False,
+                                     self.server.secure_mode,
+                                     self.server.debug,
+                                     self.server.headers,
+                                     self.server.federation_list,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.session_onion,
+                                     self.server.session_i2p,
+                                     self.server.base_dir,
+                                     self.server.person_cache,
+                                     self.server.project_version,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.domain_full,
+                                     self.server.signing_priv_key_pem,
+                                     self.path):
                     roles_list = get_actor_roles_list(actor_json)
                     msg_str = json.dumps(roles_list, ensure_ascii=False)
                     msg_str = convert_domains(calling_domain,
@@ -12833,8 +12894,26 @@ class PubServer(BaseHTTPRequestHandler):
                                                     '_GET', '_show_skills',
                                                     self.server.debug)
                         else:
+                            signing_priv_key_pem = \
+                                self.server.signing_priv_key_pem
                             if self._secure_mode(curr_session,
-                                                 proxy_type, False):
+                                                 proxy_type, False,
+                                                 self.server.secure_mode,
+                                                 self.server.debug,
+                                                 self.server.headers,
+                                                 self.server.federation_list,
+                                                 self.server.onion_domain,
+                                                 self.server.i2p_domain,
+                                                 self.server.session_onion,
+                                                 self.server.session_i2p,
+                                                 self.server.base_dir,
+                                                 self.server.person_cache,
+                                                 self.server.project_version,
+                                                 self.server.http_prefix,
+                                                 self.server.domain,
+                                                 self.server.domain_full,
+                                                 signing_priv_key_pem,
+                                                 self.path):
                                 actor_skills_list = \
                                     get_occupation_skills(actor_json)
                                 skills = \
@@ -13281,7 +13360,23 @@ class PubServer(BaseHTTPRequestHandler):
                                 '_GET', '_show_post_from_file',
                                 debug)
         else:
-            if self._secure_mode(curr_session, proxy_type, False):
+            if self._secure_mode(curr_session, proxy_type, False,
+                                 self.server.secure_mode,
+                                 self.server.debug,
+                                 self.server.headers,
+                                 self.server.federation_list,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain,
+                                 self.server.session_onion,
+                                 self.server.session_i2p,
+                                 self.server.base_dir,
+                                 self.server.person_cache,
+                                 self.server.project_version,
+                                 self.server.http_prefix,
+                                 self.server.domain,
+                                 self.server.domain_full,
+                                 self.server.signing_priv_key_pem,
+                                 self.path):
                 if not include_create_wrapper and \
                    post_json_object['type'] == 'Create' and \
                    has_object_dict(post_json_object):
@@ -15254,7 +15349,23 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', '_show_outbox_timeline',
                                     debug)
             else:
-                if self._secure_mode(curr_session, proxy_type, False):
+                if self._secure_mode(curr_session, proxy_type, False,
+                                     self.server.secure_mode,
+                                     self.server.debug,
+                                     self.server.headers,
+                                     self.server.federation_list,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.session_onion,
+                                     self.server.session_i2p,
+                                     self.server.base_dir,
+                                     self.server.person_cache,
+                                     self.server.project_version,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.domain_full,
+                                     self.server.signing_priv_key_pem,
+                                     self.path):
                     onion_domain = self.server.onion_domain
                     i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(outbox_feed,
@@ -15575,7 +15686,23 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.getreq_busy = False
                     return True
             else:
-                if self._secure_mode(curr_session, proxy_type, False):
+                if self._secure_mode(curr_session, proxy_type, False,
+                                     self.server.secure_mode,
+                                     self.server.debug,
+                                     self.server.headers,
+                                     self.server.federation_list,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.session_onion,
+                                     self.server.session_i2p,
+                                     self.server.base_dir,
+                                     self.server.person_cache,
+                                     self.server.project_version,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.domain_full,
+                                     self.server.signing_priv_key_pem,
+                                     self.path):
                     onion_domain = self.server.onion_domain
                     i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(shares,
@@ -15733,7 +15860,23 @@ class PubServer(BaseHTTPRequestHandler):
                                         debug)
                     return True
             else:
-                if self._secure_mode(curr_session, proxy_type, False):
+                if self._secure_mode(curr_session, proxy_type, False,
+                                     self.server.secure_mode,
+                                     self.server.debug,
+                                     self.server.headers,
+                                     self.server.federation_list,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.session_onion,
+                                     self.server.session_i2p,
+                                     self.server.base_dir,
+                                     self.server.person_cache,
+                                     self.server.project_version,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.domain_full,
+                                     self.server.signing_priv_key_pem,
+                                     self.path):
                     if '/users/' in path:
                         nickname = path.split('/users/')[1]
                         if '/' in nickname:
@@ -15890,7 +16033,23 @@ class PubServer(BaseHTTPRequestHandler):
                                         debug)
                     return True
             else:
-                if self._secure_mode(curr_session, proxy_type, False):
+                if self._secure_mode(curr_session, proxy_type, False,
+                                     self.server.secure_mode,
+                                     self.server.debug,
+                                     self.server.headers,
+                                     self.server.federation_list,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.session_onion,
+                                     self.server.session_i2p,
+                                     self.server.base_dir,
+                                     self.server.person_cache,
+                                     self.server.project_version,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.domain_full,
+                                     self.server.signing_priv_key_pem,
+                                     self.path):
                     msg_str = json.dumps(following,
                                          ensure_ascii=False)
                     msg_str = convert_domains(calling_domain,
@@ -16045,7 +16204,23 @@ class PubServer(BaseHTTPRequestHandler):
                                         debug)
                     return True
             else:
-                if self._secure_mode(curr_session, proxy_type, False):
+                if self._secure_mode(curr_session, proxy_type, False,
+                                     self.server.secure_mode,
+                                     self.server.debug,
+                                     self.server.headers,
+                                     self.server.federation_list,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.session_onion,
+                                     self.server.session_i2p,
+                                     self.server.base_dir,
+                                     self.server.person_cache,
+                                     self.server.project_version,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.domain_full,
+                                     self.server.signing_priv_key_pem,
+                                     self.path):
                     msg_str = json.dumps(following,
                                          ensure_ascii=False)
                     msg_str = convert_domains(calling_domain,
@@ -16202,7 +16377,23 @@ class PubServer(BaseHTTPRequestHandler):
                                         debug)
                     return True
             else:
-                if self._secure_mode(curr_session, proxy_type, False):
+                if self._secure_mode(curr_session, proxy_type, False,
+                                     self.server.secure_mode,
+                                     self.server.debug,
+                                     self.server.headers,
+                                     self.server.federation_list,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain,
+                                     self.server.session_onion,
+                                     self.server.session_i2p,
+                                     self.server.base_dir,
+                                     self.server.person_cache,
+                                     self.server.project_version,
+                                     self.server.http_prefix,
+                                     self.server.domain,
+                                     self.server.domain_full,
+                                     self.server.signing_priv_key_pem,
+                                     self.path):
                     if '/users/' in path:
                         nickname = path.split('/users/')[1]
                         if '/' in nickname:
@@ -16397,7 +16588,23 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('DEBUG: html actor sent')
         else:
-            if self._secure_mode(curr_session, proxy_type, False):
+            if self._secure_mode(curr_session, proxy_type, False,
+                                 self.server.secure_mode,
+                                 self.server.debug,
+                                 self.server.headers,
+                                 self.server.federation_list,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain,
+                                 self.server.session_onion,
+                                 self.server.session_i2p,
+                                 self.server.base_dir,
+                                 self.server.person_cache,
+                                 self.server.project_version,
+                                 self.server.http_prefix,
+                                 self.server.domain,
+                                 self.server.domain_full,
+                                 self.server.signing_priv_key_pem,
+                                 self.path):
                 accept_str = self.headers['Accept']
                 msg_str = json.dumps(actor_json, ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,
@@ -17646,7 +17853,23 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: followers synchronization request ' +
                       self.path + ' ' + calling_domain)
             # check authorized fetch
-            if self._secure_mode(curr_session, proxy_type, False):
+            if self._secure_mode(curr_session, proxy_type, False,
+                                 self.server.secure_mode,
+                                 self.server.debug,
+                                 self.server.headers,
+                                 self.server.federation_list,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain,
+                                 self.server.session_onion,
+                                 self.server.session_i2p,
+                                 self.server.base_dir,
+                                 self.server.person_cache,
+                                 self.server.project_version,
+                                 self.server.http_prefix,
+                                 self.server.domain,
+                                 self.server.domain_full,
+                                 self.server.signing_priv_key_pem,
+                                 self.path):
                 nickname = get_nickname_from_actor(self.path)
                 sync_cache = self.server.followers_sync_cache
                 sync_json, _ = \
@@ -21554,7 +21777,23 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if not self._secure_mode(curr_session,
-                                 proxy_type, False):
+                                 proxy_type, False,
+                                 self.server.secure_mode,
+                                 self.server.debug,
+                                 self.server.headers,
+                                 self.server.federation_list,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain,
+                                 self.server.session_onion,
+                                 self.server.session_i2p,
+                                 self.server.base_dir,
+                                 self.server.person_cache,
+                                 self.server.project_version,
+                                 self.server.http_prefix,
+                                 self.server.domain,
+                                 self.server.domain_full,
+                                 self.server.signing_priv_key_pem,
+                                 self.path):
             if self.server.debug:
                 print('WARN: Unauthorized GET')
             self._404()
