@@ -583,3 +583,33 @@ def getheader_signature_input(headers: {}):
         # Ye olde Masto http sig
         return headers['signature']
     return None
+
+
+def signed_get_key_id(headers: {}, debug: bool) -> str:
+    """Returns the actor from the signed GET key_id
+    """
+    signature = None
+    if headers.get('signature'):
+        signature = headers['signature']
+    elif headers.get('Signature'):
+        signature = headers['Signature']
+
+    # check that the headers are signed
+    if not signature:
+        if debug:
+            print('AUTH: secure mode actor, ' +
+                  'GET has no signature in headers')
+        return None
+
+    # get the key_id, which is typically the instance actor
+    key_id = None
+    signature_params = signature.split(',')
+    for signature_item in signature_params:
+        if signature_item.startswith('keyId='):
+            if '"' in signature_item:
+                key_id = signature_item.split('"')[1]
+                # remove #/main-key or #main-key
+                if '#' in key_id:
+                    key_id = key_id.split('#')[0]
+                return key_id
+    return None
