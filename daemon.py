@@ -679,18 +679,18 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('ERROR: unable to create vote')
 
-    def _signed_get_key_id(self) -> str:
+    def _signed_get_key_id(self, headers: {}, debug: bool) -> str:
         """Returns the actor from the signed GET key_id
         """
         signature = None
-        if self.headers.get('signature'):
-            signature = self.headers['signature']
+        if headers.get('signature'):
+            signature = headers['signature']
         elif self.headers.get('Signature'):
-            signature = self.headers['Signature']
+            signature = headers['Signature']
 
         # check that the headers are signed
         if not signature:
-            if self.server.debug:
+            if debug:
                 print('AUTH: secure mode actor, ' +
                       'GET has no signature in headers')
             return None
@@ -733,7 +733,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.secure_mode and not force:
             return True
 
-        key_id = self._signed_get_key_id()
+        key_id = self._signed_get_key_id(self.headers, self.server.debug)
         if not key_id:
             if self.server.debug:
                 print('AUTH: secure mode, ' +
