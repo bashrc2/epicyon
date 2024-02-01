@@ -23,6 +23,7 @@ WorkingDirectory=/opt/epicyon
 ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain $domain --registration open --log_login_failures
 Environment=USER=epicyon
 Environment=PYTHONUNBUFFERED=true
+Environment=PYTHONIOENCODING=utf-8
 Restart=always
 StandardError=syslog
 CPUQuota=80%

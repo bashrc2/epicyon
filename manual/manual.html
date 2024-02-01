@@ -155,32 +155,33 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="va">ExecStart</span><span class="op">=</span>/usr/bin/python3 <span class="ex">/opt/epicyon/epicyon.py</span> <span class="at">--port</span> 443 <span class="at">--proxy</span> 7156 <span class="at">--domain</span> YOUR_DOMAIN <span class="at">--registration</span> open <span class="at">--log_login_failures</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="va">Environment</span><span class="op">=</span>USER=epicyon</span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="va">Environment</span><span class="op">=</span>PYTHONUNBUFFERED=true</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="va">Restart</span><span class="op">=</span>always</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="va">StandardError</span><span class="op">=</span>syslog</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="va">CPUQuota</span><span class="op">=</span>80%</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectHome</span><span class="op">=</span>true</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectKernelTunables</span><span class="op">=</span>true</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectKernelModules</span><span class="op">=</span>true</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectControlGroups</span><span class="op">=</span>true</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectKernelLogs</span><span class="op">=</span>true</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectHostname</span><span class="op">=</span>true</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectClock</span><span class="op">=</span>true</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectProc</span><span class="op">=</span>invisible</span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="va">ProcSubset</span><span class="op">=</span>pid</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="va">PrivateTmp</span><span class="op">=</span>true</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="va">PrivateUsers</span><span class="op">=</span>true</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="va">PrivateDevices</span><span class="op">=</span>true</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="va">PrivateIPC</span><span class="op">=</span>true</span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="va">MemoryDenyWriteExecute</span><span class="op">=</span>true</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="va">NoNewPrivileges</span><span class="op">=</span>true</span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="va">LockPersonality</span><span class="op">=</span>true</span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="va">RestrictRealtime</span><span class="op">=</span>true</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="va">RestrictSUIDSGID</span><span class="op">=</span>true</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="va">RestrictNamespaces</span><span class="op">=</span>true</span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="va">SystemCallArchitectures</span><span class="op">=</span>native</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="ex">[Install]</span></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="va">WantedBy</span><span class="op">=</span>multi-user.target</span></code></pre></div>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="va">Environment</span><span class="op">=</span>PYTHONIOENCODING=utf-8</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="va">Restart</span><span class="op">=</span>always</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="va">StandardError</span><span class="op">=</span>syslog</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="va">CPUQuota</span><span class="op">=</span>80%</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectHome</span><span class="op">=</span>true</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectKernelTunables</span><span class="op">=</span>true</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectKernelModules</span><span class="op">=</span>true</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectControlGroups</span><span class="op">=</span>true</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectKernelLogs</span><span class="op">=</span>true</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectHostname</span><span class="op">=</span>true</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectClock</span><span class="op">=</span>true</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="va">ProtectProc</span><span class="op">=</span>invisible</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="va">ProcSubset</span><span class="op">=</span>pid</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="va">PrivateTmp</span><span class="op">=</span>true</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="va">PrivateUsers</span><span class="op">=</span>true</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="va">PrivateDevices</span><span class="op">=</span>true</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="va">PrivateIPC</span><span class="op">=</span>true</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="va">MemoryDenyWriteExecute</span><span class="op">=</span>true</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="va">NoNewPrivileges</span><span class="op">=</span>true</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="va">LockPersonality</span><span class="op">=</span>true</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="va">RestrictRealtime</span><span class="op">=</span>true</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="va">RestrictSUIDSGID</span><span class="op">=</span>true</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="va">RestrictNamespaces</span><span class="op">=</span>true</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="va">SystemCallArchitectures</span><span class="op">=</span>native</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="ex">[Install]</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="va">WantedBy</span><span class="op">=</span>multi-user.target</span></code></pre></div>
 <p>Activate the daemon:</p>
 <div class="sourceCode" id="cb7"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> enable epicyon</span>

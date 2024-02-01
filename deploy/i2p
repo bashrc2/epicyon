@@ -216,6 +216,7 @@ echo 'Creating Epicyon daemon'
   echo "ExecStart=/usr/bin/python3 ${install_destination}/epicyon.py --http --i2p --port 80 --proxy ${EPICYON_PORT} --domain ${I2P_DOMAIN} --registration open";
   echo "Environment=USER=$username";
   echo 'Environment=PYTHONUNBUFFERED=true';
+  echo 'Environment=PYTHONIOENCODING=utf-8';
   echo 'Restart=always';
   echo 'StandardError=syslog';
   echo 'CPUQuota=80%';

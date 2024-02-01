@@ -1382,20 +1382,21 @@ Ever feel like corporate social media is deliberately pressing your buttons or g
       Paste the following:
     </p>
     <div class="shell">
-      [Unit]<br>
-      Description=epicyon<br>
-      After=syslog.target<br>
-      After=network.target<br>
-      <br>
-      [Service]<br>
-      Type=simple<br>
-      User=epicyon<br>
-      Group=epicyon<br>
-      WorkingDirectory=/opt/epicyon<br>
-      ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --log_login_failures<br>
-      Environment=USER=epicyon<br>
-      Environment=PYTHONUNBUFFERED=true<br>
-      Restart=always<br>
+        [Unit]<br>
+        Description=epicyon<br>
+        After=syslog.target<br>
+        After=network.target<br>
+        <br>
+        [Service]<br>
+        Type=simple<br>
+        User=epicyon<br>
+        Group=epicyon<br>
+        WorkingDirectory=/opt/epicyon<br>
+        ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --log_login_failures<br>
+        Environment=USER=epicyon<br>
+        Environment=PYTHONUNBUFFERED=true<br>
+        Environment=PYTHONIOENCODING=utf-8<br>
+        Restart=always<br>
       StandardError=syslog<br>
       CPUQuota=80%<br>
       ProtectHome=true<br>
