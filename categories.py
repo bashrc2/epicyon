@@ -35,6 +35,9 @@ def get_hashtag_category(base_dir: str, hashtag: str) -> str:
             category_str = category_file.read()
     except OSError:
         print('EX: unable to read category ' + category_filename)
+    except UnicodeEncodeError as ex:
+        print('EX: unable to read category unicode ' + category_filename +
+              ' ' + str(ex))
     if category_str:
         return category_str
     return ''
@@ -135,8 +138,15 @@ def get_hashtag_categories(base_dir: str,
                 continue
 
             category_str = None
-            with open(category_filename, 'r', encoding='utf-8') as fp_category:
-                category_str = fp_category.read()
+            try:
+                with open(category_filename, 'r',
+                          encoding='utf-8') as fp_category:
+                    category_str = fp_category.read()
+            except OSError:
+                print('EX: get_hashtag_categories ' + category_filename)
+            except UnicodeEncodeError as ex:
+                print('EX: get_hashtag_categories unicode ' +
+                      category_filename + ' ' + str(ex))
 
             if not category_str:
                 continue
@@ -252,6 +262,9 @@ def set_hashtag_category(base_dir: str, hashtag: str, category: str,
             category_written = True
     except OSError as ex:
         print('EX: unable to write category ' + category_filename +
+              ' ' + str(ex))
+    except UnicodeEncodeError as ex:
+        print('EX: unable to write category unicode ' + category_filename +
               ' ' + str(ex))
 
     if category_written:
