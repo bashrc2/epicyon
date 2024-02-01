@@ -179,9 +179,14 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
     # write the new schedule index file
     schedule_index_file = \
         acct_handle_dir(base_dir, handle) + '/schedule.index'
-    with open(schedule_index_file, 'w+', encoding='utf-8') as schedule_file:
-        for line in index_lines:
-            schedule_file.write(line)
+    try:
+        with open(schedule_index_file, 'w+',
+                  encoding='utf-8') as schedule_file:
+            for line in index_lines:
+                schedule_file.write(line)
+    except OSError:
+        print('EX: _update_post_schedule unable to write ' +
+              schedule_index_file)
 
 
 def run_post_schedule(base_dir: str, httpd, max_scheduled_posts: int):

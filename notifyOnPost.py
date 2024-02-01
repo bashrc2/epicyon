@@ -43,20 +43,32 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
     following_handles = ''
     if os.path.isfile(notify_on_post_filename):
         print('notify file exists')
-        with open(notify_on_post_filename, 'r',
-                  encoding='utf-8') as calendar_file:
-            following_handles = calendar_file.read()
+        try:
+            with open(notify_on_post_filename, 'r',
+                      encoding='utf-8') as calendar_file:
+                following_handles = calendar_file.read()
+        except OSError:
+            print('EX: _notify_on_post_arrival unable to read 1 ' +
+                  notify_on_post_filename)
     else:
         # create a new notifyOnPost file from the following file
         print('Creating notifyOnPost file ' + notify_on_post_filename)
         following_handles = ''
-        with open(following_filename, 'r',
-                  encoding='utf-8') as following_file:
-            following_handles = following_file.read()
+        try:
+            with open(following_filename, 'r',
+                      encoding='utf-8') as following_file:
+                following_handles = following_file.read()
+        except OSError:
+            print('EX: _notify_on_post_arrival unable to read 2 ' +
+                  following_filename)
         if add:
-            with open(notify_on_post_filename, 'w+',
-                      encoding='utf-8') as fp_notify:
-                fp_notify.write(following_handles + handle + '\n')
+            try:
+                with open(notify_on_post_filename, 'w+',
+                          encoding='utf-8') as fp_notify:
+                    fp_notify.write(following_handles + handle + '\n')
+            except OSError:
+                print('EX: _notify_on_post_arrival unable to write  1' +
+                      notify_on_post_filename)
 
     # already in the notifyOnPost file?
     if handle + '\n' in following_handles or \
@@ -74,18 +86,26 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
                 new_following_handles += followed + '\n'
         following_handles = new_following_handles
 
-        with open(notify_on_post_filename, 'w+',
-                  encoding='utf-8') as fp_notify:
-            fp_notify.write(following_handles)
+        try:
+            with open(notify_on_post_filename, 'w+',
+                      encoding='utf-8') as fp_notify:
+                fp_notify.write(following_handles)
+        except OSError:
+            print('EX: _notify_on_post_arrival unable to write  2' +
+                  notify_on_post_filename)
     else:
         print(handle + ' not in notifyOnPost.txt')
         # not already in the notifyOnPost file
         if add:
             # append to the list of handles
             following_handles += handle + '\n'
-            with open(notify_on_post_filename, 'w+',
-                      encoding='utf-8') as fp_notify:
-                fp_notify.write(following_handles)
+            try:
+                with open(notify_on_post_filename, 'w+',
+                          encoding='utf-8') as fp_notify:
+                    fp_notify.write(following_handles)
+            except OSError:
+                print('EX: _notify_on_post_arrival unable to write  3' +
+                      notify_on_post_filename)
 
 
 def add_notify_on_post(base_dir: str, nickname: str, domain: str,
@@ -118,7 +138,11 @@ def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
     handle = following_nickname + '@' + following_domain
     if not os.path.isfile(notify_on_post_filename):
         # create a new notifyOnPost file
-        with open(notify_on_post_filename, 'w+',
-                  encoding='utf-8') as fp_notify:
-            fp_notify.write('')
+        try:
+            with open(notify_on_post_filename, 'w+',
+                      encoding='utf-8') as fp_notify:
+                fp_notify.write('')
+        except OSError:
+            print('EX: notify_when_person_posts unable to write ' +
+                  notify_on_post_filename)
     return text_in_file(handle + '\n', notify_on_post_filename, False)

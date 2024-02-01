@@ -2786,13 +2786,21 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
             # save the log file
             post_log_filename = base_dir + '/post.log'
             if os.path.isfile(post_log_filename):
-                with open(post_log_filename, 'a+',
-                          encoding='utf-8') as log_file:
-                    log_file.write(log_str + '\n')
+                try:
+                    with open(post_log_filename, 'a+',
+                              encoding='utf-8') as log_file:
+                        log_file.write(log_str + '\n')
+                except OSError:
+                    print('EX: thread_send_post unable to append ' +
+                          post_log_filename)
             else:
-                with open(post_log_filename, 'w+',
-                          encoding='utf-8') as log_file:
-                    log_file.write(log_str + '\n')
+                try:
+                    with open(post_log_filename, 'w+',
+                              encoding='utf-8') as log_file:
+                        log_file.write(log_str + '\n')
+                except OSError:
+                    print('EX: thread_send_post unable to write ' +
+                          post_log_filename)
 
         if post_result:
             _remove_send_block(base_dir, nickname, domain, inbox_url)
@@ -5108,16 +5116,25 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         index_ctr = 0
         # get the existing index entries as a string
         new_index = ''
-        with open(index_filename, 'r', encoding='utf-8') as index_file:
-            for post_id in index_file:
-                new_index += post_id
-                index_ctr += 1
-                if index_ctr >= max_posts_in_box:
-                    break
+        try:
+            with open(index_filename, 'r', encoding='utf-8') as index_file:
+                for post_id in index_file:
+                    new_index += post_id
+                    index_ctr += 1
+                    if index_ctr >= max_posts_in_box:
+                        break
+        except OSError as ex:
+            print('EX: archive_posts_for_person unable to read ' +
+                  index_filename + ' ' + str(ex))
         # save the new index file
         if len(new_index) > 0:
-            with open(index_filename, 'w+', encoding='utf-8') as index_file:
-                index_file.write(new_index)
+            try:
+                with open(index_filename, 'w+',
+                          encoding='utf-8') as index_file:
+                    index_file.write(new_index)
+            except OSError:
+                print('EX: archive_posts_for_person unable to write ' +
+                      index_filename)
 
     posts_in_box_dict = {}
     posts_ctr = 0
@@ -5559,9 +5576,13 @@ def check_domains(session, base_dir: str,
                     update_follower_warnings = True
 
     if update_follower_warnings and follower_warning_str:
-        with open(follower_warning_filename, 'w+',
-                  encoding='utf-8') as fp_warn:
-            fp_warn.write(follower_warning_str)
+        try:
+            with open(follower_warning_filename, 'w+',
+                      encoding='utf-8') as fp_warn:
+                fp_warn.write(follower_warning_str)
+        except OSError:
+            print('EX: check_domains unable to write ' +
+                  follower_warning_filename)
         if not single_check:
             print(follower_warning_str)
 
@@ -5640,9 +5661,13 @@ def _reject_announce(announce_filename: str,
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announce_filename + '.reject'):
-        with open(announce_filename + '.reject', 'w+',
-                  encoding='utf-8') as reject_announce_file:
-            reject_announce_file.write('\n')
+        try:
+            with open(announce_filename + '.reject', 'w+',
+                      encoding='utf-8') as reject_announce_file:
+                reject_announce_file.write('\n')
+        except OSError:
+            print('EX: _reject_announce unable to write ' +
+                  announce_filename + '.reject')
 
 
 def download_announce(session, base_dir: str, http_prefix: str,

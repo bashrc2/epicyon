@@ -485,9 +485,13 @@ def refresh_newswire(base_dir: str):
     refresh_newswire_filename = base_dir + '/accounts/.refresh_newswire'
     if os.path.isfile(refresh_newswire_filename):
         return
-    with open(refresh_newswire_filename, 'w+',
-              encoding='utf-8') as refresh_file:
-        refresh_file.write('\n')
+    try:
+        with open(refresh_newswire_filename, 'w+',
+                  encoding='utf-8') as refresh_file:
+            refresh_file.write('\n')
+    except OSError:
+        print('EX: refresh_newswire unable to write ' +
+              refresh_newswire_filename)
 
 
 def get_sha_256(msg: str):
@@ -1731,8 +1735,13 @@ def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
         follow_nickname + '@' + follow_domain + '\n'
     if not os.path.isfile(petnames_filename):
         # if there is no existing petnames lookup file
-        with open(petnames_filename, 'w+', encoding='utf-8') as petnames_file:
-            petnames_file.write(petname_lookup_entry)
+        try:
+            with open(petnames_filename, 'w+',
+                      encoding='utf-8') as petnames_file:
+                petnames_file.write(petname_lookup_entry)
+        except OSError:
+            print('EX: _set_default_pet_name unable to write ' +
+                  petnames_filename)
         return
 
     with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
@@ -1792,15 +1801,23 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         if text_in_file(handle_to_follow, unfollowed_filename):
             # remove them from the unfollowed file
             new_lines = ''
-            with open(unfollowed_filename, 'r',
-                      encoding='utf-8') as unfoll_file:
-                lines = unfoll_file.readlines()
-                for line in lines:
-                    if handle_to_follow not in line:
-                        new_lines += line
-            with open(unfollowed_filename, 'w+',
-                      encoding='utf-8') as unfoll_file:
-                unfoll_file.write(new_lines)
+            try:
+                with open(unfollowed_filename, 'r',
+                          encoding='utf-8') as unfoll_file:
+                    lines = unfoll_file.readlines()
+                    for line in lines:
+                        if handle_to_follow not in line:
+                            new_lines += line
+            except OSError:
+                print('EX: follow_person unable to read ' +
+                      unfollowed_filename)
+            try:
+                with open(unfollowed_filename, 'w+',
+                          encoding='utf-8') as unfoll_file:
+                    unfoll_file.write(new_lines)
+            except OSError:
+                print('EX: follow_person unable to write ' +
+                      unfollowed_filename)
 
     if not os.path.isdir(base_dir + '/accounts'):
         os.mkdir(base_dir + '/accounts')
@@ -1831,8 +1848,11 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                   ' creating new following file to follow ' +
                   handle_to_follow +
                   ', filename is ' + filename)
-        with open(filename, 'w+', encoding='utf-8') as foll_file:
-            foll_file.write(handle_to_follow + '\n')
+        try:
+            with open(filename, 'w+', encoding='utf-8') as foll_file:
+                foll_file.write(handle_to_follow + '\n')
+        except OSError:
+            print('EX: follow_person unable to write ' + filename)
 
     if follow_file.endswith('following.txt'):
         # Default to adding new follows to the calendar.
@@ -2126,18 +2146,22 @@ def remove_moderation_post_from_index(base_dir: str, post_url: str,
         return
     post_id = remove_id_ending(post_url)
     if text_in_file(post_id, moderation_index_file):
-        with open(moderation_index_file, 'r',
-                  encoding='utf-8') as file1:
-            lines = file1.readlines()
-            with open(moderation_index_file, 'w+',
-                      encoding='utf-8') as file2:
-                for line in lines:
-                    if line.strip("\n").strip("\r") != post_id:
-                        file2.write(line)
-                        continue
-                    if debug:
-                        print('DEBUG: removed ' + post_id +
-                              ' from moderation index')
+        try:
+            with open(moderation_index_file, 'r',
+                      encoding='utf-8') as file1:
+                lines = file1.readlines()
+                with open(moderation_index_file, 'w+',
+                          encoding='utf-8') as file2:
+                    for line in lines:
+                        if line.strip("\n").strip("\r") != post_id:
+                            file2.write(line)
+                            continue
+                        if debug:
+                            print('DEBUG: removed ' + post_id +
+                                  ' from moderation index')
+        except OSError as ex:
+            print('EX: remove_moderation_post_from_index unable to read ' +
+                  moderation_index_file + ' ' + str(ex))
 
 
 def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
@@ -2295,9 +2319,13 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
                   'unable to delete tag index ' + str(tag_index_filename))
     else:
         # write the new hashtag index without the given post in it
-        with open(tag_index_filename, 'w+',
-                  encoding='utf-8') as index_file:
-            index_file.write(newlines)
+        try:
+            with open(tag_index_filename, 'w+',
+                      encoding='utf-8') as index_file:
+                index_file.write(newlines)
+        except OSError:
+            print('EX: _remove_post_id_from_tag_index unable to write ' +
+                  tag_index_filename)
 
 
 def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
@@ -2364,8 +2392,13 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
         return False
     conversation_str = conversation_str.replace(post_id + '\n', '')
     if conversation_str:
-        with open(conversation_filename, 'w+', encoding='utf-8') as conv_file:
-            conv_file.write(conversation_str)
+        try:
+            with open(conversation_filename, 'w+',
+                      encoding='utf-8') as conv_file:
+                conv_file.write(conversation_str)
+        except OSError:
+            print('EX: _delete_conversation_post unable to write ' +
+                  conversation_filename)
     else:
         if os.path.isfile(conversation_filename + '.muted'):
             try:
@@ -3454,9 +3487,13 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
             if recent_posts_cache['html'].get(post_url):
                 del recent_posts_cache['html'][post_url]
 
-    with open(post_filename + '.reject', 'w+',
-              encoding='utf-8') as reject_file:
-        reject_file.write('\n')
+    try:
+        with open(post_filename + '.reject', 'w+',
+                  encoding='utf-8') as reject_file:
+            reject_file.write('\n')
+    except OSError:
+        print('EX: reject_post_id unable to write ' +
+              post_filename + '.reject')
 
 
 def is_chat_message(post_json_object: {}) -> bool:
@@ -4246,8 +4283,12 @@ def set_account_timezone(base_dir: str, nickname: str, domain: str,
     tz_filename = \
         acct_dir(base_dir, nickname, domain) + '/timezone.txt'
     timezone = timezone.strip()
-    with open(tz_filename, 'w+', encoding='utf-8') as fp_timezone:
-        fp_timezone.write(timezone)
+    try:
+        with open(tz_filename, 'w+', encoding='utf-8') as fp_timezone:
+            fp_timezone.write(timezone)
+    except OSError:
+        print('EX: set_account_timezone unable to write ' +
+              tz_filename)
 
 
 def _is_onion_request(calling_domain: str, referer_domain: str,

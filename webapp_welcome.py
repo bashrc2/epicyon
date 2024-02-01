@@ -36,8 +36,12 @@ def welcome_screen_is_complete(base_dir: str,
     if not os.path.isdir(account_path):
         return
     complete_filename = account_path + '/.welcome_complete'
-    with open(complete_filename, 'w+', encoding='utf-8') as fp_comp:
-        fp_comp.write('\n')
+    try:
+        with open(complete_filename, 'w+', encoding='utf-8') as fp_comp:
+            fp_comp.write('\n')
+    except OSError:
+        print('EX: welcome_screen_is_complete unable to write ' +
+              complete_filename)
 
 
 def html_welcome_screen(base_dir: str, nickname: str,

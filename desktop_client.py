@@ -190,8 +190,8 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
                     read_file.write(post_id + content)
         except OSError as ex:
             print('EX: Failed to mark post as read 1 ' + str(ex))
-    else
-        try::
+    else:
+        try:
             with open(read_posts_filename, 'w+',
                       encoding='utf-8') as read_file:
                 read_file.write(post_id + '\n')

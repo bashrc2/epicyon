@@ -1781,8 +1781,12 @@ def _generate_next_shares_token_update(base_dir: str,
         next_update_sec = curr_time + next_update_interval
         updated = True
     if updated:
-        with open(token_update_filename, 'w+', encoding='utf-8') as fp_tok:
-            fp_tok.write(str(next_update_sec))
+        try:
+            with open(token_update_filename, 'w+', encoding='utf-8') as fp_tok:
+                fp_tok.write(str(next_update_sec))
+        except OSError:
+            print('EX: _generate_next_shares_token_update unable to write' +
+                  token_update_filename)
 
 
 def _regenerate_shares_token(base_dir: str, domain_full: str,
