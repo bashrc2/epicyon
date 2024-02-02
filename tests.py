@@ -56,6 +56,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import uninvert_text
 from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import date_utcnow
@@ -8584,6 +8585,37 @@ def _test_book_link(base_dir: str):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
+def _test_uninvert():
+    print('uninvert')
+    inverted_text = 'abcdefghijklmnopqrstuvwxyz'
+    uninverted_text = uninvert_text(inverted_text)
+    if uninverted_text != inverted_text:
+        print('inverted:   ' + inverted_text)
+        print('uninverted: ' + uninverted_text)
+    assert uninverted_text == inverted_text
+
+    inverted_text = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    uninverted_text = uninvert_text(inverted_text)
+    if uninverted_text != inverted_text:
+        print('inverted:   ' + inverted_text)
+        print('uninverted: ' + uninverted_text)
+    assert uninverted_text == inverted_text
+
+    inverted_text = 'ʍǝɹpuɐ'
+    uninverted_text = uninvert_text(inverted_text)
+    if uninverted_text != 'andrew':
+        print('inverted:   ' + inverted_text)
+        print('uninverted: ' + uninverted_text)
+    assert uninverted_text == 'andrew'
+
+    inverted_text = '˙ʇsǝʇ ɐ sı sıɥ⊥'
+    uninverted_text = uninvert_text(inverted_text)
+    if uninverted_text != 'This is a test.':
+        print('inverted:   ' + inverted_text)
+        print('uninverted: ' + uninverted_text)
+    assert uninverted_text == 'This is a test.'
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -8601,6 +8633,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_uninvert()
     _test_book_link(base_dir)
     _test_dateformat()
     _test_is_right_to_left()
