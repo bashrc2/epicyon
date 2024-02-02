@@ -189,7 +189,6 @@ def uninvert_text(text: str) -> str:
         '\u0055': '\u2229',
         '\u0056': '\u1D27',
         '\u0059': '\u2144',
-        '\u005B': '\u005D',
         '\u005F': '\u203E',
         '\u0061': '\u0250',
         '\u0062': '\u0071',
@@ -226,8 +225,25 @@ def uninvert_text(text: str) -> str:
         possible_result = ch_result + possible_result
 
     result = text
-    if matches > len(text)/2:
-        result = possible_result
+    if matches > len(text)/3:
+        result = possible_result.replace('9', '6')
+        new_result = ''
+        extra_replace = {
+            '[': ']',
+            ']': '[',
+            '(': ')',
+            ')': '(',
+            '<': '>',
+            '>': '<'
+        }
+        for ch1 in result:
+            ch_result = ch1
+            for ch2, rep in extra_replace.items():
+                if ch1 == ch2:
+                    ch_result = rep
+                    break
+            new_result += ch_result
+        result = new_result
     return result
 
 
@@ -4526,6 +4542,8 @@ def remove_inverted_text(text: str, system_language: str) -> str:
     """
     if system_language != 'en':
         return text
+
+    text = uninvert_text(text)
 
     inverted_lower = [*"_ʎ_ʍʌ_ʇ_ɹ____ɯʃʞɾıɥƃɟǝ_ɔ_ɐ"]
     inverted_upper = [*"_⅄__ᴧ∩⊥_ᴚΌԀ_ᴎ_⅂⋊ſ__⅁ℲƎ◖Ↄ𐐒∀"]

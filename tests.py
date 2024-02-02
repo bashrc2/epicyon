@@ -8585,8 +8585,8 @@ def _test_book_link(base_dir: str):
         shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
 
 
-def _test_uninvert():
-    print('uninvert')
+def _test_uninvert2():
+    print('uninvert2')
     inverted_text = 'abcdefghijklmnopqrstuvwxyz'
     uninverted_text = uninvert_text(inverted_text)
     if uninverted_text != inverted_text:
@@ -8601,12 +8601,12 @@ def _test_uninvert():
         print('uninverted: ' + uninverted_text)
     assert uninverted_text == inverted_text
 
-    inverted_text = 'ʍǝɹpuɐ'
+    inverted_text = '[ʍǝɹpuɐ]'
     uninverted_text = uninvert_text(inverted_text)
-    if uninverted_text != 'andrew':
+    if uninverted_text != '[andrew]':
         print('inverted:   ' + inverted_text)
         print('uninverted: ' + uninverted_text)
-    assert uninverted_text == 'andrew'
+    assert uninverted_text == '[andrew]'
 
     inverted_text = '˙ʇsǝʇ ɐ sı sıɥ⊥'
     uninverted_text = uninvert_text(inverted_text)
@@ -8633,7 +8633,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
-    _test_uninvert()
+    _test_uninvert2()
     _test_book_link(base_dir)
     _test_dateformat()
     _test_is_right_to_left()
