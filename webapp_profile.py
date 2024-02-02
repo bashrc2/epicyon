@@ -968,6 +968,7 @@ def html_profile(signing_priv_key_pem: str,
     if not domain:
         return ""
     display_name = remove_html(profile_json['name'])
+    display_name = standardize_text(display_name)
     display_name = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
