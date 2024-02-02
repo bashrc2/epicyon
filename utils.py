@@ -226,7 +226,7 @@ def uninvert_text(text: str) -> str:
 
     result = text
     if matches > len(text)/3:
-        result = possible_result.replace('9', '6')
+        result = possible_result
         new_result = ''
         extra_replace = {
             '[': ']',
@@ -234,7 +234,9 @@ def uninvert_text(text: str) -> str:
             '(': ')',
             ')': '(',
             '<': '>',
-            '>': '<'
+            '>': '<',
+            '9': '6',
+            '6': '9'
         }
         for ch1 in result:
             ch_result = ch1
