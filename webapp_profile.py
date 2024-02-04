@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import uninvert_text
 from utils import get_attributed_to
 from utils import get_url_from_post
 from utils import get_memorials
@@ -285,6 +286,7 @@ def html_profile_after_search(authorized: bool,
     if profile_json.get('name'):
         display_name = profile_json['name']
     display_name = remove_html(display_name)
+    display_name = uninvert_text(display_name)
     display_name = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
