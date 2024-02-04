@@ -231,6 +231,8 @@ def parse_user_feed(signing_priv_key_pem: str,
                     session, feed_url: str, as_header: {},
                     project_version: str, http_prefix: str,
                     origin_domain: str, debug: bool, depth: int = 0) -> []:
+    """Returns a feed of posts for an account url
+    """
     if depth > 10:
         if debug:
             print('Maximum search depth reached')

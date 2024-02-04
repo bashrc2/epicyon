@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import get_attributed_to
 from utils import get_url_from_post
 from utils import get_memorials
 from utils import text_in_file
@@ -175,11 +176,12 @@ def _valid_profile_preview_post(post_json_object: {},
     if has_object_dict(post_json_object):
         # convert attributedTo actor back to id
         if post_json_object['object'].get('attributedTo'):
-            if isinstance(post_json_object['object']['attributedTo'],
-                          dict):
-                if post_json_object['object']['attributedTo'].get('id'):
-                    post_json_object['object']['attributedTo'] = \
-                        post_json_object['object']['attributedTo']['id']
+            attrib_field = post_json_object['object']['attributedTo']
+            if attrib_field:
+                if isinstance(attrib_field, dict):
+                    attrib = get_attributed_to(attrib_field)
+                    if attrib:
+                        post_json_object['object']['attributedTo'] = attrib
         if not is_announced_feed_item:
             actor_url = get_actor_from_post(post_json_object)
             if actor_url != person_url and \
