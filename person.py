@@ -146,28 +146,16 @@ def set_profile_image(base_dir: str, http_prefix: str,
 
     media_type = 'image/png'
     icon_filename = icon_filename_base + '.png'
-    if image_filename.endswith('.jpg') or \
-       image_filename.endswith('.jpeg'):
-        media_type = 'image/jpeg'
-        icon_filename = icon_filename_base + '.jpg'
-    elif image_filename.endswith('.gif'):
-        media_type = 'image/gif'
-        icon_filename = icon_filename_base + '.gif'
-    elif image_filename.endswith('.webp'):
-        media_type = 'image/webp'
-        icon_filename = icon_filename_base + '.webp'
-    elif image_filename.endswith('.avif'):
-        media_type = 'image/avif'
-        icon_filename = icon_filename_base + '.avif'
-    elif image_filename.endswith('.heic'):
-        media_type = 'image/heic'
-        icon_filename = icon_filename_base + '.heic'
-    elif image_filename.endswith('.jxl'):
-        media_type = 'image/jxl'
-        icon_filename = icon_filename_base + '.jxl'
-    elif image_filename.endswith('.svg'):
-        media_type = 'image/svg+xml'
-        icon_filename = icon_filename_base + '.svg'
+    extensions = get_image_extensions()
+    for ext in extensions:
+        if image_filename.endswith('.' + ext):
+            media_type = 'image/' + ext
+            if ext == 'svg':
+                media_type = 'image/' + ext + '+xml'
+            elif ext == 'jpg':
+                media_type = 'image/jpeg'
+            icon_filename = icon_filename_base + '.' + ext
+
     profile_filename = acct_handle_dir(base_dir, handle) + '/' + icon_filename
 
     person_json = load_json(person_filename)
