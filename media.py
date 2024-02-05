@@ -703,9 +703,10 @@ def archive_media(base_dir: str, archive_directory: str,
 def path_is_video(path: str) -> bool:
     """Is the given path a video file?
     """
-    if path.endswith('.ogv') or \
-       path.endswith('.mp4'):
-        return True
+    extensions = get_video_extensions()
+    for ext in extensions:
+        if path.endswith('.' + ext):
+            return True
     return False
 
 
@@ -720,13 +721,10 @@ def path_is_transcript(path: str) -> bool:
 def path_is_audio(path: str) -> bool:
     """Is the given path an audio file?
     """
-    if path.endswith('.ogg') or \
-       path.endswith('.opus') or \
-       path.endswith('.spx') or \
-       path.endswith('.flac') or \
-       path.endswith('.wav') or \
-       path.endswith('.mp3'):
-        return True
+    extensions = get_audio_extensions()
+    for ext in extensions:
+        if path.endswith('.' + ext):
+            return True
     return False
 
 
