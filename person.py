@@ -154,6 +154,8 @@ def set_profile_image(base_dir: str, http_prefix: str,
                 media_type = 'image/' + ext + '+xml'
             elif ext == 'jpg':
                 media_type = 'image/jpeg'
+            elif ext == 'ico':
+                media_type = 'image/x-icon'
             icon_filename = icon_filename_base + '.' + ext
 
     profile_filename = acct_handle_dir(base_dir, handle) + '/' + icon_filename
