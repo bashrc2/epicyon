@@ -264,9 +264,13 @@ def _replace_silo_domain(post_json_object: {},
     if not post_json_object['object'].get('content'):
         return
     content_str = get_base_content_from_post(post_json_object, system_language)
-    if silo_domain not in content_str:
-        return
-    content_str = content_str.replace(silo_domain, replacement_domain)
+    if '/' + silo_domain not in content_str:
+        if '.' + silo_domain not in content_str:
+            return
+    content_str = content_str.replace('/' + silo_domain,
+                                      '/' + replacement_domain)
+    content_str = content_str.replace('.' + silo_domain,
+                                      '.' + replacement_domain)
     post_json_object['object']['content'] = content_str
     if post_json_object['object'].get('contentMap'):
         post_json_object['object']['contentMap'][system_language] = content_str
@@ -277,7 +281,7 @@ def replace_you_tube(post_json_object: {}, replacement_domain: str,
     """Replace YouTube with a replacement domain
     This denies Google some, but not all, tracking data
     """
-    _replace_silo_domain(post_json_object, 'www.youtube.com',
+    _replace_silo_domain(post_json_object, 'youtube.com',
                          replacement_domain, system_language)
 
 
@@ -286,7 +290,7 @@ def replace_twitter(post_json_object: {}, replacement_domain: str,
     """Replace Twitter with a replacement domain
     This allows you to view twitter posts without having a twitter account
     """
-    twitter_domains = ('mobile.twitter.com', 'twitter.com')
+    twitter_domains = ('x.com', 'twitter.com')
     for tw_domain in twitter_domains:
         _replace_silo_domain(post_json_object, tw_domain,
                              replacement_domain, system_language)
