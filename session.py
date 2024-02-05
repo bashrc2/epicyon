@@ -14,6 +14,7 @@ from utils import acct_dir
 from utils import url_permitted
 from utils import is_image_file
 from utils import binary_is_image
+from utils import image_mime_types_dict
 from httpsig import create_signed_header
 import json
 from socket import error as SocketError
@@ -752,18 +753,7 @@ def download_image(session, url: str, image_filename: str, debug: bool,
         return None
 
     # try different image types
-    image_formats = {
-        'png': 'png',
-        'jpg': 'jpeg',
-        'jpeg': 'jpeg',
-        'jxl': 'jxl',
-        'gif': 'gif',
-        'svg': 'svg+xml',
-        'webp': 'webp',
-        'avif': 'avif',
-        'heic': 'heic',
-        'ico': 'x-icon'
-    }
+    image_formats = image_mime_types_dict()
     session_headers = None
     for im_format, mime_type in image_formats.items():
         if url.endswith('.' + im_format) or \
@@ -871,18 +861,7 @@ def download_image_any_mime_type(session, url: str,
     if not content_type:
         return None, None
 
-    image_formats = {
-        'ico': 'x-icon',
-        'png': 'png',
-        'jpg': 'jpeg',
-        'jxl': 'jxl',
-        'jpeg': 'jpeg',
-        'gif': 'gif',
-        'svg': 'svg+xml',
-        'webp': 'webp',
-        'avif': 'avif',
-        'heic': 'heic'
-    }
+    image_formats = image_mime_types_dict()
     for _, m_type in image_formats.items():
         if 'image/' + m_type in content_type:
             mime_type = 'image/' + m_type

@@ -805,12 +805,13 @@ def get_image_extensions() -> []:
             'svg', 'ico', 'jxl', 'png')
 
 
-def get_image_mime_type(image_filename: str) -> str:
-    """Returns the mime type for the given image
+def image_mime_types_dict() -> {}:
+    """Returns a dict of image mime types
     """
-    extensions_to_mime = {
+    return {
         'png': 'png',
         'jpg': 'jpeg',
+        'jpeg': 'jpeg',
         'jxl': 'jxl',
         'gif': 'gif',
         'avif': 'avif',
@@ -819,6 +820,12 @@ def get_image_mime_type(image_filename: str) -> str:
         'webp': 'webp',
         'ico': 'x-icon'
     }
+
+
+def get_image_mime_type(image_filename: str) -> str:
+    """Returns the mime type for the given image filename
+    """
+    extensions_to_mime = image_mime_types_dict()
     for ext, mime_ext in extensions_to_mime.items():
         if image_filename.endswith('.' + ext):
             return 'image/' + mime_ext

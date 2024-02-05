@@ -10,6 +10,7 @@ __module_group__ = "Web Interface Columns"
 import os
 from content import remove_long_words
 from content import limit_repeated_words
+from utils import get_image_extensions
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import remove_html
@@ -255,8 +256,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                 favicon_url = \
                     cached_favicon_filename.replace(base_dir, '')
             else:
-                extensions = \
-                    ('png', 'jpg', 'gif', 'avif', 'heic', 'svg', 'webp', 'jxl')
+                extensions = get_image_extensions()
                 for ext in extensions:
                     cached_favicon_filename = \
                         get_fav_filename_from_url(base_dir, favicon_url)

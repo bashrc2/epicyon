@@ -19,6 +19,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import image_mime_types_dict
 from utils import resembles_url
 from utils import get_url_from_post
 from utils import remove_zero_length_strings
@@ -171,17 +172,7 @@ def _download_newswire_feed_favicon(session, base_dir: str,
         return False
 
     # update the favicon url
-    extensions_to_mime = {
-        'ico': 'x-icon',
-        'png': 'png',
-        'jpg': 'jpeg',
-        'jxl': 'jxl',
-        'gif': 'gif',
-        'avif': 'avif',
-        'heic': 'heic',
-        'svg': 'svg+xml',
-        'webp': 'webp'
-    }
+    extensions_to_mime = image_mime_types_dict()
     for ext, mime_ext in extensions_to_mime.items():
         if 'image/' + mime_ext in mime_type:
             fav_url = fav_url.replace('.ico', '.' + ext)

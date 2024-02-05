@@ -37,6 +37,7 @@ from roles import set_role
 from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import get_image_mime_type
 from utils import get_instance_url
 from utils import get_url_from_post
 from utils import date_utcnow
@@ -149,13 +150,7 @@ def set_profile_image(base_dir: str, http_prefix: str,
     extensions = get_image_extensions()
     for ext in extensions:
         if image_filename.endswith('.' + ext):
-            media_type = 'image/' + ext
-            if ext == 'svg':
-                media_type = 'image/' + ext + '+xml'
-            elif ext == 'jpg':
-                media_type = 'image/jpeg'
-            elif ext == 'ico':
-                media_type = 'image/x-icon'
+            media_type = get_image_mime_type(image_filename)
             icon_filename = icon_filename_base + '.' + ext
 
     profile_filename = acct_handle_dir(base_dir, handle) + '/' + icon_filename

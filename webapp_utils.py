@@ -12,6 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
+from utils import image_mime_types_dict
 from utils import get_url_from_post
 from utils import get_media_url_from_video
 from utils import get_attributed_to
@@ -357,17 +358,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
     avatar_image_path = base_dir + '/cache/avatars/' + actor_str
 
     # try different image types
-    image_formats = {
-        'png': 'png',
-        'jpg': 'jpeg',
-        'jxl': 'jxl',
-        'jpeg': 'jpeg',
-        'gif': 'gif',
-        'svg': 'svg+xml',
-        'webp': 'webp',
-        'avif': 'avif',
-        'heic': 'heic'
-    }
+    image_formats = image_mime_types_dict()
     avatar_image_filename = None
     for im_format, mime_type in image_formats.items():
         if avatar_url.endswith('.' + im_format) or \
@@ -1188,9 +1179,7 @@ def _is_attached_image(attachment_filename: str) -> bool:
     """
     if '.' not in attachment_filename:
         return False
-    image_ext = (
-        'png', 'jpg', 'jpeg', 'webp', 'avif', 'heic', 'svg', 'gif', 'jxl'
-    )
+    image_ext = get_image_extensions()
     ext = attachment_filename.split('.')[-1]
     if ext in image_ext:
         return True
