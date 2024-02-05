@@ -605,8 +605,7 @@ def attach_media(base_dir: str, http_prefix: str,
         file_extension = 'jpg'
     if media_type == 'audio/mpeg':
         file_extension = 'mp3'
-    if media_type == 'audio/speex' or \
-       media_type == 'audio/x-speex':
+    if media_type in ('audio/speex', 'audio/x-speex'):
         file_extension = 'spx'
 
     domain = get_full_domain(domain, port)
