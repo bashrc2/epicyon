@@ -202,7 +202,7 @@ def _download_newswire_feed_favicon(session, base_dir: str,
     return True
 
 
-def _add_newswire_dict_entry(base_dir: str, domain: str,
+def _add_newswire_dict_entry(base_dir: str,
                              newswire: {}, date_str: str,
                              title: str, link: str,
                              votes_status: str, post_filename: str,
@@ -866,7 +866,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                     xml_podcast_to_dict(base_dir, rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
-                _add_newswire_dict_entry(base_dir, domain,
+                _add_newswire_dict_entry(base_dir,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
@@ -980,7 +980,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                     xml_podcast_to_dict(base_dir, rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
-                _add_newswire_dict_entry(base_dir, domain,
+                _add_newswire_dict_entry(base_dir,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
@@ -1087,7 +1087,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                     xml_podcast_to_dict(base_dir, atom_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
-                _add_newswire_dict_entry(base_dir, domain,
+                _add_newswire_dict_entry(base_dir,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
@@ -1202,7 +1202,7 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
-                _add_newswire_dict_entry(base_dir, domain,
+                _add_newswire_dict_entry(base_dir,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
@@ -1218,7 +1218,7 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
     return result
 
 
-def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
+def _atom_feed_yt_to_dict(base_dir: str, xml_str: str,
                           moderated: bool, mirrored: bool,
                           max_posts_per_source: int,
                           max_feed_item_size_kb: int,
@@ -1305,7 +1305,7 @@ def _atom_feed_yt_to_dict(base_dir: str, domain: str, xml_str: str,
                     xml_podcast_to_dict(base_dir, atom_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = 'video/youtube'
-                _add_newswire_dict_entry(base_dir, domain,
+                _add_newswire_dict_entry(base_dir,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
@@ -1332,7 +1332,7 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
     """
     if '<yt:videoId>' in xml_str and '<yt:channelId>' in xml_str:
         print('YouTube feed: reading')
-        return _atom_feed_yt_to_dict(base_dir, domain,
+        return _atom_feed_yt_to_dict(base_dir,
                                      xml_str, moderated, mirrored,
                                      max_posts_per_source,
                                      max_feed_item_size_kb,
@@ -1446,9 +1446,9 @@ def get_rss(base_dir: str, domain: str, session, url: str,
     return None
 
 
-def get_rs_sfrom_dict(base_dir: str, newswire: {},
+def get_rs_sfrom_dict(newswire: {},
                       http_prefix: str, domain_full: str,
-                      title: str, translate: {}) -> str:
+                      translate: {}) -> str:
     """Returns an rss feed from the current newswire dict.
     This allows other instances to subscribe to the same newswire
     """
@@ -1599,7 +1599,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                     url_str = \
                         get_url_from_post(post_json_object['object']['url'])
                     url2 = remove_html(url_str)
-                    _add_newswire_dict_entry(base_dir, domain,
+                    _add_newswire_dict_entry(base_dir,
                                              newswire, published,
                                              summary, url2,
                                              votes, full_post_filename,

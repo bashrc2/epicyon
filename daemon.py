@@ -8990,10 +8990,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
 
-        msg = get_rs_sfrom_dict(self.server.base_dir, self.server.newswire,
+        msg = get_rs_sfrom_dict(self.server.newswire,
                                 self.server.http_prefix,
                                 self.server.domain_full,
-                                'Newswire', self.server.translate)
+                                self.server.translate)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
