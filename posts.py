@@ -1212,7 +1212,7 @@ def _attach_buy_link(post_json_object: {},
 
 
 def _attach_chat_link(post_json_object: {},
-                      chat_url: str, translate: {}) -> None:
+                      chat_url: str) -> None:
     """Attaches a chat link
     """
     if not chat_url:
@@ -1330,7 +1330,7 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                          media_license_url, media_creator, system_language)
     _attach_post_license(new_post['object'], content_license_url)
     _attach_buy_link(new_post['object'], buy_url, translate)
-    _attach_chat_link(new_post['object'], chat_url, translate)
+    _attach_chat_link(new_post['object'], chat_url)
     return new_post
 
 
@@ -1424,7 +1424,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                          system_language)
     _attach_post_license(new_post, content_license_url)
     _attach_buy_link(new_post, buy_url, translate)
-    _attach_chat_link(new_post, chat_url, translate)
+    _attach_chat_link(new_post, chat_url)
     return new_post
 
 
@@ -2320,6 +2320,15 @@ def create_question_post(base_dir: str,
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
     buy_url = ''
     chat_url = ''
+    is_moderation_report = False
+    is_article = False
+    in_reply_to = in_reply_to_atom_uri = None
+    schedule_post = False
+    event_date = event_time = location = event_uuid = category = None
+    join_mode = end_date = end_time = None
+    maximum_attendee_capacity = replies_moderation_option = None
+    anonymous_participation_enabled = event_status = ticket_url = None
+    conversation_id = None
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
                           'https://www.w3.org/ns/activitystreams#Public',
@@ -2328,11 +2337,16 @@ def create_question_post(base_dir: str,
                           client_to_server, comments_enabled,
                           attach_image_filename, media_type,
                           image_description, video_transcript, city,
-                          False, False, None, None, subject,
-                          False, None, None, None, None, None,
-                          None, None, None,
-                          None, None, None, None, None, system_language,
-                          None, low_bandwidth, content_license_url,
+                          is_moderation_report, is_article,
+                          in_reply_to, in_reply_to_atom_uri, subject,
+                          schedule_post, event_date, event_time,
+                          location, event_uuid, category,
+                          join_mode, end_date, end_time,
+                          maximum_attendee_capacity,
+                          replies_moderation_option,
+                          anonymous_participation_enabled, event_status,
+                          ticket_url, system_language,
+                          conversation_id, low_bandwidth, content_license_url,
                           media_license_url, media_creator,
                           languages_understood, translate, buy_url,
                           chat_url, auto_cw_cache)
@@ -2379,6 +2393,14 @@ def create_unlisted_post(base_dir: str,
     """
     domain_full = get_full_domain(domain, port)
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
+    is_moderation_report = False
+    is_article = False
+    event_uuid = category = join_mode = None
+    maximum_attendee_capacity = None
+    replies_moderation_option = None
+    anonymous_participation_enabled = None
+    event_status = None
+    ticket_url = None
     return _create_post_base(base_dir, nickname, domain, port,
                              local_actor + '/followers',
                              'https://www.w3.org/ns/activitystreams#Public',
@@ -2386,12 +2408,17 @@ def create_unlisted_post(base_dir: str,
                              client_to_server, comments_enabled,
                              attach_image_filename, media_type,
                              image_description, video_transcript, city,
-                             False, False,
+                             is_moderation_report, is_article,
                              in_reply_to, in_reply_to_atom_uri, subject,
                              schedule_post, event_date,
                              event_time, location,
-                             None, None, None, event_date, event_end_time,
-                             None, None, None, None, None, system_language,
+                             event_uuid, category, join_mode,
+                             event_date, event_end_time,
+                             maximum_attendee_capacity,
+                             replies_moderation_option,
+                             anonymous_participation_enabled,
+                             event_status,
+                             ticket_url, system_language,
                              conversation_id, low_bandwidth,
                              content_license_url,
                              media_license_url, media_creator,
@@ -2423,17 +2450,29 @@ def create_followers_only_post(base_dir: str,
     """
     domain_full = get_full_domain(domain, port)
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
+    is_moderation_report = False
+    is_article = False
+    event_uuid = category = join_mode = None
+    maximum_attendee_capacity = None
+    replies_moderation_option = None
+    anonymous_participation_enabled = None
+    event_status = None
+    ticket_url = None
     return _create_post_base(base_dir, nickname, domain, port,
                              local_actor + '/followers', None,
                              http_prefix, content, save_to_file,
                              client_to_server, comments_enabled,
                              attach_image_filename, media_type,
                              image_description, video_transcript, city,
-                             False, False,
+                             is_moderation_report, is_article,
                              in_reply_to, in_reply_to_atom_uri, subject,
                              schedule_post, event_date, event_time, location,
-                             None, None, None, event_date, event_end_time,
-                             None, None, None, None, None, system_language,
+                             event_uuid, category, join_mode,
+                             event_date, event_end_time,
+                             maximum_attendee_capacity,
+                             replies_moderation_option,
+                             anonymous_participation_enabled,
+                             event_status, ticket_url, system_language,
                              conversation_id, low_bandwidth,
                              content_license_url,
                              media_license_url, media_creator,
@@ -2510,6 +2549,14 @@ def create_direct_message_post(base_dir: str,
         return None
     post_to = None
     post_cc = None
+    is_moderation_report = False
+    is_article = False
+    event_uuid = category = join_mode = None
+    maximum_attendee_capacity = None
+    replies_moderation_option = None
+    anonymous_participation_enabled = None
+    event_status = None
+    ticket_url = None
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
                           post_to, post_cc,
@@ -2517,11 +2564,15 @@ def create_direct_message_post(base_dir: str,
                           client_to_server, comments_enabled,
                           attach_image_filename, media_type,
                           image_description, video_transcript, city,
-                          False, False,
+                          is_moderation_report, is_article,
                           in_reply_to, in_reply_to_atom_uri, subject,
                           schedule_post, event_date, event_time, location,
-                          None, None, None, event_date, event_end_time,
-                          None, None, None, None, None, system_language,
+                          event_uuid, category, join_mode,
+                          event_date, event_end_time,
+                          maximum_attendee_capacity,
+                          replies_moderation_option,
+                          anonymous_participation_enabled,
+                          event_status, ticket_url, system_language,
                           conversation_id, low_bandwidth,
                           content_license_url,
                           media_license_url, media_creator,
@@ -2616,6 +2667,24 @@ def create_report_post(base_dir: str,
     post_json_object = None
     buy_url = ''
     chat_url = ''
+    is_moderation_report = True
+    is_article = False
+    in_reply_to = in_reply_to_atom_uri = None
+    schedule_post = False
+    event_date = None
+    event_time = None
+    location = None
+    event_uuid = None
+    category = None
+    join_mode = None
+    end_date = None
+    end_time = None
+    maximum_attendee_capacity = None
+    replies_moderation_option = None
+    anonymous_participation_enabled = None
+    event_status = None
+    ticket_url = None
+    conversation_id = None
     for to_url in post_to:
         # who is this report going to?
         to_nickname = to_url.split('/users/')[1]
@@ -2627,11 +2696,17 @@ def create_report_post(base_dir: str,
                               client_to_server, comments_enabled,
                               attach_image_filename, media_type,
                               image_description, video_transcript, city,
-                              True, False, None, None, subject,
-                              False, None, None, None, None, None,
-                              None, None, None,
-                              None, None, None, None, None, system_language,
-                              None, low_bandwidth, content_license_url,
+                              is_moderation_report, is_article,
+                              in_reply_to, in_reply_to_atom_uri, subject,
+                              schedule_post, event_date, event_time,
+                              location, event_uuid, category,
+                              join_mode, end_date, end_time,
+                              maximum_attendee_capacity,
+                              replies_moderation_option,
+                              anonymous_participation_enabled,
+                              event_status, ticket_url, system_language,
+                              conversation_id, low_bandwidth,
+                              content_license_url,
                               media_license_url, media_creator,
                               languages_understood, translate,
                               buy_url, chat_url, auto_cw_cache)
@@ -2907,6 +2982,17 @@ def send_post(signing_priv_key_pem: str, project_version: str,
         return 5
     # shared_inbox is optional
 
+    is_moderation_report = False
+    schedule_post = False
+    event_date = event_time = location = None
+    event_uuid = category = None
+    join_mode = None
+    end_date = None
+    end_time = None
+    maximum_attendee_capacity = None
+    replies_moderation_option = None
+    anonymous_participation_enabled = None
+    event_status = ticket_url = None
     post_json_object = \
         _create_post_base(base_dir, nickname, domain, port,
                           to_person_id, cc_str, http_prefix, content,
@@ -2914,11 +3000,17 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                           comments_enabled,
                           attach_image_filename, media_type,
                           image_description, video_transcript, city,
-                          False, is_article, in_reply_to,
+                          is_moderation_report, is_article, in_reply_to,
                           in_reply_to_atom_uri, subject,
-                          False, None, None, None, None, None,
-                          None, None, None,
-                          None, None, None, None, None, system_language,
+                          schedule_post,
+                          event_date, event_time, location,
+                          event_uuid, category,
+                          join_mode,
+                          end_date, end_time,
+                          maximum_attendee_capacity,
+                          replies_moderation_option,
+                          anonymous_participation_enabled,
+                          event_status, ticket_url, system_language,
                           conversation_id, low_bandwidth,
                           content_license_url,
                           media_license_url, media_creator,
@@ -3107,6 +3199,13 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
             to_person_id = \
                 local_actor_url(http_prefix, to_nickname, to_domain_full)
 
+    is_moderation_report = False
+    schedule_post = False
+    event_uuid = category = join_mode = None
+    maximum_attendee_capacity = None
+    replies_moderation_option = None
+    anonymous_participation_enabled = None
+    event_status = ticket_url = None
     post_json_object = \
         _create_post_base(base_dir,
                           from_nickname, from_domain, from_port,
@@ -3115,12 +3214,15 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                           comments_enabled,
                           attach_image_filename, media_type,
                           image_description, video_transcript, city,
-                          False, is_article, in_reply_to,
-                          in_reply_to_atom_uri, subject,
-                          False,
+                          is_moderation_report, is_article, in_reply_to,
+                          in_reply_to_atom_uri, subject, schedule_post,
                           event_date, event_time, location,
-                          None, None, None, event_date, event_end_time,
-                          None, None, None, None, None, system_language,
+                          event_uuid, category, join_mode,
+                          event_date, event_end_time,
+                          maximum_attendee_capacity,
+                          replies_moderation_option,
+                          anonymous_participation_enabled,
+                          event_status, ticket_url, system_language,
                           conversation_id, low_bandwidth,
                           content_license_url,
                           media_license_url, media_creator,
