@@ -880,10 +880,10 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     return filename
 
 
-def _inbox_post_recipients_add(base_dir: str, http_prefix: str, to_list: [],
+def _inbox_post_recipients_add(base_dir: str, to_list: [],
                                recipients_dict: {},
                                domain_match: str, domain: str,
-                               actor: str, debug: bool,
+                               debug: bool,
                                onion_domain: str, i2p_domain: str) -> bool:
     """Given a list of post recipients (to_list) from 'to' or 'cc' parameters
     populate a recipients_dict with the handle for each
@@ -965,11 +965,11 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
             if debug:
                 print('DEBUG: resolving "to"')
             includes_followers, recipients_dict = \
-                _inbox_post_recipients_add(base_dir, http_prefix,
+                _inbox_post_recipients_add(base_dir,
                                            recipients_list,
                                            recipients_dict,
                                            domain_match, domain_base,
-                                           actor, debug,
+                                           debug,
                                            onion_domain, i2p_domain)
             if includes_followers:
                 follower_recipients = True
@@ -983,11 +983,11 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
             else:
                 recipients_list = [post_json_object['object']['cc']]
             includes_followers, recipients_dict = \
-                _inbox_post_recipients_add(base_dir, http_prefix,
+                _inbox_post_recipients_add(base_dir,
                                            recipients_list,
                                            recipients_dict,
                                            domain_match, domain_base,
-                                           actor, debug,
+                                           debug,
                                            onion_domain, i2p_domain)
             if includes_followers:
                 follower_recipients = True
@@ -1009,11 +1009,11 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
         else:
             recipients_list = [post_json_object['to']]
         includes_followers, recipients_dict = \
-            _inbox_post_recipients_add(base_dir, http_prefix,
+            _inbox_post_recipients_add(base_dir,
                                        recipients_list,
                                        recipients_dict,
                                        domain_match, domain_base,
-                                       actor, debug,
+                                       debug,
                                        onion_domain, i2p_domain)
         if includes_followers:
             follower_recipients = True
@@ -1024,11 +1024,11 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
         else:
             recipients_list = [post_json_object['cc']]
         includes_followers, recipients_dict = \
-            _inbox_post_recipients_add(base_dir, http_prefix,
+            _inbox_post_recipients_add(base_dir,
                                        recipients_list,
                                        recipients_dict,
                                        domain_match, domain_base,
-                                       actor, debug,
+                                       debug,
                                        onion_domain, i2p_domain)
         if includes_followers:
             follower_recipients = True
