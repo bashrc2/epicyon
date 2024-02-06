@@ -8615,6 +8615,36 @@ def _test_uninvert2():
     assert uninverted_text == 'This is a test.'
 
 
+def _test_check_individual_post_content():
+    print('check_individual_post_content')
+    content = "<p>Unenshitification?</p><p></p><p>" + \
+        "Counter-enshitification?</p><p></p>" + \
+        "<p>Anti-enshitification?</p><p></p><p>Nonshitification?</p>"
+    content2 = remove_style_within_html(content)
+    if content2 != content:
+        print(content)
+        print(content2)
+    assert content2 == content
+
+    content3 = remove_long_words(content, 40, [])
+    if content3 != content:
+        print(content)
+        print(content3)
+    assert content3 == content
+
+    content4 = remove_text_formatting(content, False)
+    if content4 != content:
+        print(content)
+        print(content4)
+    assert content4 == content
+
+    content5 = limit_repeated_words(content, 6)
+    if content5 != content:
+        print(content)
+        print(content5)
+    assert content5 == content
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -8632,6 +8662,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_check_individual_post_content()
     _test_uninvert2()
     _test_book_link(base_dir)
     _test_dateformat()
