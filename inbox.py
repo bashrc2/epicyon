@@ -932,7 +932,7 @@ def _inbox_post_recipients_add(base_dir: str, to_list: [],
 
 
 def _inbox_post_recipients(base_dir: str, post_json_object: {},
-                           http_prefix: str, domain: str, port: int,
+                           domain: str, port: int,
                            debug: bool,
                            onion_domain: str, i2p_domain: str) -> ([], []):
     """Returns dictionaries containing the recipients of the given post
@@ -6551,7 +6551,7 @@ def run_inbox_queue(server,
         # get recipients list
         recipients_dict, recipients_dict_followers = \
             _inbox_post_recipients(base_dir, queue_json['post'],
-                                   http_prefix, domain, port, debug,
+                                   domain, port, debug,
                                    onion_domain, i2p_domain)
         if len(recipients_dict.items()) == 0 and \
            len(recipients_dict_followers.items()) == 0:
