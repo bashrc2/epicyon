@@ -168,7 +168,7 @@ from reading import store_book_events
 
 
 def cache_svg_images(session, base_dir: str, http_prefix: str,
-                     nickname: str, domain: str, domain_full: str,
+                     domain: str, domain_full: str,
                      onion_domain: str, i2p_domain: str,
                      post_json_object: {},
                      federation_list: [], debug: bool,
@@ -5221,7 +5221,7 @@ def _inbox_after_initial(server, inbox_start_time,
         # cache any svg image attachments locally
         # This is so that any scripts can be removed
         cache_svg_images(session, base_dir, http_prefix,
-                         nickname, domain, domain_full,
+                         domain, domain_full,
                          onion_domain, i2p_domain,
                          post_json_object,
                          federation_list, debug, None)

@@ -4249,7 +4249,6 @@ def _test_danger_svg(base_dir: str) -> None:
 
     session = None
     http_prefix = 'https'
-    nickname = 'amplifier'
     domain = 'ratsratsrats.live'
     domain_full = domain
     onion_domain = None
@@ -4276,7 +4275,7 @@ def _test_danger_svg(base_dir: str) -> None:
     assert svg_content != svg_clean
 
     assert cache_svg_images(session, base_dir, http_prefix,
-                            nickname, domain, domain_full,
+                            domain, domain_full,
                             onion_domain, i2p_domain,
                             post_json_object,
                             federation_list, debug,
