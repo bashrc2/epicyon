@@ -2820,7 +2820,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
             if debug:
                 print('Obtained post_json_string for ' + inbox_url +
                       ' unauthorized: ' + str(unauthorized))
-        except Exception as ex:
+        except BaseException as ex:
             print('ERROR: post_json_string failed ' + str(ex))
 
         if unauthorized:
@@ -2842,7 +2842,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
                 if debug:
                     print('Obtained ld post_json_string for ' + inbox_url +
                           ' unauthorized: ' + str(unauthorized))
-            except Exception as ex:
+            except BaseException as ex:
                 print('ERROR: ld post_json_string failed ' + str(ex))
 
         if unauthorized:
@@ -3039,7 +3039,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
             signed_post_json_object = post_json_object.copy()
             generate_json_signature(signed_post_json_object, private_key_pem)
             post_json_object = signed_post_json_object
-        except Exception as ex:
+        except BaseException as ex:
             print('WARN: send_post failed to JSON-LD sign post, ' + str(ex))
             pprint(signed_post_json_object)
 
