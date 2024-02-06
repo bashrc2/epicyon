@@ -664,7 +664,7 @@ def _deny_non_follower(base_dir: str, nickname: str, domain: str,
     if not is_follower_of_person(base_dir, nickname, domain,
                                  follower_nickname, follower_domain):
         return True
-    elif os.path.isfile(account_dir + '/.repliesFromMutualsOnly'):
+    if os.path.isfile(account_dir + '/.repliesFromMutualsOnly'):
         if not is_following_actor(base_dir, nickname, domain,
                                   sending_actor):
             return True
