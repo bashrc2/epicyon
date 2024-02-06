@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import lines_in_file
 from utils import resembles_url
 from utils import get_url_from_post
 from utils import date_from_string_format
@@ -2913,12 +2914,10 @@ def _receive_bookmark(recent_posts_cache: {},
 
 
 def _receive_undo_bookmark(recent_posts_cache: {},
-                           session, handle: str, is_group: bool, base_dir: str,
+                           session, handle: str, base_dir: str,
                            http_prefix: str, domain: str, port: int,
-                           send_threads: [], post_log: [],
                            cached_webfingers: {},
                            person_cache: {}, message_json: {},
-                           federation_list: [],
                            debug: bool, signing_priv_key_pem: str,
                            max_recent_posts: int, translate: {},
                            allow_deletion: bool,
@@ -3041,10 +3040,9 @@ def _receive_undo_bookmark(recent_posts_cache: {},
     return True
 
 
-def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
+def _receive_delete(handle: str, base_dir: str,
                     http_prefix: str, domain: str, port: int,
-                    send_threads: [], post_log: [], cached_webfingers: {},
-                    person_cache: {}, message_json: {}, federation_list: [],
+                    message_json: {},
                     debug: bool, allow_deletion: bool,
                     recent_posts_cache: {}) -> bool:
     """Receives a Delete activity within the POST section of HTTPServer
@@ -3119,12 +3117,12 @@ def _receive_delete(session, handle: str, is_group: bool, base_dir: str,
 
 
 def _receive_announce(recent_posts_cache: {},
-                      session, handle: str, is_group: bool, base_dir: str,
+                      session, handle: str, base_dir: str,
                       http_prefix: str,
                       domain: str,
                       onion_domain: str, i2p_domain: str, port: int,
-                      send_threads: [], post_log: [], cached_webfingers: {},
-                      person_cache: {}, message_json: {}, federation_list: [],
+                      cached_webfingers: {},
+                      person_cache: {}, message_json: {},
                       debug: bool, translate: {},
                       yt_replace_domain: str,
                       twitter_replacement_domain: str,
@@ -3418,13 +3416,8 @@ def _receive_announce(recent_posts_cache: {},
 
 
 def _receive_undo_announce(recent_posts_cache: {},
-                           session, handle: str, is_group: bool, base_dir: str,
-                           http_prefix: str, domain: str, port: int,
-                           send_threads: [], post_log: [],
-                           cached_webfingers: {},
-                           person_cache: {}, message_json: {},
-                           federation_list: [],
-                           debug: bool) -> bool:
+                           handle: str, base_dir: str, domain: str,
+                           message_json: {}, debug: bool) -> bool:
     """Receives an undo announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -3592,8 +3585,7 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
     post_replies_filename = post_filename.replace('.json', '.replies')
     message_id = remove_id_ending(message_json['id'])
     if os.path.isfile(post_replies_filename):
-        num_lines = sum(1 for line in open(post_replies_filename,
-                                           encoding='utf-8'))
+        num_lines = lines_in_file(post_replies_filename)
         if num_lines > max_replies:
             return False
         if not text_in_file(message_id, post_replies_filename):
@@ -4904,14 +4896,12 @@ def _inbox_after_initial(server, inbox_start_time,
         return False
 
     if _receive_undo_bookmark(recent_posts_cache,
-                              session, handle, is_group,
+                              session, handle,
                               base_dir, http_prefix,
                               domain, port,
-                              send_threads, post_log,
                               cached_webfingers,
                               person_cache,
                               message_json,
-                              federation_list,
                               debug, signing_priv_key_pem,
                               max_recent_posts, translate,
                               allow_deletion,
@@ -4951,14 +4941,12 @@ def _inbox_after_initial(server, inbox_start_time,
                       server.max_cached_readers)
 
     if _receive_announce(recent_posts_cache,
-                         session, handle, is_group,
+                         session, handle,
                          base_dir, http_prefix,
                          domain, onion_domain, i2p_domain, port,
-                         send_threads, post_log,
                          cached_webfingers,
                          person_cache,
                          message_json,
-                         federation_list,
                          debug, translate,
                          yt_replace_domain,
                          twitter_replacement_domain,
@@ -4982,15 +4970,8 @@ def _inbox_after_initial(server, inbox_start_time,
         inbox_start_time = time.time()
 
     if _receive_undo_announce(recent_posts_cache,
-                              session, handle, is_group,
-                              base_dir, http_prefix,
-                              domain, port,
-                              send_threads, post_log,
-                              cached_webfingers,
-                              person_cache,
-                              message_json,
-                              federation_list,
-                              debug):
+                              handle, base_dir, domain,
+                              message_json, debug):
         if debug:
             print('DEBUG: Undo announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -4999,14 +4980,10 @@ def _inbox_after_initial(server, inbox_start_time,
         inbox_start_time = time.time()
         return False
 
-    if _receive_delete(session, handle, is_group,
+    if _receive_delete(handle,
                        base_dir, http_prefix,
                        domain, port,
-                       send_threads, post_log,
-                       cached_webfingers,
-                       person_cache,
                        message_json,
-                       federation_list,
                        debug, allow_deletion,
                        recent_posts_cache):
         if debug:
