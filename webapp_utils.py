@@ -406,7 +406,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
                     print('WARN: update_avatar_image_cache ' +
                           'avatar image binary not recognized ' +
                           actor + ' ' + str(media_binary[0:20]))
-        except Exception as ex:
+        except BaseException as ex:
             print('EX: Failed to download avatar image: ' +
                   str(avatar_url) + ' ' + str(ex))
         prof = 'https://www.w3.org/ns/activitystreams'
