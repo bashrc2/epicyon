@@ -991,8 +991,7 @@ def html_header_with_blog_markup(css_filename: str, instance_title: str,
                                  http_prefix: str, domain: str, nickname: str,
                                  system_language: str,
                                  published: str, modified: str,
-                                 title: str, snippet: str,
-                                 translate: {}, url: str,
+                                 title: str, snippet: str, url: str,
                                  content_license_url: str) -> str:
     """html header which includes blog post markup
     https://schema.org/BlogPosting

@@ -491,8 +491,7 @@ def html_blog_post(session, authorized: bool,
     blog_str = html_header_with_blog_markup(css_filename, instance_title,
                                             http_prefix, domain_full, nickname,
                                             system_language, published,
-                                            modified,
-                                            title, snippet, translate, url,
+                                            modified, title, snippet, url,
                                             content_license_url)
     _html_blog_remove_cw_button(blog_str, translate)
 
