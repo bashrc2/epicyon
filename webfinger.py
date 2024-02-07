@@ -106,7 +106,7 @@ def webfinger_handle(session, handle: str, http_prefix: str,
         result = \
             get_json(signing_priv_key_pem, session, url, hdr, par,
                      debug, project_version, http_prefix, from_domain)
-    except Exception as ex:
+    except BaseException as ex:
         print('ERROR: webfinger_handle ' + wf_handle + ' ' + str(ex))
         return None
 
@@ -126,7 +126,7 @@ def webfinger_handle(session, handle: str, http_prefix: str,
             result = \
                 get_json(signing_priv_key_pem, session, url, hdr, par,
                          debug, project_version, http_prefix, from_domain)
-        except Exception as ex:
+        except BaseException as ex:
             print('ERROR: webfinger_handle ' + wf_handle + ' ' + str(ex))
             return None
 

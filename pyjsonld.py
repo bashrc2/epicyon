@@ -484,7 +484,7 @@ def load_document(url):
         return None
     except JsonLdError as ex:
         raise ex
-    except Exception as cause:
+    except BaseException as cause:
         raise JsonLdError(
             'Could not retrieve a JSON-LD document from the URL.',
             'jsonld.LoadDocumentError', code='loading document failed',
@@ -847,7 +847,7 @@ class JsonLdProcessor(object):
                     'jsonld.NullRemoteDocument')
             if _is_string(remote_doc['document']):
                 remote_doc['document'] = json.loads(remote_doc['document'])
-        except Exception as cause:
+        except BaseException as cause:
             raise JsonLdError(
                 'Could not retrieve a JSON-LD document from the URL.',
                 'jsonld.LoadDocumentError',
@@ -872,7 +872,7 @@ class JsonLdProcessor(object):
         try:
             self._retrieve_context_urls(
                 input_, {}, options['documentLoader'], options['base'])
-        except Exception as cause:
+        except BaseException as cause:
             raise JsonLdError(
                 'Could not perform JSON-LD expansion.',
                 'jsonld.ExpandError', cause=cause)
@@ -925,7 +925,7 @@ class JsonLdProcessor(object):
         try:
             # expand input
             expanded = self.expand(input_, options)
-        except Exception as cause:
+        except BaseException as cause:
             raise JsonLdError(
                 'Could not expand input before flattening.',
                 'jsonld.FlattenError', cause=cause)
@@ -941,7 +941,7 @@ class JsonLdProcessor(object):
         options['skipExpansion'] = True
         try:
             compacted = self.compact(flattened, ctx, options)
-        except Exception as cause:
+        except BaseException as cause:
             raise JsonLdError(
                 'Could not compact flattened output.',
                 'jsonld.FlattenError', cause=cause)
@@ -994,7 +994,7 @@ class JsonLdProcessor(object):
                     'jsonld.NullRemoteDocument')
             if _is_string(remote_frame['document']):
                 remote_frame['document'] = json.loads(remote_frame['document'])
-        except Exception as cause:
+        except BaseException as cause:
             raise JsonLdError(
                 'Could not retrieve a JSON-LD document from the URL.',
                 'jsonld.LoadDocumentError',
@@ -1218,7 +1218,7 @@ class JsonLdProcessor(object):
         try:
             self._retrieve_context_urls(
                 local_ctx, {}, options['documentLoader'], options['base'])
-        except Exception as cause:
+        except BaseException as cause:
             raise JsonLdError(
                 'Could not process JSON-LD context.',
                 'jsonld.ContextError', cause=cause)
@@ -4399,7 +4399,7 @@ class JsonLdProcessor(object):
             try:
                 remote_doc = load_document(url)
                 ctx = remote_doc['document']
-            except Exception as cause:
+            except BaseException as cause:
                 raise JsonLdError(
                     'Dereferencing a URL did not result in a valid JSON-LD '
                     'context.',
@@ -4410,7 +4410,7 @@ class JsonLdProcessor(object):
             if _is_string(ctx):
                 try:
                     ctx = json.loads(ctx)
-                except Exception as cause:
+                except BaseException as cause:
                     raise JsonLdError(
                         'Could not parse JSON from URL.',
                         'jsonld.ParseError', {'url': url},

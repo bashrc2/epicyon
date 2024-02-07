@@ -25,7 +25,7 @@ class thread_with_trace(threading.Thread):
                 threading.Thread.__init__(self, *self._args, **self._keywords)
                 self.killed = False
                 break
-            except Exception as ex:
+            except BaseException as ex:
                 print('ERROR: threads.py/__init__ failed - ' + str(ex))
                 time.sleep(1)
                 tries += 1
@@ -38,7 +38,7 @@ class thread_with_trace(threading.Thread):
                 self.run = self.__run
                 threading.Thread.start(self)
                 break
-            except Exception as ex:
+            except BaseException as ex:
                 print('ERROR: threads.py/start failed - ' + str(ex))
                 time.sleep(1)
                 tries += 1
@@ -54,7 +54,7 @@ class thread_with_trace(threading.Thread):
 #        try:
         self.__run_backup()
         self.run = self.__run_backup
-#        except Exception as ex:
+#        except BaseException as ex:
 #            print('ERROR: threads.py/__run failed - ' + str(ex) +
 #                  ', ' + str(self.__run_backup))
 
