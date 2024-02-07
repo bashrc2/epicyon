@@ -1335,10 +1335,9 @@ class PubServer(BaseHTTPRequestHandler):
             masto_api_v2_response(path,
                                   calling_domain,
                                   ua_str,
-                                  authorized,
                                   http_prefix,
                                   base_dir,
-                                  nickname, domain,
+                                  domain,
                                   domain_full,
                                   onion_domain,
                                   i2p_domain,
@@ -1346,7 +1345,6 @@ class PubServer(BaseHTTPRequestHandler):
                                   registration,
                                   system_language,
                                   project_version,
-                                  custom_emoji,
                                   show_node_info_accounts,
                                   broch_mode)
 

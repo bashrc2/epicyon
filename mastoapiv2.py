@@ -257,16 +257,14 @@ def _meta_data_instance_v2(show_accounts: bool,
 
 def masto_api_v2_response(path: str, calling_domain: str,
                           ua_str: str,
-                          authorized: bool,
                           http_prefix: str,
-                          base_dir: str, nickname: str, domain: str,
+                          base_dir: str, domain: str,
                           domain_full: str,
                           onion_domain: str, i2p_domain: str,
                           translate: {},
                           registration: bool,
                           system_language: str,
                           project_version: str,
-                          custom_emoji: [],
                           show_node_info_accounts: bool,
                           broch_mode: bool) -> ({}, str):
     """This is a vestigil mastodon API for the purpose
