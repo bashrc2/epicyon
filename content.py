@@ -1049,7 +1049,7 @@ def remove_long_words(content: str, max_word_length: int,
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     content = replace_content_duplicates(content)
-    if ' ' not in content and '<p></p>' not in content:
+    if ' ' not in content and '</p><p>' not in content:
         # handle a single very long string with no spaces
         content_str = content.replace('<p>', '').replace(r'<\p>', '')
         if '://' not in content_str:
@@ -1068,6 +1068,7 @@ def remove_long_words(content: str, max_word_length: int,
                 if word_str not in long_words_list:
                     long_words_list.append(word_str)
     for word_str in long_words_list:
+        original_word_str = word_str
         if word_str.startswith('<p>'):
             word_str = word_str.replace('<p>', '')
         if word_str.startswith('<'):
@@ -1112,8 +1113,12 @@ def remove_long_words(content: str, max_word_length: int,
         if '/' in word_str:
             continue
         if len(word_str[max_word_length:]) < max_word_length:
+            end_of_line_char = '\n'
+            if '<br>' in original_word_str:
+                end_of_line_char = ''
             content = content.replace(word_str,
-                                      word_str[:max_word_length] + '\n' +
+                                      word_str[:max_word_length] +
+                                      end_of_line_char +
                                       word_str[max_word_length:])
         else:
             content = content.replace(word_str,
