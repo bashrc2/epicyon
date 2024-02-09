@@ -680,7 +680,9 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                              message_bytes: str,
                              http_headers: {},
                              post_path: str, debug: bool,
-                             blocked_cache: [], system_language: str,
+                             blocked_cache: [],
+                             block_federated: [],
+                             system_language: str,
                              mitm: bool) -> str:
     """Saves the given json to the inbox queue for the person
     key_id specifies the actor sending the post
@@ -753,7 +755,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                     get_domain_from_actor(in_reply_to)
                 if reply_domain:
                     if is_blocked_domain(base_dir, reply_domain,
-                                         blocked_cache):
+                                         blocked_cache, block_federated):
                         if debug:
                             print('WARN: post contains reply from ' +
                                   str(actor) +

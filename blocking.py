@@ -696,7 +696,8 @@ def _get_short_domain(domain: str) -> str:
 
 
 def is_blocked_domain(base_dir: str, domain: str,
-                      blocked_cache: [] = None) -> bool:
+                      blocked_cache: [] = None,
+                      block_federated: [] = None) -> bool:
     """Is the given domain blocked?
     """
     if '.' not in domain:
@@ -709,6 +710,10 @@ def is_blocked_domain(base_dir: str, domain: str,
 
     search_str = '*@' + domain
     if not broch_mode_is_active(base_dir):
+        if block_federated:
+            if domain in block_federated:
+                return True
+
         if blocked_cache:
             for blocked_str in blocked_cache:
                 if blocked_str == search_str:
@@ -778,7 +783,8 @@ def is_blocked_nickname(base_dir: str, nickname: str,
 
 def is_blocked(base_dir: str, nickname: str, domain: str,
                block_nickname: str, block_domain: str,
-               blocked_cache: [] = None) -> bool:
+               blocked_cache: [] = None,
+               block_federated: [] = None) -> bool:
     """Is the given account blocked?
     """
     if is_evil(block_domain):
@@ -790,6 +796,15 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
 
     if not broch_mode_is_active(base_dir):
         # instance level block list
+        if block_federated:
+            for blocked_str in block_federated:
+                if '@' in blocked_str:
+                    if block_handle:
+                        if blocked_str == block_handle:
+                            return True
+                elif blocked_str == block_domain:
+                    return True
+
         if blocked_cache:
             for blocked_str in blocked_cache:
                 if block_nickname:

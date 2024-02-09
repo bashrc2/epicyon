@@ -2100,7 +2100,8 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('INBOX: checking for blocked domain ' + message_domain)
         if is_blocked_domain(self.server.base_dir, message_domain,
-                             self.server.blocked_cache):
+                             self.server.blocked_cache,
+                             self.server.block_federated):
             print('INBOX: POST from blocked domain ' + message_domain)
             self._400()
             self.server.postreq_busy = False
@@ -2206,6 +2207,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.path,
                                      self.server.debug,
                                      self.server.blocked_cache,
+                                     self.server.block_federated,
                                      self.server.system_language,
                                      mitm)
         if queue_filename:
@@ -17581,6 +17583,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.blocked_cache_last_updated,
                                    self.server.base_dir,
                                    self.server.blocked_cache,
+                                   self.server.block_federated,
                                    self.server.blocked_cache_update_secs,
                                    self.server.crawlers_allowed,
                                    self.server.known_bots,
@@ -23581,6 +23584,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.blocked_cache_last_updated,
                                self.server.base_dir,
                                self.server.blocked_cache,
+                               self.server.block_federated,
                                self.server.blocked_cache_update_secs,
                                self.server.crawlers_allowed,
                                self.server.known_bots,
