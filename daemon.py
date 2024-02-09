@@ -24682,6 +24682,12 @@ def run_daemon(no_of_books: int,
     # number of book events which show on profile screens
     httpd.no_of_books = no_of_books
 
+    # initialise federated blocklists
+    httpd.max_api_blocks = 32000
+    httpd.block_federated_endpoints = \
+        load_federated_blocks_endpoints(base_dir)
+    httpd.block_federated = []
+
     # cache storing recent book events
     httpd.books_cache = {}
     httpd.max_recent_books = 1000
@@ -25278,10 +25284,6 @@ def run_daemon(no_of_books: int,
     httpd.signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
     # load federated blocklists
-    httpd.max_api_blocks = 32000
-    httpd.block_federated_endpoints = \
-        load_federated_blocks_endpoints(base_dir)
-    httpd.block_federated = []
     if not unit_test:
         curr_session = create_session(proxy_type)
         if curr_session:
