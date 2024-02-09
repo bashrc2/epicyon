@@ -656,5 +656,6 @@
     "reading": "lezing",
     "Birthday": "Verjaardag",
     "Only show reminders": "Toon alleen herinneringen",
-    "Show all events": "Toon alle evenementen"
+    "Show all events": "Toon alle evenementen",
+    "Blocking API endpoints": "API-eindpunten blokkeren"
 }

@@ -2223,7 +2223,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                                  crawlers_allowed: str,
                                  translate: {}, reply_interval_hours: int,
                                  cw_lists: {}, lists_enabled: str,
-                                 buy_sites: {}, block_military: {}) -> str:
+                                 buy_sites: {}, block_military: {},
+                                 block_federated_endpoints: []) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filter_str = ''
@@ -2446,6 +2447,16 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             block_mil = block_military[nickname]
         edit_profile_form += \
             edit_check_box(idx, 'blockMilitary', block_mil)
+
+        block_federated_endpoints_list_str = ''
+        for block_api_url in block_federated_endpoints:
+            block_federated_endpoints_list_str += block_api_url.strip() + '\n'
+        block_federated_str = "Blocking API endpoints"
+        edit_profile_form += \
+            edit_text_area(translate[block_federated_str], None,
+                           'blockFederated',
+                           block_federated_endpoints_list_str,
+                           200, '', False)
 
         cw_lists_str = ''
         for name, _ in cw_lists.items():
@@ -2943,7 +2954,8 @@ def html_edit_profile(server, translate: {},
                       max_recent_posts: int,
                       reverse_sequence: [],
                       buy_sites: {},
-                      block_military: {}) -> str:
+                      block_military: {},
+                      block_federated_endpoints: []) -> str:
     """Shows the edit profile screen
     """
     path = path.replace('/inbox', '').replace('/outbox', '')
@@ -3214,7 +3226,7 @@ def html_edit_profile(server, translate: {},
                                      user_agents_blocked, crawlers_allowed,
                                      translate, reply_interval_hours,
                                      cw_lists, lists_enabled, buy_sites,
-                                     block_military)
+                                     block_military, block_federated_endpoints)
 
     # git projects section
     edit_profile_form += \

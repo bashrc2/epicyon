@@ -656,5 +656,6 @@
     "reading": "xwendinî",
     "Birthday": "Rojbûn",
     "Only show reminders": "Tenê bîranînan nîşan bidin",
-    "Show all events": "Hemî bûyeran nîşan bide"
+    "Show all events": "Hemî bûyeran nîşan bide",
+    "Blocking API endpoints": "Astengkirina xalên dawiya API-ê"
 }

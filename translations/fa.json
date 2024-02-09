@@ -656,5 +656,6 @@
     "reading": "خواندن",
     "Birthday": "روز تولد",
     "Only show reminders": "فقط یادآوری ها را نشان دهید",
-    "Show all events": "نمایش همه رویدادها"
+    "Show all events": "نمایش همه رویدادها",
+    "Blocking API endpoints": "مسدود کردن نقاط پایانی API"
 }

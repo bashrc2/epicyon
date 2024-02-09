@@ -656,5 +656,6 @@
     "reading": "okuma",
     "Birthday": "Doğum günü",
     "Only show reminders": "Yalnızca hatırlatıcıları göster",
-    "Show all events": "Tüm etkinlikleri göster"
+    "Show all events": "Tüm etkinlikleri göster",
+    "Blocking API endpoints": "API uç noktalarını engelleme"
 }

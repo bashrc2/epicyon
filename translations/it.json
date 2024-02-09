@@ -656,5 +656,6 @@
     "reading": "lettura",
     "Birthday": "Compleanno",
     "Only show reminders": "Mostra solo promemoria",
-    "Show all events": "Mostra tutti gli eventi"
+    "Show all events": "Mostra tutti gli eventi",
+    "Blocking API endpoints": "Blocco degli endpoint API"
 }

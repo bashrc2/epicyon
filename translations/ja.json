@@ -656,5 +656,6 @@
     "reading": "読む",
     "Birthday": "誕生日",
     "Only show reminders": "リマインダーのみを表示",
-    "Show all events": "すべてのイベントを表示"
+    "Show all events": "すべてのイベントを表示",
+    "Blocking API endpoints": "APIエンドポイントのブロック"
 }

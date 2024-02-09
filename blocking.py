@@ -1815,3 +1815,127 @@ def contains_military_domain(message_str: str) -> bool:
                domain_str + '/' in message_str:
                 return True
     return False
+
+
+def load_federated_blocks_endpoints(base_dir: str) -> []:
+    """Loads endpoint urls for federated blocklists
+    """
+    block_federated_endpoints = []
+    block_api_endpoints_filename = \
+        base_dir + '/accounts/block_api_endpoints.txt'
+    if os.path.isfile(block_api_endpoints_filename):
+        try:
+            with open(block_api_endpoints_filename, 'r',
+                      encoding='utf-8') as fp_ep:
+                block_federated_endpoints = fp_ep.read().split('\n')
+        except OSError:
+            print('EX: unable to load block_api_endpoints.txt')
+    return block_federated_endpoints
+
+
+def update_federated_blocks(session, base_dir: str,
+                            http_prefix: str,
+                            domain: str, domain_full: str,
+                            debug: bool, version: str,
+                            signing_priv_key_pem: str,
+                            max_api_blocks: int) -> []:
+    """Creates block_api.txt
+    """
+    block_federated = []
+
+    if not session:
+        print('WARN: No session for update_federated_blocks')
+        return block_federated
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+    }
+
+    block_federated_endpoints = load_federated_blocks_endpoints(base_dir)
+
+    new_block_api_str = ''
+    for endpoint in block_federated_endpoints:
+        url = endpoint.strip()
+
+        if debug:
+            print('Block API endpoint: ' + url)
+        blocked_json = get_json(signing_priv_key_pem, session, url, headers,
+                                None, debug, version, http_prefix, None)
+        if not get_json_valid(blocked_json):
+            if debug:
+                print('DEBUG: GET blocked collection failed for c2s to ' + url)
+            continue
+        if isinstance(blocked_json, list):
+            # ensure that the size of the list does not become a form of denial
+            # of service
+            if len(blocked_json) < max_api_blocks:
+                for block_dict in blocked_json:
+                    if not isinstance(block_dict, dict):
+                        continue
+                    if not block_dict.get('username'):
+                        continue
+                    if not isinstance(block_dict['username'], str):
+                        continue
+                    handle = block_dict['username']
+                    if handle.startswith('@'):
+                        handle = handle[1:]
+                    if ' ' in handle or \
+                       ',' in handle or \
+                       ';' in handle or \
+                       '.' not in handle or \
+                       '<' in handle:
+                        continue
+                    new_block_api_str += handle + '\n'
+                    if handle not in block_federated:
+                        block_federated.append(handle)
+
+    block_api_filename = \
+        base_dir + '/accounts/block_api.txt'
+    if not new_block_api_str:
+        if os.path.isfile(block_api_filename):
+            try:
+                os.remove(block_api_filename)
+            except OSError:
+                print('EX: unable to remove block api: ' + block_api_filename)
+    else:
+        try:
+            with open(block_api_filename, 'w+', encoding='utf-8') as fp_api:
+                fp_api.write(new_block_api_str)
+        except OSError:
+            print('EX: unable to write block_api.txt')
+
+    return block_federated
+
+
+def save_block_federated_endpoints(base_dir: str,
+                                   block_federated_endpoints: []) -> []:
+    """Saves a list of blocking API endpoints
+    """
+    block_api_endpoints_filename = \
+        base_dir + '/accounts/block_api_endpoints.txt'
+    result = []
+    block_federated_endpoints_str = ''
+    for endpoint in block_federated_endpoints:
+        if not endpoint:
+            continue
+        if '.' not in endpoint or \
+           ' ' in endpoint or \
+           '<' in endpoint or \
+           ',' in endpoint or \
+           ';' in endpoint:
+            continue
+        if endpoint.startswith('@'):
+            endpoint = endpoint[1:]
+        if not endpoint:
+            continue
+        block_federated_endpoints_str += endpoint.strip() + '\n'
+        result.append(endpoint)
+    try:
+        with open(block_api_endpoints_filename, 'w+',
+                  encoding='utf-8') as fp_api:
+            fp_api.write(block_federated_endpoints_str)
+    except OSError:
+        print('EX: unable to write block_api_endpoints.txt')
+    return result

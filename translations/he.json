@@ -656,5 +656,6 @@
     "reading": "קריאה",
     "Birthday": "יום הולדת",
     "Only show reminders": "הצג רק תזכורות",
-    "Show all events": "הצג את כל האירועים"
+    "Show all events": "הצג את כל האירועים",
+    "Blocking API endpoints": "חסימת נקודות קצה של API"
 }

@@ -656,5 +656,6 @@
     "reading": "阅读",
     "Birthday": "生日",
     "Only show reminders": "只显示提醒",
-    "Show all events": "显示所有活动"
+    "Show all events": "显示所有活动",
+    "Blocking API endpoints": "阻止 API 端点"
 }

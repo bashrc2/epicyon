@@ -656,5 +656,6 @@
     "reading": "ΑΝΑΓΝΩΣΗ",
     "Birthday": "Γενέθλια",
     "Only show reminders": "Εμφάνιση μόνο υπενθυμίσεων",
-    "Show all events": "Εμφάνιση όλων των συμβάντων"
+    "Show all events": "Εμφάνιση όλων των συμβάντων",
+    "Blocking API endpoints": "Αποκλεισμός τελικών σημείων API"
 }

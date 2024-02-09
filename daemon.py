@@ -160,6 +160,9 @@ from media import path_is_transcript
 from media import path_is_audio
 from cwlists import get_cw_list_variable
 from cwlists import load_cw_lists
+from blocking import save_block_federated_endpoints
+from blocking import load_federated_blocks_endpoints
+from blocking import update_federated_blocks
 from blocking import contains_military_domain
 from blocking import load_blocked_military
 from blocking import save_blocked_military
@@ -8455,6 +8458,20 @@ class PubServer(BaseHTTPRequestHandler):
                                     except OSError:
                                         print('EX: unable to delete ' +
                                               buy_sites_filename)
+
+                        # save blocking API endpoints
+                        block_ep_new = []
+                        if fields.get('blockFederated'):
+                            block_federated_str = \
+                                fields['blockFederated']
+                            block_ep_new = \
+                                block_federated_str.split('\n')
+                        if str(self.server.block_federated_endpoints) != \
+                           str(block_ep_new):
+                            base_dir = self.server.base_dir
+                            self.server.block_federated_endpoints = \
+                                save_block_federated_endpoints(base_dir,
+                                                               block_ep_new)
 
                         # save peertube instances list
                         peertube_instances_file = \
@@ -17311,7 +17328,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.max_recent_posts,
                                     self.server.reverse_sequence,
                                     self.server.buy_sites,
-                                    self.server.block_military)
+                                    self.server.block_military,
+                                    self.server.block_federated_endpoints)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -25258,6 +25276,22 @@ def run_daemon(no_of_books: int,
     # signing key used for authorized fetch
     # this is the instance actor private key
     httpd.signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+
+    # load federated blocklists
+    httpd.max_api_blocks = 32000
+    httpd.block_federated_endpoints = \
+        load_federated_blocks_endpoints(base_dir)
+    httpd.block_federated = []
+    if not unit_test:
+        curr_session = create_session(proxy_type)
+        if curr_session:
+            httpd.block_federated = \
+                update_federated_blocks(curr_session, base_dir,
+                                        http_prefix,
+                                        domain, httpd.domain_full,
+                                        debug, project_version,
+                                        httpd.signing_priv_key_pem,
+                                        httpd.max_api_blocks)
 
     # threads used for checking for actor changes when clicking on
     # avatar icon / person options

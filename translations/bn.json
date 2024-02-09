@@ -656,5 +656,6 @@
     "reading": "পড়া",
     "Birthday": "জন্মদিন",
     "Only show reminders": "শুধুমাত্র অনুস্মারক দেখান",
-    "Show all events": "সমস্ত ঘটনা দেখান"
+    "Show all events": "সমস্ত ঘটনা দেখান",
+    "Blocking API endpoints": "এপিআই এন্ডপয়েন্ট ব্লক করা"
 }

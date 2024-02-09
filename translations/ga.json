@@ -656,5 +656,6 @@
     "reading": "ag léamh",
     "Birthday": "Breithlá",
     "Only show reminders": "Ná taispeáin ach meabhrúcháin",
-    "Show all events": "Taispeáin gach imeacht"
+    "Show all events": "Taispeáin gach imeacht",
+    "Blocking API endpoints": "Ag cur bac ar chríochphointí API"
 }

@@ -656,5 +656,6 @@
     "reading": "lectura",
     "Birthday": "Aniversari",
     "Only show reminders": "Mostra només recordatoris",
-    "Show all events": "Mostra tots els esdeveniments"
+    "Show all events": "Mostra tots els esdeveniments",
+    "Blocking API endpoints": "Bloqueig de punts finals de l'API"
 }

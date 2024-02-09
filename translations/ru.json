@@ -656,5 +656,6 @@
     "reading": "чтение",
     "Birthday": "День рождения",
     "Only show reminders": "Показывать только напоминания",
-    "Show all events": "Показать все события"
+    "Show all events": "Показать все события",
+    "Blocking API endpoints": "Блокировка конечных точек API"
 }

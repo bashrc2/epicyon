@@ -656,5 +656,6 @@
     "reading": "독서",
     "Birthday": "생일",
     "Only show reminders": "알림만 표시",
-    "Show all events": "모든 이벤트 표시"
+    "Show all events": "모든 이벤트 표시",
+    "Blocking API endpoints": "API 엔드포인트 차단"
 }

@@ -656,5 +656,6 @@
     "reading": "reading",
     "Birthday": "Birthday",
     "Only show reminders": "Only show reminders",
-    "Show all events": "Show all events"
+    "Show all events": "Show all events",
+    "Blocking API endpoints": "Blocking API endpoints"
 }

@@ -656,5 +656,6 @@
     "reading": "kusoma",
     "Birthday": "Siku ya kuzaliwa",
     "Only show reminders": "Onyesha vikumbusho pekee",
-    "Show all events": "Onyesha matukio yote"
+    "Show all events": "Onyesha matukio yote",
+    "Blocking API endpoints": "Inazuia miisho ya API"
 }
