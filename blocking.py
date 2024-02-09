@@ -1927,6 +1927,7 @@ def _update_federated_blocks(session, base_dir: str,
     block_api_filename = \
         base_dir + '/accounts/block_api.txt'
     if not new_block_api_str:
+        print('DEBUG: federated blocklist not loaded: ' + block_api_filename)
         if os.path.isfile(block_api_filename):
             try:
                 os.remove(block_api_filename)
