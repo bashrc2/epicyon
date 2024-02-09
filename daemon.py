@@ -25288,11 +25288,6 @@ def run_daemon(no_of_books: int,
     # this is the instance actor private key
     httpd.signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    print('THREAD: Creating federated blocks thread')
-    httpd.thrFederatedBlocksDaemon = \
-        thread_with_trace(target=run_federated_blocks_daemon,
-                          args=(base_dir, httpd, debug), daemon=True)
-
     # threads used for checking for actor changes when clicking on
     # avatar icon / person options
     httpd.thrCheckActor = {}
@@ -25331,6 +25326,12 @@ def run_daemon(no_of_books: int,
                               args=(project_version, httpd), daemon=True)
         begin_thread(httpd.thrFederatedSharesWatchdog,
                      'run_daemon thrFederatedSharesWatchdog')
+        print('THREAD: Creating federated blocks thread')
+        httpd.thrFederatedBlocksDaemon = \
+            thread_with_trace(target=run_federated_blocks_daemon,
+                              args=(base_dir, httpd, debug), daemon=True)
+        begin_thread(httpd.thrFederatedBlocksDaemon,
+                     'run_daemon thrFederatedBlocksDaemon')
     else:
         print('Starting inbox queue')
         begin_thread(httpd.thrInboxQueue, 'run_daemon start inbox')
@@ -25340,9 +25341,6 @@ def run_daemon(no_of_books: int,
         print('Starting federated shares daemon')
         begin_thread(httpd.thrFederatedSharesDaemon,
                      'run_daemon start federated shares')
-        print('Starting federated blocks daemon')
-        begin_thread(httpd.thrFederatedBlocksDaemon,
-                     'run_daemon start federated blocks')
 
     update_memorial_flags(base_dir, httpd.person_cache)
 
