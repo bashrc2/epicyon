@@ -729,7 +729,8 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             print('No post Domain in actor')
             return None
         if is_blocked(base_dir, nickname, domain,
-                      post_nickname, post_domain, blocked_cache):
+                      post_nickname, post_domain,
+                      blocked_cache, block_federated):
             if debug:
                 print('DEBUG: post from ' + post_nickname + ' blocked')
             return None
@@ -775,7 +776,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                         return None
                     if is_blocked(base_dir, nickname, domain,
                                   reply_nickname, reply_domain,
-                                  blocked_cache):
+                                  blocked_cache, block_federated):
                         if debug:
                             print('WARN: post contains reply from ' +
                                   str(actor) +
@@ -1833,6 +1834,7 @@ def _receive_move_activity(session, base_dir: str,
                            i2p_domain: str,
                            sites_unavailable: [],
                            blocked_cache: [],
+                           block_federated: [],
                            system_language: str) -> bool:
     """Receives a move activity within the POST section of HTTPServer
     https://codeberg.org/fediverse/fep/src/branch/main/fep/7628/fep-7628.md
@@ -1898,7 +1900,8 @@ def _receive_move_activity(session, base_dir: str,
         return False
     # is the moved actor blocked?
     if is_blocked(base_dir, nickname, domain,
-                  moved_nickname, moved_domain, blocked_cache):
+                  moved_nickname, moved_domain,
+                  blocked_cache, block_federated):
         print('INBOX: Move activity actor is blocked: ' + moved_actor)
         return False
     print('INBOX: Move activity sending follow request: ' +
@@ -3208,7 +3211,8 @@ def _receive_announce(recent_posts_cache: {},
         if debug:
             print('DEBUG: announced nickname is blocked')
         return False
-    if is_blocked(base_dir, nickname, domain, actor_nickname, actor_domain):
+    if is_blocked(base_dir, nickname, domain, actor_nickname, actor_domain,
+                  None, block_federated):
         print('Receive announce blocked for actor: ' +
               actor_nickname + '@' + actor_domain)
         return False
@@ -3230,7 +3234,8 @@ def _receive_announce(recent_posts_cache: {},
         print('WARN: _receive_announce no announced_actor_domain')
         return False
     if is_blocked(base_dir, nickname, domain,
-                  announced_actor_nickname, announced_actor_domain):
+                  announced_actor_nickname, announced_actor_domain,
+                  None, block_federated):
         print('Receive announce object blocked for actor: ' +
               announced_actor_nickname + '@' + announced_actor_domain)
         return False
@@ -3324,7 +3329,8 @@ def _receive_announce(recent_posts_cache: {},
                                          system_language,
                                          domain_full, person_cache,
                                          signing_priv_key_pem,
-                                         blocked_cache, bold_reading,
+                                         blocked_cache, block_federated,
+                                         bold_reading,
                                          show_vote_posts,
                                          languages_understood)
     if not post_json_object:
@@ -6467,6 +6473,7 @@ def run_inbox_queue(server,
                                   i2p_domain,
                                   server.sites_unavailable,
                                   server.blocked_cache,
+                                  server.block_federated,
                                   server.system_language):
             if debug:
                 print('Queue: _receive_move_activity ' + key_id)

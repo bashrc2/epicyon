@@ -2720,9 +2720,11 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        block_federated = []
         ctr = migrate_accounts(base_dir, session,
                                http_prefix, cached_webfingers,
-                               True, signing_priv_key_pem)
+                               True, signing_priv_key_pem,
+                               block_federated)
         if ctr == 0:
             print('No followed accounts have moved')
         else:

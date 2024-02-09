@@ -49,6 +49,7 @@ def html_conversation_view(authorized: bool, post_id: str,
                            min_images_for_accounts: [],
                            debug: bool, buy_sites: {},
                            blocked_cache: [],
+                           block_federated: [],
                            auto_cw_cache: {}) -> str:
     """Show a page containing a conversation thread
     """
@@ -91,7 +92,7 @@ def html_conversation_view(authorized: bool, post_id: str,
         if from_nickname and from_domain:
             if is_blocked(base_dir, nickname, domain,
                           from_nickname, from_domain,
-                          blocked_cache):
+                          blocked_cache, block_federated):
                 show_individual_post_icons = False
         allow_deletion = False
         post_str = \

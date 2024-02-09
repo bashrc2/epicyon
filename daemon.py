@@ -12959,6 +12959,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.debug,
                                    self.server.buy_sites,
                                    self.server.blocked_cache,
+                                   self.server.block_federated,
                                    self.server.auto_cw_cache)
         if conv_str:
             msg = conv_str.encode('utf-8')

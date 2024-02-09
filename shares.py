@@ -296,7 +296,7 @@ def _indicate_new_share_available(base_dir: str, http_prefix: str,
             # does this account block you?
             if account_nickname != nickname:
                 if is_blocked(base_dir, account_nickname, domain,
-                              nickname, domain, None):
+                              nickname, domain, None, None):
                     continue
             local_actor = \
                 local_actor_url(http_prefix, account_nickname, domain_full)

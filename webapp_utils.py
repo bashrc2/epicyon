@@ -484,7 +484,7 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
             # Don't include shared items from blocked accounts
             if account_nickname != nickname:
                 if is_blocked(base_dir, nickname, domain,
-                              account_nickname, domain, None):
+                              account_nickname, domain, None, None):
                     continue
             # actor who owns this share
             owner = actor.split('/users/')[0] + '/users/' + account_nickname
@@ -529,7 +529,8 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                         if not share_nickname:
                             continue
                         if is_blocked(base_dir, nickname, domain,
-                                      share_nickname, federated_domain, None):
+                                      share_nickname, federated_domain,
+                                      None, None):
                             continue
                         item['actor'] = share_actor
                         item['shareId'] = item_id

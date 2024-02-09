@@ -2260,6 +2260,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if post_json_object['type'] == 'Announce':
         announce_json_object = post_json_object.copy()
         blocked_cache = {}
+        block_federated = []
         show_vote_posts = True
         show_vote_file = acct_dir(base_dir, nickname, domain) + '/.noVotes'
         if os.path.isfile(show_vote_file):
@@ -2275,7 +2276,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blocked_cache, bold_reading,
+                              blocked_cache, block_federated,
+                              bold_reading,
                               show_vote_posts,
                               languages_understood)
         if not post_json_announce:

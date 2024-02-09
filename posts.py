@@ -4390,6 +4390,7 @@ def is_image_media(session, base_dir: str, http_prefix: str,
     """
     if post_json_object['type'] == 'Announce':
         blocked_cache = {}
+        block_federated = []
         post_json_announce = \
             download_announce(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
@@ -4401,7 +4402,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blocked_cache, bold_reading,
+                              blocked_cache, block_federated,
+                              bold_reading,
                               show_vote_posts,
                               languages_understood)
         if post_json_announce:
@@ -5784,7 +5786,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       system_language: str,
                       domain_full: str, person_cache: {},
                       signing_priv_key_pem: str,
-                      blocked_cache: {}, bold_reading: bool,
+                      blocked_cache: {}, block_federated: [],
+                      bold_reading: bool,
                       show_vote_posts: bool,
                       languages_understood: []) -> {}:
     """Download the post referenced by an announce
@@ -5917,6 +5920,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                 convert_video_to_note(base_dir, nickname, domain,
                                       system_language,
                                       announced_json, blocked_cache,
+                                      block_federated,
                                       languages_understood)
             if converted_json:
                 announced_json = converted_json

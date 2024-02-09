@@ -26,7 +26,8 @@ def _move_following_handles_for_account(base_dir: str,
                                         http_prefix: str,
                                         cached_webfingers: {},
                                         debug: bool,
-                                        signing_priv_key_pem: str) -> int:
+                                        signing_priv_key_pem: str,
+                                        block_federated: []) -> int:
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
@@ -42,14 +43,16 @@ def _move_following_handles_for_account(base_dir: str,
                 _update_moved_handle(base_dir, nickname, domain,
                                      follow_handle, session,
                                      http_prefix, cached_webfingers,
-                                     debug, signing_priv_key_pem)
+                                     debug, signing_priv_key_pem,
+                                     block_federated)
     return ctr
 
 
 def _update_moved_handle(base_dir: str, nickname: str, domain: str,
                          handle: str, session,
                          http_prefix: str, cached_webfingers: {},
-                         debug: bool, signing_priv_key_pem: str) -> int:
+                         debug: bool, signing_priv_key_pem: str,
+                         block_federated: []) -> int:
     """Check if an account has moved, and if so then alter following.txt
     for each account.
     Returns 1 if moved, 0 otherwise
@@ -118,7 +121,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
             moved_to_domain_full = moved_to_domain + ':' + str(moved_to_port)
     group_account = has_group_type(base_dir, moved_to_url, None)
     if is_blocked(base_dir, nickname, domain,
-                  moved_to_nickname, moved_to_domain):
+                  moved_to_nickname, moved_to_domain,
+                  None, block_federated):
         # someone that you follow has moved to a blocked domain
         # so just unfollow them
         unfollow_account(base_dir, nickname, domain,
@@ -207,7 +211,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
 
 def migrate_accounts(base_dir: str, session,
                      http_prefix: str, cached_webfingers: {},
-                     debug: bool, signing_priv_key_pem: str) -> int:
+                     debug: bool, signing_priv_key_pem: str,
+                     block_federated: []) -> int:
     """If followed accounts change then this modifies the
     following lists for each account accordingly.
     Returns the number of accounts migrated
@@ -224,6 +229,7 @@ def migrate_accounts(base_dir: str, session,
                 _move_following_handles_for_account(base_dir, nickname, domain,
                                                     session, http_prefix,
                                                     cached_webfingers, debug,
-                                                    signing_priv_key_pem)
+                                                    signing_priv_key_pem,
+                                                    block_federated)
         break
     return ctr

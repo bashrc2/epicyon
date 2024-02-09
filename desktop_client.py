@@ -787,7 +787,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
                          translate: {}, your_actor: str,
                          domain_full: str, person_cache: {},
                          signing_priv_key_pem: str,
-                         blocked_cache: {}, bold_reading: bool) -> {}:
+                         blocked_cache: {}, block_federated: [],
+                         bold_reading: bool) -> {}:
     """Reads a post from the given timeline
     Returns the post json
     """
@@ -835,7 +836,7 @@ def _read_local_box_post(session, nickname: str, domain: str,
                               system_language,
                               domain_full, person_cache,
                               signing_priv_key_pem,
-                              blocked_cache, bold_reading,
+                              blocked_cache, block_federated, bold_reading,
                               show_vote_posts,
                               languages_understood)
         if post_json_object2:
@@ -1515,6 +1516,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     media_creator = ''
 
     blocked_cache = {}
+    block_federated = []
     languages_understood = []
 
     indent = '   '
@@ -1811,7 +1813,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                              espeak, translate, your_actor,
                                              domain_full, person_cache,
                                              signing_priv_key_pem,
-                                             blocked_cache, bold_reading)
+                                             blocked_cache, block_federated,
+                                             bold_reading)
                     print('')
                     say_str = 'Press Enter to continue...'
                     say_str2 = _highlight_text(say_str)
@@ -2685,6 +2688,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               domain_full, person_cache,
                                               signing_priv_key_pem,
                                               blocked_cache,
+                                              block_federated,
                                               bold_reading,
                                               show_vote_posts,
                                               languages_understood)
