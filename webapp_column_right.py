@@ -468,8 +468,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
 
 def html_newswire_mobile(base_dir: str, nickname: str,
                          domain: str, domain_full: str,
-                         http_prefix: str, translate: {},
-                         newswire: {},
+                         translate: {}, newswire: {},
                          positive_voting: bool,
                          timeline_path: str,
                          show_publish_as_icon: bool,
@@ -547,8 +546,7 @@ def html_newswire_mobile(base_dir: str, nickname: str,
 
 
 def html_edit_newswire(translate: {}, base_dir: str, path: str,
-                       domain: str, port: int, http_prefix: str,
-                       default_timeline: str, theme: str,
+                       domain: str, default_timeline: str, theme: str,
                        access_keys: {}, dogwhistles: {}) -> str:
     """Shows the edit newswire screen
     """
@@ -689,7 +687,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
 
 
 def html_edit_news_post(translate: {}, base_dir: str, path: str,
-                        domain: str, port: int, http_prefix: str, postUrl: str,
+                        domain: str, post_url: str,
                         system_language: str) -> str:
     """Edits a news post on the news/features timeline
     """
@@ -705,8 +703,8 @@ def html_edit_news_post(translate: {}, base_dir: str, path: str,
     if not is_editor(base_dir, nickname):
         return ''
 
-    postUrl = postUrl.replace('/', '#')
-    post_filename = locate_post(base_dir, nickname, domain, postUrl)
+    post_url = post_url.replace('/', '#')
+    post_filename = locate_post(base_dir, nickname, domain, post_url)
     if not post_filename:
         return ''
     post_json_object = load_json(post_filename)
@@ -744,7 +742,7 @@ def html_edit_news_post(translate: {}, base_dir: str, path: str,
 
     edit_news_post_form += \
         '  <input type="hidden" name="newsPostUrl" value="' + \
-        postUrl + '">\n'
+        post_url + '">\n'
 
     news_post_title = post_json_object['object']['summary']
     edit_news_post_form += \

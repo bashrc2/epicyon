@@ -17374,8 +17374,6 @@ class PubServer(BaseHTTPRequestHandler):
             msg = html_edit_newswire(translate,
                                      base_dir,
                                      path, domain,
-                                     port,
-                                     http_prefix,
                                      self.server.default_timeline,
                                      self.server.theme_name,
                                      access_keys,
@@ -17412,8 +17410,7 @@ class PubServer(BaseHTTPRequestHandler):
                 '/statuses/' + post_id
             path = path.split('/editnewspost=')[0]
             msg = html_edit_news_post(translate, base_dir,
-                                      path, domain, port,
-                                      http_prefix,
+                                      path, domain,
                                       post_url,
                                       self.server.system_language)
             if msg:
@@ -19920,7 +19917,6 @@ class PubServer(BaseHTTPRequestHandler):
                                          nickname,
                                          self.server.domain,
                                          self.server.domain_full,
-                                         self.server.http_prefix,
                                          self.server.translate,
                                          self.server.newswire,
                                          self.server.positive_voting,
