@@ -3140,7 +3140,8 @@ def _receive_announce(recent_posts_cache: {},
                       min_images_for_accounts: [],
                       buy_sites: {},
                       languages_understood: [],
-                      auto_cw_cache: {}) -> bool:
+                      auto_cw_cache: {},
+                      block_federated: []) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -3185,7 +3186,7 @@ def _receive_announce(recent_posts_cache: {},
         object_domain = object_domain.replace(prefix, '')
     if '/' in object_domain:
         object_domain = object_domain.split('/')[0]
-    if is_blocked_domain(base_dir, object_domain):
+    if is_blocked_domain(base_dir, object_domain, None, block_federated):
         if debug:
             print('DEBUG: announced domain is blocked')
         return False
@@ -4963,7 +4964,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          server.min_images_for_accounts,
                          server.buy_sites,
                          languages_understood,
-                         server.auto_cw_cache):
+                         server.auto_cw_cache,
+                         server.block_federated):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
