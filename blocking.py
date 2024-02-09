@@ -1888,8 +1888,6 @@ def _update_federated_blocks(session, base_dir: str,
         return block_federated
 
     headers = {
-        'host': domain,
-        'Content-type': 'application/json',
         'Accept': 'application/json'
     }
 
@@ -1905,11 +1903,12 @@ def _update_federated_blocks(session, base_dir: str,
 
         print('federated blocklist Block API endpoint: ' + url)
         blocked_json = get_json(signing_priv_key_pem, session, url, headers,
-                                None, debug, version, http_prefix, None)
+                                None, debug, version, http_prefix, domain)
         if not get_json_valid(blocked_json):
             print('DEBUG: federated blocklist ' +
                   'GET blocked json failed ' + url)
             continue
+        print('DEBUG: federated blocklist: ' + str(blocked_json))
         if isinstance(blocked_json, list):
             # ensure that the size of the list does not become a form of denial
             # of service
