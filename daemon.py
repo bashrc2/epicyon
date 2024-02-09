@@ -160,9 +160,9 @@ from media import path_is_transcript
 from media import path_is_audio
 from cwlists import get_cw_list_variable
 from cwlists import load_cw_lists
+from blocking import run_federated_blocks_daemon
 from blocking import save_block_federated_endpoints
 from blocking import load_federated_blocks_endpoints
-from blocking import update_federated_blocks
 from blocking import contains_military_domain
 from blocking import load_blocked_military
 from blocking import save_blocked_military
@@ -25283,17 +25283,10 @@ def run_daemon(no_of_books: int,
     # this is the instance actor private key
     httpd.signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-    # load federated blocklists
-    if not unit_test:
-        curr_session = create_session(proxy_type)
-        if curr_session:
-            httpd.block_federated = \
-                update_federated_blocks(curr_session, base_dir,
-                                        http_prefix,
-                                        domain, httpd.domain_full,
-                                        debug, project_version,
-                                        httpd.signing_priv_key_pem,
-                                        httpd.max_api_blocks)
+    print('THREAD: Creating federated blocks thread')
+    httpd.thrFederatedBlocksDaemon = \
+        thread_with_trace(target=run_federated_blocks_daemon,
+                          args=(base_dir, httpd, debug), daemon=True)
 
     # threads used for checking for actor changes when clicking on
     # avatar icon / person options

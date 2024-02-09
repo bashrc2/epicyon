@@ -11,6 +11,7 @@ import os
 import json
 import time
 from session import get_json_valid
+from session import create_session
 from utils import date_from_string_format
 from utils import date_utcnow
 from utils import remove_eol
@@ -1833,12 +1834,12 @@ def load_federated_blocks_endpoints(base_dir: str) -> []:
     return block_federated_endpoints
 
 
-def update_federated_blocks(session, base_dir: str,
-                            http_prefix: str,
-                            domain: str, domain_full: str,
-                            debug: bool, version: str,
-                            signing_priv_key_pem: str,
-                            max_api_blocks: int) -> []:
+def _update_federated_blocks(session, base_dir: str,
+                             http_prefix: str,
+                             domain: str, domain_full: str,
+                             debug: bool, version: str,
+                             signing_priv_key_pem: str,
+                             max_api_blocks: int) -> []:
     """Creates block_api.txt
     """
     block_federated = []
@@ -1939,3 +1940,27 @@ def save_block_federated_endpoints(base_dir: str,
     except OSError:
         print('EX: unable to write block_api_endpoints.txt')
     return result
+
+
+def run_federated_blocks_daemon(base_dir: str, httpd, debug: bool) -> None:
+    """Runs the daemon used to update federated blocks
+    """
+    seconds_per_hour = 60 * 60
+    time.sleep(60)
+
+    session = None
+    while True:
+        if httpd.session:
+            session = httpd.session
+        else:
+            session = create_session(httpd.proxy_type)
+
+        if session:
+            httpd.block_federated = \
+                _update_federated_blocks(httpd.session, base_dir,
+                                         httpd.http_prefix,
+                                         httpd.domain, httpd.domain_full,
+                                         debug, httpd.project_version,
+                                         httpd.signing_priv_key_pem,
+                                         httpd.max_api_blocks)
+        time.sleep(seconds_per_hour * 6)

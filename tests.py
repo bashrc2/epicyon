@@ -5673,6 +5673,7 @@ def _test_functions():
         'run_post_schedule',
         'run_post_schedule_watchdog',
         'str2bool',
+        'run_federated_blocks_daemon',
         'run_newswire_daemon',
         'run_newswire_watchdog',
         'run_federated_shares_watchdog',
