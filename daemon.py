@@ -25340,6 +25340,9 @@ def run_daemon(no_of_books: int,
         print('Starting federated shares daemon')
         begin_thread(httpd.thrFederatedSharesDaemon,
                      'run_daemon start federated shares')
+        print('Starting federated blocks daemon')
+        begin_thread(httpd.thrFederatedBlocksDaemon,
+                     'run_daemon start federated blocks')
 
     update_memorial_flags(base_dir, httpd.person_cache)
 
