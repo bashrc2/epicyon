@@ -22256,15 +22256,10 @@ class PubServer(BaseHTTPRequestHandler):
                         html_citations(self.server.base_dir,
                                        nickname,
                                        self.server.domain,
-                                       self.server.http_prefix,
-                                       self.server.default_timeline,
                                        self.server.translate,
                                        self.server.newswire,
                                        fields['subject'],
                                        fields['message'],
-                                       filename, attachment_media_type,
-                                       fields['imageDescription'],
-                                       video_transcript,
                                        self.server.theme_name)
                     if message_json:
                         message_json = message_json.encode('utf-8')

@@ -354,13 +354,8 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
 
 
 def html_citations(base_dir: str, nickname: str, domain: str,
-                   http_prefix: str, default_timeline: str,
                    translate: {}, newswire: {},
                    blog_title: str, blog_content: str,
-                   blog_image_filename: str,
-                   blog_image_attachment_media_type: str,
-                   blog_image_description: str,
-                   blog_video_transcript: str,
                    theme: str) -> str:
     """Show the citations screen when creating a blog
     """
