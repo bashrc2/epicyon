@@ -829,6 +829,23 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                     block_str = block_handle + '\n'
                     if text_in_file(block_str, global_blocks_filename):
                         return True
+            if not block_federated:
+                federated_blocks_filename = \
+                    base_dir + '/accounts/block_api.txt'
+                if os.path.isfile(federated_blocks_filename):
+                    block_federated = []
+                    try:
+                        with open(federated_blocks_filename, 'r',
+                                  encoding='utf-8') as fp_fed:
+                            block_federated = fp_fed.read().split('\n')
+                    except OSError:
+                        print('EX: is_blocked unable to load ' +
+                              federated_blocks_filename)
+                    if block_domain in block_federated:
+                        return True
+                    if block_handle:
+                        if block_handle in block_federated:
+                            return True
     else:
         # instance allow list
         allow_filename = base_dir + '/accounts/allowedinstances.txt'
