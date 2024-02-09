@@ -1857,12 +1857,17 @@ def load_federated_blocks_endpoints(base_dir: str) -> []:
     block_api_endpoints_filename = \
         base_dir + '/accounts/block_api_endpoints.txt'
     if os.path.isfile(block_api_endpoints_filename):
+        new_block_federated_endpoints = []
         try:
             with open(block_api_endpoints_filename, 'r',
                       encoding='utf-8') as fp_ep:
-                block_federated_endpoints = fp_ep.read().split('\n')
+                new_block_federated_endpoints = fp_ep.read().split('\n')
         except OSError:
             print('EX: unable to load block_api_endpoints.txt')
+        for endpoint in new_block_federated_endpoints:
+            if endpoint:
+                if '#' not in endpoint:
+                    block_federated_endpoints.append(endpoint)
     return block_federated_endpoints
 
 
@@ -1875,6 +1880,7 @@ def _update_federated_blocks(session, base_dir: str,
     """Creates block_api.txt
     """
     block_federated = []
+    debug = True
 
     if not session:
         print('WARN: federated blocklist ' +
@@ -1893,6 +1899,8 @@ def _update_federated_blocks(session, base_dir: str,
 
     new_block_api_str = ''
     for endpoint in block_federated_endpoints:
+        if not endpoint:
+            continue
         url = endpoint.strip()
 
         print('federated blocklist Block API endpoint: ' + url)
@@ -1900,7 +1908,7 @@ def _update_federated_blocks(session, base_dir: str,
                                 None, debug, version, http_prefix, None)
         if not get_json_valid(blocked_json):
             print('DEBUG: federated blocklist ' +
-                  'GET blocked collection failed for c2s to ' + url)
+                  'GET blocked json failed ' + url)
             continue
         if isinstance(blocked_json, list):
             # ensure that the size of the list does not become a form of denial
