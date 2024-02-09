@@ -417,7 +417,7 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
     if not text_mode_browser(ua_str):
         right_column_str = \
             get_right_column_content(base_dir, nickname, domain_full,
-                                     http_prefix, translate,
+                                     translate,
                                      moderator, editor,
                                      newswire, positive_voting,
                                      False, None, True,

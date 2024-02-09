@@ -219,7 +219,7 @@ def html_front_screen(signing_priv_key_pem: str,
         '      <td valign="top" class="col-right" tabindex="-1">\n'
     profile_footer_str += \
         get_right_column_content(base_dir, 'news', domain_full,
-                                 http_prefix, translate,
+                                 translate,
                                  False, False, newswire, False,
                                  False, None, False, False,
                                  False, True, authorized, True, theme,

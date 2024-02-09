@@ -50,8 +50,7 @@ def _votes_indicator(total_votes: int, positive_voting: bool) -> str:
 
 
 def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
-                             http_prefix: str, translate: {},
-                             moderator: bool, editor: bool,
+                             translate: {}, moderator: bool, editor: bool,
                              newswire: {}, positive_voting: bool,
                              show_back_button: bool, timeline_path: str,
                              show_publish_button: bool,
@@ -533,7 +532,7 @@ def html_newswire_mobile(base_dir: str, nickname: str,
                                     icons_as_buttons) + '</center>'
     html_str += \
         get_right_column_content(base_dir, nickname, domain_full,
-                                 http_prefix, translate,
+                                 translate,
                                  moderator, editor,
                                  newswire, positive_voting,
                                  False, timeline_path, show_publish_button,
