@@ -1887,6 +1887,8 @@ def _update_federated_blocks(session, base_dir: str,
     }
 
     block_federated_endpoints = load_federated_blocks_endpoints(base_dir)
+    print('DEBUG: federated blocklist endpoints: ' +
+          str(block_federated_endpoints))
 
     new_block_api_str = ''
     for endpoint in block_federated_endpoints:
