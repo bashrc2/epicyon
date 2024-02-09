@@ -1933,6 +1933,7 @@ def _update_federated_blocks(session, base_dir: str,
             except OSError:
                 print('EX: unable to remove block api: ' + block_api_filename)
     else:
+        print('DEBUG: federated blocklist loaded: ' + str(block_federated))
         try:
             with open(block_api_filename, 'w+', encoding='utf-8') as fp_api:
                 fp_api.write(new_block_api_str)
