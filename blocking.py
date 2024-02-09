@@ -1877,7 +1877,8 @@ def _update_federated_blocks(session, base_dir: str,
     block_federated = []
 
     if not session:
-        print('WARN: No session for update_federated_blocks')
+        print('WARN: federated blocklist ' +
+              'no session for update_federated_blocks')
         return block_federated
 
     headers = {
@@ -1894,13 +1895,12 @@ def _update_federated_blocks(session, base_dir: str,
     for endpoint in block_federated_endpoints:
         url = endpoint.strip()
 
-        if debug:
-            print('Block API endpoint: ' + url)
+        print('federated blocklist Block API endpoint: ' + url)
         blocked_json = get_json(signing_priv_key_pem, session, url, headers,
                                 None, debug, version, http_prefix, None)
         if not get_json_valid(blocked_json):
-            if debug:
-                print('DEBUG: GET blocked collection failed for c2s to ' + url)
+            print('DEBUG: federated blocklist ' +
+                  'GET blocked collection failed for c2s to ' + url)
             continue
         if isinstance(blocked_json, list):
             # ensure that the size of the list does not become a form of denial
@@ -1981,17 +1981,20 @@ def save_block_federated_endpoints(base_dir: str,
 def run_federated_blocks_daemon(base_dir: str, httpd, debug: bool) -> None:
     """Runs the daemon used to update federated blocks
     """
+    print('DEBUG: federated blocklist 0')
     seconds_per_hour = 60 * 60
     time.sleep(60)
 
     session = None
     while True:
+        print('DEBUG: federated blocklist 1')
         if httpd.session:
             session = httpd.session
         else:
             session = create_session(httpd.proxy_type)
 
         if session:
+            print('DEBUG: federated blocklist 2')
             httpd.block_federated = \
                 _update_federated_blocks(httpd.session, base_dir,
                                          httpd.http_prefix,
