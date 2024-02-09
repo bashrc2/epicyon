@@ -2439,15 +2439,6 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                            'buySitesStr', buy_domains_list_str,
                            200, '', False)
 
-        idx = 'Block military instances'
-        if translate.get(idx):
-            name = translate[idx]
-        block_mil = False
-        if block_military.get(nickname):
-            block_mil = block_military[nickname]
-        edit_profile_form += \
-            edit_check_box(idx, 'blockMilitary', block_mil)
-
         block_federated_endpoints_list_str = ''
         for block_api_url in block_federated_endpoints:
             block_federated_endpoints_list_str += block_api_url.strip() + '\n'
@@ -2457,6 +2448,15 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                            'blockFederated',
                            block_federated_endpoints_list_str,
                            200, '', False)
+
+        idx = 'Block military instances'
+        if translate.get(idx):
+            name = translate[idx]
+        block_mil = False
+        if block_military.get(nickname):
+            block_mil = block_military[nickname]
+        edit_profile_form += \
+            edit_check_box(idx, 'blockMilitary', block_mil)
 
         cw_lists_str = ''
         for name, _ in cw_lists.items():
