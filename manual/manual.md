@@ -677,7 +677,7 @@ Or they can be a list of dictionaries:
     'updated_at': None
   }
 ]
-``
+```
 
 **Caution:** When subscribing to a federated blocklist you need to have a high degree of trust in the people maintaining it. If they turn out to be untrustworthy or malevolent then they can potentially render your instance useless by blocking all your followed domains.
 
