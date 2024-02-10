@@ -1871,6 +1871,18 @@ def load_federated_blocks_endpoints(base_dir: str) -> []:
     return block_federated_endpoints
 
 
+def _valid_blocklist_entry(text: str) -> bool:
+    """is the given blocklist entry valid?
+    """
+    if ' ' in text or \
+       ',' in text or \
+       ';' in text or \
+       '.' not in text or \
+       '<' in text:
+        return False
+    return True
+
+
 def _update_federated_blocks(session, base_dir: str,
                              http_prefix: str,
                              domain: str,
@@ -1917,6 +1929,16 @@ def _update_federated_blocks(session, base_dir: str,
             # of service
             if len(blocked_json) < max_api_blocks:
                 for block_dict in blocked_json:
+                    if isinstance(block_dict, str):
+                        # a simple list of strings containing handles
+                        # or domains
+                        handle = block_dict
+                        if _valid_blocklist_entry(handle):
+                            new_block_api_str += handle + '\n'
+                            if handle not in block_federated:
+                                block_federated.append(handle)
+                        continue
+
                     if not isinstance(block_dict, dict):
                         continue
                     if not block_dict.get('username'):
@@ -1926,11 +1948,7 @@ def _update_federated_blocks(session, base_dir: str,
                     handle = block_dict['username']
                     if handle.startswith('@'):
                         handle = handle[1:]
-                    if ' ' in handle or \
-                       ',' in handle or \
-                       ';' in handle or \
-                       '.' not in handle or \
-                       '<' in handle:
+                    if not _valid_blocklist_entry(handle):
                         continue
                     new_block_api_str += handle + '\n'
                     if handle not in block_federated:
