@@ -1892,8 +1892,9 @@ def _update_federated_blocks(session, base_dir: str,
     }
 
     block_federated_endpoints = load_federated_blocks_endpoints(base_dir)
-    print('DEBUG: federated blocklist endpoints: ' +
-          str(block_federated_endpoints))
+    if debug:
+        print('DEBUG: federated blocklist endpoints: ' +
+              str(block_federated_endpoints))
 
     new_block_api_str = ''
     for endpoint in block_federated_endpoints:
@@ -1901,14 +1902,16 @@ def _update_federated_blocks(session, base_dir: str,
             continue
         url = endpoint.strip()
 
-        print('federated blocklist Block API endpoint: ' + url)
+        if debug:
+            print('federated blocklist Block API endpoint: ' + url)
         blocked_json = get_json(signing_priv_key_pem, session, url, headers,
                                 None, debug, version, http_prefix, domain)
         if not get_json_valid(blocked_json):
             print('DEBUG: federated blocklist ' +
                   'GET blocked json failed ' + url)
             continue
-        print('DEBUG: federated blocklist: ' + str(blocked_json))
+        if debug:
+            print('DEBUG: federated blocklist: ' + str(blocked_json))
         if isinstance(blocked_json, list):
             # ensure that the size of the list does not become a form of denial
             # of service
