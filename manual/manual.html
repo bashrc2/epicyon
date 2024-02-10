@@ -870,14 +870,58 @@ why you blocked someone. Such as:</p>
 sealion@endlessreplies.net Another bad faith &quot;debater&quot;</code></pre>
 <p>Be sure to select <strong>Publish</strong> to finalize your
 settings.</p>
-<h3 id="replacing-words">Replacing words</h3>
-<p>Sometimes you may want to replace words within received posts. This
-can be for added clarity, to dissipate annoyance or just for fun.</p>
-<p>From the main timeline select the top banner to go to your profile,
-then select the <strong>edit</strong> icon. Open the <strong>Filtering
-and blocking</strong> section and then you can specify replacements as
-follows:</p>
-<pre class="text"><code>OldWord -&gt; NewWord
+<h3 id="federated-blocklists">Federated blocklists</h3>
+<p>If you have the admin or moderator role then there is a section
+within <strong>Filtering and blocking</strong> called <strong>Blocking
+API endpoints</strong>. This can be used to subscribe to remote
+blocklist URLs, and may be useful in situations where for example you
+have multiple instances set up for an organisation and want them to all
+use the same blocklist.</p>
+<p>Federated blocklists should be a json endpoint accessible via HTTP
+GET, and can either be a simple list of strings, where the strings are
+blocked account handles or domains:</p>
+<pre class="text"><code>[
+  &quot;@asshat@angrychuds.com&quot;,
+  &quot;@replyguy@endlessly.replying.net&quot;,
+  &quot;tedious.domain&quot;
+]</code></pre>
+<p>Or they can be a list of dictionaries:</p>
+<pre class="text"><code>[
+  {
+    &#39;id&#39;: 123,
+    &#39;username&#39;: &#39;@asshat@angrychuds.com&#39;,
+    &#39;email&#39;: &#39;null&#39;,
+    &#39;status&#39;: &#39;block&#39;,
+    &#39;created_at&#39;: None,
+    &#39;updated_at&#39;: None
+  },
+  {
+    &#39;id&#39;: 124,
+    &#39;username&#39;: &#39;@replyguy@endlessly.replying.net&#39;,
+    &#39;email&#39;: &#39;null&#39;,
+    &#39;status&#39;: &#39;block&#39;,
+    &#39;created_at&#39;: None,
+    &#39;updated_at&#39;: None
+  },
+  {
+    &#39;id&#39;: 125,
+    &#39;username&#39;: &#39;@tedious.domain&#39;,
+    &#39;email&#39;: &#39;null&#39;,
+    &#39;status&#39;: &#39;block&#39;,
+    &#39;created_at&#39;: None,
+    &#39;updated_at&#39;: None
+  }
+]
+``
+
+**Caution:** When subscribing to a federated blocklist you need to have a high degree of trust in the people maintaining it. If they turn out to be untrustworthy or malevolent then they can potentially render your instance useless by blocking all your followed domains.
+
+### Replacing words
+Sometimes you may want to replace words within received posts. This can be for added clarity, to dissipate annoyance or just for fun.
+
+From the main timeline select the top banner to go to your profile, then select the **edit** icon. Open the **Filtering and blocking** section and then you can specify replacements as follows:
+```text
+OldWord -&gt; NewWord
 original phrase -&gt; new phrase</code></pre>
 <p>These replacements are subjective, such that if you
 boost/repeat/announce a post then the original wording will be retained

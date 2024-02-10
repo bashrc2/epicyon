@@ -637,6 +637,50 @@ sealion@endlessreplies.net Another bad faith "debater"
 
 Be sure to select **Publish** to finalize your settings.
 
+### Federated blocklists
+If you have the admin or moderator role then there is a section within **Filtering and blocking** called **Blocking API endpoints**. This can be used to subscribe to remote blocklist URLs, and may be useful in situations where for example you have multiple instances set up for an organisation and want them to all use the same blocklist.
+
+Federated blocklists should be a json endpoint accessible via HTTP GET, and can either be a simple list of strings, where the strings are blocked account handles or domains:
+``` text
+[
+  "@asshat@angrychuds.com",
+  "@replyguy@endlessly.replying.net",
+  "tedious.domain"
+]
+```
+
+Or they can be a list of dictionaries:
+``` text
+[
+  {
+    'id': 123,
+    'username': '@asshat@angrychuds.com',
+    'email': 'null',
+    'status': 'block',
+    'created_at': None,
+    'updated_at': None
+  },
+  {
+    'id': 124,
+    'username': '@replyguy@endlessly.replying.net',
+    'email': 'null',
+    'status': 'block',
+    'created_at': None,
+    'updated_at': None
+  },
+  {
+    'id': 125,
+    'username': '@tedious.domain',
+    'email': 'null',
+    'status': 'block',
+    'created_at': None,
+    'updated_at': None
+  }
+]
+``
+
+**Caution:** When subscribing to a federated blocklist you need to have a high degree of trust in the people maintaining it. If they turn out to be untrustworthy or malevolent then they can potentially render your instance useless by blocking all your followed domains.
+
 ### Replacing words
 Sometimes you may want to replace words within received posts. This can be for added clarity, to dissipate annoyance or just for fun.
 
