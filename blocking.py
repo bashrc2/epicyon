@@ -2005,20 +2005,23 @@ def save_block_federated_endpoints(base_dir: str,
 def run_federated_blocks_daemon(base_dir: str, httpd, debug: bool) -> None:
     """Runs the daemon used to update federated blocks
     """
-    print('DEBUG: federated blocklist 0')
+    if debug:
+        print('DEBUG: federated blocklist 0')
     seconds_per_hour = 60 * 60
     time.sleep(60)
 
     session = None
     while True:
-        print('DEBUG: federated blocklist 1')
+        if debug:
+            print('DEBUG: federated blocklist 1')
         if httpd.session:
             session = httpd.session
         else:
             session = create_session(httpd.proxy_type)
 
         if session:
-            print('DEBUG: federated blocklist 2')
+            if debug:
+                print('DEBUG: federated blocklist 2')
             httpd.block_federated = \
                 _update_federated_blocks(httpd.session, base_dir,
                                          httpd.http_prefix,
