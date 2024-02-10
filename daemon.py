@@ -8474,6 +8474,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.block_federated_endpoints = \
                                 save_block_federated_endpoints(base_dir,
                                                                block_ep_new)
+                            if not block_ep_new:
+                                self.server.block_federated = []
 
                         # save peertube instances list
                         peertube_instances_file = \
