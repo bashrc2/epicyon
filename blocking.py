@@ -1933,26 +1933,31 @@ def _update_federated_blocks(session, base_dir: str,
                         # a simple list of strings containing handles
                         # or domains
                         handle = block_dict
+                        if handle.startswith('@'):
+                            handle = handle[1:]
                         if _valid_blocklist_entry(handle):
-                            new_block_api_str += handle + '\n'
+                            if handle not in new_block_api_str:
+                                new_block_api_str += handle + '\n'
                             if handle not in block_federated:
                                 block_federated.append(handle)
                         continue
 
                     if not isinstance(block_dict, dict):
                         continue
-                    if not block_dict.get('username'):
-                        continue
-                    if not isinstance(block_dict['username'], str):
-                        continue
-                    handle = block_dict['username']
-                    if handle.startswith('@'):
-                        handle = handle[1:]
-                    if not _valid_blocklist_entry(handle):
-                        continue
-                    new_block_api_str += handle + '\n'
-                    if handle not in block_federated:
-                        block_federated.append(handle)
+                    for block_fieldname in ('username', 'domain'):
+                        if not block_dict.get(block_fieldname):
+                            continue
+                        if not isinstance(block_dict[block_fieldname], str):
+                            continue
+                        handle = block_dict[block_fieldname]
+                        if handle.startswith('@'):
+                            handle = handle[1:]
+                        if not _valid_blocklist_entry(handle):
+                            continue
+                        if handle not in new_block_api_str:
+                            new_block_api_str += handle + '\n'
+                        if handle not in block_federated:
+                            block_federated.append(handle)
 
     block_api_filename = \
         base_dir + '/accounts/block_api.txt'
