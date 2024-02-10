@@ -1871,7 +1871,7 @@ def load_federated_blocks_endpoints(base_dir: str) -> []:
     return block_federated_endpoints
 
 
-def _valid_blocklist_entry(text: str) -> bool:
+def _valid_federated_blocklist_entry(text: str, domain: str) -> bool:
     """is the given blocklist entry valid?
     """
     if ' ' in text or \
@@ -1879,6 +1879,11 @@ def _valid_blocklist_entry(text: str) -> bool:
        ';' in text or \
        '.' not in text or \
        '<' in text:
+        return False
+    if text == domain:
+        return False
+    if text.endswith('@' + domain) or \
+       text.endswith('://' + domain):
         return False
     return True
 
@@ -1935,7 +1940,8 @@ def _update_federated_blocks(session, base_dir: str,
                         handle = block_dict
                         if handle.startswith('@'):
                             handle = handle[1:]
-                        if _valid_blocklist_entry(handle):
+                        if _valid_federated_blocklist_entry(handle,
+                                                            domain):
                             if handle not in new_block_api_str:
                                 new_block_api_str += handle + '\n'
                             if handle not in block_federated:
@@ -1952,7 +1958,8 @@ def _update_federated_blocks(session, base_dir: str,
                         handle = block_dict[block_fieldname]
                         if handle.startswith('@'):
                             handle = handle[1:]
-                        if not _valid_blocklist_entry(handle):
+                        if not _valid_federated_blocklist_entry(handle,
+                                                                domain):
                             continue
                         if handle not in new_block_api_str:
                             new_block_api_str += handle + '\n'
