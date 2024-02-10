@@ -1976,12 +1976,26 @@ def save_block_federated_endpoints(base_dir: str,
             continue
         block_federated_endpoints_str += endpoint.strip() + '\n'
         result.append(endpoint)
-    try:
-        with open(block_api_endpoints_filename, 'w+',
-                  encoding='utf-8') as fp_api:
-            fp_api.write(block_federated_endpoints_str)
-    except OSError:
-        print('EX: unable to write block_api_endpoints.txt')
+    if not block_federated_endpoints_str:
+        if os.path.isfile(block_api_endpoints_filename):
+            try:
+                os.remove(block_api_endpoints_filename)
+            except OSError:
+                print('EX: unable to delete block_api_endpoints.txt')
+        block_api_filename = \
+            base_dir + '/accounts/block_api.txt'
+        if os.path.isfile(block_api_filename):
+            try:
+                os.remove(block_api_filename)
+            except OSError:
+                print('EX: unable to delete block_api.txt')
+    else:
+        try:
+            with open(block_api_endpoints_filename, 'w+',
+                      encoding='utf-8') as fp_api:
+                fp_api.write(block_federated_endpoints_str)
+        except OSError:
+            print('EX: unable to write block_api_endpoints.txt')
     return result
 
 
