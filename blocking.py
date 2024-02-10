@@ -1873,7 +1873,7 @@ def load_federated_blocks_endpoints(base_dir: str) -> []:
 
 def _update_federated_blocks(session, base_dir: str,
                              http_prefix: str,
-                             domain: str, domain_full: str,
+                             domain: str,
                              debug: bool, version: str,
                              signing_priv_key_pem: str,
                              max_api_blocks: int) -> []:
@@ -2019,7 +2019,7 @@ def run_federated_blocks_daemon(base_dir: str, httpd, debug: bool) -> None:
             httpd.block_federated = \
                 _update_federated_blocks(httpd.session, base_dir,
                                          httpd.http_prefix,
-                                         httpd.domain, httpd.domain_full,
+                                         httpd.domain,
                                          debug, httpd.project_version,
                                          httpd.signing_priv_key_pem,
                                          httpd.max_api_blocks)
