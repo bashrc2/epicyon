@@ -538,7 +538,7 @@ def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
         post_domain, _ = get_domain_from_actor(post_url)
         if not post_domain:
             return False
-        if is_blocked_domain(base_dir, post_domain):
+        if is_blocked_domain(base_dir, post_domain, None, None):
             return False
     return True
 
@@ -851,7 +851,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
 
-        if is_blocked_domain(base_dir, item_domain):
+        if is_blocked_domain(base_dir, item_domain, None, None):
             continue
         pub_date = rss_item.split('<pubDate>')[1]
         pub_date = pub_date.split('</pubDate>')[0]
@@ -965,7 +965,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
 
-        if is_blocked_domain(base_dir, item_domain):
+        if is_blocked_domain(base_dir, item_domain, None, None):
             continue
         pub_date = rss_item.split('<dc:date>')[1]
         pub_date = pub_date.split('</dc:date>')[0]
@@ -1072,7 +1072,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
 
-        if is_blocked_domain(base_dir, item_domain):
+        if is_blocked_domain(base_dir, item_domain, None, None):
             continue
         pub_date = atom_item.split('<updated>')[1]
         pub_date = pub_date.split('</updated>')[0]
@@ -1185,7 +1185,7 @@ def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
         item_domain = link.split('://')[1]
         if '/' in item_domain:
             item_domain = item_domain.split('/')[0]
-        if is_blocked_domain(base_dir, item_domain):
+        if is_blocked_domain(base_dir, item_domain, None, None):
             continue
         if json_feed_item.get('date_published'):
             if not isinstance(json_feed_item['date_published'], str):
@@ -1228,7 +1228,7 @@ def _atom_feed_yt_to_dict(base_dir: str, xml_str: str,
     """
     if '<entry>' not in xml_str:
         return {}
-    if is_blocked_domain(base_dir, 'www.youtube.com'):
+    if is_blocked_domain(base_dir, 'www.youtube.com', None, None):
         return {}
     result = {}
     atom_items = xml_str.split('<entry>')

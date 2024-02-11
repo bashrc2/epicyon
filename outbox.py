@@ -380,7 +380,7 @@ def post_message_to_outbox(session, translate: {},
         test_domain, test_port = get_domain_from_actor(actor_url)
         if test_domain:
             test_domain = get_full_domain(test_domain, test_port)
-            if is_blocked_domain(base_dir, test_domain):
+            if is_blocked_domain(base_dir, test_domain, None, None):
                 if debug:
                     print('DEBUG: domain is blocked: ' + actor_url)
                 return False

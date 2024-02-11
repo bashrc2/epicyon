@@ -913,7 +913,7 @@ def _get_posts_for_blocked_domains(base_dir: str,
                     get_domain_from_actor(reply_id)
                 if not post_domain:
                     continue
-                if is_blocked_domain(base_dir, post_domain):
+                if is_blocked_domain(base_dir, post_domain, None, None):
                     if item['object'].get('url'):
                         url = get_url_from_post(item['object']['url'])
                     else:
@@ -936,7 +936,7 @@ def _get_posts_for_blocked_domains(base_dir: str,
                         get_domain_from_actor(tag_url)
                     if not post_domain:
                         continue
-                    if is_blocked_domain(base_dir, post_domain):
+                    if is_blocked_domain(base_dir, post_domain, None, None):
                         if item['object'].get('url'):
                             url = get_url_from_post(item['object']['url'])
                         else:

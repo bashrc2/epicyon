@@ -696,8 +696,8 @@ def _get_short_domain(domain: str) -> str:
 
 
 def is_blocked_domain(base_dir: str, domain: str,
-                      blocked_cache: [] = None,
-                      block_federated: [] = None) -> bool:
+                      blocked_cache: [],
+                      block_federated: []) -> bool:
     """Is the given domain blocked?
     """
     if '.' not in domain:

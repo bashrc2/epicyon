@@ -101,7 +101,8 @@ def html_account_info(translate: {},
                       nickname: str, domain: str, port: int,
                       search_handle: str, debug: bool,
                       system_language: str, signing_priv_key_pem: str,
-                      back_url: str) -> str:
+                      back_url: str,
+                      block_federated: []) -> str:
     """Shows which domains a search handle interacts with.
     This screen is shown if a moderator enters a handle and selects info
     on the moderation screen
@@ -205,7 +206,7 @@ def html_account_info(translate: {},
             http_prefix + '://' + post_domain + '" ' + \
             'target="_blank" rel="nofollow noopener noreferrer">' + \
             post_domain + '</a> '
-        if is_blocked_domain(base_dir, post_domain):
+        if is_blocked_domain(base_dir, post_domain, None, block_federated):
             blocked_posts_links = ''
             url_ctr = 0
             for url in blocked_post_urls:

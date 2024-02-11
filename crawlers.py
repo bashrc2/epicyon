@@ -181,7 +181,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
 
         blocked_ua = \
             is_blocked_domain(base_dir, agent_domain,
-                              blocked_cache, block_federated)
+                              blocked_cache, block_federated,
+                              None, block_federated)
         # if self.server.debug:
         if blocked_ua:
             print('BLOCK: Blocked User agent 2: ' + agent_domain)

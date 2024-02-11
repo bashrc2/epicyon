@@ -2630,7 +2630,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.debug,
                                               self.server.system_language,
                                               self.server.signing_priv_key_pem,
-                                              None)
+                                              None,
+                                              self.server.block_federated)
                     else:
                         msg = \
                             html_moderation_info(self.server.translate,
@@ -3768,7 +3769,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.debug,
                                       self.server.system_language,
                                       signing_priv_key_pem,
-                                      None)
+                                      None,
+                                      self.server.block_federated)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -4088,7 +4090,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.debug,
                                       self.server.system_language,
                                       self.server.signing_priv_key_pem,
-                                      users_path)
+                                      users_path,
+                                      self.server.block_federated)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -21336,7 +21339,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.debug,
                                   self.server.system_language,
                                   self.server.signing_priv_key_pem,
-                                  None)
+                                  None,
+                                  self.server.block_federated)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -21378,7 +21382,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.debug,
                                   self.server.system_language,
                                   self.server.signing_priv_key_pem,
-                                  None)
+                                  None,
+                                  self.server.block_federated)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
