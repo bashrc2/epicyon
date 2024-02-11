@@ -174,7 +174,7 @@ def html_account_info(translate: {},
         follower_domain_full = get_full_domain(follower_domain, follower_port)
         if is_blocked(base_dir, nickname, domain,
                       follower_nickname, follower_domain_full,
-                      None, None):
+                      None, block_federated):
             blocked_followers.append(follower_actor)
 
     # get a list of any blocked following
@@ -195,7 +195,7 @@ def html_account_info(translate: {},
             get_full_domain(following_domain, following_port)
         if is_blocked(base_dir, nickname, domain,
                       following_nickname, following_domain_full,
-                      None, None):
+                      None, block_federated):
             blocked_following.append(following_actor)
 
     info_form += '<div class="accountInfoDomains">\n'
