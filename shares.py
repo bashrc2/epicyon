@@ -278,7 +278,8 @@ def _getshare_type_from_dfc_id(dfc_uri: str, dfc_ids: {}) -> str:
 def _indicate_new_share_available(base_dir: str, http_prefix: str,
                                   nickname: str, domain: str,
                                   domain_full: str,
-                                  shares_file_type: str) -> None:
+                                  shares_file_type: str,
+                                  block_federated: []) -> None:
     """Indicate to each account that a new share is available
     """
     for _, dirs, _ in os.walk(base_dir + '/accounts'):
@@ -296,7 +297,7 @@ def _indicate_new_share_available(base_dir: str, http_prefix: str,
             # does this account block you?
             if account_nickname != nickname:
                 if is_blocked(base_dir, account_nickname, domain,
-                              nickname, domain, None, None):
+                              nickname, domain, None, block_federated):
                     continue
             local_actor = \
                 local_actor_url(http_prefix, account_nickname, domain_full)
@@ -320,7 +321,8 @@ def add_share(base_dir: str,
               price: str, currency: str,
               system_language: str, translate: {},
               shares_file_type: str, low_bandwidth: bool,
-              content_license_url: str, share_on_profile: bool) -> None:
+              content_license_url: str, share_on_profile: bool,
+              block_federated: []) -> None:
     """Adds a new share
     """
     if is_filtered_globally(base_dir,
@@ -407,7 +409,8 @@ def add_share(base_dir: str,
 
     _indicate_new_share_available(base_dir, http_prefix,
                                   nickname, domain, domain_full,
-                                  shares_file_type)
+                                  shares_file_type,
+                                  block_federated)
 
 
 def expire_shares(base_dir: str, max_shares_on_profile: int,
@@ -1151,7 +1154,8 @@ def outbox_share_upload(base_dir: str, http_prefix: str,
                         message_json: {}, debug: bool, city: str,
                         system_language: str, translate: {},
                         low_bandwidth: bool,
-                        content_license_url: str) -> None:
+                        content_license_url: str,
+                        block_federated: []) -> None:
     """ When a shared item is received by the outbox from c2s
     """
     if not message_json.get('type'):
@@ -1214,7 +1218,7 @@ def outbox_share_upload(base_dir: str, http_prefix: str,
               message_json['object']['itemCurrency'],
               system_language, translate, 'shares',
               low_bandwidth, content_license_url,
-              False)
+              False, block_federated)
     if debug:
         print('DEBUG: shared item received via c2s')
 

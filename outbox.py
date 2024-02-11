@@ -253,7 +253,8 @@ def post_message_to_outbox(session, translate: {},
                            max_recent_books: int,
                            books_cache: {},
                            max_cached_readers: int,
-                           auto_cw_cache: {}) -> bool:
+                           auto_cw_cache: {},
+                           block_federated: []) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -778,7 +779,7 @@ def post_message_to_outbox(session, translate: {},
     outbox_share_upload(base_dir, http_prefix, post_to_nickname, domain,
                         port, message_json, debug, city,
                         system_language, translate, low_bandwidth,
-                        content_license_url)
+                        content_license_url, block_federated)
 
     if debug:
         print('DEBUG: handle undo share uploads')

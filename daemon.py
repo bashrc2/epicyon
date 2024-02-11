@@ -1851,7 +1851,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.max_recent_books,
                                       self.server.books_cache,
                                       self.server.max_cached_readers,
-                                      self.server.auto_cw_cache)
+                                      self.server.auto_cw_cache,
+                                      self.server.block_federated)
 
     def _get_outbox_thread_index(self, nickname: str,
                                  max_outbox_threads_per_account: int) -> int:
@@ -23357,7 +23358,8 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.translate, shares_file_type,
                           self.server.low_bandwidth,
                           self.server.content_license_url,
-                          share_on_profile)
+                          share_on_profile,
+                          self.server.block_federated)
                 if post_type == 'newshare':
                     # add shareOnProfile items to the actor attachments
                     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md

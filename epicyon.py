@@ -3531,6 +3531,7 @@ def _command_options() -> None:
         set_role(base_dir, nickname, domain, 'admin')
         set_availability(base_dir, nickname, domain, 'busy')
 
+        block_federated = []
         add_share(base_dir,
                   http_prefix, nickname, domain, port,
                   "spanner",
@@ -3541,7 +3542,7 @@ def _command_options() -> None:
                   "City", "0", "GBP",
                   "2 months",
                   debug, city, argb.language, {}, 'shares', argb.low_bandwidth,
-                  argb.content_license_url, False)
+                  argb.content_license_url, False, block_federated)
         add_share(base_dir,
                   http_prefix, nickname, domain, port,
                   "witch hat",
@@ -3552,7 +3553,7 @@ def _command_options() -> None:
                   "City", "0", "GBP",
                   "3 months",
                   debug, city, argb.language, {}, 'shares', argb.low_bandwidth,
-                  argb.content_license_url, False)
+                  argb.content_license_url, False, block_federated)
 
         delete_all_posts(base_dir, nickname, domain, 'inbox')
         delete_all_posts(base_dir, nickname, domain, 'outbox')
