@@ -1569,7 +1569,7 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
     set_config_param(base_dir, "brochMode", enabled)
 
 
-def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
+def broch_modeLapses(base_dir: str, lapse_days: int) -> bool:
     """After broch mode is enabled it automatically
     elapses after a period of time
     """
@@ -1584,7 +1584,7 @@ def broch_modeLapses(base_dir: str, lapseDays: int) -> bool:
         return False
     curr_time = date_utcnow()
     days_since_broch = (curr_time - modified_date).days
-    if days_since_broch >= lapseDays:
+    if days_since_broch >= lapse_days:
         removed = False
         try:
             os.remove(allow_filename)
