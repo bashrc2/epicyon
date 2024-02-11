@@ -5851,7 +5851,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   actor_url)
             return None
         if is_blocked(base_dir, nickname, domain,
-                      actor_nickname, actor_domain):
+                      actor_nickname, actor_domain,
+                      None, block_federated):
             print('Announce download blocked actor: ' +
                   actor_nickname + '@' + actor_domain)
             return None
@@ -5864,7 +5865,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   str(post_json_object['object']))
             return None
         if is_blocked(base_dir, nickname, domain, object_nickname,
-                      object_domain):
+                      object_domain, None, block_federated):
             if object_nickname and object_domain:
                 print('Announce download blocked handle: ' +
                       object_nickname + '@' + object_domain)
@@ -6097,7 +6098,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
             attributed_domain = \
                 get_full_domain(attributed_domain, attributed_port)
             if is_blocked(base_dir, nickname, domain,
-                          attributed_nickname, attributed_domain):
+                          attributed_nickname, attributed_domain,
+                          None, block_federated):
                 print('WARN: announced post handle is blocked ' +
                       str(attributed_nickname) + '@' + attributed_domain)
                 _reject_announce(announce_filename,
