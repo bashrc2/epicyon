@@ -217,7 +217,8 @@ def html_person_options(default_timeline: str,
                                   nickname, domain,
                                   options_nickname, options_domain_full)
         if is_blocked(base_dir, nickname, domain,
-                      options_nickname, options_domain_full):
+                      options_nickname, options_domain_full,
+                      None, None):
             block_str = 'Unblock'
 
     if options_link:
@@ -335,7 +336,8 @@ def html_person_options(default_timeline: str,
             new_handle = new_nickname + '@' + new_domain
             blocked_icon_str = ''
             if is_blocked(base_dir, nickname, domain,
-                          new_nickname, new_domain, blocked_cache):
+                          new_nickname, new_domain, blocked_cache,
+                          None):
                 blocked_icon_str = '❌'
             options_str += \
                 '  <p class="optionsText">' + \

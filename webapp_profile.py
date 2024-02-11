@@ -431,7 +431,8 @@ def html_profile_after_search(authorized: bool,
         follow_is_permitted = False
 
     blocked = \
-        is_blocked(base_dir, nickname, domain, search_nickname, search_domain)
+        is_blocked(base_dir, nickname, domain, search_nickname, search_domain,
+                   None, None)
 
     if follow_is_permitted:
         follow_str = 'Follow'

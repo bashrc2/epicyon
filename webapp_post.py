@@ -590,7 +590,7 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
             get_domain_from_actor(post_json_object['object']['replyTo'])
         if block_domain:
             if not is_blocked(base_dir, nickname, domain,
-                              block_nickname, block_domain, {}):
+                              block_nickname, block_domain, {}, None):
                 reply_to_link = post_json_object['object']['replyTo']
 
     if post_json_object['object'].get('attributedTo'):

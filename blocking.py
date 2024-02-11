@@ -783,8 +783,8 @@ def is_blocked_nickname(base_dir: str, nickname: str,
 
 def is_blocked(base_dir: str, nickname: str, domain: str,
                block_nickname: str, block_domain: str,
-               blocked_cache: [] = None,
-               block_federated: [] = None) -> bool:
+               blocked_cache: [],
+               block_federated: []) -> bool:
     """Is the given account blocked?
     """
     if is_evil(block_domain):
