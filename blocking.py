@@ -798,7 +798,7 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
         # instance level block list
         if block_federated:
             for blocked_str in block_federated:
-                if '@' in blocked_str:
+                if '@' in blocked_str or '://' in blocked_str:
                     if block_handle:
                         if blocked_str == block_handle:
                             return True
