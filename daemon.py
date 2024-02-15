@@ -967,13 +967,14 @@ class PubServer(BaseHTTPRequestHandler):
     def _http_return_code(self, http_code: int, http_description: str,
                           long_description: str, etag: str) -> None:
         msg = \
-            '<html><head><title>' + str(http_code) + '</title></head>' \
-            '<body bgcolor="linen" text="black">' \
-            '<div style="font-size: 400px; ' \
-            'text-align: center;">' + str(http_code) + '</div>' \
-            '<div style="font-size: 128px; ' \
-            'text-align: center; font-variant: ' \
-            'small-caps;"><p role="alert">' + http_description + '</p></div>' \
+            '<html><head><title>' + str(http_code) + '</title></head>' + \
+            '<body bgcolor="linen" text="black">' + \
+            '<div style="font-size: 400px; ' + \
+            'text-align: center;">' + str(http_code) + '</div>' + \
+            '<div style="font-size: 128px; ' + \
+            'text-align: center; font-variant: ' + \
+            'small-caps;"><p role="alert">' + http_description + \
+            '</p></div>' + \
             '<div style="text-align: center;" aria-live="polite">' + \
             long_description + '</div></body></html>'
         msg = msg.encode('utf-8')
