@@ -1001,7 +1001,10 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _401(self, post_msg: str) -> None:
         if self.server.translate:
-            ok_str = self.server.translate[post_msg]
+            if self.server.translate.get(post_msg):
+                ok_str = self.server.translate[post_msg]
+            else:
+                ok_str = post_msg
             self._http_return_code(401, self.server.translate['Unauthorized'],
                                    ok_str, None)
         else:
