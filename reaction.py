@@ -454,8 +454,8 @@ def outbox_undo_reaction(recent_posts_cache: {},
         return True
     actor_url = get_actor_from_post(message_json)
     undo_reaction_collection_entry(recent_posts_cache, base_dir, post_filename,
-                                   message_id, actor_url,
-                                   domain, debug, None, emoji_content)
+                                   actor_url, domain, debug, None,
+                                   emoji_content)
     if debug:
         print('DEBUG: post undo reaction via c2s - ' + post_filename)
 

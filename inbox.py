@@ -2710,14 +2710,13 @@ def _receive_undo_reaction(recent_posts_cache: {},
     if debug:
         print('DEBUG: reaction post found in inbox. Now undoing.')
     reaction_actor = actor_url
-    post_reaction_id = message_json['object']
     emoji_content = remove_html(message_json['object']['content'])
     if not emoji_content:
         if debug:
             print('DEBUG: unreaction has no content')
         return True
     undo_reaction_collection_entry(recent_posts_cache, base_dir, post_filename,
-                                   post_reaction_id, reaction_actor, domain,
+                                   reaction_actor, domain,
                                    debug, None, emoji_content)
     # regenerate the html
     reaction_post_json = load_json(post_filename, 0, 1)
@@ -2731,12 +2730,10 @@ def _receive_undo_reaction(recent_posts_cache: {},
                         locate_post(base_dir, handle_name,
                                     domain, announce_reaction_url)
                     if announce_reaction_filename:
-                        post_reaction_id = announce_reaction_url
                         post_filename = announce_reaction_filename
                         undo_reaction_collection_entry(recent_posts_cache,
                                                        base_dir,
                                                        post_filename,
-                                                       post_reaction_id,
                                                        reaction_actor,
                                                        domain,
                                                        debug, None,

@@ -11367,7 +11367,6 @@ class PubServer(BaseHTTPRequestHandler):
                 undo_reaction_collection_entry(recent_posts_cache,
                                                base_dir,
                                                reaction_post_filename,
-                                               reaction_url,
                                                undo_actor, domain, debug,
                                                reaction_post_json,
                                                emoji_content)
@@ -11377,7 +11376,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Removing emoji reaction for ' + reaction_post_filename)
             undo_reaction_collection_entry(recent_posts_cache,
                                            base_dir, reaction_post_filename,
-                                           reaction_url,
                                            undo_actor, domain, debug,
                                            reaction_post_json, emoji_content)
             if debug:
