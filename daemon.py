@@ -13249,7 +13249,8 @@ class PubServer(BaseHTTPRequestHandler):
             pjo = post_json_object
             if not is_public_post(pjo):
                 # only public posts may be viewed by unauthorized viewers
-                self._401()
+                self._401('only public posts ' +
+                          'may be viewed by unauthorized viewers')
                 self.server.getreq_busy = False
                 return True
             remove_post_interactions(pjo, True)
