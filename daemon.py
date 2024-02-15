@@ -1051,7 +1051,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.translate['These are not the ' +
                                       'droids you are ' +
                                       'looking for'] + \
-                ' ' + str(ref),
+                ' ' + str(ref)
             self._http_return_code(404, self.server.translate['Not Found'],
                                    text, None)
         else:
