@@ -2041,14 +2041,20 @@ def _get_buy_footer(buy_links: {}, translate: {}) -> str:
     return buy_str
 
 
-def _remove_incomplete_code_tags(content: str) -> str:
+def remove_incomplete_code_tags(content: str) -> str:
     """Remove any uncompleted code tags
     """
     tags = ('code', 'pre')
     for tag_name in tags:
-        if '<' + tag_name not in content:
+        if '<' + tag_name not in content and \
+           '</' + tag_name not in content:
             continue
-        if '</' + tag_name not in content:
+        if '<' + tag_name not in content or \
+           '</' + tag_name not in content:
+            content = remove_markup_tag(content, tag_name)
+            continue
+        if content.count('<' + tag_name) > 1 or \
+           content.count('</' + tag_name) > 1:
             content = remove_markup_tag(content, tag_name)
     return content
 
@@ -2849,7 +2855,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             encrypted_str = translate[encrypted_str]
         object_content = '🔒 ' + encrypted_str
 
-    object_content = _remove_incomplete_code_tags(object_content)
+    object_content = remove_incomplete_code_tags(object_content)
 
     object_content = \
         '<article><span itemprop="articleBody">' + \

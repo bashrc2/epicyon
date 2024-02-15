@@ -402,7 +402,8 @@ def has_object_dict(post_json_object: {}) -> bool:
 def remove_markup_tag(html: str, tag: str) -> str:
     """Remove the given tag from the given html markup
     """
-    if '<' + tag not in html:
+    if '<' + tag not in html and \
+       '</' + tag not in html:
         return html
 
     section = html.split('<' + tag)

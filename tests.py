@@ -187,6 +187,7 @@ from newswire import parse_feed_date
 from newswire import limit_word_lengths
 from mastoapiv1 import get_masto_api_v1id_from_nickname
 from mastoapiv1 import get_nickname_from_masto_api_v1id
+from webapp_post import remove_incomplete_code_tags
 from webapp_post import replace_link_variable
 from webapp_post import prepare_html_post_nickname
 from speaker import speaker_replace_links
@@ -5932,6 +5933,33 @@ def _test_links_within_post(base_dir: str) -> None:
     assert post_json_object['object']['content'] == content
     assert post_json_object['object']['contentMap'][system_language] == content
 
+    content = "<p>I see confusion between <code>git bulldada</code> and " + \
+        "<code>git bollocks</code>.</p><p><code>git-checkout</code> " + \
+        "changes everything or fucks up trees and rodents.</p><p>" + \
+        "<code>git vermin</code> obliterates <code>hamsters</code> and " + \
+        "<code>gerbils</code> and that is all she wrote.</p>"
+    post_json_object = \
+        create_public_post(base_dir, nickname, domain, port, http_prefix,
+                           content,
+                           False,
+                           False, True,
+                           None, None,
+                           '', '', None,
+                           test_in_reply_to, test_in_reply_to_atom_uri,
+                           test_subject, test_schedule_post,
+                           test_event_date, test_event_time,
+                           test_event_end_time, test_location,
+                           test_is_article, system_language, conversation_id,
+                           low_bandwidth, content_license_url,
+                           media_license_url, media_creator,
+                           languages_understood, translate, buy_url, chat_url,
+                           auto_cw_cache)
+    if post_json_object['object']['content'] != content:
+        print('content1: ' + post_json_object['object']['content'])
+        print('content2: ' + content)
+    assert post_json_object['object']['content'] == content
+    assert post_json_object['object']['contentMap'][system_language] == content
+
 
 def _test_mastoapi():
     print('test_masto_api')
@@ -8672,6 +8700,30 @@ def _test_check_individual_post_content():
     assert content5 == content
 
 
+def _test_remove_tags() -> None:
+    print('remove_tags')
+    content = 'This is some content'
+    result = remove_incomplete_code_tags(content)
+    assert result == content
+
+    content = '<code>This is some content'
+    result = remove_incomplete_code_tags(content)
+    assert result == 'This is some content'
+
+    content = 'This is some content</code>'
+    result = remove_incomplete_code_tags(content)
+    assert result == 'This is some content'
+
+    content = '<code>This is some content</code>. <code>Some other content'
+    result = remove_incomplete_code_tags(content)
+    assert result == 'This is some content. Some other content'
+
+    content = \
+        '<code>This is some content</code>. <code>Some other content</code>'
+    result = remove_incomplete_code_tags(content)
+    assert result == 'This is some content. Some other content'
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -8689,6 +8741,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_remove_tags()
     _test_check_individual_post_content()
     _test_uninvert2()
     _test_book_link(base_dir)
