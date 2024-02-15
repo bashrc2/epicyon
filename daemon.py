@@ -10874,7 +10874,7 @@ class PubServer(BaseHTTPRequestHandler):
             if orig_filename and orig_post_url:
                 undo_likes_collection_entry(recent_posts_cache,
                                             base_dir, liked_post_filename,
-                                            like_url, undo_actor,
+                                            undo_actor,
                                             domain, debug,
                                             liked_post_json)
                 like_url = orig_post_url
@@ -10883,7 +10883,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Removing likes for ' + liked_post_filename)
             undo_likes_collection_entry(recent_posts_cache,
                                         base_dir,
-                                        liked_post_filename, like_url,
+                                        liked_post_filename,
                                         undo_actor, domain, debug, None)
             if debug:
                 print('Regenerating html post for changed likes collection')

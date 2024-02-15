@@ -429,8 +429,7 @@ def outbox_undo_like(recent_posts_cache: {},
         return True
     actor_url = get_actor_from_post(message_json)
     undo_likes_collection_entry(recent_posts_cache, base_dir, post_filename,
-                                message_id, actor_url,
-                                domain, debug, None)
+                                actor_url, domain, debug, None)
     if debug:
         print('DEBUG: post undo liked via c2s - ' + post_filename)
 

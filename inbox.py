@@ -2229,9 +2229,8 @@ def _receive_undo_like(recent_posts_cache: {},
     if debug:
         print('DEBUG: liked post found in inbox. Now undoing.')
     like_actor = get_actor_from_post(message_json)
-    post_liked_id = message_json['object']
     undo_likes_collection_entry(recent_posts_cache, base_dir, post_filename,
-                                post_liked_id, like_actor, domain, debug, None)
+                                like_actor, domain, debug, None)
     # regenerate the html
     liked_post_json = load_json(post_filename, 0, 1)
     if liked_post_json:
@@ -2244,12 +2243,10 @@ def _receive_undo_like(recent_posts_cache: {},
                         locate_post(base_dir, handle_name,
                                     domain, announce_like_url)
                     if announce_liked_filename:
-                        post_liked_id = announce_like_url
                         post_filename = announce_liked_filename
                         undo_likes_collection_entry(recent_posts_cache,
                                                     base_dir,
                                                     post_filename,
-                                                    post_liked_id,
                                                     like_actor, domain, debug,
                                                     None)
         if liked_post_json:

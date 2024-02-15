@@ -3172,7 +3172,6 @@ def get_file_case_insensitive(path: str) -> str:
 
 def undo_likes_collection_entry(recent_posts_cache: {},
                                 base_dir: str, post_filename: str,
-                                object_url: str,
                                 actor: str, domain: str, debug: bool,
                                 post_json_object: {}) -> None:
     """Undoes a like for a particular actor
