@@ -657,5 +657,7 @@
     "Birthday": "روز تولد",
     "Only show reminders": "فقط یادآوری ها را نشان دهید",
     "Show all events": "نمایش همه رویدادها",
-    "Blocking API endpoints": "مسدود کردن نقاط پایانی API"
+    "Blocking API endpoints": "مسدود کردن نقاط پایانی API",
+    "Payment required": "مستلزم پرداخت",
+    "It's time to splash that cash": "وقت آن است که آن پول نقد را بپاشیم"
 }

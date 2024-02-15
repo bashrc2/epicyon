@@ -657,5 +657,7 @@
     "Birthday": "生日",
     "Only show reminders": "只显示提醒",
     "Show all events": "显示所有活动",
-    "Blocking API endpoints": "阻止 API 端点"
+    "Blocking API endpoints": "阻止 API 端点",
+    "Payment required": "需要付款",
+    "It's time to splash that cash": "是时候挥霍现金了"
 }

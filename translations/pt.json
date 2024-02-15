@@ -657,5 +657,7 @@
     "Birthday": "Aniversário",
     "Only show reminders": "Mostrar apenas lembretes",
     "Show all events": "Mostrar todos os eventos",
-    "Blocking API endpoints": "Bloqueio de endpoints de API"
+    "Blocking API endpoints": "Bloqueio de endpoints de API",
+    "Payment required": "Pagamento Requerido",
+    "It's time to splash that cash": "É hora de gastar esse dinheiro"
 }

@@ -657,5 +657,7 @@
     "Birthday": "Doğum günü",
     "Only show reminders": "Yalnızca hatırlatıcıları göster",
     "Show all events": "Tüm etkinlikleri göster",
-    "Blocking API endpoints": "API uç noktalarını engelleme"
+    "Blocking API endpoints": "API uç noktalarını engelleme",
+    "Payment required": "Ödeme gerekli",
+    "It's time to splash that cash": "O parayı sıçratmanın zamanı geldi"
 }

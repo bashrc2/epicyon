@@ -657,5 +657,7 @@
     "Birthday": "יום הולדת",
     "Only show reminders": "הצג רק תזכורות",
     "Show all events": "הצג את כל האירועים",
-    "Blocking API endpoints": "חסימת נקודות קצה של API"
+    "Blocking API endpoints": "חסימת נקודות קצה של API",
+    "Payment required": "נדרש תשלום",
+    "It's time to splash that cash": "הגיע הזמן להתיז את המזומנים האלה"
 }

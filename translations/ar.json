@@ -657,5 +657,7 @@
     "Birthday": "عيد ميلاد",
     "Only show reminders": "عرض التذكيرات فقط",
     "Show all events": "عرض كافة الأحداث",
-    "Blocking API endpoints": "حظر نقاط نهاية API"
+    "Blocking API endpoints": "حظر نقاط نهاية API",
+    "Payment required": "الدفع مطلوب",
+    "It's time to splash that cash": "لقد حان الوقت لصرف هذه الأموال"
 }

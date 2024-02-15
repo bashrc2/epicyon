@@ -1008,14 +1008,15 @@ class PubServer(BaseHTTPRequestHandler):
             self._http_return_code(401, 'Unauthorized',
                                    post_msg, None)
 
-    def _402(self, post_msg: str) -> None:
+    def _402(self) -> None:
         if self.server.translate:
-            ok_str = self.server.translate[post_msg]
-            self._http_return_code(402, self.server.translate['Unauthorized'],
-                                   ok_str, None)
+            text = self.server.translate["It's time to splash that cash"]
+            self._http_return_code(402,
+                                   self.server.translate['Payment required'],
+                                   text, None)
         else:
-            self._http_return_code(402, 'Unauthorized',
-                                   post_msg, None)
+            text = "It's time to splash that cash"
+            self._http_return_code(402, 'Payment required', text, None)
 
     def _201(self, etag: str) -> None:
         if self.server.translate:
@@ -17552,9 +17553,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.headers['Server'] in corp_servers():
                 if self.server.debug:
                     print('Corporate leech bounced: ' + self.headers['Server'])
-                self._402("If you are a BigTech corp trying to steal " +
-                          "data then it's time to see the color of " +
-                          "your money")
+                self._402()
                 return
 
         if self.headers.get('Host'):

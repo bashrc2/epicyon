@@ -657,5 +657,7 @@
     "Birthday": "Penblwydd",
     "Only show reminders": "Dangoswch nodiadau atgoffa yn unig",
     "Show all events": "Dangos pob digwyddiad",
-    "Blocking API endpoints": "Rhwystro pwyntiau terfyn API"
+    "Blocking API endpoints": "Rhwystro pwyntiau terfyn API",
+    "Payment required": "Angen taliad",
+    "It's time to splash that cash": "Mae'n bryd tasgu'r arian hwnnw"
 }

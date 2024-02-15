@@ -657,5 +657,7 @@
     "Birthday": "Γενέθλια",
     "Only show reminders": "Εμφάνιση μόνο υπενθυμίσεων",
     "Show all events": "Εμφάνιση όλων των συμβάντων",
-    "Blocking API endpoints": "Αποκλεισμός τελικών σημείων API"
+    "Blocking API endpoints": "Αποκλεισμός τελικών σημείων API",
+    "Payment required": "Απαιτείται πληρωμή",
+    "It's time to splash that cash": "Ήρθε η ώρα να ρίξετε αυτά τα μετρητά"
 }

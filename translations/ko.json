@@ -657,5 +657,7 @@
     "Birthday": "생일",
     "Only show reminders": "알림만 표시",
     "Show all events": "모든 이벤트 표시",
-    "Blocking API endpoints": "API 엔드포인트 차단"
+    "Blocking API endpoints": "API 엔드포인트 차단",
+    "Payment required": "결제 필요",
+    "It's time to splash that cash": "이제 그 현금을 쏟아부을 시간이다"
 }

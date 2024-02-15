@@ -657,5 +657,7 @@
     "Birthday": "день народження",
     "Only show reminders": "Показувати лише нагадування",
     "Show all events": "Показати всі події",
-    "Blocking API endpoints": "Блокування кінцевих точок API"
+    "Blocking API endpoints": "Блокування кінцевих точок API",
+    "Payment required": "Потрібна оплата",
+    "It's time to splash that cash": "Настав час виплеснути ці гроші"
 }

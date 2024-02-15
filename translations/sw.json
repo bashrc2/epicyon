@@ -657,5 +657,7 @@
     "Birthday": "Siku ya kuzaliwa",
     "Only show reminders": "Onyesha vikumbusho pekee",
     "Show all events": "Onyesha matukio yote",
-    "Blocking API endpoints": "Inazuia miisho ya API"
+    "Blocking API endpoints": "Inazuia miisho ya API",
+    "Payment required": "Malipo yanahitajika",
+    "It's time to splash that cash": "Ni wakati wa kunyunyiza pesa hizo"
 }
