@@ -1044,18 +1044,19 @@ class PubServer(BaseHTTPRequestHandler):
             self._http_return_code(403, 'Forbidden',
                                    "You're not allowed", None)
 
-    def _404(self) -> None:
+    def _404(self, ref: int) -> None:
         if self.server.translate:
+            text = \
+                self.server.translate['These are not the ' +
+                                      'droids you are ' +
+                                      'looking for'] + \
+                ' ' + str(ref),
             self._http_return_code(404, self.server.translate['Not Found'],
-                                   self.server.translate['These are not the ' +
-                                                         'droids you are ' +
-                                                         'looking for'],
-                                   None)
+                                   text, None)
         else:
-            self._http_return_code(404, 'Not Found',
-                                   'These are not the ' +
-                                   'droids you are ' +
-                                   'looking for', None)
+            text = \
+                'These are not the droids you are looking for ' + str(ref)
+            self._http_return_code(404, 'Not Found', text, None)
 
     def _304(self) -> None:
         if self.server.translate:
@@ -1248,7 +1249,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
 
         # no api endpoints were matched
-        self._404()
+        self._404(1)
         self.server.masto_api_is_active = False
         return True
 
@@ -1373,7 +1374,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
 
         # no api v2 endpoints were matched
-        self._404()
+        self._404(2)
         self.server.masto_api_is_active = False
         return True
 
@@ -1447,7 +1448,7 @@ class PubServer(BaseHTTPRequestHandler):
             actor_json = load_json(actor_filename)
         if not actor_json:
             print('WARN: vcard actor not found ' + actor_filename)
-            self._404()
+            self._404(3)
             self.server.vcard_is_active = False
             return True
         if 'application/vcard+xml' in accept_str:
@@ -1466,7 +1467,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.vcard_is_active = False
             return True
         print('WARN: vcard string not returned')
-        self._404()
+        self._404(4)
         self.server.vcard_is_active = False
         return True
 
@@ -1582,7 +1583,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('nodeinfo sent to unknown referer')
             self.server.nodeinfo_is_active = False
             return True
-        self._404()
+        self._404(5)
         self.server.nodeinfo_is_active = False
         return True
 
@@ -1686,14 +1687,14 @@ class PubServer(BaseHTTPRequestHandler):
                                   None, calling_domain, True)
                 self._write(msg)
                 return True
-            self._404()
+            self._404(6)
             return True
         if self.path.startswith('/api/statusnet') or \
            self.path.startswith('/api/gnusocial') or \
            self.path.startswith('/siteinfo') or \
            self.path.startswith('/poco') or \
            self.path.startswith('/friendi'):
-            self._404()
+            self._404(7)
             return True
         # protocol handler. See https://fedi-to.github.io/protocol-handler.html
         if self.path.startswith('/.well-known/protocol-handler'):
@@ -1714,7 +1715,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(protocol_url, cookie,
                                        calling_domain, 308)
             else:
-                self._404()
+                self._404(8)
             return True
         # nodeinfo
         if self.path.startswith('/.well-known/nodeinfo') or \
@@ -1753,7 +1754,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       None, calling_domain, True)
                 self._write(msg)
                 return True
-            self._404()
+            self._404(9)
             return True
 
         if self.server.debug:
@@ -1782,7 +1783,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.server.debug:
                 print('DEBUG: WEBFINGER lookup 404 ' + self.path)
-            self._404()
+            self._404(10)
         return True
 
     def _post_to_outbox(self, message_json: {}, version: str,
@@ -3779,7 +3780,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                 self.server.postreq_busy = False
                 return
-            self._404()
+            self._404(11)
             return
 
         # person options screen, snooze button
@@ -5253,13 +5254,13 @@ class PubServer(BaseHTTPRequestHandler):
             return
         path_users_section = path.split('/users/')[1]
         if '/' not in path_users_section:
-            self._404()
+            self._404(12)
             self.server.postreq_busy = False
             return
         self.post_from_nickname = path_users_section.split('/')[0]
         accounts_dir = acct_dir(base_dir, self.post_from_nickname, domain)
         if not os.path.isdir(accounts_dir):
-            self._404()
+            self._404(13)
             self.server.postreq_busy = False
             return
 
@@ -5797,18 +5798,18 @@ class PubServer(BaseHTTPRequestHandler):
         hashtag = ''
         if '/tags/' not in users_path:
             # no hashtag is specified within the path
-            self._404()
+            self._404(14)
             return
         hashtag = users_path.split('/tags/')[1].strip()
         hashtag = urllib.parse.unquote_plus(hashtag)
         if not hashtag:
             # no hashtag was given in the path
-            self._404()
+            self._404(15)
             return
         hashtag_filename = base_dir + '/tags/' + hashtag + '.txt'
         if not os.path.isfile(hashtag_filename):
             # the hashtag does not exist
-            self._404()
+            self._404(16)
             return
         users_path = users_path.split('/tags/')[0]
         actor_str = \
@@ -8759,7 +8760,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         if debug:
             print('favicon not sent: ' + calling_domain)
-        self._404()
+        self._404(17)
 
     def _get_speaker(self, calling_domain: str, referer_domain: str,
                      path: str, base_dir: str, domain: str) -> None:
@@ -8772,7 +8773,7 @@ class PubServer(BaseHTTPRequestHandler):
         speaker_filename = \
             acct_dir(base_dir, nickname, domain) + '/speaker.json'
         if not os.path.isfile(speaker_filename):
-            self._404()
+            self._404(18)
             return
 
         speaker_json = load_json(speaker_filename)
@@ -8811,7 +8812,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        export_binary, None,
                                        domain_full, False, None)
                 self._write(export_binary)
-        self._404()
+        self._404(19)
 
     def _get_exported_blocks(self, path: str, base_dir: str,
                              domain: str,
@@ -8830,7 +8831,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   msglen, None, calling_domain, False)
                 self._write(msg)
                 return
-        self._404()
+        self._404(20)
 
     def _get_fonts(self, calling_domain: str, path: str,
                    base_dir: str, debug: bool,
@@ -8893,7 +8894,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         if debug:
             print('font not found: ' + path + ' ' + calling_domain)
-        self._404()
+        self._404(21)
 
     def _get_rss2feed(self, calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
@@ -8941,7 +8942,7 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('Failed to get rss2 feed: ' +
                   path + ' ' + calling_domain)
-        self._404()
+        self._404(22)
 
     def _get_rss2site(self, calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
@@ -8957,7 +8958,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     curr_session,
                                     proxy_type)
         if not curr_session:
-            self._404()
+            self._404(23)
             return
 
         msg = ''
@@ -8998,7 +8999,7 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('Failed to get rss2 feed: ' +
                   path + ' ' + calling_domain)
-        self._404()
+        self._404(24)
 
     def _get_newswire_feed(self, calling_domain: str, path: str,
                            proxy_type: str, getreq_start_time,
@@ -9010,7 +9011,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     curr_session,
                                     proxy_type)
         if not curr_session:
-            self._404()
+            self._404(25)
             return
 
         msg = get_rs_sfrom_dict(self.server.newswire,
@@ -9033,7 +9034,7 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('Failed to get rss2 newswire feed: ' +
                   path + ' ' + calling_domain)
-        self._404()
+        self._404(26)
 
     def _get_hashtag_categories_feed(self, calling_domain: str, path: str,
                                      base_dir: str, proxy_type: str,
@@ -9046,7 +9047,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("get_hashtag_categories_feed",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(27)
             return
 
         hashtag_categories = None
@@ -9067,7 +9068,7 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('Failed to get rss2 categories feed: ' +
                   path + ' ' + calling_domain)
-        self._404()
+        self._404(28)
 
     def _get_rss3feed(self, calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
@@ -9087,7 +9088,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._establish_session("get_rss3feed",
                                             curr_session, proxy_type)
                 if not curr_session:
-                    self._404()
+                    self._404(29)
                     return
                 msg = \
                     html_blog_page_rss3(base_dir, http_prefix,
@@ -9109,7 +9110,7 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('Failed to get rss3 feed: ' +
                   path + ' ' + calling_domain)
-        self._404()
+        self._404(20)
 
     def _show_person_options(self, calling_domain: str, path: str,
                              base_dir: str, http_prefix: str,
@@ -9268,7 +9269,7 @@ class PubServer(BaseHTTPRequestHandler):
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', '_show_person_options', debug)
             else:
-                self._404()
+                self._404(31)
             return
 
         if '/users/news/' in path:
@@ -9333,7 +9334,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             '_GET', '_show_media',
                                             self.server.debug)
                         return
-                    self._404()
+                    self._404(32)
                     return
 
                 media_binary = None
@@ -9351,7 +9352,7 @@ class PubServer(BaseHTTPRequestHandler):
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', '_show_media', self.server.debug)
                 return
-        self._404()
+        self._404(33)
 
     def _get_ontology(self, calling_domain: str,
                       path: str, base_dir: str,
@@ -9399,7 +9400,7 @@ class PubServer(BaseHTTPRequestHandler):
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', '_get_ontology', self.server.debug)
                 return
-        self._404()
+        self._404(34)
 
     def _show_emoji(self, path: str,
                     base_dir: str, getreq_start_time) -> None:
@@ -9433,14 +9434,14 @@ class PubServer(BaseHTTPRequestHandler):
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', '_show_emoji', self.server.debug)
                 return
-        self._404()
+        self._404(36)
 
     def _show_icon(self, path: str,
                    base_dir: str, getreq_start_time) -> None:
         """Shows an icon
         """
         if not path.endswith('.png'):
-            self._404()
+            self._404(37)
             return
         media_str = path.split('/icons/')[1]
         if '/' not in media_str:
@@ -9489,7 +9490,7 @@ class PubServer(BaseHTTPRequestHandler):
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', '_show_icon', self.server.debug)
             return
-        self._404()
+        self._404(38)
 
     def _show_specification_image(self, path: str,
                                   base_dir: str, getreq_start_time) -> None:
@@ -9497,7 +9498,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         image_filename = path.split('/', 1)[1]
         if '/' in image_filename:
-            self._404()
+            self._404(39)
             return
         media_filename = \
             base_dir + '/specification/' + image_filename
@@ -9539,7 +9540,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 '_GET', '_show_specification_image',
                                 self.server.debug)
             return
-        self._404()
+        self._404(40)
 
     def _show_manual_image(self, path: str,
                            base_dir: str, getreq_start_time) -> None:
@@ -9547,7 +9548,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         image_filename = path.split('/', 1)[1]
         if '/' in image_filename:
-            self._404()
+            self._404(41)
             return
         media_filename = \
             base_dir + '/manual/' + image_filename
@@ -9589,7 +9590,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 '_GET', '_show_manual_image',
                                 self.server.debug)
             return
-        self._404()
+        self._404(42)
 
     def _show_help_screen_image(self, path: str,
                                 base_dir: str, getreq_start_time) -> None:
@@ -9636,7 +9637,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 '_GET', '_show_help_screen_image',
                                 self.server.debug)
             return
-        self._404()
+        self._404(43)
 
     def _show_cached_favicon(self, referer_domain: str, path: str,
                              base_dir: str, getreq_start_time) -> None:
@@ -9659,7 +9660,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.debug)
             return
         if not os.path.isfile(fav_filename):
-            self._404()
+            self._404(44)
             return
         if self._etag_exists(fav_filename):
             # The file has not changed
@@ -9687,7 +9688,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             else:
                 print('WARN: favicon is not an image ' + fav_filename)
-        self._404()
+        self._404(45)
 
     def _show_cached_avatar(self, referer_domain: str, path: str,
                             base_dir: str, getreq_start_time) -> None:
@@ -9717,7 +9718,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', '_show_cached_avatar',
                                     self.server.debug)
                 return
-        self._404()
+        self._404(46)
 
     def _hashtag_search(self, calling_domain: str,
                         path: str, cookie: str,
@@ -10006,7 +10007,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("announceButton",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(47)
             return
         self.server.actorRepeat = path.split('?actor=')[1]
         announce_to_str = \
@@ -10219,7 +10220,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("undoAnnounceButton",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(48)
             return
         undo_announce_actor = \
             http_prefix + '://' + domain_full + \
@@ -10298,7 +10299,7 @@ class PubServer(BaseHTTPRequestHandler):
             handle_domain, handle_port = \
                 get_domain_from_actor(following_handle)
             if not handle_nickname or not handle_domain:
-                self._404()
+                self._404(49)
                 return
             following_handle = \
                 handle_nickname + '@' + \
@@ -10321,7 +10322,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not curr_session:
                 print('WARN: unable to establish session ' +
                       'when approving follow request')
-                self._404()
+                self._404(50)
                 return
             signing_priv_key_pem = \
                 self.server.signing_priv_key_pem
@@ -10485,7 +10486,7 @@ class PubServer(BaseHTTPRequestHandler):
             handle_domain, handle_port = \
                 get_domain_from_actor(following_handle)
             if not handle_nickname or not handle_domain:
-                self._404()
+                self._404(51)
                 return
             following_handle = \
                 handle_nickname + '@' + \
@@ -10601,7 +10602,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("likeButton",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(52)
             return
         like_actor = \
             local_actor_url(http_prefix, self.post_to_nickname, domain_full)
@@ -10827,7 +10828,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("undoLikeButton",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(53)
             return
         undo_actor = \
             local_actor_url(http_prefix, self.post_to_nickname, domain_full)
@@ -11064,7 +11065,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("reactionButton",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(54)
             return
         reaction_actor = \
             local_actor_url(http_prefix, self.post_to_nickname, domain_full)
@@ -11317,7 +11318,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("undoReactionButton",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(55)
             return
         undo_actor = \
             local_actor_url(http_prefix, self.post_to_nickname, domain_full)
@@ -11652,7 +11653,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("bookmarkButton",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(56)
             return
         bookmark_actor = \
             local_actor_url(http_prefix, self.post_to_nickname, domain_full)
@@ -11831,7 +11832,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("undo_bookmarkButton",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(57)
             return
         undo_actor = \
             local_actor_url(http_prefix, self.post_to_nickname, domain_full)
@@ -12009,7 +12010,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._establish_session("deleteButton",
                                         curr_session, proxy_type)
             if not curr_session:
-                self._404()
+                self._404(58)
                 return
 
             delete_str = \
@@ -12100,7 +12101,7 @@ class PubServer(BaseHTTPRequestHandler):
             http_prefix + '://' + domain_full + path.split('?mute=')[0]
         nickname = get_nickname_from_actor(actor)
         if not nickname:
-            self._404()
+            self._404(59)
             return
         mute_post(base_dir, nickname, domain, port,
                   http_prefix, mute_url,
@@ -12246,7 +12247,7 @@ class PubServer(BaseHTTPRequestHandler):
             http_prefix + '://' + domain_full + path.split('?unmute=')[0]
         nickname = get_nickname_from_actor(actor)
         if not nickname:
-            self._404()
+            self._404(60)
             return
         unmute_post(base_dir, nickname, domain, port,
                     http_prefix, mute_url,
@@ -12410,7 +12411,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._establish_session("showRepliesToPost",
                                             curr_session, proxy_type)
                 if not curr_session:
-                    self._404()
+                    self._404(61)
                     return True
                 recent_posts_cache = self.server.recent_posts_cache
                 max_recent_posts = self.server.max_recent_posts
@@ -12487,7 +12488,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_replies_to_post json',
                                         debug)
                 else:
-                    self._404()
+                    self._404(62)
             return True
         else:
             # replies exist. Itterate through the
@@ -12529,7 +12530,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._establish_session("showRepliesToPost2",
                                             curr_session, proxy_type)
                 if not curr_session:
-                    self._404()
+                    self._404(63)
                     return True
                 recent_posts_cache = self.server.recent_posts_cache
                 max_recent_posts = self.server.max_recent_posts
@@ -12606,7 +12607,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_replies_to_post json',
                                         debug)
                 else:
-                    self._404()
+                    self._404(64)
             return True
         return False
 
@@ -12733,7 +12734,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fitness_performance(getreq_start_time, self.server.fitness,
                                         '_GET', '_show_roles json', debug)
                 else:
-                    self._404()
+                    self._404(65)
             return True
         return False
 
@@ -12885,7 +12886,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                     '_show_skills json',
                                                     debug)
                             else:
-                                self._404()
+                                self._404(66)
                         return True
         actor = path.replace('/skills', '')
         actor_absolute = \
@@ -13039,7 +13040,7 @@ class PubServer(BaseHTTPRequestHandler):
                     http_prefix + ':##' + domain_full + '#users#' + \
                     nickname + '#statuses#' + status_number + '.ssml'
             if not os.path.isfile(ssml_filename):
-                self._404()
+                self._404(67)
                 return True
             ssml_str = None
             try:
@@ -13054,7 +13055,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, calling_domain, False)
                 self._write(msg)
                 return True
-            self._404()
+            self._404(68)
             return True
 
         post_filename = \
@@ -13136,7 +13137,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.buy_sites,
                                 self.server.auto_cw_cache)
         if not msg:
-            self._404()
+            self._404(69)
             return True
         msg = msg.encode('utf-8')
         msglen = len(msg)
@@ -13204,7 +13205,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.auto_cw_cache,
                                 'shares')
         if not msg:
-            self._404()
+            self._404(70)
             return True
         msg = msg.encode('utf-8')
         msglen = len(msg)
@@ -13229,7 +13230,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows an individual post from its filename
         """
         if not os.path.isfile(post_filename):
-            self._404()
+            self._404(71)
             self.server.getreq_busy = False
             return True
 
@@ -13245,7 +13246,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not authorized:
             pjo = post_json_object
             if not is_public_post(pjo):
-                self._404()
+                self._404(72)
                 self.server.getreq_busy = False
                 return True
             remove_post_interactions(pjo, True)
@@ -13332,7 +13333,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', '_show_post_from_file json',
                                     debug)
             else:
-                self._404()
+                self._404(73)
         self.server.getreq_busy = False
         return True
 
@@ -13388,7 +13389,7 @@ class PubServer(BaseHTTPRequestHandler):
                     http_prefix + ':##' + domain_full + '#users#' + \
                     nickname + '#statuses#' + status_number + '.ssml'
             if not os.path.isfile(ssml_filename):
-                self._404()
+                self._404(74)
                 return True
             ssml_str = None
             try:
@@ -13403,7 +13404,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, calling_domain, False)
                 self._write(msg)
                 return True
-            self._404()
+            self._404(75)
             return True
 
         post_filename = \
@@ -15300,7 +15301,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_outbox_timeline json',
                                         debug)
                 else:
-                    self._404()
+                    self._404(76)
             return True
         return False
 
@@ -15520,7 +15521,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._establish_session("show_shares_feed",
                                                 curr_session, proxy_type)
                     if not curr_session:
-                        self._404()
+                        self._404(77)
                         self.server.getreq_busy = False
                         return True
 
@@ -15621,7 +15622,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_shares_feed json',
                                         debug)
                 else:
-                    self._404()
+                    self._404(78)
                 return True
         return False
 
@@ -15670,7 +15671,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._establish_session("show_following_feed",
                                                 curr_session, proxy_type)
                     if not curr_session:
-                        self._404()
+                        self._404(79)
                         return True
 
                     access_keys = self.server.access_keys
@@ -15785,7 +15786,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_following_feed json',
                                         debug)
                 else:
-                    self._404()
+                    self._404(80)
                 return True
         return False
 
@@ -15830,7 +15831,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._establish_session("show_moved_feed",
                                                 curr_session, proxy_type)
                     if not curr_session:
-                        self._404()
+                        self._404(81)
                         return True
 
                     access_keys = self.server.access_keys
@@ -15934,7 +15935,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_moved_feed json',
                                         debug)
                 else:
-                    self._404()
+                    self._404(81)
                 return True
         return False
 
@@ -15985,7 +15986,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._establish_session("show_inactive_feed",
                                                 curr_session, proxy_type)
                     if not curr_session:
-                        self._404()
+                        self._404(82)
                         return True
 
                     access_keys = self.server.access_keys
@@ -16089,7 +16090,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_inactive_feed json',
                                         debug)
                 else:
-                    self._404()
+                    self._404(83)
                 return True
         return False
 
@@ -16138,7 +16139,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._establish_session("show_followers_feed",
                                                 curr_session, proxy_type)
                     if not curr_session:
-                        self._404()
+                        self._404(84)
                         return True
 
                     access_keys = self.server.access_keys
@@ -16254,7 +16255,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', '_show_followers_feed json',
                                         debug)
                 else:
-                    self._404()
+                    self._404(85)
             return True
         return False
 
@@ -16344,7 +16345,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._establish_session("showPersonProfile",
                                         curr_session, proxy_type)
             if not curr_session:
-                self._404()
+                self._404(86)
                 return True
 
             access_keys = self.server.access_keys
@@ -16447,7 +16448,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('DEBUG: json actor sent')
             else:
-                self._404()
+                self._404(87)
         return True
 
     def _show_instance_actor(self, calling_domain: str,
@@ -16463,12 +16464,12 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('Instance actor requested by ' + calling_domain)
         if request_http(self.headers, debug):
-            self._404()
+            self._404(88)
             return False
         actor_json = person_lookup(domain, path, base_dir)
         if not actor_json:
             print('ERROR: no instance actor found')
-            self._404()
+            self._404(89)
             return False
         accept_str = self.headers['Accept']
         actor_domain_url = get_instance_url(calling_domain,
@@ -16563,7 +16564,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("showBlogPage",
                                     curr_session, proxy_type)
         if not curr_session:
-            self._404()
+            self._404(90)
             self.server.getreq_busy = False
             return True
         msg = html_blog_page(authorized,
@@ -16589,7 +16590,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 '_GET', '_show_blog_page',
                                 debug)
             return True
-        self._404()
+        self._404(91)
         return True
 
     def _redirect_to_login_screen(self, calling_domain: str, path: str,
@@ -16689,7 +16690,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 '_GET', '_get_style_sheet',
                                 self.server.debug)
             return True
-        self._404()
+        self._404(92)
         return True
 
     def _show_qrcode(self, calling_domain: str, path: str,
@@ -16700,7 +16701,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         nickname = get_nickname_from_actor(path)
         if not nickname:
-            self._404()
+            self._404(93)
             return True
         if onion_domain:
             qrcode_domain = onion_domain
@@ -16742,7 +16743,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', '_show_qrcode',
                                     self.server.debug)
                 return True
-        self._404()
+        self._404(94)
         return True
 
     def _search_screen_banner(self, path: str,
@@ -16752,7 +16753,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         nickname = get_nickname_from_actor(path)
         if not nickname:
-            self._404()
+            self._404(95)
             return True
         banner_filename = \
             acct_dir(base_dir, nickname, domain) + '/search_banner.png'
@@ -16790,7 +16791,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', '_search_screen_banner',
                                     self.server.debug)
                 return True
-        self._404()
+        self._404(96)
         return True
 
     def _column_image(self, side: str, path: str, base_dir: str, domain: str,
@@ -16799,7 +16800,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         nickname = get_nickname_from_actor(path)
         if not nickname:
-            self._404()
+            self._404(97)
             return True
         banner_filename = \
             acct_dir(base_dir, nickname, domain) + '/' + \
@@ -16833,7 +16834,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     '_GET', '_column_image ' + side,
                                     self.server.debug)
                 return True
-        self._404()
+        self._404(98)
         return True
 
     def _show_background_image(self, path: str,
@@ -16881,7 +16882,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 '_show_background_image',
                                                 self.server.debug)
                             return True
-        self._404()
+        self._404(99)
         return True
 
     def _show_default_profile_background(self, base_dir: str, theme_name: str,
@@ -16928,7 +16929,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
                 break
 
-        self._404()
+        self._404(100)
         return True
 
     def _show_share_image(self, path: str,
@@ -16936,13 +16937,13 @@ class PubServer(BaseHTTPRequestHandler):
         """Show a shared item image
         """
         if not is_image_file(path):
-            self._404()
+            self._404(101)
             return True
 
         media_str = path.split('/sharefiles/')[1]
         media_filename = base_dir + '/sharefiles/' + media_str
         if not os.path.isfile(media_filename):
-            self._404()
+            self._404(102)
             return True
 
         if self._etag_exists(media_filename):
@@ -17160,7 +17161,7 @@ class PubServer(BaseHTTPRequestHandler):
         if is_new_post_endpoint:
             nickname = get_nickname_from_actor(path)
             if not nickname:
-                self._404()
+                self._404(103)
                 return True
             if in_reply_to_url:
                 reply_interval_hours = self.server.default_reply_interval_hrs
@@ -17257,7 +17258,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.auto_cw_cache)
             if not msg:
                 print('Error replying to ' + in_reply_to_url)
-                self._404()
+                self._404(104)
                 return True
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -17344,7 +17345,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, calling_domain, False)
                 self._write(msg)
             else:
-                self._404()
+                self._404(105)
             return True
         return False
 
@@ -17377,7 +17378,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, calling_domain, False)
                 self._write(msg)
             else:
-                self._404()
+                self._404(106)
             return True
         return False
 
@@ -17410,7 +17411,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, calling_domain, False)
                 self._write(msg)
             else:
-                self._404()
+                self._404(107)
             return True
         return False
 
@@ -17445,7 +17446,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, calling_domain, False)
                 self._write(msg)
             else:
-                self._404()
+                self._404(108)
             return True
         return False
 
@@ -17463,7 +17464,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not following_json:
             if debug:
                 print(list_name + ' json feed not found for ' + path)
-            self._404()
+            self._404(109)
             return
         msg_str = json.dumps(following_json,
                              ensure_ascii=False)
@@ -17709,7 +17710,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(msg)
                     self.server.followers_synchronization = False
                     return
-            self._404()
+            self._404(110)
             self.server.followers_synchronization = False
             return
 
@@ -17775,7 +17776,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.enable_shared_inbox):
                 return
             else:
-                self._404()
+                self._404(111)
                 return
 
         # turn off dropdowns on new post screen
@@ -17888,11 +17889,11 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
             shared_item_display_name = self.path.split('/shareditems/')[1]
             if not nickname or not shared_item_display_name:
-                self._404()
+                self._404(112)
                 return
             if not self._has_accept(calling_domain):
                 print('DEBUG: shareditems 1')
-                self._404()
+                self._404(113)
                 return
             # get the actor from the cache
             actor = \
@@ -17911,12 +17912,12 @@ class PubServer(BaseHTTPRequestHandler):
                     actor_json = load_json(actor_filename, 1, 1)
             if not actor_json:
                 print('DEBUG: shareditems 2 ' + actor)
-                self._404()
+                self._404(114)
                 return
             attached_shares = actor_attached_shares(actor_json)
             if not attached_shares:
                 print('DEBUG: shareditems 3 ' + str(actor_json['attachment']))
-                self._404()
+                self._404(115)
                 return
             # is the given shared item in the list?
             share_id = None
@@ -17929,7 +17930,7 @@ class PubServer(BaseHTTPRequestHandler):
                     break
             if not share_id:
                 print('DEBUG: shareditems 4')
-                self._404()
+                self._404(116)
                 return
             # show the shared item
             print('DEBUG: shareditems 5 ' + share_id)
@@ -17983,7 +17984,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 else:
                     print('DEBUG: shareditems 7 ' + share_id)
-            self._404()
+            self._404(117)
             return
 
         # shared items offers collection for this instance
@@ -18373,7 +18374,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       msglen, None, calling_domain, False)
                     self._write(msg)
                     return
-                self._404()
+                self._404(118)
                 return
             self._400()
             return
@@ -18482,7 +18483,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       msglen, None, calling_domain, False)
                     self._write(msg)
                     return
-                self._404()
+                self._404(119)
                 return
             self._400()
             return
@@ -18517,7 +18518,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._establish_session("GET", curr_session,
                                     proxy_type)
         if not curr_session:
-            self._404()
+            self._404(120)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'session fail',
                                 self.server.debug)
@@ -18927,7 +18928,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             curr_session,
                                             proxy_type)
                 if not curr_session:
-                    self._404()
+                    self._404(121)
                     return
                 msg = html_blog_view(authorized,
                                      curr_session,
@@ -18951,7 +18952,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', 'blog view',
                                         self.server.debug)
                     return
-                self._404()
+                self._404(122)
                 return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -19032,7 +19033,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             '_GET', 'blog post 2',
                                             self.server.debug)
                         return
-                    self._404()
+                    self._404(123)
                     return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -19225,13 +19226,13 @@ class PubServer(BaseHTTPRequestHandler):
              self.path.endswith('/followingaccounts.csv'))):
             nickname = get_nickname_from_actor(self.path)
             if not nickname:
-                self._404()
+                self._404(124)
                 return
             following_filename = \
                 acct_dir(self.server.base_dir,
                          nickname, self.server.domain) + '/following.txt'
             if not os.path.isfile(following_filename):
-                self._404()
+                self._404(125)
                 return
             if self.path.endswith('/followingaccounts.csv'):
                 html_getreq = False
@@ -19251,7 +19252,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._login_headers('text/csv', msglen, calling_domain)
                 self._write(msg.encode('utf-8'))
             else:
-                self._404()
+                self._404(126)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'following accounts shown',
                                 self.server.debug)
@@ -19266,13 +19267,13 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/followersaccounts'):
             nickname = get_nickname_from_actor(self.path)
             if not nickname:
-                self._404()
+                self._404(127)
                 return
             followers_filename = \
                 acct_dir(self.server.base_dir,
                          nickname, self.server.domain) + '/followers.txt'
             if not os.path.isfile(followers_filename):
-                self._404()
+                self._404(128)
                 return
             if html_getreq:
                 msg = html_following_list(self.server.base_dir,
@@ -19289,7 +19290,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._login_headers('text/csv', msglen, calling_domain)
                 self._write(msg.encode('utf-8'))
             else:
-                self._404()
+                self._404(129)
             fitness_performance(getreq_start_time, self.server.fitness,
                                 '_GET', 'followers accounts shown',
                                 self.server.debug)
@@ -19580,7 +19581,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', 'manifest logo shown',
                                         self.server.debug)
                     return
-            self._404()
+            self._404(130)
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -19622,7 +19623,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', 'show screenshot',
                                         self.server.debug)
                     return
-            self._404()
+            self._404(131)
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -19665,7 +19666,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', 'login screen logo',
                                         self.server.debug)
                     return
-            self._404()
+            self._404(132)
             return
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -19858,7 +19859,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not permitted_dir(self.path):
             if self.server.debug:
                 print('DEBUG: GET Not permitted')
-            self._404()
+            self._404(133)
             self.server.getreq_busy = False
             return
 
@@ -19926,7 +19927,7 @@ class PubServer(BaseHTTPRequestHandler):
                  self.server.news_instance)):
                 nickname = get_nickname_from_actor(self.path)
                 if not nickname:
-                    self._404()
+                    self._404(134)
                     self.server.getreq_busy = False
                     return
                 timeline_path = \
@@ -19970,7 +19971,7 @@ class PubServer(BaseHTTPRequestHandler):
                  self.server.news_instance)):
                 nickname = get_nickname_from_actor(self.path)
                 if not nickname:
-                    self._404()
+                    self._404(135)
                     self.server.getreq_busy = False
                     return
                 access_keys = self.server.access_keys
@@ -20153,7 +20154,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
                 self.server.getreq_busy = False
                 return
-            self._404()
+            self._404(136)
             self.server.getreq_busy = False
             return
 
@@ -20272,7 +20273,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         '_GET', 'calendar shown',
                                         self.server.debug)
                 else:
-                    self._404()
+                    self._404(137)
                 self.server.getreq_busy = False
                 return
 
@@ -20307,7 +20308,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       False)
                     self._write(msg)
                 else:
-                    self._404()
+                    self._404(138)
                 fitness_performance(getreq_start_time, self.server.fitness,
                                     '_GET', 'icalendar shown',
                                     self.server.debug)
@@ -20845,7 +20846,7 @@ class PubServer(BaseHTTPRequestHandler):
                     actor = actor.split(';')[0]
                 nickname = get_nickname_from_actor(self.path.split('?')[0])
                 if not nickname:
-                    self._404()
+                    self._404(139)
                     self.server.getreq_busy = False
                     return
                 if nickname == actor:
@@ -20895,11 +20896,11 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = get_nickname_from_actor(self.path.split('?')[0])
                 edit_post_params['nickname'] = nickname
                 if not nickname:
-                    self._404()
+                    self._404(140)
                     self.server.getreq_busy = False
                     return
                 if nickname != actor:
-                    self._404()
+                    self._404(141)
                     self.server.getreq_busy = False
                     return
                 post_url = \
@@ -21571,7 +21572,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('DEBUG: GET Not json: ' + self.path +
                       ' ' + self.server.base_dir)
-            self._404()
+            self._404(142)
             self.server.getreq_busy = False
             return
 
@@ -21579,7 +21580,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  proxy_type, False):
             if self.server.debug:
                 print('WARN: Unauthorized GET')
-            self._404()
+            self._404(143)
             self.server.getreq_busy = False
             return
 
@@ -21629,7 +21630,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.server.debug:
                 print('DEBUG: GET Unknown file')
-            self._404()
+            self._404(144)
         self.server.getreq_busy = False
 
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -21667,7 +21668,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         if not self.path.startswith('/calendars/'):
             print(endpoint_type.upper() + ' without /calendars ' + self.path)
-            self._404()
+            self._404(145)
             return
         if debug:
             print(endpoint_type.upper() + ' checking authorization')
@@ -21686,7 +21687,7 @@ class PubServer(BaseHTTPRequestHandler):
                              nickname + '@' + self.server.domain):
             print(endpoint_type.upper() +
                   ' for non-existent account ' + self.path)
-            self._404()
+            self._404(146)
             return
         propfind_bytes = None
         try:
@@ -21705,7 +21706,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._400()
             return
         if not propfind_bytes:
-            self._404()
+            self._404(147)
             return
         depth = 0
         if self.headers.get('Depth'):
@@ -21748,7 +21749,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.debug,
                                     self.server.recent_posts_cache)
         if not response_str:
-            self._404()
+            self._404(148)
             return
         if response_str == 'Not modified':
             if endpoint_type == 'put':
@@ -21843,7 +21844,7 @@ class PubServer(BaseHTTPRequestHandler):
                 elif '/accounts/avatars/' in self.path:
                     avatar_file = self.path.split('/accounts/avatars/')[1]
                     if '/' not in avatar_file:
-                        self._404()
+                        self._404(149)
                         return
                     nickname = avatar_file.split('/')[0]
                     avatar_file = avatar_file.split('/')[1]
@@ -21858,7 +21859,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     banner_file = self.path.split('/accounts/headers/')[1]
                     if '/' not in banner_file:
-                        self._404()
+                        self._404(150)
                         return
                     nickname = banner_file.split('/')[0]
                     banner_file = banner_file.split('/')[1]
@@ -21908,7 +21909,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 print('EX: do_HEAD unable to write ' +
                                       media_tag_filename)
                 else:
-                    self._404()
+                    self._404(151)
                     return
 
         media_file_type = media_file_mime_type(check_path)
@@ -23618,7 +23619,7 @@ class PubServer(BaseHTTPRequestHandler):
             fitness_performance(postreq_start_time, self.server.fitness,
                                 '_POST', 'create_session',
                                 self.server.debug)
-            self._404()
+            self._404(152)
             self.server.postreq_busy = False
             return
 
