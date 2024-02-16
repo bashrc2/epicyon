@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import time_days_ago
 from utils import uninvert_text
 from utils import get_attributed_to
 from utils import get_url_from_post
@@ -662,8 +663,11 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         '    <p><b>@' + nickname + '@' + domain_full + \
         actor_proxied + acct_blog_str + '</b><br>\n'
     if joined_date:
+        joined_str = translate['Joined']
+        if time_days_ago(joined_date) < 7:
+            joined_str = '<b>' + translate['New account'] + '</b>'
         html_str += \
-            '    <p>' + translate['Joined'] + ' ' + \
+            '    <p>' + joined_str + ' ' + \
             joined_date.split('T')[0] + '<br>\n'
     if moved_to:
         new_nickname = get_nickname_from_actor(moved_to)
@@ -816,7 +820,10 @@ def _get_profile_header_after_search(base_dir: str,
         '    <p><b>@' + search_nickname + '@' + search_domain_full + \
         actor_proxied + '</b><br>\n'
     if joined_date:
-        html_str += '        <p>' + translate['Joined'] + ' ' + \
+        joined_str = translate['Joined']
+        if time_days_ago(joined_date) < 7:
+            joined_str = '<b>' + translate['New account'] + '</b>'
+        html_str += '        <p>' + joined_str + ' ' + \
             joined_date.split('T')[0] + '</p>\n'
     if follows_you:
         if not you_follow:

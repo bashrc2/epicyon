@@ -3493,6 +3493,17 @@ def media_file_mime_type(filename: str) -> str:
     return extensions[file_ext]
 
 
+def time_days_ago(datestr: str) -> int:
+    """returns the number of days ago for the given date
+    """
+    date1 = \
+        date_from_string_format(datestr,
+                                ["%Y-%m-%dT%H:%M:%S%z"])
+    if not date1:
+        return 0
+    return (date1 - date_epoch()).days
+
+
 def is_recent_post(post_json_object: {}, max_days: int) -> bool:
     """ Is the given post recent?
     """
