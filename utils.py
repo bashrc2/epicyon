@@ -3501,7 +3501,8 @@ def time_days_ago(datestr: str) -> int:
                                 ["%Y-%m-%dT%H:%M:%S%z"])
     if not date1:
         return 0
-    return (date1 - date_epoch()).days
+    date_diff = date_utcnow() - date1
+    return date_diff.days
 
 
 def is_recent_post(post_json_object: {}, max_days: int) -> bool:
