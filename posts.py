@@ -2847,8 +2847,12 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
 
         if unauthorized:
             _add_send_block(base_dir, nickname, domain, inbox_url)
-            print('WARN: thread_send_post: Post is unauthorized ' +
-                  inbox_url + ' ' + post_json_str)
+            if debug:
+                print('WARN: thread_send_post: Post is unauthorized ' +
+                      inbox_url + ' ' + post_json_str)
+            else:
+                print('WARN: thread_send_post: Post is unauthorized ' +
+                      inbox_url)
             break
         if post_result:
             log_str = 'Success on try ' + str(tries) + ': ' + post_json_str
