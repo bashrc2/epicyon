@@ -664,6 +664,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         actor_proxied + acct_blog_str + '</b><br>\n'
     if joined_date:
         joined_str = translate['Joined']
+        print('time_days_ago 1: ' + joined_date + ' ' + str(time_days_ago(joined_date)))
         if time_days_ago(joined_date) < 7:
             joined_str = '<b>' + translate['New account'] + '</b>'
         html_str += \
@@ -821,6 +822,7 @@ def _get_profile_header_after_search(base_dir: str,
         actor_proxied + '</b><br>\n'
     if joined_date:
         joined_str = translate['Joined']
+        print('time_days_ago 2: ' + joined_date + ' ' + str(time_days_ago(joined_date)))
         if time_days_ago(joined_date) < 7:
             joined_str = '<b>' + translate['New account'] + '</b>'
         html_str += '        <p>' + joined_str + ' ' + \
