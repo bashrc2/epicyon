@@ -121,6 +121,9 @@ from maps import get_location_from_post
 from session import get_json_valid
 from session import get_json
 
+# maximum length for display name within html posts
+MAX_DISPLAY_NAME_LENGTH = 42
+
 
 def _html_post_metadata_open_graph(domain: str, post_json_object: {},
                                    system_language: str) -> str:
@@ -1406,6 +1409,15 @@ def _get_post_title_announce_html(base_dir: str,
         if len(announce_display_name) < 2 or \
            display_name_is_emoji(announce_display_name):
             announce_display_name = None
+    if announce_display_name:
+        # enforce maximum length for display name
+        if len(announce_display_name) > MAX_DISPLAY_NAME_LENGTH:
+            if ':' in announce_display_name:
+                announce_display_name = \
+                    announce_display_name.split(':')[0].strip()
+            if len(announce_display_name) > MAX_DISPLAY_NAME_LENGTH:
+                announce_display_name = \
+                    announce_display_name[:MAX_DISPLAY_NAME_LENGTH]
     if not announce_display_name and announce_domain:
         announce_display_name = announce_nickname + '@' + announce_domain
 
@@ -2410,6 +2422,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
            display_name_is_emoji(display_name):
             display_name = None
     if display_name:
+        # enforce maximum length for the display name
+        if len(display_name) > MAX_DISPLAY_NAME_LENGTH:
+            if ':' in display_name:
+                display_name = display_name.split(':')[0].strip()
+            if len(display_name) > MAX_DISPLAY_NAME_LENGTH:
+                display_name = display_name[:MAX_DISPLAY_NAME_LENGTH]
+        # add emojis
         if ':' in display_name:
             display_name = \
                 add_emoji_to_display_name(session, base_dir, http_prefix,
