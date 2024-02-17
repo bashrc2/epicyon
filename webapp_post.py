@@ -1413,8 +1413,10 @@ def _get_post_title_announce_html(base_dir: str,
         # enforce maximum length for display name
         if len(announce_display_name) > MAX_DISPLAY_NAME_LENGTH:
             if ':' in announce_display_name:
-                announce_display_name = \
+                announce_display_name_short = \
                     announce_display_name.split(':')[0].strip()
+                if len(announce_display_name_short) > 2:
+                    announce_display_name = announce_display_name_short
             if len(announce_display_name) > MAX_DISPLAY_NAME_LENGTH:
                 announce_display_name = \
                     announce_display_name[:MAX_DISPLAY_NAME_LENGTH]
@@ -2425,7 +2427,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
         # enforce maximum length for the display name
         if len(display_name) > MAX_DISPLAY_NAME_LENGTH:
             if ':' in display_name:
-                display_name = display_name.split(':')[0].strip()
+                display_name_short = display_name.split(':')[0].strip()
+                if len(display_name_short) > 2:
+                    display_name = display_name_short
             if len(display_name) > MAX_DISPLAY_NAME_LENGTH:
                 display_name = display_name[:MAX_DISPLAY_NAME_LENGTH]
         # add emojis
