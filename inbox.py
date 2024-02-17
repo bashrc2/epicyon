@@ -40,6 +40,7 @@ from utils import domain_permitted
 from utils import is_group_account
 from utils import is_system_account
 from utils import invalid_ciphertext
+from utils import contains_private_key
 from utils import remove_html
 from utils import file_last_modified
 from utils import has_object_string
@@ -1555,6 +1556,11 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                     print('REJECT: reply to post which does not ' +
                           'allow comments: ' + original_post_id)
                     return False
+    if contains_private_key(message_json['object']['content']):
+        print('REJECT: someone posted their private key ' +
+              message_json['object']['id'] + ' ' +
+              message_json['object']['content'])
+        return False
     if invalid_ciphertext(message_json['object']['content']):
         print('REJECT: malformed ciphertext in content ' +
               message_json['object']['id'] + ' ' +

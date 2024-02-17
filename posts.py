@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import contains_private_key
 from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import date_epoch
@@ -6044,6 +6045,13 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if reject_twitter_summary(base_dir, nickname, domain,
                                   summary_str):
             print('WARN: announced post has twitter summary ' +
+                  str(announced_json))
+            _reject_announce(announce_filename,
+                             base_dir, nickname, domain, post_id,
+                             recent_posts_cache)
+            return None
+        if contains_private_key(content_str):
+            print("WARN: announced post contains someone's private key " +
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,

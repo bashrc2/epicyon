@@ -3664,6 +3664,18 @@ def contains_pgp_public_key(content: str) -> bool:
     return False
 
 
+def contains_private_key(content: str) -> bool:
+    """Returns true if the given content contains a PGP private key
+    """
+    if '--BEGIN PGP PRIVATE KEY BLOCK--' in content:
+        if '--END PGP PRIVATE KEY BLOCK--' in content:
+            return True
+    if '--BEGIN RSA PRIVATE KEY--' in content:
+        if '--END RSA PRIVATE KEY--' in content:
+            return True
+    return False
+
+
 def is_pgp_encrypted(content: str) -> bool:
     """Returns true if the given content is PGP encrypted
     """
