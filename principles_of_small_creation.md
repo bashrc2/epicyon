@@ -25,7 +25,7 @@
  * We use CC-BY-NC for media and AGPL for software.
    - More permisive licenses allow BigTech companies to do what they wilt with your content and code.
    - There's a track record of BigTech refusing to use AGPL. It's like kryptonite to them.
-   - Any legal methods via which we can leverage in order to hurl spanners into the works of BigTech companies, or hinder Large Language Models should be utilised.
+   - Any legal methods which can be leveraged in order to hurl spanners into the works of BigTech companies, or hinder Large Language Models should be utilised.
  * The licensing thing scares off the grifters and suits, whether or not you have the personal means to hire lawyers or participate in court cases.
  * Even if you have no faith in, or don't believe in the legal system at all, these license symbols ward off bad spirits.
  * This lets us distribute Small Media through lots of disconnected networks, while making sure that anyone who wants to can find the creator (and pay them!), and ensuring that a company like Disney or Facebook won’t swoop in and profit off of our hard work.
