@@ -36,7 +36,7 @@
  * No one is going to be upset that your low budget, anti-capitalist disaster movie doesn’t have billion dollar special effects. Tell the story and move on.
  * Quick doesn’t mean “Go as Quickly as you can”, it means “cut out any steps that won’t help you finish the thing.” Don’t burn yourself out making a small thing! But also, don’t spend so much time polishing the thing that you never finish it.
 ## Don’t give power and money to those that seek to destroy you, when an alternative is available
- * Disney, Comcast, Fox, Sony.
+ * Disney, Comcast, Fox, Sony, Google, Facebook, OpenAI, X, Microsoft.
 ## Provide community based alternatives to the things that major corporations create
  * We can make our own News, entertainment, social media, music, art, games, toys, clothes, and food at various capacities.
 ## Support one another
