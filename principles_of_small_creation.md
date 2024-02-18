@@ -22,12 +22,13 @@
  * Consider the impact of your work on your community, strive to do no harm.
 ## Share, and make sure everyone else does
  *  This means licensing clearly, and making attribution easy
- * We use CC-BY-SA for media and (a)GPL for software.
-   - More permisive licenses are fine, more restrictive licenses aren’t.
-   - “CC-ND” limits the ability for others to transform your work, perpetuating the worst parts of our current copyright system.
-   - “CC-NC” prohibits those who share your work from monetizing in any way. Including CC-NC content in a magazine or web page with advertisements is a license violation, this can quickly lead to unsustainable situations.
- * The licensing thing scares a lot of people off. CC-BY-SA means Share it with other people, credit me for it, and if you decide to make any changes or incorporate this in to another work, release your stuff under the same terms.
- * This lets us distribute Small Media through lots of disconnected networks, while making sure that anyone who wants to can find the creator (and pay them!), and ensuring that a company like Disney won’t swoop in and profit off of our hard work.
+ * We use CC-BY-NC for media and AGPL for software.
+   - More permisive licenses allow BigTech companies to do what they wilt with your content.
+   - There's a track record of BigTech refusing to use AGPL. It's like kryptonite to them.
+   - Any legal methods via which we can leverage in order to hurl spanners into the works of BigTech companies, or hinder Large Language Models should be utilised
+ * The licensing thing scares off the grifters and suits, whether or not you have the personal means to hire lawyers or participate in court cases.
+ * Even if you have no faith in, or don't believe in the legal system at all, these license symbols ward off bad spirits.
+ * This lets us distribute Small Media through lots of disconnected networks, while making sure that anyone who wants to can find the creator (and pay them!), and ensuring that a company like Disney or Facebook won’t swoop in and profit off of our hard work.
 ## Know your neighbors
  * Physical or digital, get to know your community. Makes it easier to look out for one another.
  * We’re all real people, after all.
