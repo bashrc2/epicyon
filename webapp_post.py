@@ -125,6 +125,24 @@ from session import get_json
 MAX_DISPLAY_NAME_LENGTH = 42
 
 
+def _enforce_max_display_name_length(display_name: str) -> str:
+    """Ensures that the display name does not get too long
+    """
+    # enforce maximum length for the display name
+    if len(display_name) <= MAX_DISPLAY_NAME_LENGTH:
+        return display_name
+
+    if ':' in display_name:
+        display_name_short = display_name.split(':')[0].strip()
+        if len(display_name_short) > 2:
+            display_name = display_name_short
+
+    if len(display_name) > MAX_DISPLAY_NAME_LENGTH:
+        display_name = display_name[:MAX_DISPLAY_NAME_LENGTH]
+
+    return display_name
+
+
 def _html_post_metadata_open_graph(domain: str, post_json_object: {},
                                    system_language: str) -> str:
     """Returns html OpenGraph metadata for a post
@@ -1411,15 +1429,8 @@ def _get_post_title_announce_html(base_dir: str,
             announce_display_name = None
     if announce_display_name:
         # enforce maximum length for display name
-        if len(announce_display_name) > MAX_DISPLAY_NAME_LENGTH:
-            if ':' in announce_display_name:
-                announce_display_name_short = \
-                    announce_display_name.split(':')[0].strip()
-                if len(announce_display_name_short) > 2:
-                    announce_display_name = announce_display_name_short
-            if len(announce_display_name) > MAX_DISPLAY_NAME_LENGTH:
-                announce_display_name = \
-                    announce_display_name[:MAX_DISPLAY_NAME_LENGTH]
+        announce_display_name = \
+            _enforce_max_display_name_length(announce_display_name)
     if not announce_display_name and announce_domain:
         announce_display_name = announce_nickname + '@' + announce_domain
 
@@ -2424,14 +2435,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
            display_name_is_emoji(display_name):
             display_name = None
     if display_name:
-        # enforce maximum length for the display name
-        if len(display_name) > MAX_DISPLAY_NAME_LENGTH:
-            if ':' in display_name:
-                display_name_short = display_name.split(':')[0].strip()
-                if len(display_name_short) > 2:
-                    display_name = display_name_short
-            if len(display_name) > MAX_DISPLAY_NAME_LENGTH:
-                display_name = display_name[:MAX_DISPLAY_NAME_LENGTH]
+        display_name = _enforce_max_display_name_length(display_name)
         # add emojis
         if ':' in display_name:
             display_name = \

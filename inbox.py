@@ -1417,43 +1417,70 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         return True
 
     if not message_json['object'].get('published'):
+        if message_json['object'].get('id'):
+            print('REJECT inbox post does not have a published date. ' +
+                  str(message_json['object']['id']))
         return False
     published = message_json['object']['published']
     if 'T' not in published:
+        if message_json['object'].get('id'):
+            print('REJECT inbox post does not use expected time format. ' +
+                  published + ' ' + str(message_json['object']['id']))
         return False
     if 'Z' not in published:
-        print('REJECT inbox post does not use Zulu time format. ' +
-              published)
+        if message_json['object'].get('id'):
+            print('REJECT inbox post does not use Zulu time format. ' +
+                  published + ' ' + str(message_json['object']['id']))
         return False
     if '.' in published:
         # converts 2022-03-30T17:37:58.734Z into 2022-03-30T17:37:58Z
         published = published.split('.')[0] + 'Z'
         message_json['object']['published'] = published
     if not valid_post_date(published, 90, debug):
+        if message_json['object'].get('id'):
+            print('REJECT: invalid post published date ' +
+                  str(published) + ' ' +
+                  str(message_json['object']['id']))
         return False
 
     # if the post has been edited then check its edit date
     if message_json['object'].get('updated'):
         published_update = message_json['object']['updated']
         if 'T' not in published_update:
+            if message_json['object'].get('id'):
+                print('REJECT: invalid post update date format ' +
+                      str(published_update) + ' ' +
+                      str(message_json['object']['id']))
             return False
         if 'Z' not in published_update:
+            if message_json['object'].get('id'):
+                print('REJECT: post update date not in Zulu time ' +
+                      str(published_update) + ' ' +
+                      str(message_json['object']['id']))
             return False
         if '.' in published_update:
             # converts 2022-03-30T17:37:58.734Z into 2022-03-30T17:37:58Z
             published_update = published_update.split('.')[0] + 'Z'
             message_json['object']['updated'] = published_update
         if not valid_post_date(published_update, 90, debug):
+            if message_json['object'].get('id'):
+                print('REJECT: invalid post update date ' +
+                      str(published_update) + ' ' +
+                      str(message_json['object']['id']))
             return False
 
     summary = None
     if message_json['object'].get('summary'):
         summary = message_json['object']['summary']
         if not isinstance(summary, str):
-            print('WARN: content warning is not a string')
+            if message_json['object'].get('id'):
+                print('REJECT: content warning is not a string ' +
+                      str(summary) + ' ' + str(message_json['object']['id']))
             return False
         if summary != valid_content_warning(summary):
-            print('WARN: invalid content warning ' + summary)
+            if message_json['object'].get('id'):
+                print('REJECT: invalid content warning ' + summary + ' ' +
+                      str(message_json['object']['id']))
             return False
         if dangerous_markup(summary, allow_local_network_access, []):
             if message_json['object'].get('id'):
@@ -1483,7 +1510,7 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     if dangerous_markup(content_str, allow_local_network_access, ['pre']):
         if message_json['object'].get('id'):
             print('REJECT ARBITRARY HTML 2: ' +
-                  message_json['object']['id'])
+                  str(message_json['object']['id']))
         if debug:
             print('REJECT ARBITRARY HTML: bad string in post - ' +
                   content_str)
@@ -1493,21 +1520,23 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     mentions_est = _estimate_number_of_mentions(content_str)
     if mentions_est > max_mentions:
         if message_json['object'].get('id'):
-            print('REJECT HELLTHREAD: ' + message_json['object']['id'])
+            print('REJECT HELLTHREAD: ' + str(message_json['object']['id']))
         if debug:
             print('REJECT HELLTHREAD: Too many mentions in post - ' +
                   content_str)
         return False
     if _estimate_number_of_emoji(content_str) > max_emoji:
         if message_json['object'].get('id'):
-            print('REJECT EMOJI OVERLOAD: ' + message_json['object']['id'])
+            print('REJECT EMOJI OVERLOAD: ' +
+                  str(message_json['object']['id']))
         if debug:
             print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
                   content_str)
         return False
     if _estimate_number_of_hashtags(content_str) > max_hashtags:
         if message_json['object'].get('id'):
-            print('REJECT HASHTAG OVERLOAD: ' + message_json['object']['id'])
+            print('REJECT HASHTAG OVERLOAD: ' +
+                  str(message_json['object']['id']))
         if debug:
             print('REJECT HASHTAG OVERLOAD: Too many hashtags in post - ' +
                   content_str)
@@ -1528,6 +1557,9 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                                     message_json, system_language,
                                     http_prefix, domain_full,
                                     person_cache):
+        if message_json['object'].get('id'):
+            print('REJECT: content not understood ' +
+                  str(message_json['object']['id']))
         return False
 
     # check for urls which are too long
@@ -1542,8 +1574,9 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         content_all = summary + ' ' + content_str + ' ' + media_descriptions
     if is_filtered(base_dir, nickname, domain, content_all,
                    system_language):
-        if message_json.get('id'):
-            print('REJECT: content filtered ' + str(message_json['id']))
+        if message_json['object'].get('id'):
+            print('REJECT: content filtered ' +
+                  str(message_json['object']['id']))
         return False
     reply_id = get_reply_to(message_json['object'])
     if reply_id:
@@ -1557,14 +1590,16 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                           'allow comments: ' + original_post_id)
                     return False
     if contains_private_key(message_json['object']['content']):
-        print('REJECT: someone posted their private key ' +
-              message_json['object']['id'] + ' ' +
-              message_json['object']['content'])
+        if message_json['object'].get('id'):
+            print('REJECT: someone posted their private key ' +
+                  str(message_json['object']['id']) + ' ' +
+                  message_json['object']['content'])
         return False
     if invalid_ciphertext(message_json['object']['content']):
-        print('REJECT: malformed ciphertext in content ' +
-              message_json['object']['id'] + ' ' +
-              message_json['object']['content'])
+        if message_json['object'].get('id'):
+            print('REJECT: malformed ciphertext in content ' +
+                  str(message_json['object']['id']) + ' ' +
+                  message_json['object']['content'])
         return False
     if debug:
         print('ACCEPT: post content is valid')
