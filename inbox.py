@@ -689,7 +689,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     key_id specifies the actor sending the post
     """
     if len(message_bytes) > 10240:
-        print('WARN: inbox message too long ' +
+        print('REJECT: inbox message too long ' +
               str(len(message_bytes)) + ' bytes')
         return None
     original_domain = domain
@@ -716,24 +716,26 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     # check that the sender is valid
     if sending_actor:
         if not isinstance(sending_actor, str):
+            print('REJECT: sending actor is not a string ' +
+                  str(sending_actor))
             return None
         actor = sending_actor
         post_nickname = get_nickname_from_actor(sending_actor)
         if not post_nickname:
-            print('No post Nickname in actor ' + sending_actor)
+            print('REJECT: No post Nickname in actor ' + sending_actor)
             return None
         post_domain, post_port = \
             get_domain_from_actor(sending_actor)
         if not post_domain:
             if debug:
                 pprint(post_json_object)
-            print('No post Domain in actor')
+            print('REJECT: No post Domain in actor ' + str(sending_actor))
             return None
         if is_blocked(base_dir, nickname, domain,
                       post_nickname, post_domain,
                       blocked_cache, block_federated):
-            if debug:
-                print('DEBUG: post from ' + post_nickname + ' blocked')
+            print('BLOCK: post from ' +
+                  post_nickname + '@' + post_domain + ' blocked')
             return None
         post_domain = get_full_domain(post_domain, post_port)
 
@@ -758,10 +760,9 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                 if reply_domain:
                     if is_blocked_domain(base_dir, reply_domain,
                                          blocked_cache, block_federated):
-                        if debug:
-                            print('WARN: post contains reply from ' +
-                                  str(actor) +
-                                  ' to a blocked domain: ' + reply_domain)
+                        print('BLOCK: post contains reply from ' +
+                              str(actor) +
+                              ' to a blocked domain: ' + reply_domain)
                         return None
 
                 reply_nickname = \
@@ -769,29 +770,26 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                 if reply_nickname and reply_domain:
                     if is_blocked_nickname(base_dir, reply_domain,
                                            blocked_cache):
-                        if debug:
-                            print('WARN: post contains reply from ' +
-                                  str(actor) +
-                                  ' to a blocked nickname: ' +
-                                  reply_nickname + '@' + reply_domain)
+                        print('BLOCK: post contains reply from ' +
+                              str(actor) +
+                              ' to a blocked nickname: ' +
+                              reply_nickname + '@' + reply_domain)
                         return None
                     if is_blocked(base_dir, nickname, domain,
                                   reply_nickname, reply_domain,
                                   blocked_cache, block_federated):
-                        if debug:
-                            print('WARN: post contains reply from ' +
-                                  str(actor) +
-                                  ' to a blocked account: ' +
-                                  reply_nickname + '@' + reply_domain)
+                        print('BLOCK: post contains reply from ' +
+                              str(actor) +
+                              ' to a blocked account: ' +
+                              reply_nickname + '@' + reply_domain)
                         return None
                     if _deny_non_follower(base_dir, nickname, domain,
                                           reply_nickname, reply_domain,
                                           actor):
-                        if debug:
-                            print('WARN: post contains reply from ' +
-                                  str(actor) +
-                                  ' who is not a follower of ' +
-                                  nickname + '@' + domain)
+                        print('REJECT: post contains reply from ' +
+                              str(actor) +
+                              ' who is not a follower of ' +
+                              nickname + '@' + domain)
                         return None
 
     # filter on the content of the post
@@ -805,19 +803,22 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             summary_str + ' ' + content_str + ' ' + media_descriptions
         if is_filtered(base_dir, nickname, domain, content_all,
                        system_language):
-            if debug:
-                print('WARN: post was filtered out due to content')
+            if post_json_object.get('id'):
+                print('REJECT: post was filtered out due to content ' +
+                      str(post_json_object['id']))
             return None
         if reject_twitter_summary(base_dir, nickname, domain,
                                   summary_str):
-            if debug:
-                print('WARN: post was filtered out due to ' +
-                      'twitter summary')
+            if post_json_object.get('id'):
+                print('REJECT: post was filtered out due to ' +
+                      'twitter summary ' + str(post_json_object['id']))
             return None
 
     original_post_id = None
     if post_json_object.get('id'):
         if not isinstance(post_json_object['id'], str):
+            print('REJECT: post id is not a string ' +
+                  str(post_json_object['id']))
             return None
         original_post_id = remove_id_ending(post_json_object['id'])
 
