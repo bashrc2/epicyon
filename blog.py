@@ -273,7 +273,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)
     json_content = get_content_from_post(post_json_object, system_language,
-                                         languages_understood)
+                                         languages_understood, "content")
     minimize_all_images = False
     attachment_str, _ = \
         get_post_attachments_as_html(base_dir, nickname, domain,

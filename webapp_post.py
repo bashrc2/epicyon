@@ -2654,7 +2654,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                           languages_understood)
 
     content_str = get_content_from_post(post_json_object, system_language,
-                                        languages_understood)
+                                        languages_understood, "content")
 
     # remove any css styling within the post itself
     content_str = remove_style_within_html(content_str)
@@ -2751,7 +2751,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     domain_full = get_full_domain(domain, port)
     if not content_str:
         content_str = get_content_from_post(post_json_object, system_language,
-                                            languages_understood)
+                                            languages_understood, "content")
         # remove any css styling within the post itself
         content_str = remove_style_within_html(content_str)
         content_language = \

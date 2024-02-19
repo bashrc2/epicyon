@@ -434,7 +434,7 @@ def remove_markup_tag(html: str, tag: str) -> str:
 
 def get_content_from_post(post_json_object: {}, system_language: str,
                           languages_understood: [],
-                          content_type: str = "content") -> str:
+                          content_type: str) -> str:
     """Returns the content from the post in the given language
     including searching for a matching entry within contentMap
     """

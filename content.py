@@ -2045,7 +2045,7 @@ def create_edits_html(edits_json: {}, post_json_object: {},
     edit_dates_list.sort(reverse=True)
     edits_str = ''
     content = get_content_from_post(post_json_object, system_language,
-                                    languages_understood)
+                                    languages_understood, "content")
     if not content:
         return ''
     content = remove_html(content)
@@ -2054,7 +2054,7 @@ def create_edits_html(edits_json: {}, post_json_object: {},
         if not has_object_dict(prev_json):
             continue
         prev_content = get_content_from_post(prev_json, system_language,
-                                             languages_understood)
+                                             languages_understood, "content")
         if not prev_content:
             continue
         prev_content = remove_html(prev_content)
