@@ -4019,7 +4019,8 @@ class PubServer(BaseHTTPRequestHandler):
                 unfollow_account(self.server.base_dir, self.post_to_nickname,
                                  self.server.domain,
                                  following_nickname, following_domain_full,
-                                 self.server.debug, group_account)
+                                 self.server.debug, group_account,
+                                 'following.txt')
                 self._post_to_outbox_thread(unfollow_json,
                                             curr_session, proxy_type)
 

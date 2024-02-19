@@ -2748,7 +2748,7 @@ def _test_followers_of_person(base_dir: str) -> None:
     create_person(base_dir, 'sausagedog', domain, port,
                   http_prefix, True, False, password)
 
-    clear_follows(base_dir, nickname, domain)
+    clear_follows(base_dir, nickname, domain, 'following.txt')
     follow_person(base_dir, nickname, domain, 'maxboardroom', domain,
                   federation_list, False, False)
     follow_person(base_dir, 'drokk', domain, 'ultrapancake', domain,
@@ -2903,7 +2903,7 @@ def _test_follows(base_dir: str) -> None:
     create_person(base_dir, nickname, domain, port, http_prefix, True,
                   False, password)
 
-    clear_follows(base_dir, nickname, domain)
+    clear_follows(base_dir, nickname, domain, 'following.txt')
     follow_person(base_dir, nickname, domain, 'badger', 'wild.com',
                   federation_list, False, False)
     follow_person(base_dir, nickname, domain, 'squirrel', 'secret.com',
@@ -2930,7 +2930,7 @@ def _test_follows(base_dir: str) -> None:
 
         assert domain_found
         unfollow_account(base_dir, nickname, domain, 'batman', 'mesh.com',
-                         True, False)
+                         True, False, 'following.txt')
 
         domain_found = False
         for following_domain in fp_foll:
@@ -7898,7 +7898,8 @@ def _test_hashtag_maps():
     map_links = get_map_links_from_post_content(content)
     link = "www.google.com/maps/@52.217291,-3.0811865,20.04z"
     assert link in map_links
-    zoom, latitude, longitude = geocoords_from_map_link(link)
+    zoom, latitude, longitude = \
+        geocoords_from_map_link(link, 'openstreetmap.org')
     assert zoom == 20
     assert latitude
     assert int(latitude * 1000) == 52217
@@ -7906,7 +7907,8 @@ def _test_hashtag_maps():
     assert int(longitude * 1000) == -3081
     link = "www.openstreetmap.org/#map=19/52.90860/-3.59917"
     assert link in map_links
-    zoom, latitude, longitude = geocoords_from_map_link(link)
+    zoom, latitude, longitude = \
+        geocoords_from_map_link(link, 'openstreetmap.org')
     assert zoom == 19
     assert latitude
     assert int(latitude * 1000) == 52908

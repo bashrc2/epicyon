@@ -322,9 +322,7 @@ def _geocoords_from_wego_link(url: str) -> (int, float, float):
 
 
 def geocoords_from_map_link(url: str,
-                            osm_domain: str = 'openstreetmap.org') -> (int,
-                                                                       float,
-                                                                       float):
+                            osm_domain: str) -> (int, float, float):
     """Returns geocoordinates from a map link url
     """
     if osm_domain in url:

@@ -2972,7 +2972,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                         location_domain)
                 # remember the coordinates
                 map_zoom, map_latitude, map_longitude = \
-                    geocoords_from_map_link(location_str)
+                    geocoords_from_map_link(location_str,
+                                            'openstreetmap.org')
                 if map_zoom and map_latitude and map_longitude:
                     set_map_preferences_coords(base_dir, nickname, domain,
                                                map_latitude, map_longitude,

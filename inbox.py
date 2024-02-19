@@ -375,7 +375,9 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
     location_str = get_location_from_post(post_json_object)
     if location_str:
         if resembles_url(location_str):
-            zoom, latitude, longitude = geocoords_from_map_link(location_str)
+            zoom, latitude, longitude = \
+                geocoords_from_map_link(location_str,
+                                        'openstreetmap.org')
             if latitude and longitude and zoom and \
                location_str not in map_links:
                 map_links.append(location_str)

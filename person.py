@@ -648,7 +648,7 @@ def register_account(base_dir: str, http_prefix: str, domain: str, port: int,
 
 def create_group(base_dir: str, nickname: str, domain: str, port: int,
                  http_prefix: str, save_to_file: bool,
-                 password: str = None) -> (str, str, {}, {}):
+                 password: str) -> (str, str, {}, {}):
     """Returns a group
     """
     (private_key_pem, public_key_pem,

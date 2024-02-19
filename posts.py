@@ -341,10 +341,9 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
                    base_dir: str, session, wf_request: {}, person_cache: {},
                    project_version: str, http_prefix: str,
                    nickname: str, domain: str,
-                   box_name: str = 'inbox',
-                   source_id: int = 0,
-                   system_language: str = 'en') -> (str, str, str, str, str,
-                                                    str, str, bool):
+                   box_name: str, source_id: int,
+                   system_language: str) -> (str, str, str, str, str,
+                                             str, str, bool):
     debug = False
     profile_str = 'https://www.w3.org/ns/activitystreams'
     as_header = {
@@ -1490,7 +1489,7 @@ def _create_post_place_and_time(event_date: str, end_date: str,
         latitude = longitude = None
         if '://' in location:
             _, latitude, longitude = \
-                geocoords_from_map_link(location)
+                geocoords_from_map_link(location, 'openstreetmap.org')
         if latitude and longitude:
             tags.append({
                 "@context": "https://www.w3.org/ns/activitystreams",

@@ -145,7 +145,7 @@ def understood_post_language(base_dir: str, nickname: str,
     return False
 
 
-def libretranslate_languages(url: str, api_key: str = None) -> []:
+def libretranslate_languages(url: str, api_key: str) -> []:
     """Returns a list of supported languages
     """
     if not url:

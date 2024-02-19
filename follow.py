@@ -310,7 +310,7 @@ def is_follower_of_person(base_dir: str, nickname: str, domain: str,
 def unfollow_account(base_dir: str, nickname: str, domain: str,
                      follow_nickname: str, follow_domain: str,
                      debug: bool, group_account: bool,
-                     follow_file: str = 'following.txt') -> bool:
+                     follow_file: str) -> bool:
     """Removes a person to the follow list
     """
     domain = remove_domain_port(domain)
@@ -387,7 +387,7 @@ def unfollower_of_account(base_dir: str, nickname: str, domain: str,
 
 
 def clear_follows(base_dir: str, nickname: str, domain: str,
-                  follow_file: str = 'following.txt') -> None:
+                  follow_file: str) -> None:
     """Removes all follows
     """
     if not os.path.isdir(base_dir + '/accounts'):
@@ -1506,7 +1506,7 @@ def outbox_undo_follow(base_dir: str, message_json: {}, debug: bool) -> None:
         has_group_type(base_dir, message_json['object']['object'], None)
     if unfollow_account(base_dir, nickname_follower, domain_follower_full,
                         nickname_following, domain_following_full,
-                        debug, group_account):
+                        debug, group_account, 'following.txt'):
         if debug:
             print('DEBUG: ' + nickname_follower + ' unfollowed ' +
                   nickname_following + '@' + domain_following_full)

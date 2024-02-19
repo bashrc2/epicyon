@@ -3721,7 +3721,7 @@ def _command_options() -> None:
                            languages_understood, translate, buy_url, chat_url,
                            auto_cw_cache)
         domain_full = domain + ':' + str(port)
-        clear_follows(base_dir, nickname, domain)
+        clear_follows(base_dir, nickname, domain, 'following.txt')
         follow_person(base_dir, nickname, domain, 'maxboardroom', domain_full,
                       federation_list, False, False)
         follow_person(base_dir, nickname, domain, 'ultrapancake', domain_full,

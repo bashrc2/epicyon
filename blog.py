@@ -200,7 +200,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                             peertube_instances: [],
                             system_language: str,
                             person_cache: {},
-                            blog_separator: str = '<hr>') -> str:
+                            blog_separator: str) -> str:
     """Returns the content for a single blog post
     """
     linked_author = False
@@ -501,7 +501,7 @@ def html_blog_post(session, authorized: bool,
                                         domain_full, post_json_object,
                                         None, False,
                                         peertube_instances, system_language,
-                                        person_cache)
+                                        person_cache, '<hr>')
 
     # show rss links
     blog_str += '<p class="rssfeed">'
@@ -592,7 +592,8 @@ def html_blog_page(authorized: bool, session,
                                     base_dir, http_prefix, translate,
                                     nickname, domain, domain_full, item,
                                     None, True, peertube_instances,
-                                    system_language, person_cache)
+                                    system_language, person_cache,
+                                    '<hr>')
 
     if len(timeline_json['orderedItems']) >= no_of_items:
         blog_str += navigate_str
