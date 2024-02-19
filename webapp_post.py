@@ -316,7 +316,7 @@ def prepare_html_post_nickname(nickname: str, post_html: str) -> str:
 
 
 def replace_link_variable(link: str, variable_name: str, value: str,
-                          separator: str = '?') -> str:
+                          separator: str) -> str:
     """Replaces a variable within the given link
     """
     full_var = separator + variable_name + '='
