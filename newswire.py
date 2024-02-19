@@ -1102,7 +1102,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
     return result
 
 
-def _json_feed_v1to_dict(base_dir: str, domain: str, xml_str: str,
+def _json_feed_v1to_dict(base_dir: str, xml_str: str,
                          moderated: bool, mirrored: bool,
                          max_posts_per_source: int,
                          max_feed_item_size_kb: int,
@@ -1360,7 +1360,7 @@ def _xml_str_to_dict(base_dir: str, domain: str, xml_str: str,
                                   session, debug, preferred_podcast_formats,
                                   system_language)
     if 'https://jsonfeed.org/version/1' in xml_str:
-        return _json_feed_v1to_dict(base_dir, domain,
+        return _json_feed_v1to_dict(base_dir,
                                     xml_str, moderated, mirrored,
                                     max_posts_per_source,
                                     max_feed_item_size_kb,
