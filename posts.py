@@ -2933,8 +2933,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
               media_license_url: str, media_creator: str,
               translate: {}, buy_url: str, chat_url: str,
               auto_cw_cache: {},
-              debug: bool = False, in_reply_to: str = None,
-              in_reply_to_atom_uri: str = None, subject: str = None) -> int:
+              debug: bool, in_reply_to: str,
+              in_reply_to_atom_uri: str, subject: str) -> int:
     """Post to another inbox. Used by unit tests.
     """
     with_digest = True
