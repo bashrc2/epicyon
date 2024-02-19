@@ -3129,11 +3129,9 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                          event_date: str, event_time: str, event_end_time: str,
                          location: str, translate: {},
                          buy_url: str, chat_url: str, auto_cw_cache: {},
-                         debug: bool = False,
-                         in_reply_to: str = None,
-                         in_reply_to_atom_uri: str = None,
-                         conversation_id: str = None,
-                         subject: str = None) -> int:
+                         debug: bool, in_reply_to: str,
+                         in_reply_to_atom_uri: str,
+                         conversation_id: str, subject: str) -> int:
     """Send a post via a proxy (c2s)
     """
     if not session:
