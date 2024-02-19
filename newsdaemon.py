@@ -149,7 +149,7 @@ def _hashtag_logical_and(tree: [], hashtags: [], moderated: bool,
     for arg_index in range(1, len(tree)):
         arg_value = False
         if isinstance(tree[arg_index], str):
-            arg_value = (tree[arg_index] in hashtags)
+            arg_value = tree[arg_index] in hashtags
         elif isinstance(tree[arg_index], list):
             arg_value = hashtag_rule_resolve(tree[arg_index],
                                              hashtags, moderated,
@@ -168,7 +168,7 @@ def _hashtag_logical_or(tree: [], hashtags: [], moderated: bool,
     for arg_index in range(1, len(tree)):
         arg_value = False
         if isinstance(tree[arg_index], str):
-            arg_value = (tree[arg_index] in hashtags)
+            arg_value = tree[arg_index] in hashtags
         elif isinstance(tree[arg_index], list):
             arg_value = hashtag_rule_resolve(tree[arg_index],
                                              hashtags, moderated,
@@ -188,7 +188,7 @@ def _hashtag_logical_xor(tree: [], hashtags: [], moderated: bool,
     for arg_index in range(1, len(tree)):
         arg_value = False
         if isinstance(tree[arg_index], str):
-            arg_value = (tree[arg_index] in hashtags)
+            arg_value = tree[arg_index] in hashtags
         elif isinstance(tree[arg_index], list):
             arg_value = hashtag_rule_resolve(tree[arg_index],
                                              hashtags, moderated,
