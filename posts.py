@@ -3024,7 +3024,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                           auto_cw_cache)
 
     # get the senders private key
-    private_key_pem = get_person_key(nickname, domain, base_dir, 'private')
+    private_key_pem = get_person_key(nickname, domain, base_dir,
+                                     'private', debug)
     if len(private_key_pem) == 0:
         return 6
 

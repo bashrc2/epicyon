@@ -46,8 +46,9 @@ def get_instance_actor_key(base_dir: str, domain: str) -> str:
 
 
 def get_person_key(nickname: str, domain: str, base_dir: str,
-                   key_type: str = 'public', debug: bool = False):
+                   key_type: str, debug: bool):
     """Returns the public or private key of a person
+    key_type can be private or public
     """
     if key_type == 'private':
         key_pem = _get_local_private_key(base_dir, nickname, domain)
