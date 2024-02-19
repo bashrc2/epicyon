@@ -4232,7 +4232,7 @@ def create_bookmarks_timeline(base_dir: str,
     return _create_box_indexed({}, base_dir, 'tlbookmarks',
                                nickname, domain,
                                port, http_prefix, items_per_page, header_only,
-                               True, 0, False, 0, page_number)
+                               True, 0, False, 0, page_number, '')
 
 
 def create_dm_timeline(recent_posts_cache: {},
@@ -4265,7 +4265,7 @@ def create_blogs_timeline(base_dir: str, nickname: str, domain: str,
     return _create_box_indexed({}, base_dir, 'tlblogs', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
-                               0, False, 0, page_number)
+                               0, False, 0, page_number, '')
 
 
 def create_features_timeline(base_dir: str,
@@ -4275,7 +4275,7 @@ def create_features_timeline(base_dir: str,
     return _create_box_indexed({}, base_dir, 'tlfeatures', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
-                               0, False, 0, page_number)
+                               0, False, 0, page_number, '')
 
 
 def create_media_timeline(base_dir: str, nickname: str, domain: str,
@@ -4284,7 +4284,7 @@ def create_media_timeline(base_dir: str, nickname: str, domain: str,
     return _create_box_indexed({}, base_dir, 'tlmedia', nickname,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
-                               0, False, 0, page_number)
+                               0, False, 0, page_number, '')
 
 
 def create_news_timeline(base_dir: str, domain: str,
@@ -4296,7 +4296,7 @@ def create_news_timeline(base_dir: str, domain: str,
                                domain, port, http_prefix,
                                items_per_page, header_only, True,
                                newswire_votes_threshold, positive_voting,
-                               voting_time_mins, page_number)
+                               voting_time_mins, page_number, '')
 
 
 def create_outbox(base_dir: str, nickname: str, domain: str,
@@ -4306,7 +4306,7 @@ def create_outbox(base_dir: str, nickname: str, domain: str,
     return _create_box_indexed({}, base_dir, 'outbox',
                                nickname, domain, port, http_prefix,
                                items_per_page, header_only, authorized,
-                               0, False, 0, page_number)
+                               0, False, 0, page_number, '')
 
 
 def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
@@ -4735,7 +4735,7 @@ def _create_box_indexed(recent_posts_cache: {},
                         authorized: bool,
                         newswire_votes_threshold: int, positive_voting: bool,
                         voting_time_mins: int, page_number: int,
-                        first_post_id: str = '') -> {}:
+                        first_post_id: str) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not page_number:

@@ -23,7 +23,7 @@ from utils import load_json
 
 
 def get_moved_accounts(base_dir: str, nickname: str, domain: str,
-                       filename: str = 'following.txt') -> {}:
+                       filename: str) -> {}:
     """returns a dict of moved accounts
     """
     moved_accounts_filename = base_dir + '/accounts/actors_moved.txt'
