@@ -1530,7 +1530,7 @@ def _valid_follows_csv(content: str) -> bool:
 
 
 def save_media_in_form_post(media_bytes, debug: bool,
-                            filename_base: str = None) -> (str, str):
+                            filename_base: str) -> (str, str):
     """Saves the given media bytes extracted from http form POST
     Returns the filename and attachment type
     """
