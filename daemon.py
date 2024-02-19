@@ -5695,7 +5695,7 @@ class PubServer(BaseHTTPRequestHandler):
         if boundary:
             # extract all of the text fields into a dict
             fields = \
-                extract_text_fields_in_post(post_bytes, boundary, debug)
+                extract_text_fields_in_post(post_bytes, boundary, debug, None)
 
             if fields.get('editedLinks'):
                 links_str = fields['editedLinks']
@@ -5884,7 +5884,7 @@ class PubServer(BaseHTTPRequestHandler):
         if boundary:
             # extract all of the text fields into a dict
             fields = \
-                extract_text_fields_in_post(post_bytes, boundary, debug)
+                extract_text_fields_in_post(post_bytes, boundary, debug, None)
 
             if fields.get('hashtagCategory'):
                 category_str = fields['hashtagCategory'].lower()
@@ -5983,7 +5983,7 @@ class PubServer(BaseHTTPRequestHandler):
         if boundary:
             # extract all of the text fields into a dict
             fields = \
-                extract_text_fields_in_post(post_bytes, boundary, debug)
+                extract_text_fields_in_post(post_bytes, boundary, debug, None)
             if fields.get('editedNewswire'):
                 newswire_str = fields['editedNewswire']
                 # append a new newswire entry
@@ -6170,7 +6170,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # extract all of the text fields into a dict
             fields = \
-                extract_text_fields_in_post(post_bytes, boundary, debug)
+                extract_text_fields_in_post(post_bytes, boundary, debug, None)
             print('citationstest: ' + str(fields))
             citations = []
             for ctr in range(0, 128):
@@ -6280,7 +6280,7 @@ class PubServer(BaseHTTPRequestHandler):
         if boundary:
             # extract all of the text fields into a dict
             fields = \
-                extract_text_fields_in_post(post_bytes, boundary, debug)
+                extract_text_fields_in_post(post_bytes, boundary, debug, None)
             news_post_url = None
             news_post_title = None
             news_post_content = None
@@ -6586,7 +6586,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # extract all of the text fields into a dict
             fields = \
-                extract_text_fields_in_post(post_bytes, boundary, debug)
+                extract_text_fields_in_post(post_bytes, boundary, debug, None)
             if debug:
                 if fields:
                     print('DEBUG: profile update text ' +
@@ -22035,7 +22035,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             fields = \
                 extract_text_fields_in_post(post_bytes, boundary,
-                                            self.server.debug)
+                                            self.server.debug, None)
             if self.server.debug:
                 if fields:
                     print('DEBUG: text field extracted from POST ' +

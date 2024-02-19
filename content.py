@@ -1709,7 +1709,7 @@ def combine_textarea_lines(text: str) -> str:
 
 
 def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
-                                unit_test_data: str = None) -> {}:
+                                unit_test_data: str) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """
