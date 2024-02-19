@@ -15,7 +15,7 @@ from utils import get_config_param
 from utils import save_json
 
 
-def fitness_performance(startTime, fitness_state: {},
+def fitness_performance(start_time, fitness_state: {},
                         fitness_id: str, watch_point: str,
                         debug: bool) -> None:
     """Log a performance watchpoint
@@ -32,7 +32,7 @@ def fitness_performance(startTime, fitness_state: {},
             "ctr": int(0)
         }
 
-    time_diff = float(time.time() - startTime)
+    time_diff = float(time.time() - start_time)
 
     fitness_state['performance'][fitness_id][watch_point]['total'] += time_diff
     fitness_state['performance'][fitness_id][watch_point]['ctr'] += 1
