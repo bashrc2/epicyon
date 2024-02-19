@@ -1312,8 +1312,7 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
 
 
 def dav_delete_response(base_dir: str, nickname: str, domain: str,
-                        depth: int, path: str,
-                        http_prefix: str, debug: bool,
+                        path: str, http_prefix: str, debug: bool,
                         recent_posts_cache: {}) -> str:
     """Returns the response to caldav DELETE
     """

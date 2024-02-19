@@ -21713,9 +21713,6 @@ class PubServer(BaseHTTPRequestHandler):
         if not propfind_bytes:
             self._404(147)
             return
-        depth = 0
-        if self.headers.get('Depth'):
-            depth = self.headers['Depth']
         propfind_xml = propfind_bytes.decode('utf-8')
         response_str = None
         if endpoint_type == 'propfind':
@@ -21749,7 +21746,7 @@ class PubServer(BaseHTTPRequestHandler):
             response_str = \
                 dav_delete_response(self.server.base_dir,
                                     nickname, self.server.domain,
-                                    depth, self.path,
+                                    self.path,
                                     self.server.http_prefix,
                                     self.server.debug,
                                     self.server.recent_posts_cache)
