@@ -13141,7 +13141,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.dogwhistles,
                                 self.server.min_images_for_accounts,
                                 self.server.buy_sites,
-                                self.server.auto_cw_cache)
+                                self.server.auto_cw_cache, 'likes')
         if not msg:
             self._404(69)
             return True
