@@ -28,7 +28,7 @@ def get_hashtag_categories_feed(base_dir: str,
     """Returns an rss feed for hashtag categories
     """
     if not hashtag_categories:
-        hashtag_categories = get_hashtag_categories(base_dir)
+        hashtag_categories = get_hashtag_categories(base_dir, False, None)
     if not hashtag_categories:
         return None
 

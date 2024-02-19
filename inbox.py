@@ -441,7 +441,8 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
             # automatically assign a category to the tag if possible
             category_filename = tags_dir + '/' + tag_name + '.category'
             if not os.path.isfile(category_filename):
-                hashtag_categories = get_hashtag_categories(base_dir)
+                hashtag_categories = \
+                    get_hashtag_categories(base_dir, False, None)
                 category_str = \
                     guess_hashtag_category(tag_name, hashtag_categories, 6)
                 if category_str:

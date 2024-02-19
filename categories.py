@@ -115,8 +115,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
 
 
 def get_hashtag_categories(base_dir: str,
-                           recent: bool = False,
-                           category: str = None) -> None:
+                           recent: bool, category: str) -> None:
     """Returns a dictionary containing hashtag categories
     """
     hashtag_categories = {}
@@ -183,7 +182,7 @@ def update_hashtag_categories(base_dir: str) -> None:
     """Regenerates the list of hashtag categories
     """
     category_list_filename = base_dir + '/accounts/categoryList.txt'
-    hashtag_categories = get_hashtag_categories(base_dir)
+    hashtag_categories = get_hashtag_categories(base_dir, False, None)
     if not hashtag_categories:
         if os.path.isfile(category_list_filename):
             try:
