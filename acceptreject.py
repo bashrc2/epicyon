@@ -186,7 +186,8 @@ def _accept_follow(base_dir: str, message_json: {},
     if follow_person(base_dir,
                      nickname, accepted_domain_full,
                      followed_nickname, followed_domain_full,
-                     federation_list, debug, group_account):
+                     federation_list, debug, group_account,
+                     'following.txt'):
         if debug:
             print('DEBUG: ' + nickname + '@' + accepted_domain_full +
                   ' followed ' +

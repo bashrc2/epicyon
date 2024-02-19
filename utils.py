@@ -1864,7 +1864,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                   follow_nickname: str, follow_domain: str,
                   federation_list: [], debug: bool,
                   group_account: bool,
-                  follow_file: str = 'following.txt') -> bool:
+                  follow_file: str) -> bool:
     """Adds a person to the follow list
     """
     follow_domain_str_lower1 = follow_domain.lower()

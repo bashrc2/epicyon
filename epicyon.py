@@ -3723,13 +3723,13 @@ def _command_options() -> None:
         domain_full = domain + ':' + str(port)
         clear_follows(base_dir, nickname, domain, 'following.txt')
         follow_person(base_dir, nickname, domain, 'maxboardroom', domain_full,
-                      federation_list, False, False)
+                      federation_list, False, False, 'following.txt')
         follow_person(base_dir, nickname, domain, 'ultrapancake', domain_full,
-                      federation_list, False, False)
+                      federation_list, False, False, 'following.txt')
         follow_person(base_dir, nickname, domain, 'sausagedog', domain_full,
-                      federation_list, False, False)
+                      federation_list, False, False, 'following.txt')
         follow_person(base_dir, nickname, domain, 'drokk', domain_full,
-                      federation_list, False, False)
+                      federation_list, False, False, 'following.txt')
         add_follower_of_person(base_dir, nickname, domain, 'drokk',
                                domain_full, federation_list, False, False)
         add_follower_of_person(base_dir, nickname, domain, 'maxboardroom',
