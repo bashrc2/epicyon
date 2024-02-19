@@ -243,7 +243,7 @@ def add_links_to_content(content: str, links: {}) -> str:
 
 
 def libretranslate(url: str, text: str,
-                   source: str, target: str, api_key: str = None) -> str:
+                   source: str, target: str, api_key: str) -> str:
     """Translate string using libretranslate
     """
     if not url:
