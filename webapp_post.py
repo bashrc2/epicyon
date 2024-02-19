@@ -2661,7 +2661,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     content_language = \
         get_language_from_post(post_json_object, system_language,
-                               languages_understood)
+                               languages_understood, "content")
     content_str = dont_speak_hashtags(content_str)
 
     attachment_str, gallery_str = \
@@ -2756,7 +2756,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         content_str = remove_style_within_html(content_str)
         content_language = \
             get_language_from_post(post_json_object, system_language,
-                                   languages_understood)
+                                   languages_understood, "content")
         content_str = dont_speak_hashtags(content_str)
     if not content_str:
         content_str = \

@@ -488,7 +488,7 @@ def get_content_from_post(post_json_object: {}, system_language: str,
 
 def get_language_from_post(post_json_object: {}, system_language: str,
                            languages_understood: [],
-                           content_type: str = "content") -> str:
+                           content_type: str) -> str:
     """Returns the content language from the post
     including searching for a matching entry within contentMap
     """
