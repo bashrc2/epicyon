@@ -76,7 +76,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
     theme_dir = base_dir + '/theme/' + new_theme_name
     if not os.path.isdir(theme_dir):
         os.mkdir(theme_dir)
-    copytree(temp_theme_dir, theme_dir)
+    copytree(temp_theme_dir, theme_dir, False, None)
     if os.path.isdir(temp_theme_dir):
         rmtree(temp_theme_dir, ignore_errors=False, onerror=None)
     if scan_themes_for_scripts(theme_dir):

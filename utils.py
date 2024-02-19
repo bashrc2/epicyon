@@ -2948,7 +2948,7 @@ def is_unlisted_post(post_json_object: {}) -> bool:
     return False
 
 
-def copytree(src: str, dst: str, symlinks: str = False, ignore: bool = None):
+def copytree(src: str, dst: str, symlinks: str, ignore: bool):
     """Copy a directory
     """
     for item in os.listdir(src):

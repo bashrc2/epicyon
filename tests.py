@@ -3931,7 +3931,7 @@ def _test_addemoji(base_dir: str):
     if os.path.isdir(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     os.mkdir(path)
-    copytree(base_dir_original + '/emoji', base_dir + '/emoji')
+    copytree(base_dir_original + '/emoji', base_dir + '/emoji', False, None)
     os.chdir(base_dir)
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(base_dir, nickname, domain, port,
