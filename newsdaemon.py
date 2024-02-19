@@ -51,7 +51,8 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
     if os.path.isfile(index_filename):
         if not text_in_file(post_id, index_filename):
             try:
-                with open(index_filename, 'r+') as feeds_file:
+                with open(index_filename, 'r+',
+                          encoding='utf-8') as feeds_file:
                     content = feeds_file.read()
                     if post_id + '\n' not in content:
                         feeds_file.seek(0, 0)
