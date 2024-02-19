@@ -278,7 +278,8 @@ def html_person_options(default_timeline: str,
     nav_access_keys = {
     }
     options_str += \
-        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys)
+        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys,
+                                 None, None, None, False)
 
     options_str += '<div class="options">\n'
     options_str += '  <div class="optionsAvatar">\n'

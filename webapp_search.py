@@ -466,7 +466,8 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     search_banner_file, search_banner_filename = \
         get_search_banner_file(base_dir, search_nickname, domain, theme)
 
-    text_mode_banner_str = html_keyboard_navigation(text_mode_banner, {}, {})
+    text_mode_banner_str = html_keyboard_navigation(text_mode_banner, {}, {},
+                                                    None, None, None, False)
     if text_mode_banner_str is None:
         text_mode_banner_str = ''
 

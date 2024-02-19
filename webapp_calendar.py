@@ -631,7 +631,7 @@ def html_calendar(person_cache: {}, translate: {},
     }
     screen_reader_cal = \
         html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys,
-                                 month_name)
+                                 month_name, None, None, False)
 
     if not only_show_reminders:
         show_reminders_link = \

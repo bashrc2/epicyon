@@ -105,7 +105,8 @@ def html_login(translate: {},
         copyfile(source_image, login_image_filename)
 
     text_mode_logo = get_text_mode_logo(base_dir)
-    text_mode_logo_html = html_keyboard_navigation(text_mode_logo, {}, {})
+    text_mode_logo_html = html_keyboard_navigation(text_mode_logo, {}, {},
+                                                   None, None, None, False)
 
     set_custom_background(base_dir, 'login-background-custom',
                           'login-background')

@@ -332,7 +332,8 @@ def html_podcast_episode(translate: {},
 
     link_url = newswire_item[1]
 
-    podcast_str += html_keyboard_navigation(text_mode_banner, {}, {})
+    podcast_str += html_keyboard_navigation(text_mode_banner, {}, {},
+                                            None, None, None, False)
     podcast_str += '<br><br>\n'
     podcast_str += \
         '<div class="options" itemscope ' + \

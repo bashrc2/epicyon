@@ -1371,7 +1371,8 @@ def html_profile(signing_priv_key_pem: str,
         nav_access_keys[locals()[variable_name]] = key
 
     profile_str = html_keyboard_navigation(text_mode_banner,
-                                           nav_links, nav_access_keys)
+                                           nav_links, nav_access_keys,
+                                           None, None, None, False)
 
     profile_str += profile_header_str + donate_section
     profile_str += '<div class="container" id="buttonheader">\n'
@@ -3136,7 +3137,8 @@ def html_edit_profile(server, translate: {},
         menu_timeline: 't'
     }
     edit_profile_form += \
-        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys)
+        html_keyboard_navigation(text_mode_banner, nav_links, nav_access_keys,
+                                 None, None, None, False)
 
     # top banner
     edit_profile_form += \

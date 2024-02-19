@@ -1759,9 +1759,9 @@ def html_hide_from_screen_reader(html_str: str) -> str:
 
 
 def html_keyboard_navigation(banner: str, links: {}, access_keys: {},
-                             sub_heading: str = None,
-                             users_path: str = None, translate: {} = None,
-                             follow_approvals: bool = False) -> str:
+                             sub_heading: str,
+                             users_path: str, translate: {},
+                             follow_approvals: bool) -> str:
     """Given a set of links return the html for keyboard navigation
     """
     html_str = '<div class="transparent"><ul>\n'
