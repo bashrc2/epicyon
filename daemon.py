@@ -262,7 +262,7 @@ from webapp_search import html_skills_search
 from webapp_search import html_history_search
 from webapp_search import html_hashtag_search
 from webapp_search import html_hashtag_search_remote
-from webapp_search import rss_hashtag_search
+from webapp_search import hashtag_search_rss
 from webapp_search import hashtag_search_json
 from webapp_search import html_search_emoji
 from webapp_search import html_search_shared_items
@@ -9843,19 +9843,10 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = \
                 get_nickname_from_actor(actor)
         hashtag_str = \
-            rss_hashtag_search(nickname,
+            hashtag_search_rss(nickname,
                                domain, port,
-                               self.server.recent_posts_cache,
-                               self.server.max_recent_posts,
-                               self.server.translate,
                                base_dir, hashtag,
-                               MAX_POSTS_IN_FEED, curr_session,
-                               self.server.cached_webfingers,
-                               self.server.person_cache,
                                http_prefix,
-                               self.server.project_version,
-                               self.server.yt_replace_domain,
-                               self.server.twitter_replacement_domain,
                                self.server.system_language)
         if hashtag_str:
             msg = hashtag_str.encode('utf-8')

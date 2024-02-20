@@ -1278,15 +1278,9 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     return hashtag_search_form
 
 
-def rss_hashtag_search(nickname: str, domain: str, port: int,
-                       recent_posts_cache: {}, max_recent_posts: int,
-                       translate: {},
+def hashtag_search_rss(nickname: str, domain: str, port: int,
                        base_dir: str, hashtag: str,
-                       posts_per_page: int,
-                       session, cached_webfingers: {}, person_cache: {},
-                       http_prefix: str, project_version: str,
-                       yt_replace_domain: str,
-                       twitter_replacement_domain: str,
+                       http_prefix: str,
                        system_language: str) -> str:
     """Show an rss feed for a hashtag
     """
