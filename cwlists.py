@@ -31,7 +31,9 @@ def load_cw_lists(base_dir: str, verbose: bool) -> {}:
                 continue
             if not list_json.get('name'):
                 continue
-            if not list_json.get('words') and not list_json.get('domains'):
+            if not list_json.get('words') and \
+               not list_json.get('hashtags') and \
+               not list_json.get('domains'):
                 continue
             name = list_json['name']
             if verbose:
@@ -59,6 +61,12 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
                                     languages_understood, "content")
     if not content:
         return
+
+    post_tags = []
+    if post_json_object['object'].get('tag'):
+        if isinstance(post_json_object['object']['tag'], list):
+            post_tags = post_json_object['object']['tag']
+
     for name, item in cw_lists.items():
         if name not in lists_enabled:
             continue
@@ -75,6 +83,35 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
             continue
 
         matched = False
+
+        # match hashtags within the post
+        if post_tags and item.get('hashtags'):
+            for tag in item['hashtags']:
+                tag = tag.strip()
+                if not tag:
+                    continue
+                if not tag.startswith('#'):
+                    tag = '#' + tag
+                tag = tag.lower()
+                for tag_dict in post_tags:
+                    if not isinstance(tag_dict, dict):
+                        continue
+                    if not tag_dict.get('Hashtag'):
+                        continue
+                    if not tag_dict.get('name'):
+                        continue
+                    if tag_dict['name'].lower() == tag:
+                        if cw_text:
+                            cw_text = warning + ' / ' + cw_text
+                        else:
+                            cw_text = warning
+                        matched = True
+                        break
+                if matched:
+                    break
+
+        if matched:
+            continue
 
         # match domains within the content
         if item.get('domains'):
