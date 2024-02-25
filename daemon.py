@@ -17348,10 +17348,10 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _edit_links(self, calling_domain: str, path: str,
-                    translate: {}, base_dir: str,
-                    http_prefix: str, domain: str, port: int,
-                    cookie: str, theme: str) -> bool:
+    def _edit_links2(self, calling_domain: str, path: str,
+                     translate: {}, base_dir: str,
+                     http_prefix: str, domain: str, port: int,
+                     cookie: str, theme: str) -> bool:
         """Show the links from the left column
         """
         if '/users/' in path and path.endswith('/editlinks'):
@@ -17366,8 +17366,6 @@ class PubServer(BaseHTTPRequestHandler):
             msg = html_edit_links(translate,
                                   base_dir,
                                   path, domain,
-                                  port,
-                                  http_prefix,
                                   self.server.default_timeline,
                                   theme, access_keys)
             if msg:
@@ -20930,14 +20928,14 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             # edit links from the left column of the timeline in web interface
-            if self._edit_links(calling_domain, self.path,
-                                self.server.translate,
-                                self.server.base_dir,
-                                self.server.http_prefix,
-                                self.server.domain,
-                                self.server.port,
-                                cookie,
-                                self.server.theme_name):
+            if self._edit_links2(calling_domain, self.path,
+                                 self.server.translate,
+                                 self.server.base_dir,
+                                 self.server.http_prefix,
+                                 self.server.domain,
+                                 self.server.port,
+                                 cookie,
+                                 self.server.theme_name):
                 self.server.getreq_busy = False
                 return
 

@@ -429,7 +429,7 @@ def html_links_mobile(base_dir: str,
 
 
 def html_edit_links(translate: {}, base_dir: str, path: str,
-                    domain: str, port: int, http_prefix: str,
+                    domain: str,
                     default_timeline: str, theme: str,
                     access_keys: {}) -> str:
     """Shows the edit links screen
