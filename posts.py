@@ -1125,15 +1125,15 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
                   schedule_index_filename + ' ' + str(ex))
 
 
-def valid_content_warning(cw: str) -> str:
+def valid_content_warning(summary: str) -> str:
     """Returns a validated content warning
     """
-    cw = remove_html(cw)
+    cw_str = remove_html(summary)
     # hashtags within content warnings apparently cause a lot of trouble
     # so remove them
-    if '#' in cw:
-        cw = cw.replace('#', '').replace('  ', ' ')
-    return remove_invalid_chars(cw)
+    if '#' in cw_str:
+        cw_str = cw_str.replace('#', '').replace('  ', ' ')
+    return remove_invalid_chars(cw_str)
 
 
 def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
