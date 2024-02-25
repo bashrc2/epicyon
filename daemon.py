@@ -17379,10 +17379,9 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _edit_newswire(self, calling_domain: str, path: str,
-                       translate: {}, base_dir: str,
-                       http_prefix: str, domain: str, port: int,
-                       cookie: str) -> bool:
+    def _edit_newswire2(self, calling_domain: str, path: str,
+                        translate: {}, base_dir: str,
+                        domain: str, cookie: str) -> bool:
         """Show the newswire from the right column
         """
         if '/users/' in path and path.endswith('/editnewswire'):
@@ -17414,9 +17413,8 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _edit_news_post2(self, calling_domain: str, path: str,
                          translate: {}, base_dir: str,
-                         http_prefix: str, domain: str, port: int,
-                         domain_full: str,
-                         cookie: str) -> bool:
+                         http_prefix: str, domain: str,
+                         domain_full: str, cookie: str) -> bool:
         """Show the edit screen for a news post
         """
         if '/users/' in path and '/editnewspost=' in path:
@@ -20940,13 +20938,10 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             # edit newswire from the right column of the timeline
-            if self._edit_newswire(calling_domain, self.path,
-                                   self.server.translate,
-                                   self.server.base_dir,
-                                   self.server.http_prefix,
-                                   self.server.domain,
-                                   self.server.port,
-                                   cookie):
+            if self._edit_newswire2(calling_domain, self.path,
+                                    self.server.translate,
+                                    self.server.base_dir,
+                                    self.server.domain, cookie):
                 self.server.getreq_busy = False
                 return
 
@@ -20956,7 +20951,6 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
-                                     self.server.port,
                                      self.server.domain_full,
                                      cookie):
                 self.server.getreq_busy = False
