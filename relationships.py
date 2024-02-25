@@ -429,7 +429,7 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
             '/moved?page=1'
         id_str = \
             local_actor_url(http_prefix, nickname, domain) + '/inactive'
-        total_str = str(len(lines.items()))
+        total_str = str(len(lines))
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': first_str,
