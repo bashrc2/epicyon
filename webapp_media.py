@@ -31,7 +31,7 @@ def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
         peertube_instances.append(url)
 
 
-def _add_embedded_video_from_sites(translate: {}, content: str,
+def _add_embedded_video_from_sites(content: str,
                                    peertube_instances: [],
                                    width: int, height: int,
                                    domain: str) -> str:
@@ -389,7 +389,7 @@ def add_embedded_elements(translate: {}, content: str,
                           peertube_instances: [], domain: str) -> str:
     """Adds embedded elements for various media types
     """
-    content = _add_embedded_video_from_sites(translate, content,
+    content = _add_embedded_video_from_sites(content,
                                              peertube_instances,
                                              400, 300, domain)
     content = _add_embedded_audio(translate, content)
