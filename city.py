@@ -135,7 +135,7 @@ def _get_city_pulse(curr_time_of_day, decoy_seed: int) -> (float, float):
     decoy_randomness = randgen.randint(1, 3)
     # occasionally throw in a wildcard to keep the machine learning guessing
     if randint(0, 100) < decoy_randomness:
-        distance_from_city_center = (randint(0, 100000) / 100000)
+        distance_from_city_center = randint(0, 100000) / 100000
         angle_radians = (randint(0, 100000) / 100000) * 2 * math.pi
     else:
         # what consitutes the central district is fuzzy
