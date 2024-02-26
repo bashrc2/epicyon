@@ -426,8 +426,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
     private_key_pem, public_key_pem = generate_rsa_key()
     webfinger_endpoint = \
         create_webfinger_endpoint(nickname, domain, port,
-                                  http_prefix, public_key_pem,
-                                  group_account)
+                                  http_prefix)
     if save_to_file:
         store_webfinger_endpoint(nickname, domain, port,
                                  base_dir, webfinger_endpoint)

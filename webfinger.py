@@ -165,8 +165,7 @@ def store_webfinger_endpoint(nickname: str, domain: str, port: int,
 
 
 def create_webfinger_endpoint(nickname: str, domain: str, port: int,
-                              http_prefix: str, public_key_pem: str,
-                              group_account: bool) -> {}:
+                              http_prefix: str) -> {}:
     """Creates a webfinger endpoint for a user
     NOTE: in earlier implementations group_account modified the acct prefix.
     This has been left in, because currently there is still no consensus
