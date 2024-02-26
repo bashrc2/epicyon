@@ -98,7 +98,7 @@ def html_moderation(default_timeline: str,
 
 def html_account_info(translate: {},
                       base_dir: str, http_prefix: str,
-                      nickname: str, domain: str, port: int,
+                      nickname: str, domain: str,
                       search_handle: str, debug: bool,
                       system_language: str, signing_priv_key_pem: str,
                       back_url: str,
