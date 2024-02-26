@@ -863,11 +863,11 @@ def _add_emoji(base_dir: str, word_str: str,
     return True
 
 
-def post_tag_exists(tagType: str, tagName: str, tags: {}) -> bool:
+def post_tag_exists(tag_type: str, tag_name: str, tags: {}) -> bool:
     """Returns true if a tag exists in the given dict
     """
     for tag in tags:
-        if tag['name'] == tagName and tag['type'] == tagType:
+        if tag['name'] == tag_name and tag['type'] == tag_type:
             return True
     return False
 
@@ -1818,21 +1818,21 @@ def limit_repeated_words(text: str, max_repeats: int) -> str:
     return text
 
 
-def get_price_from_string(priceStr: str) -> (str, str):
+def get_price_from_string(price_str: str) -> (str, str):
     """Returns the item price and currency
     """
     currencies = get_currencies()
     for symbol, name in currencies.items():
-        if symbol in priceStr:
-            price = priceStr.replace(symbol, '')
+        if symbol in price_str:
+            price = price_str.replace(symbol, '')
             if is_float(price):
                 return price, name
-        elif name in priceStr:
-            price = priceStr.replace(name, '')
+        elif name in price_str:
+            price = price_str.replace(name, '')
             if is_float(price):
                 return price, name
-    if is_float(priceStr):
-        return priceStr, "EUR"
+    if is_float(price_str):
+        return price_str, "EUR"
     return "0.00", "EUR"
 
 
