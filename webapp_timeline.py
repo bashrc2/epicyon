@@ -625,7 +625,6 @@ def html_timeline(default_timeline: str,
     inbox_button = 'button'
     blogs_button = 'button'
     features_button = 'button'
-    news_button = 'button'
     dm_button = 'button'
     if new_dm:
         dm_button = 'buttonhighlighted'
@@ -651,8 +650,6 @@ def html_timeline(default_timeline: str,
         blogs_button = 'buttonselected'
     elif box_name == 'tlfeatures':
         features_button = 'buttonselected'
-    elif box_name == 'tlnews':
-        news_button = 'buttonselected'
     elif box_name == 'dm':
         dm_button = 'buttonselected'
         if new_dm:
@@ -809,7 +806,7 @@ def html_timeline(default_timeline: str,
             header_buttons_timeline(default_timeline, box_name, page_number,
                                     translate, users_path, media_button,
                                     blogs_button, features_button,
-                                    news_button, inbox_button,
+                                    inbox_button,
                                     dm_button, new_dm, replies_button,
                                     new_reply, minimal, sent_button,
                                     shares_button_str, wanted_button_str,
@@ -862,7 +859,7 @@ def html_timeline(default_timeline: str,
             header_buttons_timeline(default_timeline, box_name, page_number,
                                     translate, users_path, media_button,
                                     blogs_button, features_button,
-                                    news_button, inbox_button,
+                                    inbox_button,
                                     dm_button, new_dm, replies_button,
                                     new_reply, minimal, sent_button,
                                     shares_button_str, wanted_button_str,
