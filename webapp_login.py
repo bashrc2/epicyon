@@ -24,7 +24,7 @@ from theme import get_text_mode_logo
 
 
 def html_get_login_credentials(login_params: str,
-                               last_login_time: int, domain: str,
+                               last_login_time: int,
                                registrations_open: bool) -> (str, str, bool):
     """Receives login credentials via HTTPServer POST
     """

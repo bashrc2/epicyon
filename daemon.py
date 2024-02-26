@@ -2350,7 +2350,6 @@ class PubServer(BaseHTTPRequestHandler):
         login_nickname, login_password, register = \
             html_get_login_credentials(login_params,
                                        self.server.last_login_time,
-                                       domain,
                                        registrations_open)
         if login_nickname and login_password:
             if is_system_account(login_nickname):
