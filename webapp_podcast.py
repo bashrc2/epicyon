@@ -28,7 +28,7 @@ from session import get_json
 def _html_podcast_chapters(link_url: str,
                            session, session_onion, session_i2p,
                            http_prefix: str, domain: str,
-                           podcast_properties: {}, translate: {},
+                           podcast_properties: {},
                            debug: bool) -> str:
     """Returns html for chapters of a podcast
     """
@@ -471,7 +471,7 @@ def html_podcast_episode(translate: {},
         _html_podcast_chapters(link_url,
                                session, session_onion, session_i2p,
                                http_prefix, domain,
-                               podcast_properties, translate, debug)
+                               podcast_properties, debug)
 
     podcast_str += '  </center>\n'
     podcast_str += '</div>\n'
