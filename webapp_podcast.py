@@ -300,9 +300,8 @@ def _html_podcast_soundbites(link_url: str, extension: str,
 
 def html_podcast_episode(translate: {},
                          base_dir: str, nickname: str, domain: str,
-                         newswire_item: [], theme: str,
-                         default_timeline: str,
-                         text_mode_banner: str, access_keys: {},
+                         newswire_item: [],
+                         text_mode_banner: str,
                          session, session_onion, session_i2p,
                          http_prefix: str, debug: bool) -> str:
     """Returns html for a podcast episode, an item from the newswire
