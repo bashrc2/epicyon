@@ -123,7 +123,7 @@ def _remove_from_follow_base(base_dir: str,
         accept_deny_nickname = accept_or_deny_handle.split('@')[0]
         accept_deny_domain = accept_or_deny_handle.split('@')[1]
         # for each possible users path construct an actor and
-        # check if it exists in teh file
+        # check if it exists in the file
         users_paths = get_user_paths()
         actor_found = False
         for users_name in users_paths:
