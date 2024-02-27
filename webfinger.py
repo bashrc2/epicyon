@@ -58,11 +58,12 @@ def _parse_handle(handle: str) -> (str, str, bool):
     users_paths = get_user_paths()
     group_paths = get_group_paths()
     for possible_users_path in users_paths:
-        if possible_users_path in handle:
-            if possible_users_path in group_paths:
-                group_account = True
-            domain, nickname = handle_str.split(possible_users_path)
-            return nickname, domain, group_account
+        if possible_users_path not in handle:
+            continue
+        if possible_users_path in group_paths:
+            group_account = True
+        domain, nickname = handle_str.split(possible_users_path)
+        return nickname, domain, group_account
 
     return None, None, False
 
@@ -95,12 +96,12 @@ def webfinger_handle(session, handle: str, http_prefix: str,
         if debug:
             print('Webfinger from cache: ' + str(wfg))
         return wfg
-    url = '{}://{}/.well-known/webfinger'.format(http_prefix, domain)
+    url = http_prefix + '://' + domain + '/.well-known/webfinger'
     hdr = {
         'Accept': 'application/jrd+json'
     }
     par = {
-        'resource': 'acct:{}'.format(wf_handle)
+        'resource': 'acct:' + wf_handle
     }
     try:
         result = \
@@ -120,7 +121,7 @@ def webfinger_handle(session, handle: str, http_prefix: str,
         # try again using the actor as the resource
         # See https://datatracker.ietf.org/doc/html/rfc7033 section 4.5
         par = {
-            'resource': '{}'.format(resource)
+            'resource': resource
         }
         try:
             result = \
@@ -137,8 +138,8 @@ def webfinger_handle(session, handle: str, http_prefix: str,
               'from_domain: ' + str(from_domain) + ' ' +
               'nickname: ' + str(nickname) + ' ' +
               'handle: ' + str(handle) + ' ' +
-              'wf_handle: ' + str(wf_handle) + ' ' +
-              'domain: ' + str(wf_domain) + ' ' +
+              'wf_handle: ' + wf_handle + ' ' +
+              'domain: ' + wf_domain + ' ' +
               'headers: ' + str(hdr) + ' ' +
               'params: ' + str(par))
 
