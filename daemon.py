@@ -7338,17 +7338,15 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # change gemini link
                     current_gemini_link = \
-                        get_gemini_link(actor_json, self.server.translate)
+                        get_gemini_link(actor_json)
                     if fields.get('geminiLink'):
                         if fields['geminiLink'] != current_gemini_link:
                             set_gemini_link(actor_json,
-                                            fields['geminiLink'],
-                                            self.server.translate)
+                                            fields['geminiLink'])
                             actor_changed = True
                     else:
                         if current_gemini_link:
-                            set_gemini_link(actor_json, '',
-                                            self.server.translate)
+                            set_gemini_link(actor_json, '')
                             actor_changed = True
 
                     # account moved to new address
@@ -9187,8 +9185,7 @@ class PubServer(BaseHTTPRequestHandler):
                 locked_account = get_locked_account(actor_json)
                 donate_url = get_donation_url(actor_json)
                 website_url = get_website(actor_json, self.server.translate)
-                gemini_link = get_gemini_link(actor_json,
-                                              self.server.translate)
+                gemini_link = get_gemini_link(actor_json)
                 xmpp_address = get_xmpp_address(actor_json)
                 matrix_address = get_matrix_address(actor_json)
                 ssb_address = get_ssb_address(actor_json)

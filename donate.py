@@ -103,7 +103,7 @@ def get_website(actor_json: {}, translate: {}) -> str:
     return ''
 
 
-def get_gemini_link(actor_json: {}, translate: {}) -> str:
+def get_gemini_link(actor_json: {}) -> str:
     """Returns a gemini link
     """
     if not actor_json.get('attachment'):
@@ -255,7 +255,7 @@ def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
     actor_json['attachment'].append(new_entry)
 
 
-def set_gemini_link(actor_json: {}, gemini_link: str, translate: {}) -> None:
+def set_gemini_link(actor_json: {}, gemini_link: str) -> None:
     """Sets a gemini link
     """
     gemini_link = gemini_link.strip()
