@@ -1176,7 +1176,6 @@ class PubServer(BaseHTTPRequestHandler):
                       registration: bool,
                       system_language: str,
                       project_version: str,
-                      custom_emoji: [],
                       show_node_info_accounts: bool,
                       referer_domain: str,
                       debug: bool,
@@ -1309,7 +1308,7 @@ class PubServer(BaseHTTPRequestHandler):
                               http_prefix, base_dir, nickname, domain,
                               domain_full, onion_domain, i2p_domain,
                               translate, registration, system_language,
-                              project_version, custom_emoji,
+                              project_version,
                               show_node_info_accounts,
                               referer_domain, debug, 5,
                               known_crawlers, sites_unavailable):
