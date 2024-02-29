@@ -2941,13 +2941,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.postreq_busy = False
         return
 
-    def _person_options(self, path: str,
-                        calling_domain: str, cookie: str,
-                        base_dir: str, http_prefix: str,
-                        domain: str, domain_full: str, port: int,
-                        onion_domain: str, i2p_domain: str,
-                        debug: bool, curr_session,
-                        authorized: bool) -> None:
+    def _person_options2(self, path: str,
+                         calling_domain: str, cookie: str,
+                         base_dir: str, http_prefix: str,
+                         domain: str, domain_full: str, port: int,
+                         onion_domain: str, i2p_domain: str,
+                         debug: bool, curr_session,
+                         authorized: bool) -> None:
         """Receive POST from person options screen
         """
         page_number = 1
@@ -4808,10 +4808,9 @@ class PubServer(BaseHTTPRequestHandler):
                         '?options=' + actor + ';1;' + avatar_url
 
                     self._show_person_options(calling_domain, profile_path_str,
-                                              base_dir, http_prefix,
+                                              base_dir,
                                               domain, domain_full,
                                               getreq_start_time,
-                                              onion_domain, i2p_domain,
                                               cookie, debug, authorized,
                                               curr_session)
                     return
@@ -9027,10 +9026,9 @@ class PubServer(BaseHTTPRequestHandler):
         self._404(20)
 
     def _show_person_options(self, calling_domain: str, path: str,
-                             base_dir: str, http_prefix: str,
+                             base_dir: str,
                              domain: str, domain_full: str,
                              getreq_start_time,
-                             onion_domain: str, i2p_domain: str,
                              cookie: str, debug: bool,
                              authorized: bool,
                              curr_session) -> None:
@@ -18916,12 +18914,9 @@ class PubServer(BaseHTTPRequestHandler):
             if '?options=' in self.path:
                 self._show_person_options(calling_domain, self.path,
                                           self.server.base_dir,
-                                          self.server.http_prefix,
                                           self.server.domain,
                                           self.server.domain_full,
                                           getreq_start_time,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain,
                                           cookie, self.server.debug,
                                           authorized,
                                           curr_session)
@@ -23914,18 +23909,18 @@ class PubServer(BaseHTTPRequestHandler):
             # an option was chosen from person options screen
             # view/follow/block/report
             if self.path.endswith('/personoptions'):
-                self._person_options(self.path,
-                                     calling_domain, cookie,
-                                     self.server.base_dir,
-                                     self.server.http_prefix,
-                                     self.server.domain,
-                                     self.server.domain_full,
-                                     self.server.port,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain,
-                                     self.server.debug,
-                                     curr_session,
-                                     authorized)
+                self._person_options2(self.path,
+                                      calling_domain, cookie,
+                                      self.server.base_dir,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.domain_full,
+                                      self.server.port,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain,
+                                      self.server.debug,
+                                      curr_session,
+                                      authorized)
                 self.server.postreq_busy = False
                 return
 
