@@ -12898,7 +12898,6 @@ class PubServer(BaseHTTPRequestHandler):
                                  path: str,
                                  base_dir: str, http_prefix: str,
                                  domain: str, domain_full: str, port: int,
-                                 onion_domain: str, i2p_domain: str,
                                  getreq_start_time,
                                  proxy_type: str, cookie: str,
                                  debug: str,
@@ -16401,10 +16400,8 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         accept_str = self.headers['Accept']
         actor_domain_url = get_instance_url(calling_domain,
-                                            self.server.http_prefix,
-                                            self.server.domain_full,
-                                            self.server.onion_domain,
-                                            self.server.i2p_domain)
+                                            http_prefix, domain_full,
+                                            onion_domain, i2p_domain)
         actor_url = actor_domain_url + '/users/Actor'
         remove_fields = (
             'icon', 'image', 'tts', 'shares',
@@ -20911,8 +20908,6 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain,
                                          self.server.domain_full,
                                          self.server.port,
-                                         self.server.onion_domain,
-                                         self.server.i2p_domain,
                                          getreq_start_time,
                                          proxy_type,
                                          cookie, self.server.debug,
