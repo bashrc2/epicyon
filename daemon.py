@@ -16567,10 +16567,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: path=' + path)
             redirect_url = \
                 get_instance_url(calling_domain,
-                                 self.server.http_prefix,
-                                 self.server.domain_full,
-                                 self.server.onion_domain,
-                                 self.server.i2p_domain) + \
+                                 http_prefix, domain_full,
+                                 onion_domain, i2p_domain) + \
                 divert_path
             self._redirect_headers(redirect_url, None, calling_domain)
             fitness_performance(getreq_start_time,
