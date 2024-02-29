@@ -5,7 +5,7 @@ __version__ = "1.5.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
-__module_group__ = "Core"
+__module_group__ = "Security"
 
 from httpsig import verify_post_headers
 from session import establish_session
