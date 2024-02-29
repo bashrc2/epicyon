@@ -23,10 +23,9 @@ from hashlib import sha256
 from hashlib import md5
 from shutil import copyfile
 from session import site_is_verified
-from session import create_session
 from session import get_session_for_domain
 from session import get_session_for_domains
-from session import set_session_for_sender
+from session import establish_session
 from webfinger import webfinger_meta
 from webfinger import webfinger_node_info
 from webfinger import webfinger_lookup
@@ -683,23 +682,6 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             print('ERROR: unable to create vote')
 
-    def _establish_session(self,
-                           calling_function: str,
-                           curr_session,
-                           proxy_type: str):
-        """Recreates session if needed
-        """
-        if curr_session:
-            return curr_session
-        print('DEBUG: creating new session during ' + calling_function)
-        curr_session = create_session(proxy_type)
-        if curr_session:
-            set_session_for_sender(self.server, proxy_type, curr_session)
-            return curr_session
-        print('ERROR: GET failed to create session during ' +
-              calling_function)
-        return None
-
     def _secure_mode(self, curr_session, proxy_type: str,
                      force: bool) -> bool:
         """http authentication of GET requests for json
@@ -731,8 +713,9 @@ class PubServer(BaseHTTPRequestHandler):
                 proxy_type = 'i2p'
 
         curr_session = \
-            self._establish_session("secure mode",
-                                    curr_session, proxy_type)
+            establish_session("secure mode",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             return False
 
@@ -3216,9 +3199,10 @@ class PubServer(BaseHTTPRequestHandler):
                 curr_session = self.server.session_i2p
 
             curr_session = \
-                self._establish_session("handle search",
-                                        curr_session,
-                                        curr_proxy_type)
+                establish_session("handle search",
+                                  curr_session,
+                                  curr_proxy_type,
+                                  self.server)
             if not curr_session:
                 self.server.postreq_busy = False
                 return
@@ -4161,9 +4145,10 @@ class PubServer(BaseHTTPRequestHandler):
                         curr_proxy_type = 'i2p'
 
                 curr_session = \
-                    self._establish_session("follow request",
-                                            curr_session,
-                                            curr_proxy_type)
+                    establish_session("follow request",
+                                      curr_session,
+                                      curr_proxy_type,
+                                      self.server)
 
                 send_follow_request(curr_session,
                                     base_dir, follower_nickname,
@@ -4881,9 +4866,10 @@ class PubServer(BaseHTTPRequestHandler):
                         curr_session = self.server.session_i2p
 
                     curr_session = \
-                        self._establish_session("handle search",
-                                                curr_session,
-                                                curr_proxy_type)
+                        establish_session("handle search",
+                                          curr_session,
+                                          curr_proxy_type,
+                                          self.server)
                     if not curr_session:
                         self.server.postreq_busy = False
                         return
@@ -4948,9 +4934,10 @@ class PubServer(BaseHTTPRequestHandler):
                         curr_session = self.server.session_i2p
 
                     curr_session = \
-                        self._establish_session("handle search",
-                                                curr_session,
-                                                curr_proxy_type)
+                        establish_session("handle search",
+                                          curr_session,
+                                          curr_proxy_type,
+                                          self.server)
                     if not curr_session:
                         self.server.postreq_busy = False
                         return
@@ -8910,9 +8897,10 @@ class PubServer(BaseHTTPRequestHandler):
             account_dir = acct_dir(self.server.base_dir, nickname, domain)
             if os.path.isdir(account_dir):
                 curr_session = \
-                    self._establish_session("RSS request",
-                                            curr_session,
-                                            proxy_type)
+                    establish_session("RSS request",
+                                      curr_session,
+                                      proxy_type,
+                                      self.server)
                 if not curr_session:
                     return
 
@@ -8954,9 +8942,10 @@ class PubServer(BaseHTTPRequestHandler):
         """Returns an RSS2 feed for all blogs on this instance
         """
         curr_session = \
-            self._establish_session("get_rss2site",
-                                    curr_session,
-                                    proxy_type)
+            establish_session("get_rss2site",
+                              curr_session,
+                              proxy_type,
+                              self.server)
         if not curr_session:
             self._404(23)
             return
@@ -9007,9 +8996,10 @@ class PubServer(BaseHTTPRequestHandler):
         """Returns the newswire feed
         """
         curr_session = \
-            self._establish_session("get_newswire_feed",
-                                    curr_session,
-                                    proxy_type)
+            establish_session("get_newswire_feed",
+                              curr_session,
+                              proxy_type,
+                              self.server)
         if not curr_session:
             self._404(25)
             return
@@ -9044,8 +9034,9 @@ class PubServer(BaseHTTPRequestHandler):
         """Returns the hashtag categories feed
         """
         curr_session = \
-            self._establish_session("get_hashtag_categories_feed",
-                                    curr_session, proxy_type)
+            establish_session("get_hashtag_categories_feed",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(27)
             return
@@ -9085,8 +9076,9 @@ class PubServer(BaseHTTPRequestHandler):
             account_dir = acct_dir(base_dir, nickname, domain)
             if os.path.isdir(account_dir):
                 curr_session = \
-                    self._establish_session("get_rss3feed",
-                                            curr_session, proxy_type)
+                    establish_session("get_rss3feed",
+                                      curr_session, proxy_type,
+                                      self.server)
                 if not curr_session:
                     self._404(29)
                     return
@@ -9994,8 +9986,9 @@ class PubServer(BaseHTTPRequestHandler):
                 proxy_type = 'i2p'
 
         curr_session = \
-            self._establish_session("announceButton",
-                                    curr_session, proxy_type)
+            establish_session("announceButton",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(47)
             return
@@ -10207,8 +10200,9 @@ class PubServer(BaseHTTPRequestHandler):
                 proxy_type = 'i2p'
 
         curr_session = \
-            self._establish_session("undoAnnounceButton",
-                                    curr_session, proxy_type)
+            establish_session("undoAnnounceButton",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(48)
             return
@@ -10307,8 +10301,9 @@ class PubServer(BaseHTTPRequestHandler):
                     port = 80
 
             curr_session = \
-                self._establish_session("follow_approve_button",
-                                        curr_session, proxy_type)
+                establish_session("follow_approve_button",
+                                  curr_session, proxy_type,
+                                  self.server)
             if not curr_session:
                 print('WARN: unable to establish session ' +
                       'when approving follow request')
@@ -10589,8 +10584,9 @@ class PubServer(BaseHTTPRequestHandler):
                 proxy_type = 'i2p'
 
         curr_session = \
-            self._establish_session("likeButton",
-                                    curr_session, proxy_type)
+            establish_session("likeButton",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(52)
             return
@@ -10815,8 +10811,9 @@ class PubServer(BaseHTTPRequestHandler):
                 proxy_type = 'i2p'
 
         curr_session = \
-            self._establish_session("undoLikeButton",
-                                    curr_session, proxy_type)
+            establish_session("undoLikeButton",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(53)
             return
@@ -11052,8 +11049,9 @@ class PubServer(BaseHTTPRequestHandler):
                 proxy_type = 'i2p'
 
         curr_session = \
-            self._establish_session("reactionButton",
-                                    curr_session, proxy_type)
+            establish_session("reactionButton",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(54)
             return
@@ -11305,8 +11303,9 @@ class PubServer(BaseHTTPRequestHandler):
                 proxy_type = 'i2p'
 
         curr_session = \
-            self._establish_session("undoReactionButton",
-                                    curr_session, proxy_type)
+            establish_session("undoReactionButton",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(55)
             return
@@ -11640,8 +11639,9 @@ class PubServer(BaseHTTPRequestHandler):
                 proxy_type = 'i2p'
 
         curr_session = \
-            self._establish_session("bookmarkButton",
-                                    curr_session, proxy_type)
+            establish_session("bookmarkButton",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(56)
             return
@@ -11819,8 +11819,9 @@ class PubServer(BaseHTTPRequestHandler):
                 proxy_type = 'i2p'
 
         curr_session = \
-            self._establish_session("undo_bookmarkButton",
-                                    curr_session, proxy_type)
+            establish_session("undo_bookmarkButton",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(57)
             return
@@ -11997,8 +11998,9 @@ class PubServer(BaseHTTPRequestHandler):
                     proxy_type = 'i2p'
 
             curr_session = \
-                self._establish_session("deleteButton",
-                                        curr_session, proxy_type)
+                establish_session("deleteButton",
+                                  curr_session, proxy_type,
+                                  self.server)
             if not curr_session:
                 self._404(58)
                 return
@@ -12398,8 +12400,9 @@ class PubServer(BaseHTTPRequestHandler):
 
             if request_http(self.headers, debug):
                 curr_session = \
-                    self._establish_session("showRepliesToPost",
-                                            curr_session, proxy_type)
+                    establish_session("showRepliesToPost",
+                                      curr_session, proxy_type,
+                                      self.server)
                 if not curr_session:
                     self._404(61)
                     return True
@@ -12517,8 +12520,9 @@ class PubServer(BaseHTTPRequestHandler):
             # send the replies json
             if request_http(self.headers, debug):
                 curr_session = \
-                    self._establish_session("showRepliesToPost2",
-                                            curr_session, proxy_type)
+                    establish_session("showRepliesToPost2",
+                                      curr_session, proxy_type,
+                                      self.server)
                 if not curr_session:
                     self._404(63)
                     return True
@@ -15510,8 +15514,9 @@ class PubServer(BaseHTTPRequestHandler):
                 get_person = person_lookup(domain, search_path2, base_dir)
                 if get_person:
                     curr_session = \
-                        self._establish_session("show_shares_feed",
-                                                curr_session, proxy_type)
+                        establish_session("show_shares_feed",
+                                          curr_session, proxy_type,
+                                          self.server)
                     if not curr_session:
                         self._404(77)
                         self.server.getreq_busy = False
@@ -15660,8 +15665,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   base_dir)
                 if get_person:
                     curr_session = \
-                        self._establish_session("show_following_feed",
-                                                curr_session, proxy_type)
+                        establish_session("show_following_feed",
+                                          curr_session, proxy_type,
+                                          self.server)
                     if not curr_session:
                         self._404(79)
                         return True
@@ -15820,8 +15826,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   base_dir)
                 if get_person:
                     curr_session = \
-                        self._establish_session("show_moved_feed",
-                                                curr_session, proxy_type)
+                        establish_session("show_moved_feed",
+                                          curr_session, proxy_type,
+                                          self.server)
                     if not curr_session:
                         self._404(81)
                         return True
@@ -15975,8 +15982,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   base_dir)
                 if get_person:
                     curr_session = \
-                        self._establish_session("show_inactive_feed",
-                                                curr_session, proxy_type)
+                        establish_session("show_inactive_feed",
+                                          curr_session, proxy_type,
+                                          self.server)
                     if not curr_session:
                         self._404(82)
                         return True
@@ -16128,8 +16136,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   base_dir)
                 if get_person:
                     curr_session = \
-                        self._establish_session("show_followers_feed",
-                                                curr_session, proxy_type)
+                        establish_session("show_followers_feed",
+                                          curr_session, proxy_type,
+                                          self.server)
                     if not curr_session:
                         self._404(84)
                         return True
@@ -16334,8 +16343,9 @@ class PubServer(BaseHTTPRequestHandler):
         add_alternate_domains(actor_json, domain, onion_domain, i2p_domain)
         if request_http(self.headers, debug):
             curr_session = \
-                self._establish_session("showPersonProfile",
-                                        curr_session, proxy_type)
+                establish_session("showPersonProfile",
+                                  curr_session, proxy_type,
+                                  self.server)
             if not curr_session:
                 self._404(86)
                 return True
@@ -16553,8 +16563,9 @@ class PubServer(BaseHTTPRequestHandler):
                 elif page_number > 10:
                     page_number = 10
         curr_session = \
-            self._establish_session("showBlogPage",
-                                    curr_session, proxy_type)
+            establish_session("showBlogPage",
+                              curr_session, proxy_type,
+                              self.server)
         if not curr_session:
             self._404(90)
             self.server.getreq_busy = False
@@ -18501,8 +18512,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.debug)
 
         curr_session = \
-            self._establish_session("GET", curr_session,
-                                    proxy_type)
+            establish_session("GET", curr_session,
+                              proxy_type, self.server)
         if not curr_session:
             self._404(120)
             fitness_performance(getreq_start_time, self.server.fitness,
@@ -18907,9 +18918,9 @@ class PubServer(BaseHTTPRequestHandler):
            self.path in ('/blog', '/blog/', '/blogs', '/blogs/'):
             if '/rss.xml' not in self.path:
                 curr_session = \
-                    self._establish_session("show the main blog page",
-                                            curr_session,
-                                            proxy_type)
+                    establish_session("show the main blog page",
+                                      curr_session,
+                                      proxy_type, self.server)
                 if not curr_session:
                     self._404(121)
                     return
@@ -23587,8 +23598,8 @@ class PubServer(BaseHTTPRequestHandler):
             get_session_for_domain(self.server, calling_domain)
 
         curr_session = \
-            self._establish_session("POST", curr_session,
-                                    proxy_type)
+            establish_session("POST", curr_session,
+                              proxy_type, self.server)
         if not curr_session:
             fitness_performance(postreq_start_time, self.server.fitness,
                                 '_POST', 'create_session',

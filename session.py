@@ -997,3 +997,20 @@ def set_session_for_sender(server, proxy_type: str, new_session) -> None:
                 server.session_i2p = new_session
                 return
     server.session = new_session
+
+
+def establish_session(calling_function: str,
+                      curr_session, proxy_type: str,
+                      server):
+    """Recreates session if needed
+    """
+    if curr_session:
+        return curr_session
+    print('DEBUG: creating new session during ' + calling_function)
+    curr_session = create_session(proxy_type)
+    if curr_session:
+        set_session_for_sender(server, proxy_type, curr_session)
+        return curr_session
+    print('ERROR: GET failed to create session during ' +
+          calling_function)
+    return None
