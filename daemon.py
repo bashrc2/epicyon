@@ -4428,10 +4428,10 @@ class PubServer(BaseHTTPRequestHandler):
         users_path = path.replace('/searchhandle', '')
         actor_str = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             users_path
         length = int(self.headers['Content-length'])
         try:
@@ -4733,11 +4733,9 @@ class PubServer(BaseHTTPRequestHandler):
                    search_str.endswith(';') or \
                    search_str.endswith('.'):
                     actor_str = \
-                        get_instance_url(calling_domain,
-                                         self.server.http_prefix,
-                                         self.server.domain_full,
-                                         self.server.onion_domain,
-                                         self.server.i2p_domain) + \
+                        get_instance_url(calling_domain, http_prefix,
+                                         domain_full, onion_domain,
+                                         i2p_domain) + \
                         users_path
                     self._redirect_headers(actor_str + '/search',
                                            cookie, calling_domain)
@@ -4921,10 +4919,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 actor_str = \
                     get_instance_url(calling_domain,
-                                     self.server.http_prefix,
-                                     self.server.domain_full,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain) + \
+                                     http_prefix, domain_full,
+                                     onion_domain, i2p_domain) + \
                     users_path
                 self._redirect_headers(actor_str + '/search',
                                        cookie, calling_domain)
@@ -5003,11 +4999,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.postreq_busy = False
                     return
         actor_str = \
-            get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+            get_instance_url(calling_domain, http_prefix,
+                             domain_full, onion_domain, i2p_domain) + \
             users_path
         self._redirect_headers(actor_str + '/' +
                                self.server.default_timeline,
