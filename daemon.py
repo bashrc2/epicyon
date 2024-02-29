@@ -4148,7 +4148,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _remove_reading_status(self, calling_domain: str, cookie: str,
                                path: str, base_dir: str, http_prefix: str,
-                               domain: str, domain_full: str,
+                               domain_full: str,
                                onion_domain: str, i2p_domain: str,
                                debug: bool,
                                books_cache: {}) -> None:
@@ -4223,8 +4223,7 @@ class PubServer(BaseHTTPRequestHandler):
                        path: str, base_dir: str, http_prefix: str,
                        domain: str, domain_full: str, port: int,
                        onion_domain: str, i2p_domain: str,
-                       debug: bool,
-                       curr_session, proxy_type: str) -> None:
+                       debug: bool) -> None:
         """Confirms a block from the person options screen
         """
         users_path = path.split('/blockconfirm')[0]
@@ -23842,7 +23841,6 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.path,
                                             self.server.base_dir,
                                             self.server.http_prefix,
-                                            self.server.domain,
                                             self.server.domain_full,
                                             self.server.onion_domain,
                                             self.server.i2p_domain,
@@ -23905,9 +23903,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.port,
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
-                                    self.server.debug,
-                                    curr_session,
-                                    proxy_type)
+                                    self.server.debug)
                 self.server.postreq_busy = False
                 return
 
