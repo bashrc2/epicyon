@@ -17229,10 +17229,10 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
         return True
 
-    def _edit_profile(self, calling_domain: str, path: str,
-                      translate: {}, base_dir: str,
-                      http_prefix: str, domain: str, port: int,
-                      cookie: str) -> bool:
+    def _edit_profile2(self, calling_domain: str, path: str,
+                       translate: {}, base_dir: str,
+                       http_prefix: str, domain: str, port: int,
+                       cookie: str) -> bool:
         """Show the edit profile screen
         """
         if '/users/' in path and path.endswith('/editprofile'):
@@ -20836,13 +20836,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             # edit profile in web interface
-            if self._edit_profile(calling_domain, self.path,
-                                  self.server.translate,
-                                  self.server.base_dir,
-                                  self.server.http_prefix,
-                                  self.server.domain,
-                                  self.server.port,
-                                  cookie):
+            if self._edit_profile2(calling_domain, self.path,
+                                   self.server.translate,
+                                   self.server.base_dir,
+                                   self.server.http_prefix,
+                                   self.server.domain,
+                                   self.server.port,
+                                   cookie):
                 self.server.getreq_busy = False
                 return
 
