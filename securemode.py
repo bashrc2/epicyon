@@ -16,7 +16,7 @@ from cache import get_person_pub_key
 
 def secure_mode(curr_session, proxy_type: str,
                 force: bool, server, headers: {}, path: str) -> bool:
-    """http authentication of GET requests for json
+    """http authentication (aka 'authorized fetch') of GET requests for json
     See AUTHORIZED_FETCH in https://docs.joinmastodon.org/admin/config
     """
     if not server.secure_mode and not force:
