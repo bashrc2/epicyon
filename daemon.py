@@ -2214,8 +2214,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _post_login_screen(self, calling_domain: str, cookie: str,
                            base_dir: str, http_prefix: str,
-                           domain: str, domain_full: str, port: int,
-                           onion_domain: str, i2p_domain: str,
+                           domain: str, port: int,
                            ua_str: str, debug: bool,
                            registrations_open: bool) -> None:
         """POST to login screen, containing credentials
@@ -23590,10 +23589,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.base_dir,
                                     self.server.http_prefix,
                                     self.server.domain,
-                                    self.server.domain_full,
                                     self.server.port,
-                                    self.server.onion_domain,
-                                    self.server.i2p_domain,
                                     ua_str, self.server.debug,
                                     self.server.registration)
             self.server.postreq_busy = False
