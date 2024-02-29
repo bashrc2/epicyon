@@ -12873,7 +12873,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.dogwhistles,
                                    self.server.access_keys,
                                    self.server.min_images_for_accounts,
-                                   self.server.debug,
+                                   debug,
                                    self.server.buy_sites,
                                    self.server.blocked_cache,
                                    self.server.block_federated,
