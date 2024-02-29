@@ -9726,8 +9726,7 @@ class PubServer(BaseHTTPRequestHandler):
                              base_dir: str, http_prefix: str,
                              domain: str, domain_full: str, port: int,
                              onion_domain: str, i2p_domain: str,
-                             getreq_start_time,
-                             curr_session) -> None:
+                             getreq_start_time) -> None:
         """Return an RSS 2 feed for a hashtag
         """
         hashtag = path.split('/tags/rss2/')[1]
@@ -20021,8 +20020,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.port,
                                           self.server.onion_domain,
                                           self.server.i2p_domain,
-                                          getreq_start_time,
-                                          curr_session)
+                                          getreq_start_time)
                 self.server.getreq_busy = False
                 return
             if not html_getreq:
