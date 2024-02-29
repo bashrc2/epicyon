@@ -17231,7 +17231,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _edit_profile2(self, calling_domain: str, path: str,
                        translate: {}, base_dir: str,
-                       http_prefix: str, domain: str, port: int,
+                       domain: str, port: int,
                        cookie: str) -> bool:
         """Show the edit profile screen
         """
@@ -17277,8 +17277,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _edit_links2(self, calling_domain: str, path: str,
                      translate: {}, base_dir: str,
-                     http_prefix: str, domain: str, port: int,
-                     cookie: str, theme: str) -> bool:
+                     domain: str, cookie: str, theme: str) -> bool:
         """Show the links from the left column
         """
         if '/users/' in path and path.endswith('/editlinks'):
@@ -20839,7 +20838,6 @@ class PubServer(BaseHTTPRequestHandler):
             if self._edit_profile2(calling_domain, self.path,
                                    self.server.translate,
                                    self.server.base_dir,
-                                   self.server.http_prefix,
                                    self.server.domain,
                                    self.server.port,
                                    cookie):
@@ -20850,9 +20848,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._edit_links2(calling_domain, self.path,
                                  self.server.translate,
                                  self.server.base_dir,
-                                 self.server.http_prefix,
                                  self.server.domain,
-                                 self.server.port,
                                  cookie,
                                  self.server.theme_name):
                 self.server.getreq_busy = False
