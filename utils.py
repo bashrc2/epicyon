@@ -5201,3 +5201,15 @@ def get_instance_url(calling_domain: str,
         instance_url = \
             http_prefix + '://' + domain_full
     return instance_url
+
+
+def check_bad_path(path: str):
+    """for http GET or POST check that the path looks valid
+    """
+    path_lower = path.lower()
+    if '..' in path_lower or \
+       '%2e%2e' in path_lower or \
+       '%252e%252e' in path_lower:
+        print('WARN: bad path ' + path)
+        return True
+    return False

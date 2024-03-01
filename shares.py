@@ -130,8 +130,8 @@ def _get_valid_shared_item_id(actor: str, display_name: str) -> str:
     return actor + '--shareditems--' + display_name
 
 
-def remove_shared_item(base_dir: str, nickname: str, domain: str,
-                       item_id: str, shares_file_type: str) -> None:
+def remove_shared_item2(base_dir: str, nickname: str, domain: str,
+                        item_id: str, shares_file_type: str) -> None:
     """Removes a share for a person
     """
     shares_filename = \
@@ -1241,9 +1241,9 @@ def outbox_undo_share_upload(base_dir: str, nickname: str, domain: str,
         if debug:
             print('DEBUG: displayName missing from Offer')
         return
-    remove_shared_item(base_dir, nickname, domain,
-                       message_json['object']['displayName'],
-                       'shares')
+    remove_shared_item2(base_dir, nickname, domain,
+                        message_json['object']['displayName'],
+                        'shares')
     if debug:
         print('DEBUG: shared item removed via c2s')
 
