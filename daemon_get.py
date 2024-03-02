@@ -68,7 +68,6 @@ from webapp_create_post import html_new_post
 from webapp_profile import html_profile
 from webapp_profile import html_edit_profile
 from webapp_conversation import html_conversation_view
-from webapp_pwa import pwa_manifest
 from webapp_moderation import html_moderation
 from webapp_moderation import html_account_info
 from webapp_calendar import html_calendar_delete_confirm
@@ -225,6 +224,7 @@ from daemon_get_favicon import show_cached_favicon
 from daemon_get_favicon import get_favicon
 from daemon_get_exports import get_exported_blocks
 from daemon_get_exports import get_exported_theme
+from daemon_get_pwa import progressive_web_app_manifest
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -522,10 +522,10 @@ def daemon_http_get(self) -> None:
     if '/manifest.json' in self.path:
         if has_accept(self, calling_domain):
             if not request_http(self.headers, self.server.debug):
-                _progressive_web_app_manifest(self, self.server.base_dir,
-                                              calling_domain,
-                                              referer_domain,
-                                              getreq_start_time)
+                progressive_web_app_manifest(self, self.server.base_dir,
+                                             calling_domain,
+                                             referer_domain,
+                                             getreq_start_time)
                 return
             else:
                 self.path = '/'
@@ -4687,36 +4687,6 @@ def _show_instance_actor(self, calling_domain: str,
                         '_GET', '_show_instance_actor',
                         debug)
     return True
-
-
-def _progressive_web_app_manifest(self, base_dir: str,
-                                  calling_domain: str,
-                                  referer_domain: str,
-                                  getreq_start_time) -> None:
-    """gets the PWA manifest
-    """
-    manifest = pwa_manifest(base_dir)
-    msg_str = json.dumps(manifest, ensure_ascii=False)
-    msg_str = convert_domains(calling_domain,
-                              referer_domain,
-                              msg_str,
-                              self.server.http_prefix,
-                              self.server.domain,
-                              self.server.onion_domain,
-                              self.server.i2p_domain)
-    msg = msg_str.encode('utf-8')
-
-    msglen = len(msg)
-    protocol_str = \
-        get_json_content_from_accept(self.headers['Accept'])
-    set_headers(self, protocol_str, msglen,
-                None, calling_domain, False)
-    write2(self, msg)
-    if self.server.debug:
-        print('Sent manifest: ' + calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_progressive_web_app_manifest',
-                        self.server.debug)
 
 
 def _browser_config(self, calling_domain: str, referer_domain: str,
