@@ -56,7 +56,6 @@ from follow import pending_followers_timeline_json
 from follow import get_following_feed
 from blocking import unmute_post
 from blocking import mute_post
-from blocking import is_blocked_hashtag
 from blocking import broch_mode_is_active
 from blocking import remove_global_block
 from blocking import update_blocked_cache
@@ -75,9 +74,6 @@ from webapp_hashtagswarm import get_hashtag_categories_feed
 from webapp_hashtagswarm import html_search_hashtag_category
 from webapp_minimalbutton import set_minimal
 from webapp_minimalbutton import is_minimal
-from webapp_search import hashtag_search_json
-from webapp_search import html_hashtag_search
-from webapp_search import hashtag_search_rss
 from webapp_search import html_search_emoji_text_entry
 from webapp_search import html_search
 from webapp_search import html_hashtag_search_remote
@@ -110,7 +106,6 @@ from webapp_welcome_final import html_welcome_final
 from webapp_welcome import html_welcome_screen
 from webapp_welcome import is_welcome_screen_complete
 from webapp_podcast import html_podcast_episode
-from webapp_utils import html_hashtag_blocked
 from webapp_utils import get_default_path
 from webapp_utils import csv_following_list
 from webapp_utils import get_shares_collection
@@ -225,6 +220,9 @@ from daemon_get_pwa import progressive_web_app_manifest
 from daemon_get_css import get_fonts
 from daemon_get_css import get_style_sheet
 from daemon_get_nodeinfo import get_nodeinfo
+from daemon_get_hashtag import hashtag_search_rss2
+from daemon_get_hashtag import hashtag_search_json2
+from daemon_get_hashtag import hashtag_search2
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -2799,20 +2797,20 @@ def daemon_http_get(self) -> None:
     if self.path.startswith('/tags/') or \
        (authorized and '/tags/' in self.path):
         if self.path.startswith('/tags/rss2/'):
-            _hashtag_search_rss2(self, calling_domain,
-                                 self.path, cookie,
-                                 self.server.base_dir,
-                                 self.server.http_prefix,
-                                 self.server.domain,
-                                 self.server.domain_full,
-                                 self.server.port,
-                                 self.server.onion_domain,
-                                 self.server.i2p_domain,
-                                 getreq_start_time)
+            hashtag_search_rss2(self, calling_domain,
+                                self.path, cookie,
+                                self.server.base_dir,
+                                self.server.http_prefix,
+                                self.server.domain,
+                                self.server.domain_full,
+                                self.server.port,
+                                self.server.onion_domain,
+                                self.server.i2p_domain,
+                                getreq_start_time)
             self.server.getreq_busy = False
             return
         if not html_getreq:
-            _hashtag_search_json(self, calling_domain, referer_domain,
+            hashtag_search_json2(self, calling_domain, referer_domain,
                                  self.path, cookie,
                                  self.server.base_dir,
                                  self.server.http_prefix,
@@ -2821,20 +2819,22 @@ def daemon_http_get(self) -> None:
                                  self.server.port,
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
-                                 getreq_start_time)
+                                 getreq_start_time,
+                                 MAX_POSTS_IN_FEED)
             self.server.getreq_busy = False
             return
-        _hashtag_search2(self, calling_domain,
-                         self.path, cookie,
-                         self.server.base_dir,
-                         self.server.http_prefix,
-                         self.server.domain,
-                         self.server.domain_full,
-                         self.server.port,
-                         self.server.onion_domain,
-                         self.server.i2p_domain,
-                         getreq_start_time,
-                         curr_session)
+        hashtag_search2(self, calling_domain,
+                        self.path, cookie,
+                        self.server.base_dir,
+                        self.server.http_prefix,
+                        self.server.domain,
+                        self.server.domain_full,
+                        self.server.port,
+                        self.server.onion_domain,
+                        self.server.i2p_domain,
+                        getreq_start_time,
+                        curr_session,
+                        MAX_POSTS_IN_HASHTAG_FEED)
         self.server.getreq_busy = False
         return
 
@@ -6070,209 +6070,6 @@ def _webfinger(self, calling_domain: str, referer_domain: str,
             print('DEBUG: WEBFINGER lookup 404 ' + self.path)
         http_404(self, 10)
     return True
-
-
-def _hashtag_search_rss2(self, calling_domain: str,
-                         path: str, cookie: str,
-                         base_dir: str, http_prefix: str,
-                         domain: str, domain_full: str, port: int,
-                         onion_domain: str, i2p_domain: str,
-                         getreq_start_time) -> None:
-    """Return an RSS 2 feed for a hashtag
-    """
-    hashtag = path.split('/tags/rss2/')[1]
-    if is_blocked_hashtag(base_dir, hashtag):
-        http_400(self)
-        return
-    nickname = None
-    if '/users/' in path:
-        actor = \
-            http_prefix + '://' + domain_full + path
-        nickname = \
-            get_nickname_from_actor(actor)
-    hashtag_str = \
-        hashtag_search_rss(nickname,
-                           domain, port,
-                           base_dir, hashtag,
-                           http_prefix,
-                           self.server.system_language)
-    if hashtag_str:
-        msg = hashtag_str.encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/xml', msglen,
-                    cookie, calling_domain, False)
-        write2(self, msg)
-    else:
-        origin_path_str = path.split('/tags/rss2/')[0]
-        origin_path_str_absolute = \
-            http_prefix + '://' + domain_full + origin_path_str
-        if calling_domain.endswith('.onion') and onion_domain:
-            origin_path_str_absolute = \
-                'http://' + onion_domain + origin_path_str
-        elif (calling_domain.endswith('.i2p') and onion_domain):
-            origin_path_str_absolute = \
-                'http://' + i2p_domain + origin_path_str
-        redirect_headers(self, origin_path_str_absolute + '/search',
-                         cookie, calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_hashtag_search_rss2',
-                        self.server.debug)
-
-
-def _hashtag_search_json(self, calling_domain: str,
-                         referer_domain: str,
-                         path: str, cookie: str,
-                         base_dir: str, http_prefix: str,
-                         domain: str, domain_full: str, port: int,
-                         onion_domain: str, i2p_domain: str,
-                         getreq_start_time) -> None:
-    """Return a json collection for a hashtag
-    """
-    page_number = 1
-    if '?page=' in path:
-        page_number_str = path.split('?page=')[1]
-        if page_number_str.isdigit():
-            page_number = int(page_number_str)
-        path = path.split('?page=')[0]
-    hashtag = path.split('/tags/')[1]
-    if is_blocked_hashtag(base_dir, hashtag):
-        http_400(self)
-        return
-    nickname = None
-    if '/users/' in path:
-        actor = \
-            http_prefix + '://' + domain_full + path
-        nickname = \
-            get_nickname_from_actor(actor)
-    hashtag_json = \
-        hashtag_search_json(nickname,
-                            domain, port,
-                            base_dir, hashtag,
-                            page_number, MAX_POSTS_IN_FEED,
-                            http_prefix)
-    if hashtag_json:
-        msg_str = json.dumps(hashtag_json)
-        msg_str = convert_domains(calling_domain, referer_domain,
-                                  msg_str, http_prefix, domain,
-                                  onion_domain, i2p_domain)
-        msg = msg_str.encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'application/json', msglen,
-                    None, calling_domain, True)
-        write2(self, msg)
-    else:
-        origin_path_str = path.split('/tags/')[0]
-        origin_path_str_absolute = \
-            http_prefix + '://' + domain_full + origin_path_str
-        if calling_domain.endswith('.onion') and onion_domain:
-            origin_path_str_absolute = \
-                'http://' + onion_domain + origin_path_str
-        elif (calling_domain.endswith('.i2p') and onion_domain):
-            origin_path_str_absolute = \
-                'http://' + i2p_domain + origin_path_str
-        redirect_headers(self, origin_path_str_absolute,
-                         cookie, calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_hashtag_search_json',
-                        self.server.debug)
-
-
-def _hashtag_search2(self, calling_domain: str,
-                     path: str, cookie: str,
-                     base_dir: str, http_prefix: str,
-                     domain: str, domain_full: str, port: int,
-                     onion_domain: str, i2p_domain: str,
-                     getreq_start_time,
-                     curr_session) -> None:
-    """Return the result of a hashtag search
-    """
-    page_number = 1
-    if '?page=' in path:
-        page_number_str = path.split('?page=')[1]
-        if '#' in page_number_str:
-            page_number_str = page_number_str.split('#')[0]
-        if len(page_number_str) > 5:
-            page_number_str = "1"
-        if page_number_str.isdigit():
-            page_number = int(page_number_str)
-    hashtag = path.split('/tags/')[1]
-    if '?page=' in hashtag:
-        hashtag = hashtag.split('?page=')[0]
-    hashtag = urllib.parse.unquote_plus(hashtag)
-    if is_blocked_hashtag(base_dir, hashtag):
-        print('BLOCK: blocked hashtag #' + hashtag)
-        msg = html_hashtag_blocked(base_dir,
-                                   self.server.translate).encode('utf-8')
-        msglen = len(msg)
-        login_headers(self, 'text/html', msglen, calling_domain)
-        write2(self, msg)
-        return
-    nickname = None
-    if '/users/' in path:
-        nickname = path.split('/users/')[1]
-        if '/' in nickname:
-            nickname = nickname.split('/')[0]
-        if '?' in nickname:
-            nickname = nickname.split('?')[0]
-    timezone = None
-    if self.server.account_timezone.get(nickname):
-        timezone = \
-            self.server.account_timezone.get(nickname)
-    bold_reading = False
-    if self.server.bold_reading.get(nickname):
-        bold_reading = True
-    hashtag_str = \
-        html_hashtag_search(nickname, domain, port,
-                            self.server.recent_posts_cache,
-                            self.server.max_recent_posts,
-                            self.server.translate,
-                            base_dir, hashtag, page_number,
-                            MAX_POSTS_IN_HASHTAG_FEED,
-                            curr_session,
-                            self.server.cached_webfingers,
-                            self.server.person_cache,
-                            http_prefix,
-                            self.server.project_version,
-                            self.server.yt_replace_domain,
-                            self.server.twitter_replacement_domain,
-                            self.server.show_published_date_only,
-                            self.server.peertube_instances,
-                            self.server.allow_local_network_access,
-                            self.server.theme_name,
-                            self.server.system_language,
-                            self.server.max_like_count,
-                            self.server.signing_priv_key_pem,
-                            self.server.cw_lists,
-                            self.server.lists_enabled,
-                            timezone, bold_reading,
-                            self.server.dogwhistles,
-                            self.server.map_format,
-                            self.server.access_keys,
-                            'search',
-                            self.server.min_images_for_accounts,
-                            self.server.buy_sites,
-                            self.server.auto_cw_cache)
-    if hashtag_str:
-        msg = hashtag_str.encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/html', msglen,
-                    cookie, calling_domain, False)
-        write2(self, msg)
-    else:
-        origin_path_str = path.split('/tags/')[0]
-        origin_path_str_absolute = \
-            http_prefix + '://' + domain_full + origin_path_str
-        if calling_domain.endswith('.onion') and onion_domain:
-            origin_path_str_absolute = \
-                'http://' + onion_domain + origin_path_str
-        elif (calling_domain.endswith('.i2p') and onion_domain):
-            origin_path_str_absolute = \
-                'http://' + i2p_domain + origin_path_str
-        redirect_headers(self, origin_path_str_absolute + '/search',
-                         cookie, calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_hashtag_search',
-                        self.server.debug)
 
 
 def _confirm_delete_event(self, calling_domain: str, path: str,
