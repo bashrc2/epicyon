@@ -27,15 +27,11 @@ from media import path_is_video
 from media import path_is_transcript
 from media import path_is_audio
 from context import get_individual_post_context
-from newswire import rss2header
-from newswire import rss2footer
 from pgp import actor_to_vcard
 from pgp import actor_to_vcard_xml
 from siteactive import referer_is_active
 from maps import map_format_from_tagmaps_path
 from blog import html_blog_page
-from blog import html_blog_page_rss2
-from blog import html_blog_page_rss3
 from blog import html_edit_blog
 from blog import html_blog_post
 from blog import path_contains_blog_link
@@ -127,7 +123,6 @@ from utils import get_new_post_endpoints
 from utils import locate_post
 from utils import get_image_mime_type
 from utils import get_image_extensions
-from utils import is_account_dir
 from utils import get_config_param
 from utils import user_agent_domain
 from utils import local_network_host
@@ -215,6 +210,9 @@ from daemon_get_newswire import newswire_vote
 from daemon_get_newswire import newswire_unvote
 from daemon_get_newswire import edit_newswire2
 from daemon_get_newswire import edit_news_post2
+from daemon_get_rss import get_rss2feed
+from daemon_get_rss import get_rss2site
+from daemon_get_rss import get_rss3feed
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -1344,26 +1342,26 @@ def daemon_http_get(self) -> None:
     if self.path.startswith('/blog/') and \
        self.path.endswith('/rss.xml'):
         if not self.path == '/blog/rss.xml':
-            _get_rss2feed(self, calling_domain, self.path,
-                          self.server.base_dir,
-                          self.server.http_prefix,
-                          self.server.domain,
-                          self.server.port,
-                          proxy_type,
-                          getreq_start_time,
-                          self.server.debug,
-                          curr_session)
+            get_rss2feed(self, calling_domain, self.path,
+                         self.server.base_dir,
+                         self.server.http_prefix,
+                         self.server.domain,
+                         self.server.port,
+                         proxy_type,
+                         getreq_start_time,
+                         self.server.debug,
+                         curr_session, MAX_POSTS_IN_RSS_FEED)
         else:
-            _get_rss2site(self, calling_domain, self.path,
-                          self.server.base_dir,
-                          self.server.http_prefix,
-                          self.server.domain_full,
-                          self.server.port,
-                          proxy_type,
-                          self.server.translate,
-                          getreq_start_time,
-                          self.server.debug,
-                          curr_session)
+            get_rss2site(self, calling_domain, self.path,
+                         self.server.base_dir,
+                         self.server.http_prefix,
+                         self.server.domain_full,
+                         self.server.port,
+                         proxy_type,
+                         self.server.translate,
+                         getreq_start_time,
+                         self.server.debug,
+                         curr_session, MAX_POSTS_IN_RSS_FEED)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -1373,16 +1371,16 @@ def daemon_http_get(self) -> None:
     # RSS 3.0
     if self.path.startswith('/blog/') and \
        self.path.endswith('/rss.txt'):
-        _get_rss3feed(self, calling_domain, self.path,
-                      self.server.base_dir,
-                      self.server.http_prefix,
-                      self.server.domain,
-                      self.server.port,
-                      proxy_type,
-                      getreq_start_time,
-                      self.server.debug,
-                      self.server.system_language,
-                      curr_session)
+        get_rss3feed(self, calling_domain, self.path,
+                     self.server.base_dir,
+                     self.server.http_prefix,
+                     self.server.domain,
+                     self.server.port,
+                     proxy_type,
+                     getreq_start_time,
+                     self.server.debug,
+                     self.server.system_language,
+                     curr_session, MAX_POSTS_IN_RSS_FEED)
         return
 
     users_in_path = False
@@ -4690,159 +4688,6 @@ def _show_conversation_thread(self, authorized: bool,
         redirect_headers(self, post_id, None, calling_domain)
     self.server.getreq_busy = False
     return True
-
-
-def _get_rss2feed(self, calling_domain: str, path: str,
-                  base_dir: str, http_prefix: str,
-                  domain: str, port: int, proxy_type: str,
-                  getreq_start_time, debug: bool,
-                  curr_session) -> None:
-    """Returns an RSS2 feed for the blog
-    """
-    nickname = path.split('/blog/')[1]
-    if '/' in nickname:
-        nickname = nickname.split('/')[0]
-    if not nickname.startswith('rss.'):
-        account_dir = acct_dir(self.server.base_dir, nickname, domain)
-        if os.path.isdir(account_dir):
-            curr_session = \
-                establish_session("RSS request",
-                                  curr_session,
-                                  proxy_type,
-                                  self.server)
-            if not curr_session:
-                return
-
-            msg = \
-                html_blog_page_rss2(base_dir,
-                                    http_prefix,
-                                    self.server.translate,
-                                    nickname,
-                                    domain,
-                                    port,
-                                    MAX_POSTS_IN_RSS_FEED, 1,
-                                    True,
-                                    self.server.system_language)
-            if msg is not None:
-                msg = msg.encode('utf-8')
-                msglen = len(msg)
-                set_headers(self, 'text/xml', msglen,
-                            None, calling_domain, True)
-                write2(self, msg)
-                if debug:
-                    print('Sent rss2 feed: ' +
-                          path + ' ' + calling_domain)
-                fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', '_get_rss2feed',
-                                    debug)
-                return
-    if debug:
-        print('Failed to get rss2 feed: ' +
-              path + ' ' + calling_domain)
-    http_404(self, 22)
-
-
-def _get_rss2site(self, calling_domain: str, path: str,
-                  base_dir: str, http_prefix: str,
-                  domain_full: str, port: int, proxy_type: str,
-                  translate: {},
-                  getreq_start_time,
-                  debug: bool,
-                  curr_session) -> None:
-    """Returns an RSS2 feed for all blogs on this instance
-    """
-    curr_session = \
-        establish_session("get_rss2site",
-                          curr_session,
-                          proxy_type,
-                          self.server)
-    if not curr_session:
-        http_404(self, 23)
-        return
-
-    msg = ''
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
-        for acct in dirs:
-            if not is_account_dir(acct):
-                continue
-            nickname = acct.split('@')[0]
-            domain = acct.split('@')[1]
-            msg += \
-                html_blog_page_rss2(base_dir,
-                                    http_prefix,
-                                    self.server.translate,
-                                    nickname,
-                                    domain,
-                                    port,
-                                    MAX_POSTS_IN_RSS_FEED, 1,
-                                    False,
-                                    self.server.system_language)
-        break
-    if msg:
-        msg = rss2header(http_prefix,
-                         'news', domain_full,
-                         'Site', translate) + msg + rss2footer()
-
-        msg = msg.encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/xml', msglen,
-                    None, calling_domain, True)
-        write2(self, msg)
-        if debug:
-            print('Sent rss2 feed: ' +
-                  path + ' ' + calling_domain)
-        fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_get_rss2site',
-                            debug)
-        return
-    if debug:
-        print('Failed to get rss2 feed: ' +
-              path + ' ' + calling_domain)
-    http_404(self, 24)
-
-
-def _get_rss3feed(self, calling_domain: str, path: str,
-                  base_dir: str, http_prefix: str,
-                  domain: str, port: int, proxy_type: str,
-                  getreq_start_time,
-                  debug: bool, system_language: str,
-                  curr_session) -> None:
-    """Returns an RSS3 feed
-    """
-    nickname = path.split('/blog/')[1]
-    if '/' in nickname:
-        nickname = nickname.split('/')[0]
-    if not nickname.startswith('rss.'):
-        account_dir = acct_dir(base_dir, nickname, domain)
-        if os.path.isdir(account_dir):
-            curr_session = \
-                establish_session("get_rss3feed",
-                                  curr_session, proxy_type,
-                                  self.server)
-            if not curr_session:
-                http_404(self, 29)
-                return
-            msg = \
-                html_blog_page_rss3(base_dir, http_prefix,
-                                    nickname, domain, port,
-                                    MAX_POSTS_IN_RSS_FEED, 1,
-                                    system_language)
-            if msg is not None:
-                msg = msg.encode('utf-8')
-                msglen = len(msg)
-                set_headers(self, 'text/plain; charset=utf-8',
-                            msglen, None, calling_domain, True)
-                write2(self, msg)
-                if self.server.debug:
-                    print('Sent rss3 feed: ' +
-                          path + ' ' + calling_domain)
-                fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', '_get_rss3feed', debug)
-                return
-    if debug:
-        print('Failed to get rss3 feed: ' +
-              path + ' ' + calling_domain)
-    http_404(self, 20)
 
 
 def _get_following_json(self, base_dir: str, path: str,
