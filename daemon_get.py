@@ -175,7 +175,6 @@ from utils import get_cached_post_filename
 from utils import get_image_mime_type
 from utils import get_image_extensions
 from utils import is_account_dir
-from utils import get_css
 from utils import get_config_param
 from utils import user_agent_domain
 from utils import local_network_host
@@ -225,6 +224,8 @@ from daemon_get_favicon import get_favicon
 from daemon_get_exports import get_exported_blocks
 from daemon_get_exports import get_exported_theme
 from daemon_get_pwa import progressive_web_app_manifest
+from daemon_get_css import get_fonts
+from daemon_get_css import get_style_sheet
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -1292,9 +1293,9 @@ def daemon_http_get(self) -> None:
     # get css
     # Note that this comes before the busy flag to avoid conflicts
     if self.path.endswith('.css'):
-        if _get_style_sheet(self, self.server.base_dir,
-                            calling_domain, self.path,
-                            getreq_start_time):
+        if get_style_sheet(self, self.server.base_dir,
+                           calling_domain, self.path,
+                           getreq_start_time):
             return
 
     if authorized and '/exports/' in self.path:
@@ -1311,9 +1312,9 @@ def daemon_http_get(self) -> None:
 
     # get fonts
     if '/fonts/' in self.path:
-        _get_fonts(self, calling_domain, self.path,
-                   self.server.base_dir, self.server.debug,
-                   getreq_start_time)
+        get_fonts(self, calling_domain, self.path,
+                  self.server.base_dir, self.server.debug,
+                  getreq_start_time)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -4806,110 +4807,6 @@ def _show_conversation_thread(self, authorized: bool,
         redirect_headers(self, post_id, None, calling_domain)
     self.server.getreq_busy = False
     return True
-
-
-def _get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
-                     getreq_start_time) -> bool:
-    """Returns the content of a css file
-    """
-    # get the last part of the path
-    # eg. /my/path/file.css becomes file.css
-    if '/' in path:
-        path = path.split('/')[-1]
-    path = base_dir + '/' + path
-    css = None
-    if self.server.css_cache.get(path):
-        css = self.server.css_cache[path]
-    elif os.path.isfile(path):
-        tries = 0
-        while tries < 5:
-            try:
-                css = get_css(self.server.base_dir, path)
-                if css:
-                    self.server.css_cache[path] = css
-                    break
-            except BaseException as ex:
-                print('EX: _get_style_sheet ' + path + ' ' +
-                      str(tries) + ' ' + str(ex))
-                time.sleep(1)
-                tries += 1
-    if css:
-        msg = css.encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/css', msglen,
-                    None, calling_domain, False)
-        write2(self, msg)
-        fitness_performance(getreq_start_time,
-                            self.server.fitness,
-                            '_GET', '_get_style_sheet',
-                            self.server.debug)
-        return True
-    http_404(self, 92)
-    return True
-
-
-def _get_fonts(self, calling_domain: str, path: str,
-               base_dir: str, debug: bool,
-               getreq_start_time) -> None:
-    """Returns a font
-    """
-    font_str = path.split('/fonts/')[1]
-    if font_str.endswith('.otf') or \
-       font_str.endswith('.ttf') or \
-       font_str.endswith('.woff') or \
-       font_str.endswith('.woff2'):
-        if font_str.endswith('.otf'):
-            font_type = 'font/otf'
-        elif font_str.endswith('.ttf'):
-            font_type = 'font/ttf'
-        elif font_str.endswith('.woff'):
-            font_type = 'font/woff'
-        else:
-            font_type = 'font/woff2'
-        font_filename = \
-            base_dir + '/fonts/' + font_str
-        if etag_exists(self, font_filename):
-            # The file has not changed
-            http_304(self)
-            return
-        if self.server.fontsCache.get(font_str):
-            font_binary = self.server.fontsCache[font_str]
-            set_headers_etag(self, font_filename,
-                             font_type,
-                             font_binary, None,
-                             self.server.domain_full, False, None)
-            write2(self, font_binary)
-            if debug:
-                print('font sent from cache: ' +
-                      path + ' ' + calling_domain)
-            fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_get_fonts cache',
-                                debug)
-            return
-        if os.path.isfile(font_filename):
-            font_binary = None
-            try:
-                with open(font_filename, 'rb') as fontfile:
-                    font_binary = fontfile.read()
-            except OSError:
-                print('EX: unable to load font ' + font_filename)
-            if font_binary:
-                set_headers_etag(self, font_filename,
-                                 font_type,
-                                 font_binary, None,
-                                 self.server.domain_full,
-                                 False, None)
-                write2(self, font_binary)
-                self.server.fontsCache[font_str] = font_binary
-            if debug:
-                print('font sent from file: ' +
-                      path + ' ' + calling_domain)
-            fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_get_fonts', debug)
-            return
-    if debug:
-        print('font not found: ' + path + ' ' + calling_domain)
-    http_404(self, 21)
 
 
 def _get_hashtag_categories_feed(self, calling_domain: str, path: str,
