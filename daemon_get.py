@@ -58,7 +58,6 @@ from follow import get_following_feed
 from blocking import unmute_post
 from blocking import mute_post
 from blocking import is_blocked_hashtag
-from blocking import export_blocking_file
 from blocking import broch_mode_is_active
 from blocking import remove_global_block
 from blocking import update_blocked_cache
@@ -224,6 +223,8 @@ from posts import outbox_message_create_wrap
 from daemon_get_masto_api import masto_api
 from daemon_get_favicon import show_cached_favicon
 from daemon_get_favicon import get_favicon
+from daemon_get_exports import get_exported_blocks
+from daemon_get_exports import get_exported_theme
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -1298,14 +1299,14 @@ def daemon_http_get(self) -> None:
 
     if authorized and '/exports/' in self.path:
         if 'blocks.csv' in self.path:
-            _get_exported_blocks(self, self.path,
-                                 self.server.base_dir,
-                                 self.server.domain,
-                                 calling_domain)
-        else:
-            _get_exported_theme(self, self.path,
+            get_exported_blocks(self, self.path,
                                 self.server.base_dir,
-                                self.server.domain_full)
+                                self.server.domain,
+                                calling_domain)
+        else:
+            get_exported_theme(self, self.path,
+                               self.server.base_dir,
+                               self.server.domain_full)
         return
 
     # get fonts
@@ -4875,48 +4876,6 @@ def _get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
         return True
     http_404(self, 92)
     return True
-
-
-def _get_exported_blocks(self, path: str, base_dir: str,
-                         domain: str,
-                         calling_domain: str) -> None:
-    """Returns an exported blocks csv file
-    """
-    filename = path.split('/exports/', 1)[1]
-    filename = base_dir + '/exports/' + filename
-    nickname = get_nickname_from_actor(path)
-    if nickname:
-        blocks_str = export_blocking_file(base_dir, nickname, domain)
-        if blocks_str:
-            msg = blocks_str.encode('utf-8')
-            msglen = len(msg)
-            set_headers(self, 'text/csv',
-                        msglen, None, calling_domain, False)
-            write2(self, msg)
-            return
-    http_404(self, 20)
-
-
-def _get_exported_theme(self, path: str, base_dir: str,
-                        domain_full: str) -> None:
-    """Returns an exported theme zip file
-    """
-    filename = path.split('/exports/', 1)[1]
-    filename = base_dir + '/exports/' + filename
-    if os.path.isfile(filename):
-        export_binary = None
-        try:
-            with open(filename, 'rb') as fp_exp:
-                export_binary = fp_exp.read()
-        except OSError:
-            print('EX: unable to read theme export ' + filename)
-        if export_binary:
-            export_type = 'application/zip'
-            set_headers_etag(self, filename, export_type,
-                             export_binary, None,
-                             domain_full, False, None)
-            write2(self, export_binary)
-    http_404(self, 19)
 
 
 def _get_fonts(self, calling_domain: str, path: str,
