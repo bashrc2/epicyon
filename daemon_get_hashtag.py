@@ -9,7 +9,9 @@ __module_group__ = "Core"
 
 import json
 import urllib.parse
+from session import establish_session
 from httpcodes import http_400
+from httpcodes import http_404
 from httpcodes import write2
 from httpheaders import login_headers
 from httpheaders import redirect_headers
@@ -17,11 +19,12 @@ from httpheaders import set_headers
 from blocking import is_blocked_hashtag
 from utils import convert_domains
 from utils import get_nickname_from_actor
+from fitnessFunctions import fitness_performance
 from webapp_utils import html_hashtag_blocked
 from webapp_search import html_hashtag_search
 from webapp_search import hashtag_search_rss
 from webapp_search import hashtag_search_json
-from fitnessFunctions import fitness_performance
+from webapp_hashtagswarm import get_hashtag_categories_feed
 
 
 def hashtag_search_rss2(self, calling_domain: str,
@@ -227,3 +230,39 @@ def hashtag_search2(self, calling_domain: str,
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_hashtag_search',
                         self.server.debug)
+
+
+def get_hashtag_categories_feed2(self, calling_domain: str, path: str,
+                                 base_dir: str, proxy_type: str,
+                                 getreq_start_time,
+                                 debug: bool,
+                                 curr_session) -> None:
+    """Returns the hashtag categories feed
+    """
+    curr_session = \
+        establish_session("get_hashtag_categories_feed",
+                          curr_session, proxy_type,
+                          self.server)
+    if not curr_session:
+        http_404(self, 27)
+        return
+
+    hashtag_categories = None
+    msg = \
+        get_hashtag_categories_feed(base_dir, hashtag_categories)
+    if msg:
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        set_headers(self, 'text/xml', msglen,
+                    None, calling_domain, True)
+        write2(self, msg)
+        if debug:
+            print('Sent rss2 categories feed: ' +
+                  path + ' ' + calling_domain)
+        fitness_performance(getreq_start_time, self.server.fitness,
+                            '_GET', '_get_hashtag_categories_feed', debug)
+        return
+    if debug:
+        print('Failed to get rss2 categories feed: ' +
+              path + ' ' + calling_domain)
+    http_404(self, 28)

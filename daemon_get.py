@@ -70,7 +70,6 @@ from webapp_moderation import html_moderation
 from webapp_moderation import html_account_info
 from webapp_calendar import html_calendar_delete_confirm
 from webapp_calendar import html_calendar
-from webapp_hashtagswarm import get_hashtag_categories_feed
 from webapp_hashtagswarm import html_search_hashtag_category
 from webapp_minimalbutton import set_minimal
 from webapp_minimalbutton import is_minimal
@@ -223,6 +222,7 @@ from daemon_get_nodeinfo import get_nodeinfo
 from daemon_get_hashtag import hashtag_search_rss2
 from daemon_get_hashtag import hashtag_search_json2
 from daemon_get_hashtag import hashtag_search2
+from daemon_get_hashtag import get_hashtag_categories_feed2
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -1332,7 +1332,7 @@ def daemon_http_get(self) -> None:
                         self.server.debug)
 
     if self.path == '/categories.xml':
-        _get_hashtag_categories_feed(self, calling_domain, self.path,
+        get_hashtag_categories_feed2(self, calling_domain, self.path,
                                      self.server.base_dir,
                                      proxy_type,
                                      getreq_start_time,
@@ -4689,42 +4689,6 @@ def _show_conversation_thread(self, authorized: bool,
         redirect_headers(self, post_id, None, calling_domain)
     self.server.getreq_busy = False
     return True
-
-
-def _get_hashtag_categories_feed(self, calling_domain: str, path: str,
-                                 base_dir: str, proxy_type: str,
-                                 getreq_start_time,
-                                 debug: bool,
-                                 curr_session) -> None:
-    """Returns the hashtag categories feed
-    """
-    curr_session = \
-        establish_session("get_hashtag_categories_feed",
-                          curr_session, proxy_type,
-                          self.server)
-    if not curr_session:
-        http_404(self, 27)
-        return
-
-    hashtag_categories = None
-    msg = \
-        get_hashtag_categories_feed(base_dir, hashtag_categories)
-    if msg:
-        msg = msg.encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/xml', msglen,
-                    None, calling_domain, True)
-        write2(self, msg)
-        if debug:
-            print('Sent rss2 categories feed: ' +
-                  path + ' ' + calling_domain)
-        fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_get_hashtag_categories_feed', debug)
-        return
-    if debug:
-        print('Failed to get rss2 categories feed: ' +
-              path + ' ' + calling_domain)
-    http_404(self, 28)
 
 
 def _get_newswire_feed(self, calling_domain: str, path: str,
