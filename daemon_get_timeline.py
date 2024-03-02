@@ -24,10 +24,12 @@ from webapp_timeline import html_outbox
 from webapp_timeline import html_bookmarks
 from webapp_timeline import html_wanted
 from webapp_timeline import html_shares
+from webapp_timeline import html_inbox_dms
 from webapp_timeline import html_inbox_features
 from webapp_timeline import html_inbox_news
 from webapp_timeline import html_inbox_blogs
 from webapp_timeline import html_inbox_media
+from webapp_timeline import html_inbox_replies
 from webapp_moderation import html_moderation
 from fitnessFunctions import fitness_performance
 
@@ -1475,3 +1477,365 @@ def show_mod_timeline(self, authorized: bool,
     self.send_response(405)
     self.end_headers()
     return True
+
+
+def show_dms(self, authorized: bool,
+             calling_domain: str, referer_domain: str,
+             path: str, base_dir: str, http_prefix: str,
+             domain: str, port: int,
+             getreq_start_time,
+             cookie: str, debug: str,
+             curr_session, ua_str: str,
+             max_posts_in_feed: int) -> bool:
+    """Shows the DMs timeline
+    """
+    if '/users/' in path:
+        if authorized:
+            inbox_dm_feed = \
+                person_box_json(self.server.recent_posts_cache,
+                                base_dir,
+                                domain,
+                                port,
+                                path,
+                                http_prefix,
+                                max_posts_in_feed, 'dm',
+                                authorized,
+                                0, self.server.positive_voting,
+                                self.server.voting_time_mins)
+            if inbox_dm_feed:
+                if request_http(self.headers, debug):
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/dm', '')
+                    page_number = 1
+                    if '?page=' in nickname:
+                        page_number = nickname.split('?page=')[1]
+                        if ';' in page_number:
+                            page_number = page_number.split(';')[0]
+                        nickname = nickname.split('?page=')[0]
+                        if len(page_number) > 5:
+                            page_number = "1"
+                        if page_number.isdigit():
+                            page_number = int(page_number)
+                        else:
+                            page_number = 1
+                    if 'page=' not in path:
+                        # if no page was specified then show the first
+                        inbox_dm_feed = \
+                            person_box_json(self.server.recent_posts_cache,
+                                            base_dir,
+                                            domain,
+                                            port,
+                                            path + '?page=1',
+                                            http_prefix,
+                                            max_posts_in_feed, 'dm',
+                                            authorized,
+                                            0,
+                                            self.server.positive_voting,
+                                            self.server.voting_time_mins)
+                    full_width_tl_button_header = \
+                        self.server.full_width_tl_button_header
+                    minimal_nick = is_minimal(base_dir, domain, nickname)
+
+                    access_keys = self.server.access_keys
+                    if self.server.key_shortcuts.get(nickname):
+                        access_keys = \
+                            self.server.key_shortcuts[nickname]
+
+                    shared_items_federated_domains = \
+                        self.server.shared_items_federated_domains
+                    allow_local_network_access = \
+                        self.server.allow_local_network_access
+                    twitter_replacement_domain = \
+                        self.server.twitter_replacement_domain
+                    show_published_date_only = \
+                        self.server.show_published_date_only
+                    timezone = None
+                    if self.server.account_timezone.get(nickname):
+                        timezone = \
+                            self.server.account_timezone.get(nickname)
+                    bold_reading = False
+                    if self.server.bold_reading.get(nickname):
+                        bold_reading = True
+                    reverse_sequence = False
+                    if nickname in self.server.reverse_sequence:
+                        reverse_sequence = True
+                    last_post_id = None
+                    if ';lastpost=' in path:
+                        last_post_id = path.split(';lastpost=')[1]
+                        if ';' in last_post_id:
+                            last_post_id = last_post_id.split(';')[0]
+                    msg = \
+                        html_inbox_dms(self.server.default_timeline,
+                                       self.server.recent_posts_cache,
+                                       self.server.max_recent_posts,
+                                       self.server.translate,
+                                       page_number, max_posts_in_feed,
+                                       curr_session,
+                                       base_dir,
+                                       self.server.cached_webfingers,
+                                       self.server.person_cache,
+                                       nickname,
+                                       domain,
+                                       port,
+                                       inbox_dm_feed,
+                                       self.server.allow_deletion,
+                                       http_prefix,
+                                       self.server.project_version,
+                                       minimal_nick,
+                                       self.server.yt_replace_domain,
+                                       twitter_replacement_domain,
+                                       show_published_date_only,
+                                       self.server.newswire,
+                                       self.server.positive_voting,
+                                       self.server.show_publish_as_icon,
+                                       full_width_tl_button_header,
+                                       self.server.icons_as_buttons,
+                                       self.server.rss_icon_at_top,
+                                       self.server.publish_button_at_top,
+                                       authorized, self.server.theme_name,
+                                       self.server.peertube_instances,
+                                       allow_local_network_access,
+                                       self.server.text_mode_banner,
+                                       access_keys,
+                                       self.server.system_language,
+                                       self.server.max_like_count,
+                                       shared_items_federated_domains,
+                                       self.server.signing_priv_key_pem,
+                                       self.server.cw_lists,
+                                       self.server.lists_enabled,
+                                       timezone, bold_reading,
+                                       self.server.dogwhistles, ua_str,
+                                       self.server.min_images_for_accounts,
+                                       reverse_sequence, last_post_id,
+                                       self.server.buy_sites,
+                                       self.server.auto_cw_cache)
+                    msg = msg.encode('utf-8')
+                    msglen = len(msg)
+                    set_headers(self, 'text/html', msglen,
+                                cookie, calling_domain, False)
+                    write2(self, msg)
+                    fitness_performance(getreq_start_time,
+                                        self.server.fitness,
+                                        '_GET', '_show_dms',
+                                        self.server.debug)
+                else:
+                    # don't need authorized fetch here because
+                    # there is already the authorization check
+                    onion_domain = self.server.onion_domain
+                    i2p_domain = self.server.i2p_domain
+                    msg_str = \
+                        json.dumps(inbox_dm_feed, ensure_ascii=False)
+                    msg_str = convert_domains(calling_domain,
+                                              referer_domain,
+                                              msg_str, http_prefix,
+                                              domain,
+                                              onion_domain,
+                                              i2p_domain)
+                    msg = msg_str.encode('utf-8')
+                    msglen = len(msg)
+                    accept_str = self.headers['Accept']
+                    protocol_str = \
+                        get_json_content_from_accept(accept_str)
+                    set_headers(self, protocol_str, msglen,
+                                None, calling_domain, False)
+                    write2(self, msg)
+                    fitness_performance(getreq_start_time,
+                                        self.server.fitness,
+                                        '_GET', '_show_dms json',
+                                        self.server.debug)
+                return True
+        else:
+            if debug:
+                nickname = path.replace('/users/', '')
+                nickname = nickname.replace('/dm', '')
+                print('DEBUG: ' + nickname +
+                      ' was not authorized to access ' + path)
+    if path != '/dm':
+        # not the DM inbox
+        if debug:
+            print('DEBUG: GET access to DM timeline is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        return True
+    return False
+
+
+def show_replies(self, authorized: bool,
+                 calling_domain: str, referer_domain: str,
+                 path: str,
+                 base_dir: str, http_prefix: str,
+                 domain: str, port: int,
+                 getreq_start_time,
+                 cookie: str, debug: str,
+                 curr_session, ua_str: str,
+                 max_posts_in_feed: int) -> bool:
+    """Shows the replies timeline
+    """
+    if '/users/' in path:
+        if authorized:
+            inbox_replies_feed = \
+                person_box_json(self.server.recent_posts_cache,
+                                base_dir,
+                                domain,
+                                port,
+                                path,
+                                http_prefix,
+                                max_posts_in_feed, 'tlreplies',
+                                True,
+                                0, self.server.positive_voting,
+                                self.server.voting_time_mins)
+            if not inbox_replies_feed:
+                inbox_replies_feed = []
+            if request_http(self.headers, debug):
+                nickname = path.replace('/users/', '')
+                nickname = nickname.replace('/tlreplies', '')
+                page_number = 1
+                if '?page=' in nickname:
+                    page_number = nickname.split('?page=')[1]
+                    if ';' in page_number:
+                        page_number = page_number.split(';')[0]
+                    nickname = nickname.split('?page=')[0]
+                    if len(page_number) > 5:
+                        page_number = "1"
+                    if page_number.isdigit():
+                        page_number = int(page_number)
+                    else:
+                        page_number = 1
+                if 'page=' not in path:
+                    # if no page was specified then show the first
+                    inbox_replies_feed = \
+                        person_box_json(self.server.recent_posts_cache,
+                                        base_dir,
+                                        domain,
+                                        port,
+                                        path + '?page=1',
+                                        http_prefix,
+                                        max_posts_in_feed, 'tlreplies',
+                                        True,
+                                        0, self.server.positive_voting,
+                                        self.server.voting_time_mins)
+                full_width_tl_button_header = \
+                    self.server.full_width_tl_button_header
+                minimal_nick = is_minimal(base_dir, domain, nickname)
+
+                access_keys = self.server.access_keys
+                if self.server.key_shortcuts.get(nickname):
+                    access_keys = \
+                        self.server.key_shortcuts[nickname]
+
+                shared_items_federated_domains = \
+                    self.server.shared_items_federated_domains
+                allow_local_network_access = \
+                    self.server.allow_local_network_access
+                twitter_replacement_domain = \
+                    self.server.twitter_replacement_domain
+                show_published_date_only = \
+                    self.server.show_published_date_only
+                timezone = None
+                if self.server.account_timezone.get(nickname):
+                    timezone = \
+                        self.server.account_timezone.get(nickname)
+                bold_reading = False
+                if self.server.bold_reading.get(nickname):
+                    bold_reading = True
+                reverse_sequence = False
+                if nickname in self.server.reverse_sequence:
+                    reverse_sequence = True
+                last_post_id = None
+                if ';lastpost=' in path:
+                    last_post_id = path.split(';lastpost=')[1]
+                    if ';' in last_post_id:
+                        last_post_id = last_post_id.split(';')[0]
+                msg = \
+                    html_inbox_replies(self.server.default_timeline,
+                                       self.server.recent_posts_cache,
+                                       self.server.max_recent_posts,
+                                       self.server.translate,
+                                       page_number, max_posts_in_feed,
+                                       curr_session,
+                                       base_dir,
+                                       self.server.cached_webfingers,
+                                       self.server.person_cache,
+                                       nickname,
+                                       domain,
+                                       port,
+                                       inbox_replies_feed,
+                                       self.server.allow_deletion,
+                                       http_prefix,
+                                       self.server.project_version,
+                                       minimal_nick,
+                                       self.server.yt_replace_domain,
+                                       twitter_replacement_domain,
+                                       show_published_date_only,
+                                       self.server.newswire,
+                                       self.server.positive_voting,
+                                       self.server.show_publish_as_icon,
+                                       full_width_tl_button_header,
+                                       self.server.icons_as_buttons,
+                                       self.server.rss_icon_at_top,
+                                       self.server.publish_button_at_top,
+                                       authorized, self.server.theme_name,
+                                       self.server.peertube_instances,
+                                       allow_local_network_access,
+                                       self.server.text_mode_banner,
+                                       access_keys,
+                                       self.server.system_language,
+                                       self.server.max_like_count,
+                                       shared_items_federated_domains,
+                                       self.server.signing_priv_key_pem,
+                                       self.server.cw_lists,
+                                       self.server.lists_enabled,
+                                       timezone, bold_reading,
+                                       self.server.dogwhistles,
+                                       ua_str,
+                                       self.server.min_images_for_accounts,
+                                       reverse_sequence, last_post_id,
+                                       self.server.buy_sites,
+                                       self.server.auto_cw_cache)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                set_headers(self, 'text/html', msglen,
+                            cookie, calling_domain, False)
+                write2(self, msg)
+                fitness_performance(getreq_start_time,
+                                    self.server.fitness,
+                                    '_GET', '_show_replies',
+                                    self.server.debug)
+            else:
+                # don't need authorized fetch here because there is
+                # already the authorization check
+                onion_domain = self.server.onion_domain
+                i2p_domain = self.server.i2p_domain
+                msg_str = json.dumps(inbox_replies_feed,
+                                     ensure_ascii=False)
+                msg_str = convert_domains(calling_domain,
+                                          referer_domain,
+                                          msg_str, http_prefix,
+                                          domain,
+                                          onion_domain, i2p_domain)
+                msg = msg_str.encode('utf-8')
+                msglen = len(msg)
+                accept_str = self.headers['Accept']
+                protocol_str = \
+                    get_json_content_from_accept(accept_str)
+                set_headers(self, protocol_str, msglen,
+                            None, calling_domain, False)
+                write2(self, msg)
+                fitness_performance(getreq_start_time,
+                                    self.server.fitness,
+                                    '_GET', '_show_replies json',
+                                    self.server.debug)
+            return True
+        if debug:
+            nickname = path.replace('/users/', '')
+            nickname = nickname.replace('/tlreplies', '')
+            print('DEBUG: ' + nickname +
+                  ' was not authorized to access ' + path)
+    if path != '/tlreplies':
+        # not the replies inbox
+        if debug:
+            print('DEBUG: GET access to inbox is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        return True
+    return False
