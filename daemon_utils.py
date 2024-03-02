@@ -7,6 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import os
 import time
 from auth import authorize
 from threads import thread_with_trace
@@ -787,3 +788,47 @@ def get_user_agent(self) -> str:
     elif self.headers.get('User-agent'):
         ua_str = self.headers['User-agent']
     return ua_str
+
+
+def has_accept(self, calling_domain: str) -> bool:
+    """Do the http headers have an Accept field?
+    """
+    if not self.headers.get('Accept'):
+        if self.headers.get('accept'):
+            print('Upper case Accept')
+            self.headers['Accept'] = self.headers['accept']
+
+    if self.headers.get('Accept') or calling_domain.endswith('.b32.i2p'):
+        if not self.headers.get('Accept'):
+            self.headers['Accept'] = \
+                'text/html,application/xhtml+xml,' \
+                'application/xml;q=0.9,image/webp,*/*;q=0.8'
+        return True
+    return False
+
+
+def etag_exists(self, media_filename: str) -> bool:
+    """Does an etag header exist for the given file?
+    """
+    etag_header = 'If-None-Match'
+    if not self.headers.get(etag_header):
+        etag_header = 'if-none-match'
+        if not self.headers.get(etag_header):
+            etag_header = 'If-none-match'
+
+    if self.headers.get(etag_header):
+        old_etag = self.headers[etag_header].replace('"', '')
+        if os.path.isfile(media_filename + '.etag'):
+            # load the etag from file
+            curr_etag = ''
+            try:
+                with open(media_filename + '.etag', 'r',
+                          encoding='utf-8') as efile:
+                    curr_etag = efile.read()
+            except OSError:
+                print('EX: _etag_exists unable to read ' +
+                      str(media_filename))
+            if curr_etag and old_etag == curr_etag:
+                # The file has not changed
+                return True
+    return False
