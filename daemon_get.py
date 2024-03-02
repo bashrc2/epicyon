@@ -13,8 +13,6 @@ import json
 import datetime
 import urllib.parse
 from shutil import copyfile
-from relationships import get_inactive_feed
-from relationships import get_moved_feed
 from skills import get_skills_from_list
 from skills import no_of_actor_skills
 from city import get_spoofed_city
@@ -184,7 +182,6 @@ from person import person_box_json
 from person import save_person_qrcode
 from person import person_lookup
 from person import get_account_pub_key
-from shares import get_shares_feed_for_person
 from shares import actor_attached_shares
 from shares import get_share_category
 from shares import vf_proposal_from_id
@@ -222,6 +219,11 @@ from daemon_get_timeline import show_wanted_timeline
 from daemon_get_timeline import show_bookmarks_timeline
 from daemon_get_timeline import show_outbox_timeline
 from daemon_get_timeline import show_mod_timeline
+from daemon_get_feeds import show_shares_feed
+from daemon_get_feeds import show_following_feed
+from daemon_get_feeds import show_moved_feed
+from daemon_get_feeds import show_inactive_feed
+from daemon_get_feeds import show_followers_feed
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -4150,43 +4152,7 @@ def daemon_http_get(self) -> None:
                         '_GET', 'show moderation done',
                         self.server.debug)
 
-    if _show_shares_feed(self, authorized,
-                         calling_domain, referer_domain,
-                         self.path,
-                         self.server.base_dir,
-                         self.server.http_prefix,
-                         self.server.domain,
-                         self.server.port,
-                         getreq_start_time,
-                         proxy_type,
-                         cookie, self.server.debug, 'shares',
-                         curr_session):
-        self.server.getreq_busy = False
-        return
-
-    fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', 'show profile 2 done',
-                        self.server.debug)
-
-    if _show_following_feed(self, authorized,
-                            calling_domain, referer_domain,
-                            self.path,
-                            self.server.base_dir,
-                            self.server.http_prefix,
-                            self.server.domain,
-                            self.server.port,
-                            getreq_start_time,
-                            proxy_type,
-                            cookie, self.server.debug,
-                            curr_session):
-        self.server.getreq_busy = False
-        return
-
-    fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', 'show profile 3 done',
-                        self.server.debug)
-
-    if _show_moved_feed(self, authorized,
+    if show_shares_feed(self, authorized,
                         calling_domain, referer_domain,
                         self.path,
                         self.server.base_dir,
@@ -4195,16 +4161,16 @@ def daemon_http_get(self) -> None:
                         self.server.port,
                         getreq_start_time,
                         proxy_type,
-                        cookie, self.server.debug,
-                        curr_session):
+                        cookie, self.server.debug, 'shares',
+                        curr_session, SHARES_PER_PAGE):
         self.server.getreq_busy = False
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', 'show moved 4 done',
+                        '_GET', 'show profile 2 done',
                         self.server.debug)
 
-    if _show_inactive_feed(self, authorized,
+    if show_following_feed(self, authorized,
                            calling_domain, referer_domain,
                            self.path,
                            self.server.base_dir,
@@ -4214,9 +4180,46 @@ def daemon_http_get(self) -> None:
                            getreq_start_time,
                            proxy_type,
                            cookie, self.server.debug,
-                           curr_session,
-                           self.server.dormant_months,
-                           self.server.sites_unavailable):
+                           curr_session, FOLLOWS_PER_PAGE):
+        self.server.getreq_busy = False
+        return
+
+    fitness_performance(getreq_start_time, self.server.fitness,
+                        '_GET', 'show profile 3 done',
+                        self.server.debug)
+
+    if show_moved_feed(self, authorized,
+                       calling_domain, referer_domain,
+                       self.path,
+                       self.server.base_dir,
+                       self.server.http_prefix,
+                       self.server.domain,
+                       self.server.port,
+                       getreq_start_time,
+                       proxy_type,
+                       cookie, self.server.debug,
+                       curr_session, FOLLOWS_PER_PAGE):
+        self.server.getreq_busy = False
+        return
+
+    fitness_performance(getreq_start_time, self.server.fitness,
+                        '_GET', 'show moved 4 done',
+                        self.server.debug)
+
+    if show_inactive_feed(self, authorized,
+                          calling_domain, referer_domain,
+                          self.path,
+                          self.server.base_dir,
+                          self.server.http_prefix,
+                          self.server.domain,
+                          self.server.port,
+                          getreq_start_time,
+                          proxy_type,
+                          cookie, self.server.debug,
+                          curr_session,
+                          self.server.dormant_months,
+                          self.server.sites_unavailable,
+                          FOLLOWS_PER_PAGE):
         self.server.getreq_busy = False
         return
 
@@ -4224,17 +4227,17 @@ def daemon_http_get(self) -> None:
                         '_GET', 'show inactive 5 done',
                         self.server.debug)
 
-    if _show_followers_feed(self, authorized,
-                            calling_domain, referer_domain,
-                            self.path,
-                            self.server.base_dir,
-                            self.server.http_prefix,
-                            self.server.domain,
-                            self.server.port,
-                            getreq_start_time,
-                            proxy_type,
-                            cookie, self.server.debug,
-                            curr_session):
+    if show_followers_feed(self, authorized,
+                           calling_domain, referer_domain,
+                           self.path,
+                           self.server.base_dir,
+                           self.server.http_prefix,
+                           self.server.domain,
+                           self.server.port,
+                           getreq_start_time,
+                           proxy_type,
+                           cookie, self.server.debug,
+                           curr_session, FOLLOWS_PER_PAGE):
         self.server.getreq_busy = False
         return
 
@@ -10392,802 +10395,6 @@ def _show_replies(self, authorized: bool,
             print('DEBUG: GET access to inbox is unauthorized')
         self.send_response(405)
         self.end_headers()
-        return True
-    return False
-
-
-def _show_shares_feed(self, authorized: bool,
-                      calling_domain: str, referer_domain: str,
-                      path: str, base_dir: str, http_prefix: str,
-                      domain: str, port: int, getreq_start_time,
-                      proxy_type: str, cookie: str,
-                      debug: str, shares_file_type: str,
-                      curr_session) -> bool:
-    """Shows the shares feed
-    """
-    shares = \
-        get_shares_feed_for_person(base_dir, domain, port, path,
-                                   http_prefix, shares_file_type,
-                                   SHARES_PER_PAGE)
-    if shares:
-        if request_http(self.headers, debug):
-            page_number = 1
-            if '?page=' not in path:
-                search_path = path
-                # get a page of shares, not the summary
-                shares = \
-                    get_shares_feed_for_person(base_dir, domain, port,
-                                               path + '?page=true',
-                                               http_prefix,
-                                               shares_file_type,
-                                               SHARES_PER_PAGE)
-            else:
-                page_number_str = path.split('?page=')[1]
-                if ';' in page_number_str:
-                    page_number_str = page_number_str.split(';')[0]
-                if '#' in page_number_str:
-                    page_number_str = page_number_str.split('#')[0]
-                if len(page_number_str) > 5:
-                    page_number_str = "1"
-                if page_number_str.isdigit():
-                    page_number = int(page_number_str)
-                search_path = path.split('?page=')[0]
-            search_path2 = search_path.replace('/' + shares_file_type, '')
-            get_person = person_lookup(domain, search_path2, base_dir)
-            if get_person:
-                curr_session = \
-                    establish_session("show_shares_feed",
-                                      curr_session, proxy_type,
-                                      self.server)
-                if not curr_session:
-                    http_404(self, 77)
-                    self.server.getreq_busy = False
-                    return True
-
-                access_keys = self.server.access_keys
-                if '/users/' in path:
-                    nickname = path.split('/users/')[1]
-                    if '/' in nickname:
-                        nickname = nickname.split('/')[0]
-                    if self.server.key_shortcuts.get(nickname):
-                        access_keys = \
-                            self.server.key_shortcuts[nickname]
-
-                city = get_spoofed_city(self.server.city,
-                                        base_dir, nickname, domain)
-                shared_items_federated_domains = \
-                    self.server.shared_items_federated_domains
-                timezone = None
-                if self.server.account_timezone.get(nickname):
-                    timezone = \
-                        self.server.account_timezone.get(nickname)
-                bold_reading = False
-                if self.server.bold_reading.get(nickname):
-                    bold_reading = True
-                msg = \
-                    html_profile(self.server.signing_priv_key_pem,
-                                 self.server.rss_icon_at_top,
-                                 self.server.icons_as_buttons,
-                                 self.server.default_timeline,
-                                 self.server.recent_posts_cache,
-                                 self.server.max_recent_posts,
-                                 self.server.translate,
-                                 self.server.project_version,
-                                 base_dir, http_prefix,
-                                 authorized,
-                                 get_person, shares_file_type,
-                                 curr_session,
-                                 self.server.cached_webfingers,
-                                 self.server.person_cache,
-                                 self.server.yt_replace_domain,
-                                 self.server.twitter_replacement_domain,
-                                 self.server.show_published_date_only,
-                                 self.server.newswire,
-                                 self.server.theme_name,
-                                 self.server.dormant_months,
-                                 self.server.peertube_instances,
-                                 self.server.allow_local_network_access,
-                                 self.server.text_mode_banner,
-                                 self.server.debug,
-                                 access_keys, city,
-                                 self.server.system_language,
-                                 self.server.max_like_count,
-                                 shared_items_federated_domains,
-                                 shares,
-                                 page_number, SHARES_PER_PAGE,
-                                 self.server.cw_lists,
-                                 self.server.lists_enabled,
-                                 self.server.content_license_url,
-                                 timezone, bold_reading,
-                                 self.server.buy_sites,
-                                 None,
-                                 self.server.max_shares_on_profile,
-                                 self.server.sites_unavailable,
-                                 self.server.no_of_books,
-                                 self.server.auto_cw_cache)
-                msg = msg.encode('utf-8')
-                msglen = len(msg)
-                set_headers(self, 'text/html', msglen,
-                            cookie, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_shares_feed',
-                                    debug)
-                self.server.getreq_busy = False
-                return True
-        else:
-            if secure_mode(curr_session, proxy_type, False,
-                           self.server, self.headers, self.path):
-                onion_domain = self.server.onion_domain
-                i2p_domain = self.server.i2p_domain
-                msg_str = json.dumps(shares,
-                                     ensure_ascii=False)
-                msg_str = convert_domains(calling_domain,
-                                          referer_domain,
-                                          msg_str, http_prefix,
-                                          domain,
-                                          onion_domain,
-                                          i2p_domain)
-                msg = msg_str.encode('utf-8')
-                msglen = len(msg)
-                accept_str = self.headers['Accept']
-                protocol_str = \
-                    get_json_content_from_accept(accept_str)
-                set_headers(self, protocol_str, msglen,
-                            None, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_shares_feed json',
-                                    debug)
-            else:
-                http_404(self, 78)
-            return True
-    return False
-
-
-def _show_following_feed(self, authorized: bool,
-                         calling_domain: str, referer_domain: str,
-                         path: str, base_dir: str, http_prefix: str,
-                         domain: str, port: int, getreq_start_time,
-                         proxy_type: str, cookie: str,
-                         debug: str, curr_session) -> bool:
-    """Shows the following feed
-    """
-    following = \
-        get_following_feed(base_dir, domain, port, path,
-                           http_prefix, authorized, FOLLOWS_PER_PAGE,
-                           'following')
-    if following:
-        if request_http(self.headers, debug):
-            page_number = 1
-            if '?page=' not in path:
-                search_path = path
-                # get a page of following, not the summary
-                following = \
-                    get_following_feed(base_dir,
-                                       domain,
-                                       port,
-                                       path + '?page=true',
-                                       http_prefix,
-                                       authorized, FOLLOWS_PER_PAGE)
-            else:
-                page_number_str = path.split('?page=')[1]
-                if ';' in page_number_str:
-                    page_number_str = page_number_str.split(';')[0]
-                if '#' in page_number_str:
-                    page_number_str = page_number_str.split('#')[0]
-                if len(page_number_str) > 5:
-                    page_number_str = "1"
-                if page_number_str.isdigit():
-                    page_number = int(page_number_str)
-                search_path = path.split('?page=')[0]
-            get_person = \
-                person_lookup(domain,
-                              search_path.replace('/following', ''),
-                              base_dir)
-            if get_person:
-                curr_session = \
-                    establish_session("show_following_feed",
-                                      curr_session, proxy_type,
-                                      self.server)
-                if not curr_session:
-                    http_404(self, 79)
-                    return True
-
-                access_keys = self.server.access_keys
-                city = None
-                timezone = None
-                if '/users/' in path:
-                    nickname = path.split('/users/')[1]
-                    if '/' in nickname:
-                        nickname = nickname.split('/')[0]
-                    if self.server.key_shortcuts.get(nickname):
-                        access_keys = \
-                            self.server.key_shortcuts[nickname]
-
-                    city = get_spoofed_city(self.server.city,
-                                            base_dir, nickname, domain)
-                    if self.server.account_timezone.get(nickname):
-                        timezone = \
-                            self.server.account_timezone.get(nickname)
-                content_license_url = \
-                    self.server.content_license_url
-                shared_items_federated_domains = \
-                    self.server.shared_items_federated_domains
-                bold_reading = False
-                if self.server.bold_reading.get(nickname):
-                    bold_reading = True
-                if not authorized and \
-                   self.server.hide_follows.get(nickname):
-                    following = {}
-                max_shares_on_profile = \
-                    self.server.max_shares_on_profile
-                sites_unavailable = \
-                    self.server.sites_unavailable
-                msg = \
-                    html_profile(self.server.signing_priv_key_pem,
-                                 self.server.rss_icon_at_top,
-                                 self.server.icons_as_buttons,
-                                 self.server.default_timeline,
-                                 self.server.recent_posts_cache,
-                                 self.server.max_recent_posts,
-                                 self.server.translate,
-                                 self.server.project_version,
-                                 base_dir, http_prefix,
-                                 authorized,
-                                 get_person, 'following',
-                                 curr_session,
-                                 self.server.cached_webfingers,
-                                 self.server.person_cache,
-                                 self.server.yt_replace_domain,
-                                 self.server.twitter_replacement_domain,
-                                 self.server.show_published_date_only,
-                                 self.server.newswire,
-                                 self.server.theme_name,
-                                 self.server.dormant_months,
-                                 self.server.peertube_instances,
-                                 self.server.allow_local_network_access,
-                                 self.server.text_mode_banner,
-                                 self.server.debug,
-                                 access_keys, city,
-                                 self.server.system_language,
-                                 self.server.max_like_count,
-                                 shared_items_federated_domains,
-                                 following,
-                                 page_number,
-                                 FOLLOWS_PER_PAGE,
-                                 self.server.cw_lists,
-                                 self.server.lists_enabled,
-                                 content_license_url,
-                                 timezone, bold_reading,
-                                 self.server.buy_sites,
-                                 None,
-                                 max_shares_on_profile,
-                                 sites_unavailable,
-                                 self.server.no_of_books,
-                                 self.server.auto_cw_cache).encode('utf-8')
-                msglen = len(msg)
-                set_headers(self, 'text/html',
-                            msglen, cookie, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_following_feed',
-                                    debug)
-                return True
-        else:
-            if secure_mode(curr_session, proxy_type, False,
-                           self.server, self.headers, self.path):
-                if '/users/' in path:
-                    nickname = path.split('/users/')[1]
-                    if '/' in nickname:
-                        nickname = nickname.split('/')[0]
-                    if nickname and not authorized and \
-                       self.server.hide_follows.get(nickname):
-                        following = {}
-
-                msg_str = json.dumps(following,
-                                     ensure_ascii=False)
-                msg_str = convert_domains(calling_domain,
-                                          referer_domain,
-                                          msg_str, http_prefix,
-                                          domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
-                msg = msg_str.encode('utf-8')
-                msglen = len(msg)
-                accept_str = self.headers['Accept']
-                protocol_str = \
-                    get_json_content_from_accept(accept_str)
-                set_headers(self, protocol_str, msglen,
-                            None, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_following_feed json',
-                                    debug)
-            else:
-                http_404(self, 80)
-            return True
-    return False
-
-
-def _show_moved_feed(self, authorized: bool,
-                     calling_domain: str, referer_domain: str,
-                     path: str, base_dir: str, http_prefix: str,
-                     domain: str, port: int, getreq_start_time,
-                     proxy_type: str, cookie: str,
-                     debug: str, curr_session) -> bool:
-    """Shows the moved feed
-    """
-    following = \
-        get_moved_feed(base_dir, domain, port, path,
-                       http_prefix, authorized, FOLLOWS_PER_PAGE)
-    if following:
-        if request_http(self.headers, debug):
-            page_number = 1
-            if '?page=' not in path:
-                search_path = path
-                # get a page of following, not the summary
-                following = \
-                    get_moved_feed(base_dir, domain, port, path,
-                                   http_prefix, authorized,
-                                   FOLLOWS_PER_PAGE)
-            else:
-                page_number_str = path.split('?page=')[1]
-                if ';' in page_number_str:
-                    page_number_str = page_number_str.split(';')[0]
-                if '#' in page_number_str:
-                    page_number_str = page_number_str.split('#')[0]
-                if len(page_number_str) > 5:
-                    page_number_str = "1"
-                if page_number_str.isdigit():
-                    page_number = int(page_number_str)
-                search_path = path.split('?page=')[0]
-            get_person = \
-                person_lookup(domain,
-                              search_path.replace('/moved', ''),
-                              base_dir)
-            if get_person:
-                curr_session = \
-                    establish_session("show_moved_feed",
-                                      curr_session, proxy_type,
-                                      self.server)
-                if not curr_session:
-                    http_404(self, 81)
-                    return True
-
-                access_keys = self.server.access_keys
-                city = None
-                timezone = None
-                if '/users/' in path:
-                    nickname = path.split('/users/')[1]
-                    if '/' in nickname:
-                        nickname = nickname.split('/')[0]
-                    if self.server.key_shortcuts.get(nickname):
-                        access_keys = \
-                            self.server.key_shortcuts[nickname]
-
-                    city = get_spoofed_city(self.server.city,
-                                            base_dir, nickname, domain)
-                    if self.server.account_timezone.get(nickname):
-                        timezone = \
-                            self.server.account_timezone.get(nickname)
-                content_license_url = \
-                    self.server.content_license_url
-                shared_items_federated_domains = \
-                    self.server.shared_items_federated_domains
-                bold_reading = False
-                if self.server.bold_reading.get(nickname):
-                    bold_reading = True
-                max_shares_on_profile = \
-                    self.server.max_shares_on_profile
-                sites_unavailable = \
-                    self.server.sites_unavailable
-                msg = \
-                    html_profile(self.server.signing_priv_key_pem,
-                                 self.server.rss_icon_at_top,
-                                 self.server.icons_as_buttons,
-                                 self.server.default_timeline,
-                                 self.server.recent_posts_cache,
-                                 self.server.max_recent_posts,
-                                 self.server.translate,
-                                 self.server.project_version,
-                                 base_dir, http_prefix,
-                                 authorized,
-                                 get_person, 'moved',
-                                 curr_session,
-                                 self.server.cached_webfingers,
-                                 self.server.person_cache,
-                                 self.server.yt_replace_domain,
-                                 self.server.twitter_replacement_domain,
-                                 self.server.show_published_date_only,
-                                 self.server.newswire,
-                                 self.server.theme_name,
-                                 self.server.dormant_months,
-                                 self.server.peertube_instances,
-                                 self.server.allow_local_network_access,
-                                 self.server.text_mode_banner,
-                                 self.server.debug,
-                                 access_keys, city,
-                                 self.server.system_language,
-                                 self.server.max_like_count,
-                                 shared_items_federated_domains,
-                                 following,
-                                 page_number,
-                                 FOLLOWS_PER_PAGE,
-                                 self.server.cw_lists,
-                                 self.server.lists_enabled,
-                                 content_license_url,
-                                 timezone, bold_reading,
-                                 self.server.buy_sites,
-                                 None,
-                                 max_shares_on_profile,
-                                 sites_unavailable,
-                                 self.server.no_of_books,
-                                 self.server.auto_cw_cache).encode('utf-8')
-                msglen = len(msg)
-                set_headers(self, 'text/html',
-                            msglen, cookie, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_moved_feed',
-                                    debug)
-                return True
-        else:
-            if secure_mode(curr_session, proxy_type, False,
-                           self.server, self.headers, self.path):
-                msg_str = json.dumps(following,
-                                     ensure_ascii=False)
-                msg_str = convert_domains(calling_domain,
-                                          referer_domain,
-                                          msg_str, http_prefix,
-                                          domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
-                msg = msg_str.encode('utf-8')
-                msglen = len(msg)
-                accept_str = self.headers['Accept']
-                protocol_str = \
-                    get_json_content_from_accept(accept_str)
-                set_headers(self, protocol_str, msglen,
-                            None, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_moved_feed json',
-                                    debug)
-            else:
-                http_404(self, 81)
-            return True
-    return False
-
-
-def _show_inactive_feed(self, authorized: bool,
-                        calling_domain: str, referer_domain: str,
-                        path: str, base_dir: str, http_prefix: str,
-                        domain: str, port: int, getreq_start_time,
-                        proxy_type: str, cookie: str,
-                        debug: str, curr_session,
-                        dormant_months: int,
-                        sites_unavailable: []) -> bool:
-    """Shows the inactive accounts feed
-    """
-    following = \
-        get_inactive_feed(base_dir, domain, port, path,
-                          http_prefix, authorized,
-                          dormant_months,
-                          FOLLOWS_PER_PAGE, sites_unavailable)
-    if following:
-        if request_http(self.headers, debug):
-            page_number = 1
-            if '?page=' not in path:
-                search_path = path
-                # get a page of following, not the summary
-                following = \
-                    get_inactive_feed(base_dir, domain, port, path,
-                                      http_prefix, authorized,
-                                      dormant_months,
-                                      FOLLOWS_PER_PAGE,
-                                      sites_unavailable)
-            else:
-                page_number_str = path.split('?page=')[1]
-                if ';' in page_number_str:
-                    page_number_str = page_number_str.split(';')[0]
-                if '#' in page_number_str:
-                    page_number_str = page_number_str.split('#')[0]
-                if len(page_number_str) > 5:
-                    page_number_str = "1"
-                if page_number_str.isdigit():
-                    page_number = int(page_number_str)
-                search_path = path.split('?page=')[0]
-            get_person = \
-                person_lookup(domain,
-                              search_path.replace('/inactive', ''),
-                              base_dir)
-            if get_person:
-                curr_session = \
-                    establish_session("show_inactive_feed",
-                                      curr_session, proxy_type,
-                                      self.server)
-                if not curr_session:
-                    http_404(self, 82)
-                    return True
-
-                access_keys = self.server.access_keys
-                city = None
-                timezone = None
-                if '/users/' in path:
-                    nickname = path.split('/users/')[1]
-                    if '/' in nickname:
-                        nickname = nickname.split('/')[0]
-                    if self.server.key_shortcuts.get(nickname):
-                        access_keys = \
-                            self.server.key_shortcuts[nickname]
-
-                    city = get_spoofed_city(self.server.city,
-                                            base_dir, nickname, domain)
-                    if self.server.account_timezone.get(nickname):
-                        timezone = \
-                            self.server.account_timezone.get(nickname)
-                content_license_url = \
-                    self.server.content_license_url
-                shared_items_federated_domains = \
-                    self.server.shared_items_federated_domains
-                bold_reading = False
-                if self.server.bold_reading.get(nickname):
-                    bold_reading = True
-                max_shares_on_profile = \
-                    self.server.max_shares_on_profile
-                sites_unavailable = \
-                    self.server.sites_unavailable
-                msg = \
-                    html_profile(self.server.signing_priv_key_pem,
-                                 self.server.rss_icon_at_top,
-                                 self.server.icons_as_buttons,
-                                 self.server.default_timeline,
-                                 self.server.recent_posts_cache,
-                                 self.server.max_recent_posts,
-                                 self.server.translate,
-                                 self.server.project_version,
-                                 base_dir, http_prefix,
-                                 authorized,
-                                 get_person, 'inactive',
-                                 curr_session,
-                                 self.server.cached_webfingers,
-                                 self.server.person_cache,
-                                 self.server.yt_replace_domain,
-                                 self.server.twitter_replacement_domain,
-                                 self.server.show_published_date_only,
-                                 self.server.newswire,
-                                 self.server.theme_name,
-                                 self.server.dormant_months,
-                                 self.server.peertube_instances,
-                                 self.server.allow_local_network_access,
-                                 self.server.text_mode_banner,
-                                 self.server.debug,
-                                 access_keys, city,
-                                 self.server.system_language,
-                                 self.server.max_like_count,
-                                 shared_items_federated_domains,
-                                 following,
-                                 page_number,
-                                 FOLLOWS_PER_PAGE,
-                                 self.server.cw_lists,
-                                 self.server.lists_enabled,
-                                 content_license_url,
-                                 timezone, bold_reading,
-                                 self.server.buy_sites,
-                                 None,
-                                 max_shares_on_profile,
-                                 sites_unavailable,
-                                 self.server.no_of_books,
-                                 self.server.auto_cw_cache).encode('utf-8')
-                msglen = len(msg)
-                set_headers(self, 'text/html',
-                            msglen, cookie, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_inactive_feed',
-                                    debug)
-                return True
-        else:
-            if secure_mode(curr_session, proxy_type, False,
-                           self.server, self.headers, self.path):
-                msg_str = json.dumps(following,
-                                     ensure_ascii=False)
-                msg_str = convert_domains(calling_domain,
-                                          referer_domain,
-                                          msg_str, http_prefix,
-                                          domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
-                msg = msg_str.encode('utf-8')
-                msglen = len(msg)
-                accept_str = self.headers['Accept']
-                protocol_str = \
-                    get_json_content_from_accept(accept_str)
-                set_headers(self, protocol_str, msglen,
-                            None, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_inactive_feed json',
-                                    debug)
-            else:
-                http_404(self, 83)
-            return True
-    return False
-
-
-def _show_followers_feed(self, authorized: bool,
-                         calling_domain: str, referer_domain: str,
-                         path: str, base_dir: str, http_prefix: str,
-                         domain: str, port: int, getreq_start_time,
-                         proxy_type: str, cookie: str,
-                         debug: str, curr_session) -> bool:
-    """Shows the followers feed
-    """
-    followers = \
-        get_following_feed(base_dir, domain, port, path, http_prefix,
-                           authorized, FOLLOWS_PER_PAGE, 'followers')
-    if followers:
-        if request_http(self.headers, debug):
-            page_number = 1
-            if '?page=' not in path:
-                search_path = path
-                # get a page of followers, not the summary
-                followers = \
-                    get_following_feed(base_dir,
-                                       domain,
-                                       port,
-                                       path + '?page=1',
-                                       http_prefix,
-                                       authorized, FOLLOWS_PER_PAGE,
-                                       'followers')
-            else:
-                page_number_str = path.split('?page=')[1]
-                if ';' in page_number_str:
-                    page_number_str = page_number_str.split(';')[0]
-                if '#' in page_number_str:
-                    page_number_str = page_number_str.split('#')[0]
-                if len(page_number_str) > 5:
-                    page_number_str = "1"
-                if page_number_str.isdigit():
-                    page_number = int(page_number_str)
-                search_path = path.split('?page=')[0]
-            get_person = \
-                person_lookup(domain,
-                              search_path.replace('/followers', ''),
-                              base_dir)
-            if get_person:
-                curr_session = \
-                    establish_session("show_followers_feed",
-                                      curr_session, proxy_type,
-                                      self.server)
-                if not curr_session:
-                    http_404(self, 84)
-                    return True
-
-                access_keys = self.server.access_keys
-                city = None
-                timezone = None
-                if '/users/' in path:
-                    nickname = path.split('/users/')[1]
-                    if '/' in nickname:
-                        nickname = nickname.split('/')[0]
-                    if self.server.key_shortcuts.get(nickname):
-                        access_keys = \
-                            self.server.key_shortcuts[nickname]
-
-                    city = get_spoofed_city(self.server.city,
-                                            base_dir, nickname, domain)
-                    if self.server.account_timezone.get(nickname):
-                        timezone = \
-                            self.server.account_timezone.get(nickname)
-                content_license_url = \
-                    self.server.content_license_url
-                shared_items_federated_domains = \
-                    self.server.shared_items_federated_domains
-                bold_reading = False
-                if self.server.bold_reading.get(nickname):
-                    bold_reading = True
-                if not authorized and \
-                   self.server.hide_follows.get(nickname):
-                    followers = {}
-                max_shares_on_profile = \
-                    self.server.max_shares_on_profile
-                sites_unavailable = \
-                    self.server.sites_unavailable
-                msg = \
-                    html_profile(self.server.signing_priv_key_pem,
-                                 self.server.rss_icon_at_top,
-                                 self.server.icons_as_buttons,
-                                 self.server.default_timeline,
-                                 self.server.recent_posts_cache,
-                                 self.server.max_recent_posts,
-                                 self.server.translate,
-                                 self.server.project_version,
-                                 base_dir,
-                                 http_prefix,
-                                 authorized,
-                                 get_person, 'followers',
-                                 curr_session,
-                                 self.server.cached_webfingers,
-                                 self.server.person_cache,
-                                 self.server.yt_replace_domain,
-                                 self.server.twitter_replacement_domain,
-                                 self.server.show_published_date_only,
-                                 self.server.newswire,
-                                 self.server.theme_name,
-                                 self.server.dormant_months,
-                                 self.server.peertube_instances,
-                                 self.server.allow_local_network_access,
-                                 self.server.text_mode_banner,
-                                 self.server.debug,
-                                 access_keys, city,
-                                 self.server.system_language,
-                                 self.server.max_like_count,
-                                 shared_items_federated_domains,
-                                 followers,
-                                 page_number,
-                                 FOLLOWS_PER_PAGE,
-                                 self.server.cw_lists,
-                                 self.server.lists_enabled,
-                                 content_license_url,
-                                 timezone, bold_reading,
-                                 self.server.buy_sites,
-                                 None,
-                                 max_shares_on_profile,
-                                 sites_unavailable,
-                                 self.server.no_of_books,
-                                 self.server.auto_cw_cache).encode('utf-8')
-                msglen = len(msg)
-                set_headers(self, 'text/html', msglen,
-                            cookie, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_followers_feed',
-                                    debug)
-                return True
-        else:
-            if secure_mode(curr_session, proxy_type, False,
-                           self.server, self.headers, self.path):
-                if '/users/' in path:
-                    nickname = path.split('/users/')[1]
-                    if '/' in nickname:
-                        nickname = nickname.split('/')[0]
-                    if nickname and not authorized and \
-                       self.server.hide_follows.get(nickname):
-                        followers = {}
-
-                msg_str = json.dumps(followers,
-                                     ensure_ascii=False)
-                msg_str = convert_domains(calling_domain,
-                                          referer_domain,
-                                          msg_str, http_prefix,
-                                          domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
-                msg = msg_str.encode('utf-8')
-                msglen = len(msg)
-                accept_str = self.headers['Accept']
-                protocol_str = \
-                    get_json_content_from_accept(accept_str)
-                set_headers(self, protocol_str, msglen,
-                            None, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_followers_feed json',
-                                    debug)
-            else:
-                http_404(self, 85)
         return True
     return False
 
