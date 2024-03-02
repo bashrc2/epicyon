@@ -28,7 +28,6 @@ from media import path_is_transcript
 from media import path_is_audio
 from context import get_individual_post_context
 from newswire import rss2header
-from newswire import get_rss_from_dict
 from newswire import rss2footer
 from pgp import actor_to_vcard
 from pgp import actor_to_vcard_xml
@@ -65,8 +64,6 @@ from webapp_search import html_search
 from webapp_search import html_hashtag_search_remote
 from webapp_column_left import html_edit_links
 from webapp_column_left import html_links_mobile
-from webapp_column_right import html_edit_news_post
-from webapp_column_right import html_edit_newswire
 from webapp_column_right import html_newswire_mobile
 from webapp_theme_designer import html_theme_designer
 from webapp_accesskeys import html_access_keys
@@ -127,7 +124,6 @@ from utils import get_occupation_skills
 from utils import is_public_post_from_url
 from utils import can_reply_to
 from utils import get_new_post_endpoints
-from utils import save_json
 from utils import locate_post
 from utils import get_image_mime_type
 from utils import get_image_extensions
@@ -214,6 +210,11 @@ from daemon_get_buttons import bookmark_button_undo
 from daemon_get_buttons import delete_button
 from daemon_get_buttons import mute_button
 from daemon_get_buttons import mute_button_undo
+from daemon_get_newswire import get_newswire_feed
+from daemon_get_newswire import newswire_vote
+from daemon_get_newswire import newswire_unvote
+from daemon_get_newswire import edit_newswire2
+from daemon_get_newswire import edit_news_post2
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -1332,11 +1333,11 @@ def daemon_http_get(self) -> None:
         return
 
     if self.path == '/newswire.xml':
-        _get_newswire_feed(self, calling_domain, self.path,
-                           proxy_type,
-                           getreq_start_time,
-                           self.server.debug,
-                           curr_session)
+        get_newswire_feed(self, calling_domain, self.path,
+                          proxy_type,
+                          getreq_start_time,
+                          self.server.debug,
+                          curr_session)
         return
 
     # RSS 2.0
@@ -3112,31 +3113,31 @@ def daemon_http_get(self) -> None:
     # send a newswire moderation vote from the web interface
     if authorized and '/newswirevote=' in self.path and \
        self.path.startswith('/users/'):
-        _newswire_vote(self, calling_domain, self.path,
-                       cookie,
-                       self.server.base_dir,
-                       self.server.http_prefix,
-                       self.server.domain_full,
-                       self.server.onion_domain,
-                       self.server.i2p_domain,
-                       getreq_start_time,
-                       self.server.newswire)
+        newswire_vote(self, calling_domain, self.path,
+                      cookie,
+                      self.server.base_dir,
+                      self.server.http_prefix,
+                      self.server.domain_full,
+                      self.server.onion_domain,
+                      self.server.i2p_domain,
+                      getreq_start_time,
+                      self.server.newswire)
         self.server.getreq_busy = False
         return
 
     # send a newswire moderation unvote from the web interface
     if authorized and '/newswireunvote=' in self.path and \
        self.path.startswith('/users/'):
-        _newswire_unvote(self, calling_domain, self.path,
-                         cookie,
-                         self.server.base_dir,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain,
-                         getreq_start_time,
-                         self.server.debug,
-                         self.server.newswire)
+        newswire_unvote(self, calling_domain, self.path,
+                        cookie,
+                        self.server.base_dir,
+                        self.server.http_prefix,
+                        self.server.domain_full,
+                        self.server.onion_domain,
+                        self.server.i2p_domain,
+                        getreq_start_time,
+                        self.server.debug,
+                        self.server.newswire)
         self.server.getreq_busy = False
         return
 
@@ -3632,21 +3633,21 @@ def daemon_http_get(self) -> None:
             return
 
         # edit newswire from the right column of the timeline
-        if _edit_newswire2(self, calling_domain, self.path,
-                           self.server.translate,
-                           self.server.base_dir,
-                           self.server.domain, cookie):
+        if edit_newswire2(self, calling_domain, self.path,
+                          self.server.translate,
+                          self.server.base_dir,
+                          self.server.domain, cookie):
             self.server.getreq_busy = False
             return
 
         # edit news post
-        if _edit_news_post2(self, calling_domain, self.path,
-                            self.server.translate,
-                            self.server.base_dir,
-                            self.server.http_prefix,
-                            self.server.domain,
-                            self.server.domain_full,
-                            cookie):
+        if edit_news_post2(self, calling_domain, self.path,
+                           self.server.translate,
+                           self.server.base_dir,
+                           self.server.http_prefix,
+                           self.server.domain,
+                           self.server.domain_full,
+                           cookie):
             self.server.getreq_busy = False
             return
 
@@ -4689,43 +4690,6 @@ def _show_conversation_thread(self, authorized: bool,
         redirect_headers(self, post_id, None, calling_domain)
     self.server.getreq_busy = False
     return True
-
-
-def _get_newswire_feed(self, calling_domain: str, path: str,
-                       proxy_type: str, getreq_start_time,
-                       debug: bool, curr_session) -> None:
-    """Returns the newswire feed
-    """
-    curr_session = \
-        establish_session("get_newswire_feed",
-                          curr_session,
-                          proxy_type,
-                          self.server)
-    if not curr_session:
-        http_404(self, 25)
-        return
-
-    msg = get_rss_from_dict(self.server.newswire,
-                            self.server.http_prefix,
-                            self.server.domain_full,
-                            self.server.translate)
-    if msg:
-        msg = msg.encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/xml', msglen,
-                    None, calling_domain, True)
-        write2(self, msg)
-        if debug:
-            print('Sent rss2 newswire feed: ' +
-                  path + ' ' + calling_domain)
-        fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_get_newswire_feed',
-                            debug)
-        return
-    if debug:
-        print('Failed to get rss2 newswire feed: ' +
-              path + ' ' + calling_domain)
-    http_404(self, 26)
 
 
 def _get_rss2feed(self, calling_domain: str, path: str,
@@ -6094,116 +6058,6 @@ def _confirm_delete_event(self, calling_domain: str, path: str,
     return True
 
 
-def _newswire_vote(self, calling_domain: str, path: str,
-                   cookie: str,
-                   base_dir: str, http_prefix: str,
-                   domain_full: str,
-                   onion_domain: str, i2p_domain: str,
-                   getreq_start_time,
-                   newswire: {}):
-    """Vote for a newswire item
-    """
-    origin_path_str = path.split('/newswirevote=')[0]
-    date_str = \
-        path.split('/newswirevote=')[1].replace('T', ' ')
-    date_str = date_str.replace(' 00:00', '').replace('+00:00', '')
-    date_str = urllib.parse.unquote_plus(date_str) + '+00:00'
-    nickname = \
-        urllib.parse.unquote_plus(origin_path_str.split('/users/')[1])
-    if '/' in nickname:
-        nickname = nickname.split('/')[0]
-    print('Newswire item date: ' + date_str)
-    if newswire.get(date_str):
-        if is_moderator(base_dir, nickname):
-            newswire_item = newswire[date_str]
-            print('Voting on newswire item: ' + str(newswire_item))
-            votes_index = 2
-            filename_index = 3
-            if 'vote:' + nickname not in newswire_item[votes_index]:
-                newswire_item[votes_index].append('vote:' + nickname)
-                filename = newswire_item[filename_index]
-                newswire_state_filename = \
-                    base_dir + '/accounts/.newswirestate.json'
-                try:
-                    save_json(newswire, newswire_state_filename)
-                except BaseException as ex:
-                    print('EX: saving newswire state, ' + str(ex))
-                if filename:
-                    save_json(newswire_item[votes_index],
-                              filename + '.votes')
-    else:
-        print('No newswire item with date: ' + date_str + ' ' +
-              str(newswire))
-
-    origin_path_str_absolute = \
-        http_prefix + '://' + domain_full + origin_path_str + '/' + \
-        self.server.default_timeline
-    if calling_domain.endswith('.onion') and onion_domain:
-        origin_path_str_absolute = \
-            'http://' + onion_domain + origin_path_str
-    elif (calling_domain.endswith('.i2p') and i2p_domain):
-        origin_path_str_absolute = \
-            'http://' + i2p_domain + origin_path_str
-    fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_newswire_vote',
-                        self.server.debug)
-    redirect_headers(self, origin_path_str_absolute,
-                     cookie, calling_domain)
-
-
-def _newswire_unvote(self, calling_domain: str, path: str,
-                     cookie: str, base_dir: str, http_prefix: str,
-                     domain_full: str,
-                     onion_domain: str, i2p_domain: str,
-                     getreq_start_time, debug: bool,
-                     newswire: {}):
-    """Remove vote for a newswire item
-    """
-    origin_path_str = path.split('/newswireunvote=')[0]
-    date_str = \
-        path.split('/newswireunvote=')[1].replace('T', ' ')
-    date_str = date_str.replace(' 00:00', '').replace('+00:00', '')
-    date_str = urllib.parse.unquote_plus(date_str) + '+00:00'
-    nickname = \
-        urllib.parse.unquote_plus(origin_path_str.split('/users/')[1])
-    if '/' in nickname:
-        nickname = nickname.split('/')[0]
-    if newswire.get(date_str):
-        if is_moderator(base_dir, nickname):
-            votes_index = 2
-            filename_index = 3
-            newswire_item = newswire[date_str]
-            if 'vote:' + nickname in newswire_item[votes_index]:
-                newswire_item[votes_index].remove('vote:' + nickname)
-                filename = newswire_item[filename_index]
-                newswire_state_filename = \
-                    base_dir + '/accounts/.newswirestate.json'
-                try:
-                    save_json(newswire, newswire_state_filename)
-                except BaseException as ex:
-                    print('EX: saving newswire state, ' + str(ex))
-                if filename:
-                    save_json(newswire_item[votes_index],
-                              filename + '.votes')
-    else:
-        print('No newswire item with date: ' + date_str + ' ' +
-              str(newswire))
-
-    origin_path_str_absolute = \
-        http_prefix + '://' + domain_full + origin_path_str + '/' + \
-        self.server.default_timeline
-    if calling_domain.endswith('.onion') and onion_domain:
-        origin_path_str_absolute = \
-            'http://' + onion_domain + origin_path_str
-    elif (calling_domain.endswith('.i2p') and i2p_domain):
-        origin_path_str_absolute = \
-            'http://' + i2p_domain + origin_path_str
-    redirect_headers(self, origin_path_str_absolute,
-                     cookie, calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_newswire_unvote', debug)
-
-
 def _reaction_picker2(self, calling_domain: str, path: str,
                       base_dir: str, http_prefix: str,
                       domain: str, port: int,
@@ -6429,74 +6283,6 @@ def _edit_links2(self, calling_domain: str, path: str,
             write2(self, msg)
         else:
             http_404(self, 106)
-        return True
-    return False
-
-
-def _edit_newswire2(self, calling_domain: str, path: str,
-                    translate: {}, base_dir: str,
-                    domain: str, cookie: str) -> bool:
-    """Show the newswire from the right column
-    """
-    if '/users/' in path and path.endswith('/editnewswire'):
-        nickname = path.split('/users/')[1]
-        if '/' in nickname:
-            nickname = nickname.split('/')[0]
-
-        access_keys = self.server.access_keys
-        if self.server.key_shortcuts.get(nickname):
-            access_keys = self.server.key_shortcuts[nickname]
-
-        msg = html_edit_newswire(translate,
-                                 base_dir,
-                                 path, domain,
-                                 self.server.default_timeline,
-                                 self.server.theme_name,
-                                 access_keys,
-                                 self.server.dogwhistles)
-        if msg:
-            msg = msg.encode('utf-8')
-            msglen = len(msg)
-            set_headers(self, 'text/html', msglen,
-                        cookie, calling_domain, False)
-            write2(self, msg)
-        else:
-            http_404(self, 107)
-        return True
-    return False
-
-
-def _edit_news_post2(self, calling_domain: str, path: str,
-                     translate: {}, base_dir: str,
-                     http_prefix: str, domain: str,
-                     domain_full: str, cookie: str) -> bool:
-    """Show the edit screen for a news post
-    """
-    if '/users/' in path and '/editnewspost=' in path:
-        post_actor = 'news'
-        if '?actor=' in path:
-            post_actor = path.split('?actor=')[1]
-            if '?' in post_actor:
-                post_actor = post_actor.split('?')[0]
-        post_id = path.split('/editnewspost=')[1]
-        if '?' in post_id:
-            post_id = post_id.split('?')[0]
-        post_url = \
-            local_actor_url(http_prefix, post_actor, domain_full) + \
-            '/statuses/' + post_id
-        path = path.split('/editnewspost=')[0]
-        msg = html_edit_news_post(translate, base_dir,
-                                  path, domain,
-                                  post_url,
-                                  self.server.system_language)
-        if msg:
-            msg = msg.encode('utf-8')
-            msglen = len(msg)
-            set_headers(self, 'text/html', msglen,
-                        cookie, calling_domain, False)
-            write2(self, msg)
-        else:
-            http_404(self, 108)
         return True
     return False
 
