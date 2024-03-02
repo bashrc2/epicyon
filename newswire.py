@@ -1446,7 +1446,7 @@ def get_rss(base_dir: str, domain: str, session, url: str,
     return None
 
 
-def get_rs_sfrom_dict(newswire: {},
+def get_rss_from_dict(newswire: {},
                       http_prefix: str, domain_full: str,
                       translate: {}) -> str:
     """Returns an rss feed from the current newswire dict.

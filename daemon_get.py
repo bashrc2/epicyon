@@ -28,7 +28,7 @@ from media import path_is_transcript
 from media import path_is_audio
 from context import get_individual_post_context
 from newswire import rss2header
-from newswire import get_rs_sfrom_dict
+from newswire import get_rss_from_dict
 from newswire import rss2footer
 from pgp import actor_to_vcard
 from pgp import actor_to_vcard_xml
@@ -4705,7 +4705,7 @@ def _get_newswire_feed(self, calling_domain: str, path: str,
         http_404(self, 25)
         return
 
-    msg = get_rs_sfrom_dict(self.server.newswire,
+    msg = get_rss_from_dict(self.server.newswire,
                             self.server.http_prefix,
                             self.server.domain_full,
                             self.server.translate)
