@@ -9,6 +9,8 @@ __module_group__ = "Core"
 
 import os
 import json
+from webapp_conversation import html_conversation_view
+from utils import get_instance_url
 from utils import is_public_post_from_url
 from utils import local_actor_url
 from utils import locate_post
@@ -30,6 +32,8 @@ from httpcodes import http_401
 from httpcodes import http_403
 from httpcodes import http_404
 from httpheaders import set_headers
+from httpheaders import login_headers
+from httpheaders import redirect_headers
 from httprequests import request_http
 from posts import populate_replies_json
 from posts import remove_post_interactions
@@ -128,7 +132,7 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                           cookie, calling_domain, False)
         write2(self, msg)
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_post_from_file',
+                            '_GET', 'show_post_from_file',
                             debug)
     else:
         if secure_mode(curr_session, proxy_type, False,
@@ -158,7 +162,7 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                         None, calling_domain, False)
             write2(self, msg)
             fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_post_from_file json',
+                                '_GET', 'show_post_from_file json',
                                 debug)
         else:
             http_404(self, 73)
@@ -256,7 +260,7 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                                   include_create_wrapper,
                                   curr_session)
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_show_individual_post',
+                        '_GET', 'show_individual_post',
                         self.server.debug)
     return result
 
@@ -408,7 +412,7 @@ def show_new_post(self, edit_post_params: {},
         write2(self, msg)
         fitness_performance(getreq_start_time,
                             self.server.fitness,
-                            '_GET', '_show_new_post',
+                            '_GET', 'show_new_post',
                             self.server.debug)
         return True
     return False
@@ -510,7 +514,7 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                                   include_create_wrapper,
                                   curr_session)
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_show_individual_at_post',
+                        '_GET', 'show_individual_at_post',
                         self.server.debug)
     return result
 
@@ -578,7 +582,7 @@ def show_likers_of_post(self, authorized: bool,
                 cookie, calling_domain, False)
     write2(self, msg)
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_show_likers_of_post',
+                        '_GET', 'show_likers_of_post',
                         debug)
     return True
 
@@ -647,7 +651,7 @@ def show_announcers_of_post(self, authorized: bool,
                 cookie, calling_domain, False)
     write2(self, msg)
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_show_announcers_of_post',
+                        '_GET', 'show_announcers_of_post',
                         debug)
     return True
 
@@ -775,7 +779,7 @@ def show_replies_to_post(self, authorized: bool,
                         cookie, calling_domain, False)
             write2(self, msg)
             fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_replies_to_post',
+                                '_GET', 'show_replies_to_post',
                                 debug)
         else:
             if secure_mode(curr_session, proxy_type, False,
@@ -795,7 +799,7 @@ def show_replies_to_post(self, authorized: bool,
                             calling_domain, False)
                 write2(self, msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', '_show_replies_to_post json',
+                                    '_GET', 'show_replies_to_post json',
                                     debug)
             else:
                 http_404(self, 62)
@@ -896,7 +900,7 @@ def show_replies_to_post(self, authorized: bool,
                         cookie, calling_domain, False)
             write2(self, msg)
             fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_replies_to_post',
+                                '_GET', 'show_replies_to_post',
                                 debug)
         else:
             if secure_mode(curr_session, proxy_type, False,
@@ -916,7 +920,7 @@ def show_replies_to_post(self, authorized: bool,
                             None, calling_domain, False)
                 write2(self, msg)
                 fitness_performance(getreq_start_time, self.server.fitness,
-                                    '_GET', '_show_replies_to_post json',
+                                    '_GET', 'show_replies_to_post json',
                                     debug)
             else:
                 http_404(self, 64)
@@ -967,6 +971,89 @@ def show_notify_post(self, authorized: bool,
                                   include_create_wrapper,
                                   curr_session)
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_show_notify_post',
+                        '_GET', 'show_notify_post',
                         self.server.debug)
     return result
+
+
+def show_conversation_thread(self, authorized: bool,
+                             calling_domain: str, path: str,
+                             base_dir: str, http_prefix: str,
+                             domain: str, port: int,
+                             debug: str, curr_session,
+                             cookie: str) -> bool:
+    """get conversation thread from the date link on a post
+    """
+    if not path.startswith('/users/'):
+        return False
+    if '?convthread=' not in path:
+        return False
+    post_id = path.split('?convthread=')[1].strip()
+    post_id = post_id.replace('--', '/')
+    if post_id.startswith('/users/'):
+        instance_url = get_instance_url(calling_domain,
+                                        self.server.http_prefix,
+                                        self.server.domain_full,
+                                        self.server.onion_domain,
+                                        self.server.i2p_domain)
+        post_id = instance_url + post_id
+    nickname = path.split('/users/')[1]
+    if '?convthread=' in nickname:
+        nickname = nickname.split('?convthread=')[0]
+    if '/' in nickname:
+        nickname = nickname.split('/')[0]
+    timezone = None
+    if self.server.account_timezone.get(nickname):
+        timezone = \
+            self.server.account_timezone.get(nickname)
+    bold_reading = False
+    if self.server.bold_reading.get(nickname):
+        bold_reading = True
+    conv_str = \
+        html_conversation_view(authorized,
+                               post_id, self.server.translate,
+                               base_dir,
+                               http_prefix,
+                               nickname,
+                               domain,
+                               self.server.project_version,
+                               self.server.recent_posts_cache,
+                               self.server.max_recent_posts,
+                               curr_session,
+                               self.server.cached_webfingers,
+                               self.server.person_cache,
+                               port,
+                               self.server.yt_replace_domain,
+                               self.server.twitter_replacement_domain,
+                               self.server.show_published_date_only,
+                               self.server.peertube_instances,
+                               self.server.allow_local_network_access,
+                               self.server.theme_name,
+                               self.server.system_language,
+                               self.server.max_like_count,
+                               self.server.signing_priv_key_pem,
+                               self.server.cw_lists,
+                               self.server.lists_enabled,
+                               timezone, bold_reading,
+                               self.server.dogwhistles,
+                               self.server.access_keys,
+                               self.server.min_images_for_accounts,
+                               debug,
+                               self.server.buy_sites,
+                               self.server.blocked_cache,
+                               self.server.block_federated,
+                               self.server.auto_cw_cache)
+    if conv_str:
+        msg = conv_str.encode('utf-8')
+        msglen = len(msg)
+        login_headers(self, 'text/html', msglen, calling_domain)
+        write2(self, msg)
+        self.server.getreq_busy = False
+        return True
+    # redirect to the original site if there are no results
+    if '://' + self.server.domain_full + '/' in post_id:
+        redirect_headers(self, post_id, cookie, calling_domain)
+    else:
+        redirect_headers(self, post_id, None, calling_domain)
+    self.server.getreq_busy = False
+    return True

@@ -28,7 +28,6 @@ from blocking import update_blocked_cache
 from blocking import add_global_block
 from blocking import blocked_timeline_json
 from cache import get_person_from_cache
-from webapp_conversation import html_conversation_view
 from webapp_moderation import html_account_info
 from webapp_calendar import html_calendar_delete_confirm
 from webapp_calendar import html_calendar
@@ -200,6 +199,7 @@ from daemon_get_post import show_announcers_of_post
 from daemon_get_post import show_likers_of_post
 from daemon_get_post import show_individual_at_post
 from daemon_get_post import show_new_post
+from daemon_get_post import show_conversation_thread
 from daemon_get_collections import get_featured_collection
 from daemon_get_collections import get_featured_tags_collection
 from daemon_get_collections import get_following_json
@@ -560,15 +560,15 @@ def daemon_http_get(self) -> None:
                             self.server.debug)
         return
 
-    if _show_conversation_thread(self, authorized,
-                                 calling_domain, self.path,
-                                 self.server.base_dir,
-                                 self.server.http_prefix,
-                                 self.server.domain,
-                                 self.server.port,
-                                 self.server.debug,
-                                 self.server.session,
-                                 cookie):
+    if show_conversation_thread(self, authorized,
+                                calling_domain, self.path,
+                                self.server.base_dir,
+                                self.server.http_prefix,
+                                self.server.domain,
+                                self.server.port,
+                                self.server.debug,
+                                self.server.session,
+                                cookie):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_show_conversation_thread',
                             self.server.debug)
@@ -4596,89 +4596,6 @@ def _browser_config(self, calling_domain: str, referer_domain: str,
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_browser_config',
                         self.server.debug)
-
-
-def _show_conversation_thread(self, authorized: bool,
-                              calling_domain: str, path: str,
-                              base_dir: str, http_prefix: str,
-                              domain: str, port: int,
-                              debug: str, curr_session,
-                              cookie: str) -> bool:
-    """get conversation thread from the date link on a post
-    """
-    if not path.startswith('/users/'):
-        return False
-    if '?convthread=' not in path:
-        return False
-    post_id = path.split('?convthread=')[1].strip()
-    post_id = post_id.replace('--', '/')
-    if post_id.startswith('/users/'):
-        instance_url = get_instance_url(calling_domain,
-                                        self.server.http_prefix,
-                                        self.server.domain_full,
-                                        self.server.onion_domain,
-                                        self.server.i2p_domain)
-        post_id = instance_url + post_id
-    nickname = path.split('/users/')[1]
-    if '?convthread=' in nickname:
-        nickname = nickname.split('?convthread=')[0]
-    if '/' in nickname:
-        nickname = nickname.split('/')[0]
-    timezone = None
-    if self.server.account_timezone.get(nickname):
-        timezone = \
-            self.server.account_timezone.get(nickname)
-    bold_reading = False
-    if self.server.bold_reading.get(nickname):
-        bold_reading = True
-    conv_str = \
-        html_conversation_view(authorized,
-                               post_id, self.server.translate,
-                               base_dir,
-                               http_prefix,
-                               nickname,
-                               domain,
-                               self.server.project_version,
-                               self.server.recent_posts_cache,
-                               self.server.max_recent_posts,
-                               curr_session,
-                               self.server.cached_webfingers,
-                               self.server.person_cache,
-                               port,
-                               self.server.yt_replace_domain,
-                               self.server.twitter_replacement_domain,
-                               self.server.show_published_date_only,
-                               self.server.peertube_instances,
-                               self.server.allow_local_network_access,
-                               self.server.theme_name,
-                               self.server.system_language,
-                               self.server.max_like_count,
-                               self.server.signing_priv_key_pem,
-                               self.server.cw_lists,
-                               self.server.lists_enabled,
-                               timezone, bold_reading,
-                               self.server.dogwhistles,
-                               self.server.access_keys,
-                               self.server.min_images_for_accounts,
-                               debug,
-                               self.server.buy_sites,
-                               self.server.blocked_cache,
-                               self.server.block_federated,
-                               self.server.auto_cw_cache)
-    if conv_str:
-        msg = conv_str.encode('utf-8')
-        msglen = len(msg)
-        login_headers(self, 'text/html', msglen, calling_domain)
-        write2(self, msg)
-        self.server.getreq_busy = False
-        return True
-    # redirect to the original site if there are no results
-    if '://' + self.server.domain_full + '/' in post_id:
-        redirect_headers(self, post_id, cookie, calling_domain)
-    else:
-        redirect_headers(self, post_id, None, calling_domain)
-    self.server.getreq_busy = False
-    return True
 
 
 def _get_speaker(self, calling_domain: str, referer_domain: str,
