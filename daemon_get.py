@@ -11,8 +11,6 @@ import os
 import time
 import json
 import urllib.parse
-from pgp import actor_to_vcard
-from pgp import actor_to_vcard_xml
 from siteactive import referer_is_active
 from maps import map_format_from_tagmaps_path
 from blog import html_blog_page
@@ -203,6 +201,7 @@ from daemon_get_collections import get_following_json
 from daemon_get_webfinger import get_webfinger
 from daemon_get_reactions import reaction_picker2
 from daemon_get_instance_actor import show_instance_actor
+from daemon_get_vcard import show_vcard
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -300,9 +299,9 @@ def daemon_http_get(self) -> None:
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'start', self.server.debug)
 
-    if _show_vcard(self, self.server.base_dir,
-                   self.path, calling_domain, referer_domain,
-                   self.server.domain):
+    if show_vcard(self, self.server.base_dir,
+                  self.path, calling_domain, referer_domain,
+                  self.server.domain):
         return
 
     # getting the public key for an account
@@ -4350,67 +4349,6 @@ def _get_referer_domain(self, ua_str: str) -> str:
     elif ua_str:
         referer_domain = user_agent_domain(ua_str, self.server.debug)
     return referer_domain
-
-
-def _show_vcard(self, base_dir: str, path: str, calling_domain: str,
-                referer_domain: str, domain: str) -> bool:
-    """Returns a vcard for the given account
-    """
-    if not has_accept(self, calling_domain):
-        return False
-    if path.endswith('.vcf'):
-        path = path.split('.vcf')[0]
-        accept_str = 'text/vcard'
-    else:
-        accept_str = self.headers['Accept']
-    if 'text/vcard' not in accept_str and \
-       'application/vcard+xml' not in accept_str:
-        return False
-    if path.startswith('/@'):
-        if '/@/' not in path:
-            path = path.replace('/@', '/users/', 1)
-    if not path.startswith('/users/'):
-        http_400(self)
-        return True
-    nickname = path.split('/users/')[1]
-    if '/' in nickname:
-        nickname = nickname.split('/')[0]
-    if '?' in nickname:
-        nickname = nickname.split('?')[0]
-    if self.server.vcard_is_active:
-        print('vcard is busy during request from ' + str(referer_domain))
-        http_503(self)
-        return True
-    self.server.vcard_is_active = True
-    actor_json = None
-    actor_filename = \
-        acct_dir(base_dir, nickname, domain) + '.json'
-    if os.path.isfile(actor_filename):
-        actor_json = load_json(actor_filename)
-    if not actor_json:
-        print('WARN: vcard actor not found ' + actor_filename)
-        http_404(self, 3)
-        self.server.vcard_is_active = False
-        return True
-    if 'application/vcard+xml' in accept_str:
-        vcard_str = actor_to_vcard_xml(actor_json, domain)
-        header_type = 'application/vcard+xml; charset=utf-8'
-    else:
-        vcard_str = actor_to_vcard(actor_json, domain)
-        header_type = 'text/vcard; charset=utf-8'
-    if vcard_str:
-        msg = vcard_str.encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, header_type, msglen,
-                    None, calling_domain, True)
-        write2(self, msg)
-        print('vcard sent to ' + str(referer_domain))
-        self.server.vcard_is_active = False
-        return True
-    print('WARN: vcard string not returned')
-    http_404(self, 4)
-    self.server.vcard_is_active = False
-    return True
 
 
 def _security_txt(self, ua_str: str, calling_domain: str,
