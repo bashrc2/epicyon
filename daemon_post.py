@@ -13,9 +13,6 @@ import json
 import os
 import urllib.parse
 from socket import error as SocketError
-from utils import clear_from_post_caches
-from utils import first_paragraph_from_string
-from utils import date_from_string_format
 from utils import dangerous_markup
 from utils import binary_is_image
 from utils import get_image_extension_from_mime_type
@@ -52,7 +49,6 @@ from inbox import inbox_message_has_params
 from inbox import inbox_permitted_message
 from httpsig import getheader_signature_input
 from person import get_actor_update_json
-from content import load_dogwhistles
 from content import extract_text_fields_in_post
 from filters import is_filtered
 from categories import set_hashtag_category
@@ -88,6 +84,9 @@ from daemon_post_confirm import follow_confirm2
 from daemon_post_confirm import unfollow_confirm
 from daemon_post_confirm import block_confirm2
 from daemon_post_confirm import unblock_confirm
+from daemon_post_newswire import newswire_update
+from daemon_post_newswire import citations_update
+from daemon_post_newswire import news_post_edit
 
 # maximum number of posts in a hashtag feed
 MAX_POSTS_IN_HASHTAG_FEED = 6
@@ -273,29 +272,29 @@ def daemon_http_post(self) -> None:
         return
 
     if authorized and self.path.endswith('/newswiredata'):
-        _newswire_update(self, calling_domain, cookie,
-                         self.path,
-                         self.server.base_dir,
-                         self.server.domain, self.server.debug,
-                         self.server.default_timeline)
+        newswire_update(self, calling_domain, cookie,
+                        self.path,
+                        self.server.base_dir,
+                        self.server.domain, self.server.debug,
+                        self.server.default_timeline)
         self.server.postreq_busy = False
         return
 
     if authorized and self.path.endswith('/citationsdata'):
-        _citations_update(self, calling_domain, cookie,
-                          self.path,
-                          self.server.base_dir,
-                          self.server.domain,
-                          self.server.debug,
-                          self.server.newswire)
+        citations_update(self, calling_domain, cookie,
+                         self.path,
+                         self.server.base_dir,
+                         self.server.domain,
+                         self.server.debug,
+                         self.server.newswire)
         self.server.postreq_busy = False
         return
 
     if authorized and self.path.endswith('/newseditdata'):
-        _news_post_edit(self, calling_domain, cookie, self.path,
-                        self.server.base_dir,
-                        self.server.domain,
-                        self.server.debug)
+        news_post_edit(self, calling_domain, cookie, self.path,
+                       self.server.base_dir,
+                       self.server.domain,
+                       self.server.debug)
         self.server.postreq_busy = False
         return
 
@@ -1361,143 +1360,6 @@ def _remove_reading_status(self, calling_domain: str, cookie: str,
     self.server.postreq_busy = False
 
 
-def _receive_vote(self, calling_domain: str, cookie: str,
-                  path: str, http_prefix: str,
-                  domain: str, domain_full: str, port: int,
-                  onion_domain: str, i2p_domain: str,
-                  curr_session, proxy_type: str,
-                  base_dir: str, city: str,
-                  person_cache: {}, debug: bool,
-                  system_language: str,
-                  low_bandwidth: bool,
-                  dm_license_url: str,
-                  content_license_url: str,
-                  translate: {}, max_replies: int,
-                  project_version: str,
-                  recent_posts_cache: {}) -> None:
-    """Receive a vote via POST
-    """
-    first_post_id = ''
-    if '?firstpost=' in path:
-        first_post_id = path.split('?firstpost=')[1]
-        path = path.split('?firstpost=')[0]
-    if ';firstpost=' in path:
-        first_post_id = path.split(';firstpost=')[1]
-        path = path.split(';firstpost=')[0]
-    if first_post_id:
-        if '?' in first_post_id:
-            first_post_id = first_post_id.split('?')[0]
-        if ';' in first_post_id:
-            first_post_id = first_post_id.split(';')[0]
-        first_post_id = first_post_id.replace('/', '--')
-        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
-
-    last_post_id = ''
-    if '?lastpost=' in path:
-        last_post_id = path.split('?lastpost=')[1]
-        path = path.split('?lastpost=')[0]
-    if ';lastpost=' in path:
-        last_post_id = path.split(';lastpost=')[1]
-        path = path.split(';lastpost=')[0]
-    if last_post_id:
-        if '?' in last_post_id:
-            last_post_id = last_post_id.split('?')[0]
-        if ';' in last_post_id:
-            last_post_id = last_post_id.split(';')[0]
-        last_post_id = last_post_id.replace('/', '--')
-        last_post_id = ';lastpost=' + last_post_id.replace('#', '--')
-
-    page_number = 1
-    if '?page=' in path:
-        page_number_str = path.split('?page=')[1]
-        if '#' in page_number_str:
-            page_number_str = page_number_str.split('#')[0]
-        if len(page_number_str) > 5:
-            page_number_str = "1"
-        if page_number_str.isdigit():
-            page_number = int(page_number_str)
-
-    # the actor who votes
-    users_path = path.replace('/question', '')
-    actor = http_prefix + '://' + domain_full + users_path
-    nickname = get_nickname_from_actor(actor)
-    if not nickname:
-        if calling_domain.endswith('.onion') and onion_domain:
-            actor = 'http://' + onion_domain + users_path
-        elif (calling_domain.endswith('.i2p') and i2p_domain):
-            actor = 'http://' + i2p_domain + users_path
-        actor_path_str = \
-            actor + '/' + self.server.default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, actor_path_str,
-                         cookie, calling_domain)
-        self.server.postreq_busy = False
-        return
-
-    # get the parameters
-    length = int(self.headers['Content-length'])
-
-    try:
-        question_params = self.rfile.read(length).decode('utf-8')
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: POST question_params connection was reset')
-        else:
-            print('EX: POST question_params socket error')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: POST question_params rfile.read failed, ' + str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    question_params = question_params.replace('+', ' ')
-    question_params = question_params.replace('%3F', '')
-    question_params = \
-        urllib.parse.unquote_plus(question_params.strip())
-
-    # post being voted on
-    message_id = None
-    if 'messageId=' in question_params:
-        message_id = question_params.split('messageId=')[1]
-        if '&' in message_id:
-            message_id = message_id.split('&')[0]
-
-    answer = None
-    if 'answer=' in question_params:
-        answer = question_params.split('answer=')[1]
-        if '&' in answer:
-            answer = answer.split('&')[0]
-
-    _send_reply_to_question(self, base_dir, http_prefix,
-                            nickname, domain, domain_full, port,
-                            message_id, answer,
-                            curr_session, proxy_type, city,
-                            person_cache, debug,
-                            system_language,
-                            low_bandwidth,
-                            dm_license_url,
-                            content_license_url,
-                            translate, max_replies,
-                            project_version,
-                            recent_posts_cache)
-    if calling_domain.endswith('.onion') and onion_domain:
-        actor = 'http://' + onion_domain + users_path
-    elif (calling_domain.endswith('.i2p') and i2p_domain):
-        actor = 'http://' + i2p_domain + users_path
-    actor_path_str = \
-        actor + '/' + self.server.default_timeline + \
-        '?page=' + str(page_number) + first_post_id + last_post_id
-    redirect_headers(self, actor_path_str, cookie,
-                     calling_domain)
-    self.server.postreq_busy = False
-    return
-
-
 def _send_reply_to_question(self, base_dir: str,
                             http_prefix: str,
                             nickname: str, domain: str,
@@ -2188,447 +2050,6 @@ def _links_update(self, calling_domain: str, cookie: str,
     self.server.postreq_busy = False
 
 
-def _newswire_update(self, calling_domain: str, cookie: str,
-                     path: str, base_dir: str,
-                     domain: str, debug: bool,
-                     default_timeline: str) -> None:
-    """Updates the right newswire column of the timeline
-    """
-    users_path = path.replace('/newswiredata', '')
-    users_path = users_path.replace('/editnewswire', '')
-    actor_str = \
-        get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
-        users_path
-
-    boundary = None
-    if ' boundary=' in self.headers['Content-type']:
-        boundary = self.headers['Content-type'].split('boundary=')[1]
-        if ';' in boundary:
-            boundary = boundary.split(';')[0]
-
-    # get the nickname
-    nickname = get_nickname_from_actor(actor_str)
-    moderator = None
-    if nickname:
-        moderator = is_moderator(base_dir, nickname)
-    if not nickname or not moderator:
-        if not nickname:
-            print('WARN: nickname not found in ' + actor_str)
-        else:
-            print('WARN: nickname is not a moderator' + actor_str)
-        redirect_headers(self, actor_str, cookie, calling_domain)
-        self.server.postreq_busy = False
-        return
-
-    if self.headers.get('Content-length'):
-        length = int(self.headers['Content-length'])
-
-        # check that the POST isn't too large
-        if length > self.server.max_post_length:
-            print('Maximum newswire data length exceeded ' + str(length))
-            redirect_headers(self, actor_str, cookie, calling_domain)
-            self.server.postreq_busy = False
-            return
-
-    try:
-        # read the bytes of the http form POST
-        post_bytes = self.rfile.read(length)
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: connection was reset while ' +
-                  'reading bytes from http form POST')
-        else:
-            print('EX: error while reading bytes ' +
-                  'from http form POST')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: failed to read bytes for POST, ' + str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    newswire_filename = base_dir + '/accounts/newswire.txt'
-
-    if not boundary:
-        if b'--LYNX' in post_bytes:
-            boundary = '--LYNX'
-
-    if boundary:
-        # extract all of the text fields into a dict
-        fields = \
-            extract_text_fields_in_post(post_bytes, boundary, debug, None)
-        if fields.get('editedNewswire'):
-            newswire_str = fields['editedNewswire']
-            # append a new newswire entry
-            if fields.get('newNewswireFeed'):
-                if newswire_str:
-                    if not newswire_str.endswith('\n'):
-                        newswire_str += '\n'
-                newswire_str += fields['newNewswireFeed'] + '\n'
-            try:
-                with open(newswire_filename, 'w+',
-                          encoding='utf-8') as newsfile:
-                    newsfile.write(newswire_str)
-            except OSError:
-                print('EX: unable to write ' + newswire_filename)
-        else:
-            if fields.get('newNewswireFeed'):
-                # the text area is empty but there is a new feed added
-                newswire_str = fields['newNewswireFeed'] + '\n'
-                try:
-                    with open(newswire_filename, 'w+',
-                              encoding='utf-8') as newsfile:
-                        newsfile.write(newswire_str)
-                except OSError:
-                    print('EX: unable to write ' + newswire_filename)
-            else:
-                # text area has been cleared and there is no new feed
-                if os.path.isfile(newswire_filename):
-                    try:
-                        os.remove(newswire_filename)
-                    except OSError:
-                        print('EX: _newswire_update unable to delete ' +
-                              newswire_filename)
-
-        # save filtered words list for the newswire
-        filter_newswire_filename = \
-            base_dir + '/accounts/' + \
-            'news@' + domain + '/filters.txt'
-        if fields.get('filteredWordsNewswire'):
-            try:
-                with open(filter_newswire_filename, 'w+',
-                          encoding='utf-8') as filterfile:
-                    filterfile.write(fields['filteredWordsNewswire'])
-            except OSError:
-                print('EX: unable to write ' + filter_newswire_filename)
-        else:
-            if os.path.isfile(filter_newswire_filename):
-                try:
-                    os.remove(filter_newswire_filename)
-                except OSError:
-                    print('EX: _newswire_update unable to delete ' +
-                          filter_newswire_filename)
-
-        # save dogwhistle words list
-        dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
-        if fields.get('dogwhistleWords'):
-            try:
-                with open(dogwhistles_filename, 'w+',
-                          encoding='utf-8') as fp_dogwhistles:
-                    fp_dogwhistles.write(fields['dogwhistleWords'])
-            except OSError:
-                print('EX: unable to write ' + dogwhistles_filename)
-            self.server.dogwhistles = \
-                load_dogwhistles(dogwhistles_filename)
-        else:
-            # save an empty file
-            try:
-                with open(dogwhistles_filename, 'w+',
-                          encoding='utf-8') as fp_dogwhistles:
-                    fp_dogwhistles.write('')
-            except OSError:
-                print('EX: unable to write ' + dogwhistles_filename)
-            self.server.dogwhistles = {}
-
-        # save news tagging rules
-        hashtag_rules_filename = \
-            base_dir + '/accounts/hashtagrules.txt'
-        if fields.get('hashtagRulesList'):
-            try:
-                with open(hashtag_rules_filename, 'w+',
-                          encoding='utf-8') as rulesfile:
-                    rulesfile.write(fields['hashtagRulesList'])
-            except OSError:
-                print('EX: unable to write ' + hashtag_rules_filename)
-        else:
-            if os.path.isfile(hashtag_rules_filename):
-                try:
-                    os.remove(hashtag_rules_filename)
-                except OSError:
-                    print('EX: _newswire_update unable to delete ' +
-                          hashtag_rules_filename)
-
-        newswire_tusted_filename = \
-            base_dir + '/accounts/newswiretrusted.txt'
-        if fields.get('trustedNewswire'):
-            newswire_trusted = fields['trustedNewswire']
-            if not newswire_trusted.endswith('\n'):
-                newswire_trusted += '\n'
-            try:
-                with open(newswire_tusted_filename, 'w+',
-                          encoding='utf-8') as trustfile:
-                    trustfile.write(newswire_trusted)
-            except OSError:
-                print('EX: unable to write ' + newswire_tusted_filename)
-        else:
-            if os.path.isfile(newswire_tusted_filename):
-                try:
-                    os.remove(newswire_tusted_filename)
-                except OSError:
-                    print('EX: _newswire_update unable to delete ' +
-                          newswire_tusted_filename)
-
-    # redirect back to the default timeline
-    redirect_headers(self, actor_str + '/' + default_timeline,
-                     cookie, calling_domain)
-    self.server.postreq_busy = False
-
-
-def _citations_update(self, calling_domain: str, cookie: str,
-                      path: str, base_dir: str,
-                      domain: str, debug: bool,
-                      newswire: {}) -> None:
-    """Updates the citations for a blog post after hitting
-    update button on the citations screen
-    """
-    users_path = path.replace('/citationsdata', '')
-    actor_str = \
-        get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
-        users_path
-    nickname = get_nickname_from_actor(actor_str)
-    if not nickname:
-        self.server.postreq_busy = False
-        return
-
-    citations_filename = \
-        acct_dir(base_dir, nickname, domain) + '/.citations.txt'
-    # remove any existing citations file
-    if os.path.isfile(citations_filename):
-        try:
-            os.remove(citations_filename)
-        except OSError:
-            print('EX: _citations_update unable to delete ' +
-                  citations_filename)
-
-    if newswire and \
-       ' boundary=' in self.headers['Content-type']:
-        boundary = self.headers['Content-type'].split('boundary=')[1]
-        if ';' in boundary:
-            boundary = boundary.split(';')[0]
-
-        length = int(self.headers['Content-length'])
-
-        # check that the POST isn't too large
-        if length > self.server.max_post_length:
-            print('Maximum citations data length exceeded ' + str(length))
-            redirect_headers(self, actor_str, cookie, calling_domain)
-            self.server.postreq_busy = False
-            return
-
-        try:
-            # read the bytes of the http form POST
-            post_bytes = self.rfile.read(length)
-        except SocketError as ex:
-            if ex.errno == errno.ECONNRESET:
-                print('EX: connection was reset while ' +
-                      'reading bytes from http form ' +
-                      'citation screen POST')
-            else:
-                print('EX: error while reading bytes ' +
-                      'from http form citations screen POST')
-            self.send_response(400)
-            self.end_headers()
-            self.server.postreq_busy = False
-            return
-        except ValueError as ex:
-            print('EX: failed to read bytes for ' +
-                  'citations screen POST, ' + str(ex))
-            self.send_response(400)
-            self.end_headers()
-            self.server.postreq_busy = False
-            return
-
-        # extract all of the text fields into a dict
-        fields = \
-            extract_text_fields_in_post(post_bytes, boundary, debug, None)
-        print('citationstest: ' + str(fields))
-        citations = []
-        for ctr in range(0, 128):
-            field_name = 'newswire' + str(ctr)
-            if not fields.get(field_name):
-                continue
-            citations.append(fields[field_name])
-
-        if citations:
-            citations_str = ''
-            for citation_date in citations:
-                citations_str += citation_date + '\n'
-            # save citations dates, so that they can be added when
-            # reloading the newblog screen
-            try:
-                with open(citations_filename, 'w+',
-                          encoding='utf-8') as citfile:
-                    citfile.write(citations_str)
-            except OSError:
-                print('EX: unable to write ' + citations_filename)
-
-    # redirect back to the default timeline
-    redirect_headers(self, actor_str + '/newblog',
-                     cookie, calling_domain)
-    self.server.postreq_busy = False
-
-
-def _news_post_edit(self, calling_domain: str, cookie: str,
-                    path: str, base_dir: str,
-                    domain: str, debug: bool) -> None:
-    """edits a news post after receiving POST
-    """
-    users_path = path.replace('/newseditdata', '')
-    users_path = users_path.replace('/editnewspost', '')
-    actor_str = \
-        get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
-        users_path
-
-    boundary = None
-    if ' boundary=' in self.headers['Content-type']:
-        boundary = self.headers['Content-type'].split('boundary=')[1]
-        if ';' in boundary:
-            boundary = boundary.split(';')[0]
-
-    # get the nickname
-    nickname = get_nickname_from_actor(actor_str)
-    editor_role = None
-    if nickname:
-        editor_role = is_editor(base_dir, nickname)
-    if not nickname or not editor_role:
-        if not nickname:
-            print('WARN: nickname not found in ' + actor_str)
-        else:
-            print('WARN: nickname is not an editor' + actor_str)
-        if self.server.news_instance:
-            redirect_headers(self, actor_str + '/tlfeatures',
-                             cookie, calling_domain)
-        else:
-            redirect_headers(self, actor_str + '/tlnews',
-                             cookie, calling_domain)
-        self.server.postreq_busy = False
-        return
-
-    if self.headers.get('Content-length'):
-        length = int(self.headers['Content-length'])
-
-        # check that the POST isn't too large
-        if length > self.server.max_post_length:
-            print('Maximum news data length exceeded ' + str(length))
-            if self.server.news_instance:
-                redirect_headers(self, actor_str + '/tlfeatures',
-                                 cookie, calling_domain)
-            else:
-                redirect_headers(self, actor_str + '/tlnews',
-                                 cookie, calling_domain)
-            self.server.postreq_busy = False
-            return
-
-    try:
-        # read the bytes of the http form POST
-        post_bytes = self.rfile.read(length)
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: connection was reset while ' +
-                  'reading bytes from http form POST')
-        else:
-            print('EX: error while reading bytes ' +
-                  'from http form POST')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: failed to read bytes for POST, ' + str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    if not boundary:
-        if b'--LYNX' in post_bytes:
-            boundary = '--LYNX'
-
-    if boundary:
-        # extract all of the text fields into a dict
-        fields = \
-            extract_text_fields_in_post(post_bytes, boundary, debug, None)
-        news_post_url = None
-        news_post_title = None
-        news_post_content = None
-        if fields.get('newsPostUrl'):
-            news_post_url = fields['newsPostUrl']
-        if fields.get('newsPostTitle'):
-            news_post_title = fields['newsPostTitle']
-        if fields.get('editedNewsPost'):
-            news_post_content = fields['editedNewsPost']
-
-        if news_post_url and news_post_content and news_post_title:
-            # load the post
-            post_filename = \
-                locate_post(base_dir, nickname, domain,
-                            news_post_url)
-            if post_filename:
-                post_json_object = load_json(post_filename)
-                # update the content and title
-                post_json_object['object']['summary'] = \
-                    news_post_title
-                post_json_object['object']['content'] = \
-                    news_post_content
-                content_map = post_json_object['object']['contentMap']
-                content_map[self.server.system_language] = \
-                    news_post_content
-                # update newswire
-                pub_date = post_json_object['object']['published']
-                published_date = \
-                    date_from_string_format(pub_date,
-                                            ["%Y-%m-%dT%H:%M:%S%z"])
-                if self.server.newswire.get(str(published_date)):
-                    self.server.newswire[published_date][0] = \
-                        news_post_title
-                    self.server.newswire[published_date][4] = \
-                        first_paragraph_from_string(news_post_content)
-                    # save newswire
-                    newswire_state_filename = \
-                        base_dir + '/accounts/.newswirestate.json'
-                    try:
-                        save_json(self.server.newswire,
-                                  newswire_state_filename)
-                    except BaseException as ex:
-                        print('EX: saving newswire state, ' + str(ex))
-
-                # remove any previous cached news posts
-                news_id = \
-                    remove_id_ending(post_json_object['object']['id'])
-                news_id = news_id.replace('/', '#')
-                clear_from_post_caches(base_dir,
-                                       self.server.recent_posts_cache,
-                                       news_id)
-
-                # save the news post
-                save_json(post_json_object, post_filename)
-
-    # redirect back to the default timeline
-    if self.server.news_instance:
-        redirect_headers(self, actor_str + '/tlfeatures',
-                         cookie, calling_domain)
-    else:
-        redirect_headers(self, actor_str + '/tlnews',
-                         cookie, calling_domain)
-    self.server.postreq_busy = False
-
-
 def _set_hashtag_category2(self, calling_domain: str, cookie: str,
                            path: str, base_dir: str,
                            domain: str, debug: bool,
@@ -2743,3 +2164,140 @@ def _set_hashtag_category2(self, calling_domain: str, cookie: str,
     redirect_headers(self, tag_screen_str,
                      cookie, calling_domain)
     self.server.postreq_busy = False
+
+
+def _receive_vote(self, calling_domain: str, cookie: str,
+                  path: str, http_prefix: str,
+                  domain: str, domain_full: str, port: int,
+                  onion_domain: str, i2p_domain: str,
+                  curr_session, proxy_type: str,
+                  base_dir: str, city: str,
+                  person_cache: {}, debug: bool,
+                  system_language: str,
+                  low_bandwidth: bool,
+                  dm_license_url: str,
+                  content_license_url: str,
+                  translate: {}, max_replies: int,
+                  project_version: str,
+                  recent_posts_cache: {}) -> None:
+    """Receive a vote on a question via POST
+    """
+    first_post_id = ''
+    if '?firstpost=' in path:
+        first_post_id = path.split('?firstpost=')[1]
+        path = path.split('?firstpost=')[0]
+    if ';firstpost=' in path:
+        first_post_id = path.split(';firstpost=')[1]
+        path = path.split(';firstpost=')[0]
+    if first_post_id:
+        if '?' in first_post_id:
+            first_post_id = first_post_id.split('?')[0]
+        if ';' in first_post_id:
+            first_post_id = first_post_id.split(';')[0]
+        first_post_id = first_post_id.replace('/', '--')
+        first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
+
+    last_post_id = ''
+    if '?lastpost=' in path:
+        last_post_id = path.split('?lastpost=')[1]
+        path = path.split('?lastpost=')[0]
+    if ';lastpost=' in path:
+        last_post_id = path.split(';lastpost=')[1]
+        path = path.split(';lastpost=')[0]
+    if last_post_id:
+        if '?' in last_post_id:
+            last_post_id = last_post_id.split('?')[0]
+        if ';' in last_post_id:
+            last_post_id = last_post_id.split(';')[0]
+        last_post_id = last_post_id.replace('/', '--')
+        last_post_id = ';lastpost=' + last_post_id.replace('#', '--')
+
+    page_number = 1
+    if '?page=' in path:
+        page_number_str = path.split('?page=')[1]
+        if '#' in page_number_str:
+            page_number_str = page_number_str.split('#')[0]
+        if len(page_number_str) > 5:
+            page_number_str = "1"
+        if page_number_str.isdigit():
+            page_number = int(page_number_str)
+
+    # the actor who votes
+    users_path = path.replace('/question', '')
+    actor = http_prefix + '://' + domain_full + users_path
+    nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        if calling_domain.endswith('.onion') and onion_domain:
+            actor = 'http://' + onion_domain + users_path
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
+            actor = 'http://' + i2p_domain + users_path
+        actor_path_str = \
+            actor + '/' + self.server.default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, actor_path_str,
+                         cookie, calling_domain)
+        self.server.postreq_busy = False
+        return
+
+    # get the parameters
+    length = int(self.headers['Content-length'])
+
+    try:
+        question_params = self.rfile.read(length).decode('utf-8')
+    except SocketError as ex:
+        if ex.errno == errno.ECONNRESET:
+            print('EX: POST question_params connection was reset')
+        else:
+            print('EX: POST question_params socket error')
+        self.send_response(400)
+        self.end_headers()
+        self.server.postreq_busy = False
+        return
+    except ValueError as ex:
+        print('EX: POST question_params rfile.read failed, ' + str(ex))
+        self.send_response(400)
+        self.end_headers()
+        self.server.postreq_busy = False
+        return
+
+    question_params = question_params.replace('+', ' ')
+    question_params = question_params.replace('%3F', '')
+    question_params = \
+        urllib.parse.unquote_plus(question_params.strip())
+
+    # post being voted on
+    message_id = None
+    if 'messageId=' in question_params:
+        message_id = question_params.split('messageId=')[1]
+        if '&' in message_id:
+            message_id = message_id.split('&')[0]
+
+    answer = None
+    if 'answer=' in question_params:
+        answer = question_params.split('answer=')[1]
+        if '&' in answer:
+            answer = answer.split('&')[0]
+
+    _send_reply_to_question(self, base_dir, http_prefix,
+                            nickname, domain, domain_full, port,
+                            message_id, answer,
+                            curr_session, proxy_type, city,
+                            person_cache, debug,
+                            system_language,
+                            low_bandwidth,
+                            dm_license_url,
+                            content_license_url,
+                            translate, max_replies,
+                            project_version,
+                            recent_posts_cache)
+    if calling_domain.endswith('.onion') and onion_domain:
+        actor = 'http://' + onion_domain + users_path
+    elif (calling_domain.endswith('.i2p') and i2p_domain):
+        actor = 'http://' + i2p_domain + users_path
+    actor_path_str = \
+        actor + '/' + self.server.default_timeline + \
+        '?page=' + str(page_number) + first_post_id + last_post_id
+    redirect_headers(self, actor_path_str, cookie,
+                     calling_domain)
+    self.server.postreq_busy = False
+    return
