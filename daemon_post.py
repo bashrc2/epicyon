@@ -26,7 +26,6 @@ from utils import has_group_type
 from utils import get_status_number
 from utils import load_json
 from utils import save_json
-from utils import delete_post
 from utils import locate_post
 from utils import get_full_domain
 from utils import get_domain_from_actor
@@ -43,7 +42,6 @@ from utils import acct_dir
 from utils import get_nickname_from_actor
 from blocking import is_blocked_hashtag
 from blocking import contains_military_domain
-from blocking import add_global_block
 from blocking import update_blocked_cache
 from blocking import remove_global_block
 from blocking import remove_block
@@ -63,8 +61,6 @@ from person import get_actor_update_json
 from content import load_dogwhistles
 from content import extract_text_fields_in_post
 from filters import is_filtered
-from filters import add_global_filter
-from filters import remove_global_filter
 from categories import set_hashtag_category
 from httpcodes import write2
 from httpcodes import http_200
@@ -79,15 +75,9 @@ from daemon_utils import update_inbox_queue
 from daemon_utils import is_authorized
 from posts import is_moderator
 from webapp_moderation import html_account_info
-from webapp_moderation import html_moderation_info
-from person import suspend_account
-from person import reenable_account
-from person import remove_account
-from person import can_remove_post
 from cache import store_person_in_cache
 from cache import remove_person_from_cache
 from cache import get_person_from_cache
-from cache import clear_actor_cache
 from theme import reset_theme_designer_settings
 from theme import set_theme
 from theme import set_theme_from_designer
@@ -105,6 +95,7 @@ from daemon_post_receive import receive_new_post
 from daemon_post_profile import profile_edit
 from daemon_post_person_options import person_options2
 from daemon_post_search import receive_search_query
+from daemon_post_moderator import moderator_actions
 
 # maximum number of posts in a hashtag feed
 MAX_POSTS_IN_HASHTAG_FEED = 6
@@ -327,13 +318,13 @@ def daemon_http_post(self) -> None:
     # moderator action buttons
     if authorized and users_in_path and \
        self.path.endswith('/moderationaction'):
-        _moderator_actions(self,
-                           self.path, calling_domain, cookie,
-                           self.server.base_dir,
-                           self.server.http_prefix,
-                           self.server.domain,
-                           self.server.port,
-                           self.server.debug)
+        moderator_actions(self,
+                          self.path, calling_domain, cookie,
+                          self.server.base_dir,
+                          self.server.http_prefix,
+                          self.server.domain,
+                          self.server.port,
+                          self.server.debug)
         self.server.postreq_busy = False
         return
 
@@ -1071,299 +1062,6 @@ def daemon_http_post(self) -> None:
             return
     http_200(self)
     self.server.postreq_busy = False
-
-
-def _moderator_actions(self, path: str, calling_domain: str, cookie: str,
-                       base_dir: str, http_prefix: str,
-                       domain: str, port: int, debug: bool) -> None:
-    """Actions on the moderator screen
-    """
-    users_path = path.replace('/moderationaction', '')
-    nickname = users_path.replace('/users/', '')
-    actor_str = \
-        get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
-        users_path
-    if not is_moderator(self.server.base_dir, nickname):
-        redirect_headers(self, actor_str + '/moderation',
-                         cookie, calling_domain)
-        self.server.postreq_busy = False
-        return
-
-    length = int(self.headers['Content-length'])
-
-    try:
-        moderation_params = self.rfile.read(length).decode('utf-8')
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: POST moderation_params connection was reset')
-        else:
-            print('EX: POST moderation_params ' +
-                  'rfile.read socket error')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: POST moderation_params rfile.read failed, ' +
-              str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    if '&' in moderation_params:
-        moderation_text = None
-        moderation_button = None
-        # get the moderation text first
-        act_str = 'moderationAction='
-        for moderation_str in moderation_params.split('&'):
-            if moderation_str.startswith(act_str):
-                if act_str in moderation_str:
-                    moderation_text = \
-                        moderation_str.split(act_str)[1].strip()
-                    mod_text = moderation_text.replace('+', ' ')
-                    moderation_text = \
-                        urllib.parse.unquote_plus(mod_text.strip())
-        # which button was pressed?
-        for moderation_str in moderation_params.split('&'):
-            if moderation_str.startswith('submitInfo='):
-                if not moderation_text and \
-                   'submitInfo=' in moderation_str:
-                    moderation_text = \
-                        moderation_str.split('submitInfo=')[1].strip()
-                    mod_text = moderation_text.replace('+', ' ')
-                    moderation_text = \
-                        urllib.parse.unquote_plus(mod_text.strip())
-                search_handle = moderation_text
-                if search_handle:
-                    if '/@' in search_handle and \
-                       '/@/' not in search_handle:
-                        search_nickname = \
-                            get_nickname_from_actor(search_handle)
-                        if search_nickname:
-                            search_domain, _ = \
-                                get_domain_from_actor(search_handle)
-                            if search_domain:
-                                search_handle = \
-                                    search_nickname + '@' + search_domain
-                            else:
-                                search_handle = ''
-                        else:
-                            search_handle = ''
-                    if '@' not in search_handle or \
-                       '/@/' in search_handle:
-                        if search_handle.startswith('http') or \
-                           search_handle.startswith('ipfs') or \
-                           search_handle.startswith('ipns'):
-                            search_nickname = \
-                                get_nickname_from_actor(search_handle)
-                            if search_nickname:
-                                search_domain, _ = \
-                                    get_domain_from_actor(search_handle)
-                                if search_domain:
-                                    search_handle = \
-                                        search_nickname + '@' + \
-                                        search_domain
-                                else:
-                                    search_handle = ''
-                            else:
-                                search_handle = ''
-                    if '@' not in search_handle:
-                        # is this a local nickname on this instance?
-                        local_handle = \
-                            search_handle + '@' + self.server.domain
-                        if os.path.isdir(self.server.base_dir +
-                                         '/accounts/' + local_handle):
-                            search_handle = local_handle
-                        else:
-                            search_handle = ''
-                if search_handle is None:
-                    search_handle = ''
-                if '@' in search_handle:
-                    msg = \
-                        html_account_info(self.server.translate,
-                                          base_dir, http_prefix,
-                                          nickname,
-                                          self.server.domain,
-                                          search_handle,
-                                          self.server.debug,
-                                          self.server.system_language,
-                                          self.server.signing_priv_key_pem,
-                                          None,
-                                          self.server.block_federated)
-                else:
-                    msg = \
-                        html_moderation_info(self.server.translate,
-                                             base_dir, nickname,
-                                             self.server.domain,
-                                             self.server.theme_name,
-                                             self.server.access_keys)
-                if msg:
-                    msg = msg.encode('utf-8')
-                    msglen = len(msg)
-                    login_headers(self, 'text/html',
-                                  msglen, calling_domain)
-                    write2(self, msg)
-                self.server.postreq_busy = False
-                return
-            if moderation_str.startswith('submitBlock'):
-                moderation_button = 'block'
-            elif moderation_str.startswith('submitUnblock'):
-                moderation_button = 'unblock'
-            elif moderation_str.startswith('submitFilter'):
-                moderation_button = 'filter'
-            elif moderation_str.startswith('submitUnfilter'):
-                moderation_button = 'unfilter'
-            elif moderation_str.startswith('submitClearCache'):
-                moderation_button = 'clearcache'
-            elif moderation_str.startswith('submitSuspend'):
-                moderation_button = 'suspend'
-            elif moderation_str.startswith('submitUnsuspend'):
-                moderation_button = 'unsuspend'
-            elif moderation_str.startswith('submitRemove'):
-                moderation_button = 'remove'
-        if moderation_button and moderation_text:
-            if debug:
-                print('moderation_button: ' + moderation_button)
-                print('moderation_text: ' + moderation_text)
-            nickname = moderation_text
-            if nickname.startswith('http') or \
-               nickname.startswith('ipfs') or \
-               nickname.startswith('ipns') or \
-               nickname.startswith('hyper'):
-                nickname = get_nickname_from_actor(nickname)
-            if '@' in nickname:
-                nickname = nickname.split('@')[0]
-            if moderation_button == 'suspend':
-                suspend_account(base_dir, nickname, domain)
-            if moderation_button == 'unsuspend':
-                reenable_account(base_dir, nickname)
-            if moderation_button == 'filter':
-                add_global_filter(base_dir, moderation_text)
-            if moderation_button == 'unfilter':
-                remove_global_filter(base_dir, moderation_text)
-            if moderation_button == 'clearcache':
-                clear_actor_cache(base_dir,
-                                  self.server.person_cache,
-                                  moderation_text)
-            if moderation_button == 'block':
-                full_block_domain = None
-                moderation_text = moderation_text.strip()
-                moderation_reason = None
-                if ' ' in moderation_text:
-                    moderation_domain = moderation_text.split(' ', 1)[0]
-                    moderation_reason = moderation_text.split(' ', 1)[1]
-                else:
-                    moderation_domain = moderation_text
-                if moderation_domain.startswith('http') or \
-                   moderation_domain.startswith('ipfs') or \
-                   moderation_domain.startswith('ipns') or \
-                   moderation_domain.startswith('hyper'):
-                    # https://domain
-                    block_domain, block_port = \
-                        get_domain_from_actor(moderation_domain)
-                    if block_domain:
-                        full_block_domain = \
-                            get_full_domain(block_domain, block_port)
-                if '@' in moderation_domain:
-                    # nick@domain or *@domain
-                    full_block_domain = \
-                        moderation_domain.split('@')[1]
-                else:
-                    # assume the text is a domain name
-                    if not full_block_domain and '.' in moderation_domain:
-                        nickname = '*'
-                        full_block_domain = \
-                            moderation_domain.strip()
-                if full_block_domain or nickname.startswith('#'):
-                    if nickname.startswith('#') and ' ' in nickname:
-                        nickname = nickname.split(' ')[0]
-                    add_global_block(base_dir, nickname,
-                                     full_block_domain, moderation_reason)
-                    blocked_cache_last_updated = \
-                        self.server.blocked_cache_last_updated
-                    self.server.blocked_cache_last_updated = \
-                        update_blocked_cache(self.server.base_dir,
-                                             self.server.blocked_cache,
-                                             blocked_cache_last_updated, 0)
-            if moderation_button == 'unblock':
-                full_block_domain = None
-                if ' ' in moderation_text:
-                    moderation_domain = moderation_text.split(' ', 1)[0]
-                else:
-                    moderation_domain = moderation_text
-                if moderation_domain.startswith('http') or \
-                   moderation_domain.startswith('ipfs') or \
-                   moderation_domain.startswith('ipns') or \
-                   moderation_domain.startswith('hyper'):
-                    # https://domain
-                    block_domain, block_port = \
-                        get_domain_from_actor(moderation_domain)
-                    if block_domain:
-                        full_block_domain = \
-                            get_full_domain(block_domain, block_port)
-                if '@' in moderation_domain:
-                    # nick@domain or *@domain
-                    full_block_domain = moderation_domain.split('@')[1]
-                else:
-                    # assume the text is a domain name
-                    if not full_block_domain and '.' in moderation_domain:
-                        nickname = '*'
-                        full_block_domain = moderation_domain.strip()
-                if full_block_domain or nickname.startswith('#'):
-                    if nickname.startswith('#') and ' ' in nickname:
-                        nickname = nickname.split(' ')[0]
-                    remove_global_block(base_dir, nickname,
-                                        full_block_domain)
-                    blocked_cache_last_updated = \
-                        self.server.blocked_cache_last_updated
-                    self.server.blocked_cache_last_updated = \
-                        update_blocked_cache(self.server.base_dir,
-                                             self.server.blocked_cache,
-                                             blocked_cache_last_updated, 0)
-            if moderation_button == 'remove':
-                if '/statuses/' not in moderation_text:
-                    remove_account(base_dir, nickname, domain, port)
-                else:
-                    # remove a post or thread
-                    post_filename = \
-                        locate_post(base_dir, nickname, domain,
-                                    moderation_text)
-                    if post_filename:
-                        if can_remove_post(base_dir, domain, port,
-                                           moderation_text):
-                            delete_post(base_dir,
-                                        http_prefix,
-                                        nickname, domain,
-                                        post_filename,
-                                        debug,
-                                        self.server.recent_posts_cache,
-                                        True)
-                    if nickname != 'news':
-                        # if this is a local blog post then also remove it
-                        # from the news actor
-                        post_filename = \
-                            locate_post(base_dir, 'news', domain,
-                                        moderation_text)
-                        if post_filename:
-                            if can_remove_post(base_dir, domain, port,
-                                               moderation_text):
-                                delete_post(base_dir,
-                                            http_prefix,
-                                            'news', domain,
-                                            post_filename,
-                                            debug,
-                                            self.server.recent_posts_cache,
-                                            True)
-
-    redirect_headers(self, actor_str + '/moderation',
-                     cookie, calling_domain)
-    self.server.postreq_busy = False
-    return
 
 
 def _key_shortcuts(self, calling_domain: str, cookie: str,
