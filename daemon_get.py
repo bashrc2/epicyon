@@ -109,7 +109,6 @@ from utils import get_json_content_from_accept
 from utils import check_bad_path
 from utils import corp_servers
 from utils import decoded_host
-from person import person_lookup
 from person import get_account_pub_key
 from shares import actor_attached_shares
 from shares import get_share_category
@@ -203,6 +202,7 @@ from daemon_get_collections import get_featured_tags_collection
 from daemon_get_collections import get_following_json
 from daemon_get_webfinger import get_webfinger
 from daemon_get_reactions import reaction_picker2
+from daemon_get_instance_actor import show_instance_actor
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -455,17 +455,17 @@ def daemon_http_get(self) -> None:
     if self.path in ('/actor', '/users/instance.actor', '/users/actor',
                      '/Actor', '/users/Actor'):
         self.path = '/users/inbox'
-        if _show_instance_actor(self, calling_domain, referer_domain,
-                                self.path,
-                                self.server.base_dir,
-                                self.server.http_prefix,
-                                self.server.domain,
-                                self.server.domain_full,
-                                self.server.onion_domain,
-                                self.server.i2p_domain,
-                                getreq_start_time,
-                                None, self.server.debug,
-                                self.server.enable_shared_inbox):
+        if show_instance_actor(self, calling_domain, referer_domain,
+                               self.path,
+                               self.server.base_dir,
+                               self.server.http_prefix,
+                               self.server.domain,
+                               self.server.domain_full,
+                               self.server.onion_domain,
+                               self.server.i2p_domain,
+                               getreq_start_time,
+                               None, self.server.debug,
+                               self.server.enable_shared_inbox):
             return
         else:
             http_404(self, 111)
@@ -4482,82 +4482,6 @@ def _security_txt(self, ua_str: str, calling_domain: str,
         else:
             print('security.txt sent to unknown referer')
     self.server.security_txt_is_active = False
-    return True
-
-
-def _show_instance_actor(self, calling_domain: str,
-                         referer_domain: str, path: str,
-                         base_dir: str, http_prefix: str,
-                         domain: str, domain_full: str,
-                         onion_domain: str, i2p_domain: str,
-                         getreq_start_time,
-                         cookie: str, debug: str,
-                         enable_shared_inbox: bool) -> bool:
-    """Shows the instance actor
-    """
-    if debug:
-        print('Instance actor requested by ' + calling_domain)
-    if request_http(self.headers, debug):
-        http_404(self, 88)
-        return False
-    actor_json = person_lookup(domain, path, base_dir)
-    if not actor_json:
-        print('ERROR: no instance actor found')
-        http_404(self, 89)
-        return False
-    accept_str = self.headers['Accept']
-    actor_domain_url = get_instance_url(calling_domain,
-                                        http_prefix, domain_full,
-                                        onion_domain, i2p_domain)
-    actor_url = actor_domain_url + '/users/Actor'
-    remove_fields = (
-        'icon', 'image', 'tts', 'shares',
-        'alsoKnownAs', 'hasOccupation', 'featured',
-        'featuredTags', 'discoverable', 'published',
-        'devices'
-    )
-    for rfield in remove_fields:
-        if rfield in actor_json:
-            del actor_json[rfield]
-    actor_json['endpoints'] = {}
-    if enable_shared_inbox:
-        actor_json['endpoints'] = {
-            'sharedInbox': actor_domain_url + '/inbox'
-        }
-    actor_json['name'] = 'ACTOR'
-    actor_json['preferredUsername'] = domain_full
-    actor_json['id'] = actor_domain_url + '/actor'
-    actor_json['type'] = 'Application'
-    actor_json['summary'] = 'Instance Actor'
-    actor_json['publicKey']['id'] = actor_domain_url + '/actor#main-key'
-    actor_json['publicKey']['owner'] = actor_domain_url + '/actor'
-    actor_json['url'] = actor_domain_url + '/actor'
-    actor_json['inbox'] = actor_url + '/inbox'
-    actor_json['followers'] = actor_url + '/followers'
-    actor_json['following'] = actor_url + '/following'
-    msg_str = json.dumps(actor_json, ensure_ascii=False)
-    msg_str = convert_domains(calling_domain,
-                              referer_domain,
-                              msg_str, http_prefix,
-                              domain,
-                              self.server.onion_domain,
-                              self.server.i2p_domain)
-    msg = msg_str.encode('utf-8')
-    msglen = len(msg)
-    if 'application/ld+json' in accept_str:
-        set_headers(self, 'application/ld+json', msglen,
-                    cookie, calling_domain, False)
-    elif 'application/jrd+json' in accept_str:
-        set_headers(self, 'application/jrd+json', msglen,
-                    cookie, calling_domain, False)
-    else:
-        set_headers(self, 'application/activity+json', msglen,
-                    cookie, calling_domain, False)
-    write2(self, msg)
-    fitness_performance(getreq_start_time,
-                        self.server.fitness,
-                        '_GET', '_show_instance_actor',
-                        debug)
     return True
 
 
