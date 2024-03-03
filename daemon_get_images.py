@@ -9,6 +9,8 @@ __module_group__ = "Core"
 
 import os
 import datetime
+import time
+from shutil import copyfile
 from media import path_is_video
 from media import path_is_transcript
 from media import path_is_audio
@@ -16,6 +18,7 @@ from httpcodes import write2
 from httpcodes import http_304
 from httpcodes import http_404
 from httpheaders import set_headers_etag
+from utils import get_nickname_from_actor
 from utils import media_file_mime_type
 from utils import get_image_mime_type
 from utils import get_image_extensions
@@ -23,6 +26,7 @@ from utils import acct_dir
 from utils import is_image_file
 from daemon_utils import etag_exists
 from fitnessFunctions import fitness_performance
+from person import save_person_qrcode
 
 
 def show_avatar_or_banner(self, referer_domain: str, path: str,
@@ -462,3 +466,247 @@ def show_media(self, path: str, base_dir: str,
                                 '_GET', '_show_media', self.server.debug)
             return
     http_404(self, 33)
+
+
+def show_qrcode(self, calling_domain: str, path: str,
+                base_dir: str, domain: str,
+                onion_domain: str, i2p_domain: str,
+                port: int, getreq_start_time) -> bool:
+    """Shows a QR code for an account
+    """
+    nickname = get_nickname_from_actor(path)
+    if not nickname:
+        http_404(self, 93)
+        return True
+    if onion_domain:
+        qrcode_domain = onion_domain
+        port = 80
+    elif i2p_domain:
+        qrcode_domain = i2p_domain
+        port = 80
+    else:
+        qrcode_domain = domain
+    save_person_qrcode(base_dir, nickname, domain, qrcode_domain, port)
+    qr_filename = \
+        acct_dir(base_dir, nickname, domain) + '/qrcode.png'
+    if os.path.isfile(qr_filename):
+        if etag_exists(self, qr_filename):
+            # The file has not changed
+            http_304(self)
+            return
+
+        tries = 0
+        media_binary = None
+        while tries < 5:
+            try:
+                with open(qr_filename, 'rb') as av_file:
+                    media_binary = av_file.read()
+                    break
+            except OSError as ex:
+                print('EX: _show_qrcode ' + str(tries) + ' ' + str(ex))
+                time.sleep(1)
+                tries += 1
+        if media_binary:
+            mime_type = media_file_mime_type(qr_filename)
+            set_headers_etag(self, qr_filename, mime_type,
+                             media_binary, None,
+                             self.server.domain_full,
+                             False, None)
+            write2(self, media_binary)
+            fitness_performance(getreq_start_time,
+                                self.server.fitness,
+                                '_GET', '_show_qrcode',
+                                self.server.debug)
+            return True
+    http_404(self, 94)
+    return True
+
+
+def search_screen_banner(self, path: str,
+                         base_dir: str, domain: str,
+                         getreq_start_time) -> bool:
+    """Shows a banner image on the search screen
+    """
+    nickname = get_nickname_from_actor(path)
+    if not nickname:
+        http_404(self, 95)
+        return True
+    banner_filename = \
+        acct_dir(base_dir, nickname, domain) + '/search_banner.png'
+    if not os.path.isfile(banner_filename):
+        if os.path.isfile(base_dir + '/theme/default/search_banner.png'):
+            copyfile(base_dir + '/theme/default/search_banner.png',
+                     banner_filename)
+    if os.path.isfile(banner_filename):
+        if etag_exists(self, banner_filename):
+            # The file has not changed
+            http_304(self)
+            return True
+
+        tries = 0
+        media_binary = None
+        while tries < 5:
+            try:
+                with open(banner_filename, 'rb') as av_file:
+                    media_binary = av_file.read()
+                    break
+            except OSError as ex:
+                print('EX: _search_screen_banner ' +
+                      str(tries) + ' ' + str(ex))
+                time.sleep(1)
+                tries += 1
+        if media_binary:
+            mime_type = media_file_mime_type(banner_filename)
+            set_headers_etag(self, banner_filename, mime_type,
+                             media_binary, None,
+                             self.server.domain_full,
+                             False, None)
+            write2(self, media_binary)
+            fitness_performance(getreq_start_time,
+                                self.server.fitness,
+                                '_GET', '_search_screen_banner',
+                                self.server.debug)
+            return True
+    http_404(self, 96)
+    return True
+
+
+def column_image(self, side: str, path: str, base_dir: str, domain: str,
+                 getreq_start_time) -> bool:
+    """Shows an image at the top of the left/right column
+    """
+    nickname = get_nickname_from_actor(path)
+    if not nickname:
+        http_404(self, 97)
+        return True
+    banner_filename = \
+        acct_dir(base_dir, nickname, domain) + '/' + \
+        side + '_col_image.png'
+    if os.path.isfile(banner_filename):
+        if etag_exists(self, banner_filename):
+            # The file has not changed
+            http_304(self)
+            return True
+
+        tries = 0
+        media_binary = None
+        while tries < 5:
+            try:
+                with open(banner_filename, 'rb') as av_file:
+                    media_binary = av_file.read()
+                    break
+            except OSError as ex:
+                print('EX: _column_image ' + str(tries) + ' ' + str(ex))
+                time.sleep(1)
+                tries += 1
+        if media_binary:
+            mime_type = media_file_mime_type(banner_filename)
+            set_headers_etag(self, banner_filename, mime_type,
+                             media_binary, None,
+                             self.server.domain_full,
+                             False, None)
+            write2(self, media_binary)
+            fitness_performance(getreq_start_time,
+                                self.server.fitness,
+                                '_GET', '_column_image ' + side,
+                                self.server.debug)
+            return True
+    http_404(self, 98)
+    return True
+
+
+def show_default_profile_background(self, base_dir: str, theme_name: str,
+                                    getreq_start_time) -> bool:
+    """If a background image is missing after searching for a handle
+    then substitute this image
+    """
+    image_extensions = get_image_extensions()
+    for ext in image_extensions:
+        bg_filename = \
+            base_dir + '/theme/' + theme_name + '/image.' + ext
+        if os.path.isfile(bg_filename):
+            if etag_exists(self, bg_filename):
+                # The file has not changed
+                http_304(self)
+                return True
+
+            tries = 0
+            bg_binary = None
+            while tries < 5:
+                try:
+                    with open(bg_filename, 'rb') as av_file:
+                        bg_binary = av_file.read()
+                        break
+                except OSError as ex:
+                    print('EX: _show_default_profile_background ' +
+                          str(tries) + ' ' + str(ex))
+                    time.sleep(1)
+                    tries += 1
+            if bg_binary:
+                if ext == 'jpg':
+                    ext = 'jpeg'
+                set_headers_etag(self, bg_filename,
+                                 'image/' + ext,
+                                 bg_binary, None,
+                                 self.server.domain_full,
+                                 False, None)
+                write2(self, bg_binary)
+                fitness_performance(getreq_start_time,
+                                    self.server.fitness,
+                                    '_GET',
+                                    '_show_default_profile_background',
+                                    self.server.debug)
+                return True
+            break
+
+    http_404(self, 100)
+    return True
+
+
+def show_background_image(self, path: str,
+                          base_dir: str, getreq_start_time) -> bool:
+    """Show a background image
+    """
+    image_extensions = get_image_extensions()
+    for ext in image_extensions:
+        for bg_im in ('follow', 'options', 'login', 'welcome'):
+            # follow screen background image
+            if path.endswith('/' + bg_im + '-background.' + ext):
+                bg_filename = \
+                    base_dir + '/accounts/' + \
+                    bg_im + '-background.' + ext
+                if os.path.isfile(bg_filename):
+                    if etag_exists(self, bg_filename):
+                        # The file has not changed
+                        http_304(self)
+                        return True
+
+                    tries = 0
+                    bg_binary = None
+                    while tries < 5:
+                        try:
+                            with open(bg_filename, 'rb') as av_file:
+                                bg_binary = av_file.read()
+                                break
+                        except OSError as ex:
+                            print('EX: _show_background_image ' +
+                                  str(tries) + ' ' + str(ex))
+                            time.sleep(1)
+                            tries += 1
+                    if bg_binary:
+                        if ext == 'jpg':
+                            ext = 'jpeg'
+                        set_headers_etag(self, bg_filename,
+                                         'image/' + ext,
+                                         bg_binary, None,
+                                         self.server.domain_full,
+                                         False, None)
+                        write2(self, bg_binary)
+                        fitness_performance(getreq_start_time,
+                                            self.server.fitness,
+                                            '_GET',
+                                            '_show_background_image',
+                                            self.server.debug)
+                        return True
+    http_404(self, 99)
+    return True
