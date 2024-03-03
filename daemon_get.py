@@ -92,7 +92,6 @@ from httpcodes import http_400
 from httpcodes import http_503
 from httpcodes import write2
 from utils import locate_post
-from utils import get_image_mime_type
 from utils import user_agent_domain
 from utils import local_network_host
 from utils import permitted_dir
@@ -193,6 +192,7 @@ from daemon_get_images import show_default_profile_background
 from daemon_get_images import column_image
 from daemon_get_images import search_screen_banner
 from daemon_get_images import show_qrcode
+from daemon_get_images import show_emoji
 from daemon_get_post import show_individual_post
 from daemon_get_post import show_notify_post
 from daemon_get_post import show_replies_to_post
@@ -2420,8 +2420,8 @@ def daemon_http_get(self) -> None:
 
     # emoji images
     if '/emoji/' in self.path:
-        _show_emoji(self, self.path, self.server.base_dir,
-                    getreq_start_time)
+        show_emoji(self, self.path, self.server.base_dir,
+                   getreq_start_time)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -4838,41 +4838,6 @@ def _redirect_to_login_screen(self, calling_domain: str, path: str,
                             debug)
         return True
     return False
-
-
-def _show_emoji(self, path: str,
-                base_dir: str, getreq_start_time) -> None:
-    """Returns an emoji image
-    """
-    if is_image_file(path):
-        emoji_str = path.split('/emoji/')[1]
-        emoji_filename = base_dir + '/emoji/' + emoji_str
-        if not os.path.isfile(emoji_filename):
-            emoji_filename = base_dir + '/emojicustom/' + emoji_str
-        if os.path.isfile(emoji_filename):
-            if etag_exists(self, emoji_filename):
-                # The file has not changed
-                http_304(self)
-                return
-
-            media_image_type = get_image_mime_type(emoji_filename)
-            media_binary = None
-            try:
-                with open(emoji_filename, 'rb') as av_file:
-                    media_binary = av_file.read()
-            except OSError:
-                print('EX: unable to read emoji image ' + emoji_filename)
-            if media_binary:
-                set_headers_etag(self, emoji_filename,
-                                 media_image_type,
-                                 media_binary, None,
-                                 self.server.domain_full,
-                                 False, None)
-                write2(self, media_binary)
-            fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_emoji', self.server.debug)
-            return
-    http_404(self, 36)
 
 
 def _get_ontology(self, calling_domain: str,

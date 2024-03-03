@@ -117,7 +117,7 @@ def show_avatar_or_banner(self, referer_domain: str, path: str,
         write2(self, media_binary)
     fitness_performance(getreq_start_time,
                         self.server.fitness,
-                        '_GET', '_show_avatar_or_banner',
+                        '_GET', 'show_avatar_or_banner',
                         self.server.debug)
     return True
 
@@ -147,7 +147,7 @@ def show_cached_avatar(self, referer_domain: str, path: str,
                              False, None)
             write2(self, media_binary)
             fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_cached_avatar',
+                                '_GET', 'show_cached_avatar',
                                 self.server.debug)
             return
     http_404(self, 46)
@@ -195,7 +195,7 @@ def show_help_screen_image(self, path: str,
                              False, None)
             write2(self, media_binary)
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_help_screen_image',
+                            '_GET', 'show_help_screen_image',
                             self.server.debug)
         return
     http_404(self, 43)
@@ -225,7 +225,7 @@ def show_manual_image(self, path: str,
                          False, None)
         write2(self, media_binary)
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_manual_image',
+                            '_GET', 'show_manual_image',
                             self.server.debug)
         return
     if os.path.isfile(media_filename):
@@ -246,7 +246,7 @@ def show_manual_image(self, path: str,
             write2(self, media_binary)
             self.server.iconsCache[media_filename] = media_binary
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_manual_image',
+                            '_GET', 'show_manual_image',
                             self.server.debug)
         return
     http_404(self, 42)
@@ -276,7 +276,7 @@ def show_specification_image(self, path: str,
                          False, None)
         write2(self, media_binary)
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_specification_image',
+                            '_GET', 'show_specification_image',
                             self.server.debug)
         return
     if os.path.isfile(media_filename):
@@ -297,7 +297,7 @@ def show_specification_image(self, path: str,
             write2(self, media_binary)
             self.server.iconsCache[media_filename] = media_binary
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_specification_image',
+                            '_GET', 'show_specification_image',
                             self.server.debug)
         return
     http_404(self, 40)
@@ -338,7 +338,7 @@ def show_share_image(self, path: str,
         write2(self, media_binary)
     fitness_performance(getreq_start_time,
                         self.server.fitness,
-                        '_GET', '_show_share_image',
+                        '_GET', 'show_share_image',
                         self.server.debug)
     return True
 
@@ -376,7 +376,7 @@ def show_icon(self, path: str,
                          False, None)
         write2(self, media_binary)
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_icon', self.server.debug)
+                            '_GET', 'show_icon', self.server.debug)
         return
     if os.path.isfile(media_filename):
         media_binary = None
@@ -395,7 +395,7 @@ def show_icon(self, path: str,
             write2(self, media_binary)
             self.server.iconsCache[media_str] = media_binary
         fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_icon', self.server.debug)
+                            '_GET', 'show_icon', self.server.debug)
         return
     http_404(self, 38)
 
@@ -444,7 +444,7 @@ def show_media(self, path: str, base_dir: str,
                     write2(self, media_transcript)
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
-                                        '_GET', '_show_media',
+                                        '_GET', 'show_media',
                                         self.server.debug)
                     return
                 http_404(self, 32)
@@ -463,7 +463,7 @@ def show_media(self, path: str, base_dir: str,
                                  last_modified_time_str)
                 write2(self, media_binary)
             fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_media', self.server.debug)
+                                '_GET', 'show_media', self.server.debug)
             return
     http_404(self, 33)
 
@@ -515,7 +515,7 @@ def show_qrcode(self, calling_domain: str, path: str,
             write2(self, media_binary)
             fitness_performance(getreq_start_time,
                                 self.server.fitness,
-                                '_GET', '_show_qrcode',
+                                '_GET', 'show_qrcode',
                                 self.server.debug)
             return True
     http_404(self, 94)
@@ -564,7 +564,7 @@ def search_screen_banner(self, path: str,
             write2(self, media_binary)
             fitness_performance(getreq_start_time,
                                 self.server.fitness,
-                                '_GET', '_search_screen_banner',
+                                '_GET', 'search_screen_banner',
                                 self.server.debug)
             return True
     http_404(self, 96)
@@ -608,7 +608,7 @@ def column_image(self, side: str, path: str, base_dir: str, domain: str,
             write2(self, media_binary)
             fitness_performance(getreq_start_time,
                                 self.server.fitness,
-                                '_GET', '_column_image ' + side,
+                                '_GET', 'column_image ' + side,
                                 self.server.debug)
             return True
     http_404(self, 98)
@@ -654,7 +654,7 @@ def show_default_profile_background(self, base_dir: str, theme_name: str,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET',
-                                    '_show_default_profile_background',
+                                    'show_default_profile_background',
                                     self.server.debug)
                 return True
             break
@@ -705,8 +705,43 @@ def show_background_image(self, path: str,
                         fitness_performance(getreq_start_time,
                                             self.server.fitness,
                                             '_GET',
-                                            '_show_background_image',
+                                            'show_background_image',
                                             self.server.debug)
                         return True
     http_404(self, 99)
     return True
+
+
+def show_emoji(self, path: str,
+               base_dir: str, getreq_start_time) -> None:
+    """Returns an emoji image
+    """
+    if is_image_file(path):
+        emoji_str = path.split('/emoji/')[1]
+        emoji_filename = base_dir + '/emoji/' + emoji_str
+        if not os.path.isfile(emoji_filename):
+            emoji_filename = base_dir + '/emojicustom/' + emoji_str
+        if os.path.isfile(emoji_filename):
+            if etag_exists(self, emoji_filename):
+                # The file has not changed
+                http_304(self)
+                return
+
+            media_image_type = get_image_mime_type(emoji_filename)
+            media_binary = None
+            try:
+                with open(emoji_filename, 'rb') as av_file:
+                    media_binary = av_file.read()
+            except OSError:
+                print('EX: unable to read emoji image ' + emoji_filename)
+            if media_binary:
+                set_headers_etag(self, emoji_filename,
+                                 media_image_type,
+                                 media_binary, None,
+                                 self.server.domain_full,
+                                 False, None)
+                write2(self, media_binary)
+            fitness_performance(getreq_start_time, self.server.fitness,
+                                '_GET', 'show_emoji', self.server.debug)
+            return
+    http_404(self, 36)
