@@ -1479,7 +1479,7 @@ def deactivate_account(base_dir: str, nickname: str, domain: str) -> bool:
     return os.path.isdir(deactivated_dir + '/' + nickname + '@' + domain)
 
 
-def activate_account(base_dir: str, nickname: str, domain: str) -> None:
+def activate_account2(base_dir: str, nickname: str, domain: str) -> None:
     """Makes a deactivated account available
     """
     handle = nickname + '@' + domain

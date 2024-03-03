@@ -19,7 +19,7 @@ from person import create_person
 from person import create_group
 from person import set_profile_image
 from person import remove_account
-from person import activate_account
+from person import activate_account2
 from person import deactivate_account
 from skills import set_skill_level
 from roles import set_role
@@ -3062,7 +3062,7 @@ def _command_options() -> None:
             if not argb.domain or not get_config_param(base_dir, 'domain'):
                 print('Use the --domain option to set the domain name')
                 sys.exit()
-        if activate_account(base_dir, nickname, domain):
+        if activate_account2(base_dir, nickname, domain):
             print('Account for ' + nickname + '@' + domain + ' was activated')
         else:
             print('Deactivated account for ' + nickname + '@' + domain +
