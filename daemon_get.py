@@ -15,7 +15,6 @@ from webfinger import webfinger_lookup
 from webfinger import webfinger_node_info
 from webfinger import webfinger_meta
 from webfinger import wellknown_protocol_handler
-from context import get_individual_post_context
 from pgp import actor_to_vcard
 from pgp import actor_to_vcard_xml
 from siteactive import referer_is_active
@@ -27,7 +26,6 @@ from blog import path_contains_blog_link
 from blog import html_blog_view
 from speaker import get_ssml_box
 from follow import pending_followers_timeline_json
-from follow import get_following_feed
 from blocking import broch_mode_is_active
 from blocking import remove_global_block
 from blocking import update_blocked_cache
@@ -128,7 +126,6 @@ from shares import authorize_shared_items
 from shares import shares_catalog_endpoint
 from shares import shares_catalog_account_endpoint
 from shares import shares_catalog_csv_endpoint
-from posts import json_pin_post
 from posts import is_moderator
 from posts import get_pinned_post_as_json
 from posts import outbox_message_create_wrap
@@ -207,6 +204,9 @@ from daemon_get_post import show_announcers_of_post
 from daemon_get_post import show_likers_of_post
 from daemon_get_post import show_individual_at_post
 from daemon_get_post import show_new_post
+from daemon_get_collections import get_featured_collection
+from daemon_get_collections import get_featured_tags_collection
+from daemon_get_collections import get_following_json
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -1383,35 +1383,35 @@ def daemon_http_get(self) -> None:
 
     if authorized and not html_getreq and users_in_path:
         if '/following?page=' in self.path:
-            _get_following_json(self, self.server.base_dir,
-                                self.path,
-                                calling_domain, referer_domain,
-                                self.server.http_prefix,
-                                self.server.domain,
-                                self.server.port,
-                                self.server.followingItemsPerPage,
-                                self.server.debug, 'following')
+            get_following_json(self, self.server.base_dir,
+                               self.path,
+                               calling_domain, referer_domain,
+                               self.server.http_prefix,
+                               self.server.domain,
+                               self.server.port,
+                               self.server.followingItemsPerPage,
+                               self.server.debug, 'following')
             return
         if '/followers?page=' in self.path:
-            _get_following_json(self, self.server.base_dir,
-                                self.path,
-                                calling_domain, referer_domain,
-                                self.server.http_prefix,
-                                self.server.domain,
-                                self.server.port,
-                                self.server.followingItemsPerPage,
-                                self.server.debug, 'followers')
+            get_following_json(self, self.server.base_dir,
+                               self.path,
+                               calling_domain, referer_domain,
+                               self.server.http_prefix,
+                               self.server.domain,
+                               self.server.port,
+                               self.server.followingItemsPerPage,
+                               self.server.debug, 'followers')
             return
         if '/followrequests?page=' in self.path:
-            _get_following_json(self, self.server.base_dir,
-                                self.path,
-                                calling_domain, referer_domain,
-                                self.server.http_prefix,
-                                self.server.domain,
-                                self.server.port,
-                                self.server.followingItemsPerPage,
-                                self.server.debug,
-                                'followrequests')
+            get_following_json(self, self.server.base_dir,
+                               self.path,
+                               calling_domain, referer_domain,
+                               self.server.http_prefix,
+                               self.server.domain,
+                               self.server.port,
+                               self.server.followingItemsPerPage,
+                               self.server.debug,
+                               'followrequests')
             return
 
     # authorized endpoint used for TTS of posts
@@ -1536,25 +1536,25 @@ def daemon_http_get(self) -> None:
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         # return the featured posts collection
-        _get_featured_collection(self, calling_domain, referer_domain,
-                                 self.server.base_dir,
-                                 self.server.http_prefix,
-                                 nickname, self.server.domain,
-                                 self.server.domain_full,
-                                 self.server.system_language)
+        get_featured_collection(self, calling_domain, referer_domain,
+                                self.server.base_dir,
+                                self.server.http_prefix,
+                                nickname, self.server.domain,
+                                self.server.domain_full,
+                                self.server.system_language)
         return
 
     if not html_getreq and \
        users_in_path and self.path.endswith('/collections/featuredTags'):
-        _get_featured_tags_collection(self, calling_domain, referer_domain,
-                                      self.path,
-                                      self.server.http_prefix,
-                                      self.server.domain_full,
-                                      self.server.domain)
+        get_featured_tags_collection(self, calling_domain, referer_domain,
+                                     self.path,
+                                     self.server.http_prefix,
+                                     self.server.domain_full,
+                                     self.server.domain)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_get_featured_tags_collection done',
+                        '_GET', 'get_featured_tags_collection done',
                         self.server.debug)
 
     # show a performance graph
@@ -4684,40 +4684,6 @@ def _show_conversation_thread(self, authorized: bool,
     return True
 
 
-def _get_following_json(self, base_dir: str, path: str,
-                        calling_domain: str, referer_domain: str,
-                        http_prefix: str,
-                        domain: str, port: int,
-                        following_items_per_page: int,
-                        debug: bool, list_name: str = 'following') -> None:
-    """Returns json collection for following.txt
-    """
-    following_json = \
-        get_following_feed(base_dir, domain, port, path, http_prefix,
-                           True, following_items_per_page, list_name)
-    if not following_json:
-        if debug:
-            print(list_name + ' json feed not found for ' + path)
-        http_404(self, 109)
-        return
-    msg_str = json.dumps(following_json,
-                         ensure_ascii=False)
-    msg_str = convert_domains(calling_domain,
-                              referer_domain,
-                              msg_str, http_prefix,
-                              domain,
-                              self.server.onion_domain,
-                              self.server.i2p_domain)
-    msg = msg_str.encode('utf-8')
-    msglen = len(msg)
-    accept_str = self.headers['Accept']
-    protocol_str = \
-        get_json_content_from_accept(accept_str)
-    set_headers(self, protocol_str, msglen,
-                None, calling_domain, False)
-    write2(self, msg)
-
-
 def _get_speaker(self, calling_domain: str, referer_domain: str,
                  path: str, base_dir: str, domain: str) -> None:
     """Returns the speaker file used for TTS and
@@ -4745,72 +4711,6 @@ def _get_speaker(self, calling_domain: str, referer_domain: str,
     msglen = len(msg)
     protocol_str = \
         get_json_content_from_accept(self.headers['Accept'])
-    set_headers(self, protocol_str, msglen,
-                None, calling_domain, False)
-    write2(self, msg)
-
-
-def _get_featured_collection(self, calling_domain: str,
-                             referer_domain: str,
-                             base_dir: str,
-                             http_prefix: str,
-                             nickname: str, domain: str,
-                             domain_full: str,
-                             system_language: str) -> None:
-    """Returns the featured posts collections in
-    actor/collections/featured
-    """
-    featured_collection = \
-        json_pin_post(base_dir, http_prefix,
-                      nickname, domain, domain_full, system_language)
-    msg_str = json.dumps(featured_collection,
-                         ensure_ascii=False)
-    msg_str = convert_domains(calling_domain,
-                              referer_domain,
-                              msg_str, http_prefix,
-                              domain,
-                              self.server.onion_domain,
-                              self.server.i2p_domain)
-    msg = msg_str.encode('utf-8')
-    msglen = len(msg)
-    accept_str = self.headers['Accept']
-    protocol_str = \
-        get_json_content_from_accept(accept_str)
-    set_headers(self, protocol_str, msglen,
-                None, calling_domain, False)
-    write2(self, msg)
-
-
-def _get_featured_tags_collection(self, calling_domain: str,
-                                  referer_domain: str,
-                                  path: str,
-                                  http_prefix: str,
-                                  domain_full: str,
-                                  domain: str):
-    """Returns the featured tags collections in
-    actor/collections/featuredTags
-    """
-    post_context = get_individual_post_context()
-    featured_tags_collection = {
-        '@context': post_context,
-        'id': http_prefix + '://' + domain_full + path,
-        'orderedItems': [],
-        'totalItems': 0,
-        'type': 'OrderedCollection'
-    }
-    msg_str = json.dumps(featured_tags_collection,
-                         ensure_ascii=False)
-    msg_str = convert_domains(calling_domain,
-                              referer_domain,
-                              msg_str, http_prefix,
-                              domain,
-                              self.server.onion_domain,
-                              self.server.i2p_domain)
-    msg = msg_str.encode('utf-8')
-    msglen = len(msg)
-    accept_str = self.headers['Accept']
-    protocol_str = \
-        get_json_content_from_accept(accept_str)
     set_headers(self, protocol_str, msglen,
                 None, calling_domain, False)
     write2(self, msg)
