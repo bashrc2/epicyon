@@ -41,14 +41,11 @@ from crawlers import blocked_user_agent
 from session import get_session_for_domain
 from session import establish_session
 from fitnessFunctions import fitness_performance
-from shares import add_shares_to_actor
-from shares import remove_shared_item2
 from shares import update_shared_item_federation_token
 from inbox import populate_replies
 from inbox import inbox_message_has_params
 from inbox import inbox_permitted_message
 from httpsig import getheader_signature_input
-from person import get_actor_update_json
 from content import extract_text_fields_in_post
 from filters import is_filtered
 from categories import set_hashtag_category
@@ -61,19 +58,12 @@ from daemon_utils import get_user_agent
 from daemon_utils import post_to_outbox
 from daemon_utils import update_inbox_queue
 from daemon_utils import is_authorized
-from posts import is_moderator
-from cache import store_person_in_cache
-from cache import remove_person_from_cache
-from cache import get_person_from_cache
 from theme import reset_theme_designer_settings
 from theme import set_theme
 from theme import set_theme_from_designer
 from languages import get_understood_languages
-from daemon_utils import post_to_outbox_thread
-from reading import remove_reading_event
 from city import get_spoofed_city
 from posts import create_direct_message_post
-from happening import remove_calendar_event
 from daemon_post_login import post_login_screen
 from daemon_post_receive import receive_new_post
 from daemon_post_profile import profile_edit
@@ -87,6 +77,10 @@ from daemon_post_confirm import unblock_confirm
 from daemon_post_newswire import newswire_update
 from daemon_post_newswire import citations_update
 from daemon_post_newswire import news_post_edit
+from daemon_post_remove import remove_reading_status
+from daemon_post_remove import remove_share
+from daemon_post_remove import remove_wanted
+from daemon_post_remove import receive_remove_post
 
 # maximum number of posts in a hashtag feed
 MAX_POSTS_IN_HASHTAG_FEED = 6
@@ -402,31 +396,31 @@ def daemon_http_post(self) -> None:
 
         # removes a shared item
         if self.path.endswith('/rmshare'):
-            _remove_share(self, calling_domain, cookie,
-                          authorized, self.path,
-                          self.server.base_dir,
-                          self.server.http_prefix,
-                          self.server.domain_full,
-                          self.server.onion_domain,
-                          self.server.i2p_domain,
-                          curr_session, proxy_type)
+            remove_share(self, calling_domain, cookie,
+                         authorized, self.path,
+                         self.server.base_dir,
+                         self.server.http_prefix,
+                         self.server.domain_full,
+                         self.server.onion_domain,
+                         self.server.i2p_domain,
+                         curr_session, proxy_type)
             self.server.postreq_busy = False
             return
 
         # removes a wanted item
         if self.path.endswith('/rmwanted'):
-            _remove_wanted(self, calling_domain, cookie,
-                           authorized, self.path,
-                           self.server.base_dir,
-                           self.server.http_prefix,
-                           self.server.domain_full,
-                           self.server.onion_domain,
-                           self.server.i2p_domain)
+            remove_wanted(self, calling_domain, cookie,
+                          authorized, self.path,
+                          self.server.base_dir,
+                          self.server.http_prefix,
+                          self.server.domain_full,
+                          self.server.onion_domain,
+                          self.server.i2p_domain)
             self.server.postreq_busy = False
             return
 
         fitness_performance(postreq_start_time, self.server.fitness,
-                            '_POST', '_remove_wanted',
+                            '_POST', 'remove_wanted',
                             self.server.debug)
 
         # removes a post
@@ -438,15 +432,15 @@ def daemon_http_post(self) -> None:
                 self.server.postreq_busy = False
                 return
         if self.path.endswith('/rmpost'):
-            _receive_remove_post(self, calling_domain, cookie,
-                                 self.path,
-                                 self.server.base_dir,
-                                 self.server.http_prefix,
-                                 self.server.domain,
-                                 self.server.domain_full,
-                                 self.server.onion_domain,
-                                 self.server.i2p_domain,
-                                 curr_session, proxy_type)
+            receive_remove_post(self, calling_domain, cookie,
+                                self.path,
+                                self.server.base_dir,
+                                self.server.http_prefix,
+                                self.server.domain,
+                                self.server.domain_full,
+                                self.server.onion_domain,
+                                self.server.i2p_domain,
+                                curr_session, proxy_type)
             self.server.postreq_busy = False
             return
 
@@ -477,20 +471,20 @@ def daemon_http_post(self) -> None:
 
         # remove a reading status from the profile screen
         if self.path.endswith('/removereadingstatus'):
-            _remove_reading_status(self, calling_domain, cookie,
-                                   self.path,
-                                   self.server.base_dir,
-                                   self.server.http_prefix,
-                                   self.server.domain_full,
-                                   self.server.onion_domain,
-                                   self.server.i2p_domain,
-                                   self.server.debug,
-                                   self.server.books_cache)
+            remove_reading_status(self, calling_domain, cookie,
+                                  self.path,
+                                  self.server.base_dir,
+                                  self.server.http_prefix,
+                                  self.server.domain_full,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain,
+                                  self.server.debug,
+                                  self.server.books_cache)
             self.server.postreq_busy = False
             return
 
         fitness_performance(postreq_start_time, self.server.fitness,
-                            '_POST', '_remove_reading_status',
+                            '_POST', 'remove_reading_status',
                             self.server.debug)
 
         # decision to unfollow in the web interface is confirmed
@@ -1286,80 +1280,6 @@ def _theme_designer_edit(self, calling_domain: str, cookie: str,
     return
 
 
-def _remove_reading_status(self, calling_domain: str, cookie: str,
-                           path: str, base_dir: str, http_prefix: str,
-                           domain_full: str,
-                           onion_domain: str, i2p_domain: str,
-                           debug: bool,
-                           books_cache: {}) -> None:
-    """Remove a reading status from the profile screen
-    """
-    users_path = path.split('/removereadingstatus')[0]
-    origin_path_str = http_prefix + '://' + domain_full + users_path
-    reader_nickname = get_nickname_from_actor(origin_path_str)
-    if not reader_nickname:
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    length = int(self.headers['Content-length'])
-
-    try:
-        remove_reading_status_params = \
-            self.rfile.read(length).decode('utf-8')
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: POST remove_reading_status_params ' +
-                  'connection was reset')
-        else:
-            print('EX: POST remove_reading_status_params socket error')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: POST remove_reading_status_params rfile.read failed, ' +
-              str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    if '&submitRemoveReadingStatus=' in remove_reading_status_params:
-        reading_actor = \
-            urllib.parse.unquote_plus(remove_reading_status_params)
-        reading_actor = reading_actor.split('actor=')[1]
-        if '&' in reading_actor:
-            reading_actor = reading_actor.split('&')[0]
-
-        if reading_actor == origin_path_str:
-            post_secs_since_epoch = \
-                urllib.parse.unquote_plus(remove_reading_status_params)
-            post_secs_since_epoch = \
-                post_secs_since_epoch.split('publishedtimesec=')[1]
-            if '&' in post_secs_since_epoch:
-                post_secs_since_epoch = post_secs_since_epoch.split('&')[0]
-
-            book_event_type = \
-                urllib.parse.unquote_plus(remove_reading_status_params)
-            book_event_type = \
-                book_event_type.split('bookeventtype=')[1]
-            if '&' in book_event_type:
-                book_event_type = book_event_type.split('&')[0]
-
-            remove_reading_event(base_dir,
-                                 reading_actor, post_secs_since_epoch,
-                                 book_event_type, books_cache, debug)
-
-    if calling_domain.endswith('.onion') and onion_domain:
-        origin_path_str = 'http://' + onion_domain + users_path
-    elif (calling_domain.endswith('.i2p') and i2p_domain):
-        origin_path_str = 'http://' + i2p_domain + users_path
-    redirect_headers(self, origin_path_str, cookie, calling_domain)
-    self.server.postreq_busy = False
-
-
 def _send_reply_to_question(self, base_dir: str,
                             http_prefix: str,
                             nickname: str, domain: str,
@@ -1557,319 +1477,6 @@ def _receive_image(self, length: int, path: str, base_dir: str,
         print('DEBUG: image saved to ' + media_filename)
     self.send_response(201)
     self.end_headers()
-    self.server.postreq_busy = False
-
-
-def _remove_share(self, calling_domain: str, cookie: str,
-                  authorized: bool, path: str,
-                  base_dir: str, http_prefix: str, domain_full: str,
-                  onion_domain: str, i2p_domain: str,
-                  curr_session, proxy_type: str) -> None:
-    """Removes a shared item
-    """
-    users_path = path.split('/rmshare')[0]
-    origin_path_str = http_prefix + '://' + domain_full + users_path
-
-    length = int(self.headers['Content-length'])
-
-    try:
-        remove_share_confirm_params = \
-            self.rfile.read(length).decode('utf-8')
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: POST remove_share_confirm_params ' +
-                  'connection was reset')
-        else:
-            print('EX: POST remove_share_confirm_params socket error')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: POST remove_share_confirm_params ' +
-              'rfile.read failed, ' + str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    if '&submitYes=' in remove_share_confirm_params and authorized:
-        remove_share_confirm_params = \
-            remove_share_confirm_params.replace('+', ' ').strip()
-        remove_share_confirm_params = \
-            urllib.parse.unquote_plus(remove_share_confirm_params)
-        share_actor = remove_share_confirm_params.split('actor=')[1]
-        if '&' in share_actor:
-            share_actor = share_actor.split('&')[0]
-        admin_nickname = get_config_param(base_dir, 'admin')
-        admin_actor = \
-            local_actor_url(http_prefix, admin_nickname, domain_full)
-        actor = origin_path_str
-        actor_nickname = get_nickname_from_actor(actor)
-        if not actor_nickname:
-            self.send_response(400)
-            self.end_headers()
-            self.server.postreq_busy = False
-            return
-        if actor == share_actor or actor == admin_actor or \
-           is_moderator(base_dir, actor_nickname):
-            item_id = remove_share_confirm_params.split('itemID=')[1]
-            if '&' in item_id:
-                item_id = item_id.split('&')[0]
-            share_nickname = get_nickname_from_actor(share_actor)
-            share_domain, _ = \
-                get_domain_from_actor(share_actor)
-            if share_nickname and share_domain:
-                remove_shared_item2(base_dir,
-                                    share_nickname, share_domain, item_id,
-                                    'shares')
-                # remove shared items from the actor attachments
-                # https://codeberg.org/fediverse/fep/
-                # src/branch/main/fep/0837/fep-0837.md
-                actor = \
-                    get_instance_url(calling_domain,
-                                     self.server.http_prefix,
-                                     self.server.domain_full,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain) + \
-                    '/users/' + share_nickname
-                person_cache = self.server.person_cache
-                actor_json = get_person_from_cache(base_dir,
-                                                   actor, person_cache)
-                if not actor_json:
-                    actor_filename = \
-                        acct_dir(base_dir, share_nickname,
-                                 share_domain) + '.json'
-                    if os.path.isfile(actor_filename):
-                        actor_json = load_json(actor_filename, 1, 1)
-                if actor_json:
-                    max_shares_on_profile = \
-                        self.server.max_shares_on_profile
-                    if add_shares_to_actor(base_dir,
-                                           share_nickname, share_domain,
-                                           actor_json,
-                                           max_shares_on_profile):
-                        remove_person_from_cache(base_dir, actor,
-                                                 person_cache)
-                        store_person_in_cache(base_dir, actor,
-                                              actor_json,
-                                              person_cache, True)
-                        actor_filename = acct_dir(base_dir, share_nickname,
-                                                  share_domain) + '.json'
-                        save_json(actor_json, actor_filename)
-                        # send profile update to followers
-
-                        update_actor_json = \
-                            get_actor_update_json(actor_json)
-                        print('Sending actor update ' +
-                              'after change to attached shares 2: ' +
-                              str(update_actor_json))
-                        post_to_outbox(self, update_actor_json,
-                                       self.server.project_version,
-                                       share_nickname,
-                                       curr_session,
-                                       proxy_type)
-
-    if calling_domain.endswith('.onion') and onion_domain:
-        origin_path_str = 'http://' + onion_domain + users_path
-    elif (calling_domain.endswith('.i2p') and i2p_domain):
-        origin_path_str = 'http://' + i2p_domain + users_path
-    redirect_headers(self, origin_path_str + '/tlshares',
-                     cookie, calling_domain)
-    self.server.postreq_busy = False
-
-
-def _remove_wanted(self, calling_domain: str, cookie: str,
-                   authorized: bool, path: str,
-                   base_dir: str, http_prefix: str,
-                   domain_full: str,
-                   onion_domain: str, i2p_domain: str) -> None:
-    """Removes a wanted item
-    """
-    users_path = path.split('/rmwanted')[0]
-    origin_path_str = http_prefix + '://' + domain_full + users_path
-
-    length = int(self.headers['Content-length'])
-
-    try:
-        remove_share_confirm_params = \
-            self.rfile.read(length).decode('utf-8')
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: POST remove_share_confirm_params ' +
-                  'connection was reset')
-        else:
-            print('EX: POST remove_share_confirm_params socket error')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: POST remove_share_confirm_params ' +
-              'rfile.read failed, ' + str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    if '&submitYes=' in remove_share_confirm_params and authorized:
-        remove_share_confirm_params = \
-            remove_share_confirm_params.replace('+', ' ').strip()
-        remove_share_confirm_params = \
-            urllib.parse.unquote_plus(remove_share_confirm_params)
-        share_actor = remove_share_confirm_params.split('actor=')[1]
-        if '&' in share_actor:
-            share_actor = share_actor.split('&')[0]
-        admin_nickname = get_config_param(base_dir, 'admin')
-        admin_actor = \
-            local_actor_url(http_prefix, admin_nickname, domain_full)
-        actor = origin_path_str
-        actor_nickname = get_nickname_from_actor(actor)
-        if not actor_nickname:
-            self.send_response(400)
-            self.end_headers()
-            self.server.postreq_busy = False
-            return
-        if actor == share_actor or actor == admin_actor or \
-           is_moderator(base_dir, actor_nickname):
-            item_id = remove_share_confirm_params.split('itemID=')[1]
-            if '&' in item_id:
-                item_id = item_id.split('&')[0]
-            share_nickname = get_nickname_from_actor(share_actor)
-            share_domain, _ = \
-                get_domain_from_actor(share_actor)
-            if share_nickname and share_domain:
-                remove_shared_item2(base_dir,
-                                    share_nickname, share_domain, item_id,
-                                    'wanted')
-
-    if calling_domain.endswith('.onion') and onion_domain:
-        origin_path_str = 'http://' + onion_domain + users_path
-    elif (calling_domain.endswith('.i2p') and i2p_domain):
-        origin_path_str = 'http://' + i2p_domain + users_path
-    redirect_headers(self, origin_path_str + '/tlwanted',
-                     cookie, calling_domain)
-    self.server.postreq_busy = False
-
-
-def _receive_remove_post(self, calling_domain: str, cookie: str,
-                         path: str, base_dir: str, http_prefix: str,
-                         domain: str, domain_full: str,
-                         onion_domain: str, i2p_domain: str,
-                         curr_session, proxy_type: str) -> None:
-    """Endpoint for removing posts after confirmation
-    """
-    page_number = 1
-    users_path = path.split('/rmpost')[0]
-    origin_path_str = \
-        http_prefix + '://' + \
-        domain_full + users_path
-
-    length = int(self.headers['Content-length'])
-
-    try:
-        remove_post_confirm_params = \
-            self.rfile.read(length).decode('utf-8')
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: POST remove_post_confirm_params ' +
-                  'connection was reset')
-        else:
-            print('EX: POST remove_post_confirm_params socket error')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: POST remove_post_confirm_params ' +
-              'rfile.read failed, ' + str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    if '&submitYes=' in remove_post_confirm_params:
-        remove_post_confirm_params = \
-            urllib.parse.unquote_plus(remove_post_confirm_params)
-        if 'messageId=' in remove_post_confirm_params:
-            remove_message_id = \
-                remove_post_confirm_params.split('messageId=')[1]
-        elif 'eventid=' in remove_post_confirm_params:
-            remove_message_id = \
-                remove_post_confirm_params.split('eventid=')[1]
-        else:
-            self.send_response(400)
-            self.end_headers()
-            self.server.postreq_busy = False
-            return
-        if '&' in remove_message_id:
-            remove_message_id = remove_message_id.split('&')[0]
-        print('remove_message_id: ' + remove_message_id)
-        if 'pageNumber=' in remove_post_confirm_params:
-            page_number_str = \
-                remove_post_confirm_params.split('pageNumber=')[1]
-            if '&' in page_number_str:
-                page_number_str = page_number_str.split('&')[0]
-            if len(page_number_str) > 5:
-                page_number_str = "1"
-            if page_number_str.isdigit():
-                page_number = int(page_number_str)
-        year_str = None
-        if 'year=' in remove_post_confirm_params:
-            year_str = remove_post_confirm_params.split('year=')[1]
-            if '&' in year_str:
-                year_str = year_str.split('&')[0]
-        month_str = None
-        if 'month=' in remove_post_confirm_params:
-            month_str = remove_post_confirm_params.split('month=')[1]
-            if '&' in month_str:
-                month_str = month_str.split('&')[0]
-        if '/statuses/' in remove_message_id:
-            remove_post_actor = remove_message_id.split('/statuses/')[0]
-        print('origin_path_str: ' + origin_path_str)
-        print('remove_post_actor: ' + remove_post_actor)
-        if origin_path_str in remove_post_actor:
-            to_list = [
-                'https://www.w3.org/ns/activitystreams#Public',
-                remove_post_actor
-            ]
-            delete_json = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'actor': remove_post_actor,
-                'object': remove_message_id,
-                'to': to_list,
-                'cc': [remove_post_actor + '/followers'],
-                'type': 'Delete'
-            }
-            self.post_to_nickname = \
-                get_nickname_from_actor(remove_post_actor)
-            if self.post_to_nickname:
-                if month_str and year_str:
-                    if len(month_str) <= 3 and \
-                       len(year_str) <= 3 and \
-                       month_str.isdigit() and \
-                       year_str.isdigit():
-                        year_int = int(year_str)
-                        month_int = int(month_str)
-                        remove_calendar_event(base_dir,
-                                              self.post_to_nickname,
-                                              domain, year_int,
-                                              month_int,
-                                              remove_message_id)
-                post_to_outbox_thread(self, delete_json,
-                                      curr_session, proxy_type)
-    if calling_domain.endswith('.onion') and onion_domain:
-        origin_path_str = 'http://' + onion_domain + users_path
-    elif (calling_domain.endswith('.i2p') and i2p_domain):
-        origin_path_str = 'http://' + i2p_domain + users_path
-    if page_number == 1:
-        redirect_headers(self, origin_path_str + '/outbox', cookie,
-                         calling_domain)
-    else:
-        page_number_str = str(page_number)
-        actor_path_str = \
-            origin_path_str + '/outbox?page=' + page_number_str
-        redirect_headers(self, actor_path_str,
-                         cookie, calling_domain)
     self.server.postreq_busy = False
 
 
