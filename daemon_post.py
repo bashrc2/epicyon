@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import time
-import copy
 import errno
 import json
 import os
@@ -227,7 +226,7 @@ from schedule import remove_scheduled_posts
 from cwlists import get_cw_list_variable
 from webfinger import webfinger_update
 from daemon_post_login import post_login_screen
-from daemon_post_receive import receive_new_post_process
+from daemon_post_receive import receive_new_post
 
 # maximum number of posts in a hashtag feed
 MAX_POSTS_IN_HASHTAG_FEED = 6
@@ -828,10 +827,10 @@ def daemon_http_post(self) -> None:
             post_redirect = 'tlwanted'
 
         page_number = \
-            _receive_new_post(self, curr_post_type, self.path,
-                              calling_domain, cookie,
-                              self.server.content_license_url,
-                              curr_session, proxy_type)
+            receive_new_post(self, curr_post_type, self.path,
+                             calling_domain, cookie,
+                             self.server.content_license_url,
+                             curr_session, proxy_type)
         if page_number:
             print(curr_post_type + ' post received')
             nickname = self.path.split('/users/')[1]
@@ -7335,121 +7334,6 @@ def _profile_edit(self, calling_domain: str, cookie: str,
     redirect_headers(self, actor_str + redirect_path,
                      cookie, calling_domain)
     self.server.postreq_busy = False
-
-
-def _receive_new_post(self, post_type: str, path: str,
-                      calling_domain: str, cookie: str,
-                      content_license_url: str,
-                      curr_session, proxy_type: str) -> int:
-    """A new post has been created
-    This creates a thread to send the new post
-    """
-    page_number = 1
-    original_path = path
-
-    if '/users/' not in path:
-        print('Not receiving new post for ' + path +
-              ' because /users/ not in path')
-        return None
-
-    if '?' + post_type + '?' not in path:
-        print('Not receiving new post for ' + path +
-              ' because ?' + post_type + '? not in path')
-        return None
-
-    print('New post begins: ' + post_type + ' ' + path)
-
-    if '?page=' in path:
-        page_number_str = path.split('?page=')[1]
-        if '?' in page_number_str:
-            page_number_str = page_number_str.split('?')[0]
-        if '#' in page_number_str:
-            page_number_str = page_number_str.split('#')[0]
-        if len(page_number_str) > 5:
-            page_number_str = "1"
-        if page_number_str.isdigit():
-            page_number = int(page_number_str)
-            path = path.split('?page=')[0]
-
-    # get the username who posted
-    new_post_thread_name = None
-    if '/users/' in path:
-        new_post_thread_name = path.split('/users/')[1]
-        if '/' in new_post_thread_name:
-            new_post_thread_name = new_post_thread_name.split('/')[0]
-    if not new_post_thread_name:
-        new_post_thread_name = '*'
-
-    if self.server.new_post_thread.get(new_post_thread_name):
-        print('Waiting for previous new post thread to end')
-        wait_ctr = 0
-        np_thread = self.server.new_post_thread[new_post_thread_name]
-        while np_thread.is_alive() and wait_ctr < 8:
-            time.sleep(1)
-            wait_ctr += 1
-        if wait_ctr >= 8:
-            print('Killing previous new post thread for ' +
-                  new_post_thread_name)
-            np_thread.kill()
-
-    # make a copy of self.headers
-    headers = copy.deepcopy(self.headers)
-    headers_without_cookie = copy.deepcopy(headers)
-    if 'cookie' in headers_without_cookie:
-        del headers_without_cookie['cookie']
-    if 'Cookie' in headers_without_cookie:
-        del headers_without_cookie['Cookie']
-    print('New post headers: ' + str(headers_without_cookie))
-
-    length = int(headers['Content-Length'])
-    if length > self.server.max_post_length:
-        print('POST size too large')
-        return None
-
-    if not headers.get('Content-Type'):
-        if headers.get('Content-type'):
-            headers['Content-Type'] = headers['Content-type']
-        elif headers.get('content-type'):
-            headers['Content-Type'] = headers['content-type']
-    if headers.get('Content-Type'):
-        if ' boundary=' in headers['Content-Type']:
-            boundary = headers['Content-Type'].split('boundary=')[1]
-            if ';' in boundary:
-                boundary = boundary.split(';')[0]
-
-            try:
-                post_bytes = self.rfile.read(length)
-            except SocketError as ex:
-                if ex.errno == errno.ECONNRESET:
-                    print('WARN: POST post_bytes ' +
-                          'connection reset by peer')
-                else:
-                    print('WARN: POST post_bytes socket error')
-                return None
-            except ValueError as ex:
-                print('EX: POST post_bytes rfile.read failed, ' +
-                      str(ex))
-                return None
-
-            # second length check from the bytes received
-            # since Content-Length could be untruthful
-            length = len(post_bytes)
-            if length > self.server.max_post_length:
-                print('POST size too large')
-                return None
-
-            # Note sending new posts needs to be synchronous,
-            # otherwise any attachments can get mangled if
-            # other events happen during their decoding
-            print('Creating new post from: ' + new_post_thread_name)
-            receive_new_post_process(self, post_type,
-                                     original_path,
-                                     headers, length,
-                                     post_bytes, boundary,
-                                     calling_domain, cookie,
-                                     content_license_url,
-                                     curr_session, proxy_type)
-    return page_number
 
 
 def _set_hashtag_category2(self, calling_domain: str, cookie: str,

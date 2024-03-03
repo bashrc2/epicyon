@@ -9,6 +9,9 @@ __module_group__ = "Core"
 
 import os
 import time
+import copy
+import errno
+from socket import error as SocketError
 from shares import add_share
 from languages import get_understood_languages
 from languages import set_default_post_language
@@ -59,11 +62,11 @@ from shares import add_shares_to_actor
 from person import get_actor_update_json
 
 
-def receive_new_post_process(self, post_type: str, path: str, headers: {},
-                             length: int, post_bytes, boundary: str,
-                             calling_domain: str, cookie: str,
-                             content_license_url: str,
-                             curr_session, proxy_type: str) -> int:
+def _receive_new_post_process(self, post_type: str, path: str, headers: {},
+                              length: int, post_bytes, boundary: str,
+                              calling_domain: str, cookie: str,
+                              content_license_url: str,
+                              curr_session, proxy_type: str) -> int:
     # Note: this needs to happen synchronously
     # 0=this is not a new post
     # 1=new post success
@@ -1562,3 +1565,118 @@ def receive_new_post_process(self, post_type: str, path: str, headers: {},
             self.post_to_nickname = nickname
             return 1
     return -1
+
+
+def receive_new_post(self, post_type: str, path: str,
+                     calling_domain: str, cookie: str,
+                     content_license_url: str,
+                     curr_session, proxy_type: str) -> int:
+    """A new post has been created
+    This creates a thread to send the new post
+    """
+    page_number = 1
+    original_path = path
+
+    if '/users/' not in path:
+        print('Not receiving new post for ' + path +
+              ' because /users/ not in path')
+        return None
+
+    if '?' + post_type + '?' not in path:
+        print('Not receiving new post for ' + path +
+              ' because ?' + post_type + '? not in path')
+        return None
+
+    print('New post begins: ' + post_type + ' ' + path)
+
+    if '?page=' in path:
+        page_number_str = path.split('?page=')[1]
+        if '?' in page_number_str:
+            page_number_str = page_number_str.split('?')[0]
+        if '#' in page_number_str:
+            page_number_str = page_number_str.split('#')[0]
+        if len(page_number_str) > 5:
+            page_number_str = "1"
+        if page_number_str.isdigit():
+            page_number = int(page_number_str)
+            path = path.split('?page=')[0]
+
+    # get the username who posted
+    new_post_thread_name = None
+    if '/users/' in path:
+        new_post_thread_name = path.split('/users/')[1]
+        if '/' in new_post_thread_name:
+            new_post_thread_name = new_post_thread_name.split('/')[0]
+    if not new_post_thread_name:
+        new_post_thread_name = '*'
+
+    if self.server.new_post_thread.get(new_post_thread_name):
+        print('Waiting for previous new post thread to end')
+        wait_ctr = 0
+        np_thread = self.server.new_post_thread[new_post_thread_name]
+        while np_thread.is_alive() and wait_ctr < 8:
+            time.sleep(1)
+            wait_ctr += 1
+        if wait_ctr >= 8:
+            print('Killing previous new post thread for ' +
+                  new_post_thread_name)
+            np_thread.kill()
+
+    # make a copy of self.headers
+    headers = copy.deepcopy(self.headers)
+    headers_without_cookie = copy.deepcopy(headers)
+    if 'cookie' in headers_without_cookie:
+        del headers_without_cookie['cookie']
+    if 'Cookie' in headers_without_cookie:
+        del headers_without_cookie['Cookie']
+    print('New post headers: ' + str(headers_without_cookie))
+
+    length = int(headers['Content-Length'])
+    if length > self.server.max_post_length:
+        print('POST size too large')
+        return None
+
+    if not headers.get('Content-Type'):
+        if headers.get('Content-type'):
+            headers['Content-Type'] = headers['Content-type']
+        elif headers.get('content-type'):
+            headers['Content-Type'] = headers['content-type']
+    if headers.get('Content-Type'):
+        if ' boundary=' in headers['Content-Type']:
+            boundary = headers['Content-Type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            try:
+                post_bytes = self.rfile.read(length)
+            except SocketError as ex:
+                if ex.errno == errno.ECONNRESET:
+                    print('WARN: POST post_bytes ' +
+                          'connection reset by peer')
+                else:
+                    print('WARN: POST post_bytes socket error')
+                return None
+            except ValueError as ex:
+                print('EX: POST post_bytes rfile.read failed, ' +
+                      str(ex))
+                return None
+
+            # second length check from the bytes received
+            # since Content-Length could be untruthful
+            length = len(post_bytes)
+            if length > self.server.max_post_length:
+                print('POST size too large')
+                return None
+
+            # Note sending new posts needs to be synchronous,
+            # otherwise any attachments can get mangled if
+            # other events happen during their decoding
+            print('Creating new post from: ' + new_post_thread_name)
+            _receive_new_post_process(self, post_type,
+                                      original_path,
+                                      headers, length,
+                                      post_bytes, boundary,
+                                      calling_domain, cookie,
+                                      content_license_url,
+                                      curr_session, proxy_type)
+    return page_number
