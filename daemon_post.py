@@ -22,10 +22,8 @@ from utils import get_image_extension_from_mime_type
 from utils import remove_post_from_cache
 from utils import get_cached_post_filename
 from utils import text_in_file
-from utils import has_users_path
 from utils import has_group_type
 from utils import get_status_number
-from utils import remove_eol
 from utils import load_json
 from utils import save_json
 from utils import delete_post
@@ -76,7 +74,6 @@ from httpcodes import http_503
 from httpheaders import login_headers
 from httpheaders import redirect_headers
 from daemon_utils import get_user_agent
-from daemon_utils import show_person_options
 from daemon_utils import post_to_outbox
 from daemon_utils import update_inbox_queue
 from daemon_utils import is_authorized
@@ -94,21 +91,12 @@ from cache import clear_actor_cache
 from theme import reset_theme_designer_settings
 from theme import set_theme
 from theme import set_theme_from_designer
-from webapp_profile import html_profile_after_search
-from webapp_search import html_hashtag_search
 from languages import get_understood_languages
 from follow import send_follow_request
 from follow import unfollow_account
 from follow import remove_follower
-from follow import is_follower_of_person
-from follow import is_following_actor
 from daemon_utils import post_to_outbox_thread
 from reading import remove_reading_event
-from webapp_search import html_skills_search
-from webapp_search import html_history_search
-from webapp_search import html_search_emoji
-from webapp_search import html_search_shared_items
-from webapp_utils import get_avatar_image_url
 from city import get_spoofed_city
 from posts import create_direct_message_post
 from happening import remove_calendar_event
@@ -116,6 +104,7 @@ from daemon_post_login import post_login_screen
 from daemon_post_receive import receive_new_post
 from daemon_post_profile import profile_edit
 from daemon_post_person_options import person_options2
+from daemon_post_search import receive_search_query
 
 # maximum number of posts in a hashtag feed
 MAX_POSTS_IN_HASHTAG_FEED = 6
@@ -369,25 +358,26 @@ def daemon_http_post(self) -> None:
     if ((authorized or search_for_emoji) and
         (self.path.endswith('/searchhandle') or
          '/searchhandle?page=' in self.path)):
-        _receive_search_query(self, calling_domain, cookie,
-                              authorized, self.path,
-                              self.server.base_dir,
-                              self.server.http_prefix,
-                              self.server.domain,
-                              self.server.domain_full,
-                              self.server.port,
-                              search_for_emoji,
-                              self.server.onion_domain,
-                              self.server.i2p_domain,
-                              postreq_start_time,
-                              self.server.debug,
-                              curr_session,
-                              proxy_type)
+        receive_search_query(self, calling_domain, cookie,
+                             authorized, self.path,
+                             self.server.base_dir,
+                             self.server.http_prefix,
+                             self.server.domain,
+                             self.server.domain_full,
+                             self.server.port,
+                             search_for_emoji,
+                             self.server.onion_domain,
+                             self.server.i2p_domain,
+                             postreq_start_time,
+                             self.server.debug,
+                             curr_session,
+                             proxy_type, MAX_POSTS_IN_HASHTAG_FEED,
+                             MAX_POSTS_IN_FEED)
         self.server.postreq_busy = False
         return
 
     fitness_performance(postreq_start_time, self.server.fitness,
-                        '_POST', '_receive_search_query',
+                        '_POST', 'receive_search_query',
                         self.server.debug)
 
     if not authorized:
@@ -2176,611 +2166,6 @@ def _unblock_confirm(self, calling_domain: str, cookie: str,
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
     redirect_headers(self, origin_path_str,
-                     cookie, calling_domain)
-    self.server.postreq_busy = False
-
-
-def _receive_search_query(self, calling_domain: str, cookie: str,
-                          authorized: bool, path: str,
-                          base_dir: str, http_prefix: str,
-                          domain: str, domain_full: str,
-                          port: int, search_for_emoji: bool,
-                          onion_domain: str, i2p_domain: str,
-                          getreq_start_time, debug: bool,
-                          curr_session, proxy_type: str) -> None:
-    """Receive a search query
-    """
-    # get the page number
-    page_number = 1
-    if '/searchhandle?page=' in path:
-        page_number_str = path.split('/searchhandle?page=')[1]
-        if '#' in page_number_str:
-            page_number_str = page_number_str.split('#')[0]
-        if len(page_number_str) > 5:
-            page_number_str = "1"
-        if page_number_str.isdigit():
-            page_number = int(page_number_str)
-        path = path.split('?page=')[0]
-
-    users_path = path.replace('/searchhandle', '')
-    actor_str = \
-        get_instance_url(calling_domain,
-                         http_prefix,
-                         domain_full,
-                         onion_domain,
-                         i2p_domain) + \
-        users_path
-    length = int(self.headers['Content-length'])
-    try:
-        search_params = self.rfile.read(length).decode('utf-8')
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: POST search_params connection was reset')
-        else:
-            print('EX: POST search_params socket error')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: POST search_params rfile.read failed, ' + str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    if 'submitBack=' in search_params:
-        # go back on search screen
-        redirect_headers(self, actor_str + '/' +
-                         self.server.default_timeline,
-                         cookie, calling_domain)
-        self.server.postreq_busy = False
-        return
-    if 'searchtext=' in search_params:
-        search_str = search_params.split('searchtext=')[1]
-        if '&' in search_str:
-            search_str = search_str.split('&')[0]
-        search_str = \
-            urllib.parse.unquote_plus(search_str.strip())
-        search_str = search_str.strip()
-        print('search_str: ' + search_str)
-        if search_for_emoji:
-            search_str = ':' + search_str + ':'
-        if search_str.startswith('#'):
-            nickname = get_nickname_from_actor(actor_str)
-            if not nickname:
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
-
-            # hashtag search
-            timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
-            bold_reading = False
-            if self.server.bold_reading.get(nickname):
-                bold_reading = True
-            hashtag_str = \
-                html_hashtag_search(nickname, domain, port,
-                                    self.server.recent_posts_cache,
-                                    self.server.max_recent_posts,
-                                    self.server.translate,
-                                    base_dir,
-                                    search_str[1:], 1,
-                                    MAX_POSTS_IN_HASHTAG_FEED,
-                                    curr_session,
-                                    self.server.cached_webfingers,
-                                    self.server.person_cache,
-                                    http_prefix,
-                                    self.server.project_version,
-                                    self.server.yt_replace_domain,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.show_published_date_only,
-                                    self.server.peertube_instances,
-                                    self.server.allow_local_network_access,
-                                    self.server.theme_name,
-                                    self.server.system_language,
-                                    self.server.max_like_count,
-                                    self.server.signing_priv_key_pem,
-                                    self.server.cw_lists,
-                                    self.server.lists_enabled,
-                                    timezone, bold_reading,
-                                    self.server.dogwhistles,
-                                    self.server.map_format,
-                                    self.server.access_keys,
-                                    'search',
-                                    self.server.min_images_for_accounts,
-                                    self.server.buy_sites,
-                                    self.server.auto_cw_cache)
-            if hashtag_str:
-                msg = hashtag_str.encode('utf-8')
-                msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
-                write2(self, msg)
-                self.server.postreq_busy = False
-                return
-        elif (search_str.startswith('*') or
-              search_str.endswith(' skill')):
-            possible_endings = (
-                ' skill'
-            )
-            for poss_ending in possible_endings:
-                if search_str.endswith(poss_ending):
-                    search_str = search_str.replace(poss_ending, '')
-                    break
-            # skill search
-            search_str = search_str.replace('*', '').strip()
-            nickname = get_nickname_from_actor(actor_str)
-            skill_str = \
-                html_skills_search(actor_str,
-                                   self.server.translate,
-                                   base_dir,
-                                   search_str,
-                                   self.server.instance_only_skills_search,
-                                   64, nickname, domain,
-                                   self.server.theme_name,
-                                   self.server.access_keys)
-            if skill_str:
-                msg = skill_str.encode('utf-8')
-                msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
-                write2(self, msg)
-                self.server.postreq_busy = False
-                return
-        elif (search_str.startswith("'") or
-              search_str.endswith(' history') or
-              search_str.endswith(' in sent') or
-              search_str.endswith(' in outbox') or
-              search_str.endswith(' in outgoing') or
-              search_str.endswith(' in sent items') or
-              search_str.endswith(' in sent posts') or
-              search_str.endswith(' in outgoing posts') or
-              search_str.endswith(' in my history') or
-              search_str.endswith(' in my outbox') or
-              search_str.endswith(' in my posts')):
-            possible_endings = (
-                ' in my posts',
-                ' in my history',
-                ' in my outbox',
-                ' in sent posts',
-                ' in outgoing posts',
-                ' in sent items',
-                ' in history',
-                ' in outbox',
-                ' in outgoing',
-                ' in sent',
-                ' history'
-            )
-            for poss_ending in possible_endings:
-                if search_str.endswith(poss_ending):
-                    search_str = search_str.replace(poss_ending, '')
-                    break
-            # your post history search
-            nickname = get_nickname_from_actor(actor_str)
-            if not nickname:
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
-            search_str = search_str.replace("'", '', 1).strip()
-            timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
-            bold_reading = False
-            if self.server.bold_reading.get(nickname):
-                bold_reading = True
-            history_str = \
-                html_history_search(self.server.translate,
-                                    base_dir,
-                                    http_prefix,
-                                    nickname,
-                                    domain,
-                                    search_str,
-                                    MAX_POSTS_IN_FEED,
-                                    page_number,
-                                    self.server.project_version,
-                                    self.server.recent_posts_cache,
-                                    self.server.max_recent_posts,
-                                    curr_session,
-                                    self.server.cached_webfingers,
-                                    self.server.person_cache,
-                                    port,
-                                    self.server.yt_replace_domain,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.show_published_date_only,
-                                    self.server.peertube_instances,
-                                    self.server.allow_local_network_access,
-                                    self.server.theme_name, 'outbox',
-                                    self.server.system_language,
-                                    self.server.max_like_count,
-                                    self.server.signing_priv_key_pem,
-                                    self.server.cw_lists,
-                                    self.server.lists_enabled,
-                                    timezone, bold_reading,
-                                    self.server.dogwhistles,
-                                    self.server.access_keys,
-                                    self.server.min_images_for_accounts,
-                                    self.server.buy_sites,
-                                    self.server.auto_cw_cache)
-            if history_str:
-                msg = history_str.encode('utf-8')
-                msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
-                write2(self, msg)
-                self.server.postreq_busy = False
-                return
-        elif (search_str.startswith('-') or
-              search_str.endswith(' in my saved items') or
-              search_str.endswith(' in my saved posts') or
-              search_str.endswith(' in my bookmarks') or
-              search_str.endswith(' in my saved') or
-              search_str.endswith(' in my saves') or
-              search_str.endswith(' in saved posts') or
-              search_str.endswith(' in saved items') or
-              search_str.endswith(' in bookmarks') or
-              search_str.endswith(' in saved') or
-              search_str.endswith(' in saves') or
-              search_str.endswith(' bookmark')):
-            possible_endings = (
-                ' in my bookmarks'
-                ' in my saved posts'
-                ' in my saved items'
-                ' in my saved'
-                ' in my saves'
-                ' in saved posts'
-                ' in saved items'
-                ' in saved'
-                ' in saves'
-                ' in bookmarks'
-                ' bookmark'
-            )
-            for poss_ending in possible_endings:
-                if search_str.endswith(poss_ending):
-                    search_str = search_str.replace(poss_ending, '')
-                    break
-            # bookmark search
-            nickname = get_nickname_from_actor(actor_str)
-            if not nickname:
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
-            search_str = search_str.replace('-', '', 1).strip()
-            timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
-            bold_reading = False
-            if self.server.bold_reading.get(nickname):
-                bold_reading = True
-            bookmarks_str = \
-                html_history_search(self.server.translate,
-                                    base_dir,
-                                    http_prefix,
-                                    nickname,
-                                    domain,
-                                    search_str,
-                                    MAX_POSTS_IN_FEED,
-                                    page_number,
-                                    self.server.project_version,
-                                    self.server.recent_posts_cache,
-                                    self.server.max_recent_posts,
-                                    curr_session,
-                                    self.server.cached_webfingers,
-                                    self.server.person_cache,
-                                    port,
-                                    self.server.yt_replace_domain,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.show_published_date_only,
-                                    self.server.peertube_instances,
-                                    self.server.allow_local_network_access,
-                                    self.server.theme_name, 'bookmarks',
-                                    self.server.system_language,
-                                    self.server.max_like_count,
-                                    self.server.signing_priv_key_pem,
-                                    self.server.cw_lists,
-                                    self.server.lists_enabled,
-                                    timezone, bold_reading,
-                                    self.server.dogwhistles,
-                                    self.server.access_keys,
-                                    self.server.min_images_for_accounts,
-                                    self.server.buy_sites,
-                                    self.server.auto_cw_cache)
-            if bookmarks_str:
-                msg = bookmarks_str.encode('utf-8')
-                msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
-                write2(self, msg)
-                self.server.postreq_busy = False
-                return
-        elif ('@' in search_str or
-              ('://' in search_str and
-               has_users_path(search_str))):
-            remote_only = False
-            if search_str.endswith(';remote'):
-                search_str = search_str.replace(';remote', '')
-                remote_only = True
-            if search_str.endswith(':') or \
-               search_str.endswith(';') or \
-               search_str.endswith('.'):
-                actor_str = \
-                    get_instance_url(calling_domain, http_prefix,
-                                     domain_full, onion_domain,
-                                     i2p_domain) + \
-                    users_path
-                redirect_headers(self, actor_str + '/search',
-                                 cookie, calling_domain)
-                self.server.postreq_busy = False
-                return
-            # profile search
-            nickname = get_nickname_from_actor(actor_str)
-            if not nickname:
-                self.send_response(400)
-                self.end_headers()
-                self.server.postreq_busy = False
-                return
-            profile_path_str = path.replace('/searchhandle', '')
-
-            # are we already following or followed by the searched
-            # for handle?
-            search_nickname = get_nickname_from_actor(search_str)
-            search_domain, search_port = \
-                get_domain_from_actor(search_str)
-            search_follower = \
-                is_follower_of_person(base_dir, nickname, domain,
-                                      search_nickname, search_domain)
-            search_following = \
-                is_following_actor(base_dir, nickname, domain, search_str)
-            if not remote_only and (search_follower or search_following):
-                # get the actor
-                if not has_users_path(search_str):
-                    if not search_nickname or not search_domain:
-                        self.send_response(400)
-                        self.end_headers()
-                        self.server.postreq_busy = False
-                        return
-                    search_domain_full = \
-                        get_full_domain(search_domain, search_port)
-                    actor = \
-                        local_actor_url(http_prefix, search_nickname,
-                                        search_domain_full)
-                else:
-                    actor = search_str
-
-                # establish the session
-                curr_proxy_type = proxy_type
-                if '.onion/' in actor:
-                    curr_proxy_type = 'tor'
-                    curr_session = self.server.session_onion
-                elif '.i2p/' in actor:
-                    curr_proxy_type = 'i2p'
-                    curr_session = self.server.session_i2p
-
-                curr_session = \
-                    establish_session("handle search",
-                                      curr_session,
-                                      curr_proxy_type,
-                                      self.server)
-                if not curr_session:
-                    self.server.postreq_busy = False
-                    return
-
-                # get the avatar url for the actor
-                avatar_url = \
-                    get_avatar_image_url(curr_session,
-                                         base_dir, http_prefix,
-                                         actor,
-                                         self.server.person_cache,
-                                         None, True,
-                                         self.server.signing_priv_key_pem)
-                profile_path_str += \
-                    '?options=' + actor + ';1;' + avatar_url
-
-                show_person_options(self, calling_domain, profile_path_str,
-                                    base_dir,
-                                    domain, domain_full,
-                                    getreq_start_time,
-                                    cookie, debug, authorized,
-                                    curr_session)
-                return
-            else:
-                show_published_date_only = \
-                    self.server.show_published_date_only
-                allow_local_network_access = \
-                    self.server.allow_local_network_access
-
-                access_keys = self.server.access_keys
-                if self.server.key_shortcuts.get(nickname):
-                    access_keys = self.server.key_shortcuts[nickname]
-
-                signing_priv_key_pem = \
-                    self.server.signing_priv_key_pem
-                twitter_replacement_domain = \
-                    self.server.twitter_replacement_domain
-                peertube_instances = \
-                    self.server.peertube_instances
-                yt_replace_domain = \
-                    self.server.yt_replace_domain
-                cached_webfingers = \
-                    self.server.cached_webfingers
-                recent_posts_cache = \
-                    self.server.recent_posts_cache
-                timezone = None
-                if self.server.account_timezone.get(nickname):
-                    timezone = \
-                        self.server.account_timezone.get(nickname)
-
-                profile_handle = remove_eol(search_str).strip()
-
-                # establish the session
-                curr_proxy_type = proxy_type
-                if '.onion/' in profile_handle or \
-                   profile_handle.endswith('.onion'):
-                    curr_proxy_type = 'tor'
-                    curr_session = self.server.session_onion
-                elif ('.i2p/' in profile_handle or
-                      profile_handle.endswith('.i2p')):
-                    curr_proxy_type = 'i2p'
-                    curr_session = self.server.session_i2p
-
-                curr_session = \
-                    establish_session("handle search",
-                                      curr_session,
-                                      curr_proxy_type,
-                                      self.server)
-                if not curr_session:
-                    self.server.postreq_busy = False
-                    return
-
-                bold_reading = False
-                if self.server.bold_reading.get(nickname):
-                    bold_reading = True
-
-                min_images_for_accounts = \
-                    self.server.min_images_for_accounts
-                max_shares_on_profile = \
-                    self.server.max_shares_on_profile
-                profile_str = \
-                    html_profile_after_search(authorized,
-                                              recent_posts_cache,
-                                              self.server.max_recent_posts,
-                                              self.server.translate,
-                                              base_dir,
-                                              profile_path_str,
-                                              http_prefix,
-                                              nickname,
-                                              domain,
-                                              port,
-                                              profile_handle,
-                                              curr_session,
-                                              cached_webfingers,
-                                              self.server.person_cache,
-                                              self.server.debug,
-                                              self.server.project_version,
-                                              yt_replace_domain,
-                                              twitter_replacement_domain,
-                                              show_published_date_only,
-                                              self.server.default_timeline,
-                                              peertube_instances,
-                                              allow_local_network_access,
-                                              self.server.theme_name,
-                                              access_keys,
-                                              self.server.system_language,
-                                              self.server.max_like_count,
-                                              signing_priv_key_pem,
-                                              self.server.cw_lists,
-                                              self.server.lists_enabled,
-                                              timezone,
-                                              self.server.onion_domain,
-                                              self.server.i2p_domain,
-                                              bold_reading,
-                                              self.server.dogwhistles,
-                                              min_images_for_accounts,
-                                              self.server.buy_sites,
-                                              max_shares_on_profile,
-                                              self.server.no_of_books,
-                                              self.server.auto_cw_cache)
-            if profile_str:
-                msg = profile_str.encode('utf-8')
-                msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
-                write2(self, msg)
-                self.server.postreq_busy = False
-                return
-            actor_str = \
-                get_instance_url(calling_domain,
-                                 http_prefix, domain_full,
-                                 onion_domain, i2p_domain) + \
-                users_path
-            redirect_headers(self, actor_str + '/search',
-                             cookie, calling_domain)
-            self.server.postreq_busy = False
-            return
-        elif (search_str.startswith(':') or
-              search_str.endswith(' emoji')):
-            # eg. "cat emoji"
-            if search_str.endswith(' emoji'):
-                search_str = \
-                    search_str.replace(' emoji', '')
-            # emoji search
-            nickname = get_nickname_from_actor(actor_str)
-            emoji_str = \
-                html_search_emoji(self.server.translate,
-                                  base_dir, search_str,
-                                  nickname, domain,
-                                  self.server.theme_name,
-                                  self.server.access_keys)
-            if emoji_str:
-                msg = emoji_str.encode('utf-8')
-                msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
-                write2(self, msg)
-                self.server.postreq_busy = False
-                return
-        elif search_str.startswith('.'):
-            # wanted items search
-            shared_items_federated_domains = \
-                self.server.shared_items_federated_domains
-            nickname = get_nickname_from_actor(actor_str)
-            wanted_items_str = \
-                html_search_shared_items(self.server.translate,
-                                         base_dir,
-                                         search_str[1:], page_number,
-                                         MAX_POSTS_IN_FEED,
-                                         http_prefix,
-                                         domain_full,
-                                         actor_str, calling_domain,
-                                         shared_items_federated_domains,
-                                         'wanted', nickname, domain,
-                                         self.server.theme_name,
-                                         self.server.access_keys)
-            if wanted_items_str:
-                msg = wanted_items_str.encode('utf-8')
-                msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
-                write2(self, msg)
-                self.server.postreq_busy = False
-                return
-        else:
-            # shared items search
-            shared_items_federated_domains = \
-                self.server.shared_items_federated_domains
-            nickname = get_nickname_from_actor(actor_str)
-            shared_items_str = \
-                html_search_shared_items(self.server.translate,
-                                         base_dir,
-                                         search_str, page_number,
-                                         MAX_POSTS_IN_FEED,
-                                         http_prefix,
-                                         domain_full,
-                                         actor_str, calling_domain,
-                                         shared_items_federated_domains,
-                                         'shares', nickname, domain,
-                                         self.server.theme_name,
-                                         self.server.access_keys)
-            if shared_items_str:
-                msg = shared_items_str.encode('utf-8')
-                msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
-                write2(self, msg)
-                self.server.postreq_busy = False
-                return
-    actor_str = \
-        get_instance_url(calling_domain, http_prefix,
-                         domain_full, onion_domain, i2p_domain) + \
-        users_path
-    redirect_headers(self, actor_str + '/' +
-                     self.server.default_timeline,
                      cookie, calling_domain)
     self.server.postreq_busy = False
 
