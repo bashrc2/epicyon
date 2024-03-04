@@ -202,6 +202,7 @@ from daemon_get_instance_actor import show_instance_actor
 from daemon_get_vcard import show_vcard
 from daemon_get_blog import show_blog_page
 from daemon_get_links import edit_links2
+from daemon_get_login import redirect_to_login_screen
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -2213,13 +2214,13 @@ def daemon_http_get(self) -> None:
        not self.path.startswith('/.well-known/protocol-handler') and \
        self.path != '/users/news/linksmobile' and \
        self.path != '/users/news/newswiremobile':
-        if _redirect_to_login_screen(self, calling_domain, self.path,
-                                     self.server.http_prefix,
-                                     self.server.domain_full,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain,
-                                     getreq_start_time,
-                                     authorized, self.server.debug):
+        if redirect_to_login_screen(self, calling_domain, self.path,
+                                    self.server.http_prefix,
+                                    self.server.domain_full,
+                                    self.server.onion_domain,
+                                    self.server.i2p_domain,
+                                    getreq_start_time,
+                                    authorized, self.server.debug):
             return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -4489,66 +4490,6 @@ def _get_speaker(self, calling_domain: str, referer_domain: str,
     set_headers(self, protocol_str, msglen,
                 None, calling_domain, False)
     write2(self, msg)
-
-
-def _redirect_to_login_screen(self, calling_domain: str, path: str,
-                              http_prefix: str, domain_full: str,
-                              onion_domain: str, i2p_domain: str,
-                              getreq_start_time,
-                              authorized: bool, debug: bool):
-    """Redirects to the login screen if necessary
-    """
-    divert_to_login_screen = False
-    if '/media/' not in path and \
-       '/ontologies/' not in path and \
-       '/data/' not in path and \
-       '/sharefiles/' not in path and \
-       '/statuses/' not in path and \
-       '/emoji/' not in path and \
-       '/tags/' not in path and \
-       '/tagmaps/' not in path and \
-       '/avatars/' not in path and \
-       '/favicons/' not in path and \
-       '/headers/' not in path and \
-       '/fonts/' not in path and \
-       '/icons/' not in path:
-        divert_to_login_screen = True
-        if path.startswith('/users/'):
-            nick_str = path.split('/users/')[1]
-            if '/' not in nick_str and '?' not in nick_str:
-                divert_to_login_screen = False
-            else:
-                if path.endswith('/following') or \
-                   path.endswith('/followers') or \
-                   path.endswith('/skills') or \
-                   path.endswith('/roles') or \
-                   path.endswith('/wanted') or \
-                   path.endswith('/shares'):
-                    divert_to_login_screen = False
-
-    if divert_to_login_screen and not authorized:
-        divert_path = '/login'
-        if self.server.news_instance:
-            # for news instances if not logged in then show the
-            # front page
-            divert_path = '/users/news'
-        if debug:
-            print('DEBUG: divert_to_login_screen=' +
-                  str(divert_to_login_screen))
-            print('DEBUG: authorized=' + str(authorized))
-            print('DEBUG: path=' + path)
-        redirect_url = \
-            get_instance_url(calling_domain,
-                             http_prefix, domain_full,
-                             onion_domain, i2p_domain) + \
-            divert_path
-        redirect_headers(self, redirect_url, None, calling_domain)
-        fitness_performance(getreq_start_time,
-                            self.server.fitness,
-                            '_GET', '_redirect_to_login_screen',
-                            debug)
-        return True
-    return False
 
 
 def _get_ontology(self, calling_domain: str,
