@@ -392,7 +392,7 @@ def receive_remove_post(self, calling_domain: str, cookie: str,
             if self.post_to_nickname:
                 if month_str and year_str:
                     if len(month_str) <= 3 and \
-                       len(year_str) <= 3 and \
+                       len(year_str) <= 5 and \
                        month_str.isdigit() and \
                        year_str.isdigit():
                         year_int = int(year_str)
