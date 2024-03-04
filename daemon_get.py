@@ -34,7 +34,6 @@ from webapp_minimalbutton import is_minimal
 from webapp_search import html_search_emoji_text_entry
 from webapp_search import html_search
 from webapp_search import html_hashtag_search_remote
-from webapp_column_left import html_edit_links
 from webapp_column_left import html_links_mobile
 from webapp_column_right import html_newswire_mobile
 from webapp_theme_designer import html_theme_designer
@@ -202,6 +201,7 @@ from daemon_get_reactions import reaction_picker2
 from daemon_get_instance_actor import show_instance_actor
 from daemon_get_vcard import show_vcard
 from daemon_get_blog import show_blog_page
+from daemon_get_links import edit_links2
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -3610,12 +3610,12 @@ def daemon_http_get(self) -> None:
             return
 
         # edit links from the left column of the timeline in web interface
-        if _edit_links2(self, calling_domain, self.path,
-                        self.server.translate,
-                        self.server.base_dir,
-                        self.server.domain,
-                        cookie,
-                        self.server.theme_name):
+        if edit_links2(self, calling_domain, self.path,
+                       self.server.translate,
+                       self.server.base_dir,
+                       self.server.domain,
+                       cookie,
+                       self.server.theme_name):
             self.server.getreq_busy = False
             return
 
@@ -4688,34 +4688,3 @@ def _show_known_crawlers(self, calling_domain: str, path: str,
                 None, calling_domain, True)
     write2(self, msg)
     return True
-
-
-def _edit_links2(self, calling_domain: str, path: str,
-                 translate: {}, base_dir: str,
-                 domain: str, cookie: str, theme: str) -> bool:
-    """Show the links from the left column
-    """
-    if '/users/' in path and path.endswith('/editlinks'):
-        nickname = path.split('/users/')[1]
-        if '/' in nickname:
-            nickname = nickname.split('/')[0]
-
-        access_keys = self.server.access_keys
-        if self.server.key_shortcuts.get(nickname):
-            access_keys = self.server.key_shortcuts[nickname]
-
-        msg = html_edit_links(translate,
-                              base_dir,
-                              path, domain,
-                              self.server.default_timeline,
-                              theme, access_keys)
-        if msg:
-            msg = msg.encode('utf-8')
-            msglen = len(msg)
-            set_headers(self, 'text/html', msglen,
-                        cookie, calling_domain, False)
-            write2(self, msg)
-        else:
-            http_404(self, 106)
-        return True
-    return False
