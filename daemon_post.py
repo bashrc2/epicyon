@@ -10,11 +10,8 @@ __module_group__ = "Core"
 import time
 import errno
 import json
-import os
 import urllib.parse
 from socket import error as SocketError
-from utils import binary_is_image
-from utils import get_image_extension_from_mime_type
 from utils import save_json
 from utils import get_config_param
 from utils import decoded_host
@@ -63,6 +60,7 @@ from daemon_post_question import receive_vote
 from daemon_post_theme import theme_designer_edit
 from daemon_post_hashtags import set_hashtag_category2
 from daemon_post_links import links_update
+from daemon_post_image import receive_image_attachment
 
 # maximum number of posts in a hashtag feed
 MAX_POSTS_IN_HASHTAG_FEED = 6
@@ -785,10 +783,10 @@ def daemon_http_post(self) -> None:
     # receive images to the outbox
     if self.headers['Content-type'].startswith('image/') and \
        users_in_path:
-        _receive_image(self, length, self.path,
-                       self.server.base_dir,
-                       self.server.domain,
-                       self.server.debug)
+        receive_image_attachment(self, length, self.path,
+                                 self.server.base_dir,
+                                 self.server.domain,
+                                 self.server.debug)
         self.server.postreq_busy = False
         return
 
@@ -1118,65 +1116,3 @@ def _key_shortcuts(self, calling_domain: str, cookie: str,
     redirect_headers(self, origin_path_str, cookie, calling_domain)
     self.server.postreq_busy = False
     return
-
-
-def _receive_image(self, length: int, path: str, base_dir: str,
-                   domain: str, debug: bool) -> None:
-    """Receives an image via POST
-    """
-    if not self.outbox_authenticated:
-        if debug:
-            print('DEBUG: unauthenticated attempt to ' +
-                  'post image to outbox')
-        self.send_response(403)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    path_users_section = path.split('/users/')[1]
-    if '/' not in path_users_section:
-        http_404(self, 12)
-        self.server.postreq_busy = False
-        return
-    self.post_from_nickname = path_users_section.split('/')[0]
-    accounts_dir = acct_dir(base_dir, self.post_from_nickname, domain)
-    if not os.path.isdir(accounts_dir):
-        http_404(self, 13)
-        self.server.postreq_busy = False
-        return
-
-    try:
-        media_bytes = self.rfile.read(length)
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: POST media_bytes ' +
-                  'connection reset by peer')
-        else:
-            print('EX: POST media_bytes socket error')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: POST media_bytes rfile.read failed, ' + str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    media_filename_base = accounts_dir + '/upload'
-    media_filename = \
-        media_filename_base + '.' + \
-        get_image_extension_from_mime_type(self.headers['Content-type'])
-    if not binary_is_image(media_filename, media_bytes):
-        print('WARN: _receive_image image binary is not recognized ' +
-              media_filename)
-    try:
-        with open(media_filename, 'wb') as av_file:
-            av_file.write(media_bytes)
-    except OSError:
-        print('EX: unable to write ' + media_filename)
-    if debug:
-        print('DEBUG: image saved to ' + media_filename)
-    self.send_response(201)
-    self.end_headers()
-    self.server.postreq_busy = False
