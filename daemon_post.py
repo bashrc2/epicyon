@@ -28,7 +28,6 @@ from utils import check_bad_path
 from utils import get_instance_url
 from utils import acct_dir
 from utils import get_nickname_from_actor
-from blocking import is_blocked_hashtag
 from blocking import contains_military_domain
 from crawlers import blocked_user_agent
 from session import get_session_for_domain
@@ -39,8 +38,6 @@ from inbox import inbox_message_has_params
 from inbox import inbox_permitted_message
 from httpsig import getheader_signature_input
 from content import extract_text_fields_in_post
-from filters import is_filtered
-from categories import set_hashtag_category
 from httpcodes import http_200
 from httpcodes import http_404
 from httpcodes import http_400
@@ -69,6 +66,7 @@ from daemon_post_remove import remove_wanted
 from daemon_post_remove import receive_remove_post
 from daemon_post_question import receive_vote
 from daemon_post_theme import theme_designer_edit
+from daemon_post_hashtags import set_hashtag_category2
 
 # maximum number of posts in a hashtag feed
 MAX_POSTS_IN_HASHTAG_FEED = 6
@@ -219,12 +217,12 @@ def daemon_http_post(self) -> None:
                         self.server.debug)
 
     if authorized and self.path.endswith('/sethashtagcategory'):
-        _set_hashtag_category2(self, calling_domain, cookie,
-                               self.path,
-                               self.server.base_dir,
-                               self.server.domain,
-                               self.server.debug,
-                               self.server.system_language)
+        set_hashtag_category2(self, calling_domain, cookie,
+                              self.path,
+                              self.server.base_dir,
+                              self.server.domain,
+                              self.server.debug,
+                              self.server.system_language)
         self.server.postreq_busy = False
         return
 
@@ -1361,121 +1359,5 @@ def _links_update(self, calling_domain: str, cookie: str,
 
     # redirect back to the default timeline
     redirect_headers(self, actor_str + '/' + default_timeline,
-                     cookie, calling_domain)
-    self.server.postreq_busy = False
-
-
-def _set_hashtag_category2(self, calling_domain: str, cookie: str,
-                           path: str, base_dir: str,
-                           domain: str, debug: bool,
-                           system_language: str) -> None:
-    """On the screen after selecting a hashtag from the swarm, this sets
-    the category for that tag
-    """
-    users_path = path.replace('/sethashtagcategory', '')
-    hashtag = ''
-    if '/tags/' not in users_path:
-        # no hashtag is specified within the path
-        http_404(self, 14)
-        return
-    hashtag = users_path.split('/tags/')[1].strip()
-    hashtag = urllib.parse.unquote_plus(hashtag)
-    if not hashtag:
-        # no hashtag was given in the path
-        http_404(self, 15)
-        return
-    hashtag_filename = base_dir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtag_filename):
-        # the hashtag does not exist
-        http_404(self, 16)
-        return
-    users_path = users_path.split('/tags/')[0]
-    actor_str = \
-        get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
-        users_path
-    tag_screen_str = actor_str + '/tags/' + hashtag
-
-    boundary = None
-    if ' boundary=' in self.headers['Content-type']:
-        boundary = self.headers['Content-type'].split('boundary=')[1]
-        if ';' in boundary:
-            boundary = boundary.split(';')[0]
-
-    # get the nickname
-    nickname = get_nickname_from_actor(actor_str)
-    editor = None
-    if nickname:
-        editor = is_editor(base_dir, nickname)
-    if not hashtag or not editor:
-        if not nickname:
-            print('WARN: nickname not found in ' + actor_str)
-        else:
-            print('WARN: nickname is not a moderator' + actor_str)
-        redirect_headers(self, tag_screen_str, cookie, calling_domain)
-        self.server.postreq_busy = False
-        return
-
-    if self.headers.get('Content-length'):
-        length = int(self.headers['Content-length'])
-
-        # check that the POST isn't too large
-        if length > self.server.max_post_length:
-            print('Maximum links data length exceeded ' + str(length))
-            redirect_headers(self, tag_screen_str, cookie, calling_domain)
-            self.server.postreq_busy = False
-            return
-
-    try:
-        # read the bytes of the http form POST
-        post_bytes = self.rfile.read(length)
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: connection was reset while ' +
-                  'reading bytes from http form POST')
-        else:
-            print('EX: error while reading bytes ' +
-                  'from http form POST')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: failed to read bytes for POST, ' + str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-
-    if not boundary:
-        if b'--LYNX' in post_bytes:
-            boundary = '--LYNX'
-
-    if boundary:
-        # extract all of the text fields into a dict
-        fields = \
-            extract_text_fields_in_post(post_bytes, boundary, debug, None)
-
-        if fields.get('hashtagCategory'):
-            category_str = fields['hashtagCategory'].lower()
-            if not is_blocked_hashtag(base_dir, category_str) and \
-               not is_filtered(base_dir, nickname, domain, category_str,
-                               system_language):
-                set_hashtag_category(base_dir, hashtag,
-                                     category_str, False)
-        else:
-            category_filename = base_dir + '/tags/' + hashtag + '.category'
-            if os.path.isfile(category_filename):
-                try:
-                    os.remove(category_filename)
-                except OSError:
-                    print('EX: _set_hashtag_category unable to delete ' +
-                          category_filename)
-
-    # redirect back to the default timeline
-    redirect_headers(self, tag_screen_str,
                      cookie, calling_domain)
     self.server.postreq_busy = False
