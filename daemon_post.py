@@ -10,9 +10,7 @@ __module_group__ = "Core"
 import time
 import errno
 import json
-import urllib.parse
 from socket import error as SocketError
-from utils import save_json
 from utils import get_config_param
 from utils import decoded_host
 from utils import get_new_post_endpoints
@@ -20,7 +18,6 @@ from utils import local_actor_url
 from utils import contains_invalid_chars
 from utils import remove_id_ending
 from utils import check_bad_path
-from utils import acct_dir
 from blocking import contains_military_domain
 from crawlers import blocked_user_agent
 from session import get_session_for_domain
@@ -61,6 +58,7 @@ from daemon_post_theme import theme_designer_edit
 from daemon_post_hashtags import set_hashtag_category2
 from daemon_post_links import links_update
 from daemon_post_image import receive_image_attachment
+from daemon_post_keys import keyboard_shortcuts
 
 # maximum number of posts in a hashtag feed
 MAX_POSTS_IN_HASHTAG_FEED = 6
@@ -555,16 +553,16 @@ def daemon_http_post(self) -> None:
                 self.server.key_shortcuts[nickname] = access_keys.copy()
             access_keys = self.server.key_shortcuts[nickname]
 
-            _key_shortcuts(self, calling_domain, cookie,
-                           self.server.base_dir,
-                           self.server.http_prefix,
-                           nickname,
-                           self.server.domain,
-                           self.server.domain_full,
-                           self.server.onion_domain,
-                           self.server.i2p_domain,
-                           access_keys,
-                           self.server.default_timeline)
+            keyboard_shortcuts(self, calling_domain, cookie,
+                               self.server.base_dir,
+                               self.server.http_prefix,
+                               nickname,
+                               self.server.domain,
+                               self.server.domain_full,
+                               self.server.onion_domain,
+                               self.server.i2p_domain,
+                               access_keys,
+                               self.server.default_timeline)
             self.server.postreq_busy = False
             return
 
@@ -1027,92 +1025,3 @@ def daemon_http_post(self) -> None:
             return
     http_200(self)
     self.server.postreq_busy = False
-
-
-def _key_shortcuts(self, calling_domain: str, cookie: str,
-                   base_dir: str, http_prefix: str, nickname: str,
-                   domain: str, domain_full: str,
-                   onion_domain: str, i2p_domain: str,
-                   access_keys: {}, default_timeline: str) -> None:
-    """Receive POST from webapp_accesskeys
-    """
-    users_path = '/users/' + nickname
-    origin_path_str = \
-        http_prefix + '://' + domain_full + users_path + '/' + \
-        default_timeline
-    length = int(self.headers['Content-length'])
-
-    try:
-        access_keys_params = self.rfile.read(length).decode('utf-8')
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
-            print('EX: POST access_keys_params ' +
-                  'connection reset by peer')
-        else:
-            print('EX: POST access_keys_params socket error')
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    except ValueError as ex:
-        print('EX: POST access_keys_params rfile.read failed, ' +
-              str(ex))
-        self.send_response(400)
-        self.end_headers()
-        self.server.postreq_busy = False
-        return
-    access_keys_params = \
-        urllib.parse.unquote_plus(access_keys_params)
-
-    # key shortcuts screen, back button
-    # See html_access_keys
-    if 'submitAccessKeysCancel=' in access_keys_params or \
-       'submitAccessKeys=' not in access_keys_params:
-        if calling_domain.endswith('.onion') and onion_domain:
-            origin_path_str = \
-                'http://' + onion_domain + users_path + '/' + \
-                default_timeline
-        elif calling_domain.endswith('.i2p') and i2p_domain:
-            origin_path_str = \
-                'http://' + i2p_domain + users_path + \
-                '/' + default_timeline
-        redirect_headers(self, origin_path_str, cookie, calling_domain)
-        self.server.postreq_busy = False
-        return
-
-    save_keys = False
-    access_keys_template = self.server.access_keys
-    for variable_name, _ in access_keys_template.items():
-        if not access_keys.get(variable_name):
-            access_keys[variable_name] = \
-                access_keys_template[variable_name]
-
-        variable_name2 = variable_name.replace(' ', '_')
-        if variable_name2 + '=' in access_keys_params:
-            new_key = access_keys_params.split(variable_name2 + '=')[1]
-            if '&' in new_key:
-                new_key = new_key.split('&')[0]
-            if new_key:
-                if len(new_key) > 1:
-                    new_key = new_key[0]
-                if new_key != access_keys[variable_name]:
-                    access_keys[variable_name] = new_key
-                    save_keys = True
-
-    if save_keys:
-        access_keys_filename = \
-            acct_dir(base_dir, nickname, domain) + '/access_keys.json'
-        save_json(access_keys, access_keys_filename)
-        if not self.server.key_shortcuts.get(nickname):
-            self.server.key_shortcuts[nickname] = access_keys.copy()
-
-    # redirect back from key shortcuts screen
-    if calling_domain.endswith('.onion') and onion_domain:
-        origin_path_str = \
-            'http://' + onion_domain + users_path + '/' + default_timeline
-    elif calling_domain.endswith('.i2p') and i2p_domain:
-        origin_path_str = \
-            'http://' + i2p_domain + users_path + '/' + default_timeline
-    redirect_headers(self, origin_path_str, cookie, calling_domain)
-    self.server.postreq_busy = False
-    return
