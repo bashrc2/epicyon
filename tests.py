@@ -5424,17 +5424,10 @@ def _test_thread_functions():
                 if last_arg:
                     break
                 arg_ctr += 1
-#            print(mod_name + ' ' + thread_function_name + ' ' +
-#                  str(calling_function_args_list))
-            # get the function definition arguments
             test_str = \
                 modules[defininition_module]['source'].split(def_str)[1]
             test_str = test_str.split(')')[0]
             definition_function_args_list = test_str.split(',')
-            if len(definition_function_args_list) > 0:
-                if definition_function_args_list[0] == 'self':
-                    definition_function_args_list = \
-                        definition_function_args_list[1:]
             if len(definition_function_args_list) != \
                len(calling_function_args_list):
                 print('Thread function ' + thread_function_name +
