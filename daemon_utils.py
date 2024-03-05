@@ -182,10 +182,10 @@ def post_to_outbox_thread(self, message_json: {},
     print('Creating outbox thread ' +
           account_outbox_thread_name + '/' +
           str(self.server.outbox_thread_index[account_outbox_thread_name]))
-    print('THREAD: _post_to_outbox')
+    print('THREAD: post_to_outbox')
     self.server.outboxThread[account_outbox_thread_name][index] = \
         thread_with_trace(target=post_to_outbox,
-                          args=(message_json.copy(),
+                          args=(self, message_json.copy(),
                                 self.server.project_version, None,
                                 curr_session, proxy_type),
                           daemon=True)
