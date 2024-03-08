@@ -123,6 +123,232 @@ from cache import store_person_in_cache
 from daemon_utils import post_to_outbox
 
 
+def _profile_post_blog_address(curr_session,
+                               base_dir: str, http_prefix: str,
+                               nickname: str, domain: str,
+                               actor_json: {}, fields: {},
+                               actor_changed: bool,
+                               debug: bool) -> bool:
+    """ HTTP POST change blog address
+    """
+    current_blog_address = get_blog_address(actor_json)
+    if fields.get('blogAddress'):
+        if fields['blogAddress'] != current_blog_address:
+            set_blog_address(actor_json,
+                             fields['blogAddress'])
+            actor_changed = True
+        site_is_verified(curr_session,
+                         base_dir, http_prefix,
+                         nickname, domain,
+                         fields['blogAddress'],
+                         True, debug)
+    else:
+        if current_blog_address:
+            set_blog_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_ssb_address(actor_json: {}, fields: {},
+                              actor_changed: bool) -> bool:
+    """ HTTP POST change SSB address
+    """
+    current_ssb_address = get_ssb_address(actor_json)
+    if fields.get('ssbAddress'):
+        if fields['ssbAddress'] != current_ssb_address:
+            set_ssb_address(actor_json,
+                            fields['ssbAddress'])
+            actor_changed = True
+    else:
+        if current_ssb_address:
+            set_ssb_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_matrix_address(actor_json: {}, fields: {},
+                                 actor_changed: bool) -> bool:
+    """ HTTP POST change matrix address
+    """
+    current_matrix_address = get_matrix_address(actor_json)
+    if fields.get('matrixAddress'):
+        if fields['matrixAddress'] != current_matrix_address:
+            set_matrix_address(actor_json,
+                               fields['matrixAddress'])
+            actor_changed = True
+    else:
+        if current_matrix_address:
+            set_matrix_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_xmpp_address(actor_json: {}, fields: {},
+                               actor_changed: bool) -> bool:
+    """ HTTP POST change xmpp address
+    """
+    current_xmpp_address = get_xmpp_address(actor_json)
+    if fields.get('xmppAddress'):
+        if fields['xmppAddress'] != current_xmpp_address:
+            set_xmpp_address(actor_json,
+                             fields['xmppAddress'])
+            actor_changed = True
+    else:
+        if current_xmpp_address:
+            set_xmpp_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_email_address(actor_json: {}, fields: {},
+                                actor_changed: bool) -> bool:
+    """ HTTP POST change email address
+    """
+    current_email_address = get_email_address(actor_json)
+    if fields.get('email'):
+        if fields['email'] != current_email_address:
+            set_email_address(actor_json, fields['email'])
+            actor_changed = True
+    else:
+        if current_email_address:
+            set_email_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_memorial_accounts(base_dir: str, domain: str,
+                                    person_cache: {}, fields: {}) -> None:
+    """ HTTP POST change memorial accounts
+    """
+    curr_memorial = get_memorials(base_dir)
+    if fields.get('memorialAccounts'):
+        if fields['memorialAccounts'] != \
+           curr_memorial:
+            set_memorials(base_dir, domain,
+                          fields['memorialAccounts'])
+            update_memorial_flags(base_dir,
+                                  person_cache)
+    else:
+        if curr_memorial:
+            set_memorials(base_dir, domain, '')
+            update_memorial_flags(base_dir, person_cache)
+
+
+def _profile_post_instance_desc(base_dir: str, fields: {}) -> None:
+    """ HTTP POST change instance description
+    """
+    curr_instance_description = \
+        get_config_param(base_dir, 'instanceDescription')
+    if fields.get('instanceDescription'):
+        if fields['instanceDescription'] != \
+           curr_instance_description:
+            set_config_param(base_dir,
+                             'instanceDescription',
+                             fields['instanceDescription'])
+    else:
+        if curr_instance_description:
+            set_config_param(base_dir,
+                             'instanceDescription', '')
+
+
+def _profile_post_instance_short_desc(base_dir: str, fields: {}) -> None:
+    """ HTTP POST change instance short description
+    """
+    curr_instance_description_short = \
+        get_config_param(base_dir,
+                         'instanceDescriptionShort')
+    if fields.get('instanceDescriptionShort'):
+        if fields['instanceDescriptionShort'] != \
+           curr_instance_description_short:
+            idesc = fields['instanceDescriptionShort']
+            set_config_param(base_dir,
+                             'instanceDescriptionShort', idesc)
+    else:
+        if curr_instance_description_short:
+            set_config_param(base_dir,
+                             'instanceDescriptionShort', '')
+
+
+def _profile_post_content_license(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST change instance content license
+    """
+    if fields.get('contentLicenseUrl'):
+        if fields['contentLicenseUrl'] != \
+           self.server.content_license_url:
+            license_str = fields['contentLicenseUrl']
+            if '://' not in license_str:
+                license_str = \
+                    license_link_from_name(license_str)
+            set_config_param(base_dir,
+                             'contentLicenseUrl',
+                             license_str)
+            self.server.content_license_url = \
+                license_str
+    else:
+        license_str = \
+            'https://creativecommons.org/' + \
+            'licenses/by-nc/4.0'
+        set_config_param(base_dir,
+                         'contentLicenseUrl',
+                         license_str)
+        self.server.content_license_url = license_str
+
+
+def _profile_post_libretranslate_api_key(base_dir: str, fields: {}) -> None:
+    """ HTTP POST libretranslate API Key
+    """
+    curr_libretranslate_api_key = \
+        get_config_param(base_dir,
+                         'libretranslateApiKey')
+    if fields.get('libretranslateApiKey'):
+        if fields['libretranslateApiKey'] != \
+           curr_libretranslate_api_key:
+            lt_api_key = fields['libretranslateApiKey']
+            set_config_param(base_dir,
+                             'libretranslateApiKey',
+                             lt_api_key)
+    else:
+        if curr_libretranslate_api_key:
+            set_config_param(base_dir,
+                             'libretranslateApiKey', '')
+
+
+def _profile_post_registrations_remaining(base_dir: str, fields: {}) -> None:
+    """ HTTP POST change registrations remaining
+    """
+    reg_str = "registrationsRemaining"
+    remaining = get_config_param(base_dir, reg_str)
+    if fields.get('regRemaining'):
+        if fields['regRemaining'] != remaining:
+            remaining = int(fields['regRemaining'])
+            if remaining < 0:
+                remaining = 0
+            elif remaining > 10:
+                remaining = 10
+            set_config_param(base_dir, reg_str,
+                             remaining)
+
+
+def _profile_post_libretranslate_url(base_dir: str, fields: {}) -> None:
+    """ HTTP POST libretranslate URL
+    """
+    curr_libretranslate_url = \
+        get_config_param(base_dir,
+                         'libretranslateUrl')
+    if fields.get('libretranslateUrl'):
+        if fields['libretranslateUrl'] != \
+           curr_libretranslate_url:
+            lt_url = fields['libretranslateUrl']
+            if resembles_url(lt_url):
+                set_config_param(base_dir,
+                                 'libretranslateUrl',
+                                 lt_url)
+    else:
+        if curr_libretranslate_url:
+            set_config_param(base_dir,
+                             'libretranslateUrl', '')
+
+
 def _profile_post_replies_unlisted(base_dir: str, fields: {}, self) -> None:
     """ HTTP POST change public replies unlisted
     """
@@ -854,189 +1080,49 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                     _profile_post_replies_unlisted(base_dir, fields, self)
 
-                    # TODO
-                    # change registrations remaining
-                    reg_str = "registrationsRemaining"
-                    remaining = get_config_param(base_dir, reg_str)
-                    if fields.get('regRemaining'):
-                        if fields['regRemaining'] != remaining:
-                            remaining = int(fields['regRemaining'])
-                            if remaining < 0:
-                                remaining = 0
-                            elif remaining > 10:
-                                remaining = 10
-                            set_config_param(base_dir, reg_str,
-                                             remaining)
+                    _profile_post_registrations_remaining(base_dir, fields)
 
-                    # libretranslate URL
-                    curr_libretranslate_url = \
-                        get_config_param(base_dir,
-                                         'libretranslateUrl')
-                    if fields.get('libretranslateUrl'):
-                        if fields['libretranslateUrl'] != \
-                           curr_libretranslate_url:
-                            lt_url = fields['libretranslateUrl']
-                            if resembles_url(lt_url):
-                                set_config_param(base_dir,
-                                                 'libretranslateUrl',
-                                                 lt_url)
-                    else:
-                        if curr_libretranslate_url:
-                            set_config_param(base_dir,
-                                             'libretranslateUrl', '')
+                    _profile_post_libretranslate_url(base_dir, fields)
 
-                    # libretranslate API Key
-                    curr_libretranslate_api_key = \
-                        get_config_param(base_dir,
-                                         'libretranslateApiKey')
-                    if fields.get('libretranslateApiKey'):
-                        if fields['libretranslateApiKey'] != \
-                           curr_libretranslate_api_key:
-                            lt_api_key = fields['libretranslateApiKey']
-                            set_config_param(base_dir,
-                                             'libretranslateApiKey',
-                                             lt_api_key)
-                    else:
-                        if curr_libretranslate_api_key:
-                            set_config_param(base_dir,
-                                             'libretranslateApiKey', '')
+                    _profile_post_libretranslate_api_key(base_dir, fields)
 
-                    # change instance content license
-                    if fields.get('contentLicenseUrl'):
-                        if fields['contentLicenseUrl'] != \
-                           self.server.content_license_url:
-                            license_str = fields['contentLicenseUrl']
-                            if '://' not in license_str:
-                                license_str = \
-                                    license_link_from_name(license_str)
-                            set_config_param(base_dir,
-                                             'contentLicenseUrl',
-                                             license_str)
-                            self.server.content_license_url = \
-                                license_str
-                    else:
-                        license_str = \
-                            'https://creativecommons.org/' + \
-                            'licenses/by-nc/4.0'
-                        set_config_param(base_dir,
-                                         'contentLicenseUrl',
-                                         license_str)
-                        self.server.content_license_url = license_str
+                    _profile_post_content_license(base_dir, fields, self)
 
-                    # change instance short description
-                    curr_instance_description_short = \
-                        get_config_param(base_dir,
-                                         'instanceDescriptionShort')
-                    if fields.get('instanceDescriptionShort'):
-                        if fields['instanceDescriptionShort'] != \
-                           curr_instance_description_short:
-                            idesc = fields['instanceDescriptionShort']
-                            set_config_param(base_dir,
-                                             'instanceDescriptionShort',
-                                             idesc)
-                    else:
-                        if curr_instance_description_short:
-                            set_config_param(base_dir,
-                                             'instanceDescriptionShort',
-                                             '')
+                    _profile_post_instance_short_desc(base_dir, fields)
 
-                    # change instance description
-                    curr_instance_description = \
-                        get_config_param(base_dir, 'instanceDescription')
-                    if fields.get('instanceDescription'):
-                        if fields['instanceDescription'] != \
-                           curr_instance_description:
-                            set_config_param(base_dir,
-                                             'instanceDescription',
-                                             fields['instanceDescription'])
-                    else:
-                        if curr_instance_description:
-                            set_config_param(base_dir,
-                                             'instanceDescription', '')
+                    _profile_post_instance_desc(base_dir, fields)
 
-                    # change memorial accounts
-                    curr_memorial = get_memorials(base_dir)
-                    if fields.get('memorialAccounts'):
-                        if fields['memorialAccounts'] != \
-                           curr_memorial:
-                            set_memorials(base_dir, self.server.domain,
-                                          fields['memorialAccounts'])
-                            update_memorial_flags(base_dir,
-                                                  self.server.person_cache)
-                    else:
-                        if curr_memorial:
-                            set_memorials(base_dir,
-                                          self.server.domain, '')
-                            update_memorial_flags(base_dir,
-                                                  self.server.person_cache)
+                    _profile_post_memorial_accounts(base_dir,
+                                                    self.server.domain,
+                                                    self.server.person_cache,
+                                                    fields)
+                actor_changed = \
+                    _profile_post_email_address(actor_json, fields,
+                                                actor_changed)
 
-                # change email address
-                current_email_address = get_email_address(actor_json)
-                if fields.get('email'):
-                    if fields['email'] != current_email_address:
-                        set_email_address(actor_json, fields['email'])
-                        actor_changed = True
-                else:
-                    if current_email_address:
-                        set_email_address(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_xmpp_address(actor_json, fields,
+                                               actor_changed)
 
-                # change xmpp address
-                current_xmpp_address = get_xmpp_address(actor_json)
-                if fields.get('xmppAddress'):
-                    if fields['xmppAddress'] != current_xmpp_address:
-                        set_xmpp_address(actor_json,
-                                         fields['xmppAddress'])
-                        actor_changed = True
-                else:
-                    if current_xmpp_address:
-                        set_xmpp_address(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_matrix_address(actor_json, fields,
+                                                 actor_changed)
 
-                # change matrix address
-                current_matrix_address = get_matrix_address(actor_json)
-                if fields.get('matrixAddress'):
-                    if fields['matrixAddress'] != current_matrix_address:
-                        set_matrix_address(actor_json,
-                                           fields['matrixAddress'])
-                        actor_changed = True
-                else:
-                    if current_matrix_address:
-                        set_matrix_address(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_ssb_address(actor_json, fields,
+                                              actor_changed)
 
-                # change SSB address
-                current_ssb_address = get_ssb_address(actor_json)
-                if fields.get('ssbAddress'):
-                    if fields['ssbAddress'] != current_ssb_address:
-                        set_ssb_address(actor_json,
-                                        fields['ssbAddress'])
-                        actor_changed = True
-                else:
-                    if current_ssb_address:
-                        set_ssb_address(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_blog_address(curr_session,
+                                               self.server.base_dir,
+                                               self.server.http_prefix,
+                                               nickname, domain,
+                                               actor_json, fields,
+                                               actor_changed,
+                                               self.server.debug)
 
-                # change blog address
-                current_blog_address = get_blog_address(actor_json)
-                if fields.get('blogAddress'):
-                    if fields['blogAddress'] != current_blog_address:
-                        set_blog_address(actor_json,
-                                         fields['blogAddress'])
-                        actor_changed = True
-                    site_is_verified(curr_session,
-                                     self.server.base_dir,
-                                     self.server.http_prefix,
-                                     nickname, domain,
-                                     fields['blogAddress'],
-                                     True,
-                                     self.server.debug)
-                else:
-                    if current_blog_address:
-                        set_blog_address(actor_json, '')
-                        actor_changed = True
-
-                # change Languages address
+                # TODO
+                # change Languages understood
                 current_show_languages = get_actor_languages(actor_json)
                 if fields.get('showLanguages'):
                     if fields['showLanguages'] != current_show_languages:
