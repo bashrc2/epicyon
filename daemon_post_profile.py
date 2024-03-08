@@ -123,6 +123,412 @@ from cache import store_person_in_cache
 from daemon_utils import post_to_outbox
 
 
+def _profile_post_replies_unlisted(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST change public replies unlisted
+    """
+    pub_replies_unlisted = False
+    if self.server.public_replies_unlisted or \
+       get_config_param(base_dir,
+                        "publicRepliesUnlisted") is True:
+        pub_replies_unlisted = True
+    if fields.get('publicRepliesUnlisted'):
+        if fields['publicRepliesUnlisted'] != \
+           pub_replies_unlisted:
+            pub_replies_unlisted = \
+                fields['publicRepliesUnlisted']
+            set_config_param(base_dir,
+                             'publicRepliesUnlisted',
+                             True)
+            self.server.public_replies_unlisted = \
+                pub_replies_unlisted
+    else:
+        if pub_replies_unlisted:
+            set_config_param(base_dir,
+                             'publicRepliesUnlisted',
+                             False)
+            self.server.public_replies_unlisted = False
+
+
+def _profile_post_registrations_open(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST change registrations open status
+    """
+    registrations_open = False
+    if self.server.registration or \
+       get_config_param(base_dir,
+                        "registration") == 'open':
+        registrations_open = True
+    if fields.get('regOpen'):
+        if fields['regOpen'] != registrations_open:
+            registrations_open = fields['regOpen']
+            set_config_param(base_dir, 'registration',
+                             'open')
+            remaining = \
+                get_config_param(base_dir,
+                                 'registrationsRemaining')
+            if not remaining:
+                set_config_param(base_dir,
+                                 'registrationsRemaining',
+                                 10)
+            self.server.registration = True
+    else:
+        if registrations_open:
+            set_config_param(base_dir, 'registration',
+                             'closed')
+            self.server.registration = False
+
+
+def _profile_post_submit_button(base_dir: str, fields: {}) -> None:
+    """ HTTP POST change custom post submit button text
+    """
+    curr_custom_submit_text = get_config_param(base_dir, 'customSubmitText')
+    if fields.get('customSubmitText'):
+        if fields['customSubmitText'] != \
+           curr_custom_submit_text:
+            custom_text = fields['customSubmitText']
+            set_config_param(base_dir, 'customSubmitText', custom_text)
+    else:
+        if curr_custom_submit_text:
+            set_config_param(base_dir, 'customSubmitText', '')
+
+
+def _profile_post_twitter_alt_domain(base_dir: str, fields: {},
+                                     self) -> None:
+    """ HTTP POST change twitter alternate domain
+    """
+    if fields.get('twitterdomain'):
+        curr_twitter_domain = \
+            self.server.twitter_replacement_domain
+        if fields['twitterdomain'] != curr_twitter_domain:
+            new_twitter_domain = fields['twitterdomain']
+            if '://' in new_twitter_domain:
+                new_twitter_domain = \
+                    new_twitter_domain.split('://')[1]
+            if '/' in new_twitter_domain:
+                new_twitter_domain = \
+                    new_twitter_domain.split('/')[0]
+            if '.' in new_twitter_domain:
+                set_config_param(base_dir, 'twitterdomain',
+                                 new_twitter_domain)
+                self.server.twitter_replacement_domain = \
+                    new_twitter_domain
+    else:
+        set_config_param(base_dir, 'twitterdomain', '')
+        self.server.twitter_replacement_domain = None
+
+
+def _profile_post_youtube_alt_domain(base_dir: str, fields: {},
+                                     self) -> None:
+    """ HTTP POST change YouTube alternate domain
+    """
+    if fields.get('ytdomain'):
+        curr_yt_domain = self.server.yt_replace_domain
+        if fields['ytdomain'] != curr_yt_domain:
+            new_yt_domain = fields['ytdomain']
+            if '://' in new_yt_domain:
+                new_yt_domain = \
+                    new_yt_domain.split('://')[1]
+            if '/' in new_yt_domain:
+                new_yt_domain = new_yt_domain.split('/')[0]
+            if '.' in new_yt_domain:
+                set_config_param(base_dir, 'youtubedomain',
+                                 new_yt_domain)
+                self.server.yt_replace_domain = \
+                    new_yt_domain
+    else:
+        set_config_param(base_dir, 'youtubedomain', '')
+        self.server.yt_replace_domain = None
+
+
+def _profile_post_instance_title(base_dir: str, fields: {}) -> None:
+    """ HTTP POST change instance title
+    """
+    if fields.get('instanceTitle'):
+        curr_instance_title = \
+            get_config_param(base_dir, 'instanceTitle')
+        if fields['instanceTitle'] != curr_instance_title:
+            set_config_param(base_dir, 'instanceTitle',
+                             fields['instanceTitle'])
+
+
+def _profile_post_blog_instance_status(base_dir: str, fields: {},
+                                       self) -> None:
+    """ HTTP POST blog instance status
+    """
+    if fields.get('blogsInstance'):
+        self.server.blogs_instance = False
+        self.server.default_timeline = 'inbox'
+        if fields['blogsInstance'] == 'on':
+            self.server.blogs_instance = True
+            self.server.media_instance = False
+            self.server.news_instance = False
+            self.server.default_timeline = 'tlblogs'
+        set_config_param(base_dir, "blogsInstance",
+                         self.server.blogs_instance)
+        set_config_param(base_dir, "mediaInstance",
+                         self.server.media_instance)
+        set_config_param(base_dir, "newsInstance",
+                         self.server.news_instance)
+    else:
+        if self.server.blogs_instance:
+            self.server.blogs_instance = False
+            self.server.default_timeline = 'inbox'
+            set_config_param(base_dir, "blogsInstance",
+                             self.server.blogs_instance)
+
+
+def _profile_post_news_instance_status(base_dir: str, fields: {},
+                                       self) -> None:
+    """ HTTP POST change news instance status
+    """
+    if fields.get('newsInstance'):
+        self.server.news_instance = False
+        self.server.default_timeline = 'inbox'
+        if fields['newsInstance'] == 'on':
+            self.server.news_instance = True
+            self.server.blogs_instance = False
+            self.server.media_instance = False
+            self.server.default_timeline = 'tlfeatures'
+        set_config_param(base_dir, "mediaInstance",
+                         self.server.media_instance)
+        set_config_param(base_dir, "blogsInstance",
+                         self.server.blogs_instance)
+        set_config_param(base_dir, "newsInstance",
+                         self.server.news_instance)
+    else:
+        if self.server.news_instance:
+            self.server.news_instance = False
+            self.server.default_timeline = 'inbox'
+            set_config_param(base_dir, "newsInstance",
+                             self.server.media_instance)
+
+
+def _profile_post_media_instance_status(base_dir: str, fields: {},
+                                        self) -> None:
+    """ HTTP POST change media instance status
+    """
+    if fields.get('mediaInstance'):
+        self.server.media_instance = False
+        self.server.default_timeline = 'inbox'
+        if fields['mediaInstance'] == 'on':
+            self.server.media_instance = True
+            self.server.blogs_instance = False
+            self.server.news_instance = False
+            self.server.default_timeline = 'tlmedia'
+        set_config_param(base_dir, "mediaInstance",
+                         self.server.media_instance)
+        set_config_param(base_dir, "blogsInstance",
+                         self.server.blogs_instance)
+        set_config_param(base_dir, "newsInstance",
+                         self.server.news_instance)
+    else:
+        if self.server.media_instance:
+            self.server.media_instance = False
+            self.server.default_timeline = 'inbox'
+            set_config_param(base_dir, "mediaInstance",
+                             self.server.media_instance)
+
+
+def _profile_post_theme_change(base_dir: str, nickname: str,
+                               domain: str, domain_full: str,
+                               admin_nickname: str, fields: {},
+                               theme_name: str, http_prefix: str,
+                               allow_local_network_access: bool,
+                               system_language: str,
+                               dyslexic_font: bool, self) -> None:
+    """ HTTP POST change the theme from edit profile screen
+    """
+    if nickname == admin_nickname or \
+       is_artist(base_dir, nickname):
+        if fields.get('themeDropdown'):
+            if theme_name != \
+               fields['themeDropdown']:
+                theme_name = \
+                    fields['themeDropdown']
+                set_theme(base_dir, theme_name,
+                          domain, allow_local_network_access,
+                          system_language,
+                          dyslexic_font, True)
+                self.server.text_mode_banner = \
+                    get_text_mode_banner(base_dir)
+                self.server.iconsCache = {}
+                self.server.fontsCache = {}
+                self.server.css_cache = {}
+                self.server.show_publish_as_icon = \
+                    get_config_param(base_dir,
+                                     'showPublishAsIcon')
+                self.server.full_width_tl_button_header = \
+                    get_config_param(base_dir,
+                                     'fullWidthTlButtonHeader')
+                self.server.icons_as_buttons = \
+                    get_config_param(base_dir,
+                                     'iconsAsButtons')
+                self.server.rss_icon_at_top = \
+                    get_config_param(base_dir,
+                                     'rssIconAtTop')
+                self.server.publish_button_at_top = \
+                    get_config_param(base_dir,
+                                     'publishButtonAtTop')
+                set_news_avatar(base_dir,
+                                fields['themeDropdown'],
+                                http_prefix,
+                                domain, domain_full)
+
+
+def _profile_post_change_displayed_name(base_dir: str,
+                                        nickname: str, domain: str,
+                                        system_language: str,
+                                        actor_json: {},
+                                        fields: {},
+                                        check_name_and_bio: bool,
+                                        actor_changed: bool) -> (bool, str):
+    """ HTTP POST change displayed name
+    """
+    if fields.get('displayNickname'):
+        if fields['displayNickname'] != actor_json['name']:
+            display_name = \
+                remove_html(fields['displayNickname'])
+            if not is_filtered(base_dir,
+                               nickname, domain,
+                               display_name,
+                               system_language):
+                actor_json['name'] = display_name
+            else:
+                actor_json['name'] = nickname
+                if check_name_and_bio:
+                    redirect_path = '/welcome_profile'
+            actor_changed = True
+    else:
+        if check_name_and_bio:
+            redirect_path = '/welcome_profile'
+    return actor_changed, redirect_path
+
+
+def _profile_post_change_city(base_dir: str, nickname: str, domain: str,
+                              fields: {}) -> None:
+    """ HTTP POST change city
+    """
+    if fields.get('cityDropdown'):
+        city_filename = \
+            acct_dir(base_dir, nickname, domain) + '/city.txt'
+        try:
+            with open(city_filename, 'w+',
+                      encoding='utf-8') as fp_city:
+                fp_city.write(fields['cityDropdown'])
+        except OSError:
+            print('EX: edit profile unable to write city ' + city_filename)
+
+
+def _profile_post_set_reply_interval(base_dir: str, nickname: str, domain: str,
+                                     fields: {}) -> None:
+    """ HTTP POST reply interval in hours
+    """
+    if fields.get('replyhours'):
+        if fields['replyhours'].isdigit():
+            set_reply_interval_hours(base_dir,
+                                     nickname, domain,
+                                     fields['replyhours'])
+
+
+def _profile_post_change_password(base_dir: str, nickname: str,
+                                  fields: {}) -> None:
+    """ HTTP POST change password
+    """
+    if fields.get('password') and \
+       fields.get('passwordconfirm'):
+        fields['password'] = \
+            remove_eol(fields['password']).strip()
+        fields['passwordconfirm'] = \
+            remove_eol(fields['passwordconfirm']).strip()
+        if valid_password(fields['password']) and \
+           fields['password'] == fields['passwordconfirm']:
+            # set password
+            store_basic_credentials(base_dir, nickname,
+                                    fields['password'])
+
+
+def _profile_post_skill_level(actor_json: {},
+                              fields: {},
+                              base_dir: str, nickname: str, domain: str,
+                              system_language: str,
+                              translate: {},
+                              actor_changed: bool) -> bool:
+    """ HTTP POST set skill levels
+    """
+    skill_ctr = 1
+    actor_skills_ctr = no_of_actor_skills(actor_json)
+    while skill_ctr < 10:
+        skill_name = \
+            fields.get('skillName' + str(skill_ctr))
+        if not skill_name:
+            skill_ctr += 1
+            continue
+        if is_filtered(base_dir, nickname, domain, skill_name,
+                       system_language):
+            skill_ctr += 1
+            continue
+        skill_value = \
+            fields.get('skillValue' + str(skill_ctr))
+        if not skill_value:
+            skill_ctr += 1
+            continue
+        if not actor_has_skill(actor_json, skill_name):
+            actor_changed = True
+        else:
+            if actor_skill_value(actor_json, skill_name) != \
+               int(skill_value):
+                actor_changed = True
+        set_actor_skill_level(actor_json,
+                              skill_name, int(skill_value))
+        skills_str = translate['Skills']
+        skills_str = skills_str.lower()
+        set_hashtag_category(base_dir, skill_name,
+                             skills_str, False)
+        skill_ctr += 1
+    if no_of_actor_skills(actor_json) != \
+       actor_skills_ctr:
+        actor_changed = True
+    return actor_changed
+
+
+def _profile_post_avatar_image_ext(profile_media_types_uploaded: {},
+                                   actor_json: {}) -> None:
+    """ HTTP POST update the avatar/image url file extension
+    """
+    uploads = profile_media_types_uploaded.items()
+    for m_type, last_part in uploads:
+        rep_str = '/' + last_part
+        if m_type == 'avatar':
+            url_str = \
+                get_url_from_post(actor_json['icon']['url'])
+            actor_url = remove_html(url_str)
+            last_part_of_url = actor_url.split('/')[-1]
+            srch_str = '/' + last_part_of_url
+            actor_url = actor_url.replace(srch_str, rep_str)
+            actor_json['icon']['url'] = actor_url
+            print('actor_url: ' + actor_url)
+            if '.' in actor_url:
+                img_ext = actor_url.split('.')[-1]
+                if img_ext == 'jpg':
+                    img_ext = 'jpeg'
+                actor_json['icon']['mediaType'] = \
+                    'image/' + img_ext
+        elif m_type == 'image':
+            url_str = \
+                get_url_from_post(actor_json['image']['url'])
+            im_url = \
+                remove_html(url_str)
+            last_part_of_url = im_url.split('/')[-1]
+            srch_str = '/' + last_part_of_url
+            actor_json['image']['url'] = \
+                im_url.replace(srch_str, rep_str)
+            if '.' in im_url:
+                img_ext = im_url.split('.')[-1]
+                if img_ext == 'jpg':
+                    img_ext = 'jpeg'
+                actor_json['image']['mediaType'] = \
+                    'image/' + img_ext
+
+
 def profile_edit(self, calling_domain: str, cookie: str,
                  path: str, base_dir: str, http_prefix: str,
                  domain: str, domain_full: str,
@@ -387,345 +793,68 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 if actor_json.get('capabilityAcquisitionEndpoint'):
                     del actor_json['capabilityAcquisitionEndpoint']
                     actor_changed = True
-                # update the avatar/image url file extension
-                uploads = profile_media_types_uploaded.items()
-                for m_type, last_part in uploads:
-                    rep_str = '/' + last_part
-                    if m_type == 'avatar':
-                        url_str = \
-                            get_url_from_post(actor_json['icon']['url'])
-                        actor_url = remove_html(url_str)
-                        last_part_of_url = actor_url.split('/')[-1]
-                        srch_str = '/' + last_part_of_url
-                        actor_url = actor_url.replace(srch_str, rep_str)
-                        actor_json['icon']['url'] = actor_url
-                        print('actor_url: ' + actor_url)
-                        if '.' in actor_url:
-                            img_ext = actor_url.split('.')[-1]
-                            if img_ext == 'jpg':
-                                img_ext = 'jpeg'
-                            actor_json['icon']['mediaType'] = \
-                                'image/' + img_ext
-                    elif m_type == 'image':
-                        url_str = \
-                            get_url_from_post(actor_json['image']['url'])
-                        im_url = \
-                            remove_html(url_str)
-                        last_part_of_url = im_url.split('/')[-1]
-                        srch_str = '/' + last_part_of_url
-                        actor_json['image']['url'] = \
-                            im_url.replace(srch_str, rep_str)
-                        if '.' in im_url:
-                            img_ext = im_url.split('.')[-1]
-                            if img_ext == 'jpg':
-                                img_ext = 'jpeg'
-                            actor_json['image']['mediaType'] = \
-                                'image/' + img_ext
 
-                # set skill levels
-                skill_ctr = 1
-                actor_skills_ctr = no_of_actor_skills(actor_json)
-                while skill_ctr < 10:
-                    skill_name = \
-                        fields.get('skillName' + str(skill_ctr))
-                    if not skill_name:
-                        skill_ctr += 1
-                        continue
-                    if is_filtered(base_dir, nickname, domain, skill_name,
-                                   system_language):
-                        skill_ctr += 1
-                        continue
-                    skill_value = \
-                        fields.get('skillValue' + str(skill_ctr))
-                    if not skill_value:
-                        skill_ctr += 1
-                        continue
-                    if not actor_has_skill(actor_json, skill_name):
-                        actor_changed = True
-                    else:
-                        if actor_skill_value(actor_json, skill_name) != \
-                           int(skill_value):
-                            actor_changed = True
-                    set_actor_skill_level(actor_json,
-                                          skill_name, int(skill_value))
-                    skills_str = self.server.translate['Skills']
-                    skills_str = skills_str.lower()
-                    set_hashtag_category(base_dir, skill_name,
-                                         skills_str, False)
-                    skill_ctr += 1
-                if no_of_actor_skills(actor_json) != \
-                   actor_skills_ctr:
-                    actor_changed = True
+                _profile_post_avatar_image_ext(profile_media_types_uploaded,
+                                               actor_json)
 
-                # change password
-                if fields.get('password') and \
-                   fields.get('passwordconfirm'):
-                    fields['password'] = \
-                        remove_eol(fields['password']).strip()
-                    fields['passwordconfirm'] = \
-                        remove_eol(fields['passwordconfirm']).strip()
-                    if valid_password(fields['password']) and \
-                       fields['password'] == fields['passwordconfirm']:
-                        # set password
-                        store_basic_credentials(base_dir, nickname,
-                                                fields['password'])
+                actor_changed = \
+                    _profile_post_skill_level(actor_json,
+                                              fields,
+                                              base_dir, nickname, domain,
+                                              system_language,
+                                              self.server.translate,
+                                              actor_changed)
 
-                # reply interval in hours
-                if fields.get('replyhours'):
-                    if fields['replyhours'].isdigit():
-                        set_reply_interval_hours(base_dir,
-                                                 nickname, domain,
-                                                 fields['replyhours'])
+                _profile_post_change_password(base_dir, nickname, fields)
 
-                # change city
-                if fields.get('cityDropdown'):
-                    city_filename = \
-                        acct_dir(base_dir, nickname, domain) + '/city.txt'
-                    try:
-                        with open(city_filename, 'w+',
-                                  encoding='utf-8') as fp_city:
-                            fp_city.write(fields['cityDropdown'])
-                    except OSError:
-                        print('EX: unable to write city ' + city_filename)
+                _profile_post_set_reply_interval(base_dir, nickname, domain,
+                                                 fields)
+                _profile_post_change_city(base_dir, nickname, domain,
+                                          fields)
+                actor_changed, redirect_path = \
+                    _profile_post_change_displayed_name(base_dir,
+                                                        nickname, domain,
+                                                        system_language,
+                                                        actor_json,
+                                                        fields,
+                                                        check_name_and_bio,
+                                                        actor_changed)
+                _profile_post_theme_change(base_dir, nickname,
+                                           domain, domain_full,
+                                           admin_nickname, fields,
+                                           self.server.theme_name,
+                                           http_prefix,
+                                           allow_local_network_access,
+                                           system_language,
+                                           self.server.dyslexic_font, self)
 
-                # change displayed name
-                if fields.get('displayNickname'):
-                    if fields['displayNickname'] != actor_json['name']:
-                        display_name = \
-                            remove_html(fields['displayNickname'])
-                        if not is_filtered(base_dir,
-                                           nickname, domain,
-                                           display_name,
-                                           system_language):
-                            actor_json['name'] = display_name
-                        else:
-                            actor_json['name'] = nickname
-                            if check_name_and_bio:
-                                redirect_path = '/welcome_profile'
-                        actor_changed = True
-                else:
-                    if check_name_and_bio:
-                        redirect_path = '/welcome_profile'
-
-                # change the theme from edit profile screen
-                if nickname == admin_nickname or \
-                   is_artist(base_dir, nickname):
-                    if fields.get('themeDropdown'):
-                        if self.server.theme_name != \
-                           fields['themeDropdown']:
-                            self.server.theme_name = \
-                                fields['themeDropdown']
-                            set_theme(base_dir, self.server.theme_name,
-                                      domain, allow_local_network_access,
-                                      system_language,
-                                      self.server.dyslexic_font, True)
-                            self.server.text_mode_banner = \
-                                get_text_mode_banner(self.server.base_dir)
-                            self.server.iconsCache = {}
-                            self.server.fontsCache = {}
-                            self.server.css_cache = {}
-                            self.server.show_publish_as_icon = \
-                                get_config_param(self.server.base_dir,
-                                                 'showPublishAsIcon')
-                            self.server.full_width_tl_button_header = \
-                                get_config_param(self.server.base_dir,
-                                                 'fullWidthTlButtonHeader')
-                            self.server.icons_as_buttons = \
-                                get_config_param(self.server.base_dir,
-                                                 'iconsAsButtons')
-                            self.server.rss_icon_at_top = \
-                                get_config_param(self.server.base_dir,
-                                                 'rssIconAtTop')
-                            self.server.publish_button_at_top = \
-                                get_config_param(self.server.base_dir,
-                                                 'publishButtonAtTop')
-                            set_news_avatar(base_dir,
-                                            fields['themeDropdown'],
-                                            http_prefix,
-                                            domain, domain_full)
-
+                # is this the admin profile?
                 if nickname == admin_nickname:
-                    # change media instance status
-                    if fields.get('mediaInstance'):
-                        self.server.media_instance = False
-                        self.server.default_timeline = 'inbox'
-                        if fields['mediaInstance'] == 'on':
-                            self.server.media_instance = True
-                            self.server.blogs_instance = False
-                            self.server.news_instance = False
-                            self.server.default_timeline = 'tlmedia'
-                        set_config_param(base_dir, "mediaInstance",
-                                         self.server.media_instance)
-                        set_config_param(base_dir, "blogsInstance",
-                                         self.server.blogs_instance)
-                        set_config_param(base_dir, "newsInstance",
-                                         self.server.news_instance)
-                    else:
-                        if self.server.media_instance:
-                            self.server.media_instance = False
-                            self.server.default_timeline = 'inbox'
-                            set_config_param(base_dir, "mediaInstance",
-                                             self.server.media_instance)
+                    _profile_post_media_instance_status(base_dir, fields, self)
 
                     # is this a news theme?
                     if is_news_theme_name(self.server.base_dir,
                                           self.server.theme_name):
                         fields['newsInstance'] = 'on'
 
-                    # change news instance status
-                    if fields.get('newsInstance'):
-                        self.server.news_instance = False
-                        self.server.default_timeline = 'inbox'
-                        if fields['newsInstance'] == 'on':
-                            self.server.news_instance = True
-                            self.server.blogs_instance = False
-                            self.server.media_instance = False
-                            self.server.default_timeline = 'tlfeatures'
-                        set_config_param(base_dir, "mediaInstance",
-                                         self.server.media_instance)
-                        set_config_param(base_dir, "blogsInstance",
-                                         self.server.blogs_instance)
-                        set_config_param(base_dir, "newsInstance",
-                                         self.server.news_instance)
-                    else:
-                        if self.server.news_instance:
-                            self.server.news_instance = False
-                            self.server.default_timeline = 'inbox'
-                            set_config_param(base_dir, "newsInstance",
-                                             self.server.media_instance)
+                    _profile_post_news_instance_status(base_dir, fields, self)
 
-                    # change blog instance status
-                    if fields.get('blogsInstance'):
-                        self.server.blogs_instance = False
-                        self.server.default_timeline = 'inbox'
-                        if fields['blogsInstance'] == 'on':
-                            self.server.blogs_instance = True
-                            self.server.media_instance = False
-                            self.server.news_instance = False
-                            self.server.default_timeline = 'tlblogs'
-                        set_config_param(base_dir, "blogsInstance",
-                                         self.server.blogs_instance)
-                        set_config_param(base_dir, "mediaInstance",
-                                         self.server.media_instance)
-                        set_config_param(base_dir, "newsInstance",
-                                         self.server.news_instance)
-                    else:
-                        if self.server.blogs_instance:
-                            self.server.blogs_instance = False
-                            self.server.default_timeline = 'inbox'
-                            set_config_param(base_dir, "blogsInstance",
-                                             self.server.blogs_instance)
+                    _profile_post_blog_instance_status(base_dir, fields, self)
 
-                    # change instance title
-                    if fields.get('instanceTitle'):
-                        curr_instance_title = \
-                            get_config_param(base_dir, 'instanceTitle')
-                        if fields['instanceTitle'] != curr_instance_title:
-                            set_config_param(base_dir, 'instanceTitle',
-                                             fields['instanceTitle'])
+                    _profile_post_instance_title(base_dir, fields)
 
-                    # change YouTube alternate domain
-                    if fields.get('ytdomain'):
-                        curr_yt_domain = self.server.yt_replace_domain
-                        if fields['ytdomain'] != curr_yt_domain:
-                            new_yt_domain = fields['ytdomain']
-                            if '://' in new_yt_domain:
-                                new_yt_domain = \
-                                    new_yt_domain.split('://')[1]
-                            if '/' in new_yt_domain:
-                                new_yt_domain = new_yt_domain.split('/')[0]
-                            if '.' in new_yt_domain:
-                                set_config_param(base_dir, 'youtubedomain',
-                                                 new_yt_domain)
-                                self.server.yt_replace_domain = \
-                                    new_yt_domain
-                    else:
-                        set_config_param(base_dir, 'youtubedomain', '')
-                        self.server.yt_replace_domain = None
+                    _profile_post_youtube_alt_domain(base_dir, fields,
+                                                     self)
 
-                    # change twitter alternate domain
-                    if fields.get('twitterdomain'):
-                        curr_twitter_domain = \
-                            self.server.twitter_replacement_domain
-                        if fields['twitterdomain'] != curr_twitter_domain:
-                            new_twitter_domain = fields['twitterdomain']
-                            if '://' in new_twitter_domain:
-                                new_twitter_domain = \
-                                    new_twitter_domain.split('://')[1]
-                            if '/' in new_twitter_domain:
-                                new_twitter_domain = \
-                                    new_twitter_domain.split('/')[0]
-                            if '.' in new_twitter_domain:
-                                set_config_param(base_dir, 'twitterdomain',
-                                                 new_twitter_domain)
-                                self.server.twitter_replacement_domain = \
-                                    new_twitter_domain
-                    else:
-                        set_config_param(base_dir, 'twitterdomain', '')
-                        self.server.twitter_replacement_domain = None
+                    _profile_post_twitter_alt_domain(base_dir, fields, self)
 
-                    # change custom post submit button text
-                    curr_custom_submit_text = \
-                        get_config_param(base_dir, 'customSubmitText')
-                    if fields.get('customSubmitText'):
-                        if fields['customSubmitText'] != \
-                           curr_custom_submit_text:
-                            custom_text = fields['customSubmitText']
-                            set_config_param(base_dir, 'customSubmitText',
-                                             custom_text)
-                    else:
-                        if curr_custom_submit_text:
-                            set_config_param(base_dir, 'customSubmitText',
-                                             '')
+                    _profile_post_submit_button(base_dir, fields)
 
-                    # change registrations open status
-                    registrations_open = False
-                    if self.server.registration or \
-                       get_config_param(base_dir,
-                                        "registration") == 'open':
-                        registrations_open = True
-                    if fields.get('regOpen'):
-                        if fields['regOpen'] != registrations_open:
-                            registrations_open = fields['regOpen']
-                            set_config_param(base_dir, 'registration',
-                                             'open')
-                            remaining = \
-                                get_config_param(base_dir,
-                                                 'registrationsRemaining')
-                            if not remaining:
-                                set_config_param(base_dir,
-                                                 'registrationsRemaining',
-                                                 10)
-                            self.server.registration = True
-                    else:
-                        if registrations_open:
-                            set_config_param(base_dir, 'registration',
-                                             'closed')
-                            self.server.registration = False
+                    _profile_post_registrations_open(base_dir, fields, self)
 
-                    # change public replies unlisted
-                    pub_replies_unlisted = False
-                    if self.server.public_replies_unlisted or \
-                       get_config_param(base_dir,
-                                        "publicRepliesUnlisted") is True:
-                        pub_replies_unlisted = True
-                    if fields.get('publicRepliesUnlisted'):
-                        if fields['publicRepliesUnlisted'] != \
-                           pub_replies_unlisted:
-                            pub_replies_unlisted = \
-                                fields['publicRepliesUnlisted']
-                            set_config_param(base_dir,
-                                             'publicRepliesUnlisted',
-                                             True)
-                            self.server.public_replies_unlisted = \
-                                pub_replies_unlisted
-                    else:
-                        if pub_replies_unlisted:
-                            set_config_param(base_dir,
-                                             'publicRepliesUnlisted',
-                                             False)
-                            self.server.public_replies_unlisted = False
+                    _profile_post_replies_unlisted(base_dir, fields, self)
 
+                    # TODO
                     # change registrations remaining
                     reg_str = "registrationsRemaining"
                     remaining = get_config_param(base_dir, reg_str)
