@@ -123,6 +123,442 @@ from cache import store_person_in_cache
 from daemon_utils import post_to_outbox
 
 
+def _profile_post_bio(actor_json: {}, fields: {},
+                      base_dir: str, http_prefix: str,
+                      nickname: str, domain: str, domain_full: str,
+                      system_language: str, translate: {},
+                      actor_changed: bool,
+                      redirect_path: str,
+                      check_name_and_bio: bool) -> bool:
+    """ HTTP POST change user bio
+    """
+    featured_tags = get_featured_hashtags(actor_json) + ' '
+    actor_json['tag'] = []
+    if fields.get('bio'):
+        if fields['bio'] != actor_json['summary']:
+            bio_str = remove_html(fields['bio'])
+            if not is_filtered(base_dir,
+                               nickname, domain, bio_str,
+                               system_language):
+                actor_tags = {}
+                actor_json['summary'] = \
+                    add_html_tags(base_dir,
+                                  http_prefix,
+                                  nickname,
+                                  domain_full,
+                                  bio_str, [], actor_tags,
+                                  translate)
+                if actor_tags:
+                    for _, tag in actor_tags.items():
+                        if tag['name'] + ' ' in featured_tags:
+                            continue
+                        actor_json['tag'].append(tag)
+                actor_changed = True
+            else:
+                if check_name_and_bio:
+                    redirect_path = '/welcome_profile'
+    else:
+        if check_name_and_bio:
+            redirect_path = '/welcome_profile'
+    set_featured_hashtags(actor_json, featured_tags, True)
+    return actor_changed, redirect_path
+
+
+def _profile_post_alsoknownas(actor_json: {}, fields: {},
+                              actor_changed: bool) -> bool:
+    """ HTTP POST Other accounts (alsoKnownAs)
+    """
+    also_known_as = []
+    if actor_json.get('alsoKnownAs'):
+        also_known_as = actor_json['alsoKnownAs']
+    if fields.get('alsoKnownAs'):
+        also_known_as_str = ''
+        also_known_as_ctr = 0
+        for alt_actor in also_known_as:
+            if also_known_as_ctr > 0:
+                also_known_as_str += ', '
+            also_known_as_str += alt_actor
+            also_known_as_ctr += 1
+        if fields['alsoKnownAs'] != also_known_as_str and \
+           '://' in fields['alsoKnownAs'] and \
+           '@' not in fields['alsoKnownAs'] and \
+           '.' in fields['alsoKnownAs']:
+            if ';' in fields['alsoKnownAs']:
+                fields['alsoKnownAs'] = \
+                    fields['alsoKnownAs'].replace(';', ',')
+            new_also_known_as = \
+                fields['alsoKnownAs'].split(',')
+            also_known_as = []
+            for alt_actor in new_also_known_as:
+                alt_actor = alt_actor.strip()
+                if resembles_url(alt_actor):
+                    if alt_actor not in also_known_as:
+                        also_known_as.append(alt_actor)
+            actor_json['alsoKnownAs'] = also_known_as
+            actor_changed = True
+    else:
+        if also_known_as:
+            del actor_json['alsoKnownAs']
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_featured_hashtags(actor_json: {}, fields: {},
+                                    actor_changed: bool) -> bool:
+    """ HTTP POST featured hashtags on edit profile screen
+    """
+    featured_hashtags = get_featured_hashtags(actor_json)
+    if fields.get('featuredHashtags'):
+        fields['featuredHashtags'] = \
+            remove_html(fields['featuredHashtags'])
+        if featured_hashtags != \
+           fields['featuredHashtags']:
+            set_featured_hashtags(actor_json,
+                                  fields['featuredHashtags'])
+            actor_changed = True
+    else:
+        if featured_hashtags:
+            set_featured_hashtags(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_occupation(actor_json: {}, fields: {},
+                             actor_changed: bool) -> bool:
+    """ HTTP POST occupation on edit profile screen
+    """
+    occupation_name = get_occupation_name(actor_json)
+    if fields.get('occupationName'):
+        fields['occupationName'] = \
+            remove_html(fields['occupationName'])
+        if occupation_name != \
+           fields['occupationName']:
+            set_occupation_name(actor_json,
+                                fields['occupationName'])
+            actor_changed = True
+    else:
+        if occupation_name:
+            set_occupation_name(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_moved(actor_json: {}, fields: {},
+                        actor_changed: bool,
+                        send_move_activity: bool) -> bool:
+    """ HTTP POST account moved to new address
+    """
+    moved_to = ''
+    if actor_json.get('movedTo'):
+        moved_to = actor_json['movedTo']
+    if fields.get('movedTo'):
+        if fields['movedTo'] != moved_to and \
+           resembles_url(fields['movedTo']):
+            actor_json['movedTo'] = fields['movedTo']
+            send_move_activity = True
+            actor_changed = True
+    else:
+        if moved_to:
+            del actor_json['movedTo']
+            actor_changed = True
+    return actor_changed, send_move_activity
+
+
+def _profile_post_gemini_link(actor_json: {}, fields: {},
+                              actor_changed: bool) -> bool:
+    """ HTTP POST change gemini link
+    """
+    current_gemini_link = get_gemini_link(actor_json)
+    if fields.get('geminiLink'):
+        if fields['geminiLink'] != current_gemini_link:
+            set_gemini_link(actor_json,
+                            fields['geminiLink'])
+            actor_changed = True
+    else:
+        if current_gemini_link:
+            set_gemini_link(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_website(curr_session, base_dir: str, http_prefix: str,
+                          nickname: str, domain: str,
+                          actor_json: {}, fields: {},
+                          actor_changed: bool,
+                          translate: {}, debug: bool) -> bool:
+    """ HTTP POST change website
+    """
+    current_website = get_website(actor_json, translate)
+    if fields.get('websiteUrl'):
+        if fields['websiteUrl'] != current_website:
+            set_website(actor_json,
+                        fields['websiteUrl'],
+                        translate)
+            actor_changed = True
+        site_is_verified(curr_session,
+                         base_dir,
+                         http_prefix,
+                         nickname, domain,
+                         fields['websiteUrl'],
+                         True, debug)
+    else:
+        if current_website:
+            set_website(actor_json, '', translate)
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_donation_link(actor_json: {}, fields: {},
+                                actor_changed: bool) -> bool:
+    """ HTTP POST change donation link
+    """
+    current_donate_url = get_donation_url(actor_json)
+    if fields.get('donateUrl'):
+        if fields['donateUrl'] != current_donate_url:
+            set_donation_url(actor_json,
+                             fields['donateUrl'])
+            actor_changed = True
+    else:
+        if current_donate_url:
+            set_donation_url(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_pgp_fingerprint(actor_json: {}, fields: {},
+                                  actor_changed: bool) -> bool:
+    """ HTTP POST change PGP fingerprint
+    """
+    currentpgp_fingerprint = get_pgp_fingerprint(actor_json)
+    if fields.get('openpgp'):
+        if fields['openpgp'] != currentpgp_fingerprint:
+            set_pgp_fingerprint(actor_json, fields['openpgp'])
+            actor_changed = True
+    else:
+        if currentpgp_fingerprint:
+            set_pgp_fingerprint(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_pgp_pubkey(actor_json: {}, fields: {},
+                             actor_changed: bool) -> bool:
+    """ HTTP POST change PGP public key
+    """
+    currentpgp_pub_key = get_pgp_pub_key(actor_json)
+    if fields.get('pgp'):
+        if fields['pgp'] != currentpgp_pub_key:
+            set_pgp_pub_key(actor_json, fields['pgp'])
+            actor_changed = True
+    else:
+        if currentpgp_pub_key:
+            set_pgp_pub_key(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_enigma_pubkey(actor_json: {}, fields: {},
+                                actor_changed: bool) -> bool:
+    """ HTTP POST change Enigma public key
+    """
+    currentenigma_pub_key = get_enigma_pub_key(actor_json)
+    if fields.get('enigmapubkey'):
+        if fields['enigmapubkey'] != currentenigma_pub_key:
+            set_enigma_pub_key(actor_json,
+                               fields['enigmapubkey'])
+            actor_changed = True
+    else:
+        if currentenigma_pub_key:
+            set_enigma_pub_key(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_ntfy_topic(base_dir: str, nickname: str, domain: str,
+                             fields: {}) -> None:
+    """ HTTP POST change ntfy topic
+    """
+    if fields.get('ntfyTopic'):
+        ntfy_topic_file = \
+            base_dir + '/accounts/' + \
+            nickname + '@' + domain + '/.ntfy_topic'
+        try:
+            with open(ntfy_topic_file, 'w+',
+                      encoding='utf-8') as fp_ntfy:
+                fp_ntfy.write(fields['ntfyTopic'])
+        except OSError:
+            print('EX: unable to save ntfy topic ' +
+                  ntfy_topic_file)
+
+
+def _profile_post_ntfy_url(base_dir: str, nickname: str, domain: str,
+                           fields: {}) -> None:
+    """ HTTP POST change ntfy url
+    """
+    if fields.get('ntfyUrl'):
+        ntfy_url_file = \
+            base_dir + '/accounts/' + \
+            nickname + '@' + domain + '/.ntfy_url'
+        try:
+            with open(ntfy_url_file, 'w+',
+                      encoding='utf-8') as fp_ntfy:
+                fp_ntfy.write(fields['ntfyUrl'])
+        except OSError:
+            print('EX: unable to save ntfy url ' +
+                  ntfy_url_file)
+
+
+def _profile_post_cwtch_address(fields: {}, actor_json: {},
+                                actor_changed: bool) -> bool:
+    """ HTTP POST change cwtch address
+    """
+    current_cwtch_address = get_cwtch_address(actor_json)
+    if fields.get('cwtchAddress'):
+        if fields['cwtchAddress'] != current_cwtch_address:
+            set_cwtch_address(actor_json,
+                              fields['cwtchAddress'])
+            actor_changed = True
+    else:
+        if current_cwtch_address:
+            set_cwtch_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_briar_address(fields: {}, actor_json: {},
+                                actor_changed: bool) -> bool:
+    """ HTTP POST change briar address
+    """
+    current_briar_address = get_briar_address(actor_json)
+    if fields.get('briarAddress'):
+        if fields['briarAddress'] != current_briar_address:
+            set_briar_address(actor_json,
+                              fields['briarAddress'])
+            actor_changed = True
+    else:
+        if current_briar_address:
+            set_briar_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_tox_address(fields: {}, actor_json: {},
+                              actor_changed: bool) -> bool:
+    """ HTTP POST change tox address
+    """
+    current_tox_address = get_tox_address(actor_json)
+    if fields.get('toxAddress'):
+        if fields['toxAddress'] != current_tox_address:
+            set_tox_address(actor_json,
+                            fields['toxAddress'])
+            actor_changed = True
+    else:
+        if current_tox_address:
+            set_tox_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_birthday(fields: {}, actor_json: {},
+                           actor_changed: bool) -> bool:
+    """ HTTP POST birthday on edit profile screen
+    """
+    birth_date = ''
+    if actor_json.get('vcard:bday'):
+        birth_date = actor_json['vcard:bday']
+    if fields.get('birthDate'):
+        if fields['birthDate'] != birth_date:
+            new_birth_date = fields['birthDate']
+            if '-' in new_birth_date and \
+               len(new_birth_date.split('-')) == 3:
+                # set birth date
+                actor_json['vcard:bday'] = new_birth_date
+                actor_changed = True
+    else:
+        # set birth date
+        if birth_date:
+            actor_json['vcard:bday'] = ''
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_max_preview(base_dir: str, nickname: str, domain: str,
+                              fields: {}) -> None:
+    """ HTTP POST set maximum preview posts on profile screen
+    """
+    max_profile_posts = \
+        get_max_profile_posts(base_dir, nickname, domain, 20)
+    if fields.get('maxRecentProfilePosts'):
+        if fields['maxRecentProfilePosts'] != \
+           str(max_profile_posts):
+            max_profile_posts = \
+                fields['maxRecentProfilePosts']
+            set_max_profile_posts(base_dir, nickname, domain,
+                                  max_profile_posts)
+    else:
+        set_max_profile_posts(base_dir, nickname, domain, 20)
+
+
+def _profile_post_expiry(base_dir: str, nickname: str, domain: str,
+                         fields: {}, actor_changed: bool) -> bool:
+    """ HTTP POST set post expiry period in days
+    """
+    post_expiry_period_days = \
+        get_post_expiry_days(base_dir, nickname, domain)
+    if fields.get('postExpiryPeriod'):
+        if fields['postExpiryPeriod'] != \
+           str(post_expiry_period_days):
+            post_expiry_period_days = \
+                fields['postExpiryPeriod']
+            set_post_expiry_days(base_dir, nickname, domain,
+                                 post_expiry_period_days)
+            actor_changed = True
+    else:
+        if post_expiry_period_days > 0:
+            set_post_expiry_days(base_dir, nickname, domain, 0)
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_time_zone(base_dir: str, nickname: str, domain: str,
+                            fields: {}, actor_changed: bool, self) -> bool:
+    """ HTTP POST change time zone
+    """
+    timezone = get_account_timezone(base_dir, nickname, domain)
+    if fields.get('timeZone'):
+        if fields['timeZone'] != timezone:
+            set_account_timezone(base_dir,
+                                 nickname, domain,
+                                 fields['timeZone'])
+            self.server.account_timezone[nickname] = \
+                fields['timeZone']
+            actor_changed = True
+    else:
+        if timezone:
+            set_account_timezone(base_dir,
+                                 nickname, domain, '')
+            del self.server.account_timezone[nickname]
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_show_languages(actor_json: {}, fields: {},
+                                 actor_changed: bool) -> bool:
+    """ HTTP POST change Languages shown
+    """
+    current_show_languages = get_actor_languages(actor_json)
+    if fields.get('showLanguages'):
+        if fields['showLanguages'] != current_show_languages:
+            set_actor_languages(actor_json,
+                                fields['showLanguages'])
+            actor_changed = True
+    else:
+        if current_show_languages:
+            set_actor_languages(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_blog_address(curr_session,
                                base_dir: str, http_prefix: str,
                                nickname: str, domain: str,
@@ -606,7 +1042,8 @@ def _profile_post_change_displayed_name(base_dir: str,
                                         actor_json: {},
                                         fields: {},
                                         check_name_and_bio: bool,
-                                        actor_changed: bool) -> (bool, str):
+                                        actor_changed: bool,
+                                        redirect_path: str) -> (bool, str):
     """ HTTP POST change displayed name
     """
     if fields.get('displayNickname'):
@@ -1044,7 +1481,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                         actor_json,
                                                         fields,
                                                         check_name_and_bio,
-                                                        actor_changed)
+                                                        actor_changed,
+                                                        redirect_path)
                 _profile_post_theme_change(base_dir, nickname,
                                            domain, domain_full,
                                            admin_nickname, fields,
@@ -1121,339 +1559,94 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                actor_changed,
                                                self.server.debug)
 
-                # TODO
-                # change Languages understood
-                current_show_languages = get_actor_languages(actor_json)
-                if fields.get('showLanguages'):
-                    if fields['showLanguages'] != current_show_languages:
-                        set_actor_languages(actor_json,
-                                            fields['showLanguages'])
-                        actor_changed = True
-                else:
-                    if current_show_languages:
-                        set_actor_languages(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_show_languages(actor_json, fields,
+                                                 actor_changed)
 
-                # change time zone
-                timezone = \
-                    get_account_timezone(base_dir, nickname, domain)
-                if fields.get('timeZone'):
-                    if fields['timeZone'] != timezone:
-                        set_account_timezone(base_dir,
-                                             nickname, domain,
-                                             fields['timeZone'])
-                        self.server.account_timezone[nickname] = \
-                            fields['timeZone']
-                        actor_changed = True
-                else:
-                    if timezone:
-                        set_account_timezone(base_dir,
-                                             nickname, domain, '')
-                        del self.server.account_timezone[nickname]
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_time_zone(base_dir, nickname, domain,
+                                            fields, actor_changed, self)
 
-                # set post expiry period in days
-                post_expiry_period_days = \
-                    get_post_expiry_days(base_dir, nickname, domain)
-                if fields.get('postExpiryPeriod'):
-                    if fields['postExpiryPeriod'] != \
-                       str(post_expiry_period_days):
-                        post_expiry_period_days = \
-                            fields['postExpiryPeriod']
-                        set_post_expiry_days(base_dir, nickname, domain,
-                                             post_expiry_period_days)
-                        actor_changed = True
-                else:
-                    if post_expiry_period_days > 0:
-                        set_post_expiry_days(base_dir, nickname, domain, 0)
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_expiry(base_dir, nickname, domain,
+                                         fields, actor_changed)
 
-                # set maximum preview posts on profile screen
-                max_profile_posts = \
-                    get_max_profile_posts(base_dir, nickname, domain,
-                                          20)
-                if fields.get('maxRecentProfilePosts'):
-                    if fields['maxRecentProfilePosts'] != \
-                       str(max_profile_posts):
-                        max_profile_posts = \
-                            fields['maxRecentProfilePosts']
-                        set_max_profile_posts(base_dir, nickname, domain,
-                                              max_profile_posts)
-                else:
-                    set_max_profile_posts(base_dir, nickname, domain,
-                                          20)
+                _profile_post_max_preview(base_dir, nickname, domain, fields)
 
-                # birthday on edit profile screen
-                birth_date = ''
-                if actor_json.get('vcard:bday'):
-                    birth_date = actor_json['vcard:bday']
-                if fields.get('birthDate'):
-                    if fields['birthDate'] != birth_date:
-                        new_birth_date = fields['birthDate']
-                        if '-' in new_birth_date and \
-                           len(new_birth_date.split('-')) == 3:
-                            # set birth date
-                            actor_json['vcard:bday'] = new_birth_date
-                            actor_changed = True
-                else:
-                    # set birth date
-                    if birth_date:
-                        actor_json['vcard:bday'] = ''
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_birthday(fields, actor_json, actor_changed)
 
-                # change tox address
-                current_tox_address = get_tox_address(actor_json)
-                if fields.get('toxAddress'):
-                    if fields['toxAddress'] != current_tox_address:
-                        set_tox_address(actor_json,
-                                        fields['toxAddress'])
-                        actor_changed = True
-                else:
-                    if current_tox_address:
-                        set_tox_address(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_tox_address(fields, actor_json,
+                                              actor_changed)
 
-                # change briar address
-                current_briar_address = get_briar_address(actor_json)
-                if fields.get('briarAddress'):
-                    if fields['briarAddress'] != current_briar_address:
-                        set_briar_address(actor_json,
-                                          fields['briarAddress'])
-                        actor_changed = True
-                else:
-                    if current_briar_address:
-                        set_briar_address(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_briar_address(fields, actor_json,
+                                                actor_changed)
 
-                # change cwtch address
-                current_cwtch_address = get_cwtch_address(actor_json)
-                if fields.get('cwtchAddress'):
-                    if fields['cwtchAddress'] != current_cwtch_address:
-                        set_cwtch_address(actor_json,
-                                          fields['cwtchAddress'])
-                        actor_changed = True
-                else:
-                    if current_cwtch_address:
-                        set_cwtch_address(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_cwtch_address(fields, actor_json,
+                                                actor_changed)
 
-                # change ntfy url
-                if fields.get('ntfyUrl'):
-                    ntfy_url_file = \
-                        base_dir + '/accounts/' + \
-                        nickname + '@' + domain + '/.ntfy_url'
-                    try:
-                        with open(ntfy_url_file, 'w+',
-                                  encoding='utf-8') as fp_ntfy:
-                            fp_ntfy.write(fields['ntfyUrl'])
-                    except OSError:
-                        print('EX: unable to save ntfy url ' +
-                              ntfy_url_file)
+                _profile_post_ntfy_url(base_dir, nickname, domain, fields)
 
-                # change ntfy topic
-                if fields.get('ntfyTopic'):
-                    ntfy_topic_file = \
-                        base_dir + '/accounts/' + \
-                        nickname + '@' + domain + '/.ntfy_topic'
-                    try:
-                        with open(ntfy_topic_file, 'w+',
-                                  encoding='utf-8') as fp_ntfy:
-                            fp_ntfy.write(fields['ntfyTopic'])
-                    except OSError:
-                        print('EX: unable to save ntfy topic ' +
-                              ntfy_topic_file)
+                _profile_post_ntfy_topic(base_dir, nickname, domain, fields)
 
-                # change Enigma public key
-                currentenigma_pub_key = get_enigma_pub_key(actor_json)
-                if fields.get('enigmapubkey'):
-                    if fields['enigmapubkey'] != currentenigma_pub_key:
-                        set_enigma_pub_key(actor_json,
-                                           fields['enigmapubkey'])
-                        actor_changed = True
-                else:
-                    if currentenigma_pub_key:
-                        set_enigma_pub_key(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_enigma_pubkey(actor_json, fields,
+                                                actor_changed)
 
-                # change PGP public key
-                currentpgp_pub_key = get_pgp_pub_key(actor_json)
-                if fields.get('pgp'):
-                    if fields['pgp'] != currentpgp_pub_key:
-                        set_pgp_pub_key(actor_json,
-                                        fields['pgp'])
-                        actor_changed = True
-                else:
-                    if currentpgp_pub_key:
-                        set_pgp_pub_key(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_pgp_pubkey(actor_json, fields,
+                                             actor_changed)
 
-                # change PGP fingerprint
-                currentpgp_fingerprint = get_pgp_fingerprint(actor_json)
-                if fields.get('openpgp'):
-                    if fields['openpgp'] != currentpgp_fingerprint:
-                        set_pgp_fingerprint(actor_json,
-                                            fields['openpgp'])
-                        actor_changed = True
-                else:
-                    if currentpgp_fingerprint:
-                        set_pgp_fingerprint(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_pgp_fingerprint(actor_json, fields,
+                                                  actor_changed)
 
-                # change donation link
-                current_donate_url = get_donation_url(actor_json)
-                if fields.get('donateUrl'):
-                    if fields['donateUrl'] != current_donate_url:
-                        set_donation_url(actor_json,
-                                         fields['donateUrl'])
-                        actor_changed = True
-                else:
-                    if current_donate_url:
-                        set_donation_url(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_donation_link(actor_json, fields,
+                                                actor_changed)
 
-                # change website
-                current_website = \
-                    get_website(actor_json, self.server.translate)
-                if fields.get('websiteUrl'):
-                    if fields['websiteUrl'] != current_website:
-                        set_website(actor_json,
-                                    fields['websiteUrl'],
-                                    self.server.translate)
-                        actor_changed = True
-                    site_is_verified(curr_session,
-                                     self.server.base_dir,
-                                     self.server.http_prefix,
-                                     nickname, domain,
-                                     fields['websiteUrl'],
-                                     True,
-                                     self.server.debug)
-                else:
-                    if current_website:
-                        set_website(actor_json, '', self.server.translate)
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_website(curr_session,
+                                          self.server.base_dir,
+                                          self.server.http_prefix,
+                                          nickname, domain,
+                                          actor_json, fields,
+                                          actor_changed,
+                                          self.server.translate,
+                                          self.server.debug)
 
-                # change gemini link
-                current_gemini_link = \
-                    get_gemini_link(actor_json)
-                if fields.get('geminiLink'):
-                    if fields['geminiLink'] != current_gemini_link:
-                        set_gemini_link(actor_json,
-                                        fields['geminiLink'])
-                        actor_changed = True
-                else:
-                    if current_gemini_link:
-                        set_gemini_link(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_gemini_link(actor_json, fields,
+                                              actor_changed)
 
-                # account moved to new address
-                moved_to = ''
-                if actor_json.get('movedTo'):
-                    moved_to = actor_json['movedTo']
-                if fields.get('movedTo'):
-                    if fields['movedTo'] != moved_to and \
-                       resembles_url(fields['movedTo']):
-                        actor_json['movedTo'] = fields['movedTo']
-                        send_move_activity = True
-                        actor_changed = True
-                else:
-                    if moved_to:
-                        del actor_json['movedTo']
-                        actor_changed = True
+                actor_changed, send_move_activity = \
+                    _profile_post_moved(actor_json, fields,
+                                        actor_changed,
+                                        send_move_activity)
 
-                # occupation on edit profile screen
-                occupation_name = get_occupation_name(actor_json)
-                if fields.get('occupationName'):
-                    fields['occupationName'] = \
-                        remove_html(fields['occupationName'])
-                    if occupation_name != \
-                       fields['occupationName']:
-                        set_occupation_name(actor_json,
-                                            fields['occupationName'])
-                        actor_changed = True
-                else:
-                    if occupation_name:
-                        set_occupation_name(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_occupation(actor_json, fields,
+                                             actor_changed)
 
-                # featured hashtags on edit profile screen
-                featured_hashtags = get_featured_hashtags(actor_json)
-                if fields.get('featuredHashtags'):
-                    fields['featuredHashtags'] = \
-                        remove_html(fields['featuredHashtags'])
-                    if featured_hashtags != \
-                       fields['featuredHashtags']:
-                        set_featured_hashtags(actor_json,
-                                              fields['featuredHashtags'])
-                        actor_changed = True
-                else:
-                    if featured_hashtags:
-                        set_featured_hashtags(actor_json, '')
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_featured_hashtags(actor_json, fields,
+                                                    actor_changed)
 
-                # Other accounts (alsoKnownAs)
-                also_known_as = []
-                if actor_json.get('alsoKnownAs'):
-                    also_known_as = actor_json['alsoKnownAs']
-                if fields.get('alsoKnownAs'):
-                    also_known_as_str = ''
-                    also_known_as_ctr = 0
-                    for alt_actor in also_known_as:
-                        if also_known_as_ctr > 0:
-                            also_known_as_str += ', '
-                        also_known_as_str += alt_actor
-                        also_known_as_ctr += 1
-                    if fields['alsoKnownAs'] != also_known_as_str and \
-                       '://' in fields['alsoKnownAs'] and \
-                       '@' not in fields['alsoKnownAs'] and \
-                       '.' in fields['alsoKnownAs']:
-                        if ';' in fields['alsoKnownAs']:
-                            fields['alsoKnownAs'] = \
-                                fields['alsoKnownAs'].replace(';', ',')
-                        new_also_known_as = \
-                            fields['alsoKnownAs'].split(',')
-                        also_known_as = []
-                        for alt_actor in new_also_known_as:
-                            alt_actor = alt_actor.strip()
-                            if resembles_url(alt_actor):
-                                if alt_actor not in also_known_as:
-                                    also_known_as.append(alt_actor)
-                        actor_json['alsoKnownAs'] = also_known_as
-                        actor_changed = True
-                else:
-                    if also_known_as:
-                        del actor_json['alsoKnownAs']
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_alsoknownas(actor_json, fields,
+                                              actor_changed)
 
-                # change user bio
-                featured_tags = get_featured_hashtags(actor_json) + ' '
-                actor_json['tag'] = []
-                if fields.get('bio'):
-                    if fields['bio'] != actor_json['summary']:
-                        bio_str = remove_html(fields['bio'])
-                        if not is_filtered(base_dir,
-                                           nickname, domain, bio_str,
-                                           system_language):
-                            actor_tags = {}
-                            actor_json['summary'] = \
-                                add_html_tags(base_dir,
-                                              http_prefix,
-                                              nickname,
-                                              domain_full,
-                                              bio_str, [], actor_tags,
-                                              self.server.translate)
-                            if actor_tags:
-                                for _, tag in actor_tags.items():
-                                    if tag['name'] + ' ' in featured_tags:
-                                        continue
-                                    actor_json['tag'].append(tag)
-                            actor_changed = True
-                        else:
-                            if check_name_and_bio:
-                                redirect_path = '/welcome_profile'
-                else:
-                    if check_name_and_bio:
-                        redirect_path = '/welcome_profile'
-                set_featured_hashtags(actor_json, featured_tags, True)
+                actor_changed, redirect_path = \
+                    _profile_post_bio(actor_json, fields,
+                                      base_dir, http_prefix,
+                                      nickname, domain, domain_full,
+                                      system_language, self.server.translate,
+                                      actor_changed,
+                                      redirect_path,
+                                      check_name_and_bio)
 
                 admin_nickname = \
                     get_config_param(base_dir, 'admin')
@@ -1463,6 +1656,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     # on all incoming posts
                     if path.startswith('/users/' +
                                        admin_nickname + '/'):
+                        # TODO
                         show_node_info_accounts = False
                         if fields.get('showNodeInfoAccounts'):
                             if fields['showNodeInfoAccounts'] == 'on':
