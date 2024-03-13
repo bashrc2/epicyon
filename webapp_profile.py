@@ -278,9 +278,10 @@ def html_profile_after_search(authorized: bool,
 
     avatar_url = ''
     if profile_json.get('icon'):
-        if profile_json['icon'].get('url'):
-            url_str = get_url_from_post(profile_json['icon']['url'])
-            avatar_url = remove_html(url_str)
+        if isinstance(profile_json['icon'], dict):
+            if profile_json['icon'].get('url'):
+                url_str = get_url_from_post(profile_json['icon']['url'])
+                avatar_url = remove_html(url_str)
     if not avatar_url:
         avatar_url = get_person_avatar_url(base_dir, person_url, person_cache)
     display_name = search_nickname
