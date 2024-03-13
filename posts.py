@@ -411,9 +411,10 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
                 shared_inbox = person_json['endpoints']['sharedInbox']
     avatar_url = None
     if person_json.get('icon'):
-        if person_json['icon'].get('url'):
-            url_str = get_url_from_post(person_json['icon']['url'])
-            avatar_url = remove_html(url_str)
+        if isinstance(person_json['icon'], dict):
+            if person_json['icon'].get('url'):
+                url_str = get_url_from_post(person_json['icon']['url'])
+                avatar_url = remove_html(url_str)
     display_name = None
     possible_display_name = None
     if person_json.get('name'):
