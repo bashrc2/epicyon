@@ -414,7 +414,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
         icon_dict = person_json['icon']
         if isinstance(icon_dict, list):
             if len(icon_dict) > 0:
-                icon_dict = icon_dict[0]
+                icon_dict = icon_dict[-1]
         if isinstance(icon_dict, dict):
             if icon_dict.get('url'):
                 url_str = get_url_from_post(icon_dict['url'])

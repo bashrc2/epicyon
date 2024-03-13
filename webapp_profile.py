@@ -281,7 +281,7 @@ def html_profile_after_search(authorized: bool,
         icon_dict = profile_json['icon']
         if isinstance(icon_dict, list):
             if len(icon_dict) > 0:
-                icon_dict = icon_dict[0]
+                icon_dict = icon_dict[-1]
         if isinstance(icon_dict, dict):
             if icon_dict.get('url'):
                 url_str = get_url_from_post(icon_dict['url'])
