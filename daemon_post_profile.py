@@ -123,6 +123,528 @@ from cache import store_person_in_cache
 from daemon_utils import post_to_outbox
 
 
+def _profile_post_mutuals_replies(account_dir: str, fields: {}) -> None:
+    """ HTTP POST show replies only from mutuals checkbox
+    """
+    show_replies_mutuals = False
+    if fields.get('repliesFromMutualsOnly'):
+        if fields['repliesFromMutualsOnly'] == 'on':
+            show_replies_mutuals = True
+    show_replies_mutuals_file = \
+        account_dir + '/.repliesFromMutualsOnly'
+    if os.path.isfile(show_replies_mutuals_file):
+        if not show_replies_mutuals:
+            try:
+                os.remove(show_replies_mutuals_file)
+            except OSError:
+                print('EX: unable to remove repliesFromMutualsOnly file ' +
+                      show_replies_mutuals_file)
+    else:
+        if show_replies_mutuals:
+            try:
+                with open(show_replies_mutuals_file, 'w+',
+                          encoding='utf-8') as fp_replies:
+                    fp_replies.write('\n')
+            except OSError:
+                print('EX: unable to write repliesFromMutualsOnly file ' +
+                      show_replies_mutuals_file)
+
+
+def _profile_post_only_follower_replies(fields: {},
+                                        account_dir: str) -> None:
+    """ HTTP POST show replies only from followers checkbox
+    """
+    show_replies_followers = False
+    if fields.get('repliesFromFollowersOnly'):
+        if fields['repliesFromFollowersOnly'] == 'on':
+            show_replies_followers = True
+    show_replies_followers_file = \
+        account_dir + '/.repliesFromFollowersOnly'
+    if os.path.isfile(show_replies_followers_file):
+        if not show_replies_followers:
+            try:
+                os.remove(show_replies_followers_file)
+            except OSError:
+                print('EX: unable to remove ' +
+                      'repliesFromFollowersOnly file ' +
+                      show_replies_followers_file)
+    else:
+        if show_replies_followers:
+            try:
+                with open(show_replies_followers_file, 'w+',
+                          encoding='utf-8') as fp_replies:
+                    fp_replies.write('\n')
+            except OSError:
+                print('EX: unable to write ' +
+                      'repliesFromFollowersOnly file ' +
+                      show_replies_followers_file)
+
+
+def _profile_post_show_questions(base_dir: str,
+                                 nickname: str, domain: str,
+                                 fields: {},
+                                 account_dir: str) -> None:
+    """ HTTP POST show poll/vote/question posts checkbox
+    """
+    show_vote_posts = False
+    if fields.get('showVotes'):
+        if fields['showVotes'] == 'on':
+            show_vote_posts = True
+    show_vote_file = account_dir + '/.noVotes'
+    if os.path.isfile(show_vote_file):
+        if show_vote_posts:
+            try:
+                os.remove(show_vote_file)
+            except OSError:
+                print('EX: unable to remove noVotes file ' +
+                      show_vote_file)
+    else:
+        if not show_vote_posts:
+            try:
+                with open(show_vote_file, 'w+',
+                          encoding='utf-8') as fp_votes:
+                    fp_votes.write('\n')
+            except OSError:
+                print('EX: unable to write noVotes file ' +
+                      show_vote_file)
+
+
+def _profile_post_reverse_timelines(base_dir: str,
+                                    nickname: str, domain: str,
+                                    fields: {}, self) -> None:
+    """ HTTP POST reverse timelines checkbox
+    """
+    reverse = False
+    if fields.get('reverseTimelines'):
+        if fields['reverseTimelines'] == 'on':
+            reverse = True
+            if nickname not in self.server.reverse_sequence:
+                self.server.reverse_sequence.append(nickname)
+            save_reverse_timeline(base_dir,
+                                  self.server.reverse_sequence)
+    if not reverse:
+        if nickname in self.server.reverse_sequence:
+            self.server.reverse_sequence.remove(nickname)
+            save_reverse_timeline(base_dir,
+                                  self.server.reverse_sequence)
+
+
+def _profile_post_bold_reading(base_dir: str,
+                               nickname: str, domain: str,
+                               fields: {}, self) -> None:
+    """ HTTP POST bold reading checkbox
+    """
+    bold_reading_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.boldReading'
+    bold_reading = False
+    if fields.get('boldReading'):
+        if fields['boldReading'] == 'on':
+            bold_reading = True
+            self.server.bold_reading[nickname] = True
+            try:
+                with open(bold_reading_filename, 'w+',
+                          encoding='utf-8') as rfile:
+                    rfile.write('\n')
+            except OSError:
+                print('EX: unable to write bold reading ' +
+                      bold_reading_filename)
+    if not bold_reading:
+        if self.server.bold_reading.get(nickname):
+            del self.server.bold_reading[nickname]
+        if os.path.isfile(bold_reading_filename):
+            try:
+                os.remove(bold_reading_filename)
+            except OSError:
+                print('EX: _profile_edit unable to delete ' +
+                      bold_reading_filename)
+
+
+def _profile_post_hide_reaction_button(base_dir: str,
+                                       nickname: str, domain: str,
+                                       fields: {}) -> None:
+    """ HTTP POST hide Reaction button
+    """
+    hide_reaction_button_file = \
+        acct_dir(base_dir, nickname, domain) + '/.hideReactionButton'
+    notify_reactions_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.notifyReactions'
+    hide_reaction_button_active = False
+    if fields.get('hideReactionButton'):
+        if fields['hideReactionButton'] == 'on':
+            hide_reaction_button_active = True
+            try:
+                with open(hide_reaction_button_file, 'w+',
+                          encoding='utf-8') as rfile:
+                    rfile.write('\n')
+            except OSError:
+                print('EX: unable to write hide reaction ' +
+                      hide_reaction_button_file)
+            # remove notify Reaction selection
+            if os.path.isfile(notify_reactions_filename):
+                try:
+                    os.remove(notify_reactions_filename)
+                except OSError:
+                    print('EX: _profile_edit unable to delete ' +
+                          notify_reactions_filename)
+    if not hide_reaction_button_active:
+        if os.path.isfile(hide_reaction_button_file):
+            try:
+                os.remove(hide_reaction_button_file)
+            except OSError:
+                print('EX: _profile_edit unable to delete ' +
+                      hide_reaction_button_file)
+
+
+def _profile_post_minimize_images(base_dir: str, nickname: str, domain: str,
+                                  fields: {},
+                                  min_images_for_accounts: []) -> None:
+    """ HTTP POST Minimize all images from edit profile screen
+    """
+    minimize_all_images = False
+    if fields.get('minimizeAllImages'):
+        if fields['minimizeAllImages'] == 'on':
+            minimize_all_images = True
+            min_img_acct = min_images_for_accounts
+            set_minimize_all_images(base_dir,
+                                    nickname, domain,
+                                    True, min_img_acct)
+            print('min_images_for_accounts: ' +
+                  str(min_img_acct))
+    if not minimize_all_images:
+        min_img_acct = min_images_for_accounts
+        set_minimize_all_images(base_dir,
+                                nickname, domain,
+                                False, min_img_acct)
+        print('min_images_for_accounts: ' +
+              str(min_img_acct))
+
+
+def _profile_post_hide_like_button(base_dir: str, nickname: str, domain: str,
+                                   fields: {}) -> None:
+    """ HTTP POST hide Like button
+    """
+    hide_like_button_file = \
+        acct_dir(base_dir, nickname, domain) + '/.hideLikeButton'
+    notify_likes_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.notifyLikes'
+    hide_like_button_active = False
+    if fields.get('hideLikeButton'):
+        if fields['hideLikeButton'] == 'on':
+            hide_like_button_active = True
+            try:
+                with open(hide_like_button_file, 'w+',
+                          encoding='utf-8') as rfil:
+                    rfil.write('\n')
+            except OSError:
+                print('EX: unable to write hide like ' +
+                      hide_like_button_file)
+            # remove notify likes selection
+            if os.path.isfile(notify_likes_filename):
+                try:
+                    os.remove(notify_likes_filename)
+                except OSError:
+                    print('EX: _profile_edit unable to delete ' +
+                          notify_likes_filename)
+    if not hide_like_button_active:
+        if os.path.isfile(hide_like_button_file):
+            try:
+                os.remove(hide_like_button_file)
+            except OSError:
+                print('EX: _profile_edit unable to delete ' +
+                      hide_like_button_file)
+
+
+def _profile_post_remove_retweets(base_dir: str, nickname: str, domain: str,
+                                  fields: {}) -> None:
+    """ HTTP POST remove Twitter retweets
+    """
+    remove_twitter_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
+    remove_twitter_active = False
+    if fields.get('removeTwitter'):
+        if fields['removeTwitter'] == 'on':
+            remove_twitter_active = True
+            try:
+                with open(remove_twitter_filename, 'w+',
+                          encoding='utf-8') as rfile:
+                    rfile.write('\n')
+            except OSError:
+                print('EX: unable to write remove twitter ' +
+                      remove_twitter_filename)
+    if not remove_twitter_active:
+        if os.path.isfile(remove_twitter_filename):
+            try:
+                os.remove(remove_twitter_filename)
+            except OSError:
+                print('EX: _profile_edit unable to delete ' +
+                      remove_twitter_filename)
+
+
+def _profile_post_dms_from_followers(base_dir: str, nickname: str, domain: str,
+                                     on_final_welcome_screen: str, fields: {},
+                                     actor_changed: bool) -> bool:
+    """ HTTP POST only receive DMs from accounts you follow
+    """
+    follow_dms_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.followDMs'
+    if on_final_welcome_screen:
+        # initial default setting created via
+        # the welcome screen
+        try:
+            with open(follow_dms_filename, 'w+',
+                      encoding='utf-8') as ffile:
+                ffile.write('\n')
+        except OSError:
+            print('EX: unable to write follow DMs ' +
+                  follow_dms_filename)
+        actor_changed = True
+    else:
+        follow_dms_active = False
+        if fields.get('followDMs'):
+            if fields['followDMs'] == 'on':
+                follow_dms_active = True
+                try:
+                    with open(follow_dms_filename, 'w+',
+                              encoding='utf-8') as ffile:
+                        ffile.write('\n')
+                except OSError:
+                    print('EX: unable to write follow DMs 2 ' +
+                          follow_dms_filename)
+        if not follow_dms_active:
+            if os.path.isfile(follow_dms_filename):
+                try:
+                    os.remove(follow_dms_filename)
+                except OSError:
+                    print('EX: _profile_edit unable to delete ' +
+                          follow_dms_filename)
+    return actor_changed
+
+
+def _profile_post_remove_custom_font(base_dir: str, nickname: str, domain: str,
+                                     system_language: str, admin_nickname: str,
+                                     dyslexic_font: bool,
+                                     path: str, fields: {}, self) -> None:
+    """ HTTP POST remove a custom font
+    """
+    if not fields.get('removeCustomFont'):
+        return
+    if (fields['removeCustomFont'] == 'on' and
+        (is_artist(base_dir, nickname) or
+         path.startswith('/users/' + admin_nickname + '/'))):
+        font_ext = ('woff', 'woff2', 'otf', 'ttf')
+        for ext in font_ext:
+            if os.path.isfile(base_dir + '/fonts/custom.' + ext):
+                try:
+                    os.remove(base_dir + '/fonts/custom.' + ext)
+                except OSError:
+                    print('EX: _profile_edit unable to delete ' +
+                          base_dir + '/fonts/custom.' + ext)
+            if os.path.isfile(base_dir +
+                              '/fonts/custom.' + ext + '.etag'):
+                try:
+                    os.remove(base_dir +
+                              '/fonts/custom.' + ext + '.etag')
+                except OSError:
+                    print('EX: _profile_edit ' +
+                          'unable to delete ' +
+                          base_dir + '/fonts/custom.' +
+                          ext + '.etag')
+        curr_theme = get_theme(base_dir)
+        if curr_theme:
+            self.server.theme_name = curr_theme
+            allow_local_network_access = \
+                self.server.allow_local_network_access
+            set_theme(base_dir, curr_theme, domain,
+                      allow_local_network_access,
+                      system_language,
+                      dyslexic_font, False)
+            self.server.text_mode_banner = \
+                get_text_mode_banner(base_dir)
+            self.server.iconsCache = {}
+            self.server.fontsCache = {}
+            self.server.show_publish_as_icon = \
+                get_config_param(base_dir, 'showPublishAsIcon')
+            self.server.full_width_tl_button_header = \
+                get_config_param(base_dir, 'fullWidthTimelineButtonHeader')
+            self.server.icons_as_buttons = \
+                get_config_param(base_dir, 'iconsAsButtons')
+            self.server.rss_icon_at_top = \
+                get_config_param(base_dir, 'rssIconAtTop')
+            self.server.publish_button_at_top = \
+                get_config_param(base_dir, 'publishButtonAtTop')
+
+
+def _profile_post_keep_dms(base_dir: str,
+                           nickname: str, domain: str,
+                           fields: {},
+                           actor_changed: bool) -> bool:
+    """ HTTP POST keep DMs during post expiry
+    """
+    expire_keep_dms = False
+    if fields.get('expiryKeepDMs'):
+        if fields['expiryKeepDMs'] == 'on':
+            expire_keep_dms = True
+    curr_keep_dms = \
+        get_post_expiry_keep_dms(base_dir, nickname, domain)
+    if curr_keep_dms != expire_keep_dms:
+        set_post_expiry_keep_dms(base_dir, nickname, domain,
+                                 expire_keep_dms)
+        actor_changed = True
+    return actor_changed
+
+
+def _profile_post_reject_spam_actors(base_dir: str,
+                                     nickname: str, domain: str,
+                                     fields: {}) -> None:
+    """ HTTP POST reject spam actors
+    """
+    reject_spam_actors = False
+    if fields.get('rejectSpamActors'):
+        if fields['rejectSpamActors'] == 'on':
+            reject_spam_actors = True
+    curr_reject_spam_actors = False
+    actor_spam_filter_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.reject_spam_actors'
+    if os.path.isfile(actor_spam_filter_filename):
+        curr_reject_spam_actors = True
+    if reject_spam_actors != curr_reject_spam_actors:
+        if reject_spam_actors:
+            try:
+                with open(actor_spam_filter_filename, 'w+',
+                          encoding='utf-8') as fp_spam:
+                    fp_spam.write('\n')
+            except OSError:
+                print('EX: unable to write reject spam actors')
+        else:
+            try:
+                os.remove(actor_spam_filter_filename)
+            except OSError:
+                print('EX: unable to remove reject spam actors')
+
+
+def _profile_post_approve_followers(on_final_welcome_screen: bool,
+                                    actor_json: {}, fields: {},
+                                    actor_changed: bool) -> bool:
+    """ HTTP POST approve followers
+    """
+    if on_final_welcome_screen:
+        # Default setting created via the welcome screen
+        actor_json['manuallyApprovesFollowers'] = True
+        actor_changed = True
+    else:
+        approve_followers = False
+        if fields.get('approveFollowers'):
+            if fields['approveFollowers'] == 'on':
+                approve_followers = True
+        if approve_followers != \
+           actor_json['manuallyApprovesFollowers']:
+            actor_json['manuallyApprovesFollowers'] = approve_followers
+            actor_changed = True
+    return actor_changed
+
+
+def _profile_post_shared_item_federation_domains(base_dir: str, fields: {},
+                                                 self) -> None:
+    """ HTTP POST shared item federation domains
+    """
+    # shared item federation domains
+    si_domain_updated = False
+    fed_domains_variable = "sharedItemsFederatedDomains"
+    fed_domains_str = \
+        get_config_param(base_dir, fed_domains_variable)
+    if not fed_domains_str:
+        fed_domains_str = ''
+    shared_items_form_str = ''
+    if fields.get('shareDomainList'):
+        shared_it_list = fed_domains_str.split(',')
+        for shared_federated_domain in shared_it_list:
+            shared_items_form_str += \
+                shared_federated_domain.strip() + '\n'
+
+        share_domain_list = fields['shareDomainList']
+        if share_domain_list != shared_items_form_str:
+            shared_items_form_str2 = \
+                share_domain_list.replace('\n', ',')
+            shared_items_field = "sharedItemsFederatedDomains"
+            set_config_param(base_dir,
+                             shared_items_field,
+                             shared_items_form_str2)
+            si_domain_updated = True
+    else:
+        if fed_domains_str:
+            shared_items_field = \
+                "sharedItemsFederatedDomains"
+            set_config_param(base_dir,
+                             shared_items_field, '')
+            si_domain_updated = True
+    if si_domain_updated:
+        si_domains = shared_items_form_str.split('\n')
+        si_tokens = self.server.shared_item_federation_tokens
+        self.server.shared_items_federated_domains = si_domains
+        domain_full = self.server.domain_full
+        base_dir = self.server.base_dir
+        self.server.shared_item_federation_tokens = \
+            merge_shared_item_tokens(base_dir,
+                                     domain_full,
+                                     si_domains,
+                                     si_tokens)
+
+
+def _profile_post_broch_mode(base_dir: str, domain_full: str,
+                             fields: {}) -> None:
+    """ HTTP POST broch mode
+    """
+    broch_mode = False
+    if fields.get('brochMode'):
+        if fields['brochMode'] == 'on':
+            broch_mode = True
+    curr_broch_mode = get_config_param(base_dir, "brochMode")
+    if broch_mode != curr_broch_mode:
+        set_broch_mode(base_dir, domain_full, broch_mode)
+        set_config_param(base_dir, 'brochMode',
+                         broch_mode)
+
+
+def _profile_post_verify_all_signatures(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST verify all signatures
+    """
+    verify_all_signatures = False
+    if fields.get('verifyallsignatures'):
+        if fields['verifyallsignatures'] == 'on':
+            verify_all_signatures = True
+    self.server.verify_all_signatures = verify_all_signatures
+    set_config_param(base_dir, "verifyAllSignatures",
+                     verify_all_signatures)
+
+
+def _profile_post_show_nodeinfo_version(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST show nodeinfo version
+    """
+    show_node_info_version = False
+    if fields.get('showNodeInfoVersion'):
+        if fields['showNodeInfoVersion'] == 'on':
+            show_node_info_version = True
+    self.server.show_node_info_version = \
+        show_node_info_version
+    set_config_param(base_dir,
+                     "showNodeInfoVersion",
+                     show_node_info_version)
+
+
+def _profile_post_show_nodeinfo(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST Show number of accounts within nodeinfo
+    """
+    show_node_info_accounts = False
+    if fields.get('showNodeInfoAccounts'):
+        if fields['showNodeInfoAccounts'] == 'on':
+            show_node_info_accounts = True
+    self.server.show_node_info_accounts = \
+        show_node_info_accounts
+    set_config_param(base_dir,
+                     "showNodeInfoAccounts",
+                     show_node_info_accounts)
+
+
 def _profile_post_bio(actor_json: {}, fields: {},
                       base_dir: str, http_prefix: str,
                       nickname: str, domain: str, domain_full: str,
@@ -1656,100 +2178,18 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     # on all incoming posts
                     if path.startswith('/users/' +
                                        admin_nickname + '/'):
-                        # TODO
-                        show_node_info_accounts = False
-                        if fields.get('showNodeInfoAccounts'):
-                            if fields['showNodeInfoAccounts'] == 'on':
-                                show_node_info_accounts = True
-                        self.server.show_node_info_accounts = \
-                            show_node_info_accounts
-                        set_config_param(base_dir,
-                                         "showNodeInfoAccounts",
-                                         show_node_info_accounts)
+                        _profile_post_show_nodeinfo(base_dir, fields, self)
 
-                        show_node_info_version = False
-                        if fields.get('showNodeInfoVersion'):
-                            if fields['showNodeInfoVersion'] == 'on':
-                                show_node_info_version = True
-                        self.server.show_node_info_version = \
-                            show_node_info_version
-                        set_config_param(base_dir,
-                                         "showNodeInfoVersion",
-                                         show_node_info_version)
+                        _profile_post_show_nodeinfo_version(base_dir, fields,
+                                                            self)
+                        _profile_post_verify_all_signatures(base_dir, fields,
+                                                            self)
 
-                        verify_all_signatures = False
-                        if fields.get('verifyallsignatures'):
-                            if fields['verifyallsignatures'] == 'on':
-                                verify_all_signatures = True
-                        self.server.verify_all_signatures = \
-                            verify_all_signatures
-                        set_config_param(base_dir, "verifyAllSignatures",
-                                         verify_all_signatures)
+                        _profile_post_broch_mode(base_dir, domain_full, fields)
 
-                        broch_mode = False
-                        if fields.get('brochMode'):
-                            if fields['brochMode'] == 'on':
-                                broch_mode = True
-                        curr_broch_mode = \
-                            get_config_param(base_dir, "brochMode")
-                        if broch_mode != curr_broch_mode:
-                            set_broch_mode(self.server.base_dir,
-                                           self.server.domain_full,
-                                           broch_mode)
-                            set_config_param(base_dir, 'brochMode',
-                                             broch_mode)
-
-                        # shared item federation domains
-                        si_domain_updated = False
-                        fed_domains_variable = \
-                            "sharedItemsFederatedDomains"
-                        fed_domains_str = \
-                            get_config_param(base_dir,
-                                             fed_domains_variable)
-                        if not fed_domains_str:
-                            fed_domains_str = ''
-                        shared_items_form_str = ''
-                        if fields.get('shareDomainList'):
-                            shared_it_list = \
-                                fed_domains_str.split(',')
-                            for shared_federated_domain in shared_it_list:
-                                shared_items_form_str += \
-                                    shared_federated_domain.strip() + '\n'
-
-                            share_domain_list = fields['shareDomainList']
-                            if share_domain_list != \
-                               shared_items_form_str:
-                                shared_items_form_str2 = \
-                                    share_domain_list.replace('\n', ',')
-                                shared_items_field = \
-                                    "sharedItemsFederatedDomains"
-                                set_config_param(base_dir,
-                                                 shared_items_field,
-                                                 shared_items_form_str2)
-                                si_domain_updated = True
-                        else:
-                            if fed_domains_str:
-                                shared_items_field = \
-                                    "sharedItemsFederatedDomains"
-                                set_config_param(base_dir,
-                                                 shared_items_field,
-                                                 '')
-                                si_domain_updated = True
-                        if si_domain_updated:
-                            si_domains = shared_items_form_str.split('\n')
-                            si_tokens = \
-                                self.server.shared_item_federation_tokens
-                            self.server.shared_items_federated_domains = \
-                                si_domains
-                            domain_full = self.server.domain_full
-                            base_dir = \
-                                self.server.base_dir
-                            self.server.shared_item_federation_tokens = \
-                                merge_shared_item_tokens(base_dir,
-                                                         domain_full,
-                                                         si_domains,
-                                                         si_tokens)
-
+                        _profile_post_shared_item_federation_domains(base_dir,
+                                                                     fields,
+                                                                     self)
                     # change moderators list
                     set_roles_from_list(base_dir, domain, admin_nickname,
                                         'moderators', 'moderator', fields,
@@ -1778,390 +2218,66 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 # remove scheduled posts
                 if fields.get('removeScheduledPosts'):
                     if fields['removeScheduledPosts'] == 'on':
-                        remove_scheduled_posts(base_dir,
-                                               nickname, domain)
+                        remove_scheduled_posts(base_dir, nickname, domain)
 
-                # approve followers
-                if on_final_welcome_screen:
-                    # Default setting created via the welcome screen
-                    actor_json['manuallyApprovesFollowers'] = True
-                    actor_changed = True
-                else:
-                    approve_followers = False
-                    if fields.get('approveFollowers'):
-                        if fields['approveFollowers'] == 'on':
-                            approve_followers = True
-                    if approve_followers != \
-                       actor_json['manuallyApprovesFollowers']:
-                        actor_json['manuallyApprovesFollowers'] = \
-                            approve_followers
-                        actor_changed = True
+                actor_changed = \
+                    _profile_post_approve_followers(on_final_welcome_screen,
+                                                    actor_json, fields,
+                                                    actor_changed)
 
-                # reject spam actors
-                reject_spam_actors = False
-                if fields.get('rejectSpamActors'):
-                    if fields['rejectSpamActors'] == 'on':
-                        reject_spam_actors = True
-                curr_reject_spam_actors = False
-                actor_spam_filter_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/.reject_spam_actors'
-                if os.path.isfile(actor_spam_filter_filename):
-                    curr_reject_spam_actors = True
-                if reject_spam_actors != curr_reject_spam_actors:
-                    if reject_spam_actors:
-                        try:
-                            with open(actor_spam_filter_filename, 'w+',
-                                      encoding='utf-8') as fp_spam:
-                                fp_spam.write('\n')
-                        except OSError:
-                            print('EX: unable to write reject spam actors')
-                    else:
-                        try:
-                            os.remove(actor_spam_filter_filename)
-                        except OSError:
-                            print('EX: ' +
-                                  'unable to remove reject spam actors')
+                _profile_post_reject_spam_actors(base_dir,
+                                                 nickname, domain, fields)
 
-                # keep DMs during post expiry
-                expire_keep_dms = False
-                if fields.get('expiryKeepDMs'):
-                    if fields['expiryKeepDMs'] == 'on':
-                        expire_keep_dms = True
-                curr_keep_dms = \
-                    get_post_expiry_keep_dms(base_dir, nickname, domain)
-                if curr_keep_dms != expire_keep_dms:
-                    set_post_expiry_keep_dms(base_dir, nickname, domain,
-                                             expire_keep_dms)
-                    actor_changed = True
+                actor_changed = \
+                    _profile_post_keep_dms(base_dir,
+                                           nickname, domain,
+                                           fields, actor_changed)
 
-                # remove a custom font
-                if fields.get('removeCustomFont'):
-                    if (fields['removeCustomFont'] == 'on' and
-                        (is_artist(base_dir, nickname) or
-                         path.startswith('/users/' +
-                                         admin_nickname + '/'))):
-                        font_ext = ('woff', 'woff2', 'otf', 'ttf')
-                        for ext in font_ext:
-                            if os.path.isfile(base_dir +
-                                              '/fonts/custom.' + ext):
-                                try:
-                                    os.remove(base_dir +
-                                              '/fonts/custom.' + ext)
-                                except OSError:
-                                    print('EX: _profile_edit ' +
-                                          'unable to delete ' +
-                                          base_dir +
-                                          '/fonts/custom.' + ext)
-                            if os.path.isfile(base_dir +
-                                              '/fonts/custom.' + ext +
-                                              '.etag'):
-                                try:
-                                    os.remove(base_dir +
-                                              '/fonts/custom.' + ext +
-                                              '.etag')
-                                except OSError:
-                                    print('EX: _profile_edit ' +
-                                          'unable to delete ' +
-                                          base_dir + '/fonts/custom.' +
-                                          ext + '.etag')
-                        curr_theme = get_theme(base_dir)
-                        if curr_theme:
-                            self.server.theme_name = curr_theme
-                            allow_local_network_access = \
-                                self.server.allow_local_network_access
-                            set_theme(base_dir, curr_theme, domain,
-                                      allow_local_network_access,
-                                      system_language,
-                                      self.server.dyslexic_font, False)
-                            self.server.text_mode_banner = \
-                                get_text_mode_banner(base_dir)
-                            self.server.iconsCache = {}
-                            self.server.fontsCache = {}
-                            self.server.show_publish_as_icon = \
-                                get_config_param(base_dir,
-                                                 'showPublishAsIcon')
-                            self.server.full_width_tl_button_header = \
-                                get_config_param(base_dir,
-                                                 'fullWidthTimeline' +
-                                                 'ButtonHeader')
-                            self.server.icons_as_buttons = \
-                                get_config_param(base_dir,
-                                                 'iconsAsButtons')
-                            self.server.rss_icon_at_top = \
-                                get_config_param(base_dir,
-                                                 'rssIconAtTop')
-                            self.server.publish_button_at_top = \
-                                get_config_param(base_dir,
-                                                 'publishButtonAtTop')
+                _profile_post_remove_custom_font(base_dir, nickname, domain,
+                                                 system_language,
+                                                 admin_nickname,
+                                                 self.server.dyslexic_font,
+                                                 path, fields, self)
 
-                # only receive DMs from accounts you follow
-                follow_dms_filename = \
-                    acct_dir(base_dir, nickname, domain) + '/.followDMs'
-                if on_final_welcome_screen:
-                    # initial default setting created via
-                    # the welcome screen
-                    try:
-                        with open(follow_dms_filename, 'w+',
-                                  encoding='utf-8') as ffile:
-                            ffile.write('\n')
-                    except OSError:
-                        print('EX: unable to write follow DMs ' +
-                              follow_dms_filename)
-                    actor_changed = True
-                else:
-                    follow_dms_active = False
-                    if fields.get('followDMs'):
-                        if fields['followDMs'] == 'on':
-                            follow_dms_active = True
-                            try:
-                                with open(follow_dms_filename, 'w+',
-                                          encoding='utf-8') as ffile:
-                                    ffile.write('\n')
-                            except OSError:
-                                print('EX: unable to write follow DMs 2 ' +
-                                      follow_dms_filename)
-                    if not follow_dms_active:
-                        if os.path.isfile(follow_dms_filename):
-                            try:
-                                os.remove(follow_dms_filename)
-                            except OSError:
-                                print('EX: _profile_edit ' +
-                                      'unable to delete ' +
-                                      follow_dms_filename)
+                actor_changed = \
+                    _profile_post_dms_from_followers(base_dir,
+                                                     nickname, domain,
+                                                     on_final_welcome_screen,
+                                                     fields,
+                                                     actor_changed)
 
-                # remove Twitter retweets
-                remove_twitter_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/.removeTwitter'
-                remove_twitter_active = False
-                if fields.get('removeTwitter'):
-                    if fields['removeTwitter'] == 'on':
-                        remove_twitter_active = True
-                        try:
-                            with open(remove_twitter_filename, 'w+',
-                                      encoding='utf-8') as rfile:
-                                rfile.write('\n')
-                        except OSError:
-                            print('EX: unable to write remove twitter ' +
-                                  remove_twitter_filename)
-                if not remove_twitter_active:
-                    if os.path.isfile(remove_twitter_filename):
-                        try:
-                            os.remove(remove_twitter_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  remove_twitter_filename)
+                _profile_post_remove_retweets(base_dir, nickname, domain,
+                                              fields)
 
-                # hide Like button
-                hide_like_button_file = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/.hideLikeButton'
-                notify_likes_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/.notifyLikes'
-                hide_like_button_active = False
-                if fields.get('hideLikeButton'):
-                    if fields['hideLikeButton'] == 'on':
-                        hide_like_button_active = True
-                        try:
-                            with open(hide_like_button_file, 'w+',
-                                      encoding='utf-8') as rfil:
-                                rfil.write('\n')
-                        except OSError:
-                            print('EX: unable to write hide like ' +
-                                  hide_like_button_file)
-                        # remove notify likes selection
-                        if os.path.isfile(notify_likes_filename):
-                            try:
-                                os.remove(notify_likes_filename)
-                            except OSError:
-                                print('EX: _profile_edit ' +
-                                      'unable to delete ' +
-                                      notify_likes_filename)
-                if not hide_like_button_active:
-                    if os.path.isfile(hide_like_button_file):
-                        try:
-                            os.remove(hide_like_button_file)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  hide_like_button_file)
+                _profile_post_hide_like_button(base_dir, nickname, domain,
+                                               fields)
 
-                # Minimize all images from edit profile screen
-                minimize_all_images = False
-                if fields.get('minimizeAllImages'):
-                    if fields['minimizeAllImages'] == 'on':
-                        minimize_all_images = True
-                        min_img_acct = self.server.min_images_for_accounts
-                        set_minimize_all_images(base_dir,
+                min_img_acct = self.server.min_images_for_accounts
+                _profile_post_minimize_images(base_dir, nickname, domain,
+                                              fields, min_img_acct)
+
+                _profile_post_hide_reaction_button(base_dir,
+                                                   nickname, domain,
+                                                   fields)
+
+                _profile_post_bold_reading(base_dir, nickname, domain,
+                                           fields, self)
+
+                _profile_post_reverse_timelines(base_dir,
                                                 nickname, domain,
-                                                True, min_img_acct)
-                        print('min_images_for_accounts: ' +
-                              str(min_img_acct))
-                if not minimize_all_images:
-                    min_img_acct = self.server.min_images_for_accounts
-                    set_minimize_all_images(base_dir,
-                                            nickname, domain,
-                                            False, min_img_acct)
-                    print('min_images_for_accounts: ' +
-                          str(min_img_acct))
+                                                fields, self)
 
-                # hide Reaction button
-                hide_reaction_button_file = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/.hideReactionButton'
-                notify_reactions_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/.notifyReactions'
-                hide_reaction_button_active = False
-                if fields.get('hideReactionButton'):
-                    if fields['hideReactionButton'] == 'on':
-                        hide_reaction_button_active = True
-                        try:
-                            with open(hide_reaction_button_file, 'w+',
-                                      encoding='utf-8') as rfile:
-                                rfile.write('\n')
-                        except OSError:
-                            print('EX: unable to write hide reaction ' +
-                                  hide_reaction_button_file)
-                        # remove notify Reaction selection
-                        if os.path.isfile(notify_reactions_filename):
-                            try:
-                                os.remove(notify_reactions_filename)
-                            except OSError:
-                                print('EX: _profile_edit ' +
-                                      'unable to delete ' +
-                                      notify_reactions_filename)
-                if not hide_reaction_button_active:
-                    if os.path.isfile(hide_reaction_button_file):
-                        try:
-                            os.remove(hide_reaction_button_file)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  hide_reaction_button_file)
+                account_dir = acct_dir(base_dir, nickname, domain)
 
-                # bold reading checkbox
-                bold_reading_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/.boldReading'
-                bold_reading = False
-                if fields.get('boldReading'):
-                    if fields['boldReading'] == 'on':
-                        bold_reading = True
-                        self.server.bold_reading[nickname] = True
-                        try:
-                            with open(bold_reading_filename, 'w+',
-                                      encoding='utf-8') as rfile:
-                                rfile.write('\n')
-                        except OSError:
-                            print('EX: unable to write bold reading ' +
-                                  bold_reading_filename)
-                if not bold_reading:
-                    if self.server.bold_reading.get(nickname):
-                        del self.server.bold_reading[nickname]
-                    if os.path.isfile(bold_reading_filename):
-                        try:
-                            os.remove(bold_reading_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  bold_reading_filename)
+                _profile_post_show_questions(base_dir,
+                                             nickname, domain,
+                                             fields, account_dir)
 
-                # reverse timelines checkbox
-                reverse = False
-                if fields.get('reverseTimelines'):
-                    if fields['reverseTimelines'] == 'on':
-                        reverse = True
-                        if nickname not in self.server.reverse_sequence:
-                            self.server.reverse_sequence.append(nickname)
-                        save_reverse_timeline(base_dir,
-                                              self.server.reverse_sequence)
-                if not reverse:
-                    if nickname in self.server.reverse_sequence:
-                        self.server.reverse_sequence.remove(nickname)
-                        save_reverse_timeline(base_dir,
-                                              self.server.reverse_sequence)
+                _profile_post_only_follower_replies(fields, account_dir)
 
-                # show poll/vote/question posts checkbox
-                show_vote_posts = False
-                if fields.get('showVotes'):
-                    if fields['showVotes'] == 'on':
-                        show_vote_posts = True
-                account_dir = acct_dir(self.server.base_dir,
-                                       nickname, self.server.domain)
-                show_vote_file = account_dir + '/.noVotes'
-                if os.path.isfile(show_vote_file):
-                    if show_vote_posts:
-                        try:
-                            os.remove(show_vote_file)
-                        except OSError:
-                            print('EX: unable to remove noVotes file ' +
-                                  show_vote_file)
-                else:
-                    if not show_vote_posts:
-                        try:
-                            with open(show_vote_file, 'w+',
-                                      encoding='utf-8') as fp_votes:
-                                fp_votes.write('\n')
-                        except OSError:
-                            print('EX: unable to write noVotes file ' +
-                                  show_vote_file)
+                _profile_post_mutuals_replies(account_dir, fields)
 
-                # show replies only from followers checkbox
-                show_replies_followers = False
-                if fields.get('repliesFromFollowersOnly'):
-                    if fields['repliesFromFollowersOnly'] == 'on':
-                        show_replies_followers = True
-                show_replies_followers_file = \
-                    account_dir + '/.repliesFromFollowersOnly'
-                if os.path.isfile(show_replies_followers_file):
-                    if not show_replies_followers:
-                        try:
-                            os.remove(show_replies_followers_file)
-                        except OSError:
-                            print('EX: unable to remove ' +
-                                  'repliesFromFollowersOnly file ' +
-                                  show_replies_followers_file)
-                else:
-                    if show_replies_followers:
-                        try:
-                            with open(show_replies_followers_file, 'w+',
-                                      encoding='utf-8') as fp_replies:
-                                fp_replies.write('\n')
-                        except OSError:
-                            print('EX: unable to write ' +
-                                  'repliesFromFollowersOnly file ' +
-                                  show_replies_followers_file)
-
-                # show replies only from mutuals checkbox
-                show_replies_mutuals = False
-                if fields.get('repliesFromMutualsOnly'):
-                    if fields['repliesFromMutualsOnly'] == 'on':
-                        show_replies_mutuals = True
-                show_replies_mutuals_file = \
-                    account_dir + '/.repliesFromMutualsOnly'
-                if os.path.isfile(show_replies_mutuals_file):
-                    if not show_replies_mutuals:
-                        try:
-                            os.remove(show_replies_mutuals_file)
-                        except OSError:
-                            print('EX: unable to remove ' +
-                                  'repliesFromMutualsOnly file ' +
-                                  show_replies_mutuals_file)
-                else:
-                    if show_replies_mutuals:
-                        try:
-                            with open(show_replies_mutuals_file, 'w+',
-                                      encoding='utf-8') as fp_replies:
-                                fp_replies.write('\n')
-                        except OSError:
-                            print('EX: unable to write ' +
-                                  'repliesFromMutualsOnly file ' +
-                                  show_replies_mutuals_file)
-
+                # TODO
                 # hide follows checkbox
                 hide_follows_filename = \
                     acct_dir(base_dir, nickname, domain) + \
