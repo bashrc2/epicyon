@@ -2325,6 +2325,17 @@ def profile_edit(self, calling_domain: str, cookie: str,
                         save_blocked_military(self.server.base_dir,
                                               self.server.block_military)
 
+                notify_likes_filename = \
+                    acct_dir(base_dir, nickname, domain) + '/.notifyLikes'
+                hide_reaction_button_active = False
+                if fields.get('hideReactionButton'):
+                    if fields['hideReactionButton'] == 'on':
+                        hide_reaction_button_active = True
+                hide_like_button_active = False
+                if fields.get('hideLikeButton'):
+                    if fields['hideLikeButton'] == 'on':
+                        hide_like_button_active = True
+
                 # notify about new Likes
                 if on_final_welcome_screen:
                     # default setting from welcome screen
