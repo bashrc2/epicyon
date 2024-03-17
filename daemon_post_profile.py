@@ -159,25 +159,20 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
     if actor_json.get('nomadicLocations'):
         del actor_json['nomadicLocations']
     if not actor_json.get('featured'):
-        actor_json['featured'] = \
-            actor_json['id'] + '/collections/featured'
+        actor_json['featured'] = actor_json['id'] + '/collections/featured'
     if not actor_json.get('featuredTags'):
-        actor_json['featuredTags'] = \
-            actor_json['id'] + '/collections/tags'
+        actor_json['featuredTags'] = actor_json['id'] + '/collections/tags'
     randomize_actor_images(actor_json)
     add_actor_update_timestamp(actor_json)
     # save the actor
     save_json(actor_json, actor_filename)
-    webfinger_update(base_dir,
-                     nickname, domain,
+    webfinger_update(base_dir, nickname, domain,
                      onion_domain, i2p_domain,
                      self.server.cached_webfingers)
     # also copy to the actors cache and
     # person_cache in memory
-    store_person_in_cache(base_dir,
-                          actor_json['id'], actor_json,
-                          self.server.person_cache,
-                          True)
+    store_person_in_cache(base_dir, actor_json['id'], actor_json,
+                          self.server.person_cache, True)
     # clear any cached images for this actor
     id_str = actor_json['id'].replace('/', '-')
     remove_avatar_from_cache(base_dir, id_str)
@@ -188,17 +183,14 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
     save_json(actor_json, actor_cache_filename)
     # send profile update to followers
     update_actor_json = get_actor_update_json(actor_json)
-    print('Sending actor update: ' +
-          str(update_actor_json))
+    print('Sending actor update: ' + str(update_actor_json))
     post_to_outbox(self, update_actor_json,
-                   self.server.project_version,
-                   nickname,
+                   self.server.project_version, nickname,
                    curr_session, proxy_type)
     # send move activity if necessary
     if send_move_activity:
         move_actor_json = get_actor_move_json(actor_json)
-        print('Sending Move activity: ' +
-              str(move_actor_json))
+        print('Sending Move activity: ' + str(move_actor_json))
         post_to_outbox(self, move_actor_json,
                        self.server.project_version,
                        nickname,
@@ -232,15 +224,13 @@ def _profile_post_git_projects(base_dir: str, nickname: str, domain: str,
                       encoding='utf-8') as afile:
                 afile.write(fields['gitProjects'].lower())
         except OSError:
-            print('EX: unable to write git ' +
-                  git_projects_filename)
+            print('EX: unable to write git ' + git_projects_filename)
     else:
         if os.path.isfile(git_projects_filename):
             try:
                 os.remove(git_projects_filename)
             except OSError:
-                print('EX: _profile_edit ' +
-                      'unable to delete ' +
+                print('EX: _profile_edit unable to delete ' +
                       git_projects_filename)
 
 
@@ -257,8 +247,7 @@ def _profile_post_peertube_instances(base_dir: str, fields: {}, self) -> None:
         except OSError:
             print('EX: unable to write peertube ' +
                   peertube_instances_file)
-        pt_instances_list = \
-            fields['ptInstances'].split('\n')
+        pt_instances_list = fields['ptInstances'].split('\n')
         if pt_instances_list:
             for url in pt_instances_list:
                 url = url.strip()
@@ -272,8 +261,7 @@ def _profile_post_peertube_instances(base_dir: str, fields: {}, self) -> None:
             try:
                 os.remove(peertube_instances_file)
             except OSError:
-                print('EX: _profile_edit ' +
-                      'unable to delete ' +
+                print('EX: _profile_edit unable to delete ' +
                       peertube_instances_file)
         self.server.peertube_instances.clear()
 
@@ -283,12 +271,9 @@ def _profile_post_block_federated(base_dir: str, fields: {}, self) -> None:
     """
     block_ep_new = []
     if fields.get('blockFederated'):
-        block_federated_str = \
-            fields['blockFederated']
-        block_ep_new = \
-            block_federated_str.split('\n')
-    if str(self.server.block_federated_endpoints) != \
-       str(block_ep_new):
+        block_federated_str = fields['blockFederated']
+        block_ep_new = block_federated_str.split('\n')
+    if str(self.server.block_federated_endpoints) != str(block_ep_new):
         self.server.block_federated_endpoints = \
             save_block_federated_endpoints(base_dir,
                                            block_ep_new)
@@ -301,15 +286,12 @@ def _profile_post_buy_domains(base_dir: str, fields: {}, self) -> None:
     """
     buy_sites = {}
     if fields.get('buySitesStr'):
-        buy_sites_str = \
-            fields['buySitesStr']
-        buy_sites_list = \
-            buy_sites_str.split('\n')
+        buy_sites_str = fields['buySitesStr']
+        buy_sites_list = buy_sites_str.split('\n')
         for site_url in buy_sites_list:
             if ' ' in site_url:
                 site_url = site_url.split(' ')[-1]
-                buy_icon_text = \
-                    site_url.replace(site_url, '').strip()
+                buy_icon_text = site_url.replace(site_url, '').strip()
                 if not buy_icon_text:
                     buy_icon_text = site_url
             else:
@@ -321,11 +303,9 @@ def _profile_post_buy_domains(base_dir: str, fields: {}, self) -> None:
             if not site_url.strip():
                 continue
             buy_sites[buy_icon_text] = site_url.strip()
-    if str(self.server.buy_sites) != \
-       str(buy_sites):
+    if str(self.server.buy_sites) != str(buy_sites):
         self.server.buy_sites = buy_sites
-        buy_sites_filename = \
-            base_dir + '/accounts/buy_sites.json'
+        buy_sites_filename = base_dir + '/accounts/buy_sites.json'
         if buy_sites:
             save_json(buy_sites, buy_sites_filename)
         else:
@@ -342,18 +322,14 @@ def _profile_post_crawlers_allowed(base_dir: str, fields: {}, self) -> None:
     """
     crawlers_allowed = []
     if fields.get('crawlersAllowedStr'):
-        crawlers_allowed_str = \
-            fields['crawlersAllowedStr']
-        crawlers_allowed_list = \
-            crawlers_allowed_str.split('\n')
+        crawlers_allowed_str = fields['crawlersAllowedStr']
+        crawlers_allowed_list = crawlers_allowed_str.split('\n')
         for uagent in crawlers_allowed_list:
             if uagent in crawlers_allowed:
                 continue
             crawlers_allowed.append(uagent.strip())
-    if str(self.server.crawlers_allowed) != \
-       str(crawlers_allowed):
-        self.server.crawlers_allowed = \
-            crawlers_allowed
+    if str(self.server.crawlers_allowed) != str(crawlers_allowed):
+        self.server.crawlers_allowed = crawlers_allowed
         crawlers_allowed_str = ''
         for uagent in crawlers_allowed:
             if crawlers_allowed_str:
@@ -368,18 +344,14 @@ def _profile_post_blocked_user_agents(base_dir: str, fields: {}, self) -> None:
     """
     user_agents_blocked = []
     if fields.get('userAgentsBlockedStr'):
-        user_agents_blocked_str = \
-            fields['userAgentsBlockedStr']
-        user_agents_blocked_list = \
-            user_agents_blocked_str.split('\n')
+        user_agents_blocked_str = fields['userAgentsBlockedStr']
+        user_agents_blocked_list = user_agents_blocked_str.split('\n')
         for uagent in user_agents_blocked_list:
             if uagent in user_agents_blocked:
                 continue
             user_agents_blocked.append(uagent.strip())
-    if str(self.server.user_agents_blocked) != \
-       str(user_agents_blocked):
-        self.server.user_agents_blocked = \
-            user_agents_blocked
+    if str(self.server.user_agents_blocked) != str(user_agents_blocked):
+        self.server.user_agents_blocked = user_agents_blocked
         user_agents_blocked_str = ''
         for uagent in user_agents_blocked:
             if user_agents_blocked_str:
@@ -440,8 +412,7 @@ def _profile_post_dm_instances(base_dir: str, nickname: str, domain: str,
     if the .followDMs flag file exists
     """
     dm_allowed_instances_filename = \
-        acct_dir(base_dir, nickname, domain) + \
-        '/dmAllowedInstances.txt'
+        acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if fields.get('dmAllowedInstances'):
         try:
             with open(dm_allowed_instances_filename, 'w+',
@@ -467,16 +438,14 @@ def _profile_post_import_theme(base_dir: str, nickname: str,
     if fields.get('importTheme'):
         if not os.path.isdir(base_dir + '/imports'):
             os.mkdir(base_dir + '/imports')
-        filename_base = \
-            base_dir + '/imports/newtheme.zip'
+        filename_base = base_dir + '/imports/newtheme.zip'
         if os.path.isfile(filename_base):
             try:
                 os.remove(filename_base)
             except OSError:
                 print('EX: _profile_edit unable to delete ' +
                       filename_base)
-        if nickname == admin_nickname or \
-           is_artist(base_dir, nickname):
+        if nickname == admin_nickname or is_artist(base_dir, nickname):
             if import_theme(base_dir, filename_base):
                 print(nickname + ' uploaded a theme')
         else:
@@ -489,8 +458,7 @@ def _profile_post_import_follows(base_dir: str, nickname: str, domain: str,
     """
     if fields.get('importFollows'):
         filename_base = \
-            acct_dir(base_dir, nickname, domain) + \
-            '/import_following.csv'
+            acct_dir(base_dir, nickname, domain) + '/import_following.csv'
         follows_str = fields['importFollows']
         while follows_str.startswith('\n'):
             follows_str = follows_str[1:]
@@ -524,8 +492,7 @@ def _profile_post_auto_cw(base_dir: str, nickname: str, domain: str,
     """ HTTP POST autogenerated content warnings
     """
     auto_cw_filename = \
-        acct_dir(base_dir, nickname, domain) + \
-        '/autocw.txt'
+        acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if fields.get('autoCW'):
         try:
             with open(auto_cw_filename, 'w+',
@@ -534,8 +501,7 @@ def _profile_post_auto_cw(base_dir: str, nickname: str, domain: str,
         except OSError:
             print('EX: unable to write auto CW ' +
                   auto_cw_filename)
-        self.server.auto_cw_cache[nickname] = \
-            fields['autoCW'].split('\n')
+        self.server.auto_cw_cache[nickname] = fields['autoCW'].split('\n')
     else:
         if os.path.isfile(auto_cw_filename):
             try:
@@ -709,16 +675,14 @@ def _profile_post_account_type(path: str, actor_json: {}, fields: {},
     """ HTTP POST Changes the type of account Bot/Group/Person
     """
     if fields.get('isBot'):
-        if fields['isBot'] == 'on' and \
-           actor_json.get('type'):
+        if fields['isBot'] == 'on' and actor_json.get('type'):
             if actor_json['type'] != 'Service':
                 actor_json['type'] = 'Service'
                 actor_changed = True
     else:
         # this account is a group
         if fields.get('isGroup'):
-            if fields['isGroup'] == 'on' and \
-               actor_json.get('type'):
+            if fields['isGroup'] == 'on' and actor_json.get('type'):
                 if actor_json['type'] != 'Group':
                     # only allow admin to create groups
                     if path.startswith('/users/' +
@@ -742,8 +706,7 @@ def _profile_post_notify_reactions(base_dir: str,
     """ HTTP POST notify about new Reactions
     """
     notify_reactions_filename = \
-        acct_dir(base_dir, nickname, domain) + \
-        '/.notifyReactions'
+        acct_dir(base_dir, nickname, domain) + '/.notifyReactions'
     if on_final_welcome_screen:
         # default setting from welcome screen
         notify_react_filename = notify_reactions_filename
@@ -846,8 +809,7 @@ def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
     """ HTTP POST hide follows checkbox
     """
     hide_follows_filename = \
-        acct_dir(base_dir, nickname, domain) + \
-        '/.hideFollows'
+        acct_dir(base_dir, nickname, domain) + '/.hideFollows'
     hide_follows = False
     if fields.get('hideFollows'):
         if fields['hideFollows'] == 'on':
@@ -884,8 +846,7 @@ def _profile_post_mutuals_replies(account_dir: str, fields: {}) -> None:
     if fields.get('repliesFromMutualsOnly'):
         if fields['repliesFromMutualsOnly'] == 'on':
             show_replies_mutuals = True
-    show_replies_mutuals_file = \
-        account_dir + '/.repliesFromMutualsOnly'
+    show_replies_mutuals_file = account_dir + '/.repliesFromMutualsOnly'
     if os.path.isfile(show_replies_mutuals_file):
         if not show_replies_mutuals:
             try:
@@ -912,8 +873,7 @@ def _profile_post_only_follower_replies(fields: {},
     if fields.get('repliesFromFollowersOnly'):
         if fields['repliesFromFollowersOnly'] == 'on':
             show_replies_followers = True
-    show_replies_followers_file = \
-        account_dir + '/.repliesFromFollowersOnly'
+    show_replies_followers_file = account_dir + '/.repliesFromFollowersOnly'
     if os.path.isfile(show_replies_followers_file):
         if not show_replies_followers:
             try:
@@ -1206,14 +1166,12 @@ def _profile_post_remove_custom_font(base_dir: str, nickname: str, domain: str,
         curr_theme = get_theme(base_dir)
         if curr_theme:
             self.server.theme_name = curr_theme
-            allow_local_network_access = \
-                self.server.allow_local_network_access
+            allow_local_network_access = self.server.allow_local_network_access
             set_theme(base_dir, curr_theme, domain,
                       allow_local_network_access,
                       system_language,
                       dyslexic_font, False)
-            self.server.text_mode_banner = \
-                get_text_mode_banner(base_dir)
+            self.server.text_mode_banner = get_text_mode_banner(base_dir)
             self.server.iconsCache = {}
             self.server.fontsCache = {}
             self.server.show_publish_as_icon = \
@@ -1238,8 +1196,7 @@ def _profile_post_keep_dms(base_dir: str,
     if fields.get('expiryKeepDMs'):
         if fields['expiryKeepDMs'] == 'on':
             expire_keep_dms = True
-    curr_keep_dms = \
-        get_post_expiry_keep_dms(base_dir, nickname, domain)
+    curr_keep_dms = get_post_expiry_keep_dms(base_dir, nickname, domain)
     if curr_keep_dms != expire_keep_dms:
         set_post_expiry_keep_dms(base_dir, nickname, domain,
                                  expire_keep_dms)
@@ -1290,8 +1247,7 @@ def _profile_post_approve_followers(on_final_welcome_screen: bool,
         if fields.get('approveFollowers'):
             if fields['approveFollowers'] == 'on':
                 approve_followers = True
-        if approve_followers != \
-           actor_json['manuallyApprovesFollowers']:
+        if approve_followers != actor_json['manuallyApprovesFollowers']:
             actor_json['manuallyApprovesFollowers'] = approve_followers
             actor_changed = True
     return actor_changed
@@ -1304,21 +1260,18 @@ def _profile_post_shared_item_federation_domains(base_dir: str, fields: {},
     # shared item federation domains
     si_domain_updated = False
     fed_domains_variable = "sharedItemsFederatedDomains"
-    fed_domains_str = \
-        get_config_param(base_dir, fed_domains_variable)
+    fed_domains_str = get_config_param(base_dir, fed_domains_variable)
     if not fed_domains_str:
         fed_domains_str = ''
     shared_items_form_str = ''
     if fields.get('shareDomainList'):
         shared_it_list = fed_domains_str.split(',')
         for shared_federated_domain in shared_it_list:
-            shared_items_form_str += \
-                shared_federated_domain.strip() + '\n'
+            shared_items_form_str += shared_federated_domain.strip() + '\n'
 
         share_domain_list = fields['shareDomainList']
         if share_domain_list != shared_items_form_str:
-            shared_items_form_str2 = \
-                share_domain_list.replace('\n', ',')
+            shared_items_form_str2 = share_domain_list.replace('\n', ',')
             shared_items_field = "sharedItemsFederatedDomains"
             set_config_param(base_dir,
                              shared_items_field,
@@ -1326,8 +1279,7 @@ def _profile_post_shared_item_federation_domains(base_dir: str, fields: {},
             si_domain_updated = True
     else:
         if fed_domains_str:
-            shared_items_field = \
-                "sharedItemsFederatedDomains"
+            shared_items_field = "sharedItemsFederatedDomains"
             set_config_param(base_dir,
                              shared_items_field, '')
             si_domain_updated = True
@@ -1338,10 +1290,8 @@ def _profile_post_shared_item_federation_domains(base_dir: str, fields: {},
         domain_full = self.server.domain_full
         base_dir = self.server.base_dir
         self.server.shared_item_federation_tokens = \
-            merge_shared_item_tokens(base_dir,
-                                     domain_full,
-                                     si_domains,
-                                     si_tokens)
+            merge_shared_item_tokens(base_dir, domain_full,
+                                     si_domains, si_tokens)
 
 
 def _profile_post_broch_mode(base_dir: str, domain_full: str,
@@ -1380,8 +1330,7 @@ def _profile_post_show_nodeinfo_version(base_dir: str, fields: {},
     if fields.get('showNodeInfoVersion'):
         if fields['showNodeInfoVersion'] == 'on':
             show_node_info_version = True
-    self.server.show_node_info_version = \
-        show_node_info_version
+    self.server.show_node_info_version = show_node_info_version
     set_config_param(base_dir,
                      "showNodeInfoVersion",
                      show_node_info_version)
@@ -1394,8 +1343,7 @@ def _profile_post_show_nodeinfo(base_dir: str, fields: {}, self) -> None:
     if fields.get('showNodeInfoAccounts'):
         if fields['showNodeInfoAccounts'] == 'on':
             show_node_info_accounts = True
-    self.server.show_node_info_accounts = \
-        show_node_info_accounts
+    self.server.show_node_info_accounts = show_node_info_accounts
     set_config_param(base_dir,
                      "showNodeInfoAccounts",
                      show_node_info_accounts)
@@ -1464,8 +1412,7 @@ def _profile_post_alsoknownas(actor_json: {}, fields: {},
             if ';' in fields['alsoKnownAs']:
                 fields['alsoKnownAs'] = \
                     fields['alsoKnownAs'].replace(';', ',')
-            new_also_known_as = \
-                fields['alsoKnownAs'].split(',')
+            new_also_known_as = fields['alsoKnownAs'].split(',')
             also_known_as = []
             for alt_actor in new_also_known_as:
                 alt_actor = alt_actor.strip()
@@ -1487,10 +1434,8 @@ def _profile_post_featured_hashtags(actor_json: {}, fields: {},
     """
     featured_hashtags = get_featured_hashtags(actor_json)
     if fields.get('featuredHashtags'):
-        fields['featuredHashtags'] = \
-            remove_html(fields['featuredHashtags'])
-        if featured_hashtags != \
-           fields['featuredHashtags']:
+        fields['featuredHashtags'] = remove_html(fields['featuredHashtags'])
+        if featured_hashtags != fields['featuredHashtags']:
             set_featured_hashtags(actor_json,
                                   fields['featuredHashtags'])
             actor_changed = True
@@ -1507,10 +1452,8 @@ def _profile_post_occupation(actor_json: {}, fields: {},
     """
     occupation_name = get_occupation_name(actor_json)
     if fields.get('occupationName'):
-        fields['occupationName'] = \
-            remove_html(fields['occupationName'])
-        if occupation_name != \
-           fields['occupationName']:
+        fields['occupationName'] = remove_html(fields['occupationName'])
+        if occupation_name != fields['occupationName']:
             set_occupation_name(actor_json,
                                 fields['occupationName'])
             actor_changed = True
@@ -1530,8 +1473,7 @@ def _profile_post_moved(actor_json: {}, fields: {},
     if actor_json.get('movedTo'):
         moved_to = actor_json['movedTo']
     if fields.get('movedTo'):
-        if fields['movedTo'] != moved_to and \
-           resembles_url(fields['movedTo']):
+        if fields['movedTo'] != moved_to and resembles_url(fields['movedTo']):
             actor_json['movedTo'] = fields['movedTo']
             send_move_activity = True
             actor_changed = True
@@ -1657,9 +1599,7 @@ def _profile_post_ntfy_topic(base_dir: str, nickname: str, domain: str,
     """ HTTP POST change ntfy topic
     """
     if fields.get('ntfyTopic'):
-        ntfy_topic_file = \
-            base_dir + '/accounts/' + \
-            nickname + '@' + domain + '/.ntfy_topic'
+        ntfy_topic_file = acct_dir(base_dir, nickname, domain) + '/.ntfy_topic'
         try:
             with open(ntfy_topic_file, 'w+',
                       encoding='utf-8') as fp_ntfy:
@@ -1674,9 +1614,7 @@ def _profile_post_ntfy_url(base_dir: str, nickname: str, domain: str,
     """ HTTP POST change ntfy url
     """
     if fields.get('ntfyUrl'):
-        ntfy_url_file = \
-            base_dir + '/accounts/' + \
-            nickname + '@' + domain + '/.ntfy_url'
+        ntfy_url_file = acct_dir(base_dir, nickname, domain) + '/.ntfy_url'
         try:
             with open(ntfy_url_file, 'w+',
                       encoding='utf-8') as fp_ntfy:
@@ -1747,8 +1685,7 @@ def _profile_post_birthday(fields: {}, actor_json: {},
     if fields.get('birthDate'):
         if fields['birthDate'] != birth_date:
             new_birth_date = fields['birthDate']
-            if '-' in new_birth_date and \
-               len(new_birth_date.split('-')) == 3:
+            if '-' in new_birth_date and len(new_birth_date.split('-')) == 3:
                 # set birth date
                 actor_json['vcard:bday'] = new_birth_date
                 actor_changed = True
@@ -1764,13 +1701,10 @@ def _profile_post_max_preview(base_dir: str, nickname: str, domain: str,
                               fields: {}) -> None:
     """ HTTP POST set maximum preview posts on profile screen
     """
-    max_profile_posts = \
-        get_max_profile_posts(base_dir, nickname, domain, 20)
+    max_profile_posts = get_max_profile_posts(base_dir, nickname, domain, 20)
     if fields.get('maxRecentProfilePosts'):
-        if fields['maxRecentProfilePosts'] != \
-           str(max_profile_posts):
-            max_profile_posts = \
-                fields['maxRecentProfilePosts']
+        if fields['maxRecentProfilePosts'] != str(max_profile_posts):
+            max_profile_posts = fields['maxRecentProfilePosts']
             set_max_profile_posts(base_dir, nickname, domain,
                                   max_profile_posts)
     else:
@@ -1781,13 +1715,10 @@ def _profile_post_expiry(base_dir: str, nickname: str, domain: str,
                          fields: {}, actor_changed: bool) -> bool:
     """ HTTP POST set post expiry period in days
     """
-    post_expiry_period_days = \
-        get_post_expiry_days(base_dir, nickname, domain)
+    post_expiry_period_days = get_post_expiry_days(base_dir, nickname, domain)
     if fields.get('postExpiryPeriod'):
-        if fields['postExpiryPeriod'] != \
-           str(post_expiry_period_days):
-            post_expiry_period_days = \
-                fields['postExpiryPeriod']
+        if fields['postExpiryPeriod'] != str(post_expiry_period_days):
+            post_expiry_period_days = fields['postExpiryPeriod']
             set_post_expiry_days(base_dir, nickname, domain,
                                  post_expiry_period_days)
             actor_changed = True
@@ -1808,8 +1739,7 @@ def _profile_post_time_zone(base_dir: str, nickname: str, domain: str,
             set_account_timezone(base_dir,
                                  nickname, domain,
                                  fields['timeZone'])
-            self.server.account_timezone[nickname] = \
-                fields['timeZone']
+            self.server.account_timezone[nickname] = fields['timeZone']
             actor_changed = True
     else:
         if timezone:
@@ -1936,8 +1866,7 @@ def _profile_post_memorial_accounts(base_dir: str, domain: str,
     """
     curr_memorial = get_memorials(base_dir)
     if fields.get('memorialAccounts'):
-        if fields['memorialAccounts'] != \
-           curr_memorial:
+        if fields['memorialAccounts'] != curr_memorial:
             set_memorials(base_dir, domain,
                           fields['memorialAccounts'])
             update_memorial_flags(base_dir,
@@ -1954,8 +1883,7 @@ def _profile_post_instance_desc(base_dir: str, fields: {}) -> None:
     curr_instance_description = \
         get_config_param(base_dir, 'instanceDescription')
     if fields.get('instanceDescription'):
-        if fields['instanceDescription'] != \
-           curr_instance_description:
+        if fields['instanceDescription'] != curr_instance_description:
             set_config_param(base_dir,
                              'instanceDescription',
                              fields['instanceDescription'])
@@ -1969,8 +1897,7 @@ def _profile_post_instance_short_desc(base_dir: str, fields: {}) -> None:
     """ HTTP POST change instance short description
     """
     curr_instance_description_short = \
-        get_config_param(base_dir,
-                         'instanceDescriptionShort')
+        get_config_param(base_dir, 'instanceDescriptionShort')
     if fields.get('instanceDescriptionShort'):
         if fields['instanceDescriptionShort'] != \
            curr_instance_description_short:
@@ -1987,24 +1914,17 @@ def _profile_post_content_license(base_dir: str, fields: {}, self) -> None:
     """ HTTP POST change instance content license
     """
     if fields.get('contentLicenseUrl'):
-        if fields['contentLicenseUrl'] != \
-           self.server.content_license_url:
+        if fields['contentLicenseUrl'] != self.server.content_license_url:
             license_str = fields['contentLicenseUrl']
             if '://' not in license_str:
-                license_str = \
-                    license_link_from_name(license_str)
+                license_str = license_link_from_name(license_str)
             set_config_param(base_dir,
                              'contentLicenseUrl',
                              license_str)
-            self.server.content_license_url = \
-                license_str
+            self.server.content_license_url = license_str
     else:
-        license_str = \
-            'https://creativecommons.org/' + \
-            'licenses/by-nc/4.0'
-        set_config_param(base_dir,
-                         'contentLicenseUrl',
-                         license_str)
+        license_str = 'https://creativecommons.org/licenses/by-nc/4.0'
+        set_config_param(base_dir, 'contentLicenseUrl', license_str)
         self.server.content_license_url = license_str
 
 
@@ -2012,11 +1932,9 @@ def _profile_post_libretranslate_api_key(base_dir: str, fields: {}) -> None:
     """ HTTP POST libretranslate API Key
     """
     curr_libretranslate_api_key = \
-        get_config_param(base_dir,
-                         'libretranslateApiKey')
+        get_config_param(base_dir, 'libretranslateApiKey')
     if fields.get('libretranslateApiKey'):
-        if fields['libretranslateApiKey'] != \
-           curr_libretranslate_api_key:
+        if fields['libretranslateApiKey'] != curr_libretranslate_api_key:
             lt_api_key = fields['libretranslateApiKey']
             set_config_param(base_dir,
                              'libretranslateApiKey',
@@ -2046,17 +1964,12 @@ def _profile_post_registrations_remaining(base_dir: str, fields: {}) -> None:
 def _profile_post_libretranslate_url(base_dir: str, fields: {}) -> None:
     """ HTTP POST libretranslate URL
     """
-    curr_libretranslate_url = \
-        get_config_param(base_dir,
-                         'libretranslateUrl')
+    curr_libretranslate_url = get_config_param(base_dir, 'libretranslateUrl')
     if fields.get('libretranslateUrl'):
-        if fields['libretranslateUrl'] != \
-           curr_libretranslate_url:
+        if fields['libretranslateUrl'] != curr_libretranslate_url:
             lt_url = fields['libretranslateUrl']
             if resembles_url(lt_url):
-                set_config_param(base_dir,
-                                 'libretranslateUrl',
-                                 lt_url)
+                set_config_param(base_dir, 'libretranslateUrl', lt_url)
     else:
         if curr_libretranslate_url:
             set_config_param(base_dir,
@@ -2068,19 +1981,15 @@ def _profile_post_replies_unlisted(base_dir: str, fields: {}, self) -> None:
     """
     pub_replies_unlisted = False
     if self.server.public_replies_unlisted or \
-       get_config_param(base_dir,
-                        "publicRepliesUnlisted") is True:
+       get_config_param(base_dir, "publicRepliesUnlisted") is True:
         pub_replies_unlisted = True
     if fields.get('publicRepliesUnlisted'):
-        if fields['publicRepliesUnlisted'] != \
-           pub_replies_unlisted:
-            pub_replies_unlisted = \
-                fields['publicRepliesUnlisted']
+        if fields['publicRepliesUnlisted'] != pub_replies_unlisted:
+            pub_replies_unlisted = fields['publicRepliesUnlisted']
             set_config_param(base_dir,
                              'publicRepliesUnlisted',
                              True)
-            self.server.public_replies_unlisted = \
-                pub_replies_unlisted
+            self.server.public_replies_unlisted = pub_replies_unlisted
     else:
         if pub_replies_unlisted:
             set_config_param(base_dir,
@@ -2094,8 +2003,7 @@ def _profile_post_registrations_open(base_dir: str, fields: {}, self) -> None:
     """
     registrations_open = False
     if self.server.registration or \
-       get_config_param(base_dir,
-                        "registration") == 'open':
+       get_config_param(base_dir, "registration") == 'open':
         registrations_open = True
     if fields.get('regOpen'):
         if fields['regOpen'] != registrations_open:
@@ -2103,8 +2011,7 @@ def _profile_post_registrations_open(base_dir: str, fields: {}, self) -> None:
             set_config_param(base_dir, 'registration',
                              'open')
             remaining = \
-                get_config_param(base_dir,
-                                 'registrationsRemaining')
+                get_config_param(base_dir, 'registrationsRemaining')
             if not remaining:
                 set_config_param(base_dir,
                                  'registrationsRemaining',
@@ -2122,8 +2029,7 @@ def _profile_post_submit_button(base_dir: str, fields: {}) -> None:
     """
     curr_custom_submit_text = get_config_param(base_dir, 'customSubmitText')
     if fields.get('customSubmitText'):
-        if fields['customSubmitText'] != \
-           curr_custom_submit_text:
+        if fields['customSubmitText'] != curr_custom_submit_text:
             custom_text = fields['customSubmitText']
             set_config_param(base_dir, 'customSubmitText', custom_text)
     else:
@@ -2136,21 +2042,17 @@ def _profile_post_twitter_alt_domain(base_dir: str, fields: {},
     """ HTTP POST change twitter alternate domain
     """
     if fields.get('twitterdomain'):
-        curr_twitter_domain = \
-            self.server.twitter_replacement_domain
+        curr_twitter_domain = self.server.twitter_replacement_domain
         if fields['twitterdomain'] != curr_twitter_domain:
             new_twitter_domain = fields['twitterdomain']
             if '://' in new_twitter_domain:
-                new_twitter_domain = \
-                    new_twitter_domain.split('://')[1]
+                new_twitter_domain = new_twitter_domain.split('://')[1]
             if '/' in new_twitter_domain:
-                new_twitter_domain = \
-                    new_twitter_domain.split('/')[0]
+                new_twitter_domain = new_twitter_domain.split('/')[0]
             if '.' in new_twitter_domain:
                 set_config_param(base_dir, 'twitterdomain',
                                  new_twitter_domain)
-                self.server.twitter_replacement_domain = \
-                    new_twitter_domain
+                self.server.twitter_replacement_domain = new_twitter_domain
     else:
         set_config_param(base_dir, 'twitterdomain', '')
         self.server.twitter_replacement_domain = None
@@ -2165,15 +2067,13 @@ def _profile_post_youtube_alt_domain(base_dir: str, fields: {},
         if fields['ytdomain'] != curr_yt_domain:
             new_yt_domain = fields['ytdomain']
             if '://' in new_yt_domain:
-                new_yt_domain = \
-                    new_yt_domain.split('://')[1]
+                new_yt_domain = new_yt_domain.split('://')[1]
             if '/' in new_yt_domain:
                 new_yt_domain = new_yt_domain.split('/')[0]
             if '.' in new_yt_domain:
                 set_config_param(base_dir, 'youtubedomain',
                                  new_yt_domain)
-                self.server.yt_replace_domain = \
-                    new_yt_domain
+                self.server.yt_replace_domain = new_yt_domain
     else:
         set_config_param(base_dir, 'youtubedomain', '')
         self.server.yt_replace_domain = None
@@ -2183,8 +2083,7 @@ def _profile_post_instance_title(base_dir: str, fields: {}) -> None:
     """ HTTP POST change instance title
     """
     if fields.get('instanceTitle'):
-        curr_instance_title = \
-            get_config_param(base_dir, 'instanceTitle')
+        curr_instance_title = get_config_param(base_dir, 'instanceTitle')
         if fields['instanceTitle'] != curr_instance_title:
             set_config_param(base_dir, 'instanceTitle',
                              fields['instanceTitle'])
@@ -2277,41 +2176,30 @@ def _profile_post_theme_change(base_dir: str, nickname: str,
                                dyslexic_font: bool, self) -> None:
     """ HTTP POST change the theme from edit profile screen
     """
-    if nickname == admin_nickname or \
-       is_artist(base_dir, nickname):
+    if nickname == admin_nickname or is_artist(base_dir, nickname):
         if fields.get('themeDropdown'):
-            if theme_name != \
-               fields['themeDropdown']:
-                theme_name = \
-                    fields['themeDropdown']
+            if theme_name != fields['themeDropdown']:
+                theme_name = fields['themeDropdown']
                 set_theme(base_dir, theme_name,
                           domain, allow_local_network_access,
                           system_language,
                           dyslexic_font, True)
-                self.server.text_mode_banner = \
-                    get_text_mode_banner(base_dir)
+                self.server.text_mode_banner = get_text_mode_banner(base_dir)
                 self.server.iconsCache = {}
                 self.server.fontsCache = {}
                 self.server.css_cache = {}
                 self.server.show_publish_as_icon = \
-                    get_config_param(base_dir,
-                                     'showPublishAsIcon')
+                    get_config_param(base_dir, 'showPublishAsIcon')
                 self.server.full_width_tl_button_header = \
-                    get_config_param(base_dir,
-                                     'fullWidthTlButtonHeader')
+                    get_config_param(base_dir, 'fullWidthTlButtonHeader')
                 self.server.icons_as_buttons = \
-                    get_config_param(base_dir,
-                                     'iconsAsButtons')
+                    get_config_param(base_dir, 'iconsAsButtons')
                 self.server.rss_icon_at_top = \
-                    get_config_param(base_dir,
-                                     'rssIconAtTop')
+                    get_config_param(base_dir, 'rssIconAtTop')
                 self.server.publish_button_at_top = \
-                    get_config_param(base_dir,
-                                     'publishButtonAtTop')
-                set_news_avatar(base_dir,
-                                fields['themeDropdown'],
-                                http_prefix,
-                                domain, domain_full)
+                    get_config_param(base_dir, 'publishButtonAtTop')
+                set_news_avatar(base_dir, fields['themeDropdown'],
+                                http_prefix, domain, domain_full)
 
 
 def _profile_post_change_displayed_name(base_dir: str,
@@ -2326,12 +2214,9 @@ def _profile_post_change_displayed_name(base_dir: str,
     """
     if fields.get('displayNickname'):
         if fields['displayNickname'] != actor_json['name']:
-            display_name = \
-                remove_html(fields['displayNickname'])
-            if not is_filtered(base_dir,
-                               nickname, domain,
-                               display_name,
-                               system_language):
+            display_name = remove_html(fields['displayNickname'])
+            if not is_filtered(base_dir, nickname, domain,
+                               display_name, system_language):
                 actor_json['name'] = display_name
             else:
                 actor_json['name'] = nickname
@@ -2349,8 +2234,7 @@ def _profile_post_change_city(base_dir: str, nickname: str, domain: str,
     """ HTTP POST change city
     """
     if fields.get('cityDropdown'):
-        city_filename = \
-            acct_dir(base_dir, nickname, domain) + '/city.txt'
+        city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
         try:
             with open(city_filename, 'w+',
                       encoding='utf-8') as fp_city:
@@ -2374,10 +2258,8 @@ def _profile_post_change_password(base_dir: str, nickname: str,
                                   fields: {}) -> None:
     """ HTTP POST change password
     """
-    if fields.get('password') and \
-       fields.get('passwordconfirm'):
-        fields['password'] = \
-            remove_eol(fields['password']).strip()
+    if fields.get('password') and fields.get('passwordconfirm'):
+        fields['password'] = remove_eol(fields['password']).strip()
         fields['passwordconfirm'] = \
             remove_eol(fields['passwordconfirm']).strip()
         if valid_password(fields['password']) and \
@@ -2398,8 +2280,7 @@ def _profile_post_skill_level(actor_json: {},
     skill_ctr = 1
     actor_skills_ctr = no_of_actor_skills(actor_json)
     while skill_ctr < 10:
-        skill_name = \
-            fields.get('skillName' + str(skill_ctr))
+        skill_name = fields.get('skillName' + str(skill_ctr))
         if not skill_name:
             skill_ctr += 1
             continue
@@ -2407,8 +2288,7 @@ def _profile_post_skill_level(actor_json: {},
                        system_language):
             skill_ctr += 1
             continue
-        skill_value = \
-            fields.get('skillValue' + str(skill_ctr))
+        skill_value = fields.get('skillValue' + str(skill_ctr))
         if not skill_value:
             skill_ctr += 1
             continue
@@ -2425,8 +2305,7 @@ def _profile_post_skill_level(actor_json: {},
         set_hashtag_category(base_dir, skill_name,
                              skills_str, False)
         skill_ctr += 1
-    if no_of_actor_skills(actor_json) != \
-       actor_skills_ctr:
+    if no_of_actor_skills(actor_json) != actor_skills_ctr:
         actor_changed = True
     return actor_changed
 
@@ -2439,8 +2318,7 @@ def _profile_post_avatar_image_ext(profile_media_types_uploaded: {},
     for m_type, last_part in uploads:
         rep_str = '/' + last_part
         if m_type == 'avatar':
-            url_str = \
-                get_url_from_post(actor_json['icon']['url'])
+            url_str = get_url_from_post(actor_json['icon']['url'])
             actor_url = remove_html(url_str)
             last_part_of_url = actor_url.split('/')[-1]
             srch_str = '/' + last_part_of_url
@@ -2451,23 +2329,18 @@ def _profile_post_avatar_image_ext(profile_media_types_uploaded: {},
                 img_ext = actor_url.split('.')[-1]
                 if img_ext == 'jpg':
                     img_ext = 'jpeg'
-                actor_json['icon']['mediaType'] = \
-                    'image/' + img_ext
+                actor_json['icon']['mediaType'] = 'image/' + img_ext
         elif m_type == 'image':
-            url_str = \
-                get_url_from_post(actor_json['image']['url'])
-            im_url = \
-                remove_html(url_str)
+            url_str = get_url_from_post(actor_json['image']['url'])
+            im_url = remove_html(url_str)
             last_part_of_url = im_url.split('/')[-1]
             srch_str = '/' + last_part_of_url
-            actor_json['image']['url'] = \
-                im_url.replace(srch_str, rep_str)
+            actor_json['image']['url'] = im_url.replace(srch_str, rep_str)
             if '.' in im_url:
                 img_ext = im_url.split('.')[-1]
                 if img_ext == 'jpg':
                     img_ext = 'jpeg'
-                actor_json['image']['mediaType'] = \
-                    'image/' + img_ext
+                actor_json['image']['mediaType'] = 'image/' + img_ext
 
 
 def profile_edit(self, calling_domain: str, cookie: str,
@@ -2587,13 +2460,11 @@ def profile_edit(self, calling_domain: str, cookie: str,
             # time is an image with metadata publicly exposed,
             # even for a few mS
             if m_type == 'instanceLogo':
-                filename_base = \
-                    base_dir + '/accounts/login.temp'
+                filename_base = base_dir + '/accounts/login.temp'
             elif m_type == 'importTheme':
                 if not os.path.isdir(base_dir + '/imports'):
                     os.mkdir(base_dir + '/imports')
-                filename_base = \
-                    base_dir + '/imports/newtheme.zip'
+                filename_base = base_dir + '/imports/newtheme.zip'
                 if os.path.isfile(filename_base):
                     try:
                         os.remove(filename_base)
@@ -2721,8 +2592,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                       'fields could be extracted from POST')
 
         # load the json for the actor for this user
-        actor_filename = \
-            acct_dir(base_dir, nickname, domain) + '.json'
+        actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
         if os.path.isfile(actor_filename):
             actor_json = load_json(actor_filename)
             if actor_json:
