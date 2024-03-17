@@ -894,10 +894,7 @@ def _profile_post_only_follower_replies(fields: {},
                       show_replies_followers_file)
 
 
-def _profile_post_show_questions(base_dir: str,
-                                 nickname: str, domain: str,
-                                 fields: {},
-                                 account_dir: str) -> None:
+def _profile_post_show_questions(fields: {}, account_dir: str) -> None:
     """ HTTP POST show poll/vote/question posts checkbox
     """
     show_vote_posts = False
@@ -923,8 +920,7 @@ def _profile_post_show_questions(base_dir: str,
                       show_vote_file)
 
 
-def _profile_post_reverse_timelines(base_dir: str,
-                                    nickname: str, domain: str,
+def _profile_post_reverse_timelines(base_dir: str, nickname: str,
                                     fields: {}, self) -> None:
     """ HTTP POST reverse timelines checkbox
     """
@@ -2888,14 +2884,12 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                            fields, self)
 
                 _profile_post_reverse_timelines(base_dir,
-                                                nickname, domain,
+                                                nickname,
                                                 fields, self)
 
                 account_dir = acct_dir(base_dir, nickname, domain)
 
-                _profile_post_show_questions(base_dir,
-                                             nickname, domain,
-                                             fields, account_dir)
+                _profile_post_show_questions(fields, account_dir)
 
                 _profile_post_only_follower_replies(fields, account_dir)
 
