@@ -123,6 +123,760 @@ from cache import store_person_in_cache
 from daemon_utils import post_to_outbox
 
 
+def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
+                                     calling_domain: str,
+                                     fields: {}, self) -> bool:
+    """ HTTP POST deactivate the account
+    """
+    deactivated = False
+    if fields.get('deactivateThisAccount'):
+        if fields['deactivateThisAccount'] == 'on':
+            deactivate_account(base_dir, nickname, domain)
+            clear_login_details(self, nickname, calling_domain)
+            self.server.postreq_busy = False
+            deactivated = True
+    return deactivated
+
+
+def _profile_post_save_actor(base_dir: str, http_prefix: str,
+                             nickname: str, domain: str, port: int,
+                             actor_json: {}, actor_filename: str,
+                             onion_domain: str, i2p_domain: str,
+                             curr_session, proxy_type: str,
+                             send_move_activity: bool,
+                             self) -> None:
+    """ HTTP POST save actor json file within accounts
+    """
+    add_name_emojis_to_tags(base_dir, http_prefix,
+                            domain, port,
+                            actor_json)
+    # update the context for the actor
+    actor_json['@context'] = [
+        'https://www.w3.org/ns/activitystreams',
+        'https://w3id.org/security/v1',
+        get_default_person_context()
+    ]
+    if actor_json.get('nomadicLocations'):
+        del actor_json['nomadicLocations']
+    if not actor_json.get('featured'):
+        actor_json['featured'] = \
+            actor_json['id'] + '/collections/featured'
+    if not actor_json.get('featuredTags'):
+        actor_json['featuredTags'] = \
+            actor_json['id'] + '/collections/tags'
+    randomize_actor_images(actor_json)
+    add_actor_update_timestamp(actor_json)
+    # save the actor
+    save_json(actor_json, actor_filename)
+    webfinger_update(base_dir,
+                     nickname, domain,
+                     onion_domain, i2p_domain,
+                     self.server.cached_webfingers)
+    # also copy to the actors cache and
+    # person_cache in memory
+    store_person_in_cache(base_dir,
+                          actor_json['id'], actor_json,
+                          self.server.person_cache,
+                          True)
+    # clear any cached images for this actor
+    id_str = actor_json['id'].replace('/', '-')
+    remove_avatar_from_cache(base_dir, id_str)
+    # save the actor to the cache
+    actor_cache_filename = \
+        base_dir + '/cache/actors/' + \
+        actor_json['id'].replace('/', '#') + '.json'
+    save_json(actor_json, actor_cache_filename)
+    # send profile update to followers
+    update_actor_json = get_actor_update_json(actor_json)
+    print('Sending actor update: ' +
+          str(update_actor_json))
+    post_to_outbox(self, update_actor_json,
+                   self.server.project_version,
+                   nickname,
+                   curr_session, proxy_type)
+    # send move activity if necessary
+    if send_move_activity:
+        move_actor_json = get_actor_move_json(actor_json)
+        print('Sending Move activity: ' +
+              str(move_actor_json))
+        post_to_outbox(self, move_actor_json,
+                       self.server.project_version,
+                       nickname,
+                       curr_session, proxy_type)
+
+
+def _profile_post_memorial(base_dir: str, nickname: str,
+                           actor_json: {},
+                           actor_changed: bool) -> bool:
+    """ HTTP POST change memorial status
+    """
+    if is_memorial_account(base_dir, nickname):
+        if not actor_json.get('memorial'):
+            actor_json['memorial'] = True
+            actor_changed = True
+    elif actor_json.get('memorial'):
+        actor_json['memorial'] = False
+        actor_changed = True
+    return actor_changed
+
+
+def _profile_post_git_projects(base_dir: str, nickname: str, domain: str,
+                               fields: {}) -> None:
+    """ HTTP POST save git project names list
+    """
+    git_projects_filename = \
+        acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
+    if fields.get('gitProjects'):
+        try:
+            with open(git_projects_filename, 'w+',
+                      encoding='utf-8') as afile:
+                afile.write(fields['gitProjects'].lower())
+        except OSError:
+            print('EX: unable to write git ' +
+                  git_projects_filename)
+    else:
+        if os.path.isfile(git_projects_filename):
+            try:
+                os.remove(git_projects_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      git_projects_filename)
+
+
+def _profile_post_peertube_instances(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST save peertube instances list
+    """
+    peertube_instances_file = base_dir + '/accounts/peertube.txt'
+    if fields.get('ptInstances'):
+        self.server.peertube_instances.clear()
+        try:
+            with open(peertube_instances_file, 'w+',
+                      encoding='utf-8') as afile:
+                afile.write(fields['ptInstances'])
+        except OSError:
+            print('EX: unable to write peertube ' +
+                  peertube_instances_file)
+        pt_instances_list = \
+            fields['ptInstances'].split('\n')
+        if pt_instances_list:
+            for url in pt_instances_list:
+                url = url.strip()
+                if not url:
+                    continue
+                if url in self.server.peertube_instances:
+                    continue
+                self.server.peertube_instances.append(url)
+    else:
+        if os.path.isfile(peertube_instances_file):
+            try:
+                os.remove(peertube_instances_file)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      peertube_instances_file)
+        self.server.peertube_instances.clear()
+
+
+def _profile_post_block_federated(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST save blocking API endpoints
+    """
+    block_ep_new = []
+    if fields.get('blockFederated'):
+        block_federated_str = \
+            fields['blockFederated']
+        block_ep_new = \
+            block_federated_str.split('\n')
+    if str(self.server.block_federated_endpoints) != \
+       str(block_ep_new):
+        self.server.block_federated_endpoints = \
+            save_block_federated_endpoints(base_dir,
+                                           block_ep_new)
+        if not block_ep_new:
+            self.server.block_federated = []
+
+
+def _profile_post_buy_domains(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST save allowed buy domains
+    """
+    buy_sites = {}
+    if fields.get('buySitesStr'):
+        buy_sites_str = \
+            fields['buySitesStr']
+        buy_sites_list = \
+            buy_sites_str.split('\n')
+        for site_url in buy_sites_list:
+            if ' ' in site_url:
+                site_url = site_url.split(' ')[-1]
+                buy_icon_text = \
+                    site_url.replace(site_url, '').strip()
+                if not buy_icon_text:
+                    buy_icon_text = site_url
+            else:
+                buy_icon_text = site_url
+            if buy_sites.get(buy_icon_text):
+                continue
+            if '<' in site_url:
+                continue
+            if not site_url.strip():
+                continue
+            buy_sites[buy_icon_text] = site_url.strip()
+    if str(self.server.buy_sites) != \
+       str(buy_sites):
+        self.server.buy_sites = buy_sites
+        buy_sites_filename = \
+            base_dir + '/accounts/buy_sites.json'
+        if buy_sites:
+            save_json(buy_sites, buy_sites_filename)
+        else:
+            if os.path.isfile(buy_sites_filename):
+                try:
+                    os.remove(buy_sites_filename)
+                except OSError:
+                    print('EX: unable to delete ' +
+                          buy_sites_filename)
+
+
+def _profile_post_crawlers_allowed(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST save allowed web crawlers
+    """
+    crawlers_allowed = []
+    if fields.get('crawlersAllowedStr'):
+        crawlers_allowed_str = \
+            fields['crawlersAllowedStr']
+        crawlers_allowed_list = \
+            crawlers_allowed_str.split('\n')
+        for uagent in crawlers_allowed_list:
+            if uagent in crawlers_allowed:
+                continue
+            crawlers_allowed.append(uagent.strip())
+    if str(self.server.crawlers_allowed) != \
+       str(crawlers_allowed):
+        self.server.crawlers_allowed = \
+            crawlers_allowed
+        crawlers_allowed_str = ''
+        for uagent in crawlers_allowed:
+            if crawlers_allowed_str:
+                crawlers_allowed_str += ','
+            crawlers_allowed_str += uagent
+        set_config_param(base_dir, 'crawlersAllowed',
+                         crawlers_allowed_str)
+
+
+def _profile_post_blocked_user_agents(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST save blocked user agents
+    """
+    user_agents_blocked = []
+    if fields.get('userAgentsBlockedStr'):
+        user_agents_blocked_str = \
+            fields['userAgentsBlockedStr']
+        user_agents_blocked_list = \
+            user_agents_blocked_str.split('\n')
+        for uagent in user_agents_blocked_list:
+            if uagent in user_agents_blocked:
+                continue
+            user_agents_blocked.append(uagent.strip())
+    if str(self.server.user_agents_blocked) != \
+       str(user_agents_blocked):
+        self.server.user_agents_blocked = \
+            user_agents_blocked
+        user_agents_blocked_str = ''
+        for uagent in user_agents_blocked:
+            if user_agents_blocked_str:
+                user_agents_blocked_str += ','
+            user_agents_blocked_str += uagent
+        set_config_param(base_dir, 'userAgentsBlocked',
+                         user_agents_blocked_str)
+
+
+def _profile_post_cw_lists(fields: {}, self) -> None:
+    """ HTTP POST set selected content warning lists
+    """
+    new_lists_enabled = ''
+    for name, _ in self.server.cw_lists.items():
+        list_var_name = get_cw_list_variable(name)
+        if fields.get(list_var_name):
+            if fields[list_var_name] == 'on':
+                if new_lists_enabled:
+                    new_lists_enabled += ', ' + name
+                else:
+                    new_lists_enabled += name
+    if new_lists_enabled != self.server.lists_enabled:
+        self.server.lists_enabled = new_lists_enabled
+        set_config_param(self.server.base_dir,
+                         "listsEnabled", new_lists_enabled)
+
+
+def _profile_post_allowed_instances(base_dir: str, nickname: str, domain: str,
+                                    fields: {}) -> None:
+    """ HTTP POST save allowed instances list
+    This is the account level allow list
+    """
+    allowed_instances_filename = \
+        acct_dir(base_dir, nickname, domain) + '/allowedinstances.txt'
+    if fields.get('allowedInstances'):
+        inst_filename = allowed_instances_filename
+        try:
+            with open(inst_filename, 'w+',
+                      encoding='utf-8') as afile:
+                afile.write(fields['allowedInstances'])
+        except OSError:
+            print('EX: unable to write allowed instances ' +
+                  allowed_instances_filename)
+    else:
+        if os.path.isfile(allowed_instances_filename):
+            try:
+                os.remove(allowed_instances_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      allowed_instances_filename)
+
+
+def _profile_post_dm_instances(base_dir: str, nickname: str, domain: str,
+                               fields: {}) -> None:
+    """ HTTP POST Save DM allowed instances list.
+    The allow list for incoming DMs,
+    if the .followDMs flag file exists
+    """
+    dm_allowed_instances_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/dmAllowedInstances.txt'
+    if fields.get('dmAllowedInstances'):
+        try:
+            with open(dm_allowed_instances_filename, 'w+',
+                      encoding='utf-8') as afile:
+                afile.write(fields['dmAllowedInstances'])
+        except OSError:
+            print('EX: unable to write allowed DM instances ' +
+                  dm_allowed_instances_filename)
+    else:
+        if os.path.isfile(dm_allowed_instances_filename):
+            try:
+                os.remove(dm_allowed_instances_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      dm_allowed_instances_filename)
+
+
+def _profile_post_import_theme(base_dir: str, nickname: str,
+                               admin_nickname: str, fields: {}) -> None:
+    """ HTTP POST import theme from file
+    """
+    if fields.get('importTheme'):
+        if not os.path.isdir(base_dir + '/imports'):
+            os.mkdir(base_dir + '/imports')
+        filename_base = \
+            base_dir + '/imports/newtheme.zip'
+        if os.path.isfile(filename_base):
+            try:
+                os.remove(filename_base)
+            except OSError:
+                print('EX: _profile_edit unable to delete ' +
+                      filename_base)
+        if nickname == admin_nickname or \
+           is_artist(base_dir, nickname):
+            if import_theme(base_dir, filename_base):
+                print(nickname + ' uploaded a theme')
+        else:
+            print('Only admin or artist can import a theme')
+
+
+def _profile_post_import_follows(base_dir: str, nickname: str, domain: str,
+                                 fields: {}) -> None:
+    """ HTTP POST import following from file
+    """
+    if fields.get('importFollows'):
+        filename_base = \
+            acct_dir(base_dir, nickname, domain) + \
+            '/import_following.csv'
+        follows_str = fields['importFollows']
+        while follows_str.startswith('\n'):
+            follows_str = follows_str[1:]
+        try:
+            with open(filename_base, 'w+',
+                      encoding='utf-8') as fp_foll:
+                fp_foll.write(follows_str)
+        except OSError:
+            print('EX: unable to write imported follows ' +
+                  filename_base)
+
+
+def _profile_post_import_blocks_csv(base_dir: str, nickname: str, domain: str,
+                                    fields: {}) -> None:
+    """ HTTP POST import blocks from csv file
+    """
+    if fields.get('importBlocks'):
+        blocks_str = fields['importBlocks']
+        while blocks_str.startswith('\n'):
+            blocks_str = blocks_str[1:]
+        blocks_lines = blocks_str.split('\n')
+        if import_blocking_file(base_dir, nickname, domain,
+                                blocks_lines):
+            print('blocks imported for ' + nickname)
+        else:
+            print('blocks not imported for ' + nickname)
+
+
+def _profile_post_auto_cw(base_dir: str, nickname: str, domain: str,
+                          fields: {}, self) -> None:
+    """ HTTP POST autogenerated content warnings
+    """
+    auto_cw_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/autocw.txt'
+    if fields.get('autoCW'):
+        try:
+            with open(auto_cw_filename, 'w+',
+                      encoding='utf-8') as auto_cw_file:
+                auto_cw_file.write(fields['autoCW'])
+        except OSError:
+            print('EX: unable to write auto CW ' +
+                  auto_cw_filename)
+        self.server.auto_cw_cache[nickname] = \
+            fields['autoCW'].split('\n')
+    else:
+        if os.path.isfile(auto_cw_filename):
+            try:
+                os.remove(auto_cw_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      auto_cw_filename)
+            self.server.auto_cw_cache[nickname] = []
+
+
+def _profile_post_autogenerated_tags(base_dir: str,
+                                     nickname: str, domain: str,
+                                     fields: {}) -> None:
+    """ HTTP POST autogenerated tags
+    """
+    auto_tags_filename = \
+        acct_dir(base_dir, nickname, domain) + '/autotags.txt'
+    if fields.get('autoTags'):
+        try:
+            with open(auto_tags_filename, 'w+',
+                      encoding='utf-8') as autofile:
+                autofile.write(fields['autoTags'])
+        except OSError:
+            print('EX: unable to write auto tags ' +
+                  auto_tags_filename)
+    else:
+        if os.path.isfile(auto_tags_filename):
+            try:
+                os.remove(auto_tags_filename)
+            except OSError:
+                print('EX: _profile_edit unable to delete ' +
+                      auto_tags_filename)
+
+
+def _profile_post_word_replacements(base_dir: str,
+                                    nickname: str, domain: str,
+                                    fields: {}) -> None:
+    """ HTTP POST word replacements
+    """
+    switch_filename = \
+        acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
+    if fields.get('switchwords'):
+        try:
+            with open(switch_filename, 'w+',
+                      encoding='utf-8') as switchfile:
+                switchfile.write(fields['switchwords'])
+        except OSError:
+            print('EX: unable to write switches ' +
+                  switch_filename)
+    else:
+        if os.path.isfile(switch_filename):
+            try:
+                os.remove(switch_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      switch_filename)
+
+
+def _profile_post_filtered_words_within_bio(base_dir: str,
+                                            nickname: str, domain: str,
+                                            fields: {}) -> None:
+    """ HTTP POST save filtered words within bio list
+    """
+    filter_bio_filename = \
+        acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
+    if fields.get('filteredWordsBio'):
+        try:
+            with open(filter_bio_filename, 'w+',
+                      encoding='utf-8') as filterfile:
+                filterfile.write(fields['filteredWordsBio'])
+        except OSError:
+            print('EX: unable to write bio filter ' +
+                  filter_bio_filename)
+    else:
+        if os.path.isfile(filter_bio_filename):
+            try:
+                os.remove(filter_bio_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete bio filter ' +
+                      filter_bio_filename)
+
+
+def _profile_post_filtered_words(base_dir: str, nickname: str, domain: str,
+                                 fields: {}) -> None:
+    """ HTTP POST save filtered words list
+    """
+    filter_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
+    if fields.get('filteredWords'):
+        try:
+            with open(filter_filename, 'w+',
+                      encoding='utf-8') as filterfile:
+                filterfile.write(fields['filteredWords'])
+        except OSError:
+            print('EX: unable to write filter ' +
+                  filter_filename)
+    else:
+        if os.path.isfile(filter_filename):
+            try:
+                os.remove(filter_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete filter ' +
+                      filter_filename)
+
+
+def _profile_post_low_bandwidth(base_dir: str, path: str,
+                                nickname: str, admin_nickname: str,
+                                fields: {}, self) -> None:
+    """ HTTP POST low bandwidth images checkbox
+    """
+    if path.startswith('/users/' + admin_nickname + '/') or \
+       is_artist(base_dir, nickname):
+        curr_low_bandwidth = \
+            get_config_param(base_dir, 'lowBandwidth')
+        low_bandwidth = False
+        if fields.get('lowBandwidth'):
+            if fields['lowBandwidth'] == 'on':
+                low_bandwidth = True
+        if curr_low_bandwidth != low_bandwidth:
+            set_config_param(base_dir, 'lowBandwidth',
+                             low_bandwidth)
+            self.server.low_bandwidth = low_bandwidth
+
+
+def _profile_post_dyslexic_font(base_dir: str, path: str,
+                                nickname: str, admin_nickname: str,
+                                fields: {}, self) -> None:
+    """ HTTP POST dyslexic font
+    """
+    if path.startswith('/users/' + admin_nickname + '/') or \
+       is_artist(base_dir, nickname):
+        dyslexic_font = False
+        if fields.get('dyslexicFont'):
+            if fields['dyslexicFont'] == 'on':
+                dyslexic_font = True
+        if dyslexic_font != self.server.dyslexic_font:
+            self.server.dyslexic_font = dyslexic_font
+            set_config_param(base_dir, 'dyslexicFont',
+                             self.server.dyslexic_font)
+            set_theme(base_dir,
+                      self.server.theme_name,
+                      self.server.domain,
+                      self.server.allow_local_network_access,
+                      self.server.system_language,
+                      self.server.dyslexic_font, False)
+
+
+def _profile_post_grayscale_theme(base_dir: str, path: str,
+                                  nickname: str, admin_nickname: str,
+                                  fields: {}) -> None:
+    """ HTTP POST grayscale theme
+    """
+    if path.startswith('/users/' + admin_nickname + '/') or \
+       is_artist(base_dir, nickname):
+        grayscale = False
+        if fields.get('grayscale'):
+            if fields['grayscale'] == 'on':
+                grayscale = True
+        if grayscale:
+            enable_grayscale(base_dir)
+        else:
+            disable_grayscale(base_dir)
+
+
+def _profile_post_account_type(path: str, actor_json: {}, fields: {},
+                               admin_nickname: str,
+                               actor_changed: bool) -> bool:
+    """ HTTP POST Changes the type of account Bot/Group/Person
+    """
+    if fields.get('isBot'):
+        if fields['isBot'] == 'on' and \
+           actor_json.get('type'):
+            if actor_json['type'] != 'Service':
+                actor_json['type'] = 'Service'
+                actor_changed = True
+    else:
+        # this account is a group
+        if fields.get('isGroup'):
+            if fields['isGroup'] == 'on' and \
+               actor_json.get('type'):
+                if actor_json['type'] != 'Group':
+                    # only allow admin to create groups
+                    if path.startswith('/users/' +
+                                       admin_nickname + '/'):
+                        actor_json['type'] = 'Group'
+                        actor_changed = True
+        else:
+            # this account is a person (default)
+            if actor_json.get('type'):
+                if actor_json['type'] != 'Person':
+                    actor_json['type'] = 'Person'
+                    actor_changed = True
+    return actor_changed
+
+
+def _profile_post_notify_reactions(base_dir: str,
+                                   nickname: str, domain: str,
+                                   on_final_welcome_screen: bool,
+                                   hide_reaction_button_active: bool,
+                                   fields: {}) -> bool:
+    """ HTTP POST notify about new Reactions
+    """
+    notify_reactions_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/.notifyReactions'
+    if on_final_welcome_screen:
+        # default setting from welcome screen
+        notify_react_filename = notify_reactions_filename
+        try:
+            with open(notify_react_filename, 'w+',
+                      encoding='utf-8') as rfile:
+                rfile.write('\n')
+        except OSError:
+            print('EX: unable to write notify reactions ' +
+                  notify_reactions_filename)
+        actor_changed = True
+    else:
+        notify_reactions_active = False
+        if fields.get('notifyReactions'):
+            if fields['notifyReactions'] == 'on' and \
+               not hide_reaction_button_active:
+                notify_reactions_active = True
+                try:
+                    with open(notify_reactions_filename, 'w+',
+                              encoding='utf-8') as rfile:
+                        rfile.write('\n')
+                except OSError:
+                    print('EX: unable to write ' +
+                          'notify reactions ' +
+                          notify_reactions_filename)
+        if not notify_reactions_active:
+            if os.path.isfile(notify_reactions_filename):
+                try:
+                    os.remove(notify_reactions_filename)
+                except OSError:
+                    print('EX: _profile_edit ' +
+                          'unable to delete ' +
+                          notify_reactions_filename)
+    return actor_changed
+
+
+def _profile_post_notify_likes(on_final_welcome_screen: bool,
+                               notify_likes_filename: str,
+                               actor_changed: bool,
+                               fields: {},
+                               hide_like_button_active: bool) -> bool:
+    """ HTTP POST notify about new Likes
+    """
+    if on_final_welcome_screen:
+        # default setting from welcome screen
+        try:
+            with open(notify_likes_filename, 'w+',
+                      encoding='utf-8') as rfile:
+                rfile.write('\n')
+        except OSError:
+            print('EX: unable to write notify likes ' +
+                  notify_likes_filename)
+        actor_changed = True
+    else:
+        notify_likes_active = False
+        if fields.get('notifyLikes'):
+            if fields['notifyLikes'] == 'on' and \
+               not hide_like_button_active:
+                notify_likes_active = True
+                try:
+                    with open(notify_likes_filename, 'w+',
+                              encoding='utf-8') as rfile:
+                        rfile.write('\n')
+                except OSError:
+                    print('EX: unable to write notify likes ' +
+                          notify_likes_filename)
+        if not notify_likes_active:
+            if os.path.isfile(notify_likes_filename):
+                try:
+                    os.remove(notify_likes_filename)
+                except OSError:
+                    print('EX: _profile_edit ' +
+                          'unable to delete ' +
+                          notify_likes_filename)
+    return actor_changed
+
+
+def _profile_post_block_military(nickname: str, fields: {}, self) -> None:
+    """ HTTP POST block military instances
+    """
+    block_mil_instances = False
+    if fields.get('blockMilitary'):
+        if fields['blockMilitary'] == 'on':
+            block_mil_instances = True
+    if block_mil_instances:
+        if not self.server.block_military.get(nickname):
+            self.server.block_military[nickname] = True
+            save_blocked_military(self.server.base_dir,
+                                  self.server.block_military)
+    else:
+        if self.server.block_military.get(nickname):
+            del self.server.block_military[nickname]
+            save_blocked_military(self.server.base_dir,
+                                  self.server.block_military)
+
+
+def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
+                               actor_json: {}, fields: {}, self,
+                               actor_changed: bool) -> bool:
+    """ HTTP POST hide follows checkbox
+    """
+    hide_follows_filename = \
+        acct_dir(base_dir, nickname, domain) + \
+        '/.hideFollows'
+    hide_follows = False
+    if fields.get('hideFollows'):
+        if fields['hideFollows'] == 'on':
+            hide_follows = True
+            self.server.hide_follows[nickname] = True
+            actor_json['hideFollows'] = True
+            actor_changed = True
+            try:
+                with open(hide_follows_filename, 'w+',
+                          encoding='utf-8') as rfile:
+                    rfile.write('\n')
+            except OSError:
+                print('EX: unable to write hideFollows ' +
+                      hide_follows_filename)
+    if not hide_follows:
+        actor_json['hideFollows'] = False
+        if self.server.hide_follows.get(nickname):
+            del self.server.hide_follows[nickname]
+            actor_changed = True
+        if os.path.isfile(hide_follows_filename):
+            try:
+                os.remove(hide_follows_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      hide_follows_filename)
+    return actor_changed
+
+
 def _profile_post_mutuals_replies(account_dir: str, fields: {}) -> None:
     """ HTTP POST show replies only from mutuals checkbox
     """
@@ -259,9 +1013,9 @@ def _profile_post_bold_reading(base_dir: str,
                       bold_reading_filename)
 
 
-def _profile_post_hide_reaction_button(base_dir: str,
-                                       nickname: str, domain: str,
-                                       fields: {}) -> None:
+def _profile_post_hide_reaction_button2(base_dir: str,
+                                        nickname: str, domain: str,
+                                        fields: {}) -> None:
     """ HTTP POST hide Reaction button
     """
     hide_reaction_button_file = \
@@ -319,8 +1073,8 @@ def _profile_post_minimize_images(base_dir: str, nickname: str, domain: str,
               str(min_img_acct))
 
 
-def _profile_post_hide_like_button(base_dir: str, nickname: str, domain: str,
-                                   fields: {}) -> None:
+def _profile_post_hide_like_button2(base_dir: str, nickname: str, domain: str,
+                                    fields: {}) -> None:
     """ HTTP POST hide Like button
     """
     hide_like_button_file = \
@@ -605,7 +1359,8 @@ def _profile_post_broch_mode(base_dir: str, domain_full: str,
                          broch_mode)
 
 
-def _profile_post_verify_all_signatures(base_dir: str, fields: {}, self) -> None:
+def _profile_post_verify_all_signatures(base_dir: str, fields: {},
+                                        self) -> None:
     """ HTTP POST verify all signatures
     """
     verify_all_signatures = False
@@ -617,7 +1372,8 @@ def _profile_post_verify_all_signatures(base_dir: str, fields: {}, self) -> None
                      verify_all_signatures)
 
 
-def _profile_post_show_nodeinfo_version(base_dir: str, fields: {}, self) -> None:
+def _profile_post_show_nodeinfo_version(base_dir: str, fields: {},
+                                        self) -> None:
     """ HTTP POST show nodeinfo version
     """
     show_node_info_version = False
@@ -2052,8 +2808,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                     _profile_post_instance_desc(base_dir, fields)
 
-                    _profile_post_memorial_accounts(base_dir,
-                                                    self.server.domain,
+                    _profile_post_memorial_accounts(base_dir, domain,
                                                     self.server.person_cache,
                                                     fields)
                 actor_changed = \
@@ -2249,16 +3004,15 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 _profile_post_remove_retweets(base_dir, nickname, domain,
                                               fields)
 
-                _profile_post_hide_like_button(base_dir, nickname, domain,
-                                               fields)
+                _profile_post_hide_like_button2(base_dir, nickname, domain,
+                                                fields)
 
                 min_img_acct = self.server.min_images_for_accounts
                 _profile_post_minimize_images(base_dir, nickname, domain,
                                               fields, min_img_acct)
 
-                _profile_post_hide_reaction_button(base_dir,
-                                                   nickname, domain,
-                                                   fields)
+                _profile_post_hide_reaction_button2(base_dir, nickname, domain,
+                                                    fields)
 
                 _profile_post_bold_reading(base_dir, nickname, domain,
                                            fields, self)
@@ -2277,53 +3031,11 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                 _profile_post_mutuals_replies(account_dir, fields)
 
-                # TODO
-                # hide follows checkbox
-                hide_follows_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/.hideFollows'
-                hide_follows = False
-                if fields.get('hideFollows'):
-                    if fields['hideFollows'] == 'on':
-                        hide_follows = True
-                        self.server.hide_follows[nickname] = True
-                        actor_json['hideFollows'] = True
-                        actor_changed = True
-                        try:
-                            with open(hide_follows_filename, 'w+',
-                                      encoding='utf-8') as rfile:
-                                rfile.write('\n')
-                        except OSError:
-                            print('EX: unable to write hideFollows ' +
-                                  hide_follows_filename)
-                if not hide_follows:
-                    actor_json['hideFollows'] = False
-                    if self.server.hide_follows.get(nickname):
-                        del self.server.hide_follows[nickname]
-                        actor_changed = True
-                    if os.path.isfile(hide_follows_filename):
-                        try:
-                            os.remove(hide_follows_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  hide_follows_filename)
-
-                # block military instances
-                block_mil_instances = False
-                if fields.get('blockMilitary'):
-                    if fields['blockMilitary'] == 'on':
-                        block_mil_instances = True
-                if block_mil_instances:
-                    if not self.server.block_military.get(nickname):
-                        self.server.block_military[nickname] = True
-                        save_blocked_military(self.server.base_dir,
-                                              self.server.block_military)
-                else:
-                    if self.server.block_military.get(nickname):
-                        del self.server.block_military[nickname]
-                        save_blocked_military(self.server.base_dir,
-                                              self.server.block_military)
+                actor_changed = \
+                    _profile_post_hide_follows(base_dir, nickname, domain,
+                                               actor_json, fields, self,
+                                               actor_changed)
+                _profile_post_block_military(nickname, fields, self)
 
                 notify_likes_filename = \
                     acct_dir(base_dir, nickname, domain) + '/.notifyLikes'
@@ -2336,253 +3048,41 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     if fields['hideLikeButton'] == 'on':
                         hide_like_button_active = True
 
-                # notify about new Likes
-                if on_final_welcome_screen:
-                    # default setting from welcome screen
-                    try:
-                        with open(notify_likes_filename, 'w+',
-                                  encoding='utf-8') as rfile:
-                            rfile.write('\n')
-                    except OSError:
-                        print('EX: unable to write notify likes ' +
-                              notify_likes_filename)
-                    actor_changed = True
-                else:
-                    notify_likes_active = False
-                    if fields.get('notifyLikes'):
-                        if fields['notifyLikes'] == 'on' and \
-                           not hide_like_button_active:
-                            notify_likes_active = True
-                            try:
-                                with open(notify_likes_filename, 'w+',
-                                          encoding='utf-8') as rfile:
-                                    rfile.write('\n')
-                            except OSError:
-                                print('EX: unable to write notify likes ' +
-                                      notify_likes_filename)
-                    if not notify_likes_active:
-                        if os.path.isfile(notify_likes_filename):
-                            try:
-                                os.remove(notify_likes_filename)
-                            except OSError:
-                                print('EX: _profile_edit ' +
-                                      'unable to delete ' +
-                                      notify_likes_filename)
+                actor_changed = \
+                    _profile_post_notify_likes(on_final_welcome_screen,
+                                               notify_likes_filename,
+                                               actor_changed, fields,
+                                               hide_like_button_active)
 
-                notify_reactions_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/.notifyReactions'
-                if on_final_welcome_screen:
-                    # default setting from welcome screen
-                    notify_react_filename = notify_reactions_filename
-                    try:
-                        with open(notify_react_filename, 'w+',
-                                  encoding='utf-8') as rfile:
-                            rfile.write('\n')
-                    except OSError:
-                        print('EX: unable to write notify reactions ' +
-                              notify_reactions_filename)
-                    actor_changed = True
-                else:
-                    notify_reactions_active = False
-                    if fields.get('notifyReactions'):
-                        if fields['notifyReactions'] == 'on' and \
-                           not hide_reaction_button_active:
-                            notify_reactions_active = True
-                            try:
-                                with open(notify_reactions_filename, 'w+',
-                                          encoding='utf-8') as rfile:
-                                    rfile.write('\n')
-                            except OSError:
-                                print('EX: unable to write ' +
-                                      'notify reactions ' +
-                                      notify_reactions_filename)
-                    if not notify_reactions_active:
-                        if os.path.isfile(notify_reactions_filename):
-                            try:
-                                os.remove(notify_reactions_filename)
-                            except OSError:
-                                print('EX: _profile_edit ' +
-                                      'unable to delete ' +
-                                      notify_reactions_filename)
-
-                # this account is a bot
-                if fields.get('isBot'):
-                    if fields['isBot'] == 'on' and \
-                       actor_json.get('type'):
-                        if actor_json['type'] != 'Service':
-                            actor_json['type'] = 'Service'
-                            actor_changed = True
-                else:
-                    # this account is a group
-                    if fields.get('isGroup'):
-                        if fields['isGroup'] == 'on' and \
-                           actor_json.get('type'):
-                            if actor_json['type'] != 'Group':
-                                # only allow admin to create groups
-                                if path.startswith('/users/' +
-                                                   admin_nickname + '/'):
-                                    actor_json['type'] = 'Group'
-                                    actor_changed = True
-                    else:
-                        # this account is a person (default)
-                        if actor_json.get('type'):
-                            if actor_json['type'] != 'Person':
-                                actor_json['type'] = 'Person'
-                                actor_changed = True
-
-                # grayscale theme
-                if path.startswith('/users/' + admin_nickname + '/') or \
-                   is_artist(base_dir, nickname):
-                    grayscale = False
-                    if fields.get('grayscale'):
-                        if fields['grayscale'] == 'on':
-                            grayscale = True
-                    if grayscale:
-                        enable_grayscale(base_dir)
-                    else:
-                        disable_grayscale(base_dir)
-
-                # dyslexic font
-                if path.startswith('/users/' + admin_nickname + '/') or \
-                   is_artist(base_dir, nickname):
-                    dyslexic_font = False
-                    if fields.get('dyslexicFont'):
-                        if fields['dyslexicFont'] == 'on':
-                            dyslexic_font = True
-                    if dyslexic_font != self.server.dyslexic_font:
-                        self.server.dyslexic_font = dyslexic_font
-                        set_config_param(base_dir, 'dyslexicFont',
-                                         self.server.dyslexic_font)
-                        set_theme(base_dir,
-                                  self.server.theme_name,
-                                  self.server.domain,
-                                  self.server.allow_local_network_access,
-                                  self.server.system_language,
-                                  self.server.dyslexic_font, False)
-
-                # low bandwidth images checkbox
-                if path.startswith('/users/' + admin_nickname + '/') or \
-                   is_artist(base_dir, nickname):
-                    curr_low_bandwidth = \
-                        get_config_param(base_dir, 'lowBandwidth')
-                    low_bandwidth = False
-                    if fields.get('lowBandwidth'):
-                        if fields['lowBandwidth'] == 'on':
-                            low_bandwidth = True
-                    if curr_low_bandwidth != low_bandwidth:
-                        set_config_param(base_dir, 'lowBandwidth',
-                                         low_bandwidth)
-                        self.server.low_bandwidth = low_bandwidth
-
-                # save filtered words list
-                filter_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/filters.txt'
-                if fields.get('filteredWords'):
-                    try:
-                        with open(filter_filename, 'w+',
-                                  encoding='utf-8') as filterfile:
-                            filterfile.write(fields['filteredWords'])
-                    except OSError:
-                        print('EX: unable to write filter ' +
-                              filter_filename)
-                else:
-                    if os.path.isfile(filter_filename):
-                        try:
-                            os.remove(filter_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete filter ' +
-                                  filter_filename)
-
-                # save filtered words within bio list
-                filter_bio_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/filters_bio.txt'
-                if fields.get('filteredWordsBio'):
-                    try:
-                        with open(filter_bio_filename, 'w+',
-                                  encoding='utf-8') as filterfile:
-                            filterfile.write(fields['filteredWordsBio'])
-                    except OSError:
-                        print('EX: unable to write bio filter ' +
-                              filter_bio_filename)
-                else:
-                    if os.path.isfile(filter_bio_filename):
-                        try:
-                            os.remove(filter_bio_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete bio filter ' +
-                                  filter_bio_filename)
-
-                # word replacements
-                switch_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/replacewords.txt'
-                if fields.get('switchwords'):
-                    try:
-                        with open(switch_filename, 'w+',
-                                  encoding='utf-8') as switchfile:
-                            switchfile.write(fields['switchwords'])
-                    except OSError:
-                        print('EX: unable to write switches ' +
-                              switch_filename)
-                else:
-                    if os.path.isfile(switch_filename):
-                        try:
-                            os.remove(switch_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  switch_filename)
-
-                # autogenerated tags
-                auto_tags_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/autotags.txt'
-                if fields.get('autoTags'):
-                    try:
-                        with open(auto_tags_filename, 'w+',
-                                  encoding='utf-8') as autofile:
-                            autofile.write(fields['autoTags'])
-                    except OSError:
-                        print('EX: unable to write auto tags ' +
-                              auto_tags_filename)
-                else:
-                    if os.path.isfile(auto_tags_filename):
-                        try:
-                            os.remove(auto_tags_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  auto_tags_filename)
-
-                # autogenerated content warnings
-                auto_cw_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/autocw.txt'
-                if fields.get('autoCW'):
-                    try:
-                        with open(auto_cw_filename, 'w+',
-                                  encoding='utf-8') as auto_cw_file:
-                            auto_cw_file.write(fields['autoCW'])
-                    except OSError:
-                        print('EX: unable to write auto CW ' +
-                              auto_cw_filename)
-                    self.server.auto_cw_cache[nickname] = \
-                        fields['autoCW'].split('\n')
-                else:
-                    if os.path.isfile(auto_cw_filename):
-                        try:
-                            os.remove(auto_cw_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  auto_cw_filename)
-                        self.server.auto_cw_cache[nickname] = []
-
+                actor_changed = \
+                    _profile_post_notify_reactions(base_dir,
+                                                   nickname, domain,
+                                                   on_final_welcome_screen,
+                                                   hide_reaction_button_active,
+                                                   fields)
+                actor_changed = \
+                    _profile_post_account_type(path, actor_json, fields,
+                                               admin_nickname, actor_changed)
+                _profile_post_grayscale_theme(base_dir, path,
+                                              nickname, admin_nickname,
+                                              fields)
+                _profile_post_dyslexic_font(base_dir, path,
+                                            nickname, admin_nickname,
+                                            fields, self)
+                _profile_post_low_bandwidth(base_dir, path,
+                                            nickname, admin_nickname,
+                                            fields, self)
+                _profile_post_filtered_words(base_dir, nickname, domain,
+                                             fields)
+                _profile_post_filtered_words_within_bio(base_dir,
+                                                        nickname, domain,
+                                                        fields)
+                _profile_post_word_replacements(base_dir, nickname, domain,
+                                                fields)
+                _profile_post_autogenerated_tags(base_dir, nickname, domain,
+                                                 fields)
+                _profile_post_auto_cw(base_dir, nickname, domain,
+                                      fields, self)
                 # save blocked accounts list
                 if fields.get('blocked'):
                     add_account_blocks(base_dir,
@@ -2591,344 +3091,46 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 else:
                     add_account_blocks(base_dir,
                                        nickname, domain, '')
-                # import blocks from csv file
-                if fields.get('importBlocks'):
-                    blocks_str = fields['importBlocks']
-                    while blocks_str.startswith('\n'):
-                        blocks_str = blocks_str[1:]
-                    blocks_lines = blocks_str.split('\n')
-                    if import_blocking_file(base_dir, nickname, domain,
-                                            blocks_lines):
-                        print('blocks imported for ' + nickname)
-                    else:
-                        print('blocks not imported for ' + nickname)
 
-                if fields.get('importFollows'):
-                    filename_base = \
-                        acct_dir(base_dir, nickname, domain) + \
-                        '/import_following.csv'
-                    follows_str = fields['importFollows']
-                    while follows_str.startswith('\n'):
-                        follows_str = follows_str[1:]
-                    try:
-                        with open(filename_base, 'w+',
-                                  encoding='utf-8') as fp_foll:
-                            fp_foll.write(follows_str)
-                    except OSError:
-                        print('EX: unable to write imported follows ' +
-                              filename_base)
+                _profile_post_import_blocks_csv(base_dir, nickname, domain,
+                                                fields)
+                _profile_post_import_follows(base_dir, nickname, domain,
+                                             fields)
+                _profile_post_import_theme(base_dir, nickname,
+                                           admin_nickname, fields)
+                _profile_post_dm_instances(base_dir, nickname, domain,
+                                           fields)
+                _profile_post_allowed_instances(base_dir, nickname, domain,
+                                                fields)
+                if is_moderator(base_dir, nickname):
+                    _profile_post_cw_lists(fields, self)
+                    _profile_post_blocked_user_agents(base_dir, fields, self)
+                    _profile_post_crawlers_allowed(base_dir, fields, self)
+                    _profile_post_buy_domains(base_dir, fields, self)
+                    _profile_post_block_federated(base_dir, fields, self)
+                    _profile_post_peertube_instances(base_dir, fields, self)
 
-                if fields.get('importTheme'):
-                    if not os.path.isdir(base_dir + '/imports'):
-                        os.mkdir(base_dir + '/imports')
-                    filename_base = \
-                        base_dir + '/imports/newtheme.zip'
-                    if os.path.isfile(filename_base):
-                        try:
-                            os.remove(filename_base)
-                        except OSError:
-                            print('EX: _profile_edit unable to delete ' +
-                                  filename_base)
-                    if nickname == admin_nickname or \
-                       is_artist(base_dir, nickname):
-                        if import_theme(base_dir, filename_base):
-                            print(nickname + ' uploaded a theme')
-                    else:
-                        print('Only admin or artist can import a theme')
-
-                # Save DM allowed instances list.
-                # The allow list for incoming DMs,
-                # if the .followDMs flag file exists
-                dm_allowed_instances_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/dmAllowedInstances.txt'
-                if fields.get('dmAllowedInstances'):
-                    try:
-                        with open(dm_allowed_instances_filename, 'w+',
-                                  encoding='utf-8') as afile:
-                            afile.write(fields['dmAllowedInstances'])
-                    except OSError:
-                        print('EX: unable to write allowed DM instances ' +
-                              dm_allowed_instances_filename)
-                else:
-                    if os.path.isfile(dm_allowed_instances_filename):
-                        try:
-                            os.remove(dm_allowed_instances_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  dm_allowed_instances_filename)
-
-                # save allowed instances list
-                # This is the account level allow list
-                allowed_instances_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/allowedinstances.txt'
-                if fields.get('allowedInstances'):
-                    inst_filename = allowed_instances_filename
-                    try:
-                        with open(inst_filename, 'w+',
-                                  encoding='utf-8') as afile:
-                            afile.write(fields['allowedInstances'])
-                    except OSError:
-                        print('EX: unable to write allowed instances ' +
-                              allowed_instances_filename)
-                else:
-                    if os.path.isfile(allowed_instances_filename):
-                        try:
-                            os.remove(allowed_instances_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  allowed_instances_filename)
-
-                if is_moderator(self.server.base_dir, nickname):
-                    # set selected content warning lists
-                    new_lists_enabled = ''
-                    for name, _ in self.server.cw_lists.items():
-                        list_var_name = get_cw_list_variable(name)
-                        if fields.get(list_var_name):
-                            if fields[list_var_name] == 'on':
-                                if new_lists_enabled:
-                                    new_lists_enabled += ', ' + name
-                                else:
-                                    new_lists_enabled += name
-                    if new_lists_enabled != self.server.lists_enabled:
-                        self.server.lists_enabled = new_lists_enabled
-                        set_config_param(self.server.base_dir,
-                                         "listsEnabled",
-                                         new_lists_enabled)
-
-                    # save blocked user agents
-                    user_agents_blocked = []
-                    if fields.get('userAgentsBlockedStr'):
-                        user_agents_blocked_str = \
-                            fields['userAgentsBlockedStr']
-                        user_agents_blocked_list = \
-                            user_agents_blocked_str.split('\n')
-                        for uagent in user_agents_blocked_list:
-                            if uagent in user_agents_blocked:
-                                continue
-                            user_agents_blocked.append(uagent.strip())
-                    if str(self.server.user_agents_blocked) != \
-                       str(user_agents_blocked):
-                        self.server.user_agents_blocked = \
-                            user_agents_blocked
-                        user_agents_blocked_str = ''
-                        for uagent in user_agents_blocked:
-                            if user_agents_blocked_str:
-                                user_agents_blocked_str += ','
-                            user_agents_blocked_str += uagent
-                        set_config_param(base_dir, 'userAgentsBlocked',
-                                         user_agents_blocked_str)
-
-                    # save allowed web crawlers
-                    crawlers_allowed = []
-                    if fields.get('crawlersAllowedStr'):
-                        crawlers_allowed_str = \
-                            fields['crawlersAllowedStr']
-                        crawlers_allowed_list = \
-                            crawlers_allowed_str.split('\n')
-                        for uagent in crawlers_allowed_list:
-                            if uagent in crawlers_allowed:
-                                continue
-                            crawlers_allowed.append(uagent.strip())
-                    if str(self.server.crawlers_allowed) != \
-                       str(crawlers_allowed):
-                        self.server.crawlers_allowed = \
-                            crawlers_allowed
-                        crawlers_allowed_str = ''
-                        for uagent in crawlers_allowed:
-                            if crawlers_allowed_str:
-                                crawlers_allowed_str += ','
-                            crawlers_allowed_str += uagent
-                        set_config_param(base_dir, 'crawlersAllowed',
-                                         crawlers_allowed_str)
-
-                    # save allowed buy domains
-                    buy_sites = {}
-                    if fields.get('buySitesStr'):
-                        buy_sites_str = \
-                            fields['buySitesStr']
-                        buy_sites_list = \
-                            buy_sites_str.split('\n')
-                        for site_url in buy_sites_list:
-                            if ' ' in site_url:
-                                site_url = site_url.split(' ')[-1]
-                                buy_icon_text = \
-                                    site_url.replace(site_url, '').strip()
-                                if not buy_icon_text:
-                                    buy_icon_text = site_url
-                            else:
-                                buy_icon_text = site_url
-                            if buy_sites.get(buy_icon_text):
-                                continue
-                            if '<' in site_url:
-                                continue
-                            if not site_url.strip():
-                                continue
-                            buy_sites[buy_icon_text] = site_url.strip()
-                    if str(self.server.buy_sites) != \
-                       str(buy_sites):
-                        self.server.buy_sites = buy_sites
-                        buy_sites_filename = \
-                            base_dir + '/accounts/buy_sites.json'
-                        if buy_sites:
-                            save_json(buy_sites, buy_sites_filename)
-                        else:
-                            if os.path.isfile(buy_sites_filename):
-                                try:
-                                    os.remove(buy_sites_filename)
-                                except OSError:
-                                    print('EX: unable to delete ' +
-                                          buy_sites_filename)
-
-                    # save blocking API endpoints
-                    block_ep_new = []
-                    if fields.get('blockFederated'):
-                        block_federated_str = \
-                            fields['blockFederated']
-                        block_ep_new = \
-                            block_federated_str.split('\n')
-                    if str(self.server.block_federated_endpoints) != \
-                       str(block_ep_new):
-                        base_dir = self.server.base_dir
-                        self.server.block_federated_endpoints = \
-                            save_block_federated_endpoints(base_dir,
-                                                           block_ep_new)
-                        if not block_ep_new:
-                            self.server.block_federated = []
-
-                    # save peertube instances list
-                    peertube_instances_file = \
-                        base_dir + '/accounts/peertube.txt'
-                    if fields.get('ptInstances'):
-                        self.server.peertube_instances.clear()
-                        try:
-                            with open(peertube_instances_file, 'w+',
-                                      encoding='utf-8') as afile:
-                                afile.write(fields['ptInstances'])
-                        except OSError:
-                            print('EX: unable to write peertube ' +
-                                  peertube_instances_file)
-                        pt_instances_list = \
-                            fields['ptInstances'].split('\n')
-                        if pt_instances_list:
-                            for url in pt_instances_list:
-                                url = url.strip()
-                                if not url:
-                                    continue
-                                if url in self.server.peertube_instances:
-                                    continue
-                                self.server.peertube_instances.append(url)
-                    else:
-                        if os.path.isfile(peertube_instances_file):
-                            try:
-                                os.remove(peertube_instances_file)
-                            except OSError:
-                                print('EX: _profile_edit ' +
-                                      'unable to delete ' +
-                                      peertube_instances_file)
-                        self.server.peertube_instances.clear()
-
-                # save git project names list
-                git_projects_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/gitprojects.txt'
-                if fields.get('gitProjects'):
-                    try:
-                        with open(git_projects_filename, 'w+',
-                                  encoding='utf-8') as afile:
-                            afile.write(fields['gitProjects'].lower())
-                    except OSError:
-                        print('EX: unable to write git ' +
-                              git_projects_filename)
-                else:
-                    if os.path.isfile(git_projects_filename):
-                        try:
-                            os.remove(git_projects_filename)
-                        except OSError:
-                            print('EX: _profile_edit ' +
-                                  'unable to delete ' +
-                                  git_projects_filename)
-
-                # change memorial status
-                if is_memorial_account(base_dir, nickname):
-                    if not actor_json.get('memorial'):
-                        actor_json['memorial'] = True
-                        actor_changed = True
-                elif actor_json.get('memorial'):
-                    actor_json['memorial'] = False
-                    actor_changed = True
+                _profile_post_git_projects(base_dir, nickname, domain,
+                                           fields)
+                actor_changed = \
+                    _profile_post_memorial(base_dir, nickname,
+                                           actor_json, actor_changed)
 
                 # save actor json file within accounts
                 if actor_changed:
-                    add_name_emojis_to_tags(base_dir, http_prefix,
-                                            domain, self.server.port,
-                                            actor_json)
-                    # update the context for the actor
-                    actor_json['@context'] = [
-                        'https://www.w3.org/ns/activitystreams',
-                        'https://w3id.org/security/v1',
-                        get_default_person_context()
-                    ]
-                    if actor_json.get('nomadicLocations'):
-                        del actor_json['nomadicLocations']
-                    if not actor_json.get('featured'):
-                        actor_json['featured'] = \
-                            actor_json['id'] + '/collections/featured'
-                    if not actor_json.get('featuredTags'):
-                        actor_json['featuredTags'] = \
-                            actor_json['id'] + '/collections/tags'
-                    randomize_actor_images(actor_json)
-                    add_actor_update_timestamp(actor_json)
-                    # save the actor
-                    save_json(actor_json, actor_filename)
-                    webfinger_update(base_dir,
-                                     nickname, domain,
-                                     onion_domain, i2p_domain,
-                                     self.server.cached_webfingers)
-                    # also copy to the actors cache and
-                    # person_cache in memory
-                    store_person_in_cache(base_dir,
-                                          actor_json['id'], actor_json,
-                                          self.server.person_cache,
-                                          True)
-                    # clear any cached images for this actor
-                    id_str = actor_json['id'].replace('/', '-')
-                    remove_avatar_from_cache(base_dir, id_str)
-                    # save the actor to the cache
-                    actor_cache_filename = \
-                        base_dir + '/cache/actors/' + \
-                        actor_json['id'].replace('/', '#') + '.json'
-                    save_json(actor_json, actor_cache_filename)
-                    # send profile update to followers
-                    update_actor_json = get_actor_update_json(actor_json)
-                    print('Sending actor update: ' +
-                          str(update_actor_json))
-                    post_to_outbox(self, update_actor_json,
-                                   self.server.project_version,
-                                   nickname,
-                                   curr_session, proxy_type)
-                    # send move activity if necessary
-                    if send_move_activity:
-                        move_actor_json = get_actor_move_json(actor_json)
-                        print('Sending Move activity: ' +
-                              str(move_actor_json))
-                        post_to_outbox(self, move_actor_json,
-                                       self.server.project_version,
-                                       nickname,
-                                       curr_session, proxy_type)
+                    _profile_post_save_actor(base_dir, http_prefix,
+                                             nickname, domain,
+                                             self.server.port,
+                                             actor_json, actor_filename,
+                                             onion_domain, i2p_domain,
+                                             curr_session, proxy_type,
+                                             send_move_activity,
+                                             self)
 
-                # deactivate the account
-                if fields.get('deactivateThisAccount'):
-                    if fields['deactivateThisAccount'] == 'on':
-                        deactivate_account(base_dir,
-                                           nickname, domain)
-                        clear_login_details(self, nickname,
-                                            calling_domain)
-                        self.server.postreq_busy = False
-                        return
+                if _profile_post_deactivate_account(base_dir, nickname, domain,
+                                                    calling_domain,
+                                                    fields, self):
+                    return
 
     # redirect back to the profile screen
     redirect_headers(self, actor_str + redirect_path,
