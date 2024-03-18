@@ -13,6 +13,8 @@ This instance will not host content containing sexism, racism, casteism, homopho
 
 Even if not conspicuously discriminatory, expressions of support for organizations with discrminatory agendas are not permitted on this instance. These include, but are not limited to, racial supremacist groups, the redpill/incel movement, anti-vaccination, anti-LGBT and anti-immigrant campaigns.
 
+Algorithmic content: i.e. text, images, audio or video which has been generated using "AI" or Large Language Models should be clearly marked, such as by using an appropriate hashtag. Algorithmic content not marked as such will be considered to be spam and removed. Accounts posting only unmarked algorithmic content will also be deleted.
+
 Depictions of injury, death or medical procedures are not permitted.
 
 Publication of private information (aka doxxing), such as home address, without the consent of the person to whom the information belongs is not permitted.
@@ -31,6 +33,8 @@ Content found to be non-compliant with this policy will be removed and any accou
 In a proactive effort to avoid the classic fate of *"embrace, extend, extinguish"* this system will block any instance launched, acquired or funded by Alphabet/Google, Facebook/Meta, Twitter, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.
 
 This system will not federate with instances whose moderation policy is incompatible with the content policy described above. If an instance lacks a moderation policy, or refuses to enforce one, it will be assumed to be incompatible.
+
+This system will not federate with instances publishing unmarked algorithmic content.
 
 ### Use by Research Organizations and Universities
 Data may not be "scraped" or otherwise obtained from this instance and used for academic research or cited within research publications without the prior written permission of the administrator. Financial remedy will be sought through the courts from any researcher publishing data obtained from this instance without consent.
