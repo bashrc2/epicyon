@@ -1145,9 +1145,7 @@ def _load_auto_tags(base_dir: str, nickname: str, domain: str) -> []:
     return []
 
 
-def _auto_tag(base_dir: str, nickname: str, domain: str,
-              word_str: str, auto_tag_list: [],
-              append_tags: []):
+def _auto_tag(word_str: str, auto_tag_list: [], append_tags: []) -> None:
     """Generates a list of tags to be automatically appended to the content
     """
     for tag_rule in auto_tag_list:
@@ -1429,13 +1427,11 @@ def add_html_tags(base_dir: str, http_prefix: str,
                            original_domain, replace_emoji, hashtags,
                            emoji_dict)
             else:
-                if _auto_tag(base_dir, nickname, domain, word_str,
-                             auto_tags_list, append_tags):
+                if _auto_tag(word_str, auto_tags_list, append_tags):
                     prev_word_str = ''
                     continue
                 if prev_word_str:
-                    if _auto_tag(base_dir, nickname, domain,
-                                 prev_word_str + ' ' + word_str,
+                    if _auto_tag(prev_word_str + ' ' + word_str,
                                  auto_tags_list, append_tags):
                         prev_word_str = ''
                         continue
