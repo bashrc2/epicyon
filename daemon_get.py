@@ -271,7 +271,7 @@ def daemon_http_get(self) -> None:
 
     ua_str = get_user_agent(self)
 
-    if not _permitted_crawler_path(self, self.path):
+    if not _permitted_crawler_path(self.path):
         block, self.server.blocked_cache_last_updated = \
             blocked_user_agent(calling_domain, ua_str,
                                self.server.news_instance,
@@ -467,9 +467,8 @@ def daemon_http_get(self) -> None:
                                None, self.server.debug,
                                self.server.enable_shared_inbox):
             return
-        else:
-            http_404(self, 111)
-            return
+        http_404(self, 111)
+        return
 
     # turn off dropdowns on new post screen
     no_drop_down = False
@@ -649,8 +648,7 @@ def daemon_http_get(self) -> None:
                             None, calling_domain, True)
                 write2(self, msg)
                 return
-            else:
-                print('DEBUG: shareditems 6 ' + share_id)
+            print('DEBUG: shareditems 6 ' + share_id)
         else:
             # get json for the shared item in ValueFlows format
             share_json = \
@@ -673,8 +671,7 @@ def daemon_http_get(self) -> None:
                             None, calling_domain, True)
                 write2(self, msg)
                 return
-            else:
-                print('DEBUG: shareditems 7 ' + share_id)
+            print('DEBUG: shareditems 7 ' + share_id)
         http_404(self, 117)
         return
 
@@ -1052,7 +1049,7 @@ def daemon_http_get(self) -> None:
                             None, calling_domain, False)
                 write2(self, msg)
                 return
-            elif catalog_type == 'csv':
+            if catalog_type == 'csv':
                 # catalog as a CSV file for import into a spreadsheet
                 msg = \
                     shares_catalog_csv_endpoint(self.server.base_dir,
@@ -1161,7 +1158,7 @@ def daemon_http_get(self) -> None:
                             None, calling_domain, False)
                 write2(self, msg)
                 return
-            elif catalog_type == 'csv':
+            if catalog_type == 'csv':
                 # catalog as a CSV file for import into a spreadsheet
                 msg = \
                     shares_catalog_csv_endpoint(self.server.base_dir,
@@ -2274,8 +2271,7 @@ def daemon_http_get(self) -> None:
 
     # manifest images used to show example screenshots
     # for use by app stores
-    if self.path == '/screenshot1.jpg' or \
-       self.path == '/screenshot2.jpg':
+    if self.path in ('/screenshot1.jpg', '/screenshot2.jpg'):
         screen_filename = \
             self.server.base_dir + '/img' + self.path
         if os.path.isfile(screen_filename):
@@ -2752,25 +2748,24 @@ def daemon_http_get(self) -> None:
             write2(self, msg)
             self.server.getreq_busy = False
             return
+        hashtag = urllib.parse.unquote(hashtag_url.split('/')[-1])
+        tags_filename = \
+            self.server.base_dir + '/tags/' + hashtag + '.txt'
+        if os.path.isfile(tags_filename):
+            # redirect to the local hashtag screen
+            self.server.getreq_busy = False
+            ht_url = \
+                get_instance_url(calling_domain,
+                                 self.server.http_prefix,
+                                 self.server.domain_full,
+                                 self.server.onion_domain,
+                                 self.server.i2p_domain) + \
+                '/users/' + nickname + '/tags/' + hashtag
+            redirect_headers(self, ht_url, cookie, calling_domain)
         else:
-            hashtag = urllib.parse.unquote(hashtag_url.split('/')[-1])
-            tags_filename = \
-                self.server.base_dir + '/tags/' + hashtag + '.txt'
-            if os.path.isfile(tags_filename):
-                # redirect to the local hashtag screen
-                self.server.getreq_busy = False
-                ht_url = \
-                    get_instance_url(calling_domain,
-                                     self.server.http_prefix,
-                                     self.server.domain_full,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain) + \
-                    '/users/' + nickname + '/tags/' + hashtag
-                redirect_headers(self, ht_url, cookie, calling_domain)
-            else:
-                # redirect to the upstream hashtag url
-                self.server.getreq_busy = False
-                redirect_headers(self, hashtag_url, None, calling_domain)
+            # redirect to the upstream hashtag url
+            self.server.getreq_busy = False
+            redirect_headers(self, hashtag_url, None, calling_domain)
         return
 
     # hashtag search
@@ -4317,7 +4312,7 @@ def daemon_http_get(self) -> None:
                         self.server.debug)
 
 
-def _permitted_crawler_path(self, path: str) -> bool:
+def _permitted_crawler_path(path: str) -> bool:
     """Is the given path permitted to be crawled by a search engine?
     this should only allow through basic information, such as nodeinfo
     """
