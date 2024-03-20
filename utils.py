@@ -5213,3 +5213,10 @@ def check_bad_path(path: str):
         print('WARN: bad path ' + path)
         return True
     return False
+
+
+def is_premium_account(base_dir: str, nickname: str, domain: str) -> bool:
+    """ Is the given account a premium one?
+    """
+    premium_filename = acct_dir(base_dir, nickname, domain) + '/.premium'
+    return os.path.isfile(premium_filename)

@@ -14,6 +14,7 @@ from socket import error as SocketError
 from blocking import save_blocked_military
 from httpheaders import redirect_headers
 from httpheaders import clear_login_details
+from utils import is_premium_account
 from utils import remove_avatar_from_cache
 from utils import is_memorial_account
 from utils import save_json
@@ -1231,7 +1232,8 @@ def _profile_post_reject_spam_actors(base_dir: str,
 
 def _profile_post_approve_followers(on_final_welcome_screen: bool,
                                     actor_json: {}, fields: {},
-                                    actor_changed: bool) -> bool:
+                                    actor_changed: bool,
+                                    premium: bool) -> bool:
     """ HTTP POST approve followers
     """
     if on_final_welcome_screen:
@@ -1239,7 +1241,7 @@ def _profile_post_approve_followers(on_final_welcome_screen: bool,
         actor_json['manuallyApprovesFollowers'] = True
         actor_changed = True
     else:
-        approve_followers = False
+        approve_followers = premium
         if fields.get('approveFollowers'):
             if fields['approveFollowers'] == 'on':
                 approve_followers = True
@@ -2841,10 +2843,11 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     if fields['removeScheduledPosts'] == 'on':
                         remove_scheduled_posts(base_dir, nickname, domain)
 
+                premium = is_premium_account(base_dir, nickname, domain)
                 actor_changed = \
                     _profile_post_approve_followers(on_final_welcome_screen,
                                                     actor_json, fields,
-                                                    actor_changed)
+                                                    actor_changed, premium)
 
                 _profile_post_reject_spam_actors(base_dir,
                                                  nickname, domain, fields)

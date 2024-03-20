@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import is_premium_account
 from utils import time_days_ago
 from utils import uninvert_text
 from utils import get_attributed_to
@@ -922,13 +923,6 @@ def _get_profile_header_after_search(base_dir: str,
     return html_str
 
 
-def _is_premium_account(base_dir: str, nickname: str, domain: str) -> bool:
-    """ Is the given account a premium one?
-    """
-    premium_filename = acct_dir(base_dir, nickname, domain) + '/.premium'
-    return os.path.isfile(premium_filename)
-
-
 def html_profile(signing_priv_key_pem: str,
                  rss_icon_at_top: bool,
                  icons_as_buttons: bool,
@@ -1068,7 +1062,7 @@ def html_profile(signing_priv_key_pem: str,
     briar_address = get_briar_address(profile_json)
     cwtch_address = get_cwtch_address(profile_json)
     verified_site_checkmark = '✔'
-    premium = _is_premium_account(base_dir, nickname, domain)
+    premium = is_premium_account(base_dir, nickname, domain)
     if donate_url or website_url or repo_url or xmpp_address or \
        matrix_address or ssb_address or tox_address or briar_address or \
        cwtch_address or pgp_pub_key or enigma_pub_key or \
@@ -2882,7 +2876,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
                         moved_to, 'https://...')
 
     donate_str = translate['Donations link']
-    if _is_premium_account(base_dir, nickname, domain):
+    if is_premium_account(base_dir, nickname, domain):
         donate_str = translate['Subscribe']
     edit_profile_form += \
         edit_text_field(donate_str, 'donateUrl', donate_url, 'https://...')
