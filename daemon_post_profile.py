@@ -704,7 +704,7 @@ def _profile_post_notify_reactions(base_dir: str,
                                    nickname: str, domain: str,
                                    on_final_welcome_screen: bool,
                                    hide_reaction_button_active: bool,
-                                   fields: {}) -> bool:
+                                   fields: {}, actor_changed: bool) -> bool:
     """ HTTP POST notify about new Reactions
     """
     notify_reactions_filename = \
@@ -2942,7 +2942,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                    nickname, domain,
                                                    on_final_welcome_screen,
                                                    hide_reaction_button_active,
-                                                   fields)
+                                                   fields, actor_changed)
                 actor_changed = \
                     _profile_post_account_type(path, actor_json, fields,
                                                admin_nickname, actor_changed)
