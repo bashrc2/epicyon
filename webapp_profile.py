@@ -2718,10 +2718,13 @@ def _html_edit_profile_options(is_admin: bool,
                                show_vote_posts: bool,
                                show_replies_followers: bool,
                                show_replies_mutuals: bool,
-                               hide_follows: bool) -> str:
+                               hide_follows: bool,
+                               premium: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
+    edit_profile_form += \
+        edit_check_box(translate['Premium account'], 'premiumAccount', premium)
     edit_profile_form += \
         edit_check_box(translate['Approve follower requests'],
                        'approveFollowers', manually_approves_followers)
@@ -3191,6 +3194,9 @@ def html_edit_profile(server, translate: {},
     if os.path.isfile(account_dir + '/.hideFollows'):
         hide_follows = True
 
+    # is this a premium account?
+    premium = is_premium_account(base_dir, nickname, domain)
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -3203,7 +3209,8 @@ def html_edit_profile(server, translate: {},
                                    nickname, min_images_for_accounts,
                                    reverse_sequence, show_vote_posts,
                                    show_replies_followers,
-                                   show_replies_mutuals, hide_follows)
+                                   show_replies_mutuals, hide_follows,
+                                   premium)
 
     # Contact information
     edit_profile_form += \

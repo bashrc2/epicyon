@@ -5220,3 +5220,24 @@ def is_premium_account(base_dir: str, nickname: str, domain: str) -> bool:
     """
     premium_filename = acct_dir(base_dir, nickname, domain) + '/.premium'
     return os.path.isfile(premium_filename)
+
+
+def set_premium_account(base_dir: str, nickname: str, domain: str,
+                        flag_state: bool) -> bool:
+    """ Set or clear the premium account flag
+    """
+    premium_filename = acct_dir(base_dir, nickname, domain) + '/.premium'
+    if os.path.isfile(premium_filename):
+        if not flag_state:
+            try:
+                os.remove(premium_filename)
+            except OSError:
+                print('EX: unable to remove premium flag ' + premium_filename)
+    else:
+        if flag_state:
+            try:
+                with open(premium_filename, 'w+',
+                          encoding='utf-8') as fp_premium:
+                    fp_premium.write('\n')
+            except OSError:
+                print('EX: unable to set premium flag ' + premium_filename)

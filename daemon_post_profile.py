@@ -14,6 +14,7 @@ from socket import error as SocketError
 from blocking import save_blocked_military
 from httpheaders import redirect_headers
 from httpheaders import clear_login_details
+from utils import set_premium_account
 from utils import is_premium_account
 from utils import remove_avatar_from_cache
 from utils import is_memorial_account
@@ -1233,18 +1234,32 @@ def _profile_post_reject_spam_actors(base_dir: str,
 def _profile_post_approve_followers(on_final_welcome_screen: bool,
                                     actor_json: {}, fields: {},
                                     actor_changed: bool,
-                                    premium: bool) -> bool:
-    """ HTTP POST approve followers
+                                    premium: bool, base_dir: str,
+                                    nickname: str, domain: str) -> bool:
+    """ HTTP POST approve followers and handle premium account flag
     """
     if on_final_welcome_screen:
         # Default setting created via the welcome screen
         actor_json['manuallyApprovesFollowers'] = True
         actor_changed = True
+        set_premium_account(base_dir, nickname, domain, False)
     else:
         approve_followers = premium
         if fields.get('approveFollowers'):
             if fields['approveFollowers'] == 'on':
                 approve_followers = True
+
+        premium_activated = False
+        if fields.get('premiumAccount'):
+            if fields['premiumAccount'] == 'on':
+                # turn on premium flag
+                set_premium_account(base_dir, nickname, domain, True)
+                approve_followers = True
+                premium_activated = True
+        if premium and not premium_activated:
+            # turn off premium flag
+            set_premium_account(base_dir, nickname, domain, False)
+
         if approve_followers != actor_json['manuallyApprovesFollowers']:
             actor_json['manuallyApprovesFollowers'] = approve_followers
             actor_changed = True
@@ -2847,7 +2862,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_approve_followers(on_final_welcome_screen,
                                                     actor_json, fields,
-                                                    actor_changed, premium)
+                                                    actor_changed, premium,
+                                                    base_dir, nickname, domain)
 
                 _profile_post_reject_spam_actors(base_dir,
                                                  nickname, domain, fields)
