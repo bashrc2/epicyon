@@ -1459,6 +1459,16 @@ def add_html_tags(base_dir: str, http_prefix: str,
     return '<p>' + html_replace_quote_marks(content) + '</p>'
 
 
+def _string_starts_with_url_prefix(text: str) -> bool:
+    """ Does the given text begin with one of the url prefixes?
+    """
+    url_prefixes = ('http', 'gnunet', 'i2p', 'ipfs', 'ipns', 'hyper', 'dat:')
+    for possible_prefix in url_prefixes:
+        if text.startswith(possible_prefix):
+            return True
+    return False
+
+
 def get_mentions_from_html(html_text: str, match_str: str) -> []:
     """Extracts mentioned actors from the given html content string
     """
@@ -1470,13 +1480,7 @@ def get_mentions_from_html(html_text: str, match_str: str) -> []:
         if '"' not in mention_str:
             continue
         actor_str = mention_str.split('"')[0]
-        if actor_str.startswith('http') or \
-           actor_str.startswith('gnunet') or \
-           actor_str.startswith('i2p') or \
-           actor_str.startswith('ipfs') or \
-           actor_str.startswith('ipns') or \
-           actor_str.startswith('hyper') or \
-           actor_str.startswith('dat:'):
+        if _string_starts_with_url_prefix(actor_str):
             if actor_str not in mentions:
                 mentions.append(actor_str)
     return mentions
