@@ -2880,7 +2880,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
 
     donate_str = translate['Donations link']
     if is_premium_account(base_dir, nickname, domain):
-        donate_str = translate['Subscribe']
+        donate_str = translate['Premium account subscription link']
     edit_profile_form += \
         edit_text_field(donate_str, 'donateUrl', donate_url, 'https://...')
 
