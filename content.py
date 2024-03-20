@@ -1333,8 +1333,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
 
     # remove . for words which are not mentions
     new_words = []
-    for word_index in range(0, len(words)):
-        word_str = words[word_index]
+    for _, word_str in enumerate(words):
         if word_str.endswith('.'):
             if not word_str.startswith('@'):
                 word_str = word_str[:-1]
@@ -1377,65 +1376,64 @@ def add_html_tags(base_dir: str, http_prefix: str,
     append_tags = []
     for word_str in words:
         word_len = len(word_str)
-        if word_len > 2:
-            if word_len > max_word_length:
-                long_words_list.append(word_str)
-            first_char = word_str[0]
-            if first_char == '@':
-                if _add_mention(base_dir, word_str, http_prefix, following,
-                                petnames, replace_mentions, recipients,
-                                hashtags):
+        if word_len <= 2:
+            continue
+        if word_len > max_word_length:
+            long_words_list.append(word_str)
+        first_char = word_str[0]
+        if first_char == '@':
+            if _add_mention(base_dir, word_str, http_prefix, following,
+                            petnames, replace_mentions, recipients,
+                            hashtags):
+                prev_word_str = ''
+                continue
+        elif first_char == '#':
+            # remove any endings from the hashtag
+            hash_tag_endings = ('.', ':', ';', '-', '\n')
+            for ending in hash_tag_endings:
+                if word_str.endswith(ending):
+                    word_str = word_str[:len(word_str) - 1]
+                    break
+
+            if _add_hash_tags(word_str, http_prefix, original_domain,
+                              replace_hashtags, hashtags):
+                prev_word_str = ''
+                continue
+        elif ':' in word_str:
+            word_str2 = word_str.split(':')[1]
+            if not emoji_dict:
+                # emoji.json is generated so that it can be customized and
+                # the changes will be retained even if default_emoji.json
+                # is subsequently updated
+                if not os.path.isfile(base_dir + '/emoji/emoji.json'):
+                    copyfile(base_dir + '/emoji/default_emoji.json',
+                             base_dir + '/emoji/emoji.json')
+            emoji_dict = load_json(base_dir + '/emoji/emoji.json')
+
+            # append custom emoji to the dict
+            custom_emoji_filename = base_dir + '/emojicustom/emoji.json'
+            if os.path.isfile(custom_emoji_filename):
+                custom_emoji_dict = load_json(custom_emoji_filename)
+                if custom_emoji_dict:
+                    # combine emoji dicts one by one
+                    for ename, eitem in custom_emoji_dict.items():
+                        if ename and eitem:
+                            if not emoji_dict.get(ename):
+                                emoji_dict[ename] = eitem
+
+            _add_emoji(base_dir, ':' + word_str2 + ':', http_prefix,
+                       original_domain, replace_emoji, hashtags,
+                       emoji_dict)
+        else:
+            if _auto_tag(word_str, auto_tags_list, append_tags):
+                prev_word_str = ''
+                continue
+            if prev_word_str:
+                if _auto_tag(prev_word_str + ' ' + word_str,
+                             auto_tags_list, append_tags):
                     prev_word_str = ''
                     continue
-            elif first_char == '#':
-                # remove any endings from the hashtag
-                hash_tag_endings = ('.', ':', ';', '-', '\n')
-                for ending in hash_tag_endings:
-                    if word_str.endswith(ending):
-                        word_str = word_str[:len(word_str) - 1]
-                        break
-
-                if _add_hash_tags(word_str, http_prefix, original_domain,
-                                  replace_hashtags, hashtags):
-                    prev_word_str = ''
-                    continue
-            elif ':' in word_str:
-                word_str2 = word_str.split(':')[1]
-#                print('TAG: emoji located - ' + word_str)
-                if not emoji_dict:
-                    # emoji.json is generated so that it can be customized and
-                    # the changes will be retained even if default_emoji.json
-                    # is subsequently updated
-                    if not os.path.isfile(base_dir + '/emoji/emoji.json'):
-                        copyfile(base_dir + '/emoji/default_emoji.json',
-                                 base_dir + '/emoji/emoji.json')
-                emoji_dict = load_json(base_dir + '/emoji/emoji.json')
-
-                # append custom emoji to the dict
-                custom_emoji_filename = base_dir + '/emojicustom/emoji.json'
-                if os.path.isfile(custom_emoji_filename):
-                    custom_emoji_dict = load_json(custom_emoji_filename)
-                    if custom_emoji_dict:
-                        # combine emoji dicts one by one
-                        for ename, eitem in custom_emoji_dict.items():
-                            if ename and eitem:
-                                if not emoji_dict.get(ename):
-                                    emoji_dict[ename] = eitem
-
-#                print('TAG: looking up emoji for :' + word_str2 + ':')
-                _add_emoji(base_dir, ':' + word_str2 + ':', http_prefix,
-                           original_domain, replace_emoji, hashtags,
-                           emoji_dict)
-            else:
-                if _auto_tag(word_str, auto_tags_list, append_tags):
-                    prev_word_str = ''
-                    continue
-                if prev_word_str:
-                    if _auto_tag(prev_word_str + ' ' + word_str,
-                                 auto_tags_list, append_tags):
-                        prev_word_str = ''
-                        continue
-            prev_word_str = word_str
+        prev_word_str = word_str
 
     # add any auto generated tags
     for appended in append_tags:
