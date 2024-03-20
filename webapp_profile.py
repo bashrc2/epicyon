@@ -609,7 +609,8 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         person_url: str,
                         no_of_books: int,
                         authorized: bool,
-                        birth_date: str) -> str:
+                        birth_date: str,
+                        premium: bool) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -636,9 +637,13 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         occupation_str += \
             '        <b>' + occupation_name + '</b><br>\n'
 
-    html_str += \
-        '        <h1>' + display_name + '\n</h1>\n' + \
-        occupation_str
+    html_str += '        <h1>' + display_name + '\n</h1>\n'
+
+    if premium:
+        html_str += \
+            '        <b>' + translate['Premium account'] + '</b><br>\n'
+
+    html_str += occupation_str
 
     # show if the actor is proxied
     if not actor_proxied:
@@ -917,6 +922,13 @@ def _get_profile_header_after_search(base_dir: str,
     return html_str
 
 
+def _is_premium_account(base_dir: str, nickname: str, domain: str) -> bool:
+    """ Is the given account a premium one?
+    """
+    premium_filename = acct_dir(base_dir, nickname, domain) + '/.premium'
+    return os.path.isfile(premium_filename)
+
+
 def html_profile(signing_priv_key_pem: str,
                  rss_icon_at_top: bool,
                  icons_as_buttons: bool,
@@ -1056,6 +1068,7 @@ def html_profile(signing_priv_key_pem: str,
     briar_address = get_briar_address(profile_json)
     cwtch_address = get_cwtch_address(profile_json)
     verified_site_checkmark = '✔'
+    premium = _is_premium_account(base_dir, nickname, domain)
     if donate_url or website_url or repo_url or xmpp_address or \
        matrix_address or ssb_address or tox_address or briar_address or \
        cwtch_address or pgp_pub_key or enigma_pub_key or \
@@ -1063,10 +1076,13 @@ def html_profile(signing_priv_key_pem: str,
         donate_section = '<div class="container">\n'
         donate_section += '  <center>\n'
         if donate_url and not is_system_account(nickname):
+            donate_str = translate['Donate']
+            if premium:
+                donate_str = translate['Subscribe']
             donate_section += \
                 '    <p><a href="' + donate_url + \
                 '" tabindex="1" rel="donation">' + \
-                '<button class="donateButton">' + translate['Donate'] + \
+                '<button class="donateButton">' + donate_str + \
                 '</button></a></p>\n'
         if website_url:
             if site_is_verified(session, base_dir, http_prefix,
@@ -1313,7 +1329,7 @@ def html_profile(signing_priv_key_pem: str,
                             occupation_name,
                             actor_proxied, actor,
                             no_of_books, authorized,
-                            birth_date)
+                            birth_date, premium)
 
     # keyboard navigation
     user_path_str = '/users/' + nickname
@@ -1468,7 +1484,7 @@ def html_profile(signing_priv_key_pem: str,
         translate['Get the source code'] + '" title="' + \
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
-    if selected == 'posts':
+    if selected == 'posts' and not premium:
         max_profile_posts = \
             get_max_profile_posts(base_dir, nickname, domain, 20)
         min_images_for_accounts = []
@@ -2865,9 +2881,11 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
         edit_text_field(translate['Moved to new account address'], 'movedTo',
                         moved_to, 'https://...')
 
+    donate_str = translate['Donations link']
+    if _is_premium_account(base_dir, nickname, domain):
+        donate_str = translate['Subscribe']
     edit_profile_form += \
-        edit_text_field(translate['Donations link'], 'donateUrl',
-                        donate_url, 'https://...')
+        edit_text_field(donate_str, 'donateUrl', donate_url, 'https://...')
 
     edit_profile_form += \
         edit_text_field(translate['Website'], 'websiteUrl',
