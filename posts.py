@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import is_premium_account
 from utils import contains_private_key
 from utils import get_url_from_post
 from utils import date_from_string_format
@@ -4752,6 +4753,10 @@ def _create_box_indexed(recent_posts_cache: {},
         print('ERROR: invalid boxname ' + boxname)
         return None
 
+    unauthorized_premium = False
+    if not authorized and boxname == 'outbox':
+        unauthorized_premium = is_premium_account(base_dir, nickname, domain)
+
     # bookmarks and events timelines are like the inbox
     # but have their own separate index
     index_box_name = boxname
@@ -4798,24 +4803,31 @@ def _create_box_indexed(recent_posts_cache: {},
     posts_in_box = []
     post_urls_in_box = []
 
-    total_posts_count, posts_added_to_timeline = \
-        _create_box_items(base_dir,
-                          timeline_nickname,
-                          original_domain,
-                          nickname, domain,
-                          index_box_name,
-                          first_post_id,
-                          page_number,
-                          items_per_page,
-                          newswire_votes_threshold,
-                          positive_voting,
-                          voting_time_mins,
-                          post_urls_in_box,
-                          recent_posts_cache,
-                          boxname,
-                          posts_in_box,
-                          box_actor)
-    if first_post_id and posts_added_to_timeline == 0:
+    if not unauthorized_premium:
+        total_posts_count, posts_added_to_timeline = \
+            _create_box_items(base_dir,
+                              timeline_nickname,
+                              original_domain,
+                              nickname, domain,
+                              index_box_name,
+                              first_post_id,
+                              page_number,
+                              items_per_page,
+                              newswire_votes_threshold,
+                              positive_voting,
+                              voting_time_mins,
+                              post_urls_in_box,
+                              recent_posts_cache,
+                              boxname,
+                              posts_in_box,
+                              box_actor)
+    else:
+        # unauthorized requests for premium posts should return an empty set
+        total_posts_count = posts_added_to_timeline = 0
+
+    if first_post_id and \
+       posts_added_to_timeline == 0 and \
+       not unauthorized_premium:
         # no first post was found within the index, so just use the page number
         first_post_id = ''
         total_posts_count, posts_added_to_timeline = \
