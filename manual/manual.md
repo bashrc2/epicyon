@@ -145,10 +145,10 @@ server {
   error_log /dev/null;
   client_max_body_size 31m;
   client_body_buffer_size 128k;
-  
+
   limit_conn conn_limit_per_ip 10;
   limit_req zone=req_limit_per_ip burst=10 nodelay;
-  
+
   index index.html;
   rewrite ^ https://$server_name$request_uri? permanent;
 }
@@ -156,7 +156,7 @@ server {
 server {
   listen 443 ssl http2;
   server_name YOUR_DOMAIN;
-  
+
   gzip on;
   gzip_disable "msie6";
   gzip_vary on;
@@ -166,20 +166,20 @@ server {
   gzip_buffers 16 8k;
   gzip_http_version 1.1;
   gzip_types text/plain text/css text/vcard text/vcard+xml application/json application/ld+json application/javascript text/xml application/xml application/rdf+xml application/xml+rss text/javascript;
-  
+
   ssl_stapling off;
   ssl_stapling_verify off;
   ssl on;
   ssl_certificate /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem;
   #ssl_dhparam /etc/ssl/certs/YOUR_DOMAIN.dhparam;
-  
+
   ssl_protocols TLSv1.2 TLSv1.3;
   ssl_ciphers HIGH:!MEDIUM:!LOW:!aNULL:!NULL:!SHA;
   ssl_prefer_server_ciphers on;
   ssl_session_cache shared:SSL:10m;
   ssl_session_tickets off;
-  
+
   add_header Content-Security-Policy "default-src https:; script-src https: 'unsafe-inline'; style-src https: 'unsafe-inline'";
   add_header X-Frame-Options DENY;
   add_header X-Content-Type-Options nosniff;
@@ -187,20 +187,20 @@ server {
   add_header X-Download-Options noopen;
   add_header X-Permitted-Cross-Domain-Policies none;
   add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload" always;
-  
+
   access_log /dev/null;
   error_log /dev/null;
-  
+
   index index.html;
-  
+
   location /newsmirror {
     root /var/www/YOUR_DOMAIN;
     try_files $uri =404;
   }
-  
+
   keepalive_timeout 70;
   sendfile on;
-  
+
   location / {
   proxy_http_version 1.1;
   client_max_body_size 31M;
@@ -333,7 +333,7 @@ If you have any other fediverse accounts on different instances then you might w
 You can set your posts to expire after a number of days. If this value is zero then the instance will keep your posts indefinitely.
 
 ### Quitting Twitter
-If you are coming to the fediverse as an exile from Twitter then you may want to select the option to remove any Twitter posts from your timeline. Sometimes people want to make a clean break from Twitter and have no further involvement with it.
+If you are coming to the fediverse as an exile from the website formerly known as Twitter then you may want to select the option to remove any Twitter posts from your timeline. Sometimes people want to make a clean break from Twitter and have no further involvement with it.
 
 ### Alternative contact details
 You can set additional contact details, such as email, XMPP and Matrix addresses. So if people want to contact you for private [end-to-end secure](https://en.wikipedia.org/wiki/End-to-end_encryption) chat then they can do so. The fediverse was never designed for end-to-end security - it is primarily for public communications - and so it's better to leave secure private chat to the apps which are specialized for that purpose.
