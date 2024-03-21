@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import is_premium_account
 from utils import dangerous_markup
 from utils import remove_html
 from utils import get_content_from_post
@@ -62,7 +63,8 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
                              dropdown_report_suffix: str,
                              no_drop_down: bool,
                              access_keys: {},
-                             account_dir: str) -> str:
+                             account_dir: str,
+                             premium: bool) -> str:
     """Returns the html for a drop down list of new post types
     """
     drop_down_content = '<nav><div class="newPostDropdown">\n'
@@ -112,13 +114,18 @@ def _html_new_post_drop_down(scope_icon: str, scope_description: str,
         'icons/scope_unlisted.png"/><b>' + \
         translate['Unlisted'] + '</b><br>' + \
         translate['Not on public timeline'] + '</a></li>\n'
+    followers_str = translate['Followers']
+    followers_desc_str = translate['Only to followers']
+    if premium:
+        followers_str = translate['Fans']
+        followers_desc_str = translate['Only to fans']
     drop_down_content += \
         '<li><a href="' + path_base + dropdown_followers_suffix + \
         '" accesskey="' + access_keys['menuFollowers'] + '">' + \
         '<img loading="lazy" decoding="async" alt="" title="" src="/' + \
         'icons/scope_followers.png"/><b>' + \
-        translate['Followers'] + '</b><br>' + \
-        translate['Only to followers'] + '</a></li>\n'
+        followers_str + '</b><br>' + \
+        followers_desc_str + '</a></li>\n'
     drop_down_content += \
         '<li><a href="' + path_base + dropdown_dm_suffix + \
         '" accesskey="' + access_keys['menuDM'] + '">' + \
@@ -625,6 +632,7 @@ def html_new_post(edit_post_params: {},
             'and time when you wish to stay'
         placeholder_message = translate[idx]
     extra_fields = ''
+    premium = is_premium_account(base_dir, nickname, domain)
     endpoint = 'newpost'
     if path.endswith('/newblog'):
         placeholder_subject = translate['Title']
@@ -641,6 +649,8 @@ def html_new_post(edit_post_params: {},
     elif path.endswith('/newfollowers'):
         scope_icon = 'scope_followers.png'
         scope_description = translate['Followers']
+        if premium:
+            scope_description = translate['Fans']
         endpoint = 'newfollowers'
     elif path.endswith('/newdm'):
         scope_icon = 'scope_dm.png'
@@ -1077,7 +1087,7 @@ def html_new_post(edit_post_params: {},
                                      dropdown_reminder_suffix,
                                      dropdown_report_suffix,
                                      no_drop_down, access_keys,
-                                     account_dir)
+                                     account_dir, premium)
     else:
         if not share_description:
             # reporting a post to moderator

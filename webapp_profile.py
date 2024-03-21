@@ -1330,6 +1330,8 @@ def html_profile(signing_priv_key_pem: str,
     deft = default_timeline
     is_group = False
     followers_str = translate['Followers']
+    if premium:
+        followers_str = translate['Fans']
     if is_group_account(base_dir, nickname, domain):
         is_group = True
         followers_str = translate['Members']
@@ -2653,7 +2655,7 @@ def _html_edit_notifications(base_dir: str, nickname: str, domain: str,
 
 
 def _html_edit_profile_import_export(nickname: str, domain: str,
-                                     translate: {}) -> str:
+                                     translate: {}, premium: bool) -> str:
     """Contact Information section of edit profile screen
     """
     edit_profile_form = begin_edit_section(translate['Import and Export'])
@@ -2673,10 +2675,13 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
         ' <a href="/users/' + nickname + '/followingaccounts.csv" ' + \
         'download="' + nickname + '@' + domain + '_following.csv">' + \
         '<label class="labels">⇩ CSV</label></a></p>\n'
+    followers_str = translate['Followers']
+    if premium:
+        followers_str = translate['Fans']
     edit_profile_form += \
         '<p><a href="/users/' + nickname + \
         '/followersaccounts"><label class="labels">' + \
-        translate['Followers'] + '</label></a><br></p>\n'
+        followers_str + '</label></a><br></p>\n'
     edit_profile_form += end_edit_section()
     return edit_profile_form
 
@@ -3226,7 +3231,7 @@ def html_edit_profile(server, translate: {},
 
     # Import and export
     edit_profile_form += \
-        _html_edit_profile_import_export(nickname, domain, translate)
+        _html_edit_profile_import_export(nickname, domain, translate, premium)
 
     # Encryption Keys
     edit_profile_form += \
