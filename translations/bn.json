@@ -663,5 +663,8 @@
     "Premium account": "প্রিমিয়াম অ্যাকাউন্ট",
     "Premium account subscription link": "প্রিমিয়াম অ্যাকাউন্ট সাবস্ক্রিপশন লিঙ্ক",
     "Fans": "ভক্ত",
-    "Only to fans": "শুধুমাত্র ভক্তদের জন্য"
+    "Only to fans": "শুধুমাত্র ভক্তদের জন্য",
+    "Approve fans": "ভক্তদের অনুমোদন করুন",
+    "Only allow replies from fans": "শুধুমাত্র অনুরাগীদের কাছ থেকে উত্তরের অনুমতি দিন",
+    "Do not show fans on your profile": "আপনার প্রোফাইলে ভক্ত দেখাবেন না"
 }

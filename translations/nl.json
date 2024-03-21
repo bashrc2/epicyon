@@ -663,5 +663,8 @@
     "Premium account": "Premium account",
     "Premium account subscription link": "Abonnementlink voor premiumaccount",
     "Fans": "Fans",
-    "Only to fans": "Alleen voor fans"
+    "Only to fans": "Alleen voor fans",
+    "Approve fans": "Fans goedkeuren",
+    "Only allow replies from fans": "Sta alleen antwoorden van fans toe",
+    "Do not show fans on your profile": "Toon geen fans op je profiel"
 }

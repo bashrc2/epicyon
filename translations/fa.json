@@ -663,5 +663,8 @@
     "Premium account": "حساب ویژه",
     "Premium account subscription link": "لینک اشتراک حساب پریمیوم",
     "Fans": "طرفداران",
-    "Only to fans": "فقط به طرفداران"
+    "Only to fans": "فقط به طرفداران",
+    "Approve fans": "طرفداران را تایید کنید",
+    "Only allow replies from fans": "فقط اجازه پاسخ از طرفداران را بدهید",
+    "Do not show fans on your profile": "طرفداران را در نمایه خود نشان ندهید"
 }

@@ -663,5 +663,8 @@
     "Premium account": "Özel hesap",
     "Premium account subscription link": "Premium hesap abonelik bağlantısı",
     "Fans": "Hayranlar",
-    "Only to fans": "Sadece hayranlara"
+    "Only to fans": "Sadece hayranlara",
+    "Approve fans": "Hayranları onayla",
+    "Only allow replies from fans": "Yalnızca hayranlardan gelen yanıtlara izin ver",
+    "Do not show fans on your profile": "Hayranlarınızı profilinizde gösterme"
 }

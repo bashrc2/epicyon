@@ -663,5 +663,8 @@
     "Premium account": "प्रीमियम खाता",
     "Premium account subscription link": "प्रीमियम खाता सदस्यता लिंक",
     "Fans": "प्रशंसक",
-    "Only to fans": "केवल प्रशंसकों के लिए"
+    "Only to fans": "केवल प्रशंसकों के लिए",
+    "Approve fans": "प्रशंसकों का अनुमोदन करें",
+    "Only allow replies from fans": "केवल प्रशंसकों के उत्तरों की अनुमति दें",
+    "Do not show fans on your profile": "अपनी प्रोफ़ाइल पर प्रशंसकों को न दिखाएं"
 }

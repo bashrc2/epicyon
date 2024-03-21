@@ -663,5 +663,8 @@
     "Premium account": "Cyfrif premiwm",
     "Premium account subscription link": "Dolen tanysgrifiad cyfrif premiwm",
     "Fans": "Cefnogwyr",
-    "Only to fans": "Dim ond i gefnogwyr"
+    "Only to fans": "Dim ond i gefnogwyr",
+    "Approve fans": "Cymeradwyo cefnogwyr",
+    "Only allow replies from fans": "Caniatewch atebion gan gefnogwyr yn unig",
+    "Do not show fans on your profile": "Peidiwch â dangos cefnogwyr ar eich proffil"
 }

@@ -663,5 +663,8 @@
     "Premium account": "Compte Premium",
     "Premium account subscription link": "Lien d'abonnement au compte Premium",
     "Fans": "Ventilateurs",
-    "Only to fans": "Uniquement aux fans"
+    "Only to fans": "Uniquement aux fans",
+    "Approve fans": "Approuver les fans",
+    "Only allow replies from fans": "Autoriser uniquement les réponses des fans",
+    "Do not show fans on your profile": "Ne pas afficher les fans sur votre profil"
 }

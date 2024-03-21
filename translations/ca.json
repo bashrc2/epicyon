@@ -663,5 +663,8 @@
     "Premium account": "Compte Premium",
     "Premium account subscription link": "Enllaç de subscripció al compte Premium",
     "Fans": "Ventiladors",
-    "Only to fans": "Només als aficionats"
+    "Only to fans": "Només als aficionats",
+    "Approve fans": "Aprovar els aficionats",
+    "Only allow replies from fans": "Només permet respostes dels fans",
+    "Do not show fans on your profile": "No mostris els fans al teu perfil"
 }

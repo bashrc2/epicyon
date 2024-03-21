@@ -663,5 +663,8 @@
     "Premium account": "Премиум аккаунт",
     "Premium account subscription link": "Ссылка на подписку на премиум-аккаунт",
     "Fans": "Поклонники",
-    "Only to fans": "Только фанатам"
+    "Only to fans": "Только фанатам",
+    "Approve fans": "Одобрить поклонников",
+    "Only allow replies from fans": "Разрешить ответы только от фанатов",
+    "Do not show fans on your profile": "Не показывать поклонников в своем профиле"
 }

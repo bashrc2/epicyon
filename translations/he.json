@@ -663,5 +663,8 @@
     "Premium account": "חשבון פרימיום",
     "Premium account subscription link": "קישור מנוי לחשבון פרימיום",
     "Fans": "מעריצים",
-    "Only to fans": "רק למעריצים"
+    "Only to fans": "רק למעריצים",
+    "Approve fans": "לאשר מעריצים",
+    "Only allow replies from fans": "אפשר רק תשובות ממעריצים",
+    "Do not show fans on your profile": "אל תראה מעריצים בפרופיל שלך"
 }

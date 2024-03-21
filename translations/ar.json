@@ -663,5 +663,8 @@
     "Premium account": "حساب الأقساط",
     "Premium account subscription link": "رابط الاشتراك في الحساب المميز",
     "Fans": "المشجعين",
-    "Only to fans": "فقط للجماهير"
+    "Only to fans": "فقط للجماهير",
+    "Approve fans": "الموافقة على المشجعين",
+    "Only allow replies from fans": "السماح فقط بالردود من المعجبين",
+    "Do not show fans on your profile": "لا تظهر المعجبين في ملفك الشخصي"
 }

@@ -663,5 +663,8 @@
     "Premium account": "プレミアムアカウント",
     "Premium account subscription link": "プレミアムアカウントのサブスクリプションリンク",
     "Fans": "ファン",
-    "Only to fans": "ファンだけに"
+    "Only to fans": "ファンだけに",
+    "Approve fans": "ファンを承認する",
+    "Only allow replies from fans": "ファンからの返信のみを許可する",
+    "Do not show fans on your profile": "プロフィールにファンを表示しない"
 }

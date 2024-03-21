@@ -2730,8 +2730,11 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form = '    <div class="container">\n'
     edit_profile_form += \
         edit_check_box(translate['Premium account'], 'premiumAccount', premium)
+    approve_followers_str = translate['Approve follower requests']
+    if premium:
+        approve_followers_str = translate['Approve fans']
     edit_profile_form += \
-        edit_check_box(translate['Approve follower requests'],
+        edit_check_box(approve_followers_str,
                        'approveFollowers', manually_approves_followers)
     edit_profile_form += \
         edit_check_box(translate['Reject spam accounts'],
@@ -2781,6 +2784,8 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(show_vote_posts_str, 'showVotes', show_vote_posts)
     show_replies_followers_str = translate['Only allow replies from followers']
+    if premium:
+        show_replies_followers_str = translate['Only allow replies from fans']
     edit_profile_form += \
         edit_check_box(show_replies_followers_str, 'repliesFromFollowersOnly',
                        show_replies_followers)
@@ -2789,6 +2794,8 @@ def _html_edit_profile_options(is_admin: bool,
         edit_check_box(show_replies_mutuals_str, 'repliesFromMutualsOnly',
                        show_replies_mutuals)
     hide_follows_str = translate['Do not show follows on your profile']
+    if premium:
+        hide_follows_str = translate['Do not show fans on your profile']
     edit_profile_form += \
         edit_check_box(hide_follows_str, 'hideFollows', hide_follows)
 

@@ -663,5 +663,8 @@
     "Premium account": "Konto premium",
     "Premium account subscription link": "Link do subskrypcji konta premium",
     "Fans": "Fani",
-    "Only to fans": "Tylko dla fanów"
+    "Only to fans": "Tylko dla fanów",
+    "Approve fans": "Zatwierdź fanów",
+    "Only allow replies from fans": "Zezwalaj tylko na odpowiedzi od fanów",
+    "Do not show fans on your profile": "Nie pokazuj fanów na swoim profilu"
 }

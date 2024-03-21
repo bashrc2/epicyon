@@ -663,5 +663,8 @@
     "Premium account": "Преміум акаунт",
     "Premium account subscription link": "Посилання на підписку на преміум-акаунт",
     "Fans": "вболівальники",
-    "Only to fans": "Тільки фанатам"
+    "Only to fans": "Тільки фанатам",
+    "Approve fans": "Схвалити шанувальників",
+    "Only allow replies from fans": "Дозволити лише відповіді від шанувальників",
+    "Do not show fans on your profile": "Не показуйте шанувальників у своєму профілі"
 }
