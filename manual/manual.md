@@ -326,6 +326,11 @@ When you first register an account on the instance the first thing that you may 
 ### Describe yourself
 Add an appropriate description of youself, which doesn't resemble the type of thing which would appear on a spam account. When other fediverse users are judging a follow request from you they will want to know that you are a real person and not a spammer or troll.
 
+### Premium Account
+There is an option to set your account as "premium". This is intended for an [OnlyFans](https://en.wikipedia.org/wiki/OnlyFans)-like situation in which followers need to subscribe with some payment before making a follow request to receive your posts. If this option is selected then recent posts on your profile won't be shown to unauthorized viewers and the terminology of donations is switched to subscriptions. You will need to set a link where followers can register, and ask fans to specify their fediverse handle so that you can approve it.
+
+A difference with corporate content subscription services is that the federated nature of instances means that once a post has been sent out to fans/followers then you won't have any control over what they subsequently do with your content. So they could boost/announce posts to non-subscribers, for example.
+
 ### Other fediverse accounts
 If you have any other fediverse accounts on different instances then you might want to add URLs for those. You can set the languages which you can read, as [two letter abbreviations](https://en.wikipedia.org/wiki/ISO_639-1). This helps to avoid having posts from other people within your timeline which you can't read.
 

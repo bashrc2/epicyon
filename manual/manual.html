@@ -199,10 +199,10 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="
   error_log /dev/null;
   client_max_body_size 31m;
   client_body_buffer_size 128k;
-  
+
   limit_conn conn_limit_per_ip 10;
   limit_req zone=req_limit_per_ip burst=10 nodelay;
-  
+
   index index.html;
   rewrite ^ https://$server_name$request_uri? permanent;
 }
@@ -210,7 +210,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="
 server {
   listen 443 ssl http2;
   server_name YOUR_DOMAIN;
-  
+
   gzip on;
   gzip_disable &quot;msie6&quot;;
   gzip_vary on;
@@ -220,20 +220,20 @@ server {
   gzip_buffers 16 8k;
   gzip_http_version 1.1;
   gzip_types text/plain text/css text/vcard text/vcard+xml application/json application/ld+json application/javascript text/xml application/xml application/rdf+xml application/xml+rss text/javascript;
-  
+
   ssl_stapling off;
   ssl_stapling_verify off;
   ssl on;
   ssl_certificate /etc/letsencrypt/live/YOUR_DOMAIN/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/YOUR_DOMAIN/privkey.pem;
   #ssl_dhparam /etc/ssl/certs/YOUR_DOMAIN.dhparam;
-  
+
   ssl_protocols TLSv1.2 TLSv1.3;
   ssl_ciphers HIGH:!MEDIUM:!LOW:!aNULL:!NULL:!SHA;
   ssl_prefer_server_ciphers on;
   ssl_session_cache shared:SSL:10m;
   ssl_session_tickets off;
-  
+
   add_header Content-Security-Policy &quot;default-src https:; script-src https: &#39;unsafe-inline&#39;; style-src https: &#39;unsafe-inline&#39;&quot;;
   add_header X-Frame-Options DENY;
   add_header X-Content-Type-Options nosniff;
@@ -241,20 +241,20 @@ server {
   add_header X-Download-Options noopen;
   add_header X-Permitted-Cross-Domain-Policies none;
   add_header Strict-Transport-Security &quot;max-age=15768000; includeSubDomains; preload&quot; always;
-  
+
   access_log /dev/null;
   error_log /dev/null;
-  
+
   index index.html;
-  
+
   location /newsmirror {
     root /var/www/YOUR_DOMAIN;
     try_files $uri =404;
   }
-  
+
   keepalive_timeout 70;
   sendfile on;
-  
+
   location / {
   proxy_http_version 1.1;
   client_max_body_size 31M;
@@ -401,6 +401,22 @@ src="manual-edit-button.png" alt="Profile edit button" /></p>
 type of thing which would appear on a spam account. When other fediverse
 users are judging a follow request from you they will want to know that
 you are a real person and not a spammer or troll.</p>
+<h3 id="premium-account">Premium Account</h3>
+<p>There is an option to set your account as “premium”. This is intended
+for an <a
+href="https://en.wikipedia.org/wiki/OnlyFans">OnlyFans</a>-like
+situation in which followers need to subscribe with some payment before
+making a follow request to receive your posts. If this option is
+selected then recent posts on your profile won’t be shown to
+unauthorized viewers and the terminology of donations is switched to
+subscriptions. You will need to set a link where followers can register,
+and ask fans to specify their fediverse handle so that you can approve
+it.</p>
+<p>A difference with corporate content subscription services is that the
+federated nature of instances means that once a post has been sent out
+to fans/followers then you won’t have any control over what they
+subsequently do with your content. So they could boost/announce posts to
+non-subscribers, for example.</p>
 <h3 id="other-fediverse-accounts">Other fediverse accounts</h3>
 <p>If you have any other fediverse accounts on different instances then
 you might want to add URLs for those. You can set the languages which
@@ -411,10 +427,11 @@ people within your timeline which you can’t read.</p>
 <p>You can set your posts to expire after a number of days. If this
 value is zero then the instance will keep your posts indefinitely.</p>
 <h3 id="quitting-twitter">Quitting Twitter</h3>
-<p>If you are coming to the fediverse as an exile from Twitter then you
-may want to select the option to remove any Twitter posts from your
-timeline. Sometimes people want to make a clean break from Twitter and
-have no further involvement with it.</p>
+<p>If you are coming to the fediverse as an exile from the website
+formerly known as Twitter then you may want to select the option to
+remove any Twitter posts from your timeline. Sometimes people want to
+make a clean break from Twitter and have no further involvement with
+it.</p>
 <h3 id="alternative-contact-details">Alternative contact details</h3>
 <p>You can set additional contact details, such as email, XMPP and
 Matrix addresses. So if people want to contact you for private <a
