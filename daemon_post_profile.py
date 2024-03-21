@@ -807,18 +807,22 @@ def _profile_post_block_military(nickname: str, fields: {}, self) -> None:
 
 def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
                                actor_json: {}, fields: {}, self,
-                               actor_changed: bool) -> bool:
+                               actor_changed: bool,
+                               premium: bool) -> bool:
     """ HTTP POST hide follows checkbox
+    This hides follows from unauthorized viewers
     """
     hide_follows_filename = \
         acct_dir(base_dir, nickname, domain) + '/.hideFollows'
-    hide_follows = False
+    hide_follows = premium
     if fields.get('hideFollows'):
         if fields['hideFollows'] == 'on':
             hide_follows = True
-            self.server.hide_follows[nickname] = True
-            actor_json['hideFollows'] = True
-            actor_changed = True
+    if hide_follows:
+        self.server.hide_follows[nickname] = True
+        actor_json['hideFollows'] = True
+        actor_changed = True
+        if not os.path.isfile(hide_follows_filename):
             try:
                 with open(hide_follows_filename, 'w+',
                           encoding='utf-8') as rfile:
@@ -2917,7 +2921,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_hide_follows(base_dir, nickname, domain,
                                                actor_json, fields, self,
-                                               actor_changed)
+                                               actor_changed, premium)
                 _profile_post_block_military(nickname, fields, self)
 
                 notify_likes_filename = \
