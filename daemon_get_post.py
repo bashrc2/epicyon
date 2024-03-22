@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 import json
 from webapp_conversation import html_conversation_view
+from utils import is_premium_account
 from utils import get_instance_url
 from utils import is_public_post_from_url
 from utils import local_actor_url
@@ -55,13 +56,20 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                          getreq_start_time,
                          proxy_type: str, cookie: str,
                          debug: str, include_create_wrapper: bool,
-                         curr_session) -> bool:
+                         curr_session, translate: {}) -> bool:
     """Shows an individual post from its filename
     """
     if not os.path.isfile(post_filename):
         http_404(self, 71)
         self.server.getreq_busy = False
         return True
+
+    # if this is a premium account and the viewer is unauthorized
+    if not authorized:
+        if is_premium_account(base_dir, nickname, domain):
+            http_401(self, translate['Premium account'])
+            self.server.getreq_busy = False
+            return True
 
     post_json_object = load_json(post_filename)
     if not post_json_object:
@@ -178,7 +186,7 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                          getreq_start_time,
                          proxy_type: str, cookie: str,
                          debug: str,
-                         curr_session) -> bool:
+                         curr_session, translate: {}) -> bool:
     """Shows an individual post
     """
     liked_by = None
@@ -258,7 +266,7 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                                   getreq_start_time,
                                   proxy_type, cookie, debug,
                                   include_create_wrapper,
-                                  curr_session)
+                                  curr_session, translate)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show_individual_post',
                         self.server.debug)
@@ -426,7 +434,7 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                             getreq_start_time,
                             proxy_type: str, cookie: str,
                             debug: str,
-                            curr_session) -> bool:
+                            curr_session, translate) -> bool:
     """get an individual post from the path /@nickname/statusnumber
     """
     if '/@' not in path:
@@ -512,7 +520,7 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                                   getreq_start_time,
                                   proxy_type, cookie, debug,
                                   include_create_wrapper,
-                                  curr_session)
+                                  curr_session, translate)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show_individual_at_post',
                         self.server.debug)
@@ -936,7 +944,7 @@ def show_notify_post(self, authorized: bool,
                      getreq_start_time,
                      proxy_type: str, cookie: str,
                      debug: str,
-                     curr_session) -> bool:
+                     curr_session, translate: {}) -> bool:
     """Shows an individual post from an account which you are following
     and where you have the notify checkbox set on person options
     """
@@ -969,7 +977,7 @@ def show_notify_post(self, authorized: bool,
                                   getreq_start_time,
                                   proxy_type, cookie, debug,
                                   include_create_wrapper,
-                                  curr_session)
+                                  curr_session, translate)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show_notify_post',
                         self.server.debug)

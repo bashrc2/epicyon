@@ -3668,7 +3668,8 @@ def daemon_http_get(self) -> None:
                                getreq_start_time,
                                proxy_type,
                                cookie, self.server.debug,
-                               curr_session):
+                               curr_session,
+                               self.server.translate):
         self.server.getreq_busy = False
         return
 
@@ -3770,7 +3771,8 @@ def daemon_http_get(self) -> None:
                             getreq_start_time,
                             proxy_type,
                             cookie, self.server.debug,
-                            curr_session):
+                            curr_session,
+                            self.server.translate):
             self.server.getreq_busy = False
             return
 
@@ -3788,7 +3790,8 @@ def daemon_http_get(self) -> None:
                                 getreq_start_time,
                                 proxy_type,
                                 cookie, self.server.debug,
-                                curr_session):
+                                curr_session,
+                                self.server.translate):
             self.server.getreq_busy = False
             return
 
