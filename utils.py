@@ -1300,7 +1300,7 @@ def evil_incarnate() -> []:
     """Hardcoded blocked domains
     """
     return ('fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz',
-            'kiwifarms.cc', 'djitter.com')
+            'kiwifarms.cc')
 
 
 def is_evil(domain: str) -> bool:
@@ -1780,8 +1780,8 @@ def get_user_paths() -> []:
     """Returns possible user paths
     e.g. /users/nickname, /channel/nickname
     """
-    return ('/users/', '/profile/', '/accounts/', '/channel/', '/u/',
-            '/c/', '/m/', '/a/', '/video-channels/', '/author/',
+    return ('/users/', '/profile/', '/accounts/', '/channel/',
+            '/u/', '/c/', '/m/', '/a/', '/video-channels/', '/author/',
             '/activitypub/', '/actors/', '/snac/', '/@/', '/~/',
             '/fediverse/blog/', '/user/', '/@')
 
