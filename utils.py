@@ -4504,6 +4504,12 @@ def disallow_announce(content: str, attachment: [], capabilities: {}) -> bool:
             if not item.get('name'):
                 # no image description
                 return True
+            image_description = item['name']
+            if not isinstance(image_description, str):
+                continue
+            if len(image_description) < 5:
+                # not enough description
+                return True
     return False
 
 
