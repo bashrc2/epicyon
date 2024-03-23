@@ -74,7 +74,7 @@ In general avoid using web frameworks and instead use local modules which are pr
 
 ## High Level Architecture
 
-The main modules are *epicyon.py* and *daemon.py*. *epicyon.py* is the commandline interface and *daemon.py* is the http server.
+The main modules are *epicyon.py* and *daemon.py*. *epicyon.py* is the commandline interface and *daemon.py* is the http server. The daemon has submodules for HTTP GET and HTTP POST.
 
 ![commandline and core modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Commandline-Interface_Core.png)
 
