@@ -1,0 +1,29 @@
+{
+    "name": "Paywalled websites",
+    "warning": "Paywalled websites",
+    "description": "Contains links to sites which are paywalled",
+    "words": [],
+    "domains": [
+        "nytimes.com",
+	      "ft.com",
+        "wsj.com",
+        "theathletic.com",
+        "washingtonpost.com",
+        "nikkei.com",
+        "economist.com",
+        "theguardian.com",
+        "caixin.com",
+        "aftonbladet.se",
+        "telegraph.co.uk",
+        "clarin.com",
+        "bild.de",
+        "latimes.com",
+        "theatlantic.com",
+        "thetimes.co.uk",
+        "lemonde.fr",
+        "corriere.it",
+        "dn.se",
+        "lanacion.com",
+        "wyborcza.pl"
+    ]
+}
