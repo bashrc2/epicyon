@@ -805,6 +805,35 @@ def _profile_post_block_military(nickname: str, fields: {}, self) -> None:
                                   self.server.block_military)
 
 
+def _profile_post_no_reply_boosts(base_dir: str, nickname: str, domain: str,
+                                  fields: {}) -> bool:
+    """ HTTP POST disallow boosts of replies in inbox
+    """
+    no_reply_boosts_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.noReplyBoosts'
+    no_reply_boosts = False
+    if fields.get('noReplyBoosts'):
+        if fields['noReplyBoosts'] == 'on':
+            no_reply_boosts = True
+    if no_reply_boosts:
+        if not os.path.isfile(no_reply_boosts_filename):
+            try:
+                with open(no_reply_boosts_filename, 'w+',
+                          encoding='utf-8') as rfile:
+                    rfile.write('\n')
+            except OSError:
+                print('EX: unable to write noReplyBoosts ' +
+                      no_reply_boosts_filename)
+    if not no_reply_boosts:
+        if os.path.isfile(no_reply_boosts_filename):
+            try:
+                os.remove(no_reply_boosts_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      no_reply_boosts_filename)
+
+
 def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
                                actor_json: {}, fields: {}, self,
                                actor_changed: bool,
@@ -2923,6 +2952,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                actor_json, fields, self,
                                                actor_changed, premium)
                 _profile_post_block_military(nickname, fields, self)
+                _profile_post_no_reply_boosts(base_dir, nickname, domain,
+                                              fields)
 
                 notify_likes_filename = \
                     acct_dir(base_dir, nickname, domain) + '/.notifyLikes'

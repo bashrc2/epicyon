@@ -1585,6 +1585,7 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
     reply_id = get_reply_to(message_json['object'])
     if reply_id:
         if isinstance(reply_id, str):
+            # this is a reply
             original_post_id = reply_id
             post_post_filename = locate_post(base_dir, nickname, domain,
                                              original_post_id)
@@ -3372,8 +3373,23 @@ def _receive_announce(recent_posts_cache: {},
                                          bold_reading,
                                          show_vote_posts,
                                          languages_understood)
+    # are annouced/boosted replies allowed?
+    announce_denied = False
+    if post_json_object:
+        if has_object_dict(post_json_object):
+            if post_json_object['object'].get('inReplyTo'):
+                account_dir = acct_dir(base_dir, nickname, domain)
+                no_reply_boosts_filename = account_dir + '/.noReplyBoosts'
+                if os.path.isfile(no_reply_boosts_filename):
+                    post_json_object = None
+                    announce_denied = True
+
     if not post_json_object:
-        print('WARN: unable to download announce: ' + str(message_json))
+        if not announce_denied:
+            print('WARN: unable to download announce: ' + str(message_json))
+        else:
+            print('REJECT: Announce/Boost of reply denied ' +
+                  message_json['object'])
         not_in_onion = True
         if onion_domain:
             if onion_domain in message_json['object']:
@@ -3391,6 +3407,7 @@ def _receive_announce(recent_posts_cache: {},
             actor_url = get_actor_from_post(message_json)
             print('DEBUG: Announce post downloaded for ' +
                   actor_url + ' -> ' + message_json['object'])
+
         store_hash_tags(base_dir, nickname, domain,
                         http_prefix, domain_full,
                         post_json_object, translate)

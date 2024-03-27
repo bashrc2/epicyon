@@ -2724,7 +2724,8 @@ def _html_edit_profile_options(is_admin: bool,
                                show_replies_followers: bool,
                                show_replies_mutuals: bool,
                                hide_follows: bool,
-                               premium: bool) -> str:
+                               premium: bool,
+                               no_reply_boosts: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2764,9 +2765,11 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(translate["Don't show the Reaction button"],
                        'hideReactionButton', hide_reaction_button)
+
     bold_str = bold_reading_string(translate['Bold reading'])
     edit_profile_form += \
         edit_check_box(bold_str, 'boldReading', bold_reading)
+
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
@@ -2774,30 +2777,39 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(minimize_all_images_str, 'minimizeAllImages',
                        minimize_all_images)
+
     reverse = False
     if nickname in reverse_sequence:
         reverse = True
     reverse_str = translate['Reverse timelines']
     edit_profile_form += \
         edit_check_box(reverse_str, 'reverseTimelines', reverse)
+
     show_vote_posts_str = translate['Show vote posts']
     edit_profile_form += \
         edit_check_box(show_vote_posts_str, 'showVotes', show_vote_posts)
+
     show_replies_followers_str = translate['Only allow replies from followers']
     if premium:
         show_replies_followers_str = translate['Only allow replies from fans']
     edit_profile_form += \
         edit_check_box(show_replies_followers_str, 'repliesFromFollowersOnly',
                        show_replies_followers)
+
     show_replies_mutuals_str = translate['Only allow replies from mutuals']
     edit_profile_form += \
         edit_check_box(show_replies_mutuals_str, 'repliesFromMutualsOnly',
                        show_replies_mutuals)
+
     hide_follows_str = translate['Do not show follows on your profile']
     if premium:
         hide_follows_str = translate['Do not show fans on your profile']
     edit_profile_form += \
         edit_check_box(hide_follows_str, 'hideFollows', hide_follows)
+
+    no_reply_boosts_str = translate["Don't show boosted replies"]
+    edit_profile_form += \
+        edit_check_box(no_reply_boosts_str, 'noReplyBoosts', no_reply_boosts)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -3209,6 +3221,12 @@ def html_edit_profile(server, translate: {},
     # is this a premium account?
     premium = is_premium_account(base_dir, nickname, domain)
 
+    # are boosts of replies permitted in the inbox?
+    no_reply_boosts_filename = account_dir + '/.noReplyBoosts'
+    no_reply_boosts = False
+    if os.path.isfile(no_reply_boosts_filename):
+        no_reply_boosts = True
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -3222,7 +3240,7 @@ def html_edit_profile(server, translate: {},
                                    reverse_sequence, show_vote_posts,
                                    show_replies_followers,
                                    show_replies_mutuals, hide_follows,
-                                   premium)
+                                   premium, no_reply_boosts)
 
     # Contact information
     edit_profile_form += \
