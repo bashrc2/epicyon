@@ -43,6 +43,7 @@ def create_session(proxy_type: str):
         return None
     if not session:
         return None
+    session.max_redirects = 3
     if proxy_type == 'tor':
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:9050'
