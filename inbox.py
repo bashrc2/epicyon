@@ -3389,7 +3389,7 @@ def _receive_announce(recent_posts_cache: {},
             print('WARN: unable to download announce: ' + str(message_json))
         else:
             print('REJECT: Announce/Boost of reply denied ' +
-                  message_json['object'])
+                  actor_url + ' 🔁 ' + message_json['object'])
         not_in_onion = True
         if onion_domain:
             if onion_domain in message_json['object']:
