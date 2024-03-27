@@ -642,7 +642,7 @@
     "Mutuals": "Mutuals",
     "Public replies default to unlisted scope": "Public replies default to unlisted scope",
     "About the author": "About the author",
-    "Do not show follows on your profile": "Do not show follows on your profile",
+    "Do not show follows on your profile": "Don't show follows on your profile",
     "rated": "rated",
     "wants to read": "wants to read",
     "finished reading": "finished reading",
@@ -666,5 +666,5 @@
     "Only to fans": "Only to fans",
     "Approve fans": "Approve fans",
     "Only allow replies from fans": "Only allow replies from fans",
-    "Do not show fans on your profile": "Do not show fans on your profile"
+    "Do not show fans on your profile": "Don't show fans on your profile"
 }
