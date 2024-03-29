@@ -334,10 +334,9 @@ def update_inbox_queue(self, nickname: str, message_json: {},
                 http_400(self)
                 self.server.postreq_busy = False
                 return 3
-        # check that some fields are lists
+        # check attachment is a list or dict
         if debug:
-            print('INBOX: checking object to and cc fields')
-        # check attachment
+            print('INBOX: checking attachment is a list or dict')
         if message_json['object'].get('attachment'):
             if not isinstance(message_json['object']['attachment'], list) and \
                not isinstance(message_json['object']['attachment'], dict):
@@ -346,6 +345,9 @@ def update_inbox_queue(self, nickname: str, message_json: {},
                 http_400(self)
                 self.server.postreq_busy = False
                 return 3
+        # check that some fields are lists
+        if debug:
+            print('INBOX: checking object to and cc fields')
         # check to and cc fields
         list_fields = ('to', 'cc')
         for check_field in list_fields:
