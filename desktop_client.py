@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import get_post_attachments
 from utils import get_url_from_post
 from utils import get_actor_languages_list
 from utils import get_attributed_to
@@ -705,15 +706,12 @@ def _get_image_description(post_json_object: {}) -> str:
     """Returns a image description/s on a post
     """
     image_description = ''
-    if not post_json_object['object'].get('attachment'):
-        return image_description
-
-    attach_list = post_json_object['object']['attachment']
-    if not isinstance(attach_list, list):
+    post_attachments = get_post_attachments(post_json_object)
+    if not post_attachments:
         return image_description
 
     # for each attachment
-    for img in attach_list:
+    for img in post_attachments:
         if not isinstance(img, dict):
             continue
         if not img.get('name'):
@@ -2326,9 +2324,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     post_summary = ''
                     if post_json_object['object'].get('summary'):
                         post_summary = post_json_object['object']['summary']
-                    attachment = []
-                    if post_json_object['object'].get('attachment'):
-                        attachment = post_json_object['object']['attachment']
+                    attachment = get_post_attachments(post_json_object)
                     capabilities = {}
                     if post_json_object['object'].get('capabilities'):
                         capabilities = \

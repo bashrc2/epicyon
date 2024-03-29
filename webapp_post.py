@@ -24,6 +24,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import get_post_attachments
 from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import remove_markup_tag
@@ -194,7 +195,8 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
         metadata += \
             "    <meta content=\"" + obj_json['published'] + \
             "\" property=\"og:published_time\" />\n"
-    if not obj_json.get('attachment') or obj_json.get('sensitive'):
+    post_attachments = get_post_attachments(obj_json)
+    if not post_attachments or obj_json.get('sensitive'):
         if 'content' in obj_json and not obj_json.get('sensitive'):
             obj_content = obj_json['content']
             if 'contentMap' in obj_json:
@@ -210,7 +212,7 @@ def _html_post_metadata_open_graph(domain: str, post_json_object: {},
         return metadata
 
     # metadata for attachment
-    for attach_json in obj_json['attachment']:
+    for attach_json in post_attachments:
         if not isinstance(attach_json, dict):
             continue
         if not attach_json.get('mediaType'):
@@ -1979,7 +1981,8 @@ def _get_content_license(post_json_object: {}) -> str:
             value = license_link_from_name(value)
         return value
 
-    for item in post_json_object['object']['attachment']:
+    post_attachments = get_post_attachments(post_json_object)
+    for item in post_attachments:
         if not item.get('name'):
             continue
         name_lower = item['name'].lower()
@@ -2765,9 +2768,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         content_all_str = str(summary_str) + ' ' + content_str
         # does an emoji or lack of alt text on an image indicate a
         # no boost preference? if so then don't show the repeat/announce icon
-        attachment = []
-        if post_json_object['object'].get('attachment'):
-            attachment = post_json_object['object']['attachment']
+        attachment = get_post_attachments(post_json_object)
         capabilities = {}
         if post_json_object['object'].get('capabilities'):
             capabilities = post_json_object['object']['capabilities']
@@ -2784,7 +2785,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     # html for the buy icon
     buy_str = ''
-    if 'attachment' not in post_json_object['object']:
+    post_attachments = get_post_attachments(post_json_object['object'])
+    if not post_attachments:
         post_json_object['object']['attachment'] = []
     if not is_patch:
         buy_links = get_buy_links(post_json_object, translate, buy_sites)

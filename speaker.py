@@ -11,6 +11,7 @@ import os
 import html
 import random
 import urllib.parse
+from utils import get_post_attachments
 from utils import get_cached_post_filename
 from utils import remove_id_ending
 from utils import is_dm
@@ -466,10 +467,10 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
         say_content = content
 
     image_description = ''
-    if post_json_object['object'].get('attachment'):
-        attach_list = post_json_object['object']['attachment']
-        if isinstance(attach_list, list):
-            for img in attach_list:
+    post_attachments = get_post_attachments(post_json_object)
+    if post_attachments:
+        if isinstance(post_attachments, list):
+            for img in post_attachments:
                 if not isinstance(img, dict):
                     continue
                 if img.get('name'):

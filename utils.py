@@ -517,15 +517,11 @@ def get_media_descriptions_from_post(post_json_object: {}) -> str:
     """Returns all attached media descriptions as a single text.
     This is used for filtering
     """
-    this_post_json = post_json_object
-    if has_object_dict(post_json_object):
-        this_post_json = post_json_object['object']
-    if not this_post_json.get('attachment'):
-        return ''
-    if not isinstance(this_post_json['attachment'], list):
+    post_attachments = get_post_attachments(post_json_object)
+    if not post_attachments:
         return ''
     descriptions = ''
-    for attach in this_post_json['attachment']:
+    for attach in post_attachments:
         if not isinstance(attach, dict):
             print('WARN: attachment is not a dict ' + str(attach))
             continue
@@ -2208,11 +2204,12 @@ def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
                        post_json: {}):
     """Removes media files for an attachment
     """
-    if not post_json.get('attachment'):
+    post_attachments = get_post_attachments(post_json)
+    if not post_attachments:
         return
-    if not post_json['attachment'][0].get('url'):
+    if not post_attachments[0].get('url'):
         return
-    attachment_url = get_url_from_post(post_json['attachment'][0]['url'])
+    attachment_url = get_url_from_post(post_attachments[0]['url'])
     if not attachment_url:
         return
     attachment_url = remove_html(attachment_url)
@@ -5247,3 +5244,18 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
                     fp_premium.write('\n')
             except OSError:
                 print('EX: unable to set premium flag ' + premium_filename)
+
+
+def get_post_attachments(post_json_object: {}) -> []:
+    """ Returns the list of attachments for a post
+    """
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+    if not post_obj.get('attachment'):
+        return []
+    if isinstance(post_obj['attachment'], list):
+        return post_obj['attachment']
+    if isinstance(post_obj['attachment'], dict):
+        return [post_obj['attachment']]
+    return []

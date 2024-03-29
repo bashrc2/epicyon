@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import get_post_attachments
 from utils import is_premium_account
 from utils import contains_private_key
 from utils import get_url_from_post
@@ -707,13 +708,14 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                         continue
                     in_reply_to = reply_id
 
-            if this_item.get('attachment'):
-                if len(this_item['attachment']) > max_attachments:
+            post_attachments = get_post_attachments(this_item)
+            if post_attachments:
+                if len(post_attachments) > max_attachments:
                     if debug:
                         print('max attachments reached')
                     continue
-                if this_item['attachment']:
-                    for attach in this_item['attachment']:
+                if post_attachments:
+                    for attach in post_attachments:
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
                             url_str = get_url_from_post(attach['url'])
@@ -4426,11 +4428,10 @@ def is_image_media(session, base_dir: str, http_prefix: str,
     if post_json_object['object']['type'] not in ('Note', 'Page', 'Event',
                                                   'ChatMessage', 'Article'):
         return False
-    if not post_json_object['object'].get('attachment'):
+    post_attachments = get_post_attachments(post_json_object)
+    if not post_attachments:
         return False
-    if not isinstance(post_json_object['object']['attachment'], list):
-        return False
-    for attach in post_json_object['object']['attachment']:
+    for attach in post_attachments:
         if attach.get('mediaType') and attach.get('url'):
             if attach['mediaType'].startswith('image/') or \
                attach['mediaType'].startswith('audio/') or \

@@ -15,6 +15,7 @@ from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
+from utils import get_post_attachments
 from utils import get_attributed_to
 from utils import contains_invalid_actor_url_chars
 from utils import get_attachment_property_value
@@ -392,9 +393,10 @@ def post_message_to_outbox(session, translate: {},
                         system_language)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         message_json['object']['attributedTo'] = actor_url
-        if message_json['object'].get('attachment'):
+        message_attachments = get_post_attachments(message_json['object'])
+        if message_attachments:
             attachment_index = 0
-            attach = message_json['object']['attachment'][attachment_index]
+            attach = message_attachments[attachment_index]
             if attach.get('mediaType'):
                 file_extension = 'png'
                 media_type_str = \
@@ -442,6 +444,13 @@ def post_message_to_outbox(session, translate: {},
                     media_filename = base_dir + '/' + media_path
                     # move the uploaded image to its new path
                     os.rename(upload_media_filename, media_filename)
+                    # convert dictionary to list if needed
+                    if isinstance(message_json['object']['attachment'], dict):
+                        message_json['object']['attachment'] = \
+                            [message_json['object']['attachment']]
+                        attach_idx = attachment_index
+                        attach = \
+                            message_json['object']['attachment'][attach_idx]
                     # change the url of the attachment
                     attach['url'] = \
                         http_prefix + '://' + domain_full + '/' + media_path

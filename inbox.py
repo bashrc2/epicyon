@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import get_post_attachments
 from utils import lines_in_file
 from utils import resembles_url
 from utils import get_url_from_post
@@ -183,18 +184,17 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
         obj = post_json_object
     if not obj.get('id'):
         return False
-    if not obj.get('attachment'):
-        return False
-    if not isinstance(obj['attachment'], list):
+    post_attachments = get_post_attachments(obj)
+    if not post_attachments:
         return False
     cached = False
     post_id = remove_id_ending(obj['id']).replace('/', '--')
     actor = 'unknown'
-    if obj.get('attributedTo'):
+    if post_attachments:
         actor = get_attributed_to(obj['attributedTo'])
     log_filename = base_dir + '/accounts/svg_scripts_log.txt'
-    for index in range(len(obj['attachment'])):
-        attach = obj['attachment'][index]
+    for index in range(len(post_attachments)):
+        attach = post_attachments[index]
         if not attach.get('mediaType'):
             continue
         if not attach.get('url'):
@@ -249,6 +249,9 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
                 except OSError:
                     print('EX: unable to write cleaned up svg ' + url)
                 if svg_written:
+                    # convert to list if needed
+                    if isinstance(obj['attachment'], dict):
+                        obj['attachment'] = [obj['attachment']]
                     # change the url to be the local version
                     obj['attachment'][index]['url'] = \
                         http_prefix + '://' + domain_full + '/media/' + \

@@ -12,6 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
+from utils import get_post_attachments
 from utils import image_mime_types_dict
 from utils import get_url_from_post
 from utils import get_media_url_from_video
@@ -1249,17 +1250,16 @@ def get_post_attachments_as_html(base_dir: str,
             'type': 'Document',
             'url': media_url
         }]
-        if not post_json_object['object'].get('attachment'):
+        post_attachments = get_post_attachments(post_json_object)
+        if not post_attachments:
             post_json_object['object']['attachment'] = \
                 attachment_dict
 
-    if not post_json_object['object'].get('attachment'):
+    post_attachments = get_post_attachments(post_json_object)
+    if not post_attachments:
         return attachment_str, gallery_str
 
-    if not isinstance(post_json_object['object']['attachment'], list):
-        return attachment_str, gallery_str
-
-    attachment_dict += post_json_object['object']['attachment']
+    attachment_dict += post_attachments
 
     media_style_added = False
     post_id = None
@@ -2297,9 +2297,8 @@ def html_following_dropdown(base_dir: str, nickname: str,
 def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
     """Returns any links to buy something from an external site
     """
-    if not post_json_object['object'].get('attachment'):
-        return {}
-    if not isinstance(post_json_object['object']['attachment'], list):
+    post_attachments = get_post_attachments(post_json_object)
+    if not post_attachments:
         return {}
     links = {}
     buy_strings = []
@@ -2308,7 +2307,7 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
             buy_str = translate[buy_str]
         buy_strings += buy_str.lower()
     buy_strings += ('Paypal', 'Stripe', 'Cashapp', 'Venmo')
-    for item in post_json_object['object']['attachment']:
+    for item in post_attachments:
         if not isinstance(item, dict):
             continue
         if not item.get('name'):

@@ -10,6 +10,7 @@ __module_group__ = "Core"
 
 import os
 from collections import OrderedDict
+from utils import get_post_attachments
 from utils import get_content_from_post
 from utils import has_object_dict
 from utils import remove_id_ending
@@ -71,12 +72,11 @@ def get_book_from_post(post_json_object: {}, debug: bool) -> {}:
 def _get_book_image_from_post(post_json_object: {}) -> str:
     """ Returns a book image from the given post
     """
-    if 'attachment' not in post_json_object:
-        return ''
-    if not isinstance(post_json_object['attachment'], list):
+    post_attachments = get_post_attachments(post_json_object)
+    if not post_attachments:
         return ''
     extensions = get_image_extensions()
-    for attach_dict in post_json_object['attachment']:
+    for attach_dict in post_attachments:
         if not isinstance(attach_dict, dict):
             continue
         if 'url' not in attach_dict:

@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 import urllib.parse
+from utils import get_post_attachments
 from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import get_attributed_to
@@ -1372,8 +1373,9 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
                     '         <description>' + description + '</description>'
                 hashtag_feed += \
                     '         <pubDate>' + rss_date_str + '</pubDate>'
-                if post_json_object['object'].get('attachment'):
-                    for attach in post_json_object['object']['attachment']:
+                post_attachments = get_post_attachments(post_json_object)
+                if post_attachments:
+                    for attach in post_attachments:
                         if not attach.get('url'):
                             continue
                         url_str = get_url_from_post(attach['url'])
