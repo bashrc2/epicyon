@@ -5795,6 +5795,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                   'nickname. Assuming single user instance.')
     if not message_json.get('to'):
         message_json['to'] = message_json['object']
+        if not isinstance(message_json['to'], list):
+            message_json['to'] = [message_json['to']]
     if not has_users_path(message_json['object']):
         if debug:
             print('DEBUG: users/profile/author/channel/accounts ' +

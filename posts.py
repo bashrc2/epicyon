@@ -2588,6 +2588,8 @@ def create_direct_message_post(base_dir: str,
                           auto_cw_cache)
     # mentioned recipients go into To rather than Cc
     message_json['to'] = message_json['object']['cc']
+    if not isinstance(message_json['to'], list):
+        message_json['to'] = [message_json['to']]
     message_json['object']['to'] = message_json['to']
     message_json['cc'] = []
     message_json['object']['cc'] = []

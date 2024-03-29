@@ -988,7 +988,7 @@ def send_follow_request(session, base_dir: str,
         'object': followed_id
     }
     if group_account:
-        new_follow_json['to'] = followed_id
+        new_follow_json['to'] = [followed_id]
         print('Follow request: ' + str(new_follow_json))
 
     if follow_approval_required(base_dir, nickname, domain, debug,
