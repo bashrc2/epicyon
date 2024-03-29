@@ -3323,7 +3323,7 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
         if post_json_object.get('cc'):
             return
         actor_url = get_actor_from_post(post_json_object)
-        post_json_object['cc'] = actor_url + '/followers'
+        post_json_object['cc'] = [actor_url + '/followers']
     elif has_object_dict(post_json_object):
         if not post_json_object['object'].get('to'):
             return
@@ -3339,7 +3339,7 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
             return
         actor_url = get_actor_from_post(post_json_object)
         post_json_object['object']['cc'] = \
-            actor_url + '/followers'
+            [actor_url + '/followers']
 
 
 def send_signed_json(post_json_object: {}, session, base_dir: str,
