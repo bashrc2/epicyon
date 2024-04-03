@@ -4519,6 +4519,7 @@ def disallow_reply(content: str) -> bool:
         ':noreplies:',
         ':no_reply:',
         ':no_replies:',
+        ':no_responses:',
         ':replies_no:',
         'dont_at_me',
         'do not reply',
