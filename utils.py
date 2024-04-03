@@ -4525,7 +4525,8 @@ def disallow_reply(content: str) -> bool:
         "don't reply",
         "don't @ me",
         'dont@me',
-        'dontatme'
+        'dontatme',
+        'noresponses'
     )
     content_lower = content.lower()
     for diss in disallow_strings:
