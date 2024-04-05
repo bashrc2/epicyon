@@ -1205,14 +1205,19 @@ def remove_avatar_from_cache(base_dir: str, actor_str: str) -> None:
 def save_json(json_object: {}, filename: str) -> bool:
     """Saves json to a file
     """
+    if not isinstance(json_object, dict):
+        print('EX: save_json object is not json ' + str(json_object))
+        return False
+
     tries = 1
     while tries <= 5:
         try:
             with open(filename, 'w+', encoding='utf-8') as json_file:
                 json_file.write(json.dumps(json_object))
                 return True
-        except OSError:
-            print('EX: save_json ' + str(tries) + ' ' + str(filename))
+        except OSError as ex:
+            print('EX: save_json ' + str(tries) + ' ' + str(filename) +
+                  ' ' + str(ex))
             time.sleep(1)
             tries += 1
     return False
