@@ -898,6 +898,13 @@ def html_new_post(edit_post_params: {},
                     'name="commentsEnabled" ' + \
                     'checked><label class="labels"> ' + \
                     translate['Allow replies.'] + '</label></p>\n'
+                if endpoint == 'newpost':
+                    replies_section += \
+                        '<p><input type="checkbox" ' + \
+                        'class="profilecheckbox" ' + \
+                        'name="pinToProfile"><label class="labels"> ' + \
+                        translate['Pin this post to your profile.'] + \
+                        '</label></p>\n'
             else:
                 replies_section += \
                     '<input type="hidden" name="commentsEnabled" ' + \
@@ -933,12 +940,6 @@ def html_new_post(edit_post_params: {},
 
             date_and_location = \
                 begin_edit_section('🗓️ ' + translate['Set a place and time'])
-            if endpoint == 'newpost':
-                date_and_location += \
-                    '<p><input type="checkbox" class="profilecheckbox" ' + \
-                    'name="pinToProfile"><label class="labels"> ' + \
-                    translate['Pin this post to your profile.'] + \
-                    '</label></p>\n'
 
             if not in_reply_to:
                 date_and_location += \
