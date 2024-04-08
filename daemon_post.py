@@ -663,7 +663,8 @@ def daemon_http_post(self) -> None:
             receive_new_post(self, curr_post_type, self.path,
                              calling_domain, cookie,
                              self.server.content_license_url,
-                             curr_session, proxy_type)
+                             curr_session, proxy_type,
+                             self.server.base_dir)
         if page_number:
             print(curr_post_type + ' post received')
             nickname = self.path.split('/users/')[1]

@@ -2456,7 +2456,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
         self.server.postreq_busy = False
         return
 
-    admin_nickname = get_config_param(self.server.base_dir, 'admin')
+    admin_nickname = get_config_param(base_dir, 'admin')
 
     if not boundary:
         if b'--LYNX' in post_bytes:
@@ -2602,13 +2602,13 @@ def profile_edit(self, calling_domain: str, cookie: str,
             redirect_path = '/welcome_final'
         elif 'name="welcomeCompleteButton"' in post_bytes_str:
             redirect_path = '/' + self.server.default_timeline
-            welcome_screen_is_complete(self.server.base_dir, nickname,
+            welcome_screen_is_complete(base_dir, nickname,
                                        self.server.domain)
             on_final_welcome_screen = True
         elif 'name="submitExportTheme"' in post_bytes_str:
             print('submitExportTheme')
             theme_download_path = actor_str
-            if export_theme(self.server.base_dir,
+            if export_theme(base_dir,
                             self.server.theme_name):
                 theme_download_path += \
                     '/exports/' + self.server.theme_name + '.zip'
@@ -2691,7 +2691,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     _profile_post_media_instance_status(base_dir, fields, self)
 
                     # is this a news theme?
-                    if is_news_theme_name(self.server.base_dir,
+                    if is_news_theme_name(base_dir,
                                           self.server.theme_name):
                         fields['newsInstance'] = 'on'
 
@@ -2745,7 +2745,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                 actor_changed = \
                     _profile_post_blog_address(curr_session,
-                                               self.server.base_dir,
+                                               base_dir,
                                                self.server.http_prefix,
                                                nickname, domain,
                                                actor_json, fields,
@@ -2803,7 +2803,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                 actor_changed = \
                     _profile_post_website(curr_session,
-                                          self.server.base_dir,
+                                          base_dir,
                                           self.server.http_prefix,
                                           nickname, domain,
                                           actor_json, fields,

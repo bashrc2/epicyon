@@ -452,18 +452,18 @@ def person_options2(self, path: str,
     # person options screen, permission to post to newswire
     # See html_person_options
     if '&submitPostToNews=' in options_confirm_params:
-        admin_nickname = get_config_param(self.server.base_dir, 'admin')
+        admin_nickname = get_config_param(base_dir, 'admin')
         if (chooser_nickname != options_nickname and
             (chooser_nickname == admin_nickname or
-             (is_moderator(self.server.base_dir, chooser_nickname) and
-              not is_moderator(self.server.base_dir, options_nickname)))):
+             (is_moderator(base_dir, chooser_nickname) and
+              not is_moderator(base_dir, options_nickname)))):
             posts_to_news = None
             if 'postsToNews=' in options_confirm_params:
                 posts_to_news = \
                     options_confirm_params.split('postsToNews=')[1]
                 if '&' in posts_to_news:
                     posts_to_news = posts_to_news.split('&')[0]
-            account_dir = acct_dir(self.server.base_dir,
+            account_dir = acct_dir(base_dir,
                                    options_nickname, options_domain)
             newswire_blocked_filename = account_dir + '/.nonewswire'
             if posts_to_news == 'on':
@@ -473,7 +473,7 @@ def person_options2(self, path: str,
                     except OSError:
                         print('EX: _person_options unable to delete ' +
                               newswire_blocked_filename)
-                    refresh_newswire(self.server.base_dir)
+                    refresh_newswire(base_dir)
             else:
                 if os.path.isdir(account_dir):
                     nw_filename = newswire_blocked_filename
@@ -487,7 +487,7 @@ def person_options2(self, path: str,
                         print('EX: unable to write ' + nw_filename +
                               ' ' + str(ex))
                     if nw_written:
-                        refresh_newswire(self.server.base_dir)
+                        refresh_newswire(base_dir)
         users_path_str = \
             users_path + '/' + self.server.default_timeline + \
             '?page=' + str(page_number)
@@ -499,18 +499,18 @@ def person_options2(self, path: str,
     # person options screen, permission to post to featured articles
     # See html_person_options
     if '&submitPostToFeatures=' in options_confirm_params:
-        admin_nickname = get_config_param(self.server.base_dir, 'admin')
+        admin_nickname = get_config_param(base_dir, 'admin')
         if (chooser_nickname != options_nickname and
             (chooser_nickname == admin_nickname or
-             (is_moderator(self.server.base_dir, chooser_nickname) and
-              not is_moderator(self.server.base_dir, options_nickname)))):
+             (is_moderator(base_dir, chooser_nickname) and
+              not is_moderator(base_dir, options_nickname)))):
             posts_to_features = None
             if 'postsToFeatures=' in options_confirm_params:
                 posts_to_features = \
                     options_confirm_params.split('postsToFeatures=')[1]
                 if '&' in posts_to_features:
                     posts_to_features = posts_to_features.split('&')[0]
-            account_dir = acct_dir(self.server.base_dir,
+            account_dir = acct_dir(base_dir,
                                    options_nickname, options_domain)
             features_blocked_filename = account_dir + '/.nofeatures'
             if posts_to_features == 'on':
@@ -520,7 +520,7 @@ def person_options2(self, path: str,
                     except OSError:
                         print('EX: _person_options unable to delete ' +
                               features_blocked_filename)
-                    refresh_newswire(self.server.base_dir)
+                    refresh_newswire(base_dir)
             else:
                 if os.path.isdir(account_dir):
                     feat_filename = features_blocked_filename
@@ -534,7 +534,7 @@ def person_options2(self, path: str,
                         print('EX: unable to write ' + feat_filename +
                               ' ' + str(ex))
                     if feat_written:
-                        refresh_newswire(self.server.base_dir)
+                        refresh_newswire(base_dir)
         users_path_str = \
             users_path + '/' + self.server.default_timeline + \
             '?page=' + str(page_number)
@@ -546,18 +546,18 @@ def person_options2(self, path: str,
     # person options screen, permission to post to newswire
     # See html_person_options
     if '&submitModNewsPosts=' in options_confirm_params:
-        admin_nickname = get_config_param(self.server.base_dir, 'admin')
+        admin_nickname = get_config_param(base_dir, 'admin')
         if (chooser_nickname != options_nickname and
             (chooser_nickname == admin_nickname or
-             (is_moderator(self.server.base_dir, chooser_nickname) and
-              not is_moderator(self.server.base_dir, options_nickname)))):
+             (is_moderator(base_dir, chooser_nickname) and
+              not is_moderator(base_dir, options_nickname)))):
             mod_posts_to_news = None
             if 'modNewsPosts=' in options_confirm_params:
                 mod_posts_to_news = \
                     options_confirm_params.split('modNewsPosts=')[1]
                 if '&' in mod_posts_to_news:
                     mod_posts_to_news = mod_posts_to_news.split('&')[0]
-            account_dir = acct_dir(self.server.base_dir,
+            account_dir = acct_dir(base_dir,
                                    options_nickname, options_domain)
             newswire_mod_filename = account_dir + '/.newswiremoderated'
             if mod_posts_to_news != 'on':
@@ -771,7 +771,7 @@ def person_options2(self, path: str,
     # person options screen, Info button
     # See html_person_options
     if '&submitPersonInfo=' in options_confirm_params:
-        if is_moderator(self.server.base_dir, chooser_nickname):
+        if is_moderator(base_dir, chooser_nickname):
             if debug:
                 print('Showing info for ' + options_actor)
             signing_priv_key_pem = self.server.signing_priv_key_pem

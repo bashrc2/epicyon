@@ -10,6 +10,8 @@ Procedural style. Think "C style in Python". Avoid classes and objects as far as
 
 Declare all called functions individually at the top of each module. This avoids any possible mistakes with colliding function names, and allows static analysis to explicitly check all dependencies.
 
+Avoid too much encapsulation. Prefer passing a variable as a function argument rather than using "self.server.variable". This makes static checking of everything easier, before it goes into production.
+
 Don't use any features of Python which are not supported by the version of Python within the current Debian stable release. Don't assume that all users are running the latest cutting-edge Python release.
 
 Before doing a commit run all the unit tests. There are three layers of testing. The first just checks PEP8 compliance. The second runs a more thorough static analysis and unit tests. The third simulates instances communicating with each other.

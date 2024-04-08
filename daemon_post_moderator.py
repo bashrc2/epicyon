@@ -49,7 +49,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                          self.server.onion_domain,
                          self.server.i2p_domain) + \
         users_path
-    if not is_moderator(self.server.base_dir, nickname):
+    if not is_moderator(base_dir, nickname):
         redirect_headers(self, actor_str + '/moderation',
                          cookie, calling_domain)
         self.server.postreq_busy = False
@@ -138,7 +138,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                         # is this a local nickname on this instance?
                         local_handle = \
                             search_handle + '@' + self.server.domain
-                        if os.path.isdir(self.server.base_dir +
+                        if os.path.isdir(base_dir +
                                          '/accounts/' + local_handle):
                             search_handle = local_handle
                         else:
@@ -249,7 +249,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     blocked_cache_last_updated = \
                         self.server.blocked_cache_last_updated
                     self.server.blocked_cache_last_updated = \
-                        update_blocked_cache(self.server.base_dir,
+                        update_blocked_cache(base_dir,
                                              self.server.blocked_cache,
                                              blocked_cache_last_updated, 0)
             if moderation_button == 'unblock':
@@ -284,7 +284,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     blocked_cache_last_updated = \
                         self.server.blocked_cache_last_updated
                     self.server.blocked_cache_last_updated = \
-                        update_blocked_cache(self.server.base_dir,
+                        update_blocked_cache(base_dir,
                                              self.server.blocked_cache,
                                              blocked_cache_last_updated, 0)
             if moderation_button == 'remove':

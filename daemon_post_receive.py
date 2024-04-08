@@ -66,7 +66,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               length: int, post_bytes, boundary: str,
                               calling_domain: str, cookie: str,
                               content_license_url: str,
-                              curr_session, proxy_type: str) -> int:
+                              curr_session, proxy_type: str,
+                              base_dir: str) -> int:
     # Note: this needs to happen synchronously
     # 0=this is not a new post
     # 1=new post success
@@ -140,7 +141,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         # Note: a .temp extension is used here so that at no time is
         # an image with metadata publicly exposed, even for a few mS
         filename_base = \
-            acct_dir(self.server.base_dir,
+            acct_dir(base_dir,
                      nickname, self.server.domain) + '/upload.temp'
 
         filename, attachment_media_type = \
@@ -157,11 +158,11 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 post_image_filename = filename.replace('.temp', '')
                 print('Removing metadata from ' + post_image_filename)
                 city = get_spoofed_city(self.server.city,
-                                        self.server.base_dir,
+                                        base_dir,
                                         nickname, self.server.domain)
                 if self.server.low_bandwidth:
                     convert_image_to_low_bandwidth(filename)
-                process_meta_data(self.server.base_dir,
+                process_meta_data(base_dir,
                                   nickname, self.server.domain,
                                   filename, post_image_filename, city,
                                   content_license_url)
@@ -204,7 +205,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             submit_text2 = self.server.translate['Send']
             submit_text3 = submit_text2
             custom_submit_text = \
-                get_config_param(self.server.base_dir, 'customSubmitText')
+                get_config_param(base_dir, 'customSubmitText')
             if custom_submit_text:
                 submit_text3 = custom_submit_text
             if fields.get('submitPost'):
@@ -242,7 +243,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             fields['location'] = None
         if not fields.get('languagesDropdown'):
             fields['languagesDropdown'] = self.server.system_language
-        set_default_post_language(self.server.base_dir, nickname,
+        set_default_post_language(base_dir, nickname,
                                   self.server.domain,
                                   fields['languagesDropdown'])
         self.server.default_post_language[nickname] = \
@@ -253,7 +254,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             # since epoch when an attempt to post something was made.
             # This is then used for active monthly users counts
             last_used_filename = \
-                acct_dir(self.server.base_dir,
+                acct_dir(base_dir,
                          nickname, self.server.domain) + '/.lastUsed'
             try:
                 with open(last_used_filename, 'w+',
@@ -287,12 +288,12 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 # is the post message empty?
                 if not fields['message']:
                     # remove the pinned content from profile screen
-                    undo_pinned_post(self.server.base_dir,
+                    undo_pinned_post(base_dir,
                                      nickname, self.server.domain)
                     return 1
 
             city = get_spoofed_city(self.server.city,
-                                    self.server.base_dir,
+                                    base_dir,
                                     nickname, self.server.domain)
 
             conversation_id = None
@@ -300,7 +301,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 conversation_id = fields['conversationId']
 
             languages_understood = \
-                get_understood_languages(self.server.base_dir,
+                get_understood_languages(base_dir,
                                          self.server.http_prefix,
                                          nickname,
                                          self.server.domain_full,
@@ -319,7 +320,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_public_post(self.server.base_dir,
+                create_public_post(base_dir,
                                    nickname,
                                    self.server.domain,
                                    self.server.port,
@@ -361,7 +362,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                         self.server.min_images_for_accounts
                     peertube_instances = \
                         self.server.peertube_instances
-                    update_edited_post(self.server.base_dir,
+                    update_edited_post(base_dir,
                                        nickname, self.server.domain,
                                        message_json,
                                        edited_published,
@@ -404,14 +405,14 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     content_str = \
                         get_base_content_from_post(message_json,
                                                    sys_language)
-                    pin_post2(self.server.base_dir,
+                    pin_post2(base_dir,
                               nickname, self.server.domain, content_str)
                     return 1
                 if post_to_outbox(self, message_json,
                                   self.server.project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    populate_replies(self.server.base_dir,
+                    populate_replies(base_dir,
                                      self.server.http_prefix,
                                      self.server.domain_full,
                                      message_json,
@@ -423,7 +424,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             # citations button on newblog screen
             if citations_button_press:
                 message_json = \
-                    html_citations(self.server.base_dir,
+                    html_citations(base_dir,
                                    nickname,
                                    self.server.domain,
                                    self.server.translate,
@@ -455,7 +456,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('conversationId'):
                 conversation_id = fields['conversationId']
             languages_understood = \
-                get_understood_languages(self.server.base_dir,
+                get_understood_languages(base_dir,
                                          self.server.http_prefix,
                                          nickname,
                                          self.server.domain_full,
@@ -473,7 +474,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_blog_post(self.server.base_dir, nickname,
+                create_blog_post(base_dir, nickname,
                                  self.server.domain, self.server.port,
                                  self.server.http_prefix,
                                  fields['message'],
@@ -505,8 +506,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   self.server.project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    refresh_newswire(self.server.base_dir)
-                    populate_replies(self.server.base_dir,
+                    refresh_newswire(base_dir)
+                    populate_replies(base_dir,
                                      self.server.http_prefix,
                                      self.server.domain_full,
                                      message_json,
@@ -517,14 +518,14 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         elif post_type == 'editblogpost':
             print('Edited blog post received')
             post_filename = \
-                locate_post(self.server.base_dir,
+                locate_post(base_dir,
                             nickname, self.server.domain,
                             fields['postUrl'])
             if os.path.isfile(post_filename):
                 post_json_object = load_json(post_filename)
                 if post_json_object:
                     cached_filename = \
-                        acct_dir(self.server.base_dir,
+                        acct_dir(base_dir,
                                  nickname, self.server.domain) + \
                         '/postcache/' + \
                         fields['postUrl'].replace('/', '#') + '.html'
@@ -546,7 +547,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     hashtags_dict = {}
                     mentioned_recipients = []
                     fields['message'] = \
-                        add_html_tags(self.server.base_dir,
+                        add_html_tags(base_dir,
                                       self.server.http_prefix,
                                       nickname, self.server.domain,
                                       fields['message'],
@@ -561,7 +562,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     # get list of tags
                     fields['message'] = \
                         replace_emoji_from_tags(curr_session,
-                                                self.server.base_dir,
+                                                base_dir,
                                                 fields['message'],
                                                 tags, 'content',
                                                 self.server.debug,
@@ -582,7 +583,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
 
                     if filename:
                         city = get_spoofed_city(self.server.city,
-                                                self.server.base_dir,
+                                                base_dir,
                                                 nickname,
                                                 self.server.domain)
                         license_url = self.server.content_license_url
@@ -595,7 +596,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                         if fields.get('mediaCreator'):
                             creator = fields['mediaCreator']
                         post_json_object['object'] = \
-                            attach_media(self.server.base_dir,
+                            attach_media(base_dir,
                                          self.server.http_prefix,
                                          nickname,
                                          self.server.domain,
@@ -635,7 +636,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             return -1
         elif post_type == 'newunlisted':
             city = get_spoofed_city(self.server.city,
-                                    self.server.base_dir,
+                                    base_dir,
                                     nickname,
                                     self.server.domain)
             save_to_file = False
@@ -646,7 +647,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 conversation_id = fields['conversationId']
 
             languages_understood = \
-                get_understood_languages(self.server.base_dir,
+                get_understood_languages(base_dir,
                                          self.server.http_prefix,
                                          nickname,
                                          self.server.domain_full,
@@ -664,7 +665,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_unlisted_post(self.server.base_dir,
+                create_unlisted_post(base_dir,
                                      nickname,
                                      self.server.domain, self.server.port,
                                      self.server.http_prefix,
@@ -707,7 +708,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                         self.server.min_images_for_accounts
                     peertube_instances = \
                         self.server.peertube_instances
-                    update_edited_post(self.server.base_dir,
+                    update_edited_post(base_dir,
                                        nickname, self.server.domain,
                                        message_json,
                                        edited_published,
@@ -750,7 +751,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   self.server.project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    populate_replies(self.server.base_dir,
+                    populate_replies(base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
                                      message_json,
@@ -760,7 +761,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 return -1
         elif post_type == 'newfollowers':
             city = get_spoofed_city(self.server.city,
-                                    self.server.base_dir,
+                                    base_dir,
                                     nickname,
                                     self.server.domain)
             save_to_file = False
@@ -772,7 +773,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
 
             mentions_message = mentions_str + fields['message']
             languages_understood = \
-                get_understood_languages(self.server.base_dir,
+                get_understood_languages(base_dir,
                                          self.server.http_prefix,
                                          nickname,
                                          self.server.domain_full,
@@ -790,7 +791,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_followers_only_post(self.server.base_dir,
+                create_followers_only_post(base_dir,
                                            nickname,
                                            self.server.domain,
                                            self.server.port,
@@ -836,7 +837,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                         self.server.min_images_for_accounts
                     peertube_instances = \
                         self.server.peertube_instances
-                    update_edited_post(self.server.base_dir,
+                    update_edited_post(base_dir,
                                        nickname, self.server.domain,
                                        message_json,
                                        edited_published,
@@ -879,7 +880,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   self.server.project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    populate_replies(self.server.base_dir,
+                    populate_replies(base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
                                      message_json,
@@ -892,7 +893,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             print('A DM was posted')
             if '@' in mentions_str:
                 city = get_spoofed_city(self.server.city,
-                                        self.server.base_dir,
+                                        base_dir,
                                         nickname,
                                         self.server.domain)
                 save_to_file = False
@@ -904,7 +905,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 content_license_url = self.server.content_license_url
 
                 languages_understood = \
-                    get_understood_languages(self.server.base_dir,
+                    get_understood_languages(base_dir,
                                              self.server.http_prefix,
                                              nickname,
                                              self.server.domain_full,
@@ -928,7 +929,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 if fields.get('videoTranscript'):
                     video_transcript = fields['videoTranscript']
                 message_json = \
-                    create_direct_message_post(self.server.base_dir,
+                    create_direct_message_post(base_dir,
                                                nickname,
                                                self.server.domain,
                                                self.server.port,
@@ -980,7 +981,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                         self.server.min_images_for_accounts
                     peertube_instances = \
                         self.server.peertube_instances
-                    update_edited_post(self.server.base_dir,
+                    update_edited_post(base_dir,
                                        nickname, self.server.domain,
                                        message_json,
                                        edited_published,
@@ -1025,7 +1026,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   self.server.project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    populate_replies(self.server.base_dir,
+                    populate_replies(base_dir,
                                      self.server.http_prefix,
                                      self.server.domain,
                                      message_json,
@@ -1040,7 +1041,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if '@' + handle not in mentions_str:
                 mentions_str = '@' + handle + ' ' + mentions_str
             city = get_spoofed_city(self.server.city,
-                                    self.server.base_dir,
+                                    base_dir,
                                     nickname,
                                     self.server.domain)
             save_to_file = False
@@ -1049,7 +1050,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             conversation_id = None
             mentions_message = mentions_str + fields['message']
             languages_understood = \
-                get_understood_languages(self.server.base_dir,
+                get_understood_languages(base_dir,
                                          self.server.http_prefix,
                                          nickname,
                                          self.server.domain_full,
@@ -1067,7 +1068,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_direct_message_post(self.server.base_dir,
+                create_direct_message_post(base_dir,
                                            nickname,
                                            self.server.domain,
                                            self.server.port,
@@ -1117,7 +1118,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                         self.server.min_images_for_accounts
                     peertube_instances = \
                         self.server.peertube_instances
-                    update_edited_post(self.server.base_dir,
+                    update_edited_post(base_dir,
                                        nickname, self.server.domain,
                                        message_json,
                                        edited_published,
@@ -1168,11 +1169,11 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             # included fediverse addresses by replacing '@' with '-at-'
             fields['message'] = fields['message'].replace('@', '-at-')
             city = get_spoofed_city(self.server.city,
-                                    self.server.base_dir,
+                                    base_dir,
                                     nickname,
                                     self.server.domain)
             languages_understood = \
-                get_understood_languages(self.server.base_dir,
+                get_understood_languages(base_dir,
                                          self.server.http_prefix,
                                          nickname,
                                          self.server.domain_full,
@@ -1190,7 +1191,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_report_post(self.server.base_dir,
+                create_report_post(base_dir,
                                    nickname,
                                    self.server.domain, self.server.port,
                                    self.server.http_prefix,
@@ -1228,7 +1229,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if not q_options:
                 return -1
             city = get_spoofed_city(self.server.city,
-                                    self.server.base_dir,
+                                    base_dir,
                                     nickname,
                                     self.server.domain)
             if isinstance(fields['duration'], str):
@@ -1236,7 +1237,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     return -1
             int_duration_days = int(fields['duration'])
             languages_understood = \
-                get_understood_languages(self.server.base_dir,
+                get_understood_languages(base_dir,
                                          self.server.http_prefix,
                                          nickname,
                                          self.server.domain_full,
@@ -1254,7 +1255,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_question_post(self.server.base_dir,
+                create_question_post(base_dir,
                                      nickname,
                                      self.server.domain,
                                      self.server.port,
@@ -1320,18 +1321,18 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 video_transcript = fields['videoTranscript']
             conversation_id = None
             languages_understood = \
-                get_understood_languages(self.server.base_dir,
+                get_understood_languages(base_dir,
                                          self.server.http_prefix,
                                          nickname,
                                          self.server.domain_full,
                                          self.server.person_cache)
             city = get_spoofed_city(self.server.city,
-                                    self.server.base_dir,
+                                    base_dir,
                                     nickname, self.server.domain)
             msg_str = fields['readingupdatetype']
             # reading status
             message_json = \
-                create_reading_post(self.server.base_dir,
+                create_reading_post(base_dir,
                                     nickname,
                                     self.server.domain,
                                     self.server.port,
@@ -1375,7 +1376,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                         self.server.min_images_for_accounts
                     peertube_instances = \
                         self.server.peertube_instances
-                    update_edited_post(self.server.base_dir,
+                    update_edited_post(base_dir,
                                        nickname, self.server.domain,
                                        message_json,
                                        edited_published,
@@ -1422,14 +1423,14 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     content_str = \
                         get_base_content_from_post(message_json,
                                                    sys_language)
-                    pin_post2(self.server.base_dir,
+                    pin_post2(base_dir,
                               nickname, self.server.domain, content_str)
                     return 1
                 if post_to_outbox(self, message_json,
                                   self.server.project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    populate_replies(self.server.base_dir,
+                    populate_replies(base_dir,
                                      self.server.http_prefix,
                                      self.server.domain_full,
                                      message_json,
@@ -1465,7 +1466,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 if ' ' not in duration_str:
                     duration_str = duration_str + ' days'
             city = get_spoofed_city(self.server.city,
-                                    self.server.base_dir,
+                                    base_dir,
                                     nickname,
                                     self.server.domain)
             item_qty = 1
@@ -1489,7 +1490,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('shareOnProfile'):
                 if fields['shareOnProfile'] == 'on':
                     share_on_profile = True
-            add_share(self.server.base_dir,
+            add_share(base_dir,
                       self.server.http_prefix,
                       nickname,
                       self.server.domain, self.server.port,
@@ -1519,28 +1520,28 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                      self.server.i2p_domain) + \
                     '/users/' + nickname
                 person_cache = self.server.person_cache
-                actor_json = get_person_from_cache(self.server.base_dir,
+                actor_json = get_person_from_cache(base_dir,
                                                    actor, person_cache)
                 if not actor_json:
                     actor_filename = \
-                        acct_dir(self.server.base_dir, nickname,
+                        acct_dir(base_dir, nickname,
                                  self.server.domain) + '.json'
                     if os.path.isfile(actor_filename):
                         actor_json = load_json(actor_filename, 1, 1)
                 if actor_json:
                     max_shares_on_profile = \
                         self.server.max_shares_on_profile
-                    if add_shares_to_actor(self.server.base_dir,
+                    if add_shares_to_actor(base_dir,
                                            nickname, self.server.domain,
                                            actor_json,
                                            max_shares_on_profile):
-                        remove_person_from_cache(self.server.base_dir,
+                        remove_person_from_cache(base_dir,
                                                  actor, person_cache)
-                        store_person_in_cache(self.server.base_dir, actor,
+                        store_person_in_cache(base_dir, actor,
                                               actor_json, person_cache,
                                               True)
                         actor_filename = \
-                            acct_dir(self.server.base_dir,
+                            acct_dir(base_dir,
                                      nickname,
                                      self.server.domain) + '.json'
                         save_json(actor_json, actor_filename)
@@ -1570,7 +1571,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
 def receive_new_post(self, post_type: str, path: str,
                      calling_domain: str, cookie: str,
                      content_license_url: str,
-                     curr_session, proxy_type: str) -> int:
+                     curr_session, proxy_type: str,
+                     base_dir: str) -> int:
     """A new post has been created
     This creates a thread to send the new post
     """
@@ -1678,5 +1680,6 @@ def receive_new_post(self, post_type: str, path: str,
                                       post_bytes, boundary,
                                       calling_domain, cookie,
                                       content_license_url,
-                                      curr_session, proxy_type)
+                                      curr_session, proxy_type,
+                                      base_dir)
     return page_number

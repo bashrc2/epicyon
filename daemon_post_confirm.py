@@ -117,7 +117,7 @@ def unfollow_confirm(self, calling_domain: str, cookie: str,
             self.post_to_nickname = path_users_section.split('/')[0]
             group_account = has_group_type(base_dir, following_actor,
                                            self.server.person_cache)
-            unfollow_account(self.server.base_dir, self.post_to_nickname,
+            unfollow_account(base_dir, self.post_to_nickname,
                              self.server.domain,
                              following_nickname, following_domain_full,
                              self.server.debug, group_account,
@@ -333,7 +333,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                 blocked_cache_last_updated = \
                     self.server.blocked_cache_last_updated
                 self.server.blocked_cache_last_updated = \
-                    update_blocked_cache(self.server.base_dir,
+                    update_blocked_cache(base_dir,
                                          self.server.blocked_cache,
                                          blocked_cache_last_updated, 0)
 
@@ -519,7 +519,7 @@ def unblock_confirm(self, calling_domain: str, cookie: str,
                 blocked_cache_last_updated = \
                     self.server.blocked_cache_last_updated
                 self.server.blocked_cache_last_updated = \
-                    update_blocked_cache(self.server.base_dir,
+                    update_blocked_cache(base_dir,
                                          self.server.blocked_cache,
                                          blocked_cache_last_updated, 0)
     if calling_domain.endswith('.onion') and onion_domain:
