@@ -105,7 +105,7 @@ def show_person_profile(self, authorized: bool,
                          self.server.peertube_instances,
                          self.server.allow_local_network_access,
                          self.server.text_mode_banner,
-                         self.server.debug,
+                         debug,
                          access_keys, city,
                          self.server.system_language,
                          self.server.max_like_count,
@@ -129,7 +129,7 @@ def show_person_profile(self, authorized: bool,
                             self.server.fitness,
                             '_GET', '_show_person_profile',
                             debug)
-        if self.server.debug:
+        if debug:
             print('DEBUG: html actor sent')
     else:
         if secure_mode(curr_session, proxy_type, False,
@@ -140,8 +140,8 @@ def show_person_profile(self, authorized: bool,
                                       referer_domain,
                                       msg_str, http_prefix,
                                       domain,
-                                      self.server.onion_domain,
-                                      self.server.i2p_domain)
+                                      onion_domain,
+                                      i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if 'application/ld+json' in accept_str:
@@ -157,8 +157,8 @@ def show_person_profile(self, authorized: bool,
             fitness_performance(getreq_start_time,
                                 self.server.fitness,
                                 '_GET', '_show_person_profile json',
-                                self.server.debug)
-            if self.server.debug:
+                                debug)
+            if debug:
                 print('DEBUG: json actor sent')
         else:
             http_404(self, 87)
@@ -246,7 +246,7 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                                  self.server.peertube_instances,
                                  self.server.allow_local_network_access,
                                  self.server.text_mode_banner,
-                                 self.server.debug,
+                                 debug,
                                  access_keys, city,
                                  self.server.system_language,
                                  self.server.max_like_count,
@@ -309,7 +309,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
             actor_json = load_json(actor_filename)
             if actor_json:
                 if no_of_actor_skills(actor_json) > 0:
-                    if request_http(self.headers, self.server.debug):
+                    if request_http(self.headers, debug):
                         get_person = \
                             person_lookup(domain,
                                           path.replace('/skills', ''),
@@ -383,7 +383,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                                              peertube_instances,
                                              allow_local_network_access,
                                              self.server.text_mode_banner,
-                                             self.server.debug,
+                                             debug,
                                              access_keys, city,
                                              self.server.system_language,
                                              self.server.max_like_count,
@@ -409,7 +409,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                             fitness_performance(getreq_start_time,
                                                 self.server.fitness,
                                                 '_GET', '_show_skills',
-                                                self.server.debug)
+                                                debug)
                     else:
                         if secure_mode(curr_session,
                                        proxy_type, False,
@@ -450,7 +450,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
     actor = path.replace('/skills', '')
     actor_absolute = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
+                         http_prefix,
                          self.server.domain_full,
                          self.server.onion_domain,
                          self.server.i2p_domain) + \

@@ -73,8 +73,8 @@ def show_instance_actor(self, calling_domain: str,
                               referer_domain,
                               msg_str, http_prefix,
                               domain,
-                              self.server.onion_domain,
-                              self.server.i2p_domain)
+                              onion_domain,
+                              i2p_domain)
     msg = msg_str.encode('utf-8')
     msglen = len(msg)
     if 'application/ld+json' in accept_str:

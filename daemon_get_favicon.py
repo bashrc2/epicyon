@@ -94,7 +94,7 @@ def get_favicon(self, calling_domain: str,
                              False, None)
             write2(self, fav_binary)
             self.server.iconsCache[fav_filename] = fav_binary
-            if self.server.debug:
+            if debug:
                 print('Sent favicon from file: ' + calling_domain)
             return
     if debug:

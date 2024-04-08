@@ -2404,10 +2404,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
     users_path = users_path.replace('/editprofile', '')
     actor_str = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         users_path
 
     boundary = None
@@ -2603,7 +2603,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
         elif 'name="welcomeCompleteButton"' in post_bytes_str:
             redirect_path = '/' + self.server.default_timeline
             welcome_screen_is_complete(base_dir, nickname,
-                                       self.server.domain)
+                                       domain)
             on_final_welcome_screen = True
         elif 'name="submitExportTheme"' in post_bytes_str:
             print('submitExportTheme')
@@ -2746,11 +2746,11 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_blog_address(curr_session,
                                                base_dir,
-                                               self.server.http_prefix,
+                                               http_prefix,
                                                nickname, domain,
                                                actor_json, fields,
                                                actor_changed,
-                                               self.server.debug)
+                                               debug)
 
                 actor_changed = \
                     _profile_post_show_languages(actor_json, fields,
@@ -2804,12 +2804,12 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_website(curr_session,
                                           base_dir,
-                                          self.server.http_prefix,
+                                          http_prefix,
                                           nickname, domain,
                                           actor_json, fields,
                                           actor_changed,
                                           self.server.translate,
-                                          self.server.debug)
+                                          debug)
 
                 actor_changed = \
                     _profile_post_gemini_link(actor_json, fields,

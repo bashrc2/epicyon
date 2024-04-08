@@ -94,7 +94,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                 self.server.postreq_busy = False
                 login_url = \
                     get_instance_url(calling_domain,
-                                     self.server.http_prefix,
+                                     http_prefix,
                                      self.server.domain_full,
                                      self.server.onion_domain,
                                      self.server.i2p_domain) + \
@@ -108,7 +108,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                 self.server.postreq_busy = False
                 login_url = \
                     get_instance_url(calling_domain,
-                                     self.server.http_prefix,
+                                     http_prefix,
                                      self.server.domain_full,
                                      self.server.onion_domain,
                                      self.server.i2p_domain) + \
@@ -205,7 +205,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                 self.server.tokens[login_nickname] + '; SameSite=Strict'
             tl_url = \
                 get_instance_url(calling_domain,
-                                 self.server.http_prefix,
+                                 http_prefix,
                                  self.server.domain_full,
                                  self.server.onion_domain,
                                  self.server.i2p_domain) + \

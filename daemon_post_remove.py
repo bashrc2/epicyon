@@ -175,10 +175,10 @@ def remove_share(self, calling_domain: str, cookie: str,
                 # src/branch/main/fep/0837/fep-0837.md
                 actor = \
                     get_instance_url(calling_domain,
-                                     self.server.http_prefix,
-                                     self.server.domain_full,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain) + \
+                                     http_prefix,
+                                     domain_full,
+                                     onion_domain,
+                                     i2p_domain) + \
                     '/users/' + share_nickname
                 person_cache = self.server.person_cache
                 actor_json = get_person_from_cache(base_dir,

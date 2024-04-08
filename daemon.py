@@ -220,7 +220,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     nickname, self.server.domain,
                                     self.path,
                                     self.server.http_prefix,
-                                    self.server.debug,
+                                    debug,
                                     self.server.recent_posts_cache)
         if not response_str:
             http_404(self, 148)

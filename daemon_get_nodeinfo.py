@@ -76,7 +76,7 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
             http_400(self)
             self.server.nodeinfo_is_active = False
             return True
-    if self.server.debug:
+    if debug:
         print('DEBUG: nodeinfo ' + self.path)
     crawl_time = \
         update_known_crawlers(ua_str,
@@ -102,7 +102,7 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
         show_node_info_accounts = False
 
     instance_url = get_instance_url(calling_domain,
-                                    self.server.http_prefix,
+                                    http_prefix,
                                     self.server.domain_full,
                                     self.server.onion_domain,
                                     self.server.i2p_domain)

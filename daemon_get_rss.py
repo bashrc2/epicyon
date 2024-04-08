@@ -101,7 +101,7 @@ def get_rss2site(self, calling_domain: str, path: str,
             msg += \
                 html_blog_page_rss2(base_dir,
                                     http_prefix,
-                                    self.server.translate,
+                                    translate,
                                     nickname,
                                     domain,
                                     port,
@@ -165,7 +165,7 @@ def get_rss3feed(self, calling_domain: str, path: str,
                 set_headers(self, 'text/plain; charset=utf-8',
                             msglen, None, calling_domain, True)
                 write2(self, msg)
-                if self.server.debug:
+                if debug:
                     print('Sent rss3 feed: ' +
                           path + ' ' + calling_domain)
                 fitness_performance(getreq_start_time, self.server.fitness,

@@ -44,7 +44,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
     nickname = users_path.replace('/users/', '')
     actor_str = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
+                         http_prefix,
                          self.server.domain_full,
                          self.server.onion_domain,
                          self.server.i2p_domain) + \
@@ -150,9 +150,9 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                         html_account_info(self.server.translate,
                                           base_dir, http_prefix,
                                           nickname,
-                                          self.server.domain,
+                                          domain,
                                           search_handle,
-                                          self.server.debug,
+                                          debug,
                                           self.server.system_language,
                                           self.server.signing_priv_key_pem,
                                           None,
@@ -161,7 +161,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     msg = \
                         html_moderation_info(self.server.translate,
                                              base_dir, nickname,
-                                             self.server.domain,
+                                             domain,
                                              self.server.theme_name,
                                              self.server.access_keys)
                 if msg:

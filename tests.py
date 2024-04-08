@@ -5441,6 +5441,32 @@ def _test_thread_functions():
             ctr += 1
 
 
+def _check_self_variables(mod_name: str, method_name: str,
+                          method_args: [], line: str,
+                          module_line: int) -> bool:
+    """ Detects whether self.server.variable exists as a function argument
+    """
+    self_vars = line.split('self.server.')
+    ctr = 0
+    terminators = (' ', '.', ',', ')', '[', ' ', ':')
+    func_args = []
+    for arg_str in method_args:
+        arg_str = arg_str.strip().split(':')[0]
+        func_args.append(arg_str)
+    for line_substr in self_vars:
+        if ctr > 0:
+            variable_str = line_substr
+            for term_str in terminators:
+                variable_str = variable_str.split(term_str)[0]
+            if variable_str in func_args:
+                print('self variable is an argument: ' + variable_str +
+                      ' in module ' + mod_name + ' function ' + method_name +
+                      ' line ' + str(module_line))
+                return False
+        ctr += 1
+    return True
+
+
 def _test_functions():
     print('test_functions')
     function = {}
@@ -5475,7 +5501,10 @@ def _test_functions():
                 line_count = 0
                 prev_line = 'start'
                 method_name = ''
+                method_args = []
+                module_line = 0
                 for line in lines:
+                    module_line += 1
                     # what group is this module in?
                     if '__module_group__' in line:
                         if '=' in line:
@@ -5490,6 +5519,11 @@ def _test_functions():
                                     mod_groups[group_name].append(mod_name)
                     # reading function lines
                     if not line.strip().startswith('def '):
+                        if 'self.server.' in line:
+                            assert _check_self_variables(mod_name,
+                                                         method_name,
+                                                         method_args, line,
+                                                         module_line)
                         if line_count > 0:
                             line_count += 1
                         # add LOC count for this function
@@ -5593,11 +5627,11 @@ def _test_functions():
         assert False
 
     # which modules is each function used within?
-    for mod_name, _ in modules.items():
+    for mod_name, mod_props in modules.items():
         print('Module: ' + mod_name + ' ✓')
         for name, properties in function_properties.items():
             line_ctr = 0
-            for line in modules[mod_name]['lines']:
+            for line in mod_props['lines']:
                 line_str = line.strip()
                 if line_str.startswith('def '):
                     line_ctr += 1
@@ -5608,7 +5642,7 @@ def _test_functions():
                 # detect a call to this function
                 if name + '(' in line:
                     mod_list = \
-                        function_properties[name]['calledInModule']
+                        properties['calledInModule']
                     if mod_name not in mod_list:
                         mod_list.append(mod_name)
                     if mod_name in exclude_func_args:
@@ -5620,17 +5654,17 @@ def _test_functions():
                     # get the function call arguments
                     call_args = \
                         _get_function_call_args(name,
-                                                modules[mod_name]['lines'],
+                                                mod_props['lines'],
                                                 line_ctr)
                     # get the function def arguments
-                    func_args = function_properties[name]['args']
+                    func_args = properties['args']
                     # match the call arguments to the definition arguments
                     if not _function_args_match(call_args, func_args):
                         print('Call to function ' + name +
                               ' does not match its arguments')
                         print('def args: ' +
-                              str(len(function_properties[name]['args'])) +
-                              '\n' + str(function_properties[name]['args']))
+                              str(len(properties['args'])) +
+                              '\n' + str(properties['args']))
                         print('Call args: ' + str(len(call_args)) + '\n' +
                               str(call_args))
                         print('module ' + mod_name + ' line ' + str(line_ctr))
@@ -5768,17 +5802,17 @@ def _test_functions():
     max_module_calls = 1
     max_function_calls = 1
     color_ctr = 0
-    for mod_name, _ in modules.items():
+    for mod_name, mod_props in modules.items():
         line_ctr = 0
-        modules[mod_name]['color'] = module_colors[color_ctr]
+        mod_props['color'] = module_colors[color_ctr]
         color_ctr += 1
         if color_ctr >= len(module_colors):
             color_ctr = 0
-        for line in modules[mod_name]['lines']:
+        for line in mod_props['lines']:
             if line.strip().startswith('def '):
                 name = line.split('def ')[1].split('(')[0]
                 calls_list = \
-                    get_function_calls(name, modules[mod_name]['lines'],
+                    get_function_calls(name, mod_props['lines'],
                                        line_ctr, function_properties)
                 function_properties[name]['calls'] = calls_list.copy()
                 if len(calls_list) > max_function_calls:

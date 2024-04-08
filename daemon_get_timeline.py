@@ -172,7 +172,7 @@ def show_media_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_media_timeline',
-                                    self.server.debug)
+                                    debug)
             else:
                 # don't need authorized fetch here because there is
                 # already the authorization check
@@ -196,7 +196,7 @@ def show_media_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_media_timeline json',
-                                    self.server.debug)
+                                    debug)
             return True
         if debug:
             nickname = path.replace('/users/', '')
@@ -350,7 +350,7 @@ def show_blogs_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_blogs_timeline',
-                                    self.server.debug)
+                                    debug)
             else:
                 # don't need authorized fetch here because there is
                 # already the authorization check
@@ -374,7 +374,7 @@ def show_blogs_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_blogs_timeline json',
-                                    self.server.debug)
+                                    debug)
             return True
         if debug:
             nickname = path.replace('/users/', '')
@@ -531,7 +531,7 @@ def show_news_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_news_timeline',
-                                    self.server.debug)
+                                    debug)
             else:
                 # don't need authorized fetch here because there is
                 # already the authorization check
@@ -555,7 +555,7 @@ def show_news_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_news_timeline json',
-                                    self.server.debug)
+                                    debug)
             return True
         if debug:
             nickname = 'news'
@@ -716,7 +716,7 @@ def show_features_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_features_timeline',
-                                    self.server.debug)
+                                    debug)
             else:
                 # don't need authorized fetch here because there is
                 # already the authorization check
@@ -741,7 +741,7 @@ def show_features_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_features_timeline json',
-                                    self.server.debug)
+                                    debug)
             return True
         if debug:
             nickname = 'news'
@@ -853,7 +853,7 @@ def show_shares_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_shares_timeline',
-                                    self.server.debug)
+                                    debug)
                 return True
     # not the shares timeline
     if debug:
@@ -958,7 +958,7 @@ def show_wanted_timeline(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_wanted_timeline',
-                                    self.server.debug)
+                                    debug)
                 return True
     # not the shares timeline
     if debug:
@@ -1104,7 +1104,7 @@ def show_bookmarks_timeline(self, authorized: bool,
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_bookmarks_timeline',
-                                        self.server.debug)
+                                        debug)
                 else:
                     # don't need authorized fetch here because
                     # there is already the authorization check
@@ -1130,7 +1130,7 @@ def show_bookmarks_timeline(self, authorized: bool,
                                         self.server.fitness,
                                         '_GET',
                                         '_show_bookmarks_timeline json',
-                                        self.server.debug)
+                                        debug)
                 return True
         else:
             if debug:
@@ -1440,7 +1440,7 @@ def show_mod_timeline(self, authorized: bool,
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_mod_timeline',
-                                        self.server.debug)
+                                        debug)
                 else:
                     # don't need authorized fetch here because
                     # there is already the authorization check
@@ -1465,7 +1465,7 @@ def show_mod_timeline(self, authorized: bool,
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_mod_timeline json',
-                                        self.server.debug)
+                                        debug)
                 return True
         else:
             if debug:
@@ -1618,7 +1618,7 @@ def show_dms(self, authorized: bool,
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_dms',
-                                        self.server.debug)
+                                        debug)
                 else:
                     # don't need authorized fetch here because
                     # there is already the authorization check
@@ -1643,7 +1643,7 @@ def show_dms(self, authorized: bool,
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_dms json',
-                                        self.server.debug)
+                                        debug)
                 return True
         else:
             if debug:
@@ -1801,7 +1801,7 @@ def show_replies(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_replies',
-                                    self.server.debug)
+                                    debug)
             else:
                 # don't need authorized fetch here because there is
                 # already the authorization check
@@ -1825,7 +1825,7 @@ def show_replies(self, authorized: bool,
                 fitness_performance(getreq_start_time,
                                     self.server.fitness,
                                     '_GET', '_show_replies json',
-                                    self.server.debug)
+                                    debug)
             return True
         if debug:
             nickname = path.replace('/users/', '')
@@ -1882,7 +1882,7 @@ def show_inbox(self, authorized: bool,
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_inbox',
-                                        self.server.debug)
+                                        debug)
                 if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/inbox', '')
@@ -1916,7 +1916,7 @@ def show_inbox(self, authorized: bool,
                             fitness_performance(getreq_start_time,
                                                 self.server.fitness,
                                                 '_GET', '_show_inbox2',
-                                                self.server.debug)
+                                                debug)
                     full_width_tl_button_header = \
                         self.server.full_width_tl_button_header
                     minimal_nick = is_minimal(base_dir, domain, nickname)
@@ -1995,7 +1995,7 @@ def show_inbox(self, authorized: bool,
                         fitness_performance(getreq_start_time,
                                             self.server.fitness,
                                             '_GET', '_show_inbox3',
-                                            self.server.debug)
+                                            debug)
                     if msg:
                         msg_str = msg
                         onion_domain = self.server.onion_domain
@@ -2017,7 +2017,7 @@ def show_inbox(self, authorized: bool,
                         fitness_performance(getreq_start_time,
                                             self.server.fitness,
                                             '_GET', '_show_inbox4',
-                                            self.server.debug)
+                                            debug)
                 else:
                     # don't need authorized fetch here because
                     # there is already the authorization check
@@ -2042,7 +2042,7 @@ def show_inbox(self, authorized: bool,
                     fitness_performance(getreq_start_time,
                                         self.server.fitness,
                                         '_GET', '_show_inbox5',
-                                        self.server.debug)
+                                        debug)
                 return True
         else:
             if debug:

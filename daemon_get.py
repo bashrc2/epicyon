@@ -4402,7 +4402,7 @@ def _security_txt(self, ua_str: str, calling_domain: str,
             http_400(self)
             self.server.security_txt_is_active = False
             return True
-    if self.server.debug:
+    if debug:
         print('DEBUG: security.txt ' + self.path)
 
     # If we are in broch mode then don't reply

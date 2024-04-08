@@ -258,7 +258,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
     if debug:
         print('INBOX: checking for actor')
     message_domain = None
-    if not has_actor(message_json, self.server.debug):
+    if not has_actor(message_json, debug):
         print('INBOX: message arriving at inbox queue has no actor')
         http_400(self)
         self.server.postreq_busy = False
@@ -500,7 +500,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
     )
     for add_to_type in add_to_field_types:
         message_json, _ = \
-            add_to_field(add_to_type, message_json, self.server.debug)
+            add_to_field(add_to_type, message_json, debug)
 
     begin_save_time = time.time()
     # save the json for later queue processing
@@ -532,7 +532,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
                                  message_bytes_decoded,
                                  headers_dict,
                                  self.path,
-                                 self.server.debug,
+                                 debug,
                                  self.server.blocked_cache,
                                  self.server.block_federated,
                                  self.server.system_language,
@@ -541,7 +541,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
         # add json to the queue
         if queue_filename not in self.server.inbox_queue:
             self.server.inbox_queue.append(queue_filename)
-        if self.server.debug:
+        if debug:
             time_diff = int((time.time() - begin_save_time) * 1000)
             if time_diff > 200:
                 print('SLOW: slow save of inbox queue item ' +
@@ -721,9 +721,9 @@ def show_person_options(self, calling_domain: str, path: str,
             self.server.thrCheckActor[nickname] = \
                 thread_with_trace(target=check_for_changed_actor,
                                   args=(curr_session,
-                                        self.server.base_dir,
+                                        base_dir,
                                         self.server.http_prefix,
-                                        self.server.domain_full,
+                                        domain_full,
                                         options_actor, options_profile_url,
                                         self.server.person_cache,
                                         self.server.check_actor_timeout),
@@ -781,7 +781,7 @@ def show_person_options(self, calling_domain: str, path: str,
     origin_path_str_absolute = \
         get_instance_url(calling_domain,
                          self.server.http_prefix,
-                         self.server.domain_full,
+                         domain_full,
                          self.server.onion_domain,
                          self.server.i2p_domain) + \
         origin_path_str

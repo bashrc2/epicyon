@@ -98,10 +98,10 @@ def announce_button(self, calling_domain: str, path: str,
         print('WARN: unable to find nickname in ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -150,7 +150,7 @@ def announce_button(self, calling_domain: str, path: str,
                         debug,
                         self.server.project_version,
                         self.server.signing_priv_key_pem,
-                        self.server.domain,
+                        domain,
                         onion_domain,
                         i2p_domain, sites_unavailable,
                         self.server.system_language)
@@ -177,7 +177,7 @@ def announce_button(self, calling_domain: str, path: str,
 
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_announce_button postToOutboxThread',
-                            self.server.debug)
+                            debug)
 
     # generate the html for the announce
     if announce_json and announce_filename:
@@ -219,7 +219,7 @@ def announce_button(self, calling_domain: str, path: str,
                                 self.server.cached_webfingers,
                                 self.server.person_cache,
                                 self.post_to_nickname, domain,
-                                self.server.port, announce_json,
+                                port, announce_json,
                                 None, True,
                                 self.server.allow_deletion,
                                 http_prefix, self.server.project_version,
@@ -246,10 +246,10 @@ def announce_button(self, calling_domain: str, path: str,
 
     actor_absolute = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -257,7 +257,7 @@ def announce_button(self, calling_domain: str, path: str,
         str(page_number) + first_post_id + timeline_bookmark
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_announce_button',
-                        self.server.debug)
+                        debug)
     redirect_headers(self, actor_path_str, cookie, calling_domain)
 
 
@@ -313,10 +313,10 @@ def announce_button_undo(self, calling_domain: str, path: str,
         print('WARN: unable to find nickname in ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + '?page=' + \
@@ -386,10 +386,10 @@ def announce_button_undo(self, calling_domain: str, path: str,
 
     actor_absolute = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -397,7 +397,7 @@ def announce_button_undo(self, calling_domain: str, path: str,
         str(page_number) + first_post_id + timeline_bookmark
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_undo_announce_button',
-                        self.server.debug)
+                        debug)
     redirect_headers(self, actor_path_str, cookie, calling_domain)
 
 
@@ -425,12 +425,12 @@ def follow_approve_button(self, calling_domain: str, path: str,
             handle_nickname + '@' + \
             get_full_domain(handle_domain, handle_port)
     if '@' in following_handle:
-        if self.server.onion_domain:
+        if onion_domain:
             if following_handle.endswith('.onion'):
                 curr_session = self.server.session_onion
                 proxy_type = 'tor'
                 port = 80
-        if self.server.i2p_domain:
+        if i2p_domain:
             if following_handle.endswith('.i2p'):
                 curr_session = self.server.session_i2p
                 proxy_type = 'i2p'
@@ -452,8 +452,8 @@ def follow_approve_button(self, calling_domain: str, path: str,
         manual_approve_follow_request_thread(self.server.session,
                                              self.server.session_onion,
                                              self.server.session_i2p,
-                                             self.server.onion_domain,
-                                             self.server.i2p_domain,
+                                             onion_domain,
+                                             i2p_domain,
                                              base_dir, http_prefix,
                                              follower_nickname,
                                              domain, port,
@@ -480,7 +480,7 @@ def follow_approve_button(self, calling_domain: str, path: str,
             'http://' + i2p_domain + origin_path_str
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_follow_approve_button',
-                        self.server.debug)
+                        debug)
     redirect_headers(self, origin_path_str_absolute,
                      cookie, calling_domain)
 
@@ -538,7 +538,7 @@ def follow_deny_button(self, calling_domain: str, path: str,
                      cookie, calling_domain)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_follow_deny_button',
-                        self.server.debug)
+                        debug)
 
 
 def like_button(self, calling_domain: str, path: str,
@@ -592,10 +592,10 @@ def like_button(self, calling_domain: str, path: str,
         print('WARN: unable to find nickname in ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -651,7 +651,7 @@ def like_button(self, calling_domain: str, path: str,
 
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_like_button postToOutbox',
-                        self.server.debug)
+                        debug)
 
     print('Locating liked post ' + like_url)
     # directly like the post file
@@ -753,10 +753,10 @@ def like_button(self, calling_domain: str, path: str,
 
     actor_absolute = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -765,7 +765,7 @@ def like_button(self, calling_domain: str, path: str,
         timeline_bookmark
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_like_button',
-                        self.server.debug)
+                        debug)
     redirect_headers(self, actor_path_str, cookie,
                      calling_domain)
 
@@ -820,10 +820,10 @@ def like_button_undo(self, calling_domain: str, path: str,
         print('WARN: unable to find nickname in ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -969,10 +969,10 @@ def like_button_undo(self, calling_domain: str, path: str,
             del self.server.iconsCache['like_inactive.png']
     actor_absolute = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -980,8 +980,7 @@ def like_button_undo(self, calling_domain: str, path: str,
         '?page=' + str(page_number) + first_post_id + \
         timeline_bookmark
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_undo_like_button',
-                        self.server.debug)
+                        '_GET', '_undo_like_button', debug)
     redirect_headers(self, actor_path_str, cookie,
                      calling_domain)
 
@@ -1042,10 +1041,10 @@ def reaction_button(self, calling_domain: str, path: str,
         print('WARN: no emoji reaction ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -1059,10 +1058,10 @@ def reaction_button(self, calling_domain: str, path: str,
         print('WARN: unable to find nickname in ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -1120,7 +1119,7 @@ def reaction_button(self, calling_domain: str, path: str,
 
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_reaction_button postToOutbox',
-                        self.server.debug)
+                        debug)
 
     print('Locating emoji reaction post ' + reaction_url)
     # directly emoji reaction the post file
@@ -1226,10 +1225,10 @@ def reaction_button(self, calling_domain: str, path: str,
 
     actor_absolute = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -1238,7 +1237,7 @@ def reaction_button(self, calling_domain: str, path: str,
         timeline_bookmark
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_reaction_button',
-                        self.server.debug)
+                        debug)
     redirect_headers(self, actor_path_str, cookie,
                      calling_domain)
 
@@ -1293,10 +1292,10 @@ def reaction_button_undo(self, calling_domain: str, path: str,
         print('WARN: unable to find nickname in ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -1313,10 +1312,10 @@ def reaction_button_undo(self, calling_domain: str, path: str,
         print('WARN: no emoji reaction ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -1466,10 +1465,10 @@ def reaction_button_undo(self, calling_domain: str, path: str,
 
     actor_absolute = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -1478,7 +1477,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
         timeline_bookmark
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_undo_reaction_button',
-                        self.server.debug)
+                        debug)
     redirect_headers(self, actor_path_str, cookie, calling_domain)
 
 
@@ -1533,10 +1532,10 @@ def bookmark_button(self, calling_domain: str, path: str,
         print('WARN: unable to find nickname in ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -1615,7 +1614,7 @@ def bookmark_button(self, calling_domain: str, path: str,
                                     self.server.cached_webfingers,
                                     self.server.person_cache,
                                     self.post_to_nickname, domain,
-                                    self.server.port, bookmark_post_json,
+                                    port, bookmark_post_json,
                                     None, True,
                                     self.server.allow_deletion,
                                     http_prefix,
@@ -1647,10 +1646,10 @@ def bookmark_button(self, calling_domain: str, path: str,
     # curr_session, proxy_type)
     actor_absolute = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -1714,10 +1713,10 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
         print('WARN: unable to find nickname in ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -1799,7 +1798,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                                     self.server.cached_webfingers,
                                     self.server.person_cache,
                                     self.post_to_nickname, domain,
-                                    self.server.port, bookmark_post_json,
+                                    port, bookmark_post_json,
                                     None, True,
                                     self.server.allow_deletion,
                                     http_prefix,
@@ -1829,10 +1828,10 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                   bookmark_filename)
     actor_absolute = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -1841,7 +1840,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
         timeline_bookmark
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', '_undo_bookmark_button',
-                        self.server.debug)
+                        debug)
     redirect_headers(self, actor_path_str, cookie,
                      calling_domain)
 
@@ -1883,7 +1882,7 @@ def delete_button(self, calling_domain: str, path: str,
         http_prefix + '://' + domain_full + users_path
     if self.server.allow_deletion or \
        delete_url.startswith(actor):
-        if self.server.debug:
+        if debug:
             print('DEBUG: delete_url=' + delete_url)
             print('DEBUG: actor=' + actor)
         if actor not in delete_url:
@@ -2066,7 +2065,7 @@ def mute_button(self, calling_domain: str, path: str,
                                     self.server.cached_webfingers,
                                     self.server.person_cache,
                                     nickname, domain,
-                                    self.server.port, mute_post_json,
+                                    port, mute_post_json,
                                     avatar_url, show_avatar_options,
                                     self.server.allow_deletion,
                                     http_prefix,
@@ -2104,7 +2103,7 @@ def mute_button(self, calling_domain: str, path: str,
             'http://' + i2p_domain + \
             path.split('?mute=')[0]
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_mute_button', self.server.debug)
+                        '_GET', '_mute_button', debug)
 
     page_number_str = str(page_number)
     redirect_str = \
@@ -2213,7 +2212,7 @@ def mute_button_undo(self, calling_domain: str, path: str,
                                     self.server.cached_webfingers,
                                     self.server.person_cache,
                                     nickname, domain,
-                                    self.server.port, mute_post_json,
+                                    port, mute_post_json,
                                     avatar_url, show_avatar_options,
                                     self.server.allow_deletion,
                                     http_prefix,
@@ -2248,7 +2247,7 @@ def mute_button_undo(self, calling_domain: str, path: str,
         actor = \
             'http://' + i2p_domain + path.split('?unmute=')[0]
     fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_undo_mute_button', self.server.debug)
+                        '_GET', '_undo_mute_button', debug)
 
     page_number_str = str(page_number)
     redirect_str = \

@@ -56,7 +56,7 @@ def reaction_picker2(self, calling_domain: str, path: str,
         print('WARN: unable to find nickname in ' + actor)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
+                             http_prefix,
                              self.server.domain_full,
                              self.server.onion_domain,
                              self.server.i2p_domain) + \
@@ -77,7 +77,7 @@ def reaction_picker2(self, calling_domain: str, path: str,
         print('WARN: unable to locate reaction post ' + reaction_url)
         actor_absolute = \
             get_instance_url(calling_domain,
-                             self.server.http_prefix,
+                             http_prefix,
                              self.server.domain_full,
                              self.server.onion_domain,
                              self.server.i2p_domain) + \

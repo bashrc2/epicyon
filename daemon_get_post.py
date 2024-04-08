@@ -107,7 +107,7 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
         msg = \
             html_individual_post(self.server.recent_posts_cache,
                                  self.server.max_recent_posts,
-                                 self.server.translate,
+                                 translate,
                                  base_dir,
                                  curr_session,
                                  self.server.cached_webfingers,
@@ -269,7 +269,7 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                                   curr_session, translate)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show_individual_post',
-                        self.server.debug)
+                        debug)
     return result
 
 
@@ -357,9 +357,9 @@ def show_new_post(self, edit_post_params: {},
 
         languages_understood = \
             get_understood_languages(base_dir,
-                                     self.server.http_prefix,
+                                     http_prefix,
                                      nickname,
-                                     self.server.domain_full,
+                                     domain_full,
                                      self.server.person_cache)
         default_buy_site = ''
         msg = \
@@ -523,7 +523,7 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                                   curr_session, translate)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show_individual_at_post',
-                        self.server.debug)
+                        debug)
     return result
 
 
@@ -980,7 +980,7 @@ def show_notify_post(self, authorized: bool,
                                   curr_session, translate)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show_notify_post',
-                        self.server.debug)
+                        debug)
     return result
 
 
@@ -1000,7 +1000,7 @@ def show_conversation_thread(self, authorized: bool,
     post_id = post_id.replace('--', '/')
     if post_id.startswith('/users/'):
         instance_url = get_instance_url(calling_domain,
-                                        self.server.http_prefix,
+                                        http_prefix,
                                         self.server.domain_full,
                                         self.server.onion_domain,
                                         self.server.i2p_domain)
