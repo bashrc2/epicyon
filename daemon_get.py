@@ -3691,7 +3691,8 @@ def daemon_http_get(self) -> None:
                                proxy_type,
                                cookie, self.server.debug,
                                curr_session,
-                               self.server.translate):
+                               self.server.translate,
+                               self.server.account_timezone):
         self.server.getreq_busy = False
         return
 
@@ -3794,7 +3795,8 @@ def daemon_http_get(self) -> None:
                             proxy_type,
                             cookie, self.server.debug,
                             curr_session,
-                            self.server.translate):
+                            self.server.translate,
+                            self.server.account_timezone):
             self.server.getreq_busy = False
             return
 
@@ -3813,7 +3815,8 @@ def daemon_http_get(self) -> None:
                                 proxy_type,
                                 cookie, self.server.debug,
                                 curr_session,
-                                self.server.translate):
+                                self.server.translate,
+                                self.server.account_timezone):
             self.server.getreq_busy = False
             return
 

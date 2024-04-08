@@ -56,7 +56,8 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                          getreq_start_time,
                          proxy_type: str, cookie: str,
                          debug: str, include_create_wrapper: bool,
-                         curr_session, translate: {}) -> bool:
+                         curr_session, translate: {},
+                         account_timezone: {}) -> bool:
     """Shows an individual post from its filename
     """
     if not os.path.isfile(post_filename):
@@ -91,9 +92,8 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
         remove_post_interactions(pjo, True)
     if request_http(self.headers, debug):
         timezone = None
-        if self.server.account_timezone.get(nickname):
-            timezone = \
-                self.server.account_timezone.get(nickname)
+        if account_timezone.get(nickname):
+            timezone = account_timezone.get(nickname)
 
         mitm = False
         if os.path.isfile(post_filename.replace('.json', '') +
@@ -186,7 +186,8 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                          getreq_start_time,
                          proxy_type: str, cookie: str,
                          debug: str,
-                         curr_session, translate: {}) -> bool:
+                         curr_session, translate: {},
+                         account_timezone: {}) -> bool:
     """Shows an individual post
     """
     liked_by = None
@@ -266,7 +267,8 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                                   getreq_start_time,
                                   proxy_type, cookie, debug,
                                   include_create_wrapper,
-                                  curr_session, translate)
+                                  curr_session, translate,
+                                  account_timezone)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show_individual_post',
                         debug)
@@ -434,7 +436,8 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                             getreq_start_time,
                             proxy_type: str, cookie: str,
                             debug: str,
-                            curr_session, translate) -> bool:
+                            curr_session, translate: {},
+                            account_timezone: {}) -> bool:
     """get an individual post from the path /@nickname/statusnumber
     """
     if '/@' not in path:
@@ -520,7 +523,8 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                                   getreq_start_time,
                                   proxy_type, cookie, debug,
                                   include_create_wrapper,
-                                  curr_session, translate)
+                                  curr_session, translate,
+                                  account_timezone)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show_individual_at_post',
                         debug)
@@ -944,7 +948,8 @@ def show_notify_post(self, authorized: bool,
                      getreq_start_time,
                      proxy_type: str, cookie: str,
                      debug: str,
-                     curr_session, translate: {}) -> bool:
+                     curr_session, translate: {},
+                     account_timezone: {}) -> bool:
     """Shows an individual post from an account which you are following
     and where you have the notify checkbox set on person options
     """
@@ -977,7 +982,8 @@ def show_notify_post(self, authorized: bool,
                                   getreq_start_time,
                                   proxy_type, cookie, debug,
                                   include_create_wrapper,
-                                  curr_session, translate)
+                                  curr_session, translate,
+                                  account_timezone)
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'show_notify_post',
                         debug)
