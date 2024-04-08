@@ -63,7 +63,9 @@ def get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
 
 def get_fonts(self, calling_domain: str, path: str,
               base_dir: str, debug: bool,
-              getreq_start_time) -> None:
+              getreq_start_time, fitness: {},
+              fonts_cache: {},
+              domain_full: str) -> None:
     """Returns a font
     """
     font_str = path.split('/fonts/')[1]
@@ -85,17 +87,17 @@ def get_fonts(self, calling_domain: str, path: str,
             # The file has not changed
             http_304(self)
             return
-        if self.server.fontsCache.get(font_str):
-            font_binary = self.server.fontsCache[font_str]
+        if fonts_cache.get(font_str):
+            font_binary = fonts_cache[font_str]
             set_headers_etag(self, font_filename,
                              font_type,
                              font_binary, None,
-                             self.server.domain_full, False, None)
+                             domain_full, False, None)
             write2(self, font_binary)
             if debug:
                 print('font sent from cache: ' +
                       path + ' ' + calling_domain)
-            fitness_performance(getreq_start_time, self.server.fitness,
+            fitness_performance(getreq_start_time, fitness,
                                 '_GET', '_get_fonts cache',
                                 debug)
             return
@@ -110,14 +112,14 @@ def get_fonts(self, calling_domain: str, path: str,
                 set_headers_etag(self, font_filename,
                                  font_type,
                                  font_binary, None,
-                                 self.server.domain_full,
+                                 domain_full,
                                  False, None)
                 write2(self, font_binary)
-                self.server.fontsCache[font_str] = font_binary
+                fonts_cache[font_str] = font_binary
             if debug:
                 print('font sent from file: ' +
                       path + ' ' + calling_domain)
-            fitness_performance(getreq_start_time, self.server.fitness,
+            fitness_performance(getreq_start_time, fitness,
                                 '_GET', '_get_fonts', debug)
             return
     if debug:

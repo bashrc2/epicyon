@@ -1292,7 +1292,9 @@ def daemon_http_get(self) -> None:
     if '/fonts/' in self.path:
         get_fonts(self, calling_domain, self.path,
                   self.server.base_dir, self.server.debug,
-                  getreq_start_time)
+                  getreq_start_time, self.server.fitness,
+                  self.server.fontsCache,
+                  self.server.domain_full)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
