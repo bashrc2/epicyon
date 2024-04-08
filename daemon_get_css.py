@@ -20,7 +20,9 @@ from daemon_utils import etag_exists
 
 
 def get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
-                    getreq_start_time) -> bool:
+                    getreq_start_time, debug: bool,
+                    css_cache: {},
+                    fitness: {}) -> bool:
     """Returns the content of a css file
     """
     # get the last part of the path
@@ -29,15 +31,15 @@ def get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
         path = path.split('/')[-1]
     path = base_dir + '/' + path
     css = None
-    if self.server.css_cache.get(path):
-        css = self.server.css_cache[path]
+    if css_cache.get(path):
+        css = css_cache[path]
     elif os.path.isfile(path):
         tries = 0
         while tries < 5:
             try:
                 css = get_css(base_dir, path)
                 if css:
-                    self.server.css_cache[path] = css
+                    css_cache[path] = css
                     break
             except BaseException as ex:
                 print('EX: _get_style_sheet ' + path + ' ' +
@@ -51,9 +53,9 @@ def get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
                     None, calling_domain, False)
         write2(self, msg)
         fitness_performance(getreq_start_time,
-                            self.server.fitness,
+                            fitness,
                             '_GET', '_get_style_sheet',
-                            self.server.debug)
+                            debug)
         return True
     http_404(self, 92)
     return True

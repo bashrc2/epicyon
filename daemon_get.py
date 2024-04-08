@@ -1270,7 +1270,10 @@ def daemon_http_get(self) -> None:
     if self.path.endswith('.css'):
         if get_style_sheet(self, self.server.base_dir,
                            calling_domain, self.path,
-                           getreq_start_time):
+                           getreq_start_time,
+                           self.server.debug,
+                           self.server.css_cache,
+                           self.server.fitness):
             return
 
     if authorized and '/exports/' in self.path:
