@@ -25,7 +25,7 @@ from metadata import meta_data_node_info
 def get_nodeinfo(self, ua_str: str, calling_domain: str,
                  referer_domain: str,
                  http_prefix: str, calling_site_timeout: int,
-                 debug: bool) -> bool:
+                 debug: bool, base_dir: str) -> bool:
     if self.path.startswith('/nodeinfo/1.0'):
         http_400(self)
         return True
@@ -80,7 +80,7 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
         print('DEBUG: nodeinfo ' + self.path)
     crawl_time = \
         update_known_crawlers(ua_str,
-                              self.server.base_dir,
+                              base_dir,
                               self.server.known_crawlers,
                               self.server.last_known_crawler)
     if crawl_time is not None:
@@ -91,7 +91,7 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
     # For example, if this or allied instances are being attacked
     # then numbers of accounts may be changing as people
     # migrate, and that information may be useful to an adversary
-    broch_mode = broch_mode_is_active(self.server.base_dir)
+    broch_mode = broch_mode_is_active(base_dir)
 
     node_info_version = self.server.project_version
     if not self.server.show_node_info_version or broch_mode:
@@ -108,7 +108,7 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
                                     self.server.i2p_domain)
     about_url = instance_url + '/about'
     terms_of_service_url = instance_url + '/terms'
-    info = meta_data_node_info(self.server.base_dir,
+    info = meta_data_node_info(base_dir,
                                about_url, terms_of_service_url,
                                self.server.registration,
                                node_info_version,

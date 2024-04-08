@@ -33,7 +33,7 @@ def get_rss2feed(self, calling_domain: str, path: str,
     if '/' in nickname:
         nickname = nickname.split('/')[0]
     if not nickname.startswith('rss.'):
-        account_dir = acct_dir(self.server.base_dir, nickname, domain)
+        account_dir = acct_dir(base_dir, nickname, domain)
         if os.path.isdir(account_dir):
             curr_session = \
                 establish_session("RSS request",

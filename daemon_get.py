@@ -330,7 +330,8 @@ def daemon_http_get(self) -> None:
     # make returning info to them high priority
     # get nodeinfo endpoint
     if get_nodeinfo(self, ua_str, calling_domain, referer_domain,
-                    self.server.http_prefix, 5, self.server.debug):
+                    self.server.http_prefix, 5, self.server.debug,
+                    self.server.base_dir):
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
