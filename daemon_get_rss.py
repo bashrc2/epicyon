@@ -26,7 +26,10 @@ def get_rss2feed(self, calling_domain: str, path: str,
                  domain: str, port: int, proxy_type: str,
                  getreq_start_time, debug: bool,
                  curr_session,
-                 max_posts_in_rss_feed: int) -> None:
+                 max_posts_in_rss_feed: int,
+                 translate: {},
+                 system_language: str,
+                 fitness: {}) -> None:
     """Returns an RSS2 feed for the blog
     """
     nickname = path.split('/blog/')[1]
@@ -46,13 +49,13 @@ def get_rss2feed(self, calling_domain: str, path: str,
             msg = \
                 html_blog_page_rss2(base_dir,
                                     http_prefix,
-                                    self.server.translate,
+                                    translate,
                                     nickname,
                                     domain,
                                     port,
                                     max_posts_in_rss_feed, 1,
                                     True,
-                                    self.server.system_language)
+                                    system_language)
             if msg is not None:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -62,7 +65,7 @@ def get_rss2feed(self, calling_domain: str, path: str,
                 if debug:
                     print('Sent rss2 feed: ' +
                           path + ' ' + calling_domain)
-                fitness_performance(getreq_start_time, self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', '_get_rss2feed',
                                     debug)
                 return
@@ -79,7 +82,9 @@ def get_rss2site(self, calling_domain: str, path: str,
                  getreq_start_time,
                  debug: bool,
                  curr_session,
-                 max_posts_in_rss_feed: int) -> None:
+                 max_posts_in_rss_feed: int,
+                 system_language: str,
+                 fitness: {}) -> None:
     """Returns an RSS2 feed for all blogs on this instance
     """
     curr_session = \
@@ -107,7 +112,7 @@ def get_rss2site(self, calling_domain: str, path: str,
                                     port,
                                     max_posts_in_rss_feed, 1,
                                     False,
-                                    self.server.system_language)
+                                    system_language)
         break
     if msg:
         msg = rss2header(http_prefix,
@@ -122,7 +127,7 @@ def get_rss2site(self, calling_domain: str, path: str,
         if debug:
             print('Sent rss2 feed: ' +
                   path + ' ' + calling_domain)
-        fitness_performance(getreq_start_time, self.server.fitness,
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', '_get_rss2site',
                             debug)
         return
@@ -138,7 +143,8 @@ def get_rss3feed(self, calling_domain: str, path: str,
                  getreq_start_time,
                  debug: bool, system_language: str,
                  curr_session,
-                 max_posts_in_rss_feed: int) -> None:
+                 max_posts_in_rss_feed: int,
+                 fitness: {}) -> None:
     """Returns an RSS3 feed
     """
     nickname = path.split('/blog/')[1]
@@ -168,7 +174,7 @@ def get_rss3feed(self, calling_domain: str, path: str,
                 if debug:
                     print('Sent rss3 feed: ' +
                           path + ' ' + calling_domain)
-                fitness_performance(getreq_start_time, self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', '_get_rss3feed', debug)
                 return
     if debug:

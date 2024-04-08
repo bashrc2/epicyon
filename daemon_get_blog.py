@@ -23,7 +23,11 @@ def show_blog_page(self, authorized: bool,
                    proxy_type: str, cookie: str,
                    translate: {}, debug: str,
                    curr_session,
-                   max_posts_in_blogs_feed: int) -> bool:
+                   max_posts_in_blogs_feed: int,
+                   peertube_instances: [],
+                   system_language: str,
+                   person_cache: {},
+                   fitness: {}) -> bool:
     """Shows a blog page
     """
     page_number = 1
@@ -64,9 +68,9 @@ def show_blog_page(self, authorized: bool,
                          nickname,
                          domain, port,
                          max_posts_in_blogs_feed, page_number,
-                         self.server.peertube_instances,
-                         self.server.system_language,
-                         self.server.person_cache,
+                         peertube_instances,
+                         system_language,
+                         person_cache,
                          debug)
     if msg is not None:
         msg = msg.encode('utf-8')
@@ -75,7 +79,7 @@ def show_blog_page(self, authorized: bool,
                     cookie, calling_domain, False)
         write2(self, msg)
         fitness_performance(getreq_start_time,
-                            self.server.fitness,
+                            fitness,
                             '_GET', 'show_blog_page',
                             debug)
         return True

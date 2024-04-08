@@ -1349,7 +1349,10 @@ def daemon_http_get(self) -> None:
                          proxy_type,
                          getreq_start_time,
                          self.server.debug,
-                         curr_session, MAX_POSTS_IN_RSS_FEED)
+                         curr_session, MAX_POSTS_IN_RSS_FEED,
+                         self.server.translate,
+                         self.server.system_language,
+                         self.server.fitness)
         else:
             get_rss2site(self, calling_domain, self.path,
                          self.server.base_dir,
@@ -1360,7 +1363,9 @@ def daemon_http_get(self) -> None:
                          self.server.translate,
                          getreq_start_time,
                          self.server.debug,
-                         curr_session, MAX_POSTS_IN_RSS_FEED)
+                         curr_session, MAX_POSTS_IN_RSS_FEED,
+                         self.server.system_language,
+                         self.server.fitness)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -1379,7 +1384,8 @@ def daemon_http_get(self) -> None:
                      getreq_start_time,
                      self.server.debug,
                      self.server.system_language,
-                     curr_session, MAX_POSTS_IN_RSS_FEED)
+                     curr_session, MAX_POSTS_IN_RSS_FEED,
+                     self.server.fitness)
         return
 
     users_in_path = False
@@ -1669,7 +1675,11 @@ def daemon_http_get(self) -> None:
                               proxy_type,
                               cookie, self.server.translate,
                               self.server.debug,
-                              curr_session, MAX_POSTS_IN_BLOGS_FEED):
+                              curr_session, MAX_POSTS_IN_BLOGS_FEED,
+                              self.server.peertube_instances,
+                              self.server.system_language,
+                              self.server.person_cache,
+                              self.server.fitness):
                 return
 
     fitness_performance(getreq_start_time, self.server.fitness,
