@@ -503,7 +503,13 @@ def daemon_http_get(self) -> None:
                 progressive_web_app_manifest(self, self.server.base_dir,
                                              calling_domain,
                                              referer_domain,
-                                             getreq_start_time)
+                                             getreq_start_time,
+                                             self.server.http_prefix,
+                                             self.server.domain,
+                                             self.server.onion_domain,
+                                             self.server.i2p_domain,
+                                             self.server.fitness,
+                                             self.server.debug)
                 return
             else:
                 self.path = '/'

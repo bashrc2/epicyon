@@ -19,7 +19,13 @@ from fitnessFunctions import fitness_performance
 def progressive_web_app_manifest(self, base_dir: str,
                                  calling_domain: str,
                                  referer_domain: str,
-                                 getreq_start_time) -> None:
+                                 getreq_start_time,
+                                 http_prefix: str,
+                                 domain: str,
+                                 onion_domain: str,
+                                 i2p_domain: str,
+                                 fitness: {},
+                                 debug: bool) -> None:
     """gets the PWA manifest
     """
     manifest = pwa_manifest(base_dir)
@@ -27,10 +33,10 @@ def progressive_web_app_manifest(self, base_dir: str,
     msg_str = convert_domains(calling_domain,
                               referer_domain,
                               msg_str,
-                              self.server.http_prefix,
-                              self.server.domain,
-                              self.server.onion_domain,
-                              self.server.i2p_domain)
+                              http_prefix,
+                              domain,
+                              onion_domain,
+                              i2p_domain)
     msg = msg_str.encode('utf-8')
 
     msglen = len(msg)
@@ -39,8 +45,8 @@ def progressive_web_app_manifest(self, base_dir: str,
     set_headers(self, protocol_str, msglen,
                 None, calling_domain, False)
     write2(self, msg)
-    if self.server.debug:
+    if debug:
         print('Sent manifest: ' + calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_progressive_web_app_manifest',
-                        self.server.debug)
+                        debug)
