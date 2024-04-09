@@ -573,7 +573,7 @@ def daemon_http_get(self) -> None:
                                 self.server.port,
                                 self.server.debug,
                                 self.server.session,
-                                cookie):
+                                cookie, ua_str):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_show_conversation_thread',
                             self.server.debug)

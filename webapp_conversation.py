@@ -16,6 +16,7 @@ from utils import get_domain_from_actor
 from utils import is_public_post
 from utils import get_attributed_to
 from blocking import is_blocked
+from webapp_utils import text_mode_browser
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_post_separator
 from webapp_utils import html_footer
@@ -50,7 +51,8 @@ def html_conversation_view(authorized: bool, post_id: str,
                            debug: bool, buy_sites: {},
                            blocked_cache: [],
                            block_federated: [],
-                           auto_cw_cache: {}) -> str:
+                           auto_cw_cache: {},
+                           ua_str: str) -> str:
     """Show a page containing a conversation thread
     """
     conv_posts = \
@@ -124,6 +126,11 @@ def html_conversation_view(authorized: bool, post_id: str,
                                     buy_sites, auto_cw_cache)
         if post_str:
             conv_str += text_mode_separator + separator_str + post_str
+
+    # if using a text mode browser then don't show SHOW MORE because there
+    # is no way to hide/expand sections
+    if text_mode_browser(ua_str):
+        conv_str = conv_str.replace(translate['SHOW MORE'], '')
 
     conv_str += text_mode_separator + html_footer()
     return conv_str

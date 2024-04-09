@@ -995,7 +995,7 @@ def show_conversation_thread(self, authorized: bool,
                              base_dir: str, http_prefix: str,
                              domain: str, port: int,
                              debug: str, curr_session,
-                             cookie: str) -> bool:
+                             cookie: str, ua_str: str) -> bool:
     """get conversation thread from the date link on a post
     """
     if not path.startswith('/users/'):
@@ -1056,7 +1056,8 @@ def show_conversation_thread(self, authorized: bool,
                                self.server.buy_sites,
                                self.server.blocked_cache,
                                self.server.block_federated,
-                               self.server.auto_cw_cache)
+                               self.server.auto_cw_cache,
+                               ua_str)
     if conv_str:
         msg = conv_str.encode('utf-8')
         msglen = len(msg)

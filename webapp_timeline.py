@@ -835,7 +835,7 @@ def html_timeline(default_timeline: str,
 
     # left column
     left_column_str = ''
-    if not text_mode_browser(ua_str):
+    if not is_text_browser:
         left_column_str = \
             get_left_column_content(base_dir, nickname, domain_full,
                                     http_prefix, translate,
