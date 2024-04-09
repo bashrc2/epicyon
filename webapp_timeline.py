@@ -854,7 +854,6 @@ def html_timeline(default_timeline: str,
     tl_str += '  <td valign="top" class="col-center" tabindex="-1">\n'
 
     if not full_width_tl_button_header:
-        is_text_browser = text_mode_browser(ua_str)
         tl_str += \
             header_buttons_timeline(default_timeline, box_name, page_number,
                                     translate, users_path, media_button,
@@ -885,44 +884,61 @@ def html_timeline(default_timeline: str,
 
     if box_name == 'tlshares':
         max_shares_per_account = items_per_page
-        return (tl_str +
-                _html_shares_timeline(translate, page_number, items_per_page,
-                                      base_dir, actor, nickname, domain, port,
-                                      max_shares_per_account, http_prefix,
-                                      shared_items_federated_domains,
-                                      'shares') +
-                _html_timeline_end(base_dir, nickname, domain_full,
-                                   translate,
-                                   moderator, editor,
-                                   newswire, positive_voting,
-                                   show_publish_as_icon,
-                                   rss_icon_at_top, publish_button_at_top,
-                                   authorized, theme,
-                                   default_timeline, access_keys,
-                                   box_name,
-                                   enable_timing_log, timeline_start_time,
-                                   ua_str) +
-                html_footer())
+
+        tl_str += \
+            _html_shares_timeline(translate, page_number, items_per_page,
+                                  base_dir, actor, nickname, domain, port,
+                                  max_shares_per_account, http_prefix,
+                                  shared_items_federated_domains,
+                                  'shares')
+
+        # if using a text mode browser then don't show SHOW MORE because there
+        # is no way to hide/expand sections
+        if is_text_browser:
+            tl_str = tl_str.replace(translate['SHOW MORE'], '')
+
+        tl_str += \
+            _html_timeline_end(base_dir, nickname, domain_full,
+                               translate,
+                               moderator, editor,
+                               newswire, positive_voting,
+                               show_publish_as_icon,
+                               rss_icon_at_top, publish_button_at_top,
+                               authorized, theme,
+                               default_timeline, access_keys,
+                               box_name,
+                               enable_timing_log, timeline_start_time,
+                               ua_str) + html_footer()
+
+        return tl_str
     elif box_name == 'tlwanted':
         max_shares_per_account = items_per_page
-        return (tl_str +
-                _html_shares_timeline(translate, page_number, items_per_page,
-                                      base_dir, actor, nickname, domain, port,
-                                      max_shares_per_account, http_prefix,
-                                      shared_items_federated_domains,
-                                      'wanted') +
-                _html_timeline_end(base_dir, nickname, domain_full,
-                                   translate,
-                                   moderator, editor,
-                                   newswire, positive_voting,
-                                   show_publish_as_icon,
-                                   rss_icon_at_top, publish_button_at_top,
-                                   authorized, theme,
-                                   default_timeline, access_keys,
-                                   box_name,
-                                   enable_timing_log, timeline_start_time,
-                                   ua_str) +
-                html_footer())
+
+        tl_str += \
+            _html_shares_timeline(translate, page_number, items_per_page,
+                                  base_dir, actor, nickname, domain, port,
+                                  max_shares_per_account, http_prefix,
+                                  shared_items_federated_domains,
+                                  'wanted')
+
+        # if using a text mode browser then don't show SHOW MORE because there
+        # is no way to hide/expand sections
+        if is_text_browser:
+            tl_str = tl_str.replace(translate['SHOW MORE'], '')
+
+        tl_str += \
+            _html_timeline_end(base_dir, nickname, domain_full,
+                               translate,
+                               moderator, editor,
+                               newswire, positive_voting,
+                               show_publish_as_icon,
+                               rss_icon_at_top, publish_button_at_top,
+                               authorized, theme,
+                               default_timeline, access_keys,
+                               box_name,
+                               enable_timing_log, timeline_start_time,
+                               ua_str) + html_footer()
+        return tl_str
 
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '7')
 
