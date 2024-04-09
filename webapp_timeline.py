@@ -800,8 +800,8 @@ def html_timeline(default_timeline: str,
         'src="' + users_path + '/' + banner_file + '" /></a>\n' + \
         '</header>\n'
 
+    is_text_browser = text_mode_browser(ua_str)
     if full_width_tl_button_header:
-        is_text_browser = text_mode_browser(ua_str)
         tl_str += \
             header_buttons_timeline(default_timeline, box_name, page_number,
                                     translate, users_path, media_button,
@@ -1123,6 +1123,11 @@ def html_timeline(default_timeline: str,
         tl_str += text_mode_separator
     elif item_ctr == 0:
         tl_str += _get_help_for_timeline(base_dir, box_name)
+
+    # if using a text mode browser then don't show SHOW MORE because there
+    # is no way to hide/expand sections
+    if is_text_browser:
+        tl_str = tl_str.replace(translate['SHOW MORE'], '')
 
     tl_str += \
         _html_timeline_end(base_dir, nickname, domain_full,
