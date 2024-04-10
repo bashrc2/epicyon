@@ -1215,9 +1215,12 @@ def save_json(json_object: {}, filename: str) -> bool:
             with open(filename, 'w+', encoding='utf-8') as json_file:
                 json_file.write(json.dumps(json_object))
                 return True
-        except OSError as ex:
+        except OSError as exc:
             print('EX: save_json ' + str(tries) + ' ' + str(filename) +
-                  ' ' + str(ex))
+                  ' ' + str(exc))
+            if exc.errno == 36:
+                # filename too long
+                break
             time.sleep(1)
             tries += 1
     return False
