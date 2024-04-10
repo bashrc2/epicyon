@@ -8,6 +8,8 @@ __status__ = "Production"
 __module_group__ = "Core GET"
 
 from utils import get_instance_url
+from utils import string_ends_with
+from utils import string_contains
 from httpheaders import redirect_headers
 from fitnessFunctions import fitness_performance
 
@@ -21,31 +23,20 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
     """Redirects to the login screen if necessary
     """
     divert_to_login_screen = False
-    if '/media/' not in path and \
-       '/ontologies/' not in path and \
-       '/data/' not in path and \
-       '/sharefiles/' not in path and \
-       '/statuses/' not in path and \
-       '/emoji/' not in path and \
-       '/tags/' not in path and \
-       '/tagmaps/' not in path and \
-       '/avatars/' not in path and \
-       '/favicons/' not in path and \
-       '/headers/' not in path and \
-       '/fonts/' not in path and \
-       '/icons/' not in path:
+    non_login_paths = ('/media/', '/ontologies/', '/data/', '/sharefiles/',
+                       '/statuses/', '/emoji/', '/tags/', '/tagmaps/',
+                       '/avatars/', '/favicons/', '/headers/', '/fonts/',
+                       '/icons/')
+    if not string_contains(path, non_login_paths):
         divert_to_login_screen = True
         if path.startswith('/users/'):
             nick_str = path.split('/users/')[1]
             if '/' not in nick_str and '?' not in nick_str:
                 divert_to_login_screen = False
             else:
-                if path.endswith('/following') or \
-                   path.endswith('/followers') or \
-                   path.endswith('/skills') or \
-                   path.endswith('/roles') or \
-                   path.endswith('/wanted') or \
-                   path.endswith('/shares'):
+                possible_endings = ('/following', '/followers',
+                                    '/skills', '/roles', '/wanted', '/shares')
+                if string_ends_with(path, possible_endings):
                     divert_to_login_screen = False
 
     if divert_to_login_screen and not authorized:

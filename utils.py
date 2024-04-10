@@ -5266,3 +5266,21 @@ def get_post_attachments(post_json_object: {}) -> []:
     if isinstance(post_obj['attachment'], dict):
         return [post_obj['attachment']]
     return []
+
+
+def string_ends_with(text: str, possible_endings: []) -> bool:
+    """ Does the given text end with at least one of the endings
+    """
+    for ending in possible_endings:
+        if text.endswith(ending):
+            return True
+    return False
+
+
+def string_contains(text: str, possible_substrings: []) -> bool:
+    """ Does the given text contain at least one of the possible substrings
+    """
+    for substring in possible_substrings:
+        if substring in text:
+            return True
+    return False
