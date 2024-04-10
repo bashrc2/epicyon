@@ -16,7 +16,8 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
                              http_prefix: str, domain_full: str,
                              onion_domain: str, i2p_domain: str,
                              getreq_start_time,
-                             authorized: bool, debug: bool):
+                             authorized: bool, debug: bool,
+                             news_instance: bool, fitness: {}) -> bool:
     """Redirects to the login screen if necessary
     """
     divert_to_login_screen = False
@@ -49,7 +50,7 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
 
     if divert_to_login_screen and not authorized:
         divert_path = '/login'
-        if self.server.news_instance:
+        if news_instance:
             # for news instances if not logged in then show the
             # front page
             divert_path = '/users/news'
@@ -64,8 +65,7 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
                              onion_domain, i2p_domain) + \
             divert_path
         redirect_headers(self, redirect_url, None, calling_domain)
-        fitness_performance(getreq_start_time,
-                            self.server.fitness,
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', '_redirect_to_login_screen',
                             debug)
         return True

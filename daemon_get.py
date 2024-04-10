@@ -2239,7 +2239,9 @@ def daemon_http_get(self) -> None:
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
                                     getreq_start_time,
-                                    authorized, self.server.debug):
+                                    authorized, self.server.debug,
+                                    self.server.news_instance,
+                                    self.server.fitness):
             return
 
     fitness_performance(getreq_start_time, self.server.fitness,
