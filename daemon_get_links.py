@@ -15,7 +15,9 @@ from httpcodes import http_404
 
 def edit_links2(self, calling_domain: str, path: str,
                 translate: {}, base_dir: str,
-                domain: str, cookie: str, theme: str) -> bool:
+                domain: str, cookie: str, theme: str,
+                access_keys: {}, key_shortcuts: {},
+                default_timeline: str) -> bool:
     """Show the links from the left column
     """
     if '/users/' in path and path.endswith('/editlinks'):
@@ -23,14 +25,13 @@ def edit_links2(self, calling_domain: str, path: str,
         if '/' in nickname:
             nickname = nickname.split('/')[0]
 
-        access_keys = self.server.access_keys
-        if self.server.key_shortcuts.get(nickname):
-            access_keys = self.server.key_shortcuts[nickname]
+        if key_shortcuts.get(nickname):
+            access_keys = key_shortcuts[nickname]
 
         msg = html_edit_links(translate,
                               base_dir,
                               path, domain,
-                              self.server.default_timeline,
+                              default_timeline,
                               theme, access_keys)
         if msg:
             msg = msg.encode('utf-8')

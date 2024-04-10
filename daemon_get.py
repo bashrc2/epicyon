@@ -3633,7 +3633,10 @@ def daemon_http_get(self) -> None:
                        self.server.base_dir,
                        self.server.domain,
                        cookie,
-                       self.server.theme_name):
+                       self.server.theme_name,
+                       self.server.access_keys,
+                       self.server.key_shortcuts,
+                       self.server.default_timeline):
             self.server.getreq_busy = False
             return
 
