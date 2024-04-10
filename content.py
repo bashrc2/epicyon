@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import string_contains
 from utils import string_ends_with
 from utils import is_account_dir
 from utils import get_url_from_post
@@ -263,9 +264,7 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
             if ctr > 0:
                 if ')' in url_str:
                     url_str = url_str.split(')')[0]
-                    if 'http' in url_str or \
-                       'ipfs' in url_str or \
-                       'ipns' in url_str:
+                    if string_contains(url_str, ('http', 'ipfs', 'ipns')):
                         print('ERROR: non-local web link in CSS ' +
                               filename)
                         return True

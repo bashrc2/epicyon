@@ -12,6 +12,7 @@ import json
 import time
 from session import get_json_valid
 from session import create_session
+from utils import string_contains
 from utils import date_from_string_format
 from utils import date_utcnow
 from utils import remove_eol
@@ -1998,10 +1999,7 @@ def save_block_federated_endpoints(base_dir: str,
         if not endpoint:
             continue
         if '.' not in endpoint or \
-           ' ' in endpoint or \
-           '<' in endpoint or \
-           ',' in endpoint or \
-           ';' in endpoint:
+           string_contains(endpoint, (' ', '<', ',', ';')):
             continue
         if endpoint.startswith('@'):
             endpoint = endpoint[1:]

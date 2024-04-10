@@ -50,6 +50,7 @@ from shares import expire_shares
 from categories import load_city_hashtags
 from categories import update_hashtag_categories
 from languages import load_default_post_languages
+from utils import string_contains
 from utils import check_bad_path
 from utils import acct_handle_dir
 from utils import load_reverse_timeline
@@ -310,9 +311,9 @@ class PubServer(BaseHTTPRequestHandler):
         file_length = -1
         last_modified_time_str = None
 
-        if '/media/' in self.path or \
-           '/accounts/avatars/' in self.path or \
-           '/accounts/headers/' in self.path:
+        if string_contains(self.path,
+                           ('/media/', '/accounts/avatars/',
+                            '/accounts/headers/')):
             if is_image_file(self.path) or \
                path_is_video(self.path) or \
                path_is_audio(self.path):
