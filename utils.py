@@ -1239,9 +1239,9 @@ def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
                 data = json_file.read()
                 json_object = json.loads(data)
                 break
-        except BaseException:
+        except BaseException as exc:
             print('EX: load_json exception ' +
-                  str(tries) + ' ' + str(filename))
+                  str(tries) + ' ' + str(filename) + ' ' + str(exc))
             if delay_sec > 0:
                 time.sleep(delay_sec)
             tries += 1
