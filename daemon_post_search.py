@@ -354,9 +354,7 @@ def receive_search_query(self, calling_domain: str, cookie: str,
             if search_str.endswith(';remote'):
                 search_str = search_str.replace(';remote', '')
                 remote_only = True
-            if search_str.endswith(':') or \
-               search_str.endswith(';') or \
-               search_str.endswith('.'):
+            if string_ends_with(search_str, (':', ';', '.')):
                 actor_str = \
                     get_instance_url(calling_domain, http_prefix,
                                      domain_full, onion_domain,

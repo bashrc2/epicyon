@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import string_ends_with
 from utils import is_account_dir
 from utils import load_json
 from utils import save_json
@@ -653,10 +654,7 @@ def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
         return
     for _, _, files in os.walk(theme_fonts_dir):
         for filename in files:
-            if filename.endswith('.woff2') or \
-               filename.endswith('.woff') or \
-               filename.endswith('.ttf') or \
-               filename.endswith('.otf'):
+            if string_ends_with(filename, ('.woff2', '.woff', '.ttf', '.otf')):
                 dest_filename = fonts_dir + '/' + filename
                 if os.path.isfile(dest_filename):
                     # font already exists in the destination location

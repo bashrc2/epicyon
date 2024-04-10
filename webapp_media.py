@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
+from utils import string_ends_with
 from utils import valid_url_prefix
 
 
@@ -250,12 +251,10 @@ def _add_embedded_video_from_sites(content: str,
             url = url.split('"')[0]
             if not url:
                 continue
-            if url.endswith('/trending') or \
-               url.endswith('/home') or \
-               url.endswith('/overview') or \
-               url.endswith('/recently-added') or \
-               url.endswith('/local') or \
-               url.endswith('/about'):
+            possible_endings = (
+                '/trending', '/home', '/overview',
+                '/recently-added', '/local', '/about')
+            if string_ends_with(url, possible_endings):
                 # ignore various peertube endpoints
                 continue
             if '/c/' in url or '/m/' in url:
