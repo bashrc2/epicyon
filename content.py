@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import string_ends_with
 from utils import is_account_dir
 from utils import get_url_from_post
 from utils import is_right_to_left_text
@@ -1193,9 +1194,7 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
         if whistle.startswith('x-'):
             whistle = whistle[2:]
             ending = True
-        elif (whistle.startswith('*') or
-              whistle.startswith('~') or
-              whistle.startswith('-')):
+        elif string_ends_with(whistle, ('*', '~', '-')):
             whistle = whistle[1:]
             ending = True
 
@@ -1217,9 +1216,7 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
         if whistle.lower().endswith('-x'):
             whistle = whistle[:len(whistle)-2]
             starting = True
-        elif (whistle.endswith('*') or
-              whistle.endswith('~') or
-              whistle.endswith('-')):
+        elif string_ends_with(whistle, ('*', '~', '-')):
             whistle = whistle[:len(whistle)-1]
             starting = True
 
