@@ -19,6 +19,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import string_contains
 from utils import image_mime_types_dict
 from utils import resembles_url
 from utils import get_url_from_post
@@ -667,9 +668,9 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
         podcast_properties['image'] = podcast_episode_image
         podcast_properties['categories'] = podcast_categories
 
-        if '<itunes:explicit>Y' in xml_item or \
-           '<itunes:explicit>T' in xml_item or \
-           '<itunes:explicit>1' in xml_item:
+        if string_contains(xml_item,
+                           ('<itunes:explicit>Y', '<itunes:explicit>T',
+                            '<itunes:explicit>1')):
             podcast_properties['explicit'] = True
         else:
             podcast_properties['explicit'] = False

@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "API"
 
 import os
+from utils import string_contains
 from utils import get_url_from_post
 from utils import load_json
 from utils import get_config_param
@@ -346,12 +347,9 @@ def masto_api_v1_response(path: str, calling_domain: str,
         path_nickname = get_nickname_from_masto_api_v1id(masto_id)
         if path_nickname:
             original_path = path
-            if '/followers?' in path or \
-               '/following?' in path or \
-               '/streaming/' in path or \
-               '/search?' in path or \
-               '/relationships?' in path or \
-               '/statuses?' in path:
+            if string_contains(path,
+                               ('/followers?', '/following?', '/streaming/',
+                                '/search?', '/relationships?', '/statuses?')):
                 path = path.split('?')[0]
             if '/streaming/' in path:
                 streaming_msg = \

@@ -12,6 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
+from utils import string_contains
 from utils import get_post_attachments
 from utils import image_mime_types_dict
 from utils import get_url_from_post
@@ -2338,9 +2339,7 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
         if remove_html(item_name) != item_name:
             continue
         # there should be no html in the link
-        if '<' in item['href'] or \
-           '://' not in item['href'] or \
-           ' ' in item['href']:
+        if string_contains(item['href'], ('<', '://', ' ')):
             continue
         if item.get('rel'):
             if isinstance(item['rel'], str):

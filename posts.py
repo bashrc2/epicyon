@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import string_contains
 from utils import get_post_attachments
 from utils import is_premium_account
 from utils import contains_private_key
@@ -793,12 +794,7 @@ def _update_word_frequency(content: str, word_frequency: {}) -> None:
         if word_len < 4:
             if word.upper() != word:
                 continue
-        if '&' in word or \
-           '"' in word or \
-           '@' in word or \
-           "'" in word or \
-           "--" in word or \
-           '//' in word:
+        if string_contains(word, ('&', '"', '@', "'", "--", '//')):
             continue
         if word.lower() in common_words:
             continue
@@ -4447,13 +4443,9 @@ def _add_post_string_to_timeline(post_str: str, boxname: str,
     """ is this a valid timeline post?
     """
     # must be a recognized ActivityPub type
-    if ('"Note"' in post_str or
-        '"EncryptedMessage"' in post_str or
-        '"ChatMessage"' in post_str or
-        '"Event"' in post_str or
-        '"Article"' in post_str or
-        '"Patch"' in post_str or
-        '"Announce"' in post_str or
+    if (string_contains(post_str,
+                        ('"Note"', '"EncryptedMessage"', '"ChatMessage"',
+                         '"Event"', '"Article"', '"Patch"', '"Announce"')) or
         ('"Question"' in post_str and
          ('"Create"' in post_str or '"Update"' in post_str))):
 

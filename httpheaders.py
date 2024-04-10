@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 import urllib.parse
 from hashlib import md5
+from utils import string_contains
 from utils import get_instance_url
 
 
@@ -121,9 +122,7 @@ def _set_headers_base(self, file_format: str, length: int, cookie: str,
                       calling_domain: str, permissive: bool) -> None:
     self.send_response(200)
     self.send_header('Content-type', file_format)
-    if 'image/' in file_format or \
-       'audio/' in file_format or \
-       'video/' in file_format:
+    if string_contains(file_format, ('image/', 'audio/', 'video/')):
         cache_control = 'public, max-age=84600, immutable'
         self.send_header('Cache-Control', cache_control)
     else:
