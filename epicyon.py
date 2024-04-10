@@ -72,6 +72,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import string_ends_with
 from utils import remove_html
 from utils import remove_eol
 from utils import text_in_file
@@ -3101,9 +3102,8 @@ def _command_options() -> None:
         sys.exit()
 
     if argb.archive:
-        if argb.archive.lower().endswith('null') or \
-           argb.archive.lower().endswith('delete') or \
-           argb.archive.lower().endswith('none'):
+        archive_lower = argb.archive.lower()
+        if string_ends_with(archive_lower, ('null', 'delete', 'none')):
             argb.archive = None
             print('Archiving with deletion of old posts...')
         else:
