@@ -14,6 +14,7 @@ from httpcodes import http_404
 from httpcodes import write2
 from httpheaders import set_headers_etag
 from httpheaders import set_headers
+from utils import string_ends_with
 from utils import get_css
 from fitnessFunctions import fitness_performance
 from daemon_utils import etag_exists
@@ -69,10 +70,8 @@ def get_fonts(self, calling_domain: str, path: str,
     """Returns a font
     """
     font_str = path.split('/fonts/')[1]
-    if font_str.endswith('.otf') or \
-       font_str.endswith('.ttf') or \
-       font_str.endswith('.woff') or \
-       font_str.endswith('.woff2'):
+    possible_extensions = ('.otf', '.ttf', '.woff', '.woff2')
+    if string_ends_with(font_str, possible_extensions):
         if font_str.endswith('.otf'):
             font_type = 'font/otf'
         elif font_str.endswith('.ttf'):

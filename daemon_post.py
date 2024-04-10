@@ -11,6 +11,7 @@ import time
 import errno
 import json
 from socket import error as SocketError
+from utils import string_ends_with
 from utils import get_config_param
 from utils import decoded_host
 from utils import get_new_post_endpoints
@@ -705,9 +706,8 @@ def daemon_http_post(self) -> None:
                         '_POST', 'receive post',
                         self.server.debug)
 
-    if self.path.endswith('/outbox') or \
-       self.path.endswith('/wanted') or \
-       self.path.endswith('/shares'):
+    possible_path_endings = ('/outbox', '/wanted', '/shares')
+    if string_ends_with(self.path, possible_path_endings):
         if users_in_path:
             if authorized:
                 self.outbox_authenticated = True
@@ -724,12 +724,10 @@ def daemon_http_post(self) -> None:
                         self.server.debug)
 
     # check that the post is to an expected path
-    if not (self.path.endswith('/outbox') or
-            self.path.endswith('/inbox') or
-            self.path.endswith('/wanted') or
-            self.path.endswith('/shares') or
-            self.path.endswith('/moderationaction') or
-            self.path == '/sharedInbox'):
+    possible_endings = ('/outbox', '/inbox', '/wanted', '/shares',
+                        '/moderationaction')
+    if not string_ends_with(self.path, possible_endings) and \
+       self.path != '/sharedInbox':
         print('Attempt to POST to invalid path ' + self.path)
         http_400(self)
         self.server.postreq_busy = False

@@ -14,6 +14,7 @@ from utils import get_instance_url
 from httpcodes import write2
 from httpheaders import login_headers
 from httpheaders import redirect_headers
+from utils import string_ends_with
 from utils import has_users_path
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -100,6 +101,10 @@ def receive_search_query(self, calling_domain: str, cookie: str,
         print('search_str: ' + search_str)
         if search_for_emoji:
             search_str = ':' + search_str + ':'
+        my_posts_endings = (
+            ' history', ' in sent', ' in outbox', ' in outgoing',
+            ' in sent items', ' in sent posts', ' in outgoing posts',
+            ' in my history', ' in my outbox', ' in my posts')
         if search_str.startswith('#'):
             nickname = get_nickname_from_actor(actor_str)
             if not nickname:
@@ -186,16 +191,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                 self.server.postreq_busy = False
                 return
         elif (search_str.startswith("'") or
-              search_str.endswith(' history') or
-              search_str.endswith(' in sent') or
-              search_str.endswith(' in outbox') or
-              search_str.endswith(' in outgoing') or
-              search_str.endswith(' in sent items') or
-              search_str.endswith(' in sent posts') or
-              search_str.endswith(' in outgoing posts') or
-              search_str.endswith(' in my history') or
-              search_str.endswith(' in my outbox') or
-              search_str.endswith(' in my posts')):
+              string_ends_with(search_str, my_posts_endings)):
+            # your post history search
             possible_endings = (
                 ' in my posts',
                 ' in my history',
@@ -213,7 +210,6 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                 if search_str.endswith(poss_ending):
                     search_str = search_str.replace(poss_ending, '')
                     break
-            # your post history search
             nickname = get_nickname_from_actor(actor_str)
             if not nickname:
                 self.send_response(400)
