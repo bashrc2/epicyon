@@ -31,7 +31,8 @@ from person import save_person_qrcode
 
 def show_avatar_or_banner(self, referer_domain: str, path: str,
                           base_dir: str, domain: str,
-                          getreq_start_time) -> bool:
+                          getreq_start_time, fitness: {},
+                          debug: bool) -> bool:
     """Shows an avatar or banner or profile background image
     """
     if '/users/' not in path:
@@ -115,15 +116,15 @@ def show_avatar_or_banner(self, referer_domain: str, path: str,
                          referer_domain, True,
                          last_modified_time_str)
         write2(self, media_binary)
-    fitness_performance(getreq_start_time,
-                        self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_avatar_or_banner',
-                        self.server.debug)
+                        debug)
     return True
 
 
 def show_cached_avatar(self, referer_domain: str, path: str,
-                       base_dir: str, getreq_start_time) -> None:
+                       base_dir: str, getreq_start_time,
+                       fitness: {}, debug: bool) -> None:
     """Shows an avatar image obtained from the cache
     """
     media_filename = base_dir + '/cache' + path
@@ -146,25 +147,27 @@ def show_cached_avatar(self, referer_domain: str, path: str,
                              referer_domain,
                              False, None)
             write2(self, media_binary)
-            fitness_performance(getreq_start_time, self.server.fitness,
+            fitness_performance(getreq_start_time, fitness,
                                 '_GET', 'show_cached_avatar',
-                                self.server.debug)
+                                debug)
             return
     http_404(self, 46)
 
 
 def show_help_screen_image(self, path: str,
-                           base_dir: str, getreq_start_time) -> None:
+                           base_dir: str, getreq_start_time,
+                           theme_name: str, domain_full: str,
+                           fitness: {}, debug: bool) -> None:
     """Shows a help screen image
     """
     if not is_image_file(path):
         return
     media_str = path.split('/helpimages/')[1]
     if '/' not in media_str:
-        if not self.server.theme_name:
+        if not theme_name:
             theme = 'default'
         else:
-            theme = self.server.theme_name
+            theme = theme_name
         icon_filename = media_str
     else:
         theme = media_str.split('/')[0]
@@ -191,18 +194,20 @@ def show_help_screen_image(self, path: str,
             set_headers_etag(self, media_filename,
                              mime_type,
                              media_binary, None,
-                             self.server.domain_full,
+                             domain_full,
                              False, None)
             write2(self, media_binary)
-        fitness_performance(getreq_start_time, self.server.fitness,
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', 'show_help_screen_image',
-                            self.server.debug)
+                            debug)
         return
     http_404(self, 43)
 
 
 def show_manual_image(self, path: str,
-                      base_dir: str, getreq_start_time) -> None:
+                      base_dir: str, getreq_start_time,
+                      icons_cache: {}, domain_full: str,
+                      fitness: {}, debug: bool) -> None:
     """Shows an image within the manual
     """
     image_filename = path.split('/', 1)[1]
@@ -215,18 +220,18 @@ def show_manual_image(self, path: str,
         # The file has not changed
         http_304(self)
         return
-    if self.server.iconsCache.get(media_filename):
-        media_binary = self.server.iconsCache[media_filename]
+    if icons_cache.get(media_filename):
+        media_binary = icons_cache[media_filename]
         mime_type_str = media_file_mime_type(media_filename)
         set_headers_etag(self, media_filename,
                          mime_type_str,
                          media_binary, None,
-                         self.server.domain_full,
+                         domain_full,
                          False, None)
         write2(self, media_binary)
-        fitness_performance(getreq_start_time, self.server.fitness,
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', 'show_manual_image',
-                            self.server.debug)
+                            debug)
         return
     if os.path.isfile(media_filename):
         media_binary = None
@@ -241,19 +246,21 @@ def show_manual_image(self, path: str,
             set_headers_etag(self, media_filename,
                              mime_type,
                              media_binary, None,
-                             self.server.domain_full,
+                             domain_full,
                              False, None)
             write2(self, media_binary)
-            self.server.iconsCache[media_filename] = media_binary
-        fitness_performance(getreq_start_time, self.server.fitness,
+            icons_cache[media_filename] = media_binary
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', 'show_manual_image',
-                            self.server.debug)
+                            debug)
         return
     http_404(self, 42)
 
 
 def show_specification_image(self, path: str,
-                             base_dir: str, getreq_start_time) -> None:
+                             base_dir: str, getreq_start_time,
+                             icons_cache: {}, domain_full: str,
+                             fitness: {}, debug: bool) -> None:
     """Shows an image within the ActivityPub specification document
     """
     image_filename = path.split('/', 1)[1]
@@ -266,18 +273,18 @@ def show_specification_image(self, path: str,
         # The file has not changed
         http_304(self)
         return
-    if self.server.iconsCache.get(media_filename):
-        media_binary = self.server.iconsCache[media_filename]
+    if icons_cache.get(media_filename):
+        media_binary = icons_cache[media_filename]
         mime_type_str = media_file_mime_type(media_filename)
         set_headers_etag(self, media_filename,
                          mime_type_str,
                          media_binary, None,
-                         self.server.domain_full,
+                         domain_full,
                          False, None)
         write2(self, media_binary)
-        fitness_performance(getreq_start_time, self.server.fitness,
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', 'show_specification_image',
-                            self.server.debug)
+                            debug)
         return
     if os.path.isfile(media_filename):
         media_binary = None
@@ -292,19 +299,21 @@ def show_specification_image(self, path: str,
             set_headers_etag(self, media_filename,
                              mime_type,
                              media_binary, None,
-                             self.server.domain_full,
+                             domain_full,
                              False, None)
             write2(self, media_binary)
-            self.server.iconsCache[media_filename] = media_binary
-        fitness_performance(getreq_start_time, self.server.fitness,
+            icons_cache[media_filename] = media_binary
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', 'show_specification_image',
-                            self.server.debug)
+                            debug)
         return
     http_404(self, 40)
 
 
 def show_share_image(self, path: str,
-                     base_dir: str, getreq_start_time) -> bool:
+                     base_dir: str, getreq_start_time,
+                     domain_full: str, fitness: {},
+                     debug: bool) -> bool:
     """Show a shared item image
     """
     if not is_image_file(path):
@@ -333,18 +342,20 @@ def show_share_image(self, path: str,
         set_headers_etag(self, media_filename,
                          media_file_type,
                          media_binary, None,
-                         self.server.domain_full,
+                         domain_full,
                          False, None)
         write2(self, media_binary)
-    fitness_performance(getreq_start_time,
-                        self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_share_image',
-                        self.server.debug)
+                        debug)
     return True
 
 
 def show_icon(self, path: str,
-              base_dir: str, getreq_start_time) -> None:
+              base_dir: str, getreq_start_time,
+              theme_name: str,
+              icons_cache: {}, domain_full: str,
+              fitness: {}, debug: bool) -> None:
     """Shows an icon
     """
     if not path.endswith('.png'):
@@ -352,10 +363,10 @@ def show_icon(self, path: str,
         return
     media_str = path.split('/icons/')[1]
     if '/' not in media_str:
-        if not self.server.theme_name:
+        if not theme_name:
             theme = 'default'
         else:
-            theme = self.server.theme_name
+            theme = theme_name
         icon_filename = media_str
     else:
         theme = media_str.split('/')[0]
@@ -366,17 +377,17 @@ def show_icon(self, path: str,
         # The file has not changed
         http_304(self)
         return
-    if self.server.iconsCache.get(media_str):
-        media_binary = self.server.iconsCache[media_str]
+    if icons_cache.get(media_str):
+        media_binary = icons_cache[media_str]
         mime_type_str = media_file_mime_type(media_filename)
         set_headers_etag(self, media_filename,
                          mime_type_str,
                          media_binary, None,
-                         self.server.domain_full,
+                         domain_full,
                          False, None)
         write2(self, media_binary)
-        fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', 'show_icon', self.server.debug)
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_icon', debug)
         return
     if os.path.isfile(media_filename):
         media_binary = None
@@ -390,18 +401,19 @@ def show_icon(self, path: str,
             set_headers_etag(self, media_filename,
                              mime_type,
                              media_binary, None,
-                             self.server.domain_full,
+                             domain_full,
                              False, None)
             write2(self, media_binary)
-            self.server.iconsCache[media_str] = media_binary
-        fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', 'show_icon', self.server.debug)
+            icons_cache[media_str] = media_binary
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_icon', debug)
         return
     http_404(self, 38)
 
 
 def show_media(self, path: str, base_dir: str,
-               getreq_start_time) -> None:
+               getreq_start_time, fitness: {},
+               debug: bool) -> None:
     """Returns a media file
     """
     if is_image_file(path) or \
@@ -443,9 +455,9 @@ def show_media(self, path: str, base_dir: str,
                                      last_modified_time_str)
                     write2(self, media_transcript)
                     fitness_performance(getreq_start_time,
-                                        self.server.fitness,
+                                        fitness,
                                         '_GET', 'show_media',
-                                        self.server.debug)
+                                        debug)
                     return
                 http_404(self, 32)
                 return
@@ -462,16 +474,17 @@ def show_media(self, path: str, base_dir: str,
                                  None, True,
                                  last_modified_time_str)
                 write2(self, media_binary)
-            fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', 'show_media', self.server.debug)
+            fitness_performance(getreq_start_time, fitness,
+                                '_GET', 'show_media', debug)
             return
     http_404(self, 33)
 
 
 def show_qrcode(self, calling_domain: str, path: str,
-                base_dir: str, domain: str,
+                base_dir: str, domain: str, domain_full: str,
                 onion_domain: str, i2p_domain: str,
-                port: int, getreq_start_time) -> bool:
+                port: int, getreq_start_time,
+                fitness: {}, debug: bool) -> bool:
     """Shows a QR code for an account
     """
     nickname = get_nickname_from_actor(path)
@@ -510,13 +523,12 @@ def show_qrcode(self, calling_domain: str, path: str,
             mime_type = media_file_mime_type(qr_filename)
             set_headers_etag(self, qr_filename, mime_type,
                              media_binary, None,
-                             self.server.domain_full,
+                             domain_full,
                              False, None)
             write2(self, media_binary)
-            fitness_performance(getreq_start_time,
-                                self.server.fitness,
+            fitness_performance(getreq_start_time, fitness,
                                 '_GET', 'show_qrcode',
-                                self.server.debug)
+                                debug)
             return True
     http_404(self, 94)
     return True
@@ -524,7 +536,9 @@ def show_qrcode(self, calling_domain: str, path: str,
 
 def search_screen_banner(self, path: str,
                          base_dir: str, domain: str,
-                         getreq_start_time) -> bool:
+                         getreq_start_time,
+                         domain_full: str,
+                         fitness: {}, debug: bool) -> bool:
     """Shows a banner image on the search screen
     """
     nickname = get_nickname_from_actor(path)
@@ -559,20 +573,20 @@ def search_screen_banner(self, path: str,
             mime_type = media_file_mime_type(banner_filename)
             set_headers_etag(self, banner_filename, mime_type,
                              media_binary, None,
-                             self.server.domain_full,
+                             domain_full,
                              False, None)
             write2(self, media_binary)
-            fitness_performance(getreq_start_time,
-                                self.server.fitness,
+            fitness_performance(getreq_start_time, fitness,
                                 '_GET', 'search_screen_banner',
-                                self.server.debug)
+                                debug)
             return True
     http_404(self, 96)
     return True
 
 
 def column_image(self, side: str, path: str, base_dir: str, domain: str,
-                 getreq_start_time) -> bool:
+                 getreq_start_time, domain_full: str,
+                 fitness: {}, debug: bool) -> bool:
     """Shows an image at the top of the left/right column
     """
     nickname = get_nickname_from_actor(path)
@@ -603,20 +617,21 @@ def column_image(self, side: str, path: str, base_dir: str, domain: str,
             mime_type = media_file_mime_type(banner_filename)
             set_headers_etag(self, banner_filename, mime_type,
                              media_binary, None,
-                             self.server.domain_full,
+                             domain_full,
                              False, None)
             write2(self, media_binary)
-            fitness_performance(getreq_start_time,
-                                self.server.fitness,
+            fitness_performance(getreq_start_time, fitness,
                                 '_GET', 'column_image ' + side,
-                                self.server.debug)
+                                debug)
             return True
     http_404(self, 98)
     return True
 
 
 def show_default_profile_background(self, base_dir: str, theme_name: str,
-                                    getreq_start_time) -> bool:
+                                    getreq_start_time,
+                                    domain_full: {},
+                                    fitness: {}, debug: bool) -> bool:
     """If a background image is missing after searching for a handle
     then substitute this image
     """
@@ -648,14 +663,13 @@ def show_default_profile_background(self, base_dir: str, theme_name: str,
                 set_headers_etag(self, bg_filename,
                                  'image/' + ext,
                                  bg_binary, None,
-                                 self.server.domain_full,
+                                 domain_full,
                                  False, None)
                 write2(self, bg_binary)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET',
                                     'show_default_profile_background',
-                                    self.server.debug)
+                                    debug)
                 return True
             break
 
@@ -664,7 +678,9 @@ def show_default_profile_background(self, base_dir: str, theme_name: str,
 
 
 def show_background_image(self, path: str,
-                          base_dir: str, getreq_start_time) -> bool:
+                          base_dir: str, getreq_start_time,
+                          domain_full: str, fitness: {},
+                          debug: bool) -> bool:
     """Show a background image
     """
     image_extensions = get_image_extensions()
@@ -699,21 +715,22 @@ def show_background_image(self, path: str,
                         set_headers_etag(self, bg_filename,
                                          'image/' + ext,
                                          bg_binary, None,
-                                         self.server.domain_full,
+                                         domain_full,
                                          False, None)
                         write2(self, bg_binary)
-                        fitness_performance(getreq_start_time,
-                                            self.server.fitness,
+                        fitness_performance(getreq_start_time, fitness,
                                             '_GET',
                                             'show_background_image',
-                                            self.server.debug)
+                                            debug)
                         return True
     http_404(self, 99)
     return True
 
 
 def show_emoji(self, path: str,
-               base_dir: str, getreq_start_time) -> None:
+               base_dir: str, getreq_start_time,
+               domain_full: {}, fitness: {},
+               debug: bool) -> None:
     """Returns an emoji image
     """
     if is_image_file(path):
@@ -738,10 +755,10 @@ def show_emoji(self, path: str,
                 set_headers_etag(self, emoji_filename,
                                  media_image_type,
                                  media_binary, None,
-                                 self.server.domain_full,
+                                 domain_full,
                                  False, None)
                 write2(self, media_binary)
-            fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', 'show_emoji', self.server.debug)
+            fitness_performance(getreq_start_time, fitness,
+                                '_GET', 'show_emoji', debug)
             return
     http_404(self, 36)

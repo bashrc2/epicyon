@@ -2383,10 +2383,13 @@ def daemon_http_get(self) -> None:
         if show_qrcode(self, calling_domain, self.path,
                        self.server.base_dir,
                        self.server.domain,
+                       self.server.domain_full,
                        self.server.onion_domain,
                        self.server.i2p_domain,
                        self.server.port,
-                       getreq_start_time):
+                       getreq_start_time,
+                       self.server.fitness,
+                       self.server.debug):
             return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -2399,21 +2402,30 @@ def daemon_http_get(self) -> None:
             if search_screen_banner(self, self.path,
                                     self.server.base_dir,
                                     self.server.domain,
-                                    getreq_start_time):
+                                    getreq_start_time,
+                                    self.server.domain_full,
+                                    self.server.fitness,
+                                    self.server.debug):
                 return
 
         if self.path.endswith('/left_col_image.png'):
             if column_image(self, 'left', self.path,
                             self.server.base_dir,
                             self.server.domain,
-                            getreq_start_time):
+                            getreq_start_time,
+                            self.server.domain_full,
+                            self.server.fitness,
+                            self.server.debug):
                 return
 
         if self.path.endswith('/right_col_image.png'):
             if column_image(self, 'right', self.path,
                             self.server.base_dir,
                             self.server.domain,
-                            getreq_start_time):
+                            getreq_start_time,
+                            self.server.domain_full,
+                            self.server.fitness,
+                            self.server.debug):
                 return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -2423,14 +2435,20 @@ def daemon_http_get(self) -> None:
     if self.path.startswith('/defaultprofilebackground'):
         show_default_profile_background(self, self.server.base_dir,
                                         self.server.theme_name,
-                                        getreq_start_time)
+                                        getreq_start_time,
+                                        self.server.domain_full,
+                                        self.server.fitness,
+                                        self.server.debug)
         return
 
     # show a background image on the login or person options page
     if '-background.' in self.path:
         if show_background_image(self, self.path,
                                  self.server.base_dir,
-                                 getreq_start_time):
+                                 getreq_start_time,
+                                 self.server.domain_full,
+                                 self.server.fitness,
+                                 self.server.debug):
             return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -2440,7 +2458,8 @@ def daemon_http_get(self) -> None:
     # emoji images
     if '/emoji/' in self.path:
         show_emoji(self, self.path, self.server.base_dir,
-                   getreq_start_time)
+                   getreq_start_time, self.server.domain_full,
+                   self.server.fitness, self.server.debug)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -2455,7 +2474,8 @@ def daemon_http_get(self) -> None:
                                       '/media/')
     if '/media/' in self.path:
         show_media(self, self.path, self.server.base_dir,
-                   getreq_start_time)
+                   getreq_start_time, self.server.fitness,
+                   self.server.debug)
         return
 
     if '/ontologies/' in self.path or \
@@ -2474,7 +2494,10 @@ def daemon_http_get(self) -> None:
     # Note that this comes before the busy flag to avoid conflicts
     if '/sharefiles/' in self.path:
         if show_share_image(self, self.path, self.server.base_dir,
-                            getreq_start_time):
+                            getreq_start_time,
+                            self.server.domain_full,
+                            self.server.fitness,
+                            self.server.debug):
             return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -2485,7 +2508,10 @@ def daemon_http_get(self) -> None:
     # Note that this comes before the busy flag to avoid conflicts
     if self.path.startswith('/icons/'):
         show_icon(self, self.path, self.server.base_dir,
-                  getreq_start_time)
+                  getreq_start_time, self.server.theme_name,
+                  self.server.iconsCache,
+                  self.server.domain_full,
+                  self.server.fitness, self.server.debug)
         return
 
     # show images within https://instancedomain/activitypub
@@ -2493,7 +2519,11 @@ def daemon_http_get(self) -> None:
         if self.path.endswith('.png'):
             show_specification_image(self, self.path,
                                      self.server.base_dir,
-                                     getreq_start_time)
+                                     getreq_start_time,
+                                     self.server.iconsCache,
+                                     self.server.domain_full,
+                                     self.server.fitness,
+                                     self.server.debug)
             return
 
     # show images within https://instancedomain/manual
@@ -2501,7 +2531,11 @@ def daemon_http_get(self) -> None:
         if is_image_file(self.path):
             show_manual_image(self, self.path,
                               self.server.base_dir,
-                              getreq_start_time)
+                              getreq_start_time,
+                              self.server.iconsCache,
+                              self.server.domain_full,
+                              self.server.fitness,
+                              self.server.debug)
             return
 
     # help screen images
@@ -2509,7 +2543,11 @@ def daemon_http_get(self) -> None:
     if self.path.startswith('/helpimages/'):
         show_help_screen_image(self, self.path,
                                self.server.base_dir,
-                               getreq_start_time)
+                               getreq_start_time,
+                               self.server.theme_name,
+                               self.server.domain_full,
+                               self.server.fitness,
+                               self.server.debug)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -2521,7 +2559,9 @@ def daemon_http_get(self) -> None:
     if self.path.startswith('/avatars/'):
         show_cached_avatar(self, referer_domain, self.path,
                            self.server.base_dir,
-                           getreq_start_time)
+                           getreq_start_time,
+                           self.server.fitness,
+                           self.server.debug)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -2533,7 +2573,9 @@ def daemon_http_get(self) -> None:
     if show_avatar_or_banner(self, referer_domain, self.path,
                              self.server.base_dir,
                              self.server.domain,
-                             getreq_start_time):
+                             getreq_start_time,
+                             self.server.fitness,
+                             self.server.debug):
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
