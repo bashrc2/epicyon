@@ -101,10 +101,17 @@ def receive_search_query(self, calling_domain: str, cookie: str,
         print('search_str: ' + search_str)
         if search_for_emoji:
             search_str = ':' + search_str + ':'
+
         my_posts_endings = (
             ' history', ' in sent', ' in outbox', ' in outgoing',
             ' in sent items', ' in sent posts', ' in outgoing posts',
             ' in my history', ' in my outbox', ' in my posts')
+        bookmark_endings = (
+            ' in my saved items', ' in my saved posts',
+            ' in my bookmarks', ' in my saved', ' in my saves',
+            ' in saved posts', ' in saved items', ' in bookmarks',
+            ' in saved', ' in saves', ' bookmark')
+
         if search_str.startswith('#'):
             nickname = get_nickname_from_actor(actor_str)
             if not nickname:
@@ -266,17 +273,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                 self.server.postreq_busy = False
                 return
         elif (search_str.startswith('-') or
-              search_str.endswith(' in my saved items') or
-              search_str.endswith(' in my saved posts') or
-              search_str.endswith(' in my bookmarks') or
-              search_str.endswith(' in my saved') or
-              search_str.endswith(' in my saves') or
-              search_str.endswith(' in saved posts') or
-              search_str.endswith(' in saved items') or
-              search_str.endswith(' in bookmarks') or
-              search_str.endswith(' in saved') or
-              search_str.endswith(' in saves') or
-              search_str.endswith(' bookmark')):
+              string_ends_with(search_str, bookmark_endings)):
+            # bookmark search
             possible_endings = (
                 ' in my bookmarks'
                 ' in my saved posts'
@@ -294,7 +292,6 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                 if search_str.endswith(poss_ending):
                     search_str = search_str.replace(poss_ending, '')
                     break
-            # bookmark search
             nickname = get_nickname_from_actor(actor_str)
             if not nickname:
                 self.send_response(400)
