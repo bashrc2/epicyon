@@ -194,7 +194,43 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                path: str, base_dir: str, http_prefix: str,
                domain: str, getreq_start_time,
                proxy_type: str, cookie: str, debug: str,
-               curr_session) -> bool:
+               curr_session, default_timeline: str,
+               recent_posts_cache: {},
+               cached_webfingers: {},
+               yt_replace_domain: str,
+               twitter_replacement_domain: str,
+               icons_as_buttons: bool,
+               access_keys: {},
+               key_shortcuts: {}, city: str,
+               signing_priv_key_pem: str,
+               rss_icon_at_top: bool,
+               shared_items_federated_domains: [],
+               account_timezone: {},
+               bold_reading_nicknames: [],
+               max_recent_posts: int,
+               translate: {},
+               project_version: str,
+               person_cache: {},
+               show_published_date_only: bool,
+               newswire: str,
+               theme_name: str,
+               dormant_months: int,
+               peertube_instances: [],
+               allow_local_network_access: bool,
+               text_mode_banner: str,
+               system_language: str,
+               max_like_count: int,
+               cw_lists: {},
+               lists_enabled: {},
+               content_license_url: str,
+               buy_sites: {},
+               max_shares_on_profile: int,
+               sites_unavailable: [],
+               no_of_books: int,
+               auto_cw_cache: {},
+               fitness: {},
+               onion_domain: str,
+               i2p_domain: str) -> bool:
     """Show roles within profile screen
     """
     named_status = path.split('/users/')[1]
@@ -217,93 +253,74 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                 person_lookup(domain, path.replace('/roles', ''),
                               base_dir)
             if get_person:
-                default_timeline = \
-                    self.server.default_timeline
-                recent_posts_cache = \
-                    self.server.recent_posts_cache
-                cached_webfingers = \
-                    self.server.cached_webfingers
-                yt_replace_domain = \
-                    self.server.yt_replace_domain
-                twitter_replacement_domain = \
-                    self.server.twitter_replacement_domain
-                icons_as_buttons = \
-                    self.server.icons_as_buttons
-
-                access_keys = self.server.access_keys
-                if self.server.key_shortcuts.get(nickname):
-                    access_keys = self.server.key_shortcuts[nickname]
+                if key_shortcuts.get(nickname):
+                    access_keys = key_shortcuts[nickname]
 
                 roles_list = get_actor_roles_list(actor_json)
-                city = \
-                    get_spoofed_city(self.server.city,
-                                     base_dir, nickname, domain)
-                shared_items_federated_domains = \
-                    self.server.shared_items_federated_domains
+                city = get_spoofed_city(city, base_dir, nickname, domain)
 
                 timezone = None
-                if self.server.account_timezone.get(nickname):
-                    timezone = \
-                        self.server.account_timezone.get(nickname)
+                if account_timezone.get(nickname):
+                    timezone = account_timezone.get(nickname)
                 bold_reading = False
-                if self.server.bold_reading.get(nickname):
+                if bold_reading_nicknames.get(nickname):
                     bold_reading = True
                 msg = \
-                    html_profile(self.server.signing_priv_key_pem,
-                                 self.server.rss_icon_at_top,
+                    html_profile(signing_priv_key_pem,
+                                 rss_icon_at_top,
                                  icons_as_buttons,
                                  default_timeline,
                                  recent_posts_cache,
-                                 self.server.max_recent_posts,
-                                 self.server.translate,
-                                 self.server.project_version,
+                                 max_recent_posts,
+                                 translate,
+                                 project_version,
                                  base_dir, http_prefix, True,
                                  get_person, 'roles',
                                  curr_session,
                                  cached_webfingers,
-                                 self.server.person_cache,
+                                 person_cache,
                                  yt_replace_domain,
                                  twitter_replacement_domain,
-                                 self.server.show_published_date_only,
-                                 self.server.newswire,
-                                 self.server.theme_name,
-                                 self.server.dormant_months,
-                                 self.server.peertube_instances,
-                                 self.server.allow_local_network_access,
-                                 self.server.text_mode_banner,
+                                 show_published_date_only,
+                                 newswire,
+                                 theme_name,
+                                 dormant_months,
+                                 peertube_instances,
+                                 allow_local_network_access,
+                                 text_mode_banner,
                                  debug,
                                  access_keys, city,
-                                 self.server.system_language,
-                                 self.server.max_like_count,
+                                 system_language,
+                                 max_like_count,
                                  shared_items_federated_domains,
                                  roles_list,
-                                 None, None, self.server.cw_lists,
-                                 self.server.lists_enabled,
-                                 self.server.content_license_url,
+                                 None, None, cw_lists,
+                                 lists_enabled,
+                                 content_license_url,
                                  timezone, bold_reading,
-                                 self.server.buy_sites, None,
-                                 self.server.max_shares_on_profile,
-                                 self.server.sites_unavailable,
-                                 self.server.no_of_books,
-                                 self.server.auto_cw_cache)
+                                 buy_sites, None,
+                                 max_shares_on_profile,
+                                 sites_unavailable,
+                                 no_of_books,
+                                 auto_cw_cache)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
                             cookie, calling_domain, False)
                 write2(self, msg)
-                fitness_performance(getreq_start_time, self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', '_show_roles', debug)
         else:
             if secure_mode(curr_session, proxy_type, False,
-                           self.server, self.headers, self.path):
+                           self.server, self.headers, path):
                 roles_list = get_actor_roles_list(actor_json)
                 msg_str = json.dumps(roles_list, ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
+                                          onion_domain,
+                                          i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 protocol_str = \
@@ -311,7 +328,7 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                 set_headers(self, protocol_str, msglen,
                             None, calling_domain, False)
                 write2(self, msg)
-                fitness_performance(getreq_start_time, self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', '_show_roles json', debug)
             else:
                 http_404(self, 65)
