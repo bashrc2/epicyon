@@ -331,7 +331,20 @@ def daemon_http_get(self) -> None:
     # get nodeinfo endpoint
     if get_nodeinfo(self, ua_str, calling_domain, referer_domain,
                     self.server.http_prefix, 5, self.server.debug,
-                    self.server.base_dir):
+                    self.server.base_dir,
+                    self.server.unit_test,
+                    self.server.domain_full,
+                    self.path,
+                    self.server.allow_local_network_access,
+                    self.server.sites_unavailable,
+                    self.server.known_crawlers,
+                    self.server.onion_domain,
+                    self.server.i2p_domain,
+                    self.server.project_version,
+                    self.server.show_node_info_version,
+                    self.server.show_node_info_accounts,
+                    self.server.registration,
+                    self.server.domain):
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
