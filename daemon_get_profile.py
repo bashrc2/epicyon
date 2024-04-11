@@ -509,38 +509,53 @@ def show_skills(self, calling_domain: str, referer_domain: str,
 def edit_profile2(self, calling_domain: str, path: str,
                   translate: {}, base_dir: str,
                   domain: str, port: int,
-                  cookie: str) -> bool:
+                  cookie: str,
+                  peertube_instances: [],
+                  access_keys: {},
+                  key_shortcuts: {},
+                  default_reply_interval_hrs: int,
+                  default_timeline: str,
+                  theme_name: str,
+                  text_mode_banner: str,
+                  user_agents_blocked: [],
+                  crawlers_allowed: [],
+                  cw_lists: {},
+                  lists_enabled: {},
+                  system_language: str,
+                  min_images_for_accounts: bool,
+                  max_recent_posts: int,
+                  reverse_sequence: bool,
+                  buy_sites: [],
+                  block_military: bool,
+                  block_federated_endpoints: []) -> bool:
     """Show the edit profile screen
     """
     if '/users/' in path and path.endswith('/editprofile'):
-        peertube_instances = self.server.peertube_instances
         nickname = get_nickname_from_actor(path)
 
-        access_keys = self.server.access_keys
         if '/users/' in path:
-            if self.server.key_shortcuts.get(nickname):
-                access_keys = self.server.key_shortcuts[nickname]
+            if key_shortcuts.get(nickname):
+                access_keys = key_shortcuts[nickname]
 
-        default_reply_interval_hrs = self.server.default_reply_interval_hrs
         msg = html_edit_profile(self.server, translate,
                                 base_dir, path, domain, port,
-                                self.server.default_timeline,
-                                self.server.theme_name,
+                                default_timeline,
+                                theme_name,
                                 peertube_instances,
-                                self.server.text_mode_banner,
-                                self.server.user_agents_blocked,
-                                self.server.crawlers_allowed,
+                                text_mode_banner,
+                                user_agents_blocked,
+                                crawlers_allowed,
                                 access_keys,
                                 default_reply_interval_hrs,
-                                self.server.cw_lists,
-                                self.server.lists_enabled,
-                                self.server.system_language,
-                                self.server.min_images_for_accounts,
-                                self.server.max_recent_posts,
-                                self.server.reverse_sequence,
-                                self.server.buy_sites,
-                                self.server.block_military,
-                                self.server.block_federated_endpoints)
+                                cw_lists,
+                                lists_enabled,
+                                system_language,
+                                min_images_for_accounts,
+                                max_recent_posts,
+                                reverse_sequence,
+                                buy_sites,
+                                block_military,
+                                block_federated_endpoints)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

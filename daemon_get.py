@@ -3699,7 +3699,25 @@ def daemon_http_get(self) -> None:
                          self.server.base_dir,
                          self.server.domain,
                          self.server.port,
-                         cookie):
+                         cookie,
+                         self.server.peertube_instances,
+                         self.server.access_keys,
+                         self.server.key_shortcuts,
+                         self.server.default_reply_interval_hrs,
+                         self.server.default_timeline,
+                         self.server.theme_name,
+                         self.server.text_mode_banner,
+                         self.server.user_agents_blocked,
+                         self.server.crawlers_allowed,
+                         self.server.cw_lists,
+                         self.server.lists_enabled,
+                         self.server.system_language,
+                         self.server.min_images_for_accounts,
+                         self.server.max_recent_posts,
+                         self.server.reverse_sequence,
+                         self.server.buy_sites,
+                         self.server.block_military,
+                         self.server.block_federated_endpoints):
             self.server.getreq_busy = False
             return
 
