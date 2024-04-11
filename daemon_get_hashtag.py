@@ -32,7 +32,9 @@ def hashtag_search_rss2(self, calling_domain: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
-                        getreq_start_time) -> None:
+                        getreq_start_time,
+                        system_language: str,
+                        fitness: {}, debug: bool) -> None:
     """Return an RSS 2 feed for a hashtag
     """
     hashtag = path.split('/tags/rss2/')[1]
@@ -50,7 +52,7 @@ def hashtag_search_rss2(self, calling_domain: str,
                            domain, port,
                            base_dir, hashtag,
                            http_prefix,
-                           self.server.system_language)
+                           system_language)
     if hashtag_str:
         msg = hashtag_str.encode('utf-8')
         msglen = len(msg)
@@ -69,9 +71,9 @@ def hashtag_search_rss2(self, calling_domain: str,
                 'http://' + i2p_domain + origin_path_str
         redirect_headers(self, origin_path_str_absolute + '/search',
                          cookie, calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_hashtag_search_rss2',
-                        self.server.debug)
+                        debug)
 
 
 def hashtag_search_json2(self, calling_domain: str,
@@ -81,7 +83,8 @@ def hashtag_search_json2(self, calling_domain: str,
                          domain: str, domain_full: str, port: int,
                          onion_domain: str, i2p_domain: str,
                          getreq_start_time,
-                         max_posts_in_feed: int) -> None:
+                         max_posts_in_feed: int,
+                         fitness: {}, debug: bool) -> None:
     """Return a json collection for a hashtag
     """
     page_number = 1
@@ -128,9 +131,9 @@ def hashtag_search_json2(self, calling_domain: str,
                 'http://' + i2p_domain + origin_path_str
         redirect_headers(self, origin_path_str_absolute,
                          cookie, calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_hashtag_search_json',
-                        self.server.debug)
+                        debug)
 
 
 def hashtag_search2(self, calling_domain: str,
@@ -140,7 +143,32 @@ def hashtag_search2(self, calling_domain: str,
                     onion_domain: str, i2p_domain: str,
                     getreq_start_time,
                     curr_session,
-                    max_posts_in_hashtag_feed: int) -> None:
+                    max_posts_in_hashtag_feed: int,
+                    translate: {}, account_timezone: {},
+                    bold_reading_nicknames: {},
+                    fitness: {}, debug: bool,
+                    recent_posts_cache: {},
+                    max_recent_posts: int,
+                    cached_webfingers: {},
+                    person_cache: {},
+                    project_version: str,
+                    yt_replace_domain: str,
+                    twitter_replacement_domain: str,
+                    show_published_date_only: bool,
+                    peertube_instances: [],
+                    allow_local_network_access: bool,
+                    theme_name: str,
+                    system_language: str,
+                    max_like_count: int,
+                    signing_priv_key_pem: str,
+                    cw_lists: {},
+                    lists_enabled: {},
+                    dogwhistles: {},
+                    map_format: str,
+                    access_keys: {},
+                    min_images_for_accounts: [],
+                    buy_sites: [],
+                    auto_cw_cache: {}) -> None:
     """Return the result of a hashtag search
     """
     page_number = 1
@@ -159,7 +187,7 @@ def hashtag_search2(self, calling_domain: str,
     if is_blocked_hashtag(base_dir, hashtag):
         print('BLOCK: blocked hashtag #' + hashtag)
         msg = html_hashtag_blocked(base_dir,
-                                   self.server.translate).encode('utf-8')
+                                   translate).encode('utf-8')
         msglen = len(msg)
         login_headers(self, 'text/html', msglen, calling_domain)
         write2(self, msg)
@@ -172,43 +200,42 @@ def hashtag_search2(self, calling_domain: str,
         if '?' in nickname:
             nickname = nickname.split('?')[0]
     timezone = None
-    if self.server.account_timezone.get(nickname):
-        timezone = \
-            self.server.account_timezone.get(nickname)
+    if account_timezone.get(nickname):
+        timezone = account_timezone.get(nickname)
     bold_reading = False
-    if self.server.bold_reading.get(nickname):
+    if bold_reading_nicknames.get(nickname):
         bold_reading = True
     hashtag_str = \
         html_hashtag_search(nickname, domain, port,
-                            self.server.recent_posts_cache,
-                            self.server.max_recent_posts,
-                            self.server.translate,
+                            recent_posts_cache,
+                            max_recent_posts,
+                            translate,
                             base_dir, hashtag, page_number,
                             max_posts_in_hashtag_feed,
                             curr_session,
-                            self.server.cached_webfingers,
-                            self.server.person_cache,
+                            cached_webfingers,
+                            person_cache,
                             http_prefix,
-                            self.server.project_version,
-                            self.server.yt_replace_domain,
-                            self.server.twitter_replacement_domain,
-                            self.server.show_published_date_only,
-                            self.server.peertube_instances,
-                            self.server.allow_local_network_access,
-                            self.server.theme_name,
-                            self.server.system_language,
-                            self.server.max_like_count,
-                            self.server.signing_priv_key_pem,
-                            self.server.cw_lists,
-                            self.server.lists_enabled,
+                            project_version,
+                            yt_replace_domain,
+                            twitter_replacement_domain,
+                            show_published_date_only,
+                            peertube_instances,
+                            allow_local_network_access,
+                            theme_name,
+                            system_language,
+                            max_like_count,
+                            signing_priv_key_pem,
+                            cw_lists,
+                            lists_enabled,
                             timezone, bold_reading,
-                            self.server.dogwhistles,
-                            self.server.map_format,
-                            self.server.access_keys,
+                            dogwhistles,
+                            map_format,
+                            access_keys,
                             'search',
-                            self.server.min_images_for_accounts,
-                            self.server.buy_sites,
-                            self.server.auto_cw_cache)
+                            min_images_for_accounts,
+                            buy_sites,
+                            auto_cw_cache)
     if hashtag_str:
         msg = hashtag_str.encode('utf-8')
         msglen = len(msg)
@@ -227,9 +254,8 @@ def hashtag_search2(self, calling_domain: str,
                 'http://' + i2p_domain + origin_path_str
         redirect_headers(self, origin_path_str_absolute + '/search',
                          cookie, calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
-                        '_GET', '_hashtag_search',
-                        self.server.debug)
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', '_hashtag_search', debug)
 
 
 def get_hashtag_categories_feed2(self, calling_domain: str, path: str,

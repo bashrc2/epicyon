@@ -2847,7 +2847,10 @@ def daemon_http_get(self) -> None:
                                 self.server.port,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
-                                getreq_start_time)
+                                getreq_start_time,
+                                self.server.system_language,
+                                self.server.fitness,
+                                self.server.debug)
             self.server.getreq_busy = False
             return
         if not html_getreq:
@@ -2861,7 +2864,9 @@ def daemon_http_get(self) -> None:
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
                                  getreq_start_time,
-                                 MAX_POSTS_IN_FEED)
+                                 MAX_POSTS_IN_FEED,
+                                 self.server.fitness,
+                                 self.server.debug)
             self.server.getreq_busy = False
             return
         hashtag_search2(self, calling_domain,
@@ -2875,7 +2880,34 @@ def daemon_http_get(self) -> None:
                         self.server.i2p_domain,
                         getreq_start_time,
                         curr_session,
-                        MAX_POSTS_IN_HASHTAG_FEED)
+                        MAX_POSTS_IN_HASHTAG_FEED,
+                        self.server.translate,
+                        self.server.account_timezone,
+                        self.server.bold_reading,
+                        self.server.fitness,
+                        self.server.debug,
+                        self.server.recent_posts_cache,
+                        self.server.max_recent_posts,
+                        self.server.cached_webfingers,
+                        self.server.person_cache,
+                        self.server.project_version,
+                        self.server.yt_replace_domain,
+                        self.server.twitter_replacement_domain,
+                        self.server.show_published_date_only,
+                        self.server.peertube_instances,
+                        self.server.allow_local_network_access,
+                        self.server.theme_name,
+                        self.server.system_language,
+                        self.server.max_like_count,
+                        self.server.signing_priv_key_pem,
+                        self.server.cw_lists,
+                        self.server.lists_enabled,
+                        self.server.dogwhistles,
+                        self.server.map_format,
+                        self.server.access_keys,
+                        self.server.min_images_for_accounts,
+                        self.server.buy_sites,
+                        self.server.auto_cw_cache)
         self.server.getreq_busy = False
         return
 
