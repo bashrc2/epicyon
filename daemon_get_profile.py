@@ -339,7 +339,45 @@ def show_roles(self, calling_domain: str, referer_domain: str,
 def show_skills(self, calling_domain: str, referer_domain: str,
                 path: str, base_dir: str, http_prefix: str,
                 domain: str, getreq_start_time, proxy_type: str,
-                cookie: str, debug: str, curr_session) -> bool:
+                cookie: str, debug: str, curr_session,
+                default_timeline: str,
+                recent_posts_cache: {},
+                cached_webfingers: {},
+                yt_replace_domain: str,
+                twitter_replacement_domain: str,
+                show_published_date_only: bool,
+                icons_as_buttons: bool,
+                allow_local_network_access: bool,
+                access_keys: {},
+                key_shortcuts: {},
+                shared_items_federated_domains: [],
+                signing_priv_key_pem: str,
+                content_license_url: str,
+                peertube_instances: [], city: str,
+                account_timezone: {},
+                bold_reading_nicknames: [],
+                max_shares_on_profile: int,
+                rss_icon_at_top: bool,
+                max_recent_posts: int,
+                translate: {},
+                project_version: str,
+                person_cache: {},
+                newswire: str,
+                theme_name: str,
+                dormant_months: int,
+                text_mode_banner: str,
+                system_language: str,
+                max_like_count: int,
+                cw_lists: {},
+                lists_enabled: {},
+                buy_sites: [],
+                sites_unavailable: [],
+                no_of_books: int,
+                auto_cw_cache: {},
+                fitness: {},
+                domain_full: str,
+                onion_domain: str,
+                i2p_domain: str) -> bool:
     """Show skills on the profile screen
     """
     named_status = path.split('/users/')[1]
@@ -357,99 +395,70 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                                           path.replace('/skills', ''),
                                           base_dir)
                         if get_person:
-                            default_timeline =  \
-                                self.server.default_timeline
-                            recent_posts_cache = \
-                                self.server.recent_posts_cache
-                            cached_webfingers = \
-                                self.server.cached_webfingers
-                            yt_replace_domain = \
-                                self.server.yt_replace_domain
-                            twitter_replacement_domain = \
-                                self.server.twitter_replacement_domain
-                            show_published_date_only = \
-                                self.server.show_published_date_only
-                            icons_as_buttons = \
-                                self.server.icons_as_buttons
-                            allow_local_network_access = \
-                                self.server.allow_local_network_access
-                            access_keys = self.server.access_keys
-                            if self.server.key_shortcuts.get(nickname):
-                                access_keys = \
-                                    self.server.key_shortcuts[nickname]
+                            if key_shortcuts.get(nickname):
+                                access_keys = key_shortcuts[nickname]
                             actor_skills_list = \
                                 get_occupation_skills(actor_json)
                             skills = \
                                 get_skills_from_list(actor_skills_list)
-                            city = get_spoofed_city(self.server.city,
-                                                    base_dir,
+                            city = get_spoofed_city(city, base_dir,
                                                     nickname, domain)
                             shared_items_fed_domains = \
-                                self.server.shared_items_federated_domains
-                            signing_priv_key_pem = \
-                                self.server.signing_priv_key_pem
-                            content_license_url = \
-                                self.server.content_license_url
-                            peertube_instances = \
-                                self.server.peertube_instances
+                                shared_items_federated_domains
                             timezone = None
                             nick = nickname
-                            if self.server.account_timezone.get(nick):
-                                timezone = \
-                                    self.server.account_timezone.get(nick)
+                            if account_timezone.get(nick):
+                                timezone = account_timezone.get(nick)
                             bold_reading = False
-                            if self.server.bold_reading.get(nick):
+                            if bold_reading_nicknames.get(nick):
                                 bold_reading = True
-                            max_shares_on_profile = \
-                                self.server.max_shares_on_profile
                             msg = \
                                 html_profile(signing_priv_key_pem,
-                                             self.server.rss_icon_at_top,
+                                             rss_icon_at_top,
                                              icons_as_buttons,
                                              default_timeline,
                                              recent_posts_cache,
-                                             self.server.max_recent_posts,
-                                             self.server.translate,
-                                             self.server.project_version,
+                                             max_recent_posts,
+                                             translate,
+                                             project_version,
                                              base_dir, http_prefix, True,
                                              get_person, 'skills',
                                              curr_session,
                                              cached_webfingers,
-                                             self.server.person_cache,
+                                             person_cache,
                                              yt_replace_domain,
                                              twitter_replacement_domain,
                                              show_published_date_only,
-                                             self.server.newswire,
-                                             self.server.theme_name,
-                                             self.server.dormant_months,
+                                             newswire,
+                                             theme_name,
+                                             dormant_months,
                                              peertube_instances,
                                              allow_local_network_access,
-                                             self.server.text_mode_banner,
+                                             text_mode_banner,
                                              debug,
                                              access_keys, city,
-                                             self.server.system_language,
-                                             self.server.max_like_count,
+                                             system_language,
+                                             max_like_count,
                                              shared_items_fed_domains,
                                              skills,
                                              None, None,
-                                             self.server.cw_lists,
-                                             self.server.lists_enabled,
+                                             cw_lists,
+                                             lists_enabled,
                                              content_license_url,
                                              timezone, bold_reading,
-                                             self.server.buy_sites,
+                                             buy_sites,
                                              None,
                                              max_shares_on_profile,
-                                             self.server.sites_unavailable,
-                                             self.server.no_of_books,
-                                             self.server.auto_cw_cache)
+                                             sites_unavailable,
+                                             no_of_books,
+                                             auto_cw_cache)
                             msg = msg.encode('utf-8')
                             msglen = len(msg)
                             set_headers(self, 'text/html', msglen,
                                         cookie, calling_domain,
                                               False)
                             write2(self, msg)
-                            fitness_performance(getreq_start_time,
-                                                self.server.fitness,
+                            fitness_performance(getreq_start_time, fitness,
                                                 '_GET', '_show_skills',
                                                 debug)
                     else:
@@ -457,7 +466,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                                        proxy_type, False,
                                        self.server,
                                        self.headers,
-                                       self.path):
+                                       path):
                             actor_skills_list = \
                                 get_occupation_skills(actor_json)
                             skills = \
@@ -481,8 +490,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                             set_headers(self, protocol_str, msglen, None,
                                         calling_domain, False)
                             write2(self, msg)
-                            fitness_performance(getreq_start_time,
-                                                self.server.fitness,
+                            fitness_performance(getreq_start_time, fitness,
                                                 '_GET',
                                                 '_show_skills json',
                                                 debug)
@@ -491,11 +499,8 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                     return True
     actor = path.replace('/skills', '')
     actor_absolute = \
-        get_instance_url(calling_domain,
-                         http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+        get_instance_url(calling_domain, http_prefix, domain_full,
+                         onion_domain, i2p_domain) + \
         actor
     redirect_headers(self, actor_absolute, cookie, calling_domain)
     return True
