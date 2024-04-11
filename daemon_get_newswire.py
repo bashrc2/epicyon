@@ -24,7 +24,10 @@ from webapp_column_right import html_edit_newswire
 
 def get_newswire_feed(self, calling_domain: str, path: str,
                       proxy_type: str, getreq_start_time,
-                      debug: bool, curr_session) -> None:
+                      debug: bool, curr_session,
+                      newswire: {}, http_prefix: str,
+                      domain_full: str, translate: {},
+                      fitness: {}) -> None:
     """Returns the newswire feed
     """
     curr_session = \
@@ -36,10 +39,7 @@ def get_newswire_feed(self, calling_domain: str, path: str,
         http_404(self, 25)
         return
 
-    msg = get_rss_from_dict(self.server.newswire,
-                            self.server.http_prefix,
-                            self.server.domain_full,
-                            self.server.translate)
+    msg = get_rss_from_dict(newswire, http_prefix, domain_full, translate)
     if msg:
         msg = msg.encode('utf-8')
         msglen = len(msg)
@@ -49,7 +49,7 @@ def get_newswire_feed(self, calling_domain: str, path: str,
         if debug:
             print('Sent rss2 newswire feed: ' +
                   path + ' ' + calling_domain)
-        fitness_performance(getreq_start_time, self.server.fitness,
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', '_get_newswire_feed',
                             debug)
         return
@@ -65,7 +65,8 @@ def newswire_vote(self, calling_domain: str, path: str,
                   domain_full: str,
                   onion_domain: str, i2p_domain: str,
                   getreq_start_time,
-                  newswire: {}):
+                  newswire: {}, default_timeline: str,
+                  fitness: {}, debug: bool) -> None:
     """Vote for a newswire item
     """
     origin_path_str = path.split('/newswirevote=')[0]
@@ -102,16 +103,16 @@ def newswire_vote(self, calling_domain: str, path: str,
 
     origin_path_str_absolute = \
         http_prefix + '://' + domain_full + origin_path_str + '/' + \
-        self.server.default_timeline
+        default_timeline
     if calling_domain.endswith('.onion') and onion_domain:
         origin_path_str_absolute = \
             'http://' + onion_domain + origin_path_str
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str_absolute = \
             'http://' + i2p_domain + origin_path_str
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_newswire_vote',
-                        self.server.debug)
+                        debug)
     redirect_headers(self, origin_path_str_absolute,
                      cookie, calling_domain)
 
@@ -121,7 +122,8 @@ def newswire_unvote(self, calling_domain: str, path: str,
                     domain_full: str,
                     onion_domain: str, i2p_domain: str,
                     getreq_start_time, debug: bool,
-                    newswire: {}):
+                    newswire: {}, default_timeline: str,
+                    fitness: {}) -> None:
     """Remove vote for a newswire item
     """
     origin_path_str = path.split('/newswireunvote=')[0]
@@ -156,7 +158,7 @@ def newswire_unvote(self, calling_domain: str, path: str,
 
     origin_path_str_absolute = \
         http_prefix + '://' + domain_full + origin_path_str + '/' + \
-        self.server.default_timeline
+        default_timeline
     if calling_domain.endswith('.onion') and onion_domain:
         origin_path_str_absolute = \
             'http://' + onion_domain + origin_path_str
@@ -165,13 +167,18 @@ def newswire_unvote(self, calling_domain: str, path: str,
             'http://' + i2p_domain + origin_path_str
     redirect_headers(self, origin_path_str_absolute,
                      cookie, calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_newswire_unvote', debug)
 
 
 def edit_newswire2(self, calling_domain: str, path: str,
                    translate: {}, base_dir: str,
-                   domain: str, cookie: str) -> bool:
+                   domain: str, cookie: str,
+                   access_keys: {},
+                   key_shortcuts: {},
+                   default_timeline: str,
+                   theme_name: str,
+                   dogwhistles: {}) -> bool:
     """Show the newswire from the right column
     """
     if '/users/' in path and path.endswith('/editnewswire'):
@@ -179,17 +186,16 @@ def edit_newswire2(self, calling_domain: str, path: str,
         if '/' in nickname:
             nickname = nickname.split('/')[0]
 
-        access_keys = self.server.access_keys
-        if self.server.key_shortcuts.get(nickname):
-            access_keys = self.server.key_shortcuts[nickname]
+        if key_shortcuts.get(nickname):
+            access_keys = key_shortcuts[nickname]
 
         msg = html_edit_newswire(translate,
                                  base_dir,
                                  path, domain,
-                                 self.server.default_timeline,
-                                 self.server.theme_name,
+                                 default_timeline,
+                                 theme_name,
                                  access_keys,
-                                 self.server.dogwhistles)
+                                 dogwhistles)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

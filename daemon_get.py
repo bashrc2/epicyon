@@ -1334,7 +1334,12 @@ def daemon_http_get(self) -> None:
                           proxy_type,
                           getreq_start_time,
                           self.server.debug,
-                          curr_session)
+                          curr_session,
+                          self.server.newswire,
+                          self.server.http_prefix,
+                          self.server.domain_full,
+                          self.server.translate,
+                          self.server.fitness)
         return
 
     # RSS 2.0
@@ -3202,7 +3207,10 @@ def daemon_http_get(self) -> None:
                       self.server.onion_domain,
                       self.server.i2p_domain,
                       getreq_start_time,
-                      self.server.newswire)
+                      self.server.newswire,
+                      self.server.default_timeline,
+                      self.server.fitness,
+                      self.server.debug)
         self.server.getreq_busy = False
         return
 
@@ -3218,7 +3226,9 @@ def daemon_http_get(self) -> None:
                         self.server.i2p_domain,
                         getreq_start_time,
                         self.server.debug,
-                        self.server.newswire)
+                        self.server.newswire,
+                        self.server.default_timeline,
+                        self.server.fitness)
         self.server.getreq_busy = False
         return
 
@@ -3738,7 +3748,12 @@ def daemon_http_get(self) -> None:
         if edit_newswire2(self, calling_domain, self.path,
                           self.server.translate,
                           self.server.base_dir,
-                          self.server.domain, cookie):
+                          self.server.domain, cookie,
+                          self.server.access_keys,
+                          self.server.key_shortcuts,
+                          self.server.default_timeline,
+                          self.server.theme_name,
+                          self.server.dogwhistles):
             self.server.getreq_busy = False
             return
 
