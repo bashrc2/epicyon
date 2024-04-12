@@ -748,7 +748,33 @@ def show_replies_to_post(self, authorized: bool,
                          domain: str, domain_full: str, port: int,
                          getreq_start_time,
                          proxy_type: str, cookie: str,
-                         debug: str, curr_session) -> bool:
+                         debug: str, curr_session,
+                         recent_posts_cache: {},
+                         max_recent_posts: int,
+                         translate: {},
+                         cached_webfingers: {},
+                         person_cache: {},
+                         project_version: str,
+                         yt_replace_domain: str,
+                         twitter_replacement_domain: str,
+                         peertube_instances: [],
+                         account_timezone: {},
+                         bold_reading_nicknames: {},
+                         show_published_date_only: bool,
+                         allow_local_network_access: bool,
+                         theme_name: str,
+                         system_language: str,
+                         max_like_count: int,
+                         signing_priv_key_pem: str,
+                         cw_lists: {},
+                         lists_enabled: {},
+                         dogwhistles: {},
+                         min_images_for_accounts: bool,
+                         buy_sites: [],
+                         auto_cw_cache: {},
+                         fitness: {},
+                         onion_domain: str,
+                         i2p_domain: str) -> bool:
     """Shows the replies to a post
     """
     if not ('/statuses/' in path and '/users/' in path):
@@ -812,22 +838,12 @@ def show_replies_to_post(self, authorized: bool,
             if not curr_session:
                 http_404(self, 61)
                 return True
-            recent_posts_cache = self.server.recent_posts_cache
-            max_recent_posts = self.server.max_recent_posts
-            translate = self.server.translate
-            cached_webfingers = self.server.cached_webfingers
-            person_cache = self.server.person_cache
-            project_version = self.server.project_version
-            yt_domain = self.server.yt_replace_domain
-            twitter_replacement_domain = \
-                self.server.twitter_replacement_domain
-            peertube_instances = self.server.peertube_instances
+            yt_domain = yt_replace_domain
             timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
+            if account_timezone.get(nickname):
+                timezone = account_timezone.get(nickname)
             bold_reading = False
-            if self.server.bold_reading.get(nickname):
+            if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             msg = \
                 html_post_replies(recent_posts_cache,
@@ -845,38 +861,38 @@ def show_replies_to_post(self, authorized: bool,
                                   project_version,
                                   yt_domain,
                                   twitter_replacement_domain,
-                                  self.server.show_published_date_only,
+                                  show_published_date_only,
                                   peertube_instances,
-                                  self.server.allow_local_network_access,
-                                  self.server.theme_name,
-                                  self.server.system_language,
-                                  self.server.max_like_count,
-                                  self.server.signing_priv_key_pem,
-                                  self.server.cw_lists,
-                                  self.server.lists_enabled,
+                                  allow_local_network_access,
+                                  theme_name,
+                                  system_language,
+                                  max_like_count,
+                                  signing_priv_key_pem,
+                                  cw_lists,
+                                  lists_enabled,
                                   timezone, bold_reading,
-                                  self.server.dogwhistles,
-                                  self.server.min_images_for_accounts,
-                                  self.server.buy_sites,
-                                  self.server.auto_cw_cache)
+                                  dogwhistles,
+                                  min_images_for_accounts,
+                                  buy_sites,
+                                  auto_cw_cache)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
                         cookie, calling_domain, False)
             write2(self, msg)
-            fitness_performance(getreq_start_time, self.server.fitness,
+            fitness_performance(getreq_start_time, fitness,
                                 '_GET', 'show_replies_to_post',
                                 debug)
         else:
             if secure_mode(curr_session, proxy_type, False,
-                           self.server, self.headers, self.path):
+                           self.server, self.headers, path):
                 msg_str = json.dumps(replies_json, ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
+                                          onion_domain,
+                                          i2p_domain)
                 msg = msg_str.encode('utf-8')
                 protocol_str = \
                     get_json_content_from_accept(self.headers['Accept'])
@@ -884,7 +900,7 @@ def show_replies_to_post(self, authorized: bool,
                 set_headers(self, protocol_str, msglen, None,
                             calling_domain, False)
                 write2(self, msg)
-                fitness_performance(getreq_start_time, self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', 'show_replies_to_post json',
                                     debug)
             else:
@@ -933,22 +949,12 @@ def show_replies_to_post(self, authorized: bool,
             if not curr_session:
                 http_404(self, 63)
                 return True
-            recent_posts_cache = self.server.recent_posts_cache
-            max_recent_posts = self.server.max_recent_posts
-            translate = self.server.translate
-            cached_webfingers = self.server.cached_webfingers
-            person_cache = self.server.person_cache
-            project_version = self.server.project_version
-            yt_domain = self.server.yt_replace_domain
-            twitter_replacement_domain = \
-                self.server.twitter_replacement_domain
-            peertube_instances = self.server.peertube_instances
+            yt_domain = yt_replace_domain
             timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
+            if account_timezone.get(nickname):
+                timezone = account_timezone.get(nickname)
             bold_reading = False
-            if self.server.bold_reading.get(nickname):
+            if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             msg = \
                 html_post_replies(recent_posts_cache,
@@ -966,38 +972,38 @@ def show_replies_to_post(self, authorized: bool,
                                   project_version,
                                   yt_domain,
                                   twitter_replacement_domain,
-                                  self.server.show_published_date_only,
+                                  show_published_date_only,
                                   peertube_instances,
-                                  self.server.allow_local_network_access,
-                                  self.server.theme_name,
-                                  self.server.system_language,
-                                  self.server.max_like_count,
-                                  self.server.signing_priv_key_pem,
-                                  self.server.cw_lists,
-                                  self.server.lists_enabled,
+                                  allow_local_network_access,
+                                  theme_name,
+                                  system_language,
+                                  max_like_count,
+                                  signing_priv_key_pem,
+                                  cw_lists,
+                                  lists_enabled,
                                   timezone, bold_reading,
-                                  self.server.dogwhistles,
-                                  self.server.min_images_for_accounts,
-                                  self.server.buy_sites,
-                                  self.server.auto_cw_cache)
+                                  dogwhistles,
+                                  min_images_for_accounts,
+                                  buy_sites,
+                                  auto_cw_cache)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
                         cookie, calling_domain, False)
             write2(self, msg)
-            fitness_performance(getreq_start_time, self.server.fitness,
+            fitness_performance(getreq_start_time, fitness,
                                 '_GET', 'show_replies_to_post',
                                 debug)
         else:
             if secure_mode(curr_session, proxy_type, False,
-                           self.server, self.headers, self.path):
+                           self.server, self.headers, path):
                 msg_str = json.dumps(replies_json, ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
+                                          onion_domain,
+                                          i2p_domain)
                 msg = msg_str.encode('utf-8')
                 protocol_str = \
                     get_json_content_from_accept(self.headers['Accept'])
@@ -1005,7 +1011,7 @@ def show_replies_to_post(self, authorized: bool,
                 set_headers(self, protocol_str, msglen,
                             None, calling_domain, False)
                 write2(self, msg)
-                fitness_performance(getreq_start_time, self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', 'show_replies_to_post json',
                                     debug)
             else:
