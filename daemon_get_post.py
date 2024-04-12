@@ -286,7 +286,34 @@ def show_new_post(self, edit_post_params: {},
                   domain: str, domain_full: str,
                   getreq_start_time, cookie,
                   no_drop_down: bool, conversation_id: str,
-                  curr_session) -> bool:
+                  curr_session, default_reply_interval_hrs: int,
+                  debug: bool, access_keys: {},
+                  key_shortcuts: {}, system_language: str,
+                  default_post_language: {},
+                  bold_reading_nicknames: {},
+                  person_cache: {},
+                  fitness: {},
+                  default_timeline: str,
+                  newswire: {},
+                  theme_name: str,
+                  recent_posts_cache: {},
+                  max_recent_posts: int,
+                  cached_webfingers: {},
+                  port: int,
+                  project_version: str,
+                  yt_replace_domain: str,
+                  twitter_replacement_domain: str,
+                  show_published_date_only: bool,
+                  peertube_instances: [],
+                  allow_local_network_access: bool,
+                  max_like_count: int,
+                  signing_priv_key_pem: str,
+                  cw_lists: {},
+                  lists_enabled: {},
+                  dogwhistles: {},
+                  min_images_for_accounts: bool,
+                  buy_sites: [],
+                  auto_cw_cache: {}) -> bool:
     """Shows the new post screen
     """
     is_new_post_endpoint = False
@@ -319,27 +346,25 @@ def show_new_post(self, edit_post_params: {},
             http_404(self, 103)
             return True
         if in_reply_to_url:
-            reply_interval_hours = self.server.default_reply_interval_hrs
+            reply_interval_hours = default_reply_interval_hrs
             if not can_reply_to(base_dir, nickname, domain,
                                 in_reply_to_url, reply_interval_hours):
                 print('Reply outside of time window ' + in_reply_to_url +
                       ' ' + str(reply_interval_hours) + ' hours')
                 http_403(self)
                 return True
-            if self.server.debug:
+            if debug:
                 print('Reply is within time interval: ' +
                       str(reply_interval_hours) + ' hours')
 
-        access_keys = self.server.access_keys
-        if self.server.key_shortcuts.get(nickname):
-            access_keys = self.server.key_shortcuts[nickname]
+        if key_shortcuts.get(nickname):
+            access_keys = key_shortcuts[nickname]
 
         custom_submit_text = get_config_param(base_dir, 'customSubmitText')
 
-        default_post_language = self.server.system_language
-        if self.server.default_post_language.get(nickname):
-            default_post_language = \
-                self.server.default_post_language[nickname]
+        default_post_language2 = system_language
+        if default_post_language.get(nickname):
+            default_post_language2 = default_post_language[nickname]
 
         post_json_object = None
         if in_reply_to_url:
@@ -351,10 +376,10 @@ def show_new_post(self, edit_post_params: {},
                     reply_language = \
                         get_reply_language(base_dir, post_json_object)
                     if reply_language:
-                        default_post_language = reply_language
+                        default_post_language2 = reply_language
 
         bold_reading = False
-        if self.server.bold_reading.get(nickname):
+        if bold_reading_nicknames.get(nickname):
             bold_reading = True
 
         languages_understood = \
@@ -362,7 +387,7 @@ def show_new_post(self, edit_post_params: {},
                                      http_prefix,
                                      nickname,
                                      domain_full,
-                                     self.server.person_cache)
+                                     person_cache)
         default_buy_site = ''
         msg = \
             html_new_post(edit_post_params, media_instance,
@@ -376,41 +401,41 @@ def show_new_post(self, edit_post_params: {},
                           reply_category,
                           nickname, domain,
                           domain_full,
-                          self.server.default_timeline,
-                          self.server.newswire,
-                          self.server.theme_name,
+                          default_timeline,
+                          newswire,
+                          theme_name,
                           no_drop_down, access_keys,
                           custom_submit_text,
                           conversation_id,
-                          self.server.recent_posts_cache,
-                          self.server.max_recent_posts,
+                          recent_posts_cache,
+                          max_recent_posts,
                           curr_session,
-                          self.server.cached_webfingers,
-                          self.server.person_cache,
-                          self.server.port,
+                          cached_webfingers,
+                          person_cache,
+                          port,
                           post_json_object,
-                          self.server.project_version,
-                          self.server.yt_replace_domain,
-                          self.server.twitter_replacement_domain,
-                          self.server.show_published_date_only,
-                          self.server.peertube_instances,
-                          self.server.allow_local_network_access,
-                          self.server.system_language,
+                          project_version,
+                          yt_replace_domain,
+                          twitter_replacement_domain,
+                          show_published_date_only,
+                          peertube_instances,
+                          allow_local_network_access,
+                          system_language,
                           languages_understood,
-                          self.server.max_like_count,
-                          self.server.signing_priv_key_pem,
-                          self.server.cw_lists,
-                          self.server.lists_enabled,
-                          self.server.default_timeline,
+                          max_like_count,
+                          signing_priv_key_pem,
+                          cw_lists,
+                          lists_enabled,
+                          default_timeline,
                           reply_is_chat,
                           bold_reading,
-                          self.server.dogwhistles,
-                          self.server.min_images_for_accounts,
+                          dogwhistles,
+                          min_images_for_accounts,
                           new_post_month, new_post_year,
-                          default_post_language,
-                          self.server.buy_sites,
+                          default_post_language2,
+                          buy_sites,
                           default_buy_site,
-                          self.server.auto_cw_cache)
+                          auto_cw_cache)
         if not msg:
             print('Error replying to ' + in_reply_to_url)
             http_404(self, 104)
@@ -420,10 +445,9 @@ def show_new_post(self, edit_post_params: {},
         set_headers(self, 'text/html', msglen,
                     cookie, calling_domain, False)
         write2(self, msg)
-        fitness_performance(getreq_start_time,
-                            self.server.fitness,
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', 'show_new_post',
-                            self.server.debug)
+                            debug)
         return True
     return False
 
