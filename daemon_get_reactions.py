@@ -20,9 +20,31 @@ from fitnessFunctions import fitness_performance
 
 def reaction_picker2(self, calling_domain: str, path: str,
                      base_dir: str, http_prefix: str,
-                     domain: str, port: int,
+                     domain: str, domain_full: str, port: int,
                      getreq_start_time, cookie: str,
-                     debug: str, curr_session) -> None:
+                     debug: str, curr_session,
+                     onion_domain: str, i2p_domain: str,
+                     recent_posts_cache: {},
+                     max_recent_posts: int,
+                     translate: {},
+                     cached_webfingers: {},
+                     person_cache: {},
+                     project_version: str,
+                     yt_replace_domain: str,
+                     twitter_replacement_domain: str,
+                     show_published_date_only: bool,
+                     peertube_instances: [],
+                     allow_local_network_access: bool,
+                     theme_name: str,
+                     system_language: str,
+                     max_like_count: int,
+                     signing_priv_key_pem: str,
+                     cw_lists: [],
+                     lists_enabled: {},
+                     dogwhistles: {},
+                     min_images_for_accounts: bool,
+                     buy_sites: [],
+                     auto_cw_cache: {}) -> None:
     """Press the emoji reaction picker icon at the bottom of the post
     """
     page_number = 1
@@ -57,9 +79,9 @@ def reaction_picker2(self, calling_domain: str, path: str,
         actor_absolute = \
             get_instance_url(calling_domain,
                              http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -78,9 +100,9 @@ def reaction_picker2(self, calling_domain: str, path: str,
         actor_absolute = \
             get_instance_url(calling_domain,
                              http_prefix,
-                             self.server.domain_full,
-                             self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -98,34 +120,34 @@ def reaction_picker2(self, calling_domain: str, path: str,
         bold_reading = True
 
     msg = \
-        html_emoji_reaction_picker(self.server.recent_posts_cache,
-                                   self.server.max_recent_posts,
-                                   self.server.translate,
+        html_emoji_reaction_picker(recent_posts_cache,
+                                   max_recent_posts,
+                                   translate,
                                    base_dir,
                                    curr_session,
-                                   self.server.cached_webfingers,
-                                   self.server.person_cache,
+                                   cached_webfingers,
+                                   person_cache,
                                    self.post_to_nickname,
                                    domain, port, post_json_object,
                                    http_prefix,
-                                   self.server.project_version,
-                                   self.server.yt_replace_domain,
-                                   self.server.twitter_replacement_domain,
-                                   self.server.show_published_date_only,
-                                   self.server.peertube_instances,
-                                   self.server.allow_local_network_access,
-                                   self.server.theme_name,
-                                   self.server.system_language,
-                                   self.server.max_like_count,
-                                   self.server.signing_priv_key_pem,
-                                   self.server.cw_lists,
-                                   self.server.lists_enabled,
+                                   project_version,
+                                   yt_replace_domain,
+                                   twitter_replacement_domain,
+                                   show_published_date_only,
+                                   peertube_instances,
+                                   allow_local_network_access,
+                                   theme_name,
+                                   system_language,
+                                   max_like_count,
+                                   signing_priv_key_pem,
+                                   cw_lists,
+                                   lists_enabled,
                                    timeline_str, page_number,
                                    timezone, bold_reading,
-                                   self.server.dogwhistles,
-                                   self.server.min_images_for_accounts,
-                                   self.server.buy_sites,
-                                   self.server.auto_cw_cache)
+                                   dogwhistles,
+                                   min_images_for_accounts,
+                                   buy_sites,
+                                   auto_cw_cache)
     msg = msg.encode('utf-8')
     msglen = len(msg)
     set_headers(self, 'text/html', msglen,
