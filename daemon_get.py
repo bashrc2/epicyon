@@ -479,7 +479,8 @@ def daemon_http_get(self) -> None:
                                self.server.i2p_domain,
                                getreq_start_time,
                                None, self.server.debug,
-                               self.server.enable_shared_inbox):
+                               self.server.enable_shared_inbox,
+                               self.server.fitness):
             return
         http_404(self, 111)
         return

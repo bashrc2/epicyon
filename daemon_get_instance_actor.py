@@ -25,7 +25,8 @@ def show_instance_actor(self, calling_domain: str,
                         onion_domain: str, i2p_domain: str,
                         getreq_start_time,
                         cookie: str, debug: str,
-                        enable_shared_inbox: bool) -> bool:
+                        enable_shared_inbox: bool,
+                        fitness: {}) -> bool:
     """Shows the instance actor
     """
     if debug:
@@ -87,8 +88,7 @@ def show_instance_actor(self, calling_domain: str,
         set_headers(self, 'application/activity+json', msglen,
                     cookie, calling_domain, False)
     write2(self, msg)
-    fitness_performance(getreq_start_time,
-                        self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_instance_actor',
                         debug)
     return True
