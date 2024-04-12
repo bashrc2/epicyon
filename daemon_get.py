@@ -1419,7 +1419,9 @@ def daemon_http_get(self) -> None:
                                self.server.domain,
                                self.server.port,
                                self.server.followingItemsPerPage,
-                               self.server.debug, 'following')
+                               self.server.debug, 'following',
+                               self.server.onion_domain,
+                               self.server.i2p_domain)
             return
         if '/followers?page=' in self.path:
             get_following_json(self, self.server.base_dir,
@@ -1429,7 +1431,9 @@ def daemon_http_get(self) -> None:
                                self.server.domain,
                                self.server.port,
                                self.server.followingItemsPerPage,
-                               self.server.debug, 'followers')
+                               self.server.debug, 'followers',
+                               self.server.onion_domain,
+                               self.server.i2p_domain)
             return
         if '/followrequests?page=' in self.path:
             get_following_json(self, self.server.base_dir,
@@ -1440,7 +1444,9 @@ def daemon_http_get(self) -> None:
                                self.server.port,
                                self.server.followingItemsPerPage,
                                self.server.debug,
-                               'followrequests')
+                               'followrequests',
+                               self.server.onion_domain,
+                               self.server.i2p_domain)
             return
 
     # authorized endpoint used for TTS of posts
@@ -1570,7 +1576,9 @@ def daemon_http_get(self) -> None:
                                 self.server.http_prefix,
                                 nickname, self.server.domain,
                                 self.server.domain_full,
-                                self.server.system_language)
+                                self.server.system_language,
+                                self.server.onion_domain,
+                                self.server.i2p_domain)
         return
 
     if not html_getreq and \
@@ -1579,7 +1587,9 @@ def daemon_http_get(self) -> None:
                                      self.path,
                                      self.server.http_prefix,
                                      self.server.domain_full,
-                                     self.server.domain)
+                                     self.server.domain,
+                                     self.server.onion_domain,
+                                     self.server.i2p_domain)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
