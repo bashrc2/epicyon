@@ -2628,7 +2628,15 @@ def daemon_http_get(self) -> None:
         return
 
     # get webfinger endpoint for a person
-    if get_webfinger(self, calling_domain, referer_domain, cookie):
+    if get_webfinger(self, calling_domain, referer_domain, cookie,
+                     self.path, self.server.debug,
+                     self.server.onion_domain,
+                     self.server.i2p_domain,
+                     self.server.http_prefix,
+                     self.server.domain,
+                     self.server.domain_full,
+                     self.server.base_dir,
+                     self.server.port):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', 'webfinger called',
                             self.server.debug)
