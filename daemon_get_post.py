@@ -560,7 +560,32 @@ def show_likers_of_post(self, authorized: bool,
                         base_dir: str, http_prefix: str,
                         domain: str, port: int,
                         getreq_start_time, cookie: str,
-                        debug: str, curr_session) -> bool:
+                        debug: str, curr_session,
+                        bold_reading_nicknames: {},
+                        translate: {},
+                        theme_name: str,
+                        access_keys: {},
+                        recent_posts_cache: {},
+                        max_recent_posts: int,
+                        cached_webfingers: {},
+                        person_cache: {},
+                        project_version: str,
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        system_language: str,
+                        max_like_count: int,
+                        signing_priv_key_pem: str,
+                        cw_lists: {},
+                        lists_enabled: {},
+                        default_timeline: str,
+                        dogwhistles: {},
+                        min_images_for_accounts: bool,
+                        buy_sites: [],
+                        auto_cw_cache: {},
+                        fitness: {}) -> bool:
     """Show the likers of a post
     """
     if not authorized:
@@ -578,37 +603,37 @@ def show_likers_of_post(self, authorized: bool,
     post_url = post_url.replace('--', '/')
 
     bold_reading = False
-    if self.server.bold_reading.get(nickname):
+    if bold_reading_nicknames.get(nickname):
         bold_reading = True
 
     msg = \
         html_likers_of_post(base_dir, nickname, domain, port,
-                            post_url, self.server.translate,
+                            post_url, translate,
                             http_prefix,
-                            self.server.theme_name,
-                            self.server.access_keys,
-                            self.server.recent_posts_cache,
-                            self.server.max_recent_posts,
+                            theme_name,
+                            access_keys,
+                            recent_posts_cache,
+                            max_recent_posts,
                             curr_session,
-                            self.server.cached_webfingers,
-                            self.server.person_cache,
-                            self.server.project_version,
-                            self.server.yt_replace_domain,
-                            self.server.twitter_replacement_domain,
-                            self.server.show_published_date_only,
-                            self.server.peertube_instances,
-                            self.server.allow_local_network_access,
-                            self.server.system_language,
-                            self.server.max_like_count,
-                            self.server.signing_priv_key_pem,
-                            self.server.cw_lists,
-                            self.server.lists_enabled,
-                            'inbox', self.server.default_timeline,
+                            cached_webfingers,
+                            person_cache,
+                            project_version,
+                            yt_replace_domain,
+                            twitter_replacement_domain,
+                            show_published_date_only,
+                            peertube_instances,
+                            allow_local_network_access,
+                            system_language,
+                            max_like_count,
+                            signing_priv_key_pem,
+                            cw_lists,
+                            lists_enabled,
+                            'inbox', default_timeline,
                             bold_reading,
-                            self.server.dogwhistles,
-                            self.server.min_images_for_accounts,
-                            self.server.buy_sites,
-                            self.server.auto_cw_cache, 'likes')
+                            dogwhistles,
+                            min_images_for_accounts,
+                            buy_sites,
+                            auto_cw_cache, 'likes')
     if not msg:
         http_404(self, 69)
         return True
@@ -617,7 +642,7 @@ def show_likers_of_post(self, authorized: bool,
     set_headers(self, 'text/html', msglen,
                 cookie, calling_domain, False)
     write2(self, msg)
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_likers_of_post',
                         debug)
     return True
