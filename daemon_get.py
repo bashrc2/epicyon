@@ -587,7 +587,36 @@ def daemon_http_get(self) -> None:
                                 self.server.port,
                                 self.server.debug,
                                 self.server.session,
-                                cookie, ua_str):
+                                cookie, ua_str,
+                                self.server.domain_full,
+                                self.server.onion_domain,
+                                self.server.i2p_domain,
+                                self.server.account_timezone,
+                                self.server.bold_reading,
+                                self.server.translate,
+                                self.server.project_version,
+                                self.server.recent_posts_cache,
+                                self.server.max_recent_posts,
+                                self.server.cached_webfingers,
+                                self.server.person_cache,
+                                self.server.yt_replace_domain,
+                                self.server.twitter_replacement_domain,
+                                self.server.show_published_date_only,
+                                self.server.peertube_instances,
+                                self.server.allow_local_network_access,
+                                self.server.theme_name,
+                                self.server.system_language,
+                                self.server.max_like_count,
+                                self.server.signing_priv_key_pem,
+                                self.server.cw_lists,
+                                self.server.lists_enabled,
+                                self.server.dogwhistles,
+                                self.server.access_keys,
+                                self.server.min_images_for_accounts,
+                                self.server.buy_sites,
+                                self.server.blocked_cache,
+                                self.server.block_federated,
+                                self.server.auto_cw_cache):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_show_conversation_thread',
                             self.server.debug)
@@ -4147,7 +4176,8 @@ def daemon_http_get(self) -> None:
                             cookie, self.server.debug,
                             curr_session,
                             self.server.translate,
-                            self.server.account_timezone):
+                            self.server.account_timezone,
+                            self.server.fitness):
             self.server.getreq_busy = False
             return
 

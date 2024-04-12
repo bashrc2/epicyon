@@ -1029,7 +1029,8 @@ def show_notify_post(self, authorized: bool,
                      proxy_type: str, cookie: str,
                      debug: str,
                      curr_session, translate: {},
-                     account_timezone: {}) -> bool:
+                     account_timezone: {},
+                     fitness: {}) -> bool:
     """Shows an individual post from an account which you are following
     and where you have the notify checkbox set on person options
     """
@@ -1064,7 +1065,7 @@ def show_notify_post(self, authorized: bool,
                                   include_create_wrapper,
                                   curr_session, translate,
                                   account_timezone)
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_notify_post',
                         debug)
     return result
@@ -1075,7 +1076,36 @@ def show_conversation_thread(self, authorized: bool,
                              base_dir: str, http_prefix: str,
                              domain: str, port: int,
                              debug: str, curr_session,
-                             cookie: str, ua_str: str) -> bool:
+                             cookie: str, ua_str: str,
+                             domain_full: str,
+                             onion_domain: str,
+                             i2p_domain: str,
+                             account_timezone: {},
+                             bold_reading_nicknames: {},
+                             translate: {},
+                             project_version: str,
+                             recent_posts_cache: {},
+                             max_recent_posts: int,
+                             cached_webfingers: {},
+                             person_cache: {},
+                             yt_replace_domain: str,
+                             twitter_replacement_domain: str,
+                             show_published_date_only: bool,
+                             peertube_instances: [],
+                             allow_local_network_access: bool,
+                             theme_name: str,
+                             system_language: str,
+                             max_like_count: int,
+                             signing_priv_key_pem: str,
+                             cw_lists: {},
+                             lists_enabled: {},
+                             dogwhistles: {},
+                             access_keys: {},
+                             min_images_for_accounts: bool,
+                             buy_sites: [],
+                             blocked_cache: {},
+                             block_federated: {},
+                             auto_cw_cache: {}) -> bool:
     """get conversation thread from the date link on a post
     """
     if not path.startswith('/users/'):
@@ -1087,9 +1117,9 @@ def show_conversation_thread(self, authorized: bool,
     if post_id.startswith('/users/'):
         instance_url = get_instance_url(calling_domain,
                                         http_prefix,
-                                        self.server.domain_full,
-                                        self.server.onion_domain,
-                                        self.server.i2p_domain)
+                                        domain_full,
+                                        onion_domain,
+                                        i2p_domain)
         post_id = instance_url + post_id
     nickname = path.split('/users/')[1]
     if '?convthread=' in nickname:
@@ -1097,46 +1127,45 @@ def show_conversation_thread(self, authorized: bool,
     if '/' in nickname:
         nickname = nickname.split('/')[0]
     timezone = None
-    if self.server.account_timezone.get(nickname):
-        timezone = \
-            self.server.account_timezone.get(nickname)
+    if account_timezone.get(nickname):
+        timezone = account_timezone.get(nickname)
     bold_reading = False
-    if self.server.bold_reading.get(nickname):
+    if bold_reading_nicknames.get(nickname):
         bold_reading = True
     conv_str = \
         html_conversation_view(authorized,
-                               post_id, self.server.translate,
+                               post_id, translate,
                                base_dir,
                                http_prefix,
                                nickname,
                                domain,
-                               self.server.project_version,
-                               self.server.recent_posts_cache,
-                               self.server.max_recent_posts,
+                               project_version,
+                               recent_posts_cache,
+                               max_recent_posts,
                                curr_session,
-                               self.server.cached_webfingers,
-                               self.server.person_cache,
+                               cached_webfingers,
+                               person_cache,
                                port,
-                               self.server.yt_replace_domain,
-                               self.server.twitter_replacement_domain,
-                               self.server.show_published_date_only,
-                               self.server.peertube_instances,
-                               self.server.allow_local_network_access,
-                               self.server.theme_name,
-                               self.server.system_language,
-                               self.server.max_like_count,
-                               self.server.signing_priv_key_pem,
-                               self.server.cw_lists,
-                               self.server.lists_enabled,
+                               yt_replace_domain,
+                               twitter_replacement_domain,
+                               show_published_date_only,
+                               peertube_instances,
+                               allow_local_network_access,
+                               theme_name,
+                               system_language,
+                               max_like_count,
+                               signing_priv_key_pem,
+                               cw_lists,
+                               lists_enabled,
                                timezone, bold_reading,
-                               self.server.dogwhistles,
-                               self.server.access_keys,
-                               self.server.min_images_for_accounts,
+                               dogwhistles,
+                               access_keys,
+                               min_images_for_accounts,
                                debug,
-                               self.server.buy_sites,
-                               self.server.blocked_cache,
-                               self.server.block_federated,
-                               self.server.auto_cw_cache,
+                               buy_sites,
+                               blocked_cache,
+                               block_federated,
+                               auto_cw_cache,
                                ua_str)
     if conv_str:
         msg = conv_str.encode('utf-8')
@@ -1146,7 +1175,7 @@ def show_conversation_thread(self, authorized: bool,
         self.server.getreq_busy = False
         return True
     # redirect to the original site if there are no results
-    if '://' + self.server.domain_full + '/' in post_id:
+    if '://' + domain_full + '/' in post_id:
         redirect_headers(self, post_id, cookie, calling_domain)
     else:
         redirect_headers(self, post_id, None, calling_domain)
