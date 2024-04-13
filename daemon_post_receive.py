@@ -67,17 +67,51 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               calling_domain: str, cookie: str,
                               content_license_url: str,
                               curr_session, proxy_type: str,
-                              base_dir: str) -> int:
+                              base_dir: str, debug: bool,
+                              max_post_length: int,
+                              domain: str, city: str,
+                              low_bandwidth: bool, translate: {},
+                              system_language: str,
+                              http_prefix: str,
+                              domain_full: str,
+                              person_cache: {},
+                              port: int, auto_cw_cache: {},
+                              recent_posts_cache: {},
+                              allow_local_network_access: bool,
+                              yt_replace_domain: str,
+                              twitter_replacement_domain: str,
+                              signing_priv_key_pem: str,
+                              show_published_date_only: bool,
+                              min_images_for_accounts: bool,
+                              peertube_instances: [],
+                              max_mentions: int,
+                              max_emoji: int, max_recent_posts: int,
+                              cached_webfingers: {},
+                              allow_deletion: bool,
+                              theme_name: str,
+                              max_like_count: int,
+                              cw_lists: {},
+                              dogwhistles: {},
+                              max_hashtags: int,
+                              buy_sites: [],
+                              project_version: str,
+                              max_replies: int,
+                              newswire: {},
+                              dm_license_url: str,
+                              block_federated: [],
+                              onion_domain: str,
+                              i2p_domain: str,
+                              max_shares_on_profile: int) -> int:
     # Note: this needs to happen synchronously
     # 0=this is not a new post
     # 1=new post success
     # -1=new post failed
     # 2=new post canceled
-    if self.server.debug:
+    if debug:
         print('DEBUG: receiving POST')
 
     if ' boundary=' in headers['Content-Type']:
-        if self.server.debug:
+        if debug:
             print('DEBUG: receiving POST headers ' +
                   headers['Content-Type'] +
                   ' path ' + path)
@@ -89,7 +123,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             nickname = nickname_str.split('/')[0]
         else:
             nickname = nickname_str
-        if self.server.debug:
+        if debug:
             print('DEBUG: POST nickname ' + str(nickname))
         if not nickname:
             print('WARN: no nickname found when receiving ' + post_type +
@@ -116,7 +150,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                   edited_published)
 
         length = int(headers['Content-Length'])
-        if length > self.server.max_post_length:
+        if length > max_post_length:
             print('POST size too large')
             return -1
 
@@ -127,11 +161,11 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         # Note: we don't use cgi here because it's due to be deprecated
         # in Python 3.8/3.10
         # Instead we use the multipart mime parser from the email module
-        if self.server.debug:
+        if debug:
             print('DEBUG: extracting media from POST')
         media_bytes, post_bytes = \
             extract_media_in_form_post(post_bytes, boundary, 'attachpic')
-        if self.server.debug:
+        if debug:
             if media_bytes:
                 print('DEBUG: media was found. ' +
                       str(len(media_bytes)) + ' bytes')
@@ -141,13 +175,11 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         # Note: a .temp extension is used here so that at no time is
         # an image with metadata publicly exposed, even for a few mS
         filename_base = \
-            acct_dir(base_dir,
-                     nickname, self.server.domain) + '/upload.temp'
+            acct_dir(base_dir, nickname, domain) + '/upload.temp'
 
         filename, attachment_media_type = \
-            save_media_in_form_post(media_bytes, self.server.debug,
-                                    filename_base)
-        if self.server.debug:
+            save_media_in_form_post(media_bytes, debug, filename_base)
+        if debug:
             if filename:
                 print('DEBUG: POST media filename is ' + filename)
             else:
@@ -157,13 +189,10 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if is_image_file(filename):
                 post_image_filename = filename.replace('.temp', '')
                 print('Removing metadata from ' + post_image_filename)
-                city = get_spoofed_city(self.server.city,
-                                        base_dir,
-                                        nickname, self.server.domain)
-                if self.server.low_bandwidth:
+                city = get_spoofed_city(city, base_dir, nickname, domain)
+                if low_bandwidth:
                     convert_image_to_low_bandwidth(filename)
-                process_meta_data(base_dir,
-                                  nickname, self.server.domain,
+                process_meta_data(base_dir, nickname, domain,
                                   filename, post_image_filename, city,
                                   content_license_url)
                 if os.path.isfile(post_image_filename):
@@ -178,9 +207,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     filename = new_filename
 
         fields = \
-            extract_text_fields_in_post(post_bytes, boundary,
-                                        self.server.debug, None)
-        if self.server.debug:
+            extract_text_fields_in_post(post_bytes, boundary, debug, None)
+        if debug:
             if fields:
                 print('DEBUG: text field extracted from POST ' +
                       str(fields))
@@ -190,8 +218,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         # was the citations button pressed on the newblog screen?
         citations_button_press = False
         if post_type == 'newblog' and fields.get('submitCitations'):
-            if fields['submitCitations'] == \
-               self.server.translate['Citations']:
+            if fields['submitCitations'] == translate['Citations']:
                 citations_button_press = True
 
         if not citations_button_press:
@@ -201,8 +228,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                not fields.get('pinToProfile'):
                 print('WARN: no message, image description or pin')
                 return -1
-            submit_text1 = self.server.translate['Publish']
-            submit_text2 = self.server.translate['Send']
+            submit_text1 = translate['Publish']
+            submit_text2 = translate['Send']
             submit_text3 = submit_text2
             custom_submit_text = \
                 get_config_param(base_dir, 'customSubmitText')
@@ -242,9 +269,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         if not fields.get('location'):
             fields['location'] = None
         if not fields.get('languagesDropdown'):
-            fields['languagesDropdown'] = self.server.system_language
-        set_default_post_language(base_dir, nickname,
-                                  self.server.domain,
+            fields['languagesDropdown'] = system_language
+        set_default_post_language(base_dir, nickname, domain,
                                   fields['languagesDropdown'])
         self.server.default_post_language[nickname] = \
             fields['languagesDropdown']
@@ -254,8 +280,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             # since epoch when an attempt to post something was made.
             # This is then used for active monthly users counts
             last_used_filename = \
-                acct_dir(base_dir,
-                         nickname, self.server.domain) + '/.lastUsed'
+                acct_dir(base_dir, nickname, domain) + '/.lastUsed'
             try:
                 with open(last_used_filename, 'w+',
                           encoding='utf-8') as lastfile:
@@ -288,26 +313,21 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 # is the post message empty?
                 if not fields['message']:
                     # remove the pinned content from profile screen
-                    undo_pinned_post(base_dir,
-                                     nickname, self.server.domain)
+                    undo_pinned_post(base_dir, nickname, domain)
                     return 1
 
-            city = get_spoofed_city(self.server.city,
-                                    base_dir,
-                                    nickname, self.server.domain)
+            city = get_spoofed_city(city, base_dir, nickname, domain)
 
             conversation_id = None
             if fields.get('conversationId'):
                 conversation_id = fields['conversationId']
 
             languages_understood = \
-                get_understood_languages(base_dir,
-                                         self.server.http_prefix,
-                                         nickname,
-                                         self.server.domain_full,
-                                         self.server.person_cache)
+                get_understood_languages(base_dir, http_prefix,
+                                         nickname, domain_full,
+                                         person_cache)
 
-            media_license_url = self.server.content_license_url
+            media_license_url = content_license_url
             if fields.get('mediaLicense'):
                 media_license_url = fields['mediaLicense']
                 if '://' not in media_license_url:
@@ -320,11 +340,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_public_post(base_dir,
-                                   nickname,
-                                   self.server.domain,
-                                   self.server.port,
-                                   self.server.http_prefix,
+                create_public_post(base_dir, nickname, domain,
+                                   port,
+                                   http_prefix,
                                    mentions_str + fields['message'],
                                    False, False, comments_enabled,
                                    filename, attachment_media_type,
@@ -340,98 +358,82 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                    fields['location'], False,
                                    fields['languagesDropdown'],
                                    conversation_id,
-                                   self.server.low_bandwidth,
+                                   low_bandwidth,
                                    content_license_url,
                                    media_license_url, media_creator,
                                    languages_understood,
-                                   self.server.translate, buy_url,
+                                   translate, buy_url,
                                    chat_url,
-                                   self.server.auto_cw_cache)
+                                   auto_cw_cache)
             if message_json:
                 if edited_postid:
-                    recent_posts_cache = self.server.recent_posts_cache
-                    allow_local_network_access = \
-                        self.server.allow_local_network_access
-                    signing_priv_key_pem = \
-                        self.server.signing_priv_key_pem
-                    twitter_replacement_domain = \
-                        self.server.twitter_replacement_domain
-                    show_published_date_only = \
-                        self.server.show_published_date_only
-                    min_images_for_accounts = \
-                        self.server.min_images_for_accounts
-                    peertube_instances = \
-                        self.server.peertube_instances
-                    update_edited_post(base_dir,
-                                       nickname, self.server.domain,
+                    update_edited_post(base_dir, nickname, domain,
                                        message_json,
                                        edited_published,
                                        edited_postid,
                                        recent_posts_cache,
                                        'outbox',
-                                       self.server.max_mentions,
-                                       self.server.max_emoji,
+                                       max_mentions,
+                                       max_emoji,
                                        allow_local_network_access,
-                                       self.server.debug,
-                                       self.server.system_language,
-                                       self.server.http_prefix,
-                                       self.server.domain_full,
-                                       self.server.person_cache,
+                                       debug,
+                                       system_language,
+                                       http_prefix,
+                                       domain_full,
+                                       person_cache,
                                        signing_priv_key_pem,
-                                       self.server.max_recent_posts,
-                                       self.server.translate,
+                                       max_recent_posts,
+                                       translate,
                                        curr_session,
-                                       self.server.cached_webfingers,
-                                       self.server.port,
-                                       self.server.allow_deletion,
-                                       self.server.yt_replace_domain,
+                                       cached_webfingers,
+                                       port,
+                                       allow_deletion,
+                                       yt_replace_domain,
                                        twitter_replacement_domain,
                                        show_published_date_only,
                                        peertube_instances,
-                                       self.server.theme_name,
-                                       self.server.max_like_count,
-                                       self.server.cw_lists,
-                                       self.server.dogwhistles,
+                                       theme_name,
+                                       max_like_count,
+                                       cw_lists,
+                                       dogwhistles,
                                        min_images_for_accounts,
-                                       self.server.max_hashtags,
-                                       self.server.buy_sites,
-                                       self.server.auto_cw_cache)
+                                       max_hashtags,
+                                       buy_sites,
+                                       auto_cw_cache)
                     print('DEBUG: sending edited public post ' +
                           str(message_json))
                 if fields['schedulePost']:
                     return 1
                 if pin_to_profile:
-                    sys_language = self.server.system_language
+                    sys_language = system_language
                     content_str = \
                         get_base_content_from_post(message_json,
                                                    sys_language)
                     pin_post2(base_dir,
-                              nickname, self.server.domain, content_str)
+                              nickname, domain, content_str)
                     return 1
                 if post_to_outbox(self, message_json,
-                                  self.server.project_version,
+                                  project_version,
                                   nickname,
                                   curr_session, proxy_type):
                     populate_replies(base_dir,
-                                     self.server.http_prefix,
-                                     self.server.domain_full,
+                                     http_prefix,
+                                     domain_full,
                                      message_json,
-                                     self.server.max_replies,
-                                     self.server.debug)
+                                     max_replies,
+                                     debug)
                     return 1
                 return -1
         elif post_type == 'newblog':
             # citations button on newblog screen
             if citations_button_press:
                 message_json = \
-                    html_citations(base_dir,
-                                   nickname,
-                                   self.server.domain,
-                                   self.server.translate,
-                                   self.server.newswire,
+                    html_citations(base_dir, nickname,
+                                   domain, translate,
+                                   newswire,
                                    fields['subject'],
                                    fields['message'],
-                                   self.server.theme_name)
+                                   theme_name)
                 if message_json:
                     message_json = message_json.encode('utf-8')
                     message_json_len = len(message_json)
@@ -456,12 +458,10 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('conversationId'):
                 conversation_id = fields['conversationId']
             languages_understood = \
-                get_understood_languages(base_dir,
-                                         self.server.http_prefix,
-                                         nickname,
-                                         self.server.domain_full,
-                                         self.server.person_cache)
-            media_license_url = self.server.content_license_url
+                get_understood_languages(base_dir, http_prefix,
+                                         nickname, domain_full,
+                                         person_cache)
+            media_license_url = content_license_url
             if fields.get('mediaLicense'):
                 media_license_url = fields['mediaLicense']
                 if '://' not in media_license_url:
@@ -475,15 +475,12 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 video_transcript = fields['videoTranscript']
             message_json = \
                 create_blog_post(base_dir, nickname,
-                                 self.server.domain, self.server.port,
-                                 self.server.http_prefix,
-                                 fields['message'],
-                                 save_to_file,
+                                 domain, port, http_prefix,
+                                 fields['message'], save_to_file,
                                  client_to_server, comments_enabled,
                                  filename, attachment_media_type,
                                  fields['imageDescription'],
-                                 video_transcript,
-                                 city,
+                                 video_transcript, city,
                                  fields['replyTo'], fields['replyTo'],
                                  fields['subject'],
                                  fields['schedulePost'],
@@ -493,40 +490,34 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                  fields['location'],
                                  fields['languagesDropdown'],
                                  conversation_id,
-                                 self.server.low_bandwidth,
+                                 low_bandwidth,
                                  content_license_url,
                                  media_license_url, media_creator,
                                  languages_understood,
-                                 self.server.translate, buy_url,
-                                 chat_url)
+                                 translate, buy_url, chat_url)
             if message_json:
                 if fields['schedulePost']:
                     return 1
                 if post_to_outbox(self, message_json,
-                                  self.server.project_version,
+                                  project_version,
                                   nickname,
                                   curr_session, proxy_type):
                     refresh_newswire(base_dir)
-                    populate_replies(base_dir,
-                                     self.server.http_prefix,
-                                     self.server.domain_full,
+                    populate_replies(base_dir, http_prefix, domain_full,
                                      message_json,
-                                     self.server.max_replies,
-                                     self.server.debug)
+                                     max_replies,
+                                     debug)
                     return 1
                 return -1
         elif post_type == 'editblogpost':
             print('Edited blog post received')
             post_filename = \
-                locate_post(base_dir,
-                            nickname, self.server.domain,
-                            fields['postUrl'])
+                locate_post(base_dir, nickname, domain, fields['postUrl'])
             if os.path.isfile(post_filename):
                 post_json_object = load_json(post_filename)
                 if post_json_object:
                     cached_filename = \
-                        acct_dir(base_dir,
-                                 nickname, self.server.domain) + \
+                        acct_dir(base_dir, nickname, domain) + \
                         '/postcache/' + \
                         fields['postUrl'].replace('/', '#') + '.html'
                     if os.path.isfile(cached_filename):
@@ -538,7 +529,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   'unable to delete ' + cached_filename)
                     # remove from memory cache
                     remove_post_from_cache(post_json_object,
-                                           self.server.recent_posts_cache)
+                                           recent_posts_cache)
                     # change the blog post title
                     post_json_object['object']['summary'] = \
                         fields['subject']
@@ -547,14 +538,12 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     hashtags_dict = {}
                     mentioned_recipients = []
                     fields['message'] = \
-                        add_html_tags(base_dir,
-                                      self.server.http_prefix,
-                                      nickname, self.server.domain,
+                        add_html_tags(base_dir, http_prefix,
+                                      nickname, domain,
                                       fields['message'],
                                       mentioned_recipients,
                                       hashtags_dict,
-                                      self.server.translate,
-                                      True)
+                                      translate, True)
                     # replace emoji with unicode
                     tags = []
                     for _, tag in hashtags_dict.items():
@@ -565,13 +554,12 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                                 base_dir,
                                                 fields['message'],
                                                 tags, 'content',
-                                                self.server.debug,
-                                                True)
+                                                debug, True)
 
                     post_json_object['object']['content'] = \
                         fields['message']
                     content_map = post_json_object['object']['contentMap']
-                    content_map[self.server.system_language] = \
+                    content_map[system_language] = \
                         fields['message']
 
                     img_description = ''
@@ -582,11 +570,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                         video_transcript = fields['videoTranscript']
 
                     if filename:
-                        city = get_spoofed_city(self.server.city,
-                                                base_dir,
-                                                nickname,
-                                                self.server.domain)
-                        license_url = self.server.content_license_url
+                        city = get_spoofed_city(city, base_dir, nickname,
+                                                domain)
+                        license_url = content_license_url
                         if fields.get('mediaLicense'):
                             license_url = fields['mediaLicense']
                             if '://' not in license_url:
@@ -597,26 +583,23 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                             creator = fields['mediaCreator']
                         post_json_object['object'] = \
                             attach_media(base_dir,
-                                         self.server.http_prefix,
-                                         nickname,
-                                         self.server.domain,
-                                         self.server.port,
+                                         http_prefix, nickname,
+                                         domain, port,
                                          post_json_object['object'],
                                          filename,
                                          attachment_media_type,
                                          img_description,
                                          video_transcript,
-                                         city,
-                                         self.server.low_bandwidth,
+                                         city, low_bandwidth,
                                          license_url, creator,
                                          fields['languagesDropdown'])
 
                     replace_you_tube(post_json_object,
-                                     self.server.yt_replace_domain,
-                                     self.server.system_language)
+                                     yt_replace_domain,
+                                     system_language)
                     replace_twitter(post_json_object,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.system_language)
+                                    twitter_replacement_domain,
+                                    system_language)
                     save_json(post_json_object, post_filename)
                     # also save to the news actor
                     if nickname != 'news':
@@ -635,10 +618,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                       str(fields['postUrl']))
             return -1
         elif post_type == 'newunlisted':
-            city = get_spoofed_city(self.server.city,
-                                    base_dir,
-                                    nickname,
-                                    self.server.domain)
+            city = get_spoofed_city(city, base_dir, nickname, domain)
             save_to_file = False
             client_to_server = False
 
@@ -647,12 +627,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 conversation_id = fields['conversationId']
 
             languages_understood = \
-                get_understood_languages(base_dir,
-                                         self.server.http_prefix,
-                                         nickname,
-                                         self.server.domain_full,
-                                         self.server.person_cache)
-            media_license_url = self.server.content_license_url
+                get_understood_languages(base_dir, http_prefix, nickname,
+                                         domain_full, person_cache)
+            media_license_url = content_license_url
             if fields.get('mediaLicense'):
                 media_license_url = fields['mediaLicense']
                 if '://' not in media_license_url:
@@ -665,10 +642,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_unlisted_post(base_dir,
-                                     nickname,
-                                     self.server.domain, self.server.port,
-                                     self.server.http_prefix,
+                create_unlisted_post(base_dir, nickname, domain, port,
+                                     http_prefix,
                                      mentions_str + fields['message'],
                                      save_to_file,
                                      client_to_server, comments_enabled,
@@ -686,84 +661,65 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                      fields['location'],
                                      fields['languagesDropdown'],
                                      conversation_id,
-                                     self.server.low_bandwidth,
+                                     low_bandwidth,
                                      content_license_url,
                                      media_license_url, media_creator,
                                      languages_understood,
-                                     self.server.translate, buy_url,
+                                     translate, buy_url,
                                      chat_url,
-                                     self.server.auto_cw_cache)
+                                     auto_cw_cache)
             if message_json:
                 if edited_postid:
-                    recent_posts_cache = self.server.recent_posts_cache
-                    allow_local_network_access = \
-                        self.server.allow_local_network_access
-                    signing_priv_key_pem = \
-                        self.server.signing_priv_key_pem
-                    twitter_replacement_domain = \
-                        self.server.twitter_replacement_domain
-                    show_published_date_only = \
-                        self.server.show_published_date_only
-                    min_images_for_accounts = \
-                        self.server.min_images_for_accounts
-                    peertube_instances = \
-                        self.server.peertube_instances
-                    update_edited_post(base_dir,
-                                       nickname, self.server.domain,
+                    update_edited_post(base_dir, nickname, domain,
                                        message_json,
                                        edited_published,
                                        edited_postid,
                                        recent_posts_cache,
                                        'outbox',
-                                       self.server.max_mentions,
-                                       self.server.max_emoji,
+                                       max_mentions,
+                                       max_emoji,
                                        allow_local_network_access,
-                                       self.server.debug,
-                                       self.server.system_language,
-                                       self.server.http_prefix,
-                                       self.server.domain_full,
-                                       self.server.person_cache,
+                                       debug,
+                                       system_language,
+                                       http_prefix,
+                                       domain_full,
+                                       person_cache,
                                        signing_priv_key_pem,
-                                       self.server.max_recent_posts,
-                                       self.server.translate,
+                                       max_recent_posts,
+                                       translate,
                                        curr_session,
-                                       self.server.cached_webfingers,
-                                       self.server.port,
-                                       self.server.allow_deletion,
-                                       self.server.yt_replace_domain,
+                                       cached_webfingers,
+                                       port,
+                                       allow_deletion,
+                                       yt_replace_domain,
                                        twitter_replacement_domain,
                                        show_published_date_only,
                                        peertube_instances,
-                                       self.server.theme_name,
-                                       self.server.max_like_count,
-                                       self.server.cw_lists,
-                                       self.server.dogwhistles,
+                                       theme_name,
+                                       max_like_count,
+                                       cw_lists,
+                                       dogwhistles,
                                        min_images_for_accounts,
-                                       self.server.max_hashtags,
-                                       self.server.buy_sites,
-                                       self.server.auto_cw_cache)
+                                       max_hashtags,
+                                       buy_sites,
+                                       auto_cw_cache)
                     print('DEBUG: sending edited unlisted post ' +
                           str(message_json))
 
                 if fields['schedulePost']:
                     return 1
                 if post_to_outbox(self, message_json,
-                                  self.server.project_version,
+                                  project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    populate_replies(base_dir,
-                                     self.server.http_prefix,
-                                     self.server.domain,
+                    populate_replies(base_dir, http_prefix, domain,
                                      message_json,
-                                     self.server.max_replies,
-                                     self.server.debug)
+                                     max_replies,
+                                     debug)
                     return 1
                 return -1
         elif post_type == 'newfollowers':
-            city = get_spoofed_city(self.server.city,
-                                    base_dir,
-                                    nickname,
-                                    self.server.domain)
+            city = get_spoofed_city(city, base_dir, nickname, domain)
             save_to_file = False
             client_to_server = False
 
@@ -773,12 +729,10 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
 
             mentions_message = mentions_str + fields['message']
             languages_understood = \
-                get_understood_languages(base_dir,
-                                         self.server.http_prefix,
-                                         nickname,
-                                         self.server.domain_full,
-                                         self.server.person_cache)
-            media_license_url = self.server.content_license_url
+                get_understood_languages(base_dir, http_prefix,
+                                         nickname, domain_full,
+                                         person_cache)
+            media_license_url = content_license_url
             if fields.get('mediaLicense'):
                 media_license_url = fields['mediaLicense']
                 if '://' not in media_license_url:
@@ -791,11 +745,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_followers_only_post(base_dir,
-                                           nickname,
-                                           self.server.domain,
-                                           self.server.port,
-                                           self.server.http_prefix,
+                create_followers_only_post(base_dir, nickname, domain,
+                                           port, http_prefix,
                                            mentions_message,
                                            save_to_file,
                                            client_to_server,
@@ -814,108 +765,86 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                            fields['location'],
                                            fields['languagesDropdown'],
                                            conversation_id,
-                                           self.server.low_bandwidth,
+                                           low_bandwidth,
                                            content_license_url,
                                            media_license_url,
                                            media_creator,
                                            languages_understood,
-                                           self.server.translate,
+                                           translate,
                                            buy_url, chat_url,
-                                           self.server.auto_cw_cache)
+                                           auto_cw_cache)
             if message_json:
                 if edited_postid:
-                    recent_posts_cache = self.server.recent_posts_cache
-                    allow_local_network_access = \
-                        self.server.allow_local_network_access
-                    signing_priv_key_pem = \
-                        self.server.signing_priv_key_pem
-                    twitter_replacement_domain = \
-                        self.server.twitter_replacement_domain
-                    show_published_date_only = \
-                        self.server.show_published_date_only
-                    min_images_for_accounts = \
-                        self.server.min_images_for_accounts
-                    peertube_instances = \
-                        self.server.peertube_instances
                     update_edited_post(base_dir,
-                                       nickname, self.server.domain,
+                                       nickname, domain,
                                        message_json,
                                        edited_published,
                                        edited_postid,
                                        recent_posts_cache,
                                        'outbox',
-                                       self.server.max_mentions,
-                                       self.server.max_emoji,
+                                       max_mentions,
+                                       max_emoji,
                                        allow_local_network_access,
-                                       self.server.debug,
-                                       self.server.system_language,
-                                       self.server.http_prefix,
-                                       self.server.domain_full,
-                                       self.server.person_cache,
+                                       debug,
+                                       system_language,
+                                       http_prefix,
+                                       domain_full,
+                                       person_cache,
                                        signing_priv_key_pem,
-                                       self.server.max_recent_posts,
-                                       self.server.translate,
+                                       max_recent_posts,
+                                       translate,
                                        curr_session,
-                                       self.server.cached_webfingers,
-                                       self.server.port,
-                                       self.server.allow_deletion,
-                                       self.server.yt_replace_domain,
+                                       cached_webfingers,
+                                       port,
+                                       allow_deletion,
+                                       yt_replace_domain,
                                        twitter_replacement_domain,
                                        show_published_date_only,
                                        peertube_instances,
-                                       self.server.theme_name,
-                                       self.server.max_like_count,
-                                       self.server.cw_lists,
-                                       self.server.dogwhistles,
+                                       theme_name,
+                                       max_like_count,
+                                       cw_lists,
+                                       dogwhistles,
                                        min_images_for_accounts,
-                                       self.server.max_hashtags,
-                                       self.server.buy_sites,
-                                       self.server.auto_cw_cache)
+                                       max_hashtags,
+                                       buy_sites,
+                                       auto_cw_cache)
                     print('DEBUG: sending edited followers post ' +
                           str(message_json))
 
                 if fields['schedulePost']:
                     return 1
                 if post_to_outbox(self, message_json,
-                                  self.server.project_version,
+                                  project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    populate_replies(base_dir,
-                                     self.server.http_prefix,
-                                     self.server.domain,
+                    populate_replies(base_dir, http_prefix, domain,
                                      message_json,
-                                     self.server.max_replies,
-                                     self.server.debug)
+                                     max_replies,
+                                     debug)
                     return 1
                 return -1
         elif post_type == 'newdm':
             message_json = None
             print('A DM was posted')
             if '@' in mentions_str:
-                city = get_spoofed_city(self.server.city,
-                                        base_dir,
-                                        nickname,
-                                        self.server.domain)
+                city = get_spoofed_city(city, base_dir, nickname, domain)
                 save_to_file = False
                 client_to_server = False
 
                 conversation_id = None
                 if fields.get('conversationId'):
                     conversation_id = fields['conversationId']
-                content_license_url = self.server.content_license_url
 
                 languages_understood = \
-                    get_understood_languages(base_dir,
-                                             self.server.http_prefix,
-                                             nickname,
-                                             self.server.domain_full,
-                                             self.server.person_cache)
+                    get_understood_languages(base_dir, http_prefix,
+                                             nickname, domain_full,
+                                             person_cache)
 
                 reply_is_chat = False
                 if fields.get('replychatmsg'):
                     reply_is_chat = fields['replychatmsg']
 
-                dm_license_url = self.server.dm_license_url
                 media_license_url = content_license_url
                 if fields.get('mediaLicense'):
                     media_license_url = fields['mediaLicense']
@@ -929,11 +858,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 if fields.get('videoTranscript'):
                     video_transcript = fields['videoTranscript']
                 message_json = \
-                    create_direct_message_post(base_dir,
-                                               nickname,
-                                               self.server.domain,
-                                               self.server.port,
-                                               self.server.http_prefix,
+                    create_direct_message_post(base_dir, nickname, domain,
+                                               port, http_prefix,
                                                mentions_str +
                                                fields['message'],
                                                save_to_file,
@@ -955,66 +881,52 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                                fields['location'],
                                                fields['languagesDropdown'],
                                                conversation_id,
-                                               self.server.low_bandwidth,
+                                               low_bandwidth,
                                                dm_license_url,
                                                media_license_url,
                                                media_creator,
                                                languages_understood,
                                                reply_is_chat,
-                                               self.server.translate,
+                                               translate,
                                                buy_url, chat_url,
-                                               self.server.auto_cw_cache)
+                                               auto_cw_cache)
             if message_json:
                 print('DEBUG: posting DM edited_postid ' +
                       str(edited_postid))
                 if edited_postid:
-                    recent_posts_cache = self.server.recent_posts_cache
-                    allow_local_network_access = \
-                        self.server.allow_local_network_access
-                    signing_priv_key_pem = \
-                        self.server.signing_priv_key_pem
-                    twitter_replacement_domain = \
-                        self.server.twitter_replacement_domain
-                    show_published_date_only = \
-                        self.server.show_published_date_only
-                    min_images_for_accounts = \
-                        self.server.min_images_for_accounts
-                    peertube_instances = \
-                        self.server.peertube_instances
-                    update_edited_post(base_dir,
-                                       nickname, self.server.domain,
+                    update_edited_post(base_dir, nickname, domain,
                                        message_json,
                                        edited_published,
                                        edited_postid,
                                        recent_posts_cache,
                                        'outbox',
-                                       self.server.max_mentions,
-                                       self.server.max_emoji,
+                                       max_mentions,
+                                       max_emoji,
                                        allow_local_network_access,
-                                       self.server.debug,
-                                       self.server.system_language,
-                                       self.server.http_prefix,
-                                       self.server.domain_full,
-                                       self.server.person_cache,
+                                       debug,
+                                       system_language,
+                                       http_prefix,
+                                       domain_full,
+                                       person_cache,
                                        signing_priv_key_pem,
-                                       self.server.max_recent_posts,
-                                       self.server.translate,
+                                       max_recent_posts,
+                                       translate,
                                        curr_session,
-                                       self.server.cached_webfingers,
-                                       self.server.port,
-                                       self.server.allow_deletion,
-                                       self.server.yt_replace_domain,
+                                       cached_webfingers,
+                                       port,
+                                       allow_deletion,
+                                       yt_replace_domain,
                                        twitter_replacement_domain,
                                        show_published_date_only,
                                        peertube_instances,
-                                       self.server.theme_name,
-                                       self.server.max_like_count,
-                                       self.server.cw_lists,
-                                       self.server.dogwhistles,
+                                       theme_name,
+                                       max_like_count,
+                                       cw_lists,
+                                       dogwhistles,
                                        min_images_for_accounts,
-                                       self.server.max_hashtags,
-                                       self.server.buy_sites,
-                                       self.server.auto_cw_cache)
+                                       max_hashtags,
+                                       buy_sites,
+                                       auto_cw_cache)
                     print('DEBUG: sending edited dm post ' +
                           str(message_json))
 
@@ -1023,39 +935,32 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 print('Sending new DM to ' +
                       str(message_json['object']['to']))
                 if post_to_outbox(self, message_json,
-                                  self.server.project_version,
+                                  project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    populate_replies(base_dir,
-                                     self.server.http_prefix,
-                                     self.server.domain,
+                    populate_replies(base_dir, http_prefix, domain,
                                      message_json,
-                                     self.server.max_replies,
-                                     self.server.debug)
+                                     max_replies,
+                                     debug)
                     return 1
                 return -1
         elif post_type == 'newreminder':
             message_json = None
-            handle = nickname + '@' + self.server.domain_full
+            handle = nickname + '@' + domain_full
             print('A reminder was posted for ' + handle)
             if '@' + handle not in mentions_str:
                 mentions_str = '@' + handle + ' ' + mentions_str
-            city = get_spoofed_city(self.server.city,
-                                    base_dir,
-                                    nickname,
-                                    self.server.domain)
+            city = get_spoofed_city(city, base_dir, nickname, domain)
             save_to_file = False
             client_to_server = False
             comments_enabled = False
             conversation_id = None
             mentions_message = mentions_str + fields['message']
             languages_understood = \
-                get_understood_languages(base_dir,
-                                         self.server.http_prefix,
-                                         nickname,
-                                         self.server.domain_full,
-                                         self.server.person_cache)
-            media_license_url = self.server.content_license_url
+                get_understood_languages(base_dir, http_prefix,
+                                         nickname, domain_full,
+                                         person_cache)
+            media_license_url = content_license_url
             if fields.get('mediaLicense'):
                 media_license_url = fields['mediaLicense']
                 if '://' not in media_license_url:
@@ -1068,11 +973,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_direct_message_post(base_dir,
-                                           nickname,
-                                           self.server.domain,
-                                           self.server.port,
-                                           self.server.http_prefix,
+                create_direct_message_post(base_dir, nickname, domain,
+                                           port, http_prefix,
                                            mentions_message,
                                            save_to_file,
                                            client_to_server,
@@ -1090,14 +992,14 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                            fields['location'],
                                            fields['languagesDropdown'],
                                            conversation_id,
-                                           self.server.low_bandwidth,
-                                           self.server.dm_license_url,
+                                           low_bandwidth,
+                                           dm_license_url,
                                            media_license_url,
                                            media_creator,
                                            languages_understood,
-                                           False, self.server.translate,
+                                           False, translate,
                                            buy_url, chat_url,
-                                           self.server.auto_cw_cache)
+                                           auto_cw_cache)
             if message_json:
                 if fields['schedulePost']:
                     return 1
@@ -1105,57 +1007,43 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                       str(message_json['object']['to']) + ' ' +
                       str(edited_postid))
                 if edited_postid:
-                    recent_posts_cache = self.server.recent_posts_cache
-                    allow_local_network_access = \
-                        self.server.allow_local_network_access
-                    signing_priv_key_pem = \
-                        self.server.signing_priv_key_pem
-                    twitter_replacement_domain = \
-                        self.server.twitter_replacement_domain
-                    show_published_date_only = \
-                        self.server.show_published_date_only
-                    min_images_for_accounts = \
-                        self.server.min_images_for_accounts
-                    peertube_instances = \
-                        self.server.peertube_instances
-                    update_edited_post(base_dir,
-                                       nickname, self.server.domain,
+                    update_edited_post(base_dir, nickname, domain,
                                        message_json,
                                        edited_published,
                                        edited_postid,
                                        recent_posts_cache,
                                        'dm',
-                                       self.server.max_mentions,
-                                       self.server.max_emoji,
+                                       max_mentions,
+                                       max_emoji,
                                        allow_local_network_access,
-                                       self.server.debug,
-                                       self.server.system_language,
-                                       self.server.http_prefix,
-                                       self.server.domain_full,
-                                       self.server.person_cache,
+                                       debug,
+                                       system_language,
+                                       http_prefix,
+                                       domain_full,
+                                       person_cache,
                                        signing_priv_key_pem,
-                                       self.server.max_recent_posts,
-                                       self.server.translate,
+                                       max_recent_posts,
+                                       translate,
                                        curr_session,
-                                       self.server.cached_webfingers,
-                                       self.server.port,
-                                       self.server.allow_deletion,
-                                       self.server.yt_replace_domain,
+                                       cached_webfingers,
+                                       port,
+                                       allow_deletion,
+                                       yt_replace_domain,
                                        twitter_replacement_domain,
                                        show_published_date_only,
                                        peertube_instances,
-                                       self.server.theme_name,
-                                       self.server.max_like_count,
-                                       self.server.cw_lists,
-                                       self.server.dogwhistles,
+                                       theme_name,
+                                       max_like_count,
+                                       cw_lists,
+                                       dogwhistles,
                                        min_images_for_accounts,
-                                       self.server.max_hashtags,
-                                       self.server.buy_sites,
-                                       self.server.auto_cw_cache)
+                                       max_hashtags,
+                                       buy_sites,
+                                       auto_cw_cache)
                     print('DEBUG: sending edited reminder post ' +
                           str(message_json))
                 if post_to_outbox(self, message_json,
-                                  self.server.project_version,
+                                  project_version,
                                   nickname,
                                   curr_session, proxy_type):
                     return 1
@@ -1168,17 +1056,12 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             # and not accounts being reported we disable any
             # included fediverse addresses by replacing '@' with '-at-'
             fields['message'] = fields['message'].replace('@', '-at-')
-            city = get_spoofed_city(self.server.city,
-                                    base_dir,
-                                    nickname,
-                                    self.server.domain)
+            city = get_spoofed_city(city, base_dir, nickname, domain)
             languages_understood = \
-                get_understood_languages(base_dir,
-                                         self.server.http_prefix,
-                                         nickname,
-                                         self.server.domain_full,
-                                         self.server.person_cache)
-            media_license_url = self.server.content_license_url
+                get_understood_languages(base_dir, http_prefix,
+                                         nickname, domain_full,
+                                         person_cache)
+            media_license_url = content_license_url
             if fields.get('mediaLicense'):
                 media_license_url = fields['mediaLicense']
                 if '://' not in media_license_url:
@@ -1191,27 +1074,23 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_report_post(base_dir,
-                                   nickname,
-                                   self.server.domain, self.server.port,
-                                   self.server.http_prefix,
+                create_report_post(base_dir, nickname, domain, port,
+                                   http_prefix,
                                    mentions_str + fields['message'],
                                    False, False, True,
                                    filename, attachment_media_type,
                                    fields['imageDescription'],
                                    video_transcript,
-                                   city,
-                                   self.server.debug, fields['subject'],
+                                   city, debug, fields['subject'],
                                    fields['languagesDropdown'],
-                                   self.server.low_bandwidth,
+                                   low_bandwidth,
                                    content_license_url,
                                    media_license_url, media_creator,
                                    languages_understood,
-                                   self.server.translate,
-                                   self.server.auto_cw_cache)
+                                   translate, auto_cw_cache)
             if message_json:
                 if post_to_outbox(self, message_json,
-                                  self.server.project_version,
+                                  project_version,
                                   nickname,
                                   curr_session, proxy_type):
                     return 1
@@ -1228,21 +1107,16 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                             str(question_ctr)])
             if not q_options:
                 return -1
-            city = get_spoofed_city(self.server.city,
-                                    base_dir,
-                                    nickname,
-                                    self.server.domain)
+            city = get_spoofed_city(city, base_dir, nickname, domain)
             if isinstance(fields['duration'], str):
                 if len(fields['duration']) > 5:
                     return -1
             int_duration_days = int(fields['duration'])
             languages_understood = \
-                get_understood_languages(base_dir,
-                                         self.server.http_prefix,
-                                         nickname,
-                                         self.server.domain_full,
-                                         self.server.person_cache)
-            media_license_url = self.server.content_license_url
+                get_understood_languages(base_dir, http_prefix,
+                                         nickname, domain_full,
+                                         person_cache)
+            media_license_url = content_license_url
             if fields.get('mediaLicense'):
                 media_license_url = fields['mediaLicense']
                 if '://' not in media_license_url:
@@ -1255,11 +1129,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
             message_json = \
-                create_question_post(base_dir,
-                                     nickname,
-                                     self.server.domain,
-                                     self.server.port,
-                                     self.server.http_prefix,
+                create_question_post(base_dir, nickname, domain,
+                                     port, http_prefix,
                                      fields['message'], q_options,
                                      False, False,
                                      comments_enabled,
@@ -1270,17 +1141,17 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                      fields['subject'],
                                      int_duration_days,
                                      fields['languagesDropdown'],
-                                     self.server.low_bandwidth,
+                                     low_bandwidth,
                                      content_license_url,
                                      media_license_url, media_creator,
                                      languages_understood,
-                                     self.server.translate,
-                                     self.server.auto_cw_cache)
+                                     translate,
+                                     auto_cw_cache)
             if message_json:
-                if self.server.debug:
+                if debug:
                     print('DEBUG: new Question')
                 if post_to_outbox(self, message_json,
-                                  self.server.project_version,
+                                  project_version,
                                   nickname,
                                   curr_session, proxy_type):
                     return 1
@@ -1307,7 +1178,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 if isinstance(fields['bookrating'], float) or \
                    isinstance(fields['bookrating'], int):
                     book_rating = fields['bookrating']
-            media_license_url = self.server.content_license_url
+            media_license_url = content_license_url
             if fields.get('mediaLicense'):
                 media_license_url = fields['mediaLicense']
                 if '://' not in media_license_url:
@@ -1321,22 +1192,16 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 video_transcript = fields['videoTranscript']
             conversation_id = None
             languages_understood = \
-                get_understood_languages(base_dir,
-                                         self.server.http_prefix,
-                                         nickname,
-                                         self.server.domain_full,
-                                         self.server.person_cache)
-            city = get_spoofed_city(self.server.city,
-                                    base_dir,
-                                    nickname, self.server.domain)
+                get_understood_languages(base_dir, http_prefix,
+                                         nickname, domain_full,
+                                         person_cache)
+            city = get_spoofed_city(city, base_dir,
+                                    nickname, domain)
             msg_str = fields['readingupdatetype']
             # reading status
             message_json = \
-                create_reading_post(base_dir,
-                                    nickname,
-                                    self.server.domain,
-                                    self.server.port,
-                                    self.server.http_prefix,
+                create_reading_post(base_dir, nickname, domain,
+                                    port, http_prefix,
                                     mentions_str, msg_str,
                                     fields['booktitle'],
                                     fields['bookurl'],
@@ -1354,62 +1219,48 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                     fields['location'], False,
                                     fields['languagesDropdown'],
                                     conversation_id,
-                                    self.server.low_bandwidth,
+                                    low_bandwidth,
                                     content_license_url,
                                     media_license_url, media_creator,
                                     languages_understood,
-                                    self.server.translate, buy_url,
+                                    translate, buy_url,
                                     chat_url,
-                                    self.server.auto_cw_cache)
+                                    auto_cw_cache)
             if message_json:
                 if edited_postid:
-                    recent_posts_cache = self.server.recent_posts_cache
-                    allow_local_network_access = \
-                        self.server.allow_local_network_access
-                    signing_priv_key_pem = \
-                        self.server.signing_priv_key_pem
-                    twitter_replacement_domain = \
-                        self.server.twitter_replacement_domain
-                    show_published_date_only = \
-                        self.server.show_published_date_only
-                    min_images_for_accounts = \
-                        self.server.min_images_for_accounts
-                    peertube_instances = \
-                        self.server.peertube_instances
-                    update_edited_post(base_dir,
-                                       nickname, self.server.domain,
+                    update_edited_post(base_dir, nickname, domain,
                                        message_json,
                                        edited_published,
                                        edited_postid,
                                        recent_posts_cache,
                                        'outbox',
-                                       self.server.max_mentions,
-                                       self.server.max_emoji,
+                                       max_mentions,
+                                       max_emoji,
                                        allow_local_network_access,
-                                       self.server.debug,
-                                       self.server.system_language,
-                                       self.server.http_prefix,
-                                       self.server.domain_full,
-                                       self.server.person_cache,
+                                       debug,
+                                       system_language,
+                                       http_prefix,
+                                       domain_full,
+                                       person_cache,
                                        signing_priv_key_pem,
-                                       self.server.max_recent_posts,
-                                       self.server.translate,
+                                       max_recent_posts,
+                                       translate,
                                        curr_session,
-                                       self.server.cached_webfingers,
-                                       self.server.port,
-                                       self.server.allow_deletion,
-                                       self.server.yt_replace_domain,
+                                       cached_webfingers,
+                                       port,
+                                       allow_deletion,
+                                       yt_replace_domain,
                                        twitter_replacement_domain,
                                        show_published_date_only,
                                        peertube_instances,
-                                       self.server.theme_name,
-                                       self.server.max_like_count,
-                                       self.server.cw_lists,
-                                       self.server.dogwhistles,
+                                       theme_name,
+                                       max_like_count,
+                                       cw_lists,
+                                       dogwhistles,
                                        min_images_for_accounts,
-                                       self.server.max_hashtags,
-                                       self.server.buy_sites,
-                                       self.server.auto_cw_cache)
+                                       max_hashtags,
+                                       buy_sites,
+                                       auto_cw_cache)
                     print('DEBUG: sending edited reading status post ' +
                           str(message_json))
                 if fields['schedulePost']:
@@ -1419,23 +1270,21 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 else:
                     pin_to_profile = True
                 if pin_to_profile:
-                    sys_language = self.server.system_language
+                    sys_language = system_language
                     content_str = \
                         get_base_content_from_post(message_json,
                                                    sys_language)
-                    pin_post2(base_dir,
-                              nickname, self.server.domain, content_str)
+                    pin_post2(base_dir, nickname, domain, content_str)
                     return 1
                 if post_to_outbox(self, message_json,
-                                  self.server.project_version,
+                                  project_version,
                                   nickname,
                                   curr_session, proxy_type):
-                    populate_replies(base_dir,
-                                     self.server.http_prefix,
-                                     self.server.domain_full,
+                    populate_replies(base_dir, http_prefix,
+                                     domain_full,
                                      message_json,
-                                     self.server.max_replies,
-                                     self.server.debug)
+                                     max_replies,
+                                     debug)
                     return 1
                 return -1
         elif post_type in ('newshare', 'newwanted'):
@@ -1465,10 +1314,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if duration_str:
                 if ' ' not in duration_str:
                     duration_str = duration_str + ' days'
-            city = get_spoofed_city(self.server.city,
-                                    base_dir,
-                                    nickname,
-                                    self.server.domain)
+            city = get_spoofed_city(city, base_dir, nickname, domain)
             item_qty = 1
             if fields['itemQty']:
                 if is_float(fields['itemQty']):
@@ -1490,10 +1336,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if fields.get('shareOnProfile'):
                 if fields['shareOnProfile'] == 'on':
                     share_on_profile = True
-            add_share(base_dir,
-                      self.server.http_prefix,
-                      nickname,
-                      self.server.domain, self.server.port,
+            add_share(base_dir, http_prefix, nickname, domain, port,
                       fields['subject'],
                       fields['message'],
                       filename,
@@ -1501,38 +1344,32 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                       fields['category'],
                       fields['location'],
                       duration_str,
-                      self.server.debug,
+                      debug,
                       city, item_price, item_currency,
                       fields['languagesDropdown'],
-                      self.server.translate, shares_file_type,
-                      self.server.low_bandwidth,
+                      translate, shares_file_type,
+                      low_bandwidth,
                       content_license_url,
                       share_on_profile,
-                      self.server.block_federated)
+                      block_federated)
             if post_type == 'newshare':
                 # add shareOnProfile items to the actor attachments
                 # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
                 actor = \
                     get_instance_url(calling_domain,
-                                     self.server.http_prefix,
-                                     self.server.domain_full,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain) + \
+                                     http_prefix, domain_full,
+                                     onion_domain,
+                                     i2p_domain) + \
                     '/users/' + nickname
-                person_cache = self.server.person_cache
                 actor_json = get_person_from_cache(base_dir,
                                                    actor, person_cache)
                 if not actor_json:
                     actor_filename = \
-                        acct_dir(base_dir, nickname,
-                                 self.server.domain) + '.json'
+                        acct_dir(base_dir, nickname, domain) + '.json'
                     if os.path.isfile(actor_filename):
                         actor_json = load_json(actor_filename, 1, 1)
                 if actor_json:
-                    max_shares_on_profile = \
-                        self.server.max_shares_on_profile
-                    if add_shares_to_actor(base_dir,
-                                           nickname, self.server.domain,
+                    if add_shares_to_actor(base_dir, nickname, domain,
                                            actor_json,
                                            max_shares_on_profile):
                         remove_person_from_cache(base_dir,
@@ -1541,9 +1378,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                               actor_json, person_cache,
                                               True)
                         actor_filename = \
-                            acct_dir(base_dir,
-                                     nickname,
-                                     self.server.domain) + '.json'
+                            acct_dir(base_dir, nickname, domain) + '.json'
                         save_json(actor_json, actor_filename)
                         # send profile update to followers
                         update_actor_json = \
@@ -1552,7 +1387,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               'after change to attached shares: ' +
                               str(update_actor_json))
                         post_to_outbox(self, update_actor_json,
-                                       self.server.project_version,
+                                       project_version,
                                        nickname,
                                        curr_session, proxy_type)
 
@@ -1572,7 +1407,36 @@ def receive_new_post(self, post_type: str, path: str,
                      calling_domain: str, cookie: str,
                      content_license_url: str,
                      curr_session, proxy_type: str,
-                     base_dir: str) -> int:
+                     base_dir: str, debug: bool,
+                     max_post_length: int, domain: str,
+                     city: str, low_bandwidth: bool, translate: {},
+                     system_language: str, http_prefix: str,
+                     domain_full: str, person_cache: {},
+                     port: int, auto_cw_cache: {},
+                     recent_posts_cache: {},
+                     allow_local_network_access: bool,
+                     yt_replace_domain: str,
+                     twitter_replacement_domain: str,
+                     signing_priv_key_pem: str,
+                     show_published_date_only: bool,
+                     min_images_for_accounts: bool,
+                     peertube_instances: [],
+                     max_mentions: int, max_emoji: int,
+                     max_recent_posts: int,
+                     cached_webfingers: {},
+                     allow_deletion: bool,
+                     theme_name: str,
+                     max_like_count: int,
+                     cw_lists: {},
+                     dogwhistles: {},
+                     max_hashtags: int,
+                     buy_sites: [], project_version: str,
+                     max_replies: int, newswire: {},
+                     dm_license_url: str,
+                     block_federated: [],
+                     onion_domain: str,
+                     i2p_domain: str,
+                     max_shares_on_profile: int) -> int:
     """A new post has been created
     This creates a thread to send the new post
     """
@@ -1634,7 +1498,7 @@ def receive_new_post(self, post_type: str, path: str,
     print('New post headers: ' + str(headers_without_cookie))
 
     length = int(headers['Content-Length'])
-    if length > self.server.max_post_length:
+    if length > max_post_length:
         print('POST size too large')
         return None
 
@@ -1666,7 +1530,7 @@ def receive_new_post(self, post_type: str, path: str,
             # second length check from the bytes received
             # since Content-Length could be untruthful
             length = len(post_bytes)
-            if length > self.server.max_post_length:
+            if length > max_post_length:
                 print('POST size too large')
                 return None
 
@@ -1681,5 +1545,33 @@ def receive_new_post(self, post_type: str, path: str,
                                       calling_domain, cookie,
                                       content_license_url,
                                       curr_session, proxy_type,
-                                      base_dir)
+                                      base_dir, debug, max_post_length,
+                                      domain, city, low_bandwidth,
+                                      translate, system_language,
+                                      http_prefix, domain_full,
+                                      person_cache,
+                                      port, auto_cw_cache,
+                                      recent_posts_cache,
+                                      allow_local_network_access,
+                                      yt_replace_domain,
+                                      twitter_replacement_domain,
+                                      signing_priv_key_pem,
+                                      show_published_date_only,
+                                      min_images_for_accounts,
+                                      peertube_instances,
+                                      max_mentions, max_emoji,
+                                      max_recent_posts,
+                                      cached_webfingers,
+                                      allow_deletion,
+                                      theme_name,
+                                      max_like_count,
+                                      cw_lists,
+                                      dogwhistles,
+                                      max_hashtags,
+                                      buy_sites, project_version,
+                                      max_replies, newswire,
+                                      dm_license_url, block_federated,
+                                      onion_domain,
+                                      i2p_domain,
+                                      max_shares_on_profile)
     return page_number
