@@ -4115,7 +4115,7 @@ def daemon_http_get(self) -> None:
                       self.server.cw_lists,
                       self.server.lists_enabled,
                       self.server.content_license_url,
-                      self.server.buy_sites, None,
+                      self.server.buy_sites,
                       self.server.max_shares_on_profile,
                       self.server.sites_unavailable,
                       self.server.no_of_books,
