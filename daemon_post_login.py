@@ -40,7 +40,12 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                       base_dir: str, http_prefix: str,
                       domain: str, port: int,
                       ua_str: str, debug: bool,
-                      registrations_open: bool) -> None:
+                      registrations_open: bool,
+                      domain_full: str,
+                      onion_domain: str,
+                      i2p_domain: str,
+                      manual_follower_approval: bool,
+                      default_timeline: str) -> None:
     """POST to login screen, containing credentials
     """
     # ensure that there is a minimum delay between failed login
@@ -95,23 +100,23 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                 login_url = \
                     get_instance_url(calling_domain,
                                      http_prefix,
-                                     self.server.domain_full,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain) + \
+                                     domain_full,
+                                     onion_domain,
+                                     i2p_domain) + \
                     '/login'
                 redirect_headers(self, login_url, cookie, calling_domain)
                 return
 
             if not register_account(base_dir, http_prefix, domain, port,
                                     login_nickname, login_password,
-                                    self.server.manual_follower_approval):
+                                    manual_follower_approval):
                 self.server.postreq_busy = False
                 login_url = \
                     get_instance_url(calling_domain,
                                      http_prefix,
-                                     self.server.domain_full,
-                                     self.server.onion_domain,
-                                     self.server.i2p_domain) + \
+                                     domain_full,
+                                     onion_domain,
+                                     i2p_domain) + \
                     '/login'
                 redirect_headers(self, login_url, cookie, calling_domain)
                 return
@@ -206,11 +211,11 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             tl_url = \
                 get_instance_url(calling_domain,
                                  http_prefix,
-                                 self.server.domain_full,
-                                 self.server.onion_domain,
-                                 self.server.i2p_domain) + \
+                                 domain_full,
+                                 onion_domain,
+                                 i2p_domain) + \
                 '/users/' + login_nickname + '/' + \
-                self.server.default_timeline
+                default_timeline
             redirect_headers(self, tl_url, cookie_str, calling_domain)
             self.server.postreq_busy = False
             return

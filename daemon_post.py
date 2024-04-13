@@ -201,7 +201,12 @@ def daemon_http_post(self) -> None:
                           self.server.domain,
                           self.server.port,
                           ua_str, self.server.debug,
-                          self.server.registration)
+                          self.server.registration,
+                          self.server.domain_full,
+                          self.server.onion_domain,
+                          self.server.i2p_domain,
+                          self.server.manual_follower_approval,
+                          self.server.default_timeline)
         self.server.postreq_busy = False
         return
 
