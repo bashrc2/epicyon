@@ -111,7 +111,10 @@ def remove_share(self, calling_domain: str, cookie: str,
                  authorized: bool, path: str,
                  base_dir: str, http_prefix: str, domain_full: str,
                  onion_domain: str, i2p_domain: str,
-                 curr_session, proxy_type: str) -> None:
+                 curr_session, proxy_type: str,
+                 person_cache: {},
+                 max_shares_on_profile: int,
+                 project_version: str) -> None:
     """Removes a shared item
     """
     users_path = path.split('/rmshare')[0]
@@ -180,7 +183,6 @@ def remove_share(self, calling_domain: str, cookie: str,
                                      onion_domain,
                                      i2p_domain) + \
                     '/users/' + share_nickname
-                person_cache = self.server.person_cache
                 actor_json = get_person_from_cache(base_dir,
                                                    actor, person_cache)
                 if not actor_json:
@@ -190,8 +192,6 @@ def remove_share(self, calling_domain: str, cookie: str,
                     if os.path.isfile(actor_filename):
                         actor_json = load_json(actor_filename, 1, 1)
                 if actor_json:
-                    max_shares_on_profile = \
-                        self.server.max_shares_on_profile
                     if add_shares_to_actor(base_dir,
                                            share_nickname, share_domain,
                                            actor_json,
@@ -212,7 +212,7 @@ def remove_share(self, calling_domain: str, cookie: str,
                               'after change to attached shares 2: ' +
                               str(update_actor_json))
                         post_to_outbox(self, update_actor_json,
-                                       self.server.project_version,
+                                       project_version,
                                        share_nickname,
                                        curr_session,
                                        proxy_type)

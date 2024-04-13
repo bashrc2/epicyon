@@ -392,7 +392,10 @@ def daemon_http_post(self) -> None:
                          self.server.domain_full,
                          self.server.onion_domain,
                          self.server.i2p_domain,
-                         curr_session, proxy_type)
+                         curr_session, proxy_type,
+                         self.server.person_cache,
+                         self.server.max_shares_on_profile,
+                         self.server.project_version)
             self.server.postreq_busy = False
             return
 
