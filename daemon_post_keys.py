@@ -19,7 +19,8 @@ def keyboard_shortcuts(self, calling_domain: str, cookie: str,
                        base_dir: str, http_prefix: str, nickname: str,
                        domain: str, domain_full: str,
                        onion_domain: str, i2p_domain: str,
-                       access_keys: {}, default_timeline: str) -> None:
+                       access_keys2: {}, default_timeline: str,
+                       access_keys: {}, key_shortcuts: {}) -> None:
     """Receive POST from webapp_accesskeys
     """
     users_path = '/users/' + nickname
@@ -67,10 +68,10 @@ def keyboard_shortcuts(self, calling_domain: str, cookie: str,
         return
 
     save_keys = False
-    access_keys_template = self.server.access_keys
+    access_keys_template = access_keys
     for variable_name, _ in access_keys_template.items():
-        if not access_keys.get(variable_name):
-            access_keys[variable_name] = \
+        if not access_keys2.get(variable_name):
+            access_keys2[variable_name] = \
                 access_keys_template[variable_name]
 
         variable_name2 = variable_name.replace(' ', '_')
@@ -81,16 +82,16 @@ def keyboard_shortcuts(self, calling_domain: str, cookie: str,
             if new_key:
                 if len(new_key) > 1:
                     new_key = new_key[0]
-                if new_key != access_keys[variable_name]:
-                    access_keys[variable_name] = new_key
+                if new_key != access_keys2[variable_name]:
+                    access_keys2[variable_name] = new_key
                     save_keys = True
 
     if save_keys:
         access_keys_filename = \
             acct_dir(base_dir, nickname, domain) + '/access_keys.json'
-        save_json(access_keys, access_keys_filename)
-        if not self.server.key_shortcuts.get(nickname):
-            self.server.key_shortcuts[nickname] = access_keys.copy()
+        save_json(access_keys2, access_keys_filename)
+        if not key_shortcuts.get(nickname):
+            key_shortcuts[nickname] = access_keys2.copy()
 
     # redirect back from key shortcuts screen
     if calling_domain.endswith('.onion') and onion_domain:

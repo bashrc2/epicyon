@@ -563,7 +563,9 @@ def daemon_http_post(self) -> None:
                                self.server.onion_domain,
                                self.server.i2p_domain,
                                access_keys,
-                               self.server.default_timeline)
+                               self.server.default_timeline,
+                               self.server.access_keys,
+                               self.server.key_shortcuts)
             self.server.postreq_busy = False
             return
 
