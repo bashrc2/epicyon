@@ -785,7 +785,8 @@ def daemon_http_post(self) -> None:
         receive_image_attachment(self, length, self.path,
                                  self.server.base_dir,
                                  self.server.domain,
-                                 self.server.debug)
+                                 self.server.debug,
+                                 self.outbox_authenticated)
         self.server.postreq_busy = False
         return
 

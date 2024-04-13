@@ -17,10 +17,11 @@ from utils import binary_is_image
 
 
 def receive_image_attachment(self, length: int, path: str, base_dir: str,
-                             domain: str, debug: bool) -> None:
+                             domain: str, debug: bool,
+                             outbox_authenticated: bool) -> None:
     """Receives an image via POST
     """
-    if not self.outbox_authenticated:
+    if not outbox_authenticated:
         if debug:
             print('DEBUG: unauthenticated attempt to ' +
                   'post image to outbox')
