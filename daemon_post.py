@@ -237,7 +237,13 @@ def daemon_http_post(self) -> None:
                      self.server.system_language,
                      self.server.content_license_url,
                      curr_session,
-                     proxy_type)
+                     proxy_type,
+                     self.server.cached_webfingers,
+                     self.server.person_cache,
+                     self.server.project_version,
+                     self.server.translate,
+                     self.server.theme_name,
+                     self.server.dyslexic_font)
         self.server.postreq_busy = False
         return
 

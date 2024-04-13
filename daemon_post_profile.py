@@ -146,7 +146,8 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
                              onion_domain: str, i2p_domain: str,
                              curr_session, proxy_type: str,
                              send_move_activity: bool,
-                             self) -> None:
+                             self, cached_webfingers: {},
+                             person_cache: {}, project_version: str) -> None:
     """ HTTP POST save actor json file within accounts
     """
     add_name_emojis_to_tags(base_dir, http_prefix,
@@ -170,11 +171,11 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
     save_json(actor_json, actor_filename)
     webfinger_update(base_dir, nickname, domain,
                      onion_domain, i2p_domain,
-                     self.server.cached_webfingers)
+                     cached_webfingers)
     # also copy to the actors cache and
     # person_cache in memory
     store_person_in_cache(base_dir, actor_json['id'], actor_json,
-                          self.server.person_cache, True)
+                          person_cache, True)
     # clear any cached images for this actor
     id_str = actor_json['id'].replace('/', '-')
     remove_avatar_from_cache(base_dir, id_str)
@@ -187,14 +188,14 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
     update_actor_json = get_actor_update_json(actor_json)
     print('Sending actor update: ' + str(update_actor_json))
     post_to_outbox(self, update_actor_json,
-                   self.server.project_version, nickname,
+                   project_version, nickname,
                    curr_session, proxy_type)
     # send move activity if necessary
     if send_move_activity:
         move_actor_json = get_actor_move_json(actor_json)
         print('Sending Move activity: ' + str(move_actor_json))
         post_to_outbox(self, move_actor_json,
-                       self.server.project_version,
+                       project_version,
                        nickname,
                        curr_session, proxy_type)
 
@@ -2396,18 +2397,19 @@ def profile_edit(self, calling_domain: str, cookie: str,
                  debug: bool, allow_local_network_access: bool,
                  system_language: str,
                  content_license_url: str,
-                 curr_session, proxy_type: str) -> None:
+                 curr_session, proxy_type: str,
+                 cached_webfingers: {},
+                 person_cache: {}, project_version: str,
+                 translate: {}, theme_name: str,
+                 dyslexic_font: bool) -> None:
     """Updates your user profile after editing via the Edit button
     on the profile screen
     """
     users_path = path.replace('/profiledata', '')
     users_path = users_path.replace('/editprofile', '')
     actor_str = \
-        get_instance_url(calling_domain,
-                         http_prefix,
-                         domain_full,
-                         onion_domain,
-                         i2p_domain) + \
+        get_instance_url(calling_domain, http_prefix, domain_full,
+                         onion_domain, i2p_domain) + \
         users_path
 
     boundary = None
@@ -2608,10 +2610,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
         elif 'name="submitExportTheme"' in post_bytes_str:
             print('submitExportTheme')
             theme_download_path = actor_str
-            if export_theme(base_dir,
-                            self.server.theme_name):
-                theme_download_path += \
-                    '/exports/' + self.server.theme_name + '.zip'
+            if export_theme(base_dir, theme_name):
+                theme_download_path += '/exports/' + theme_name + '.zip'
             print('submitExportTheme path=' + theme_download_path)
             redirect_headers(self, theme_download_path,
                              cookie, calling_domain)
@@ -2659,7 +2659,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                               fields,
                                               base_dir, nickname, domain,
                                               system_language,
-                                              self.server.translate,
+                                              translate,
                                               actor_changed)
 
                 _profile_post_change_password(base_dir, nickname, fields)
@@ -2680,19 +2680,18 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 _profile_post_theme_change(base_dir, nickname,
                                            domain, domain_full,
                                            admin_nickname, fields,
-                                           self.server.theme_name,
+                                           theme_name,
                                            http_prefix,
                                            allow_local_network_access,
                                            system_language,
-                                           self.server.dyslexic_font, self)
+                                           dyslexic_font, self)
 
                 # is this the admin profile?
                 if nickname == admin_nickname:
                     _profile_post_media_instance_status(base_dir, fields, self)
 
                     # is this a news theme?
-                    if is_news_theme_name(base_dir,
-                                          self.server.theme_name):
+                    if is_news_theme_name(base_dir, theme_name):
                         fields['newsInstance'] = 'on'
 
                     _profile_post_news_instance_status(base_dir, fields, self)
@@ -2725,8 +2724,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     _profile_post_instance_desc(base_dir, fields)
 
                     _profile_post_memorial_accounts(base_dir, domain,
-                                                    self.server.person_cache,
-                                                    fields)
+                                                    person_cache, fields)
                 actor_changed = \
                     _profile_post_email_address(actor_json, fields,
                                                 actor_changed)
@@ -2808,7 +2806,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                           nickname, domain,
                                           actor_json, fields,
                                           actor_changed,
-                                          self.server.translate,
+                                          translate,
                                           debug)
 
                 actor_changed = \
@@ -2836,7 +2834,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     _profile_post_bio(actor_json, fields,
                                       base_dir, http_prefix,
                                       nickname, domain, domain_full,
-                                      system_language, self.server.translate,
+                                      system_language, translate,
                                       actor_changed,
                                       redirect_path,
                                       check_name_and_bio)
@@ -2909,7 +2907,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 _profile_post_remove_custom_font(base_dir, nickname, domain,
                                                  system_language,
                                                  admin_nickname,
-                                                 self.server.dyslexic_font,
+                                                 dyslexic_font,
                                                  path, fields, self)
 
                 actor_changed = \
@@ -3043,7 +3041,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                              onion_domain, i2p_domain,
                                              curr_session, proxy_type,
                                              send_move_activity,
-                                             self)
+                                             self, cached_webfingers,
+                                             person_cache, project_version)
 
                 if _profile_post_deactivate_account(base_dir, nickname, domain,
                                                     calling_domain,
