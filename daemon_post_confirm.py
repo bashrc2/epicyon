@@ -37,7 +37,8 @@ def unfollow_confirm(self, calling_domain: str, cookie: str,
                      domain: str, domain_full: str, port: int,
                      onion_domain: str, i2p_domain: str,
                      debug: bool,
-                     curr_session, proxy_type: str) -> None:
+                     curr_session, proxy_type: str,
+                     person_cache: {}) -> None:
     """Confirm to unfollow
     """
     users_path = path.split('/unfollowconfirm')[0]
@@ -116,7 +117,7 @@ def unfollow_confirm(self, calling_domain: str, cookie: str,
             path_users_section = path.split('/users/')[1]
             self.post_to_nickname = path_users_section.split('/')[0]
             group_account = has_group_type(base_dir, following_actor,
-                                           self.server.person_cache)
+                                           person_cache)
             unfollow_account(base_dir, self.post_to_nickname,
                              domain,
                              following_nickname, following_domain_full,
@@ -138,7 +139,18 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
                     debug: bool,
-                    curr_session, proxy_type: str) -> None:
+                    curr_session, proxy_type: str,
+                    translate: {},
+                    system_language: str,
+                    signing_priv_key_pem: str,
+                    block_federated: [],
+                    federation_list: [],
+                    send_threads: [],
+                    post_log: str,
+                    cached_webfingers: {},
+                    person_cache: {},
+                    project_version: str,
+                    sites_unavailable: []) -> None:
     """Confirm to follow
     """
     users_path = path.split('/followconfirm')[0]
@@ -190,16 +202,16 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
             following_actor = following_actor.split('&')[0]
         if is_moderator(base_dir, follower_nickname):
             msg = \
-                html_account_info(self.server.translate,
+                html_account_info(translate,
                                   base_dir, http_prefix,
                                   follower_nickname,
                                   domain,
                                   following_actor,
                                   debug,
-                                  self.server.system_language,
-                                  self.server.signing_priv_key_pem,
+                                  system_language,
+                                  signing_priv_key_pem,
                                   users_path,
-                                  self.server.block_federated)
+                                  block_federated)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -239,7 +251,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
         else:
             print('Sending follow request from ' +
                   follower_nickname + ' to ' + following_actor)
-            if not self.server.signing_priv_key_pem:
+            if not signing_priv_key_pem:
                 print('Sending follow request with no signing key')
 
             curr_domain = domain
@@ -279,18 +291,18 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                                 following_domain,
                                 following_actor,
                                 following_port, curr_http_prefix,
-                                False, self.server.federation_list,
-                                self.server.send_threads,
-                                self.server.postLog,
-                                self.server.cached_webfingers,
-                                self.server.person_cache, debug,
-                                self.server.project_version,
-                                self.server.signing_priv_key_pem,
+                                False, federation_list,
+                                send_threads,
+                                post_log,
+                                cached_webfingers,
+                                person_cache, debug,
+                                project_version,
+                                signing_priv_key_pem,
                                 domain,
                                 onion_domain,
                                 i2p_domain,
-                                self.server.sites_unavailable,
-                                self.server.system_language)
+                                sites_unavailable,
+                                system_language)
 
     if '&submitUnblock=' in follow_confirm_params:
         blocking_actor = \

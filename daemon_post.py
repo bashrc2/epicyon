@@ -485,7 +485,17 @@ def daemon_http_post(self) -> None:
                             self.server.i2p_domain,
                             self.server.debug,
                             curr_session,
-                            proxy_type)
+                            proxy_type, self.server.translate,
+                            self.server.system_language,
+                            self.server.signing_priv_key_pem,
+                            self.server.block_federated,
+                            self.server.federation_list,
+                            self.server.send_threads,
+                            self.server.postLog,
+                            self.server.cached_webfingers,
+                            self.server.person_cache,
+                            self.server.project_version,
+                            self.server.sites_unavailable)
             self.server.postreq_busy = False
             return
 
@@ -523,7 +533,8 @@ def daemon_http_post(self) -> None:
                              self.server.onion_domain,
                              self.server.i2p_domain,
                              self.server.debug,
-                             curr_session, proxy_type)
+                             curr_session, proxy_type,
+                             self.server.person_cache)
             self.server.postreq_busy = False
             return
 
