@@ -430,10 +430,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                     curr_session = self.server.session_i2p
 
                 curr_session = \
-                    establish_session("handle search",
-                                      curr_session,
-                                      curr_proxy_type,
-                                      self.server)
+                    establish_session("handle search", curr_session,
+                                      curr_proxy_type, self.server)
                 if not curr_session:
                     self.server.postreq_busy = False
                     return
@@ -442,16 +440,14 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                 avatar_url = \
                     get_avatar_image_url(curr_session,
                                          base_dir, http_prefix,
-                                         actor,
-                                         person_cache,
+                                         actor, person_cache,
                                          None, True,
                                          signing_priv_key_pem)
                 profile_path_str += \
                     '?options=' + actor + ';1;' + avatar_url
 
                 show_person_options(self, calling_domain, profile_path_str,
-                                    base_dir,
-                                    domain, domain_full,
+                                    base_dir, domain, domain_full,
                                     getreq_start_time,
                                     cookie, debug, authorized,
                                     curr_session)
@@ -478,10 +474,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                     curr_session = self.server.session_i2p
 
                 curr_session = \
-                    establish_session("handle search",
-                                      curr_session,
-                                      curr_proxy_type,
-                                      self.server)
+                    establish_session("handle search", curr_session,
+                                      curr_proxy_type, self.server)
                 if not curr_session:
                     self.server.postreq_busy = False
                     return
@@ -593,17 +587,14 @@ def receive_search_query(self, calling_domain: str, cookie: str,
             # shared items search
             nickname = get_nickname_from_actor(actor_str)
             shared_items_str = \
-                html_search_shared_items(translate,
-                                         base_dir,
+                html_search_shared_items(translate, base_dir,
                                          search_str, page_number,
                                          max_posts_in_feed,
-                                         http_prefix,
-                                         domain_full,
+                                         http_prefix, domain_full,
                                          actor_str, calling_domain,
                                          shared_items_federated_domains,
                                          'shares', nickname, domain,
-                                         theme_name,
-                                         access_keys)
+                                         theme_name, access_keys)
             if shared_items_str:
                 msg = shared_items_str.encode('utf-8')
                 msglen = len(msg)
