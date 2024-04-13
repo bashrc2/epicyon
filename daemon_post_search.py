@@ -43,7 +43,38 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                          getreq_start_time, debug: bool,
                          curr_session, proxy_type: str,
                          max_posts_in_hashtag_feed: int,
-                         max_posts_in_feed: int) -> None:
+                         max_posts_in_feed: int,
+                         default_timeline: str,
+                         account_timezone: {},
+                         bold_reading_nicknames: {},
+                         recent_posts_cache: {},
+                         max_recent_posts: int,
+                         translate: {},
+                         cached_webfingers: {},
+                         person_cache: {},
+                         project_version: str,
+                         yt_replace_domain: str,
+                         twitter_replacement_domain: str,
+                         show_published_date_only: bool,
+                         peertube_instances: [],
+                         allow_local_network_access: bool,
+                         theme_name: str,
+                         system_language: str,
+                         max_like_count: int,
+                         signing_priv_key_pem: str,
+                         cw_lists: {},
+                         lists_enabled: {},
+                         dogwhistles: {},
+                         map_format: str,
+                         access_keys: {},
+                         min_images_for_accounts: bool,
+                         buy_sites: [],
+                         auto_cw_cache: {},
+                         instance_only_skills_search: bool,
+                         key_shortcuts: {},
+                         max_shares_on_profile: int,
+                         no_of_books: int,
+                         shared_items_federated_domains: []) -> None:
     """Receive a search query
     """
     # get the page number
@@ -60,11 +91,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
 
     users_path = path.replace('/searchhandle', '')
     actor_str = \
-        get_instance_url(calling_domain,
-                         http_prefix,
-                         domain_full,
-                         onion_domain,
-                         i2p_domain) + \
+        get_instance_url(calling_domain, http_prefix, domain_full,
+                         onion_domain, i2p_domain) + \
         users_path
     length = int(self.headers['Content-length'])
     try:
@@ -87,8 +115,7 @@ def receive_search_query(self, calling_domain: str, cookie: str,
     if 'submitBack=' in search_params:
         # go back on search screen
         redirect_headers(self, actor_str + '/' +
-                         self.server.default_timeline,
-                         cookie, calling_domain)
+                         default_timeline, cookie, calling_domain)
         self.server.postreq_busy = False
         return
     if 'searchtext=' in search_params:
@@ -122,44 +149,43 @@ def receive_search_query(self, calling_domain: str, cookie: str,
 
             # hashtag search
             timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
+            if account_timezone.get(nickname):
+                timezone = account_timezone.get(nickname)
             bold_reading = False
-            if self.server.bold_reading.get(nickname):
+            if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             hashtag_str = \
                 html_hashtag_search(nickname, domain, port,
-                                    self.server.recent_posts_cache,
-                                    self.server.max_recent_posts,
-                                    self.server.translate,
+                                    recent_posts_cache,
+                                    max_recent_posts,
+                                    translate,
                                     base_dir,
                                     search_str[1:], 1,
                                     max_posts_in_hashtag_feed,
                                     curr_session,
-                                    self.server.cached_webfingers,
-                                    self.server.person_cache,
+                                    cached_webfingers,
+                                    person_cache,
                                     http_prefix,
-                                    self.server.project_version,
-                                    self.server.yt_replace_domain,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.show_published_date_only,
-                                    self.server.peertube_instances,
-                                    self.server.allow_local_network_access,
-                                    self.server.theme_name,
-                                    self.server.system_language,
-                                    self.server.max_like_count,
-                                    self.server.signing_priv_key_pem,
-                                    self.server.cw_lists,
-                                    self.server.lists_enabled,
+                                    project_version,
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name,
+                                    system_language,
+                                    max_like_count,
+                                    signing_priv_key_pem,
+                                    cw_lists,
+                                    lists_enabled,
                                     timezone, bold_reading,
-                                    self.server.dogwhistles,
-                                    self.server.map_format,
-                                    self.server.access_keys,
+                                    dogwhistles,
+                                    map_format,
+                                    access_keys,
                                     'search',
-                                    self.server.min_images_for_accounts,
-                                    self.server.buy_sites,
-                                    self.server.auto_cw_cache)
+                                    min_images_for_accounts,
+                                    buy_sites,
+                                    auto_cw_cache)
             if hashtag_str:
                 msg = hashtag_str.encode('utf-8')
                 msglen = len(msg)
@@ -181,14 +207,11 @@ def receive_search_query(self, calling_domain: str, cookie: str,
             search_str = search_str.replace('*', '').strip()
             nickname = get_nickname_from_actor(actor_str)
             skill_str = \
-                html_skills_search(actor_str,
-                                   self.server.translate,
-                                   base_dir,
-                                   search_str,
-                                   self.server.instance_only_skills_search,
+                html_skills_search(actor_str, translate,
+                                   base_dir, search_str,
+                                   instance_only_skills_search,
                                    64, nickname, domain,
-                                   self.server.theme_name,
-                                   self.server.access_keys)
+                                   theme_name, access_keys)
             if skill_str:
                 msg = skill_str.encode('utf-8')
                 msglen = len(msg)
@@ -225,14 +248,13 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                 return
             search_str = search_str.replace("'", '', 1).strip()
             timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
+            if account_timezone.get(nickname):
+                timezone = account_timezone.get(nickname)
             bold_reading = False
-            if self.server.bold_reading.get(nickname):
+            if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             history_str = \
-                html_history_search(self.server.translate,
+                html_history_search(translate,
                                     base_dir,
                                     http_prefix,
                                     nickname,
@@ -240,30 +262,30 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                     search_str,
                                     max_posts_in_feed,
                                     page_number,
-                                    self.server.project_version,
-                                    self.server.recent_posts_cache,
-                                    self.server.max_recent_posts,
+                                    project_version,
+                                    recent_posts_cache,
+                                    max_recent_posts,
                                     curr_session,
-                                    self.server.cached_webfingers,
-                                    self.server.person_cache,
+                                    cached_webfingers,
+                                    person_cache,
                                     port,
-                                    self.server.yt_replace_domain,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.show_published_date_only,
-                                    self.server.peertube_instances,
-                                    self.server.allow_local_network_access,
-                                    self.server.theme_name, 'outbox',
-                                    self.server.system_language,
-                                    self.server.max_like_count,
-                                    self.server.signing_priv_key_pem,
-                                    self.server.cw_lists,
-                                    self.server.lists_enabled,
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, 'outbox',
+                                    system_language,
+                                    max_like_count,
+                                    signing_priv_key_pem,
+                                    cw_lists,
+                                    lists_enabled,
                                     timezone, bold_reading,
-                                    self.server.dogwhistles,
-                                    self.server.access_keys,
-                                    self.server.min_images_for_accounts,
-                                    self.server.buy_sites,
-                                    self.server.auto_cw_cache)
+                                    dogwhistles,
+                                    access_keys,
+                                    min_images_for_accounts,
+                                    buy_sites,
+                                    auto_cw_cache)
             if history_str:
                 msg = history_str.encode('utf-8')
                 msglen = len(msg)
@@ -300,14 +322,13 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                 return
             search_str = search_str.replace('-', '', 1).strip()
             timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
+            if account_timezone.get(nickname):
+                timezone = account_timezone.get(nickname)
             bold_reading = False
-            if self.server.bold_reading.get(nickname):
+            if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             bookmarks_str = \
-                html_history_search(self.server.translate,
+                html_history_search(translate,
                                     base_dir,
                                     http_prefix,
                                     nickname,
@@ -315,30 +336,30 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                     search_str,
                                     max_posts_in_feed,
                                     page_number,
-                                    self.server.project_version,
-                                    self.server.recent_posts_cache,
-                                    self.server.max_recent_posts,
+                                    project_version,
+                                    recent_posts_cache,
+                                    max_recent_posts,
                                     curr_session,
-                                    self.server.cached_webfingers,
-                                    self.server.person_cache,
+                                    cached_webfingers,
+                                    person_cache,
                                     port,
-                                    self.server.yt_replace_domain,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.show_published_date_only,
-                                    self.server.peertube_instances,
-                                    self.server.allow_local_network_access,
-                                    self.server.theme_name, 'bookmarks',
-                                    self.server.system_language,
-                                    self.server.max_like_count,
-                                    self.server.signing_priv_key_pem,
-                                    self.server.cw_lists,
-                                    self.server.lists_enabled,
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name, 'bookmarks',
+                                    system_language,
+                                    max_like_count,
+                                    signing_priv_key_pem,
+                                    cw_lists,
+                                    lists_enabled,
                                     timezone, bold_reading,
-                                    self.server.dogwhistles,
-                                    self.server.access_keys,
-                                    self.server.min_images_for_accounts,
-                                    self.server.buy_sites,
-                                    self.server.auto_cw_cache)
+                                    dogwhistles,
+                                    access_keys,
+                                    min_images_for_accounts,
+                                    buy_sites,
+                                    auto_cw_cache)
             if bookmarks_str:
                 msg = bookmarks_str.encode('utf-8')
                 msglen = len(msg)
@@ -422,9 +443,9 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                     get_avatar_image_url(curr_session,
                                          base_dir, http_prefix,
                                          actor,
-                                         self.server.person_cache,
+                                         person_cache,
                                          None, True,
-                                         self.server.signing_priv_key_pem)
+                                         signing_priv_key_pem)
                 profile_path_str += \
                     '?options=' + actor + ';1;' + avatar_url
 
@@ -436,31 +457,12 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                     curr_session)
                 return
             else:
-                show_published_date_only = \
-                    self.server.show_published_date_only
-                allow_local_network_access = \
-                    self.server.allow_local_network_access
+                if key_shortcuts.get(nickname):
+                    access_keys = key_shortcuts[nickname]
 
-                access_keys = self.server.access_keys
-                if self.server.key_shortcuts.get(nickname):
-                    access_keys = self.server.key_shortcuts[nickname]
-
-                signing_priv_key_pem = \
-                    self.server.signing_priv_key_pem
-                twitter_replacement_domain = \
-                    self.server.twitter_replacement_domain
-                peertube_instances = \
-                    self.server.peertube_instances
-                yt_replace_domain = \
-                    self.server.yt_replace_domain
-                cached_webfingers = \
-                    self.server.cached_webfingers
-                recent_posts_cache = \
-                    self.server.recent_posts_cache
                 timezone = None
-                if self.server.account_timezone.get(nickname):
-                    timezone = \
-                        self.server.account_timezone.get(nickname)
+                if account_timezone.get(nickname):
+                    timezone = account_timezone.get(nickname)
 
                 profile_handle = remove_eol(search_str).strip()
 
@@ -485,18 +487,14 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                     return
 
                 bold_reading = False
-                if self.server.bold_reading.get(nickname):
+                if bold_reading_nicknames.get(nickname):
                     bold_reading = True
 
-                min_images_for_accounts = \
-                    self.server.min_images_for_accounts
-                max_shares_on_profile = \
-                    self.server.max_shares_on_profile
                 profile_str = \
                     html_profile_after_search(authorized,
                                               recent_posts_cache,
-                                              self.server.max_recent_posts,
-                                              self.server.translate,
+                                              max_recent_posts,
+                                              translate,
                                               base_dir,
                                               profile_path_str,
                                               http_prefix,
@@ -506,32 +504,32 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                               profile_handle,
                                               curr_session,
                                               cached_webfingers,
-                                              self.server.person_cache,
+                                              person_cache,
                                               debug,
-                                              self.server.project_version,
+                                              project_version,
                                               yt_replace_domain,
                                               twitter_replacement_domain,
                                               show_published_date_only,
-                                              self.server.default_timeline,
+                                              default_timeline,
                                               peertube_instances,
                                               allow_local_network_access,
-                                              self.server.theme_name,
+                                              theme_name,
                                               access_keys,
-                                              self.server.system_language,
-                                              self.server.max_like_count,
+                                              system_language,
+                                              max_like_count,
                                               signing_priv_key_pem,
-                                              self.server.cw_lists,
-                                              self.server.lists_enabled,
+                                              cw_lists,
+                                              lists_enabled,
                                               timezone,
                                               onion_domain,
                                               i2p_domain,
                                               bold_reading,
-                                              self.server.dogwhistles,
+                                              dogwhistles,
                                               min_images_for_accounts,
-                                              self.server.buy_sites,
+                                              buy_sites,
                                               max_shares_on_profile,
-                                              self.server.no_of_books,
-                                              self.server.auto_cw_cache)
+                                              no_of_books,
+                                              auto_cw_cache)
             if profile_str:
                 msg = profile_str.encode('utf-8')
                 msglen = len(msg)
@@ -558,26 +556,22 @@ def receive_search_query(self, calling_domain: str, cookie: str,
             # emoji search
             nickname = get_nickname_from_actor(actor_str)
             emoji_str = \
-                html_search_emoji(self.server.translate,
+                html_search_emoji(translate,
                                   base_dir, search_str,
                                   nickname, domain,
-                                  self.server.theme_name,
-                                  self.server.access_keys)
+                                  theme_name, access_keys)
             if emoji_str:
                 msg = emoji_str.encode('utf-8')
                 msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
+                login_headers(self, 'text/html', msglen, calling_domain)
                 write2(self, msg)
                 self.server.postreq_busy = False
                 return
         elif search_str.startswith('.'):
             # wanted items search
-            shared_items_federated_domains = \
-                self.server.shared_items_federated_domains
             nickname = get_nickname_from_actor(actor_str)
             wanted_items_str = \
-                html_search_shared_items(self.server.translate,
+                html_search_shared_items(translate,
                                          base_dir,
                                          search_str[1:], page_number,
                                          max_posts_in_feed,
@@ -586,23 +580,20 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                          actor_str, calling_domain,
                                          shared_items_federated_domains,
                                          'wanted', nickname, domain,
-                                         self.server.theme_name,
-                                         self.server.access_keys)
+                                         theme_name,
+                                         access_keys)
             if wanted_items_str:
                 msg = wanted_items_str.encode('utf-8')
                 msglen = len(msg)
-                login_headers(self, 'text/html',
-                              msglen, calling_domain)
+                login_headers(self, 'text/html', msglen, calling_domain)
                 write2(self, msg)
                 self.server.postreq_busy = False
                 return
         else:
             # shared items search
-            shared_items_federated_domains = \
-                self.server.shared_items_federated_domains
             nickname = get_nickname_from_actor(actor_str)
             shared_items_str = \
-                html_search_shared_items(self.server.translate,
+                html_search_shared_items(translate,
                                          base_dir,
                                          search_str, page_number,
                                          max_posts_in_feed,
@@ -611,8 +602,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                          actor_str, calling_domain,
                                          shared_items_federated_domains,
                                          'shares', nickname, domain,
-                                         self.server.theme_name,
-                                         self.server.access_keys)
+                                         theme_name,
+                                         access_keys)
             if shared_items_str:
                 msg = shared_items_str.encode('utf-8')
                 msglen = len(msg)
@@ -625,7 +616,6 @@ def receive_search_query(self, calling_domain: str, cookie: str,
         get_instance_url(calling_domain, http_prefix,
                          domain_full, onion_domain, i2p_domain) + \
         users_path
-    redirect_headers(self, actor_str + '/' +
-                     self.server.default_timeline,
+    redirect_headers(self, actor_str + '/' + default_timeline,
                      cookie, calling_domain)
     self.server.postreq_busy = False
