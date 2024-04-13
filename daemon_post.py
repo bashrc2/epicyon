@@ -240,7 +240,12 @@ def daemon_http_post(self) -> None:
         links_update(self, calling_domain, cookie, self.path,
                      self.server.base_dir, self.server.debug,
                      self.server.default_timeline,
-                     self.server.allow_local_network_access)
+                     self.server.allow_local_network_access,
+                     self.server.http_prefix,
+                     self.server.domain_full,
+                     self.server.onion_domain,
+                     self.server.i2p_domain,
+                     self.server.max_post_length)
         self.server.postreq_busy = False
         return
 

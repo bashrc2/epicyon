@@ -22,17 +22,20 @@ from content import extract_text_fields_in_post
 def links_update(self, calling_domain: str, cookie: str,
                  path: str, base_dir: str, debug: bool,
                  default_timeline: str,
-                 allow_local_network_access: bool) -> None:
+                 allow_local_network_access: bool,
+                 http_prefix: str, domain_full: str,
+                 onion_domain: str, i2p_domain: str,
+                 max_post_length: int) -> None:
     """Updates the left links column of the timeline
     """
     users_path = path.replace('/linksdata', '')
     users_path = users_path.replace('/editlinks', '')
     actor_str = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix,
+                         domain_full,
+                         onion_domain,
+                         i2p_domain) + \
         users_path
 
     boundary = None
@@ -59,7 +62,7 @@ def links_update(self, calling_domain: str, cookie: str,
         length = int(self.headers['Content-length'])
 
         # check that the POST isn't too large
-        if length > self.server.max_post_length:
+        if length > max_post_length:
             print('Maximum links data length exceeded ' + str(length))
             redirect_headers(self, actor_str, cookie, calling_domain)
             self.server.postreq_busy = False
