@@ -2715,15 +2715,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
         # sensitive posts should have a summary
         if post_json_object['object'].get('summary'):
             post_is_sensitive = post_json_object['object']['sensitive']
-        else:
-            # add a generic summary if none is provided
-            sensitive_str = 'Sensitive'
-            if translate.get(sensitive_str):
-                sensitive_str = translate[sensitive_str]
-            post_json_object['object']['summary'] = sensitive_str
-            post_json_object['object']['summaryMap'] = {
-                system_language: sensitive_str
-            }
 
     if not post_json_object['object'].get('summary'):
         post_json_object['object']['summary'] = ''
