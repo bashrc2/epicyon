@@ -53,7 +53,39 @@ def person_options2(self, path: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
                     debug: bool, curr_session,
-                    authorized: bool) -> None:
+                    authorized: bool,
+                    show_published_date_only: bool,
+                    allow_local_network_access: bool,
+                    access_keys: {},
+                    key_shortcuts: {},
+                    signing_priv_key_pem: str,
+                    twitter_replacement_domain: str,
+                    peertube_instances: [],
+                    yt_replace_domain: str,
+                    cached_webfingers: {},
+                    recent_posts_cache: {},
+                    account_timezone: {},
+                    proxy_type: str,
+                    bold_reading_nicknames: {},
+                    min_images_for_accounts: bool,
+                    max_shares_on_profile: int,
+                    max_recent_posts: int,
+                    translate: {},
+                    person_cache: {},
+                    project_version: str,
+                    default_timeline: str,
+                    theme_name: str,
+                    system_language: str,
+                    max_like_count: int,
+                    cw_lists: {},
+                    lists_enabled: {},
+                    dogwhistles: {},
+                    buy_sites: [],
+                    no_of_books: int,
+                    auto_cw_cache: {},
+                    default_post_language: str,
+                    newswire: {},
+                    block_federated: []) -> None:
     """Receive POST from person options screen
     """
     page_number = 1
@@ -188,36 +220,17 @@ def person_options2(self, path: str,
         if debug:
             print('Viewing ' + options_actor)
 
-        show_published_date_only = \
-            self.server.show_published_date_only
-        allow_local_network_access = \
-            self.server.allow_local_network_access
+        if key_shortcuts.get(chooser_nickname):
+            access_keys = key_shortcuts[chooser_nickname]
 
-        access_keys = self.server.access_keys
-        if self.server.key_shortcuts.get(chooser_nickname):
-            access_keys = self.server.key_shortcuts[chooser_nickname]
-
-        signing_priv_key_pem = \
-            self.server.signing_priv_key_pem
-        twitter_replacement_domain = \
-            self.server.twitter_replacement_domain
-        peertube_instances = \
-            self.server.peertube_instances
-        yt_replace_domain = \
-            self.server.yt_replace_domain
-        cached_webfingers = \
-            self.server.cached_webfingers
-        recent_posts_cache = \
-            self.server.recent_posts_cache
         timezone = None
-        if self.server.account_timezone.get(chooser_nickname):
-            timezone = \
-                self.server.account_timezone.get(chooser_nickname)
+        if account_timezone.get(chooser_nickname):
+            timezone = account_timezone.get(chooser_nickname)
 
         profile_handle = remove_eol(options_actor).strip()
 
         # establish the session
-        curr_proxy_type = self.server.proxy_type
+        curr_proxy_type = proxy_type
         if '.onion/' in profile_handle or \
            profile_handle.endswith('.onion'):
             curr_proxy_type = 'tor'
@@ -237,18 +250,14 @@ def person_options2(self, path: str,
             return
 
         bold_reading = False
-        if self.server.bold_reading.get(chooser_nickname):
+        if bold_reading_nicknames.get(chooser_nickname):
             bold_reading = True
 
-        min_images_for_accounts = \
-            self.server.min_images_for_accounts
-        max_shares_on_profile = \
-            self.server.max_shares_on_profile
         profile_str = \
             html_profile_after_search(authorized,
                                       recent_posts_cache,
-                                      self.server.max_recent_posts,
-                                      self.server.translate,
+                                      max_recent_posts,
+                                      translate,
                                       base_dir,
                                       users_path,
                                       http_prefix,
@@ -258,32 +267,32 @@ def person_options2(self, path: str,
                                       profile_handle,
                                       curr_session,
                                       cached_webfingers,
-                                      self.server.person_cache,
+                                      person_cache,
                                       debug,
-                                      self.server.project_version,
+                                      project_version,
                                       yt_replace_domain,
                                       twitter_replacement_domain,
                                       show_published_date_only,
-                                      self.server.default_timeline,
+                                      default_timeline,
                                       peertube_instances,
                                       allow_local_network_access,
-                                      self.server.theme_name,
+                                      theme_name,
                                       access_keys,
-                                      self.server.system_language,
-                                      self.server.max_like_count,
+                                      system_language,
+                                      max_like_count,
                                       signing_priv_key_pem,
-                                      self.server.cw_lists,
-                                      self.server.lists_enabled,
+                                      cw_lists,
+                                      lists_enabled,
                                       timezone,
                                       onion_domain,
                                       i2p_domain,
                                       bold_reading,
-                                      self.server.dogwhistles,
+                                      dogwhistles,
                                       min_images_for_accounts,
-                                      self.server.buy_sites,
+                                      buy_sites,
                                       max_shares_on_profile,
-                                      self.server.no_of_books,
-                                      self.server.auto_cw_cache)
+                                      no_of_books,
+                                      auto_cw_cache)
         if profile_str:
             msg = profile_str.encode('utf-8')
             msglen = len(msg)
@@ -308,7 +317,7 @@ def person_options2(self, path: str,
                      domain,
                      handle, petname)
         users_path_str = \
-            users_path + '/' + self.server.default_timeline + \
+            users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
                          calling_domain)
@@ -328,7 +337,7 @@ def person_options2(self, path: str,
                          domain,
                          handle, person_notes)
         users_path_str = \
-            users_path + '/' + self.server.default_timeline + \
+            users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
                          calling_domain)
@@ -356,7 +365,7 @@ def person_options2(self, path: str,
                                         options_nickname,
                                         options_domain_full)
         users_path_str = \
-            users_path + '/' + self.server.default_timeline + \
+            users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
                          calling_domain)
@@ -385,7 +394,7 @@ def person_options2(self, path: str,
                                         options_nickname,
                                         options_domain_full)
         users_path_str = \
-            users_path + '/' + self.server.default_timeline + \
+            users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
                          calling_domain)
@@ -414,7 +423,7 @@ def person_options2(self, path: str,
                                     options_nickname,
                                     options_domain_full)
         users_path_str = \
-            users_path + '/' + self.server.default_timeline + \
+            users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
                          calling_domain)
@@ -442,7 +451,7 @@ def person_options2(self, path: str,
                                   options_nickname,
                                   options_domain_full)
         users_path_str = \
-            users_path + '/' + self.server.default_timeline + \
+            users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
                          calling_domain)
@@ -489,7 +498,7 @@ def person_options2(self, path: str,
                     if nw_written:
                         refresh_newswire(base_dir)
         users_path_str = \
-            users_path + '/' + self.server.default_timeline + \
+            users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
                          calling_domain)
@@ -536,7 +545,7 @@ def person_options2(self, path: str,
                     if feat_written:
                         refresh_newswire(base_dir)
         users_path_str = \
-            users_path + '/' + self.server.default_timeline + \
+            users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
                          calling_domain)
@@ -577,7 +586,7 @@ def person_options2(self, path: str,
                     except OSError:
                         print('EX: unable to write ' + nw_filename)
         users_path_str = \
-            users_path + '/' + self.server.default_timeline + \
+            users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
                          calling_domain)
@@ -590,7 +599,7 @@ def person_options2(self, path: str,
         if debug:
             print('Blocking ' + options_actor)
         msg = \
-            html_confirm_block(self.server.translate,
+            html_confirm_block(translate,
                                base_dir,
                                users_path,
                                options_actor,
@@ -608,7 +617,7 @@ def person_options2(self, path: str,
         if debug:
             print('Unblocking ' + options_actor)
         msg = \
-            html_confirm_unblock(self.server.translate,
+            html_confirm_unblock(translate,
                                  base_dir,
                                  users_path,
                                  options_actor,
@@ -627,7 +636,7 @@ def person_options2(self, path: str,
         if debug:
             print('Following ' + options_actor)
         msg = \
-            html_confirm_follow(self.server.translate,
+            html_confirm_follow(translate,
                                 base_dir,
                                 users_path,
                                 options_actor,
@@ -647,7 +656,7 @@ def person_options2(self, path: str,
         if debug:
             print('Moving ' + options_actor_moved)
         msg = \
-            html_confirm_follow(self.server.translate,
+            html_confirm_follow(translate,
                                 base_dir,
                                 users_path,
                                 options_actor_moved,
@@ -668,7 +677,7 @@ def person_options2(self, path: str,
        '&submitLeave=' in options_confirm_params:
         print('Unfollowing ' + options_actor)
         msg = \
-            html_confirm_unfollow(self.server.translate,
+            html_confirm_unfollow(translate,
                                   base_dir,
                                   users_path,
                                   options_actor,
@@ -687,20 +696,19 @@ def person_options2(self, path: str,
             print('Sending DM to ' + options_actor)
         report_path = path.replace('/personoptions', '') + '/newdm'
 
-        access_keys = self.server.access_keys
         if '/users/' in path:
             nickname = path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
-            if self.server.key_shortcuts.get(nickname):
-                access_keys = self.server.key_shortcuts[nickname]
+            if key_shortcuts.get(nickname):
+                access_keys = key_shortcuts[nickname]
 
         custom_submit_text = get_config_param(base_dir, 'customSubmitText')
         conversation_id = None
         reply_is_chat = False
 
         bold_reading = False
-        if self.server.bold_reading.get(chooser_nickname):
+        if bold_reading_nicknames.get(chooser_nickname):
             bold_reading = True
 
         languages_understood = \
@@ -708,15 +716,14 @@ def person_options2(self, path: str,
                                      http_prefix,
                                      chooser_nickname,
                                      domain_full,
-                                     self.server.person_cache)
+                                     person_cache)
 
-        default_post_language = self.server.system_language
-        if self.server.default_post_language.get(nickname):
-            default_post_language = \
-                self.server.default_post_language[nickname]
+        default_post_language2 = system_language
+        if default_post_language.get(nickname):
+            default_post_language2 = default_post_language[nickname]
         default_buy_site = ''
         msg = \
-            html_new_post({}, False, self.server.translate,
+            html_new_post({}, False, translate,
                           base_dir,
                           http_prefix,
                           report_path, None,
@@ -725,40 +732,40 @@ def person_options2(self, path: str,
                           chooser_nickname,
                           domain,
                           domain_full,
-                          self.server.default_timeline,
-                          self.server.newswire,
-                          self.server.theme_name,
+                          default_timeline,
+                          newswire,
+                          theme_name,
                           True, access_keys,
                           custom_submit_text,
                           conversation_id,
-                          self.server.recent_posts_cache,
-                          self.server.max_recent_posts,
+                          recent_posts_cache,
+                          max_recent_posts,
                           curr_session,
-                          self.server.cached_webfingers,
-                          self.server.person_cache,
+                          cached_webfingers,
+                          person_cache,
                           port,
                           None,
-                          self.server.project_version,
-                          self.server.yt_replace_domain,
-                          self.server.twitter_replacement_domain,
-                          self.server.show_published_date_only,
-                          self.server.peertube_instances,
-                          self.server.allow_local_network_access,
-                          self.server.system_language,
+                          project_version,
+                          yt_replace_domain,
+                          twitter_replacement_domain,
+                          show_published_date_only,
+                          peertube_instances,
+                          allow_local_network_access,
+                          system_language,
                           languages_understood,
-                          self.server.max_like_count,
-                          self.server.signing_priv_key_pem,
-                          self.server.cw_lists,
-                          self.server.lists_enabled,
-                          self.server.default_timeline,
+                          max_like_count,
+                          signing_priv_key_pem,
+                          cw_lists,
+                          lists_enabled,
+                          default_timeline,
                           reply_is_chat,
                           bold_reading,
-                          self.server.dogwhistles,
-                          self.server.min_images_for_accounts,
-                          None, None, default_post_language,
-                          self.server.buy_sites,
+                          dogwhistles,
+                          min_images_for_accounts,
+                          None, None, default_post_language2,
+                          buy_sites,
                           default_buy_site,
-                          self.server.auto_cw_cache)
+                          auto_cw_cache)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -774,19 +781,18 @@ def person_options2(self, path: str,
         if is_moderator(base_dir, chooser_nickname):
             if debug:
                 print('Showing info for ' + options_actor)
-            signing_priv_key_pem = self.server.signing_priv_key_pem
             msg = \
-                html_account_info(self.server.translate,
+                html_account_info(translate,
                                   base_dir,
                                   http_prefix,
                                   chooser_nickname,
                                   domain,
                                   options_actor,
                                   debug,
-                                  self.server.system_language,
+                                  system_language,
                                   signing_priv_key_pem,
                                   None,
-                                  self.server.block_federated)
+                                  block_federated)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -814,7 +820,7 @@ def person_options2(self, path: str,
             elif (calling_domain.endswith('.i2p') and i2p_domain):
                 this_actor = 'http://' + i2p_domain + users_path
             actor_path_str = \
-                this_actor + '/' + self.server.default_timeline + \
+                this_actor + '/' + default_timeline + \
                 '?page=' + str(page_number)
             redirect_headers(self, actor_path_str, cookie,
                              calling_domain)
@@ -837,7 +843,7 @@ def person_options2(self, path: str,
             elif (calling_domain.endswith('.i2p') and i2p_domain):
                 this_actor = 'http://' + i2p_domain + users_path
             actor_path_str = \
-                this_actor + '/' + self.server.default_timeline + \
+                this_actor + '/' + default_timeline + \
                 '?page=' + str(page_number)
             redirect_headers(self, actor_path_str, cookie,
                              calling_domain)
@@ -852,20 +858,19 @@ def person_options2(self, path: str,
         report_path = \
             path.replace('/personoptions', '') + '/newreport'
 
-        access_keys = self.server.access_keys
         if '/users/' in path:
             nickname = path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
-            if self.server.key_shortcuts.get(nickname):
-                access_keys = self.server.key_shortcuts[nickname]
+            if key_shortcuts.get(nickname):
+                access_keys = key_shortcuts[nickname]
 
         custom_submit_text = get_config_param(base_dir, 'customSubmitText')
         conversation_id = None
         reply_is_chat = False
 
         bold_reading = False
-        if self.server.bold_reading.get(chooser_nickname):
+        if bold_reading_nicknames.get(chooser_nickname):
             bold_reading = True
 
         languages_understood = \
@@ -873,15 +878,14 @@ def person_options2(self, path: str,
                                      http_prefix,
                                      chooser_nickname,
                                      domain_full,
-                                     self.server.person_cache)
+                                     person_cache)
 
-        default_post_language = self.server.system_language
-        if self.server.default_post_language.get(nickname):
-            default_post_language = \
-                self.server.default_post_language[nickname]
+        default_post_language2 = system_language
+        if default_post_language.get(nickname):
+            default_post_language2 = default_post_language[nickname]
         default_buy_site = ''
         msg = \
-            html_new_post({}, False, self.server.translate,
+            html_new_post({}, False, translate,
                           base_dir,
                           http_prefix,
                           report_path, None, [],
@@ -889,40 +893,40 @@ def person_options2(self, path: str,
                           chooser_nickname,
                           domain,
                           domain_full,
-                          self.server.default_timeline,
-                          self.server.newswire,
-                          self.server.theme_name,
+                          default_timeline,
+                          newswire,
+                          theme_name,
                           True, access_keys,
                           custom_submit_text,
                           conversation_id,
-                          self.server.recent_posts_cache,
-                          self.server.max_recent_posts,
+                          recent_posts_cache,
+                          max_recent_posts,
                           curr_session,
-                          self.server.cached_webfingers,
-                          self.server.person_cache,
+                          cached_webfingers,
+                          person_cache,
                           port,
                           None,
-                          self.server.project_version,
-                          self.server.yt_replace_domain,
-                          self.server.twitter_replacement_domain,
-                          self.server.show_published_date_only,
-                          self.server.peertube_instances,
-                          self.server.allow_local_network_access,
-                          self.server.system_language,
+                          project_version,
+                          yt_replace_domain,
+                          twitter_replacement_domain,
+                          show_published_date_only,
+                          peertube_instances,
+                          allow_local_network_access,
+                          system_language,
                           languages_understood,
-                          self.server.max_like_count,
-                          self.server.signing_priv_key_pem,
-                          self.server.cw_lists,
-                          self.server.lists_enabled,
-                          self.server.default_timeline,
+                          max_like_count,
+                          signing_priv_key_pem,
+                          cw_lists,
+                          lists_enabled,
+                          default_timeline,
                           reply_is_chat,
                           bold_reading,
-                          self.server.dogwhistles,
-                          self.server.min_images_for_accounts,
-                          None, None, default_post_language,
-                          self.server.buy_sites,
+                          dogwhistles,
+                          min_images_for_accounts,
+                          None, None, default_post_language2,
+                          buy_sites,
                           default_buy_site,
-                          self.server.auto_cw_cache)
+                          auto_cw_cache)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
