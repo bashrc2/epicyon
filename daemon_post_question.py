@@ -41,7 +41,9 @@ def receive_vote(self, calling_domain: str, cookie: str,
                  content_license_url: str,
                  translate: {}, max_replies: int,
                  project_version: str,
-                 recent_posts_cache: {}) -> None:
+                 recent_posts_cache: {},
+                 default_timeline: str,
+                 auto_cw_cache: {}) -> None:
     """Receive a vote on a question via POST
     """
     first_post_id = ''
@@ -94,7 +96,7 @@ def receive_vote(self, calling_domain: str, cookie: str,
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             actor = 'http://' + i2p_domain + users_path
         actor_path_str = \
-            actor + '/' + self.server.default_timeline + \
+            actor + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, actor_path_str,
                          cookie, calling_domain)
@@ -151,13 +153,14 @@ def receive_vote(self, calling_domain: str, cookie: str,
                             content_license_url,
                             translate, max_replies,
                             project_version,
-                            recent_posts_cache)
+                            recent_posts_cache,
+                            auto_cw_cache)
     if calling_domain.endswith('.onion') and onion_domain:
         actor = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         actor = 'http://' + i2p_domain + users_path
     actor_path_str = \
-        actor + '/' + self.server.default_timeline + \
+        actor + '/' + default_timeline + \
         '?page=' + str(page_number) + first_post_id + last_post_id
     redirect_headers(self, actor_path_str, cookie,
                      calling_domain)
@@ -183,7 +186,8 @@ def _send_reply_to_question(self, base_dir: str,
                             translate: {},
                             max_replies: int,
                             project_version: str,
-                            recent_posts_cache: {}) -> None:
+                            recent_posts_cache: {},
+                            auto_cw_cache: {}) -> None:
     """Sends a reply to a question
     """
     votes_filename = \
@@ -250,7 +254,7 @@ def _send_reply_to_question(self, base_dir: str,
                                        languages_understood, False,
                                        translate, buy_url,
                                        chat_url,
-                                       self.server.auto_cw_cache)
+                                       auto_cw_cache)
     if message_json:
         # NOTE: content and contentMap are not required, but we will keep
         # them in there so that the post does not get filtered out by

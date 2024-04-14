@@ -441,7 +441,9 @@ def daemon_http_post(self) -> None:
                          self.server.translate,
                          self.server.max_replies,
                          self.server.project_version,
-                         self.server.recent_posts_cache)
+                         self.server.recent_posts_cache,
+                         self.server.default_timeline,
+                         self.server.auto_cw_cache)
             self.server.postreq_busy = False
             return
 
