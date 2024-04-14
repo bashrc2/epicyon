@@ -30,17 +30,18 @@ from content import load_dogwhistles
 def newswire_update(self, calling_domain: str, cookie: str,
                     path: str, base_dir: str,
                     domain: str, debug: bool,
-                    default_timeline: str) -> None:
+                    default_timeline: str,
+                    http_prefix: str, domain_full: str,
+                    onion_domain: str, i2p_domain: str,
+                    max_post_length: int) -> None:
     """Updates the right newswire column of the timeline
     """
     users_path = path.replace('/newswiredata', '')
     users_path = users_path.replace('/editnewswire', '')
     actor_str = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix, domain_full,
+                         onion_domain, i2p_domain) + \
         users_path
 
     boundary = None
@@ -67,7 +68,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
         length = int(self.headers['Content-length'])
 
         # check that the POST isn't too large
-        if length > self.server.max_post_length:
+        if length > max_post_length:
             print('Maximum newswire data length exceeded ' + str(length))
             redirect_headers(self, actor_str, cookie, calling_domain)
             self.server.postreq_busy = False
@@ -224,17 +225,18 @@ def newswire_update(self, calling_domain: str, cookie: str,
 def citations_update(self, calling_domain: str, cookie: str,
                      path: str, base_dir: str,
                      domain: str, debug: bool,
-                     newswire: {}) -> None:
+                     newswire: {},
+                     http_prefix: str, domain_full: str,
+                     onion_domain: str, i2p_domain: str,
+                     max_post_length: int) -> None:
     """Updates the citations for a blog post after hitting
     update button on the citations screen
     """
     users_path = path.replace('/citationsdata', '')
     actor_str = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix, domain_full,
+                         onion_domain, i2p_domain) + \
         users_path
     nickname = get_nickname_from_actor(actor_str)
     if not nickname:
@@ -260,7 +262,7 @@ def citations_update(self, calling_domain: str, cookie: str,
         length = int(self.headers['Content-length'])
 
         # check that the POST isn't too large
-        if length > self.server.max_post_length:
+        if length > max_post_length:
             print('Maximum citations data length exceeded ' + str(length))
             redirect_headers(self, actor_str, cookie, calling_domain)
             self.server.postreq_busy = False
@@ -321,17 +323,22 @@ def citations_update(self, calling_domain: str, cookie: str,
 
 def news_post_edit(self, calling_domain: str, cookie: str,
                    path: str, base_dir: str,
-                   domain: str, debug: bool) -> None:
+                   domain: str, debug: bool,
+                   http_prefix: str, domain_full: str,
+                   onion_domain: str, i2p_domain: str,
+                   news_instance: bool,
+                   max_post_length: int,
+                   system_language: str,
+                   recent_posts_cache: {},
+                   newswire: {}) -> None:
     """edits a news post after receiving POST
     """
     users_path = path.replace('/newseditdata', '')
     users_path = users_path.replace('/editnewspost', '')
     actor_str = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix, domain_full,
+                         onion_domain, i2p_domain) + \
         users_path
 
     boundary = None
@@ -350,7 +357,7 @@ def news_post_edit(self, calling_domain: str, cookie: str,
             print('WARN: nickname not found in ' + actor_str)
         else:
             print('WARN: nickname is not an editor' + actor_str)
-        if self.server.news_instance:
+        if news_instance:
             redirect_headers(self, actor_str + '/tlfeatures',
                              cookie, calling_domain)
         else:
@@ -363,9 +370,9 @@ def news_post_edit(self, calling_domain: str, cookie: str,
         length = int(self.headers['Content-length'])
 
         # check that the POST isn't too large
-        if length > self.server.max_post_length:
+        if length > max_post_length:
             print('Maximum news data length exceeded ' + str(length))
-            if self.server.news_instance:
+            if news_instance:
                 redirect_headers(self, actor_str + '/tlfeatures',
                                  cookie, calling_domain)
             else:
@@ -420,30 +427,30 @@ def news_post_edit(self, calling_domain: str, cookie: str,
                             news_post_url)
             if post_filename:
                 post_json_object = load_json(post_filename)
+
                 # update the content and title
                 post_json_object['object']['summary'] = \
                     news_post_title
                 post_json_object['object']['content'] = \
                     news_post_content
                 content_map = post_json_object['object']['contentMap']
-                content_map[self.server.system_language] = \
+                content_map[system_language] = \
                     news_post_content
+
                 # update newswire
                 pub_date = post_json_object['object']['published']
                 published_date = \
                     date_from_string_format(pub_date,
                                             ["%Y-%m-%dT%H:%M:%S%z"])
-                if self.server.newswire.get(str(published_date)):
-                    self.server.newswire[published_date][0] = \
-                        news_post_title
-                    self.server.newswire[published_date][4] = \
+                if newswire.get(str(published_date)):
+                    newswire[published_date][0] = news_post_title
+                    newswire[published_date][4] = \
                         first_paragraph_from_string(news_post_content)
                     # save newswire
                     newswire_state_filename = \
                         base_dir + '/accounts/.newswirestate.json'
                     try:
-                        save_json(self.server.newswire,
-                                  newswire_state_filename)
+                        save_json(newswire, newswire_state_filename)
                     except BaseException as ex:
                         print('EX: saving newswire state, ' + str(ex))
 
@@ -451,15 +458,14 @@ def news_post_edit(self, calling_domain: str, cookie: str,
                 news_id = \
                     remove_id_ending(post_json_object['object']['id'])
                 news_id = news_id.replace('/', '#')
-                clear_from_post_caches(base_dir,
-                                       self.server.recent_posts_cache,
+                clear_from_post_caches(base_dir, recent_posts_cache,
                                        news_id)
 
                 # save the news post
                 save_json(post_json_object, post_filename)
 
     # redirect back to the default timeline
-    if self.server.news_instance:
+    if news_instance:
         redirect_headers(self, actor_str + '/tlfeatures',
                          cookie, calling_domain)
     else:
