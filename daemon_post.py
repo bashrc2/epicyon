@@ -220,7 +220,12 @@ def daemon_http_post(self) -> None:
                               self.server.base_dir,
                               self.server.domain,
                               self.server.debug,
-                              self.server.system_language)
+                              self.server.system_language,
+                              self.server.http_prefix,
+                              self.server.domain_full,
+                              self.server.onion_domain,
+                              self.server.i2p_domain,
+                              self.server.max_post_length)
         self.server.postreq_busy = False
         return
 

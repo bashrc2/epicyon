@@ -25,7 +25,12 @@ from categories import set_hashtag_category
 def set_hashtag_category2(self, calling_domain: str, cookie: str,
                           path: str, base_dir: str,
                           domain: str, debug: bool,
-                          system_language: str) -> None:
+                          system_language: str,
+                          http_prefix: str,
+                          domain_full: str,
+                          onion_domain: str,
+                          i2p_domain: str,
+                          max_post_length: int) -> None:
     """On the screen after selecting a hashtag from the swarm, this sets
     the category for that tag
     """
@@ -49,10 +54,8 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
     users_path = users_path.split('/tags/')[0]
     actor_str = \
         get_instance_url(calling_domain,
-                         self.server.http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix, domain_full,
+                         onion_domain, i2p_domain) + \
         users_path
     tag_screen_str = actor_str + '/tags/' + hashtag
 
@@ -80,7 +83,7 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
         length = int(self.headers['Content-length'])
 
         # check that the POST isn't too large
-        if length > self.server.max_post_length:
+        if length > max_post_length:
             print('Maximum links data length exceeded ' + str(length))
             redirect_headers(self, tag_screen_str, cookie, calling_domain)
             self.server.postreq_busy = False
