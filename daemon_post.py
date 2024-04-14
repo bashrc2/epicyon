@@ -328,7 +328,19 @@ def daemon_http_post(self) -> None:
                           self.server.http_prefix,
                           self.server.domain,
                           self.server.port,
-                          self.server.debug)
+                          self.server.debug,
+                          self.server.domain_full,
+                          self.server.onion_domain,
+                          self.server.i2p_domain,
+                          self.server.translate,
+                          self.server.system_language,
+                          self.server.signing_priv_key_pem,
+                          self.server.block_federated,
+                          self.server.theme_name,
+                          self.server.access_keys,
+                          self.server.person_cache,
+                          self.server.recent_posts_cache,
+                          self.server.blocked_cache)
         self.server.postreq_busy = False
         return
 

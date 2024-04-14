@@ -37,17 +37,25 @@ from blocking import remove_global_block
 
 def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                       base_dir: str, http_prefix: str,
-                      domain: str, port: int, debug: bool) -> None:
+                      domain: str, port: int, debug: bool,
+                      domain_full: str,
+                      onion_domain: str, i2p_domain: str,
+                      translate: {},
+                      system_language: str,
+                      signing_priv_key_pem: str,
+                      block_federated: [],
+                      theme_name: str,
+                      access_keys: {}, person_cache: {},
+                      recent_posts_cache: {},
+                      blocked_cache: {}) -> None:
     """Actions on the moderator screen
     """
     users_path = path.replace('/moderationaction', '')
     nickname = users_path.replace('/users/', '')
     actor_str = \
         get_instance_url(calling_domain,
-                         http_prefix,
-                         self.server.domain_full,
-                         self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         http_prefix, domain_full,
+                         onion_domain, i2p_domain) + \
         users_path
     if not is_moderator(base_dir, nickname):
         redirect_headers(self, actor_str + '/moderation',
@@ -137,7 +145,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     if '@' not in search_handle:
                         # is this a local nickname on this instance?
                         local_handle = \
-                            search_handle + '@' + self.server.domain
+                            search_handle + '@' + domain
                         if os.path.isdir(base_dir +
                                          '/accounts/' + local_handle):
                             search_handle = local_handle
@@ -147,23 +155,23 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     search_handle = ''
                 if '@' in search_handle:
                     msg = \
-                        html_account_info(self.server.translate,
+                        html_account_info(translate,
                                           base_dir, http_prefix,
                                           nickname,
                                           domain,
                                           search_handle,
                                           debug,
-                                          self.server.system_language,
-                                          self.server.signing_priv_key_pem,
+                                          system_language,
+                                          signing_priv_key_pem,
                                           None,
-                                          self.server.block_federated)
+                                          block_federated)
                 else:
                     msg = \
-                        html_moderation_info(self.server.translate,
+                        html_moderation_info(translate,
                                              base_dir, nickname,
                                              domain,
-                                             self.server.theme_name,
-                                             self.server.access_keys)
+                                             theme_name,
+                                             access_keys)
                 if msg:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -209,8 +217,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
             if moderation_button == 'unfilter':
                 remove_global_filter(base_dir, moderation_text)
             if moderation_button == 'clearcache':
-                clear_actor_cache(base_dir,
-                                  self.server.person_cache,
+                clear_actor_cache(base_dir, person_cache,
                                   moderation_text)
             if moderation_button == 'block':
                 full_block_domain = None
@@ -249,8 +256,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     blocked_cache_last_updated = \
                         self.server.blocked_cache_last_updated
                     self.server.blocked_cache_last_updated = \
-                        update_blocked_cache(base_dir,
-                                             self.server.blocked_cache,
+                        update_blocked_cache(base_dir, blocked_cache,
                                              blocked_cache_last_updated, 0)
             if moderation_button == 'unblock':
                 full_block_domain = None
@@ -284,8 +290,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     blocked_cache_last_updated = \
                         self.server.blocked_cache_last_updated
                     self.server.blocked_cache_last_updated = \
-                        update_blocked_cache(base_dir,
-                                             self.server.blocked_cache,
+                        update_blocked_cache(base_dir, blocked_cache,
                                              blocked_cache_last_updated, 0)
             if moderation_button == 'remove':
                 if '/statuses/' not in moderation_text:
@@ -303,7 +308,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                                         nickname, domain,
                                         post_filename,
                                         debug,
-                                        self.server.recent_posts_cache,
+                                        recent_posts_cache,
                                         True)
                     if nickname != 'news':
                         # if this is a local blog post then also remove it
@@ -319,7 +324,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                                             'news', domain,
                                             post_filename,
                                             debug,
-                                            self.server.recent_posts_cache,
+                                            recent_posts_cache,
                                             True)
 
     redirect_headers(self, actor_str + '/moderation',
