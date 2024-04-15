@@ -437,7 +437,16 @@ def follow_approve_button(self, calling_domain: str, path: str,
                           onion_domain: str, i2p_domain: str,
                           getreq_start_time,
                           proxy_type: str, debug: bool,
-                          curr_session) -> None:
+                          curr_session,
+                          federation_list: [],
+                          send_threads: {},
+                          post_log: {},
+                          cached_webfingers: {},
+                          person_cache: {},
+                          project_version: str,
+                          sites_unavailable: [],
+                          system_language: str,
+                          fitness: {}) -> None:
     """Follow approve button was pressed
     """
     origin_path_str = path.split('/followapprove=')[0]
@@ -487,18 +496,18 @@ def follow_approve_button(self, calling_domain: str, path: str,
                                              follower_nickname,
                                              domain, port,
                                              following_handle,
-                                             self.server.federation_list,
-                                             self.server.send_threads,
-                                             self.server.postLog,
-                                             self.server.cached_webfingers,
-                                             self.server.person_cache,
+                                             federation_list,
+                                             send_threads,
+                                             post_log,
+                                             cached_webfingers,
+                                             person_cache,
                                              debug,
-                                             self.server.project_version,
+                                             project_version,
                                              signing_priv_key_pem,
                                              proxy_type,
                                              followers_sync_cache,
-                                             self.server.sites_unavailable,
-                                             self.server.system_language)
+                                             sites_unavailable,
+                                             system_language)
     origin_path_str_absolute = \
         http_prefix + '://' + domain_full + origin_path_str
     if calling_domain.endswith('.onion') and onion_domain:
@@ -507,7 +516,7 @@ def follow_approve_button(self, calling_domain: str, path: str,
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str_absolute = \
             'http://' + i2p_domain + origin_path_str
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_follow_approve_button',
                         debug)
     redirect_headers(self, origin_path_str_absolute,

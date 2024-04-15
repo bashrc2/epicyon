@@ -3336,7 +3336,16 @@ def daemon_http_get(self) -> None:
                               getreq_start_time,
                               proxy_type,
                               self.server.debug,
-                              curr_session)
+                              curr_session,
+                              self.server.federation_list,
+                              self.server.send_threads,
+                              self.server.postLog,
+                              self.server.cached_webfingers,
+                              self.server.person_cache,
+                              self.server.project_version,
+                              self.server.sites_unavailable,
+                              self.server.system_language,
+                              self.server.fitness)
         self.server.getreq_busy = False
         return
 
