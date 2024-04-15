@@ -849,7 +849,30 @@ def like_button_undo(self, calling_domain: str, path: str,
                      getreq_start_time,
                      proxy_type: str, cookie: str,
                      debug: str,
-                     curr_session) -> None:
+                     curr_session,
+                     signing_priv_key_pem: str,
+                     recent_posts_cache: {},
+                     max_recent_posts: int,
+                     translate: {},
+                     cached_webfingers: {},
+                     person_cache: {},
+                     port: int,
+                     allow_deletion: bool,
+                     project_version: str,
+                     yt_replace_domain: str,
+                     twitter_replacement_domain: str,
+                     show_published_date_only: bool,
+                     peertube_instances: [],
+                     allow_local_network_access: bool,
+                     theme_name: str,
+                     system_language: str,
+                     max_like_count: int,
+                     cw_lists: {},
+                     lists_enabled: {},
+                     dogwhistles: {},
+                     buy_sites: [],
+                     auto_cw_cache: {},
+                     fitness: {}) -> None:
     """A button is pressed to undo
     """
     page_number = 1
@@ -952,7 +975,7 @@ def like_button_undo(self, calling_domain: str, path: str,
 
     # send out the undo like to followers
     post_to_outbox(self, undo_like_json,
-                   self.server.project_version, None,
+                   project_version, None,
                    curr_session, proxy_type)
 
     # directly undo the like within the post file
@@ -999,41 +1022,41 @@ def like_button_undo(self, calling_domain: str, path: str,
             if self.post_to_nickname in \
                self.server.min_images_for_accounts:
                 minimize_all_images = True
-            individual_post_as_html(self.server.signing_priv_key_pem,
+            individual_post_as_html(signing_priv_key_pem,
                                     False,
-                                    self.server.recent_posts_cache,
-                                    self.server.max_recent_posts,
-                                    self.server.translate,
+                                    recent_posts_cache,
+                                    max_recent_posts,
+                                    translate,
                                     page_number, base_dir,
                                     curr_session,
-                                    self.server.cached_webfingers,
-                                    self.server.person_cache,
+                                    cached_webfingers,
+                                    person_cache,
                                     self.post_to_nickname, domain,
-                                    self.server.port, liked_post_json,
+                                    port, liked_post_json,
                                     None, True,
-                                    self.server.allow_deletion,
+                                    allow_deletion,
                                     http_prefix,
-                                    self.server.project_version,
+                                    project_version,
                                     timeline_str,
-                                    self.server.yt_replace_domain,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.show_published_date_only,
-                                    self.server.peertube_instances,
-                                    self.server.allow_local_network_access,
-                                    self.server.theme_name,
-                                    self.server.system_language,
-                                    self.server.max_like_count,
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name,
+                                    system_language,
+                                    max_like_count,
                                     show_repeats,
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     False, True, False,
-                                    self.server.cw_lists,
-                                    self.server.lists_enabled,
+                                    cw_lists,
+                                    lists_enabled,
                                     timezone, mitm, bold_reading,
-                                    self.server.dogwhistles,
+                                    dogwhistles,
                                     minimize_all_images, None,
-                                    self.server.buy_sites,
-                                    self.server.auto_cw_cache)
+                                    buy_sites,
+                                    auto_cw_cache)
         else:
             print('WARN: Unliked post not found: ' + liked_post_filename)
         # clear the icon from the cache so that it gets updated
@@ -1051,7 +1074,7 @@ def like_button_undo(self, calling_domain: str, path: str,
         actor_absolute + '/' + timeline_str + \
         '?page=' + str(page_number) + first_post_id + \
         timeline_bookmark
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_undo_like_button', debug)
     redirect_headers(self, actor_path_str, cookie,
                      calling_domain)
