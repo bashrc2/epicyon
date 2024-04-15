@@ -2347,7 +2347,29 @@ def mute_button_undo(self, calling_domain: str, path: str,
                      domain: str, domain_full: str, port: int,
                      onion_domain: str, i2p_domain: str,
                      getreq_start_time, cookie: str,
-                     debug: str, curr_session):
+                     debug: str, curr_session,
+                     signing_priv_key_pem: str,
+                     recent_posts_cache: {},
+                     max_recent_posts: int,
+                     translate: {},
+                     cached_webfingers: {},
+                     person_cache: {},
+                     allow_deletion: bool,
+                     project_version: str,
+                     yt_replace_domain: str,
+                     twitter_replacement_domain: str,
+                     show_published_date_only: bool,
+                     peertube_instances: [],
+                     allow_local_network_access: bool,
+                     theme_name: str,
+                     system_language: str,
+                     max_like_count: int,
+                     cw_lists: {},
+                     lists_enabled: {},
+                     dogwhistles: {},
+                     buy_sites: [],
+                     auto_cw_cache: {},
+                     fitness: {}) -> None:
     """Undo mute button is pressed
     """
     mute_url = path.split('?unmute=')[1]
@@ -2392,7 +2414,7 @@ def mute_button_undo(self, calling_domain: str, path: str,
         return
     unmute_post(base_dir, nickname, domain, port,
                 http_prefix, mute_url,
-                self.server.recent_posts_cache, debug)
+                recent_posts_cache, debug)
     mute_filename = \
         locate_post(base_dir, nickname, domain, mute_url)
     if mute_filename:
@@ -2432,42 +2454,42 @@ def mute_button_undo(self, calling_domain: str, path: str,
             minimize_all_images = False
             if nickname in self.server.min_images_for_accounts:
                 minimize_all_images = True
-            individual_post_as_html(self.server.signing_priv_key_pem,
+            individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads,
-                                    self.server.recent_posts_cache,
-                                    self.server.max_recent_posts,
-                                    self.server.translate,
+                                    recent_posts_cache,
+                                    max_recent_posts,
+                                    translate,
                                     page_number, base_dir,
                                     curr_session,
-                                    self.server.cached_webfingers,
-                                    self.server.person_cache,
+                                    cached_webfingers,
+                                    person_cache,
                                     nickname, domain,
                                     port, mute_post_json,
                                     avatar_url, show_avatar_options,
-                                    self.server.allow_deletion,
+                                    allow_deletion,
                                     http_prefix,
-                                    self.server.project_version,
+                                    project_version,
                                     timeline_str,
-                                    self.server.yt_replace_domain,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.show_published_date_only,
-                                    self.server.peertube_instances,
-                                    self.server.allow_local_network_access,
-                                    self.server.theme_name,
-                                    self.server.system_language,
-                                    self.server.max_like_count,
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name,
+                                    system_language,
+                                    max_like_count,
                                     show_repeats,
                                     show_individual_post_icons,
                                     manually_approve_followers,
                                     show_public_only, store_to_cache,
                                     use_cache_only,
-                                    self.server.cw_lists,
-                                    self.server.lists_enabled,
+                                    cw_lists,
+                                    lists_enabled,
                                     timezone, mitm, bold_reading,
-                                    self.server.dogwhistles,
+                                    dogwhistles,
                                     minimize_all_images, None,
-                                    self.server.buy_sites,
-                                    self.server.auto_cw_cache)
+                                    buy_sites,
+                                    auto_cw_cache)
         else:
             print('WARN: Unmuted post not found: ' + mute_filename)
     if calling_domain.endswith('.onion') and onion_domain:
@@ -2476,7 +2498,7 @@ def mute_button_undo(self, calling_domain: str, path: str,
     elif calling_domain.endswith('.i2p') and i2p_domain:
         actor = \
             'http://' + i2p_domain + path.split('?unmute=')[0]
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_undo_mute_button', debug)
 
     page_number_str = str(page_number)
