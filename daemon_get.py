@@ -3532,7 +3532,30 @@ def daemon_http_get(self) -> None:
                              getreq_start_time,
                              proxy_type,
                              cookie, self.server.debug,
-                             curr_session)
+                             curr_session,
+                             self.server.signing_priv_key_pem,
+                             self.server.recent_posts_cache,
+                             self.server.max_recent_posts,
+                             self.server.translate,
+                             self.server.cached_webfingers,
+                             self.server.person_cache,
+                             self.server.port,
+                             self.server.allow_deletion,
+                             self.server.project_version,
+                             self.server.yt_replace_domain,
+                             self.server.twitter_replacement_domain,
+                             self.server.show_published_date_only,
+                             self.server.peertube_instances,
+                             self.server.allow_local_network_access,
+                             self.server.theme_name,
+                             self.server.system_language,
+                             self.server.max_like_count,
+                             self.server.cw_lists,
+                             self.server.lists_enabled,
+                             self.server.dogwhistles,
+                             self.server.buy_sites,
+                             self.server.auto_cw_cache,
+                             self.server.fitness)
         self.server.getreq_busy = False
         return
 
