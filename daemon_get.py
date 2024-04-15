@@ -3366,7 +3366,18 @@ def daemon_http_get(self) -> None:
                            self.server.onion_domain,
                            self.server.i2p_domain,
                            getreq_start_time,
-                           self.server.debug)
+                           self.server.debug,
+                           self.server.federation_list,
+                           self.server.send_threads,
+                           self.server.postLog,
+                           self.server.cached_webfingers,
+                           self.server.person_cache,
+                           self.server.project_version,
+                           self.server.signing_priv_key_pem,
+                           self.server.followers_sync_cache,
+                           self.server.sites_unavailable,
+                           self.server.system_language,
+                           self.server.fitness)
         self.server.getreq_busy = False
         return
 

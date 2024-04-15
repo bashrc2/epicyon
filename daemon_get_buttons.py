@@ -527,7 +527,18 @@ def follow_deny_button(self, calling_domain: str, path: str,
                        cookie: str, base_dir: str, http_prefix: str,
                        domain: str, domain_full: str, port: int,
                        onion_domain: str, i2p_domain: str,
-                       getreq_start_time, debug: bool) -> None:
+                       getreq_start_time, debug: bool,
+                       federation_list: [],
+                       send_threads: {},
+                       post_log: {},
+                       cached_webfingers: {},
+                       person_cache: {},
+                       project_version: str,
+                       signing_priv_key_pem: str,
+                       followers_sync_cache: {},
+                       sites_unavailable: [],
+                       system_language: str,
+                       fitness: {}) -> None:
     """Follow deny button was pressed
     """
     origin_path_str = path.split('/followdeny=')[0]
@@ -553,17 +564,17 @@ def follow_deny_button(self, calling_domain: str, path: str,
                                           follower_nickname,
                                           domain, port,
                                           following_handle,
-                                          self.server.federation_list,
-                                          self.server.send_threads,
-                                          self.server.postLog,
-                                          self.server.cached_webfingers,
-                                          self.server.person_cache,
+                                          federation_list,
+                                          send_threads,
+                                          post_log,
+                                          cached_webfingers,
+                                          person_cache,
                                           debug,
-                                          self.server.project_version,
-                                          self.server.signing_priv_key_pem,
-                                          self.server.followers_sync_cache,
-                                          self.server.sites_unavailable,
-                                          self.server.system_language)
+                                          project_version,
+                                          signing_priv_key_pem,
+                                          followers_sync_cache,
+                                          sites_unavailable,
+                                          system_language)
     origin_path_str_absolute = \
         http_prefix + '://' + domain_full + origin_path_str
     if calling_domain.endswith('.onion') and onion_domain:
@@ -574,7 +585,7 @@ def follow_deny_button(self, calling_domain: str, path: str,
             'http://' + i2p_domain + origin_path_str
     redirect_headers(self, origin_path_str_absolute,
                      cookie, calling_domain)
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_follow_deny_button',
                         debug)
 
