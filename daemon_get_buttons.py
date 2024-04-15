@@ -292,7 +292,10 @@ def announce_button_undo(self, calling_domain: str, path: str,
                          http_prefix: str, domain: str, domain_full: str,
                          onion_domain: str, i2p_domain: str,
                          getreq_start_time, debug: bool,
-                         recent_posts_cache: {}, curr_session) -> None:
+                         recent_posts_cache: {}, curr_session,
+                         icons_cache: {},
+                         project_version: str,
+                         fitness: {}) -> None:
     """Undo announce/repeat button was pressed
     """
     page_number = 1
@@ -386,8 +389,8 @@ def announce_button_undo(self, calling_domain: str, path: str,
         }
     }
     # clear the icon from the cache so that it gets updated
-    if self.server.iconsCache.get('repeat_inactive.png'):
-        del self.server.iconsCache['repeat_inactive.png']
+    if icons_cache.get('repeat_inactive.png'):
+        del icons_cache['repeat_inactive.png']
 
     # delete the announce post
     if '?unannounce=' in path:
@@ -406,7 +409,7 @@ def announce_button_undo(self, calling_domain: str, path: str,
                         debug, recent_posts_cache, True)
 
     post_to_outbox(self, new_undo_announce,
-                   self.server.project_version,
+                   project_version,
                    self.post_to_nickname,
                    curr_session, proxy_type)
 
@@ -421,7 +424,7 @@ def announce_button_undo(self, calling_domain: str, path: str,
     actor_path_str = \
         actor_absolute + '/' + timeline_str + '?page=' + \
         str(page_number) + first_post_id + timeline_bookmark
-    fitness_performance(getreq_start_time, self.server.fitness,
+    fitness_performance(getreq_start_time, fitness,
                         '_GET', '_undo_announce_button',
                         debug)
     redirect_headers(self, actor_path_str, cookie, calling_domain)

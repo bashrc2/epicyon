@@ -3274,7 +3274,10 @@ def daemon_http_get(self) -> None:
                              getreq_start_time,
                              self.server.debug,
                              self.server.recent_posts_cache,
-                             curr_session)
+                             curr_session,
+                             self.server.iconsCache,
+                             self.server.project_version,
+                             self.server.fitness)
         self.server.getreq_busy = False
         return
 
