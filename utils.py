@@ -310,7 +310,7 @@ def standardize_text(text: str) -> str:
 def remove_eol(line: str):
     """Removes line ending characters
     """
-    return line.replace('\n', '').replace('\r', '')
+    return line.rstrip()
 
 
 def text_in_file(text: str, filename: str,
@@ -3971,10 +3971,17 @@ def valid_url_prefix(url: str) -> bool:
     return False
 
 
-def valid_password(password: str) -> bool:
-    """Returns true if the given password is valid
+def valid_password(password: str, debug: bool) -> bool:
+    """Returns true if the given password contains valid characters and
+    is within a range of lengths
     """
-    if len(password) < 8:
+    if len(password) < 8 or len(password) > 1024:
+        if debug:
+            print('WARN: password length out of range (8-255): ' +
+                  str(len(password)))
+        return False
+    # check for trailing end of line or carriage returns
+    if remove_eol(password) != password:
         return False
     return True
 

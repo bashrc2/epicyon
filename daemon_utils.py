@@ -777,7 +777,7 @@ def show_person_options(self, calling_domain: str, path: str,
 
     if '/users/news/' in path:
         redirect_headers(self, origin_path_str + '/tlfeatures',
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
         return
 
     origin_path_str_absolute = \
@@ -788,7 +788,7 @@ def show_person_options(self, calling_domain: str, path: str,
                          self.server.i2p_domain) + \
         origin_path_str
     redirect_headers(self, origin_path_str_absolute, cookie,
-                     calling_domain)
+                     calling_domain, 303)
 
 
 def get_user_agent(self) -> str:

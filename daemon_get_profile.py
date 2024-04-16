@@ -502,7 +502,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
         get_instance_url(calling_domain, http_prefix, domain_full,
                          onion_domain, i2p_domain) + \
         actor
-    redirect_headers(self, actor_absolute, cookie, calling_domain)
+    redirect_headers(self, actor_absolute, cookie, calling_domain, 303)
     return True
 
 

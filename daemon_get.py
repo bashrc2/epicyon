@@ -1549,7 +1549,7 @@ def daemon_http_get(self) -> None:
                                               nickname,
                                               self.server.domain):
                 redirect_headers(self, '/users/' + nickname + '/welcome',
-                                 cookie, calling_domain)
+                                 cookie, calling_domain, 303)
                 return
 
     if not html_getreq and \
@@ -1833,7 +1833,7 @@ def daemon_http_get(self) -> None:
                   self.server.i2p_domain):
                 actor = 'http://' + self.server.i2p_domain + users_path
             redirect_headers(self, actor + '/tlshares',
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             return
         msg = msg.encode('utf-8')
         msglen = len(msg)
@@ -1875,7 +1875,7 @@ def daemon_http_get(self) -> None:
                   self.server.i2p_domain):
                 actor = 'http://' + self.server.i2p_domain + users_path
             redirect_headers(self, actor + '/tlwanted',
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             return
         msg = msg.encode('utf-8')
         msglen = len(msg)
@@ -1907,7 +1907,7 @@ def daemon_http_get(self) -> None:
                   self.server.i2p_domain):
                 actor = 'http://' + self.server.i2p_domain + users_path
             redirect_headers(self, actor + '/tlshares',
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             return
         msg = msg.encode('utf-8')
         msglen = len(msg)
@@ -1939,7 +1939,7 @@ def daemon_http_get(self) -> None:
                   self.server.i2p_domain):
                 actor = 'http://' + self.server.i2p_domain + users_path
             redirect_headers(self, actor + '/tlwanted',
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             return
         msg = msg.encode('utf-8')
         msglen = len(msg)
@@ -2893,11 +2893,11 @@ def daemon_http_get(self) -> None:
                                  self.server.onion_domain,
                                  self.server.i2p_domain) + \
                 '/users/' + nickname + '/tags/' + hashtag
-            redirect_headers(self, ht_url, cookie, calling_domain)
+            redirect_headers(self, ht_url, cookie, calling_domain, 303)
         else:
             # redirect to the upstream hashtag url
             self.server.getreq_busy = False
-            redirect_headers(self, hashtag_url, None, calling_domain)
+            redirect_headers(self, hashtag_url, None, calling_domain, 303)
         return
 
     # hashtag search
@@ -5347,7 +5347,7 @@ def _confirm_delete_event(self, calling_domain: str, path: str,
                 'http://' + i2p_domain + \
                 path.split('/eventdelete')[0]
         redirect_headers(self, actor + '/calendar',
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
         fitness_performance(getreq_start_time,
                             self.server.fitness,
                             '_GET', '_confirm_delete_event',

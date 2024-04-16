@@ -54,7 +54,7 @@ def links_update(self, calling_domain: str, cookie: str,
             print('WARN: nickname not found in ' + actor_str)
         else:
             print('WARN: nickname is not a moderator' + actor_str)
-        redirect_headers(self, actor_str, cookie, calling_domain)
+        redirect_headers(self, actor_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -64,7 +64,7 @@ def links_update(self, calling_domain: str, cookie: str,
         # check that the POST isn't too large
         if length > max_post_length:
             print('Maximum links data length exceeded ' + str(length))
-            redirect_headers(self, actor_str, cookie, calling_domain)
+            redirect_headers(self, actor_str, cookie, calling_domain, 303)
             self.server.postreq_busy = False
             return
 
@@ -195,5 +195,5 @@ def links_update(self, calling_domain: str, cookie: str,
 
     # redirect back to the default timeline
     redirect_headers(self, actor_str + '/' + default_timeline,
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
     self.server.postreq_busy = False

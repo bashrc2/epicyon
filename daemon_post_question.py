@@ -99,7 +99,7 @@ def receive_vote(self, calling_domain: str, cookie: str,
             actor + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, actor_path_str,
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -163,7 +163,7 @@ def receive_vote(self, calling_domain: str, cookie: str,
         actor + '/' + default_timeline + \
         '?page=' + str(page_number) + first_post_id + last_post_id
     redirect_headers(self, actor_path_str, cookie,
-                     calling_domain)
+                     calling_domain, 303)
     self.server.postreq_busy = False
     return
 

@@ -95,7 +95,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             return
         self.server.last_login_time = int(time.time())
         if register:
-            if not valid_password(login_password):
+            if not valid_password(login_password, debug):
                 self.server.postreq_busy = False
                 login_url = \
                     get_instance_url(calling_domain,
@@ -104,7 +104,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                                      onion_domain,
                                      i2p_domain) + \
                     '/login'
-                redirect_headers(self, login_url, cookie, calling_domain)
+                redirect_headers(self, login_url, cookie, calling_domain, 303)
                 return
 
             if not register_account(base_dir, http_prefix, domain, port,
@@ -118,7 +118,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                                      onion_domain,
                                      i2p_domain) + \
                     '/login'
-                redirect_headers(self, login_url, cookie, calling_domain)
+                redirect_headers(self, login_url, cookie, calling_domain, 303)
                 return
         auth_header = \
             create_basic_auth_header(login_nickname, login_password)
@@ -216,7 +216,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                                  i2p_domain) + \
                 '/users/' + login_nickname + '/' + \
                 default_timeline
-            redirect_headers(self, tl_url, cookie_str, calling_domain)
+            redirect_headers(self, tl_url, cookie_str, calling_domain, 303)
             self.server.postreq_busy = False
             return
     else:

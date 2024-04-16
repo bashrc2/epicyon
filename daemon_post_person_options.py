@@ -99,7 +99,7 @@ def person_options2(self, path: str,
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str = 'http://' + i2p_domain + users_path
         print('WARN: unable to find nickname in ' + origin_path_str)
-        redirect_headers(self, origin_path_str, cookie, calling_domain)
+        redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -192,7 +192,7 @@ def person_options2(self, path: str,
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str = 'http://' + i2p_domain + users_path
         print('WARN: unable to find nickname in ' + options_actor)
-        redirect_headers(self, origin_path_str, cookie, calling_domain)
+        redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -203,7 +203,7 @@ def person_options2(self, path: str,
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str = 'http://' + i2p_domain + users_path
         print('WARN: unable to find domain in ' + options_actor)
-        redirect_headers(self, origin_path_str, cookie, calling_domain)
+        redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -302,7 +302,7 @@ def person_options2(self, path: str,
             self.server.postreq_busy = False
             return
         redirect_headers(self, options_actor,
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -320,7 +320,7 @@ def person_options2(self, path: str,
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -340,7 +340,7 @@ def person_options2(self, path: str,
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -368,7 +368,7 @@ def person_options2(self, path: str,
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -397,7 +397,7 @@ def person_options2(self, path: str,
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -426,7 +426,7 @@ def person_options2(self, path: str,
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -454,7 +454,7 @@ def person_options2(self, path: str,
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -501,7 +501,7 @@ def person_options2(self, path: str,
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -548,7 +548,7 @@ def person_options2(self, path: str,
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -589,7 +589,7 @@ def person_options2(self, path: str,
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)
         redirect_headers(self, users_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -823,7 +823,7 @@ def person_options2(self, path: str,
                 this_actor + '/' + default_timeline + \
                 '?page=' + str(page_number)
             redirect_headers(self, actor_path_str, cookie,
-                             calling_domain)
+                             calling_domain, 303)
             self.server.postreq_busy = False
             return
 
@@ -846,7 +846,7 @@ def person_options2(self, path: str,
                 this_actor + '/' + default_timeline + \
                 '?page=' + str(page_number)
             redirect_headers(self, actor_path_str, cookie,
-                             calling_domain)
+                             calling_domain, 303)
             self.server.postreq_busy = False
             return
 
@@ -941,6 +941,6 @@ def person_options2(self, path: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif calling_domain.endswith('.i2p') and i2p_domain:
         origin_path_str = 'http://' + i2p_domain + users_path
-    redirect_headers(self, origin_path_str, cookie, calling_domain)
+    redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
     return

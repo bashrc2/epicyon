@@ -73,7 +73,7 @@ def theme_designer_edit(self, calling_domain: str, cookie: str,
             origin_path_str = \
                 'http://' + i2p_domain + users_path + \
                 '/' + default_timeline
-        redirect_headers(self, origin_path_str, cookie, calling_domain)
+        redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -154,6 +154,6 @@ def theme_designer_edit(self, calling_domain: str, cookie: str,
     elif calling_domain.endswith('.i2p') and i2p_domain:
         origin_path_str = \
             'http://' + i2p_domain + users_path + '/' + default_timeline
-    redirect_headers(self, origin_path_str, cookie, calling_domain)
+    redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
     return

@@ -2302,14 +2302,14 @@ def _profile_post_set_reply_interval(base_dir: str, nickname: str, domain: str,
 
 
 def _profile_post_change_password(base_dir: str, nickname: str,
-                                  fields: {}) -> None:
+                                  fields: {}, debug: bool) -> None:
     """ HTTP POST change password
     """
     if fields.get('password') and fields.get('passwordconfirm'):
         fields['password'] = remove_eol(fields['password']).strip()
         fields['passwordconfirm'] = \
             remove_eol(fields['passwordconfirm']).strip()
-        if valid_password(fields['password']) and \
+        if valid_password(fields['password'], debug) and \
            fields['password'] == fields['passwordconfirm']:
             # set password
             store_basic_credentials(base_dir, nickname,
@@ -2422,7 +2422,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
     nickname = get_nickname_from_actor(actor_str)
     if not nickname:
         print('WARN: nickname not found in ' + actor_str)
-        redirect_headers(self, actor_str, cookie, calling_domain)
+        redirect_headers(self, actor_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -2433,7 +2433,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
         if length > self.server.max_post_length:
             print('Maximum profile data length exceeded ' +
                   str(length))
-            redirect_headers(self, actor_str, cookie, calling_domain)
+            redirect_headers(self, actor_str, cookie, calling_domain, 303)
             self.server.postreq_busy = False
             return
 
@@ -2614,7 +2614,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 theme_download_path += '/exports/' + theme_name + '.zip'
             print('submitExportTheme path=' + theme_download_path)
             redirect_headers(self, theme_download_path,
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             self.server.postreq_busy = False
             return
         elif 'name="submitExportBlocks"' in post_bytes_str:
@@ -2622,7 +2622,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
             blocks_download_path = actor_str + '/exports/blocks.csv'
             print('submitExportBlocks path=' + blocks_download_path)
             redirect_headers(self, blocks_download_path,
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             self.server.postreq_busy = False
             return
 
@@ -2662,7 +2662,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                               translate,
                                               actor_changed)
 
-                _profile_post_change_password(base_dir, nickname, fields)
+                _profile_post_change_password(base_dir, nickname, fields,
+                                              debug)
 
                 _profile_post_set_reply_interval(base_dir, nickname, domain,
                                                  fields)
@@ -3051,5 +3052,5 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
     # redirect back to the profile screen
     redirect_headers(self, actor_str + redirect_path,
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
     self.server.postreq_busy = False

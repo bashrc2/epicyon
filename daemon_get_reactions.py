@@ -86,7 +86,7 @@ def reaction_picker2(self, calling_domain: str, path: str,
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number) + timeline_bookmark
-        redirect_headers(self, actor_path_str, cookie, calling_domain)
+        redirect_headers(self, actor_path_str, cookie, calling_domain, 303)
         return
 
     post_json_object = None
@@ -107,7 +107,7 @@ def reaction_picker2(self, calling_domain: str, path: str,
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number) + timeline_bookmark
-        redirect_headers(self, actor_path_str, cookie, calling_domain)
+        redirect_headers(self, actor_path_str, cookie, calling_domain, 303)
         return
 
     timezone = None

@@ -70,7 +70,7 @@ def hashtag_search_rss2(self, calling_domain: str,
             origin_path_str_absolute = \
                 'http://' + i2p_domain + origin_path_str
         redirect_headers(self, origin_path_str_absolute + '/search',
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_hashtag_search_rss2',
                         debug)
@@ -130,7 +130,7 @@ def hashtag_search_json2(self, calling_domain: str,
             origin_path_str_absolute = \
                 'http://' + i2p_domain + origin_path_str
         redirect_headers(self, origin_path_str_absolute,
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_hashtag_search_json',
                         debug)
@@ -253,7 +253,7 @@ def hashtag_search2(self, calling_domain: str,
             origin_path_str_absolute = \
                 'http://' + i2p_domain + origin_path_str
         redirect_headers(self, origin_path_str_absolute + '/search',
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_hashtag_search', debug)
 

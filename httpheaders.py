@@ -71,7 +71,7 @@ def logout_redirect(self, redirect: str, calling_domain: str) -> None:
 
 def redirect_headers(self, redirect: str, cookie: str,
                      calling_domain: str,
-                     code: int = 303) -> None:
+                     code: int) -> None:
     if '://' not in redirect:
         redirect = get_instance_url(calling_domain,
                                     self.server.http_prefix,
@@ -115,7 +115,7 @@ def clear_login_details(self, nickname: str, calling_domain: str) -> None:
     redirect_headers(self, self.server.http_prefix + '://' +
                      self.server.domain_full + '/login',
                      'epicyon=; SameSite=Strict',
-                     calling_domain)
+                     calling_domain, 303)
 
 
 def _set_headers_base(self, file_format: str, length: int, cookie: str,

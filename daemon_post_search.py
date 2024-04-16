@@ -115,7 +115,7 @@ def receive_search_query(self, calling_domain: str, cookie: str,
     if 'submitBack=' in search_params:
         # go back on search screen
         redirect_headers(self, actor_str + '/' +
-                         default_timeline, cookie, calling_domain)
+                         default_timeline, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
     if 'searchtext=' in search_params:
@@ -382,7 +382,7 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                      i2p_domain) + \
                     users_path
                 redirect_headers(self, actor_str + '/search',
-                                 cookie, calling_domain)
+                                 cookie, calling_domain, 303)
                 self.server.postreq_busy = False
                 return
             # profile search
@@ -538,7 +538,7 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                  onion_domain, i2p_domain) + \
                 users_path
             redirect_headers(self, actor_str + '/search',
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             self.server.postreq_busy = False
             return
         elif (search_str.startswith(':') or
@@ -608,5 +608,5 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                          domain_full, onion_domain, i2p_domain) + \
         users_path
     redirect_headers(self, actor_str + '/' + default_timeline,
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
     self.server.postreq_busy = False

@@ -55,7 +55,7 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
                              http_prefix, domain_full,
                              onion_domain, i2p_domain) + \
             divert_path
-        redirect_headers(self, redirect_url, None, calling_domain)
+        redirect_headers(self, redirect_url, None, calling_domain, 303)
         fitness_performance(getreq_start_time, fitness,
                             '_GET', '_redirect_to_login_screen',
                             debug)

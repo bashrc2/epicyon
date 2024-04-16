@@ -1345,8 +1345,8 @@ def show_conversation_thread(self, authorized: bool,
         return True
     # redirect to the original site if there are no results
     if '://' + domain_full + '/' in post_id:
-        redirect_headers(self, post_id, cookie, calling_domain)
+        redirect_headers(self, post_id, cookie, calling_domain, 303)
     else:
-        redirect_headers(self, post_id, None, calling_domain)
+        redirect_headers(self, post_id, None, calling_domain, 303)
     self.server.getreq_busy = False
     return True

@@ -130,7 +130,7 @@ def unfollow_confirm(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
-    redirect_headers(self, origin_path_str, cookie, calling_domain)
+    redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
 
@@ -190,7 +190,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
         following_actor = following_actor.split('actor=')[1]
         if '&' in following_actor:
             following_actor = following_actor.split('&')[0]
-        redirect_headers(self, following_actor, cookie, calling_domain)
+        redirect_headers(self, following_actor, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -220,7 +220,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                 write2(self, msg)
                 self.server.postreq_busy = False
                 return
-        redirect_headers(self, following_actor, cookie, calling_domain)
+        redirect_headers(self, following_actor, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -321,7 +321,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
             print('WARN: unable to find blocked nickname or domain in ' +
                   blocking_actor)
             redirect_headers(self, origin_path_str,
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             self.server.postreq_busy = False
             return
         blocking_domain_full = \
@@ -353,7 +353,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
-    redirect_headers(self, origin_path_str, cookie, calling_domain)
+    redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
 
@@ -374,7 +374,7 @@ def block_confirm2(self, calling_domain: str, cookie: str,
             origin_path_str = 'http://' + i2p_domain + users_path
         print('WARN: unable to find nickname in ' + origin_path_str)
         redirect_headers(self, origin_path_str,
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -420,7 +420,7 @@ def block_confirm2(self, calling_domain: str, cookie: str,
             print('WARN: unable to find nickname or domain in ' +
                   blocking_actor)
             redirect_headers(self, origin_path_str,
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             self.server.postreq_busy = False
             return
         blocking_domain_full = \
@@ -444,7 +444,7 @@ def block_confirm2(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
-    redirect_headers(self, origin_path_str, cookie, calling_domain)
+    redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
 
@@ -465,7 +465,7 @@ def unblock_confirm(self, calling_domain: str, cookie: str,
             origin_path_str = 'http://' + i2p_domain + users_path
         print('WARN: unable to find nickname in ' + origin_path_str)
         redirect_headers(self, origin_path_str,
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -507,7 +507,7 @@ def unblock_confirm(self, calling_domain: str, cookie: str,
                 origin_path_str = 'http://' + i2p_domain + users_path
             print('WARN: unable to find nickname in ' + blocking_actor)
             redirect_headers(self, origin_path_str,
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             self.server.postreq_busy = False
             return
         blocking_domain_full = \
@@ -539,5 +539,5 @@ def unblock_confirm(self, calling_domain: str, cookie: str,
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
     redirect_headers(self, origin_path_str,
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
     self.server.postreq_busy = False

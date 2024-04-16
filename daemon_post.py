@@ -854,7 +854,7 @@ def daemon_http_post(self) -> None:
                     '/' + post_redirect + \
                     '?page=' + str(page_number)
                 redirect_headers(self, actor_path_str, cookie,
-                                 calling_domain)
+                                 calling_domain, 303)
             elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 actor_path_str = \
@@ -863,14 +863,14 @@ def daemon_http_post(self) -> None:
                     '/' + post_redirect + \
                     '?page=' + str(page_number)
                 redirect_headers(self, actor_path_str, cookie,
-                                 calling_domain)
+                                 calling_domain, 303)
             else:
                 actor_path_str = \
                     local_actor_url(self.server.http_prefix, nickname,
                                     self.server.domain_full) + \
                     '/' + post_redirect + '?page=' + str(page_number)
                 redirect_headers(self, actor_path_str, cookie,
-                                 calling_domain)
+                                 calling_domain, 303)
             self.server.postreq_busy = False
             return
 

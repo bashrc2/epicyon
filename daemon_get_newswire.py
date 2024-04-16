@@ -114,7 +114,7 @@ def newswire_vote(self, calling_domain: str, path: str,
                         '_GET', '_newswire_vote',
                         debug)
     redirect_headers(self, origin_path_str_absolute,
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
 
 
 def newswire_unvote(self, calling_domain: str, path: str,
@@ -166,7 +166,7 @@ def newswire_unvote(self, calling_domain: str, path: str,
         origin_path_str_absolute = \
             'http://' + i2p_domain + origin_path_str
     redirect_headers(self, origin_path_str_absolute,
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_newswire_unvote', debug)
 

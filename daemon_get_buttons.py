@@ -132,7 +132,7 @@ def announce_button(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number)
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
 
     if onion_domain:
@@ -284,7 +284,7 @@ def announce_button(self, calling_domain: str, path: str,
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_announce_button',
                         debug)
-    redirect_headers(self, actor_path_str, cookie, calling_domain)
+    redirect_headers(self, actor_path_str, cookie, calling_domain, 303)
 
 
 def announce_button_undo(self, calling_domain: str, path: str,
@@ -351,7 +351,7 @@ def announce_button_undo(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + '?page=' + \
             str(page_number)
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
 
     if onion_domain:
@@ -427,7 +427,7 @@ def announce_button_undo(self, calling_domain: str, path: str,
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_undo_announce_button',
                         debug)
-    redirect_headers(self, actor_path_str, cookie, calling_domain)
+    redirect_headers(self, actor_path_str, cookie, calling_domain, 303)
 
 
 def follow_approve_button(self, calling_domain: str, path: str,
@@ -520,7 +520,7 @@ def follow_approve_button(self, calling_domain: str, path: str,
                         '_GET', '_follow_approve_button',
                         debug)
     redirect_headers(self, origin_path_str_absolute,
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
 
 
 def follow_deny_button(self, calling_domain: str, path: str,
@@ -584,7 +584,7 @@ def follow_deny_button(self, calling_domain: str, path: str,
         origin_path_str_absolute = \
             'http://' + i2p_domain + origin_path_str
     redirect_headers(self, origin_path_str_absolute,
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_follow_deny_button',
                         debug)
@@ -673,7 +673,7 @@ def like_button(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number) + timeline_bookmark
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
 
     if onion_domain:
@@ -839,7 +839,7 @@ def like_button(self, calling_domain: str, path: str,
                         '_GET', '_like_button',
                         debug)
     redirect_headers(self, actor_path_str, cookie,
-                     calling_domain)
+                     calling_domain, 303)
 
 
 def like_button_undo(self, calling_domain: str, path: str,
@@ -924,7 +924,7 @@ def like_button_undo(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number)
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
 
     if onion_domain:
@@ -1077,7 +1077,7 @@ def like_button_undo(self, calling_domain: str, path: str,
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_undo_like_button', debug)
     redirect_headers(self, actor_path_str, cookie,
-                     calling_domain)
+                     calling_domain, 303)
 
 
 def reaction_button(self, calling_domain: str, path: str,
@@ -1168,7 +1168,7 @@ def reaction_button(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number) + timeline_bookmark
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
     emoji_content = urllib.parse.unquote_plus(emoji_content_encoded)
     self.post_to_nickname = get_nickname_from_actor(actor)
@@ -1185,7 +1185,7 @@ def reaction_button(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number) + timeline_bookmark
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
 
     if onion_domain:
@@ -1357,7 +1357,7 @@ def reaction_button(self, calling_domain: str, path: str,
                         '_GET', '_reaction_button',
                         debug)
     redirect_headers(self, actor_path_str, cookie,
-                     calling_domain)
+                     calling_domain, 303)
 
 
 def reaction_button_undo(self, calling_domain: str, path: str,
@@ -1442,7 +1442,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number)
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
     emoji_content_encoded = None
     if '?emojreact=' in path:
@@ -1462,7 +1462,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number) + timeline_bookmark
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
     emoji_content = urllib.parse.unquote_plus(emoji_content_encoded)
 
@@ -1619,7 +1619,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_undo_reaction_button',
                         debug)
-    redirect_headers(self, actor_path_str, cookie, calling_domain)
+    redirect_headers(self, actor_path_str, cookie, calling_domain, 303)
 
 
 def bookmark_button(self, calling_domain: str, path: str,
@@ -1705,7 +1705,7 @@ def bookmark_button(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number)
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
 
     if onion_domain:
@@ -1824,7 +1824,7 @@ def bookmark_button(self, calling_domain: str, path: str,
                         '_GET', '_bookmark_button',
                         debug)
     redirect_headers(self, actor_path_str, cookie,
-                     calling_domain)
+                     calling_domain, 303)
 
 
 def bookmark_button_undo(self, calling_domain: str, path: str,
@@ -1908,7 +1908,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
             actor_absolute + '/' + timeline_str + \
             '?page=' + str(page_number)
         redirect_headers(self, actor_path_str, cookie,
-                         calling_domain)
+                         calling_domain, 303)
         return
 
     if onion_domain:
@@ -2028,7 +2028,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                         '_GET', '_undo_bookmark_button',
                         debug)
     redirect_headers(self, actor_path_str, cookie,
-                     calling_domain)
+                     calling_domain, 303)
 
 
 def delete_button(self, calling_domain: str, path: str,
@@ -2100,7 +2100,7 @@ def delete_button(self, calling_domain: str, path: str,
             elif calling_domain.endswith('.i2p') and i2p_domain:
                 actor = 'http://' + i2p_domain + users_path
             redirect_headers(self, actor + '/' + timeline_str,
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             return
         self.post_to_nickname = get_nickname_from_actor(actor)
         if not self.post_to_nickname:
@@ -2110,7 +2110,7 @@ def delete_button(self, calling_domain: str, path: str,
             elif calling_domain.endswith('.i2p') and i2p_domain:
                 actor = 'http://' + i2p_domain + users_path
             redirect_headers(self, actor + '/' + timeline_str,
-                             cookie, calling_domain)
+                             cookie, calling_domain, 303)
             return
 
         if onion_domain:
@@ -2170,7 +2170,7 @@ def delete_button(self, calling_domain: str, path: str,
                         '_GET', '_delete_button',
                         debug)
     redirect_headers(self, actor + '/' + timeline_str,
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
 
 
 def mute_button(self, calling_domain: str, path: str,
@@ -2339,7 +2339,7 @@ def mute_button(self, calling_domain: str, path: str,
     redirect_str = \
         actor + '/' + timeline_str + '?page=' + page_number_str + \
         first_post_id + timeline_bookmark
-    redirect_headers(self, redirect_str, cookie, calling_domain)
+    redirect_headers(self, redirect_str, cookie, calling_domain, 303)
 
 
 def mute_button_undo(self, calling_domain: str, path: str,
@@ -2505,4 +2505,4 @@ def mute_button_undo(self, calling_domain: str, path: str,
     redirect_str = \
         actor + '/' + timeline_str + '?page=' + page_number_str + \
         first_post_id + timeline_bookmark
-    redirect_headers(self, redirect_str, cookie, calling_domain)
+    redirect_headers(self, redirect_str, cookie, calling_domain, 303)

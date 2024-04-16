@@ -59,7 +59,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
         users_path
     if not is_moderator(base_dir, nickname):
         redirect_headers(self, actor_str + '/moderation',
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
 
@@ -328,6 +328,6 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                                             True)
 
     redirect_headers(self, actor_str + '/moderation',
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
     self.server.postreq_busy = False
     return

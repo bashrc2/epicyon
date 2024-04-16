@@ -103,7 +103,7 @@ def remove_reading_status(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
-    redirect_headers(self, origin_path_str, cookie, calling_domain)
+    redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
 
@@ -222,7 +222,7 @@ def remove_share(self, calling_domain: str, cookie: str,
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
     redirect_headers(self, origin_path_str + '/tlshares',
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
 
@@ -295,7 +295,7 @@ def remove_wanted(self, calling_domain: str, cookie: str,
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
     redirect_headers(self, origin_path_str + '/tlwanted',
-                     cookie, calling_domain)
+                     cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
 
@@ -410,11 +410,11 @@ def receive_remove_post(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + i2p_domain + users_path
     if page_number == 1:
         redirect_headers(self, origin_path_str + '/outbox', cookie,
-                         calling_domain)
+                         calling_domain, 303)
     else:
         page_number_str = str(page_number)
         actor_path_str = \
             origin_path_str + '/outbox?page=' + page_number_str
         redirect_headers(self, actor_path_str,
-                         cookie, calling_domain)
+                         cookie, calling_domain, 303)
     self.server.postreq_busy = False

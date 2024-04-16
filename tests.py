@@ -6950,13 +6950,16 @@ def _test_date_conversions() -> None:
     assert date_str == date_str2
 
 
-def _test_valid_password():
+def _test_valid_password2():
     print('test_valid_password')
-    assert not valid_password('123')
-    assert not valid_password('')
-    assert valid_password('パスワード12345')
-    assert valid_password('测试密码12345')
-    assert valid_password('A!bc:defg1/234?56')
+    assert not valid_password('123', True)
+    assert not valid_password('', True)
+    assert valid_password('パスワード12345', True)
+    assert valid_password('测试密码12345', True)
+    assert not valid_password('测试密码12345\n', True)
+    assert valid_password('A!bc:defg1/234?56', True)
+    assert valid_password('dcegfceu\nhdu8uigt82', True)
+    assert valid_password('dhgu\rheio', True)
 
 
 def _test_get_price_from_string() -> None:
@@ -8814,7 +8817,7 @@ def run_all_tests():
     _test_can_replyto(base_dir)
     _test_date_conversions()
     _test_authorized_shared_items()
-    _test_valid_password()
+    _test_valid_password2()
     _test_get_links_from_content()
     _test_set_actor_language()
     _test_limit_repeted_words()
