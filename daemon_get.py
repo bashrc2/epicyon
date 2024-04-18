@@ -203,6 +203,7 @@ from daemon_get_vcard import show_vcard
 from daemon_get_blog import show_blog_page
 from daemon_get_links import edit_links2
 from daemon_get_login import redirect_to_login_screen
+from daemon_get_login import show_login_screen
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -2688,24 +2689,18 @@ def daemon_http_get(self) -> None:
                         self.server.debug)
 
     # show the login screen
-    if (self.path.startswith('/login') or
-        (self.path == '/' and
-         not authorized and
-         not self.server.news_instance)):
-        # request basic auth
-        msg = html_login(self.server.translate,
+    if show_login_screen(self.path, authorized,
+                         self.server.news_instance,
+                         self.server.translate,
                          self.server.base_dir,
                          self.server.http_prefix,
                          self.server.domain_full,
                          self.server.system_language,
-                         True, ua_str,
-                         self.server.theme_name).encode('utf-8')
-        msglen = len(msg)
-        login_headers(self, 'text/html', msglen, calling_domain)
-        write2(self, msg)
-        fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', 'login shown',
-                            self.server.debug)
+                         ua_str, self.server.theme_name,
+                         calling_domain,
+                         getreq_start_time,
+                         self.server.fitness, self.server.debug,
+                         self):
         self.server.getreq_busy = False
         return
 
