@@ -25,17 +25,21 @@ from theme import get_text_mode_logo
 
 def html_get_login_credentials(login_params: str,
                                last_login_time: int,
-                               registrations_open: bool) -> (str, str, bool):
+                               registrations_open: bool,
+                               calling_domain: str,
+                               ua_str: str) -> (str, str, bool):
     """Receives login credentials via HTTPServer POST
     """
     if not login_params.startswith('username='):
         if '&username=' not in login_params:
-            print('WARN: invalid login parameters ' + login_params)
+            print('WARN: invalid login parameters ' + calling_domain + ', ' +
+                  ua_str + ', ' + login_params)
             return None, None, None
     # minimum time between login attempts
     curr_time = int(time.time())
     if curr_time < last_login_time + 10:
-        print('WARN: login attempt too frequent')
+        print('WARN: login attempt too frequent ' + calling_domain + ', ' +
+              ua_str)
         return None, None, None
     if '&' not in login_params:
         return None, None, None

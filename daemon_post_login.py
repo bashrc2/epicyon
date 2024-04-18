@@ -85,7 +85,8 @@ def post_login_screen(self, calling_domain: str, cookie: str,
     login_nickname, login_password, register = \
         html_get_login_credentials(login_params,
                                    self.server.last_login_time,
-                                   registrations_open)
+                                   registrations_open,
+                                   calling_domain, ua_str)
     if login_nickname and login_password:
         if is_system_account(login_nickname):
             print('Invalid username login: ' + login_nickname +
