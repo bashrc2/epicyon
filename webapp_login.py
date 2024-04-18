@@ -30,10 +30,12 @@ def html_get_login_credentials(login_params: str,
     """
     if not login_params.startswith('username='):
         if '&username=' not in login_params:
+            print('WARN: invalid login parameters ' + login_params)
             return None, None, None
     # minimum time between login attempts
     curr_time = int(time.time())
     if curr_time < last_login_time + 10:
+        print('WARN: login attempt too frequent')
         return None, None, None
     if '&' not in login_params:
         return None, None, None
