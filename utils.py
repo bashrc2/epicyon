@@ -4786,7 +4786,7 @@ def get_quote_toot_url(post_json_object: str) -> str:
                         if item.get('href'):
                             if isinstance(item['href'], str):
                                 if resembles_url(item['href']):
-                                    return item['href']
+                                    return remove_html(item['href'])
                 if not item.get('type'):
                     continue
                 if not item.get('mediaType'):
@@ -4802,7 +4802,7 @@ def get_quote_toot_url(post_json_object: str) -> str:
                 if item.get('href'):
                     if isinstance(item['href'], str):
                         if resembles_url(item['href']):
-                            return item['href']
+                            return remove_html(item['href'])
     return ''
 
 
