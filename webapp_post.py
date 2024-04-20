@@ -24,6 +24,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import get_quote_toot_url
 from utils import get_post_attachments
 from utils import get_url_from_post
 from utils import date_from_string_format
@@ -2845,6 +2846,17 @@ def individual_post_as_html(signing_priv_key_pem: str,
             object_content = html_replace_quote_marks(object_content)
             object_content = \
                 format_mixed_right_to_left(object_content, system_language)
+            # show quote toot link
+            quote_url = get_quote_toot_url(post_json_object)
+            if quote_url:
+                quote_url = quote_url.replace('.json', '')
+                quote_url_shown = quote_url
+                if len(quote_url_shown) > 40:
+                    quote_url_shown = quote_url_shown[:40]
+                object_content += '<p>💬 <a href="' + quote_url + \
+                    '" target="_blank" ' + \
+                    'rel="nofollow noopener noreferrer">' + \
+                    quote_url_shown + '</a></p>\n'
             # append any edits
             object_content += edits_str
         else:

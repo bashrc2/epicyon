@@ -4755,16 +4755,16 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
         break
 
 
-def is_quote_toot(post_json_object: str, content: str) -> bool:
-    """Returns true if the given post is a quote toot / quote tweet
+def get_quote_toot_url(post_json_object: str) -> str:
     """
-    # Pleroma/Misskey implementations
-    if post_json_object['object'].get('quoteUri') or \
-       post_json_object['object'].get('quoteUrl') or \
-       post_json_object['object'].get('quoteReply') or \
-       post_json_object['object'].get('toot:quoteReply') or \
-       post_json_object['object'].get('_misskey_quote'):
-        return True
+    """
+    # adhoc quote toot implementations
+    object_quote_url_fields = ('quoteUri', 'quoteUrl', 'quoteReply',
+                               'toot:quoteReply', '_misskey_quote')
+    for fieldname in object_quote_url_fields:
+        if post_json_object['object'].get(fieldname):
+            return post_json_object['object'][fieldname]
+
     # More correct ActivityPub implementation - adding a Link tag
     if post_json_object['object'].get('tag'):
         if isinstance(post_json_object['object']['tag'], list):
@@ -4772,15 +4772,21 @@ def is_quote_toot(post_json_object: str, content: str) -> bool:
                 if not isinstance(item, dict):
                     continue
                 if item.get('rel'):
+                    mk_quote = False
                     if isinstance(item['rel'], list):
                         for rel_str in item['rel']:
                             if not isinstance(rel_str, str):
                                 continue
                             if '_misskey_quote' in rel_str:
-                                return True
+                                mk_quote = True
                     elif isinstance(item['rel'], str):
                         if '_misskey_quote' in item['rel']:
-                            return True
+                            mk_quote = True
+                    if mk_quote:
+                        if item.get('href'):
+                            if isinstance(item['href'], str):
+                                if resembles_url(item['href']):
+                                    return item['href']
                 if not item.get('type'):
                     continue
                 if not item.get('mediaType'):
@@ -4793,7 +4799,18 @@ def is_quote_toot(post_json_object: str, content: str) -> bool:
                     continue
                 if 'json' not in item['mediaType']:
                     continue
-                return True
+                if item.get('href'):
+                    if isinstance(item['href'], str):
+                        if resembles_url(item['href']):
+                            return item['href']
+    return ''
+
+
+def is_quote_toot(post_json_object: str, content: str) -> bool:
+    """Returns true if the given post is a quote toot / quote tweet
+    """
+    if get_quote_toot_url(post_json_object):
+        return True
     # Twitter-style indicator
     if content:
         if 'QT: ' in content:
