@@ -2720,6 +2720,7 @@ def _html_edit_profile_options(is_admin: bool,
                                nickname: str,
                                min_images_for_accounts: [],
                                reverse_sequence: [],
+                               show_quote_toots: bool,
                                show_vote_posts: bool,
                                show_replies_followers: bool,
                                show_replies_mutuals: bool,
@@ -2784,6 +2785,10 @@ def _html_edit_profile_options(is_admin: bool,
     reverse_str = translate['Reverse timelines']
     edit_profile_form += \
         edit_check_box(reverse_str, 'reverseTimelines', reverse)
+
+    show_quote_toots_str = translate['Show quote posts']
+    edit_profile_form += \
+        edit_check_box(show_quote_toots_str, 'showQuotes', show_quote_toots)
 
     show_vote_posts_str = translate['Show vote posts']
     edit_profile_form += \
@@ -3198,6 +3203,11 @@ def html_edit_profile(server, translate: {},
                                 nickname, domain, max_recent_posts,
                                 featured_hashtags)
 
+    # whether to show quote toots
+    show_quote_toots = False
+    if os.path.isfile(account_dir + '/.allowQuotes'):
+        show_quote_toots = True
+
     # whether to show votes
     show_vote_posts = True
     if os.path.isfile(account_dir + '/.noVotes'):
@@ -3237,8 +3247,8 @@ def html_edit_profile(server, translate: {},
                                    hide_like_button, hide_reaction_button,
                                    translate, bold_reading,
                                    nickname, min_images_for_accounts,
-                                   reverse_sequence, show_vote_posts,
-                                   show_replies_followers,
+                                   reverse_sequence, show_quote_toots,
+                                   show_vote_posts, show_replies_followers,
                                    show_replies_mutuals, hide_follows,
                                    premium, no_reply_boosts)
 

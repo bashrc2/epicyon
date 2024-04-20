@@ -667,5 +667,6 @@
     "Approve fans": "ファンを承認する",
     "Only allow replies from fans": "ファンからの返信のみを許可する",
     "Do not show fans on your profile": "プロフィールにファンを表示しない",
-    "Don't show boosted replies": "ブーストされた返信を表示しない"
+    "Don't show boosted replies": "ブーストされた返信を表示しない",
+    "Show quote posts": "引用された投稿を表示"
 }

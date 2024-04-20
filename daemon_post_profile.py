@@ -930,6 +930,32 @@ def _profile_post_only_follower_replies(fields: {},
                       show_replies_followers_file)
 
 
+def _profile_post_show_quote_toots(fields: {}, account_dir: str) -> None:
+    """ HTTP POST show quote toots checkbox on edit profile
+    """
+    show_quote_toots = False
+    if fields.get('showQuotes'):
+        if fields['showQuotes'] == 'on':
+            show_quote_toots = True
+    show_quote_toots_file = account_dir + '/.allowQuotes'
+    if os.path.isfile(show_quote_toots_file):
+        if show_quote_toots:
+            try:
+                os.remove(show_quote_toots_file)
+            except OSError:
+                print('EX: unable to remove allowQuotes file ' +
+                      show_quote_toots_file)
+    else:
+        if not show_quote_toots:
+            try:
+                with open(show_quote_toots_file, 'w+',
+                          encoding='utf-8') as fp_quotes:
+                    fp_quotes.write('\n')
+            except OSError:
+                print('EX: unable to write allowQuotes file ' +
+                      show_quote_toots_file)
+
+
 def _profile_post_show_questions(fields: {}, account_dir: str) -> None:
     """ HTTP POST show poll/vote/question posts checkbox
     """
@@ -2939,6 +2965,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                 fields, self)
 
                 account_dir = acct_dir(base_dir, nickname, domain)
+
+                _profile_post_show_quote_toots(fields, account_dir)
 
                 _profile_post_show_questions(fields, account_dir)
 
