@@ -42,6 +42,8 @@ from webapp_moderation import html_account_info
 from languages import get_understood_languages
 from blocking import allowed_announce_add
 from blocking import allowed_announce_remove
+from blocking import blocked_quote_toots_add
+from blocking import blocked_quote_toots_remove
 from notifyOnPost import add_notify_on_post
 from notifyOnPost import remove_notify_on_post
 from posts import is_moderator
@@ -422,6 +424,35 @@ def person_options2(self, path: str,
                                     domain,
                                     options_nickname,
                                     options_domain_full)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return
+
+    # person options screen, allow quote toots checkbox
+    # See html_person_options
+    if '&submitAllowQuotes=' in options_confirm_params:
+        allow_quote_toots = None
+        if 'allowQuotes=' in options_confirm_params:
+            allow_quote_toots = \
+                options_confirm_params.split('allowQuotes=')[1]
+            if '&' in allow_quote_toots:
+                allow_quote_toots = allow_quote_toots.split('&')[0]
+        if allow_quote_toots != 'on':
+            blocked_quote_toots_add(base_dir,
+                                    chooser_nickname,
+                                    domain,
+                                    options_nickname,
+                                    options_domain_full)
+        else:
+            blocked_quote_toots_remove(base_dir,
+                                       chooser_nickname,
+                                       domain,
+                                       options_nickname,
+                                       options_domain_full)
         users_path_str = \
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)

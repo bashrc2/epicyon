@@ -4756,7 +4756,7 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
 
 
 def get_quote_toot_url(post_json_object: str) -> str:
-    """
+    """ Returns the url for a quote toot
     """
     # adhoc quote toot implementations
     object_quote_url_fields = ('quoteUri', 'quoteUrl', 'quoteReply',
@@ -4835,7 +4835,7 @@ def quote_toots_allowed(base_dir: str, nickname: str, domain: str,
             return True
         if os.path.isfile(quotes_blocked_filename):
             sender_handle = sender_nickname + '@' + sender_domain
-            if text_in_file(sender_handle, quotes_blocked_filename):
+            if text_in_file(sender_handle, quotes_blocked_filename, False):
                 # quote toots not permitted from this sender
                 return False
         return True

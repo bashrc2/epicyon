@@ -958,7 +958,7 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
                       encoding='utf-8') as fp_noannounce:
                 file_text = fp_noannounce.read()
         except OSError:
-            print('EX: unable to read noannounce: ' +
+            print('EX: unable to read noannounce add: ' +
                   blocking_filename + ' ' + handle)
 
         new_file_text = ''
@@ -974,7 +974,7 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
                       encoding='utf-8') as fp_noannounce:
                 fp_noannounce.write(file_text)
         except OSError:
-            print('EX: unable to write noannounce: ' +
+            print('EX: unable to write noannounce add: ' +
                   blocking_filename + ' ' + handle)
 
 
@@ -995,7 +995,7 @@ def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
                       encoding='utf-8') as fp_noannounce:
                 fp_noannounce.write(file_text)
         except OSError:
-            print('EX: unable to write initial noannounce: ' +
+            print('EX: unable to write initial noannounce remove: ' +
                   blocking_filename + ' ' + handle)
         return
 
@@ -1006,7 +1006,7 @@ def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
                       encoding='utf-8') as fp_noannounce:
                 file_text = fp_noannounce.read()
         except OSError:
-            print('EX: unable to read noannounce: ' +
+            print('EX: unable to read noannounce remove: ' +
                   blocking_filename + ' ' + handle)
         file_text += handle + '\n'
         try:
@@ -1015,6 +1015,71 @@ def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
                 fp_noannounce.write(file_text)
         except OSError:
             print('EX: unable to write noannounce: ' +
+                  blocking_filename + ' ' + handle)
+
+
+def blocked_quote_toots_add(base_dir: str, nickname: str, domain: str,
+                            following_nickname: str,
+                            following_domain: str) -> None:
+    """Block quote toots for a handle
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    blocking_filename = account_dir + '/quotesblocked.txt'
+
+    # if the quotesblocked.txt file doesn't yet exist
+    if os.path.isfile(blocking_filename):
+        return
+
+    handle = following_nickname + '@' + following_domain
+    if not text_in_file(handle + '\n', blocking_filename, False):
+        file_text = ''
+        try:
+            with open(blocking_filename, 'r',
+                      encoding='utf-8') as fp_quotes:
+                file_text = fp_quotes.read()
+        except OSError:
+            print('EX: unable to read quotesblocked add: ' +
+                  blocking_filename + ' ' + handle)
+        file_text += handle + '\n'
+
+        try:
+            with open(blocking_filename, 'w+',
+                      encoding='utf-8') as fp_quotes:
+                fp_quotes.write(file_text)
+        except OSError:
+            print('EX: unable to write quotesblocked add: ' +
+                  blocking_filename + ' ' + handle)
+
+
+def blocked_quote_toots_remove(base_dir: str, nickname: str, domain: str,
+                               following_nickname: str,
+                               following_domain: str) -> None:
+    """allow quote toots from a handle
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    blocking_filename = account_dir + '/quotesblocked.txt'
+    handle = following_nickname + '@' + following_domain
+
+    # if the quotesblocked.txt file doesn't yet exist
+    if not os.path.isfile(blocking_filename):
+        return
+
+    file_text = ''
+    if text_in_file(handle + '\n', blocking_filename, False):
+        try:
+            with open(blocking_filename, 'r',
+                      encoding='utf-8') as fp_quotes:
+                file_text = fp_quotes.read()
+        except OSError:
+            print('EX: unable to read quotesblocked remove: ' +
+                  blocking_filename + ' ' + handle)
+        file_text = file_text.replace(handle + '\n', '')
+        try:
+            with open(blocking_filename, 'w+',
+                      encoding='utf-8') as fp_quotes:
+                fp_quotes.write(file_text)
+        except OSError:
+            print('EX: unable to write quotesblocked remove: ' +
                   blocking_filename + ' ' + handle)
 
 

@@ -12,6 +12,7 @@ from shutil import copyfile
 from petnames import get_pet_name
 from person import is_person_snoozed
 from posts import is_moderator
+from utils import quote_toots_allowed
 from utils import get_full_domain
 from utils import get_config_param
 from utils import is_dormant
@@ -477,6 +478,7 @@ def html_person_options(default_timeline: str,
 
             # Notify when a post arrives from this person
             if is_following_actor(base_dir, nickname, domain, options_actor):
+                # allow announces
                 checkbox_str = \
                     '    <input type="checkbox" class="profilecheckbox" ' + \
                     'name="allowAnnounce" checked> 🔁' + \
@@ -489,6 +491,24 @@ def html_person_options(default_timeline: str,
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 
+                # allow quote toots
+                if quote_toots_allowed(base_dir, nickname, domain,
+                                       None, None):
+                    checkbox_str = \
+                        '    <input type="checkbox" ' + \
+                        'class="profilecheckbox" ' + \
+                        'name="allowQuotes" checked> ' + \
+                        translate['Show quote posts'] + \
+                        '\n    <button type="submit" class="buttonsmall" ' + \
+                        'name="submitAllowQuotes">' + \
+                        translate['Save'] + '</button><br>\n'
+                    if quote_toots_allowed(base_dir, nickname, domain,
+                                           options_nickname,
+                                           options_domain_full):
+                        checkbox_str = checkbox_str.replace(' checked>', '>')
+                    options_str += checkbox_str
+
+                # notify about new posts
                 checkbox_str = \
                     '    <input type="checkbox" class="profilecheckbox" ' + \
                     'name="notifyOnPost" checked> 🔔' + \
@@ -502,6 +522,7 @@ def html_person_options(default_timeline: str,
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 
+                # receive calendar events
                 checkbox_str = \
                     '    <input type="checkbox" ' + \
                     'class="profilecheckbox" name="onCalendar" checked> ' + \
@@ -515,6 +536,7 @@ def html_person_options(default_timeline: str,
                     checkbox_str = checkbox_str.replace(' checked>', '>')
                 options_str += checkbox_str
 
+                # minimise images for this handle
                 checkbox_str = \
                     '    <input type="checkbox" class="profilecheckbox" ' + \
                     'name="minimizeImages" checked> ' + \
