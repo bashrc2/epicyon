@@ -939,14 +939,14 @@ def _profile_post_show_quote_toots(fields: {}, account_dir: str) -> None:
             show_quote_toots = True
     show_quote_toots_file = account_dir + '/.allowQuotes'
     if os.path.isfile(show_quote_toots_file):
-        if show_quote_toots:
+        if not show_quote_toots:
             try:
                 os.remove(show_quote_toots_file)
             except OSError:
                 print('EX: unable to remove allowQuotes file ' +
                       show_quote_toots_file)
     else:
-        if not show_quote_toots:
+        if show_quote_toots:
             try:
                 with open(show_quote_toots_file, 'w+',
                           encoding='utf-8') as fp_quotes:
