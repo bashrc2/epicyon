@@ -4763,7 +4763,10 @@ def get_quote_toot_url(post_json_object: str) -> str:
                                'toot:quoteReply', '_misskey_quote')
     for fieldname in object_quote_url_fields:
         if post_json_object['object'].get(fieldname):
-            return post_json_object['object'][fieldname]
+            quote_url = post_json_object['object'][fieldname]
+            if isinstance(quote_url, str):
+                if resembles_url(quote_url):
+                    return remove_html(quote_url)
 
     # More correct ActivityPub implementation - adding a Link tag
     if post_json_object['object'].get('tag'):
