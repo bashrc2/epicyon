@@ -15,6 +15,7 @@ from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
+from utils import quote_toots_allowed
 from utils import get_post_attachments
 from utils import get_attributed_to
 from utils import contains_invalid_actor_url_chars
@@ -311,8 +312,12 @@ def post_message_to_outbox(session, translate: {},
                         return False
 
         if is_quote_toot(message_json, ''):
-            print('REJECT: POST quote toot ' + str(message_json))
-            return False
+            allow_quotes = \
+                quote_toots_allowed(base_dir, post_to_nickname, domain,
+                                    None, None)
+            if not allow_quotes:
+                print('REJECT: POST quote toot ' + str(message_json))
+                return False
 
         content_str = get_base_content_from_post(message_json, system_language)
         if content_str:

@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import quote_toots_allowed
 from utils import get_post_attachments
 from utils import lines_in_file
 from utils import resembles_url
@@ -751,10 +752,16 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
 
     if obj_dict_exists:
         if is_quote_toot(post_json_object, content_str):
-            if post_json_object.get('id'):
-                print('REJECT: inbox quote toot ' +
-                      str(post_json_object['id']))
-            return None
+            allow_quotes = False
+            if sending_actor:
+                allow_quotes = \
+                    quote_toots_allowed(base_dir, nickname, domain,
+                                        post_nickname, post_domain)
+            if not allow_quotes:
+                if post_json_object.get('id'):
+                    print('REJECT: inbox quote toot ' +
+                          str(post_json_object['id']))
+                return None
 
         # is this a reply to a blocked domain or account?
         reply_id = get_reply_to(post_json_object['object'])

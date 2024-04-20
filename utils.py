@@ -4801,6 +4801,27 @@ def is_quote_toot(post_json_object: str, content: str) -> bool:
     return False
 
 
+def quote_toots_allowed(base_dir: str, nickname: str, domain: str,
+                        sender_nickname: str, sender_domain: str) -> bool:
+    """ Returns true if quote toots are allowed by the given account
+    for the given sender
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    quotes_enabled_filename = account_dir + '/.allowQuotes'
+    if os.path.isfile(quotes_enabled_filename):
+        # check blocks on individual sending accounts
+        quotes_blocked_filename = account_dir + '/quotesblocked.txt'
+        if sender_nickname is None:
+            return True
+        if os.path.isfile(quotes_blocked_filename):
+            sender_handle = sender_nickname + '@' + sender_domain
+            if text_in_file(sender_handle, quotes_blocked_filename):
+                # quote toots not permitted from this sender
+                return False
+        return True
+    return False
+
+
 def license_link_from_name(license_name: str) -> str:
     """Returns the license link from its name
     """
