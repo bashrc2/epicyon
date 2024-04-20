@@ -502,9 +502,9 @@ def html_person_options(default_timeline: str,
                         '\n    <button type="submit" class="buttonsmall" ' + \
                         'name="submitAllowQuotes">' + \
                         translate['Save'] + '</button><br>\n'
-                    if quote_toots_allowed(base_dir, nickname, domain,
-                                           options_nickname,
-                                           options_domain_full):
+                    if not quote_toots_allowed(base_dir, nickname, domain,
+                                               options_nickname,
+                                               options_domain_full):
                         checkbox_str = checkbox_str.replace(' checked>', '>')
                     options_str += checkbox_str
 
