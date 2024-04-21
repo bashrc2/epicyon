@@ -2713,9 +2713,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     post_is_sensitive = False
     if post_json_object['object'].get('sensitive'):
-        # sensitive posts should have a summary
-        if post_json_object['object'].get('summary'):
-            post_is_sensitive = post_json_object['object']['sensitive']
+        if isinstance(post_json_object['object']['sensitive'], bool):
+            # sensitive posts should have a summary
+            if post_json_object['object'].get('summary'):
+                post_is_sensitive = post_json_object['object']['sensitive']
 
     if not post_json_object['object'].get('summary'):
         post_json_object['object']['summary'] = ''
@@ -2885,6 +2886,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         post_id = 'post' + str(create_password(8))
         content_str = ''
         if summary_str:
+            # set the content warning
             cw_str = \
                 add_emoji_to_display_name(session, base_dir, http_prefix,
                                           nickname, domain,

@@ -538,8 +538,14 @@ def get_summary_from_post(post_json_object: {}, system_language: str,
     """Returns the summary from the post in the given language
     including searching for a matching entry within summaryMap
     """
-    return get_content_from_post(post_json_object, system_language,
-                                 languages_understood, "summary")
+    summary_str = \
+        get_content_from_post(post_json_object, system_language,
+                              languages_understood, "summary")
+    if summary_str:
+        summary_str = summary_str.strip()
+        if len(summary_str) < 2:
+            summary_str = ''
+    return summary_str
 
 
 def get_base_content_from_post(post_json_object: {},
