@@ -3424,7 +3424,9 @@ def daemon_http_get(self) -> None:
                     self.server.auto_cw_cache,
                     self.server.fitness,
                     self.server.account_timezone,
-                    self.server.iconsCache)
+                    self.server.iconsCache,
+                    self.server.bold_reading,
+                    self.server.min_images_for_accounts)
         self.server.getreq_busy = False
         return
 

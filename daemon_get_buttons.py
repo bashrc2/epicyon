@@ -623,7 +623,9 @@ def like_button(self, calling_domain: str, path: str,
                 auto_cw_cache: {},
                 fitness: {},
                 account_timezone: {},
-                icons_cache: {}) -> None:
+                icons_cache: {},
+                bold_reading_nicknames: {},
+                min_images_for_accounts: []) -> None:
     """Press the like button
     """
     page_number = 1
@@ -774,11 +776,10 @@ def like_button(self, calling_domain: str, path: str,
                               '.mitm'):
                 mitm = True
             bold_reading = False
-            if self.server.bold_reading.get(self.post_to_nickname):
+            if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
             minimize_all_images = False
-            if self.post_to_nickname in \
-               self.server.min_images_for_accounts:
+            if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             individual_post_as_html(signing_priv_key_pem,
                                     False,
@@ -2057,7 +2058,7 @@ def delete_button(self, calling_domain: str, path: str,
                   cw_lists: {},
                   lists_enabled: {},
                   dogwhistles: {},
-                  min_images_for_accounts: bool,
+                  min_images_for_accounts: [],
                   buy_sites: [],
                   auto_cw_cache: {},
                   fitness: {}) -> None:

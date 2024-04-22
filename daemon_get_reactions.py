@@ -42,7 +42,7 @@ def reaction_picker2(self, calling_domain: str, path: str,
                      cw_lists: [],
                      lists_enabled: {},
                      dogwhistles: {},
-                     min_images_for_accounts: bool,
+                     min_images_for_accounts: [],
                      buy_sites: [],
                      auto_cw_cache: {}) -> None:
     """Press the emoji reaction picker icon at the bottom of the post
