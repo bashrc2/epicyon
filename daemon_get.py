@@ -3344,7 +3344,9 @@ def daemon_http_get(self) -> None:
                               self.server.project_version,
                               self.server.sites_unavailable,
                               self.server.system_language,
-                              self.server.fitness)
+                              self.server.fitness,
+                              self.server.signing_priv_key_pem,
+                              self.server.followers_sync_cache)
         self.server.getreq_busy = False
         return
 
@@ -3420,7 +3422,9 @@ def daemon_http_get(self) -> None:
                     self.server.dogwhistles,
                     self.server.buy_sites,
                     self.server.auto_cw_cache,
-                    self.server.fitness)
+                    self.server.fitness,
+                    self.server.account_timezone,
+                    self.server.iconsCache)
         self.server.getreq_busy = False
         return
 

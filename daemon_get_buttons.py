@@ -449,7 +449,9 @@ def follow_approve_button(self, calling_domain: str, path: str,
                           project_version: str,
                           sites_unavailable: [],
                           system_language: str,
-                          fitness: {}) -> None:
+                          fitness: {},
+                          signing_priv_key_pem: str,
+                          followers_sync_cache: {}) -> None:
     """Follow approve button was pressed
     """
     origin_path_str = path.split('/followapprove=')[0]
@@ -486,10 +488,6 @@ def follow_approve_button(self, calling_domain: str, path: str,
                   'when approving follow request')
             http_404(self, 50)
             return
-        signing_priv_key_pem = \
-            self.server.signing_priv_key_pem
-        followers_sync_cache = \
-            self.server.followers_sync_cache
         manual_approve_follow_request_thread(self.server.session,
                                              self.server.session_onion,
                                              self.server.session_i2p,
@@ -623,7 +621,9 @@ def like_button(self, calling_domain: str, path: str,
                 dogwhistles: {},
                 buy_sites: [],
                 auto_cw_cache: {},
-                fitness: {}) -> None:
+                fitness: {},
+                account_timezone: {},
+                icons_cache: {}) -> None:
     """Press the like button
     """
     page_number = 1
@@ -734,7 +734,6 @@ def like_button(self, calling_domain: str, path: str,
         liked_post_filename = \
             locate_post(base_dir, self.post_to_nickname, domain, like_url)
     if liked_post_filename:
-        recent_posts_cache = self.server.recent_posts_cache
         liked_post_json = load_json(liked_post_filename, 0, 1)
         if orig_filename and orig_post_url:
             update_likes_collection(recent_posts_cache,
@@ -768,9 +767,8 @@ def like_button(self, calling_domain: str, path: str,
                                          self.post_to_nickname, domain)
             show_repeats = not is_dm(liked_post_json)
             timezone = None
-            if self.server.account_timezone.get(self.post_to_nickname):
-                timezone = \
-                    self.server.account_timezone.get(self.post_to_nickname)
+            if account_timezone.get(self.post_to_nickname):
+                timezone = account_timezone.get(self.post_to_nickname)
             mitm = False
             if os.path.isfile(liked_post_filename.replace('.json', '') +
                               '.mitm'):
@@ -820,8 +818,8 @@ def like_button(self, calling_domain: str, path: str,
         else:
             print('WARN: Liked post not found: ' + liked_post_filename)
         # clear the icon from the cache so that it gets updated
-        if self.server.iconsCache.get('like.png'):
-            del self.server.iconsCache['like.png']
+        if icons_cache.get('like.png'):
+            del icons_cache['like.png']
     else:
         print('WARN: unable to locate file for liked post ' +
               like_url)
