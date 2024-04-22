@@ -80,7 +80,11 @@ def announce_button(self, calling_domain: str, path: str,
                     dogwhistles: {},
                     buy_sites: [],
                     auto_cw_cache: {},
-                    fitness: {}) -> None:
+                    fitness: {},
+                    icons_cache: {},
+                    account_timezone: {},
+                    bold_reading_nicknames: {},
+                    min_images_for_accounts: int) -> None:
     """The announce/repeat button was pressed on a post
     """
     page_number = 1
@@ -191,8 +195,8 @@ def announce_button(self, calling_domain: str, path: str,
                              announce_json, 'outbox')
 
         # clear the icon from the cache so that it gets updated
-        if self.server.iconsCache.get('repeat.png'):
-            del self.server.iconsCache['repeat.png']
+        if icons_cache.get('repeat.png'):
+            del icons_cache['repeat.png']
 
         # send out the announce within a separate thread
         post_to_outbox(self, announce_json,
@@ -222,18 +226,17 @@ def announce_button(self, calling_domain: str, path: str,
                                      self.post_to_nickname, domain)
         show_repeats = not is_dm(announce_json)
         timezone = None
-        if self.server.account_timezone.get(self.post_to_nickname):
-            timezone = \
-                self.server.account_timezone.get(self.post_to_nickname)
+        if account_timezone.get(self.post_to_nickname):
+            timezone = account_timezone.get(self.post_to_nickname)
         mitm = False
         if os.path.isfile(announce_filename.replace('.json', '') +
                           '.mitm'):
             mitm = True
         bold_reading = False
-        if self.server.bold_reading.get(self.post_to_nickname):
+        if bold_reading_nicknames.get(self.post_to_nickname):
             bold_reading = True
         minimize_all_images = False
-        if self.post_to_nickname in self.server.min_images_for_accounts:
+        if self.post_to_nickname in min_images_for_accounts:
             minimize_all_images = True
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache,
