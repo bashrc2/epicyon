@@ -67,7 +67,9 @@ def show_shares_feed(self, authorized: bool,
                      sites_unavailable: [],
                      no_of_books: int,
                      auto_cw_cache: {},
-                     fitness: {}) -> bool:
+                     fitness: {},
+                     onion_domain: str,
+                     i2p_domain: str) -> bool:
     """Shows the shares feed for a particular account/actor
     """
     shares = \
@@ -178,8 +180,6 @@ def show_shares_feed(self, authorized: bool,
         else:
             if secure_mode(curr_session, proxy_type, False,
                            self.server, self.headers, self.path):
-                onion_domain = self.server.onion_domain
-                i2p_domain = self.server.i2p_domain
                 msg_str = json.dumps(shares,
                                      ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,

@@ -4973,7 +4973,9 @@ def daemon_http_get(self) -> None:
                         self.server.sites_unavailable,
                         self.server.no_of_books,
                         self.server.auto_cw_cache,
-                        self.server.fitness):
+                        self.server.fitness,
+                        self.server.onion_domain,
+                        self.server.i2p_domain):
         self.server.getreq_busy = False
         return
 
