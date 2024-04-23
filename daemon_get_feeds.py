@@ -246,7 +246,9 @@ def show_following_feed(self, authorized: bool,
                         buy_sites: [],
                         no_of_books: int,
                         auto_cw_cache: {},
-                        fitness: {}) -> bool:
+                        fitness: {},
+                        onion_domain: str,
+                        i2p_domain: str) -> bool:
     """Shows the following feed for a particular account/actor
     """
     following = \
@@ -376,8 +378,8 @@ def show_following_feed(self, authorized: bool,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
+                                          onion_domain,
+                                          i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -436,7 +438,9 @@ def show_moved_feed(self, authorized: bool,
                     buy_sites: [],
                     no_of_books: int,
                     auto_cw_cache: {},
-                    fitness: {}) -> bool:
+                    fitness: {},
+                    onion_domain: str,
+                    i2p_domain: str) -> bool:
     """Shows the moved feed for a particular account/actor
     """
     following = \
@@ -552,8 +556,8 @@ def show_moved_feed(self, authorized: bool,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
+                                          onion_domain,
+                                          i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
