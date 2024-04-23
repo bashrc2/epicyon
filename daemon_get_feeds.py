@@ -758,7 +758,45 @@ def show_followers_feed(self, authorized: bool,
                         domain: str, port: int, getreq_start_time,
                         proxy_type: str, cookie: str,
                         debug: str, curr_session,
-                        follows_per_page: int) -> bool:
+                        follows_per_page: int,
+                        access_keys: {},
+                        key_shortcuts: {},
+                        city: str, account_timezone: {},
+                        content_license_url: str,
+                        shared_items_federated_domains: [],
+                        bold_reading_nicknames: {},
+                        hide_follows: {},
+                        max_shares_on_profile: int,
+                        sites_unavailable: [],
+                        signing_priv_key_pem: str,
+                        rss_icon_at_top: bool,
+                        icons_as_buttons: bool,
+                        default_timeline: str,
+                        recent_posts_cache: {},
+                        max_recent_posts: int,
+                        translate: {},
+                        project_version: str,
+                        cached_webfingers: {},
+                        person_cache: {},
+                        yt_replace_domain: str,
+                        twitter_replacement_domain: str,
+                        show_published_date_only: bool,
+                        newswire: {},
+                        theme_name: str,
+                        dormant_months: int,
+                        peertube_instances: [],
+                        allow_local_network_access: bool,
+                        text_mode_banner: str,
+                        system_language: str,
+                        max_like_count: int,
+                        cw_lists: {},
+                        lists_enabled: {},
+                        buy_sites: [],
+                        no_of_books: int,
+                        auto_cw_cache: {},
+                        fitness: {},
+                        onion_domain: str,
+                        i2p_domain: str) -> bool:
     """Shows the followers feed for a particular account/actor
     """
     followers = \
@@ -802,86 +840,70 @@ def show_followers_feed(self, authorized: bool,
                     http_404(self, 84)
                     return True
 
-                access_keys = self.server.access_keys
                 city = None
                 timezone = None
                 if '/users/' in path:
                     nickname = path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
-                    if self.server.key_shortcuts.get(nickname):
-                        access_keys = \
-                            self.server.key_shortcuts[nickname]
+                    if key_shortcuts.get(nickname):
+                        access_keys = key_shortcuts[nickname]
 
-                    city = get_spoofed_city(self.server.city,
-                                            base_dir, nickname, domain)
-                    if self.server.account_timezone.get(nickname):
-                        timezone = \
-                            self.server.account_timezone.get(nickname)
-                content_license_url = \
-                    self.server.content_license_url
-                shared_items_federated_domains = \
-                    self.server.shared_items_federated_domains
+                    city = get_spoofed_city(city, base_dir, nickname, domain)
+                    if account_timezone.get(nickname):
+                        timezone = account_timezone.get(nickname)
                 bold_reading = False
-                if self.server.bold_reading.get(nickname):
+                if bold_reading_nicknames.get(nickname):
                     bold_reading = True
-                if not authorized and \
-                   self.server.hide_follows.get(nickname):
-                    followers = {}
-                max_shares_on_profile = \
-                    self.server.max_shares_on_profile
-                sites_unavailable = \
-                    self.server.sites_unavailable
                 msg = \
-                    html_profile(self.server.signing_priv_key_pem,
-                                 self.server.rss_icon_at_top,
-                                 self.server.icons_as_buttons,
-                                 self.server.default_timeline,
-                                 self.server.recent_posts_cache,
-                                 self.server.max_recent_posts,
-                                 self.server.translate,
-                                 self.server.project_version,
+                    html_profile(signing_priv_key_pem,
+                                 rss_icon_at_top,
+                                 icons_as_buttons,
+                                 default_timeline,
+                                 recent_posts_cache,
+                                 max_recent_posts,
+                                 translate,
+                                 project_version,
                                  base_dir,
                                  http_prefix,
                                  authorized,
                                  get_person, 'followers',
                                  curr_session,
-                                 self.server.cached_webfingers,
-                                 self.server.person_cache,
-                                 self.server.yt_replace_domain,
-                                 self.server.twitter_replacement_domain,
-                                 self.server.show_published_date_only,
-                                 self.server.newswire,
-                                 self.server.theme_name,
-                                 self.server.dormant_months,
-                                 self.server.peertube_instances,
-                                 self.server.allow_local_network_access,
-                                 self.server.text_mode_banner,
+                                 cached_webfingers,
+                                 person_cache,
+                                 yt_replace_domain,
+                                 twitter_replacement_domain,
+                                 show_published_date_only,
+                                 newswire,
+                                 theme_name,
+                                 dormant_months,
+                                 peertube_instances,
+                                 allow_local_network_access,
+                                 text_mode_banner,
                                  debug,
                                  access_keys, city,
-                                 self.server.system_language,
-                                 self.server.max_like_count,
+                                 system_language,
+                                 max_like_count,
                                  shared_items_federated_domains,
                                  followers,
                                  page_number,
                                  follows_per_page,
-                                 self.server.cw_lists,
-                                 self.server.lists_enabled,
+                                 cw_lists,
+                                 lists_enabled,
                                  content_license_url,
                                  timezone, bold_reading,
-                                 self.server.buy_sites,
+                                 buy_sites,
                                  None,
                                  max_shares_on_profile,
                                  sites_unavailable,
-                                 self.server.no_of_books,
-                                 self.server.auto_cw_cache).encode('utf-8')
+                                 no_of_books,
+                                 auto_cw_cache).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
                             cookie, calling_domain, False)
                 write2(self, msg)
                 fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_followers_feed',
+                                    fitness, '_GET', '_show_followers_feed',
                                     debug)
                 return True
         else:
@@ -892,7 +914,7 @@ def show_followers_feed(self, authorized: bool,
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
                     if nickname and not authorized and \
-                       self.server.hide_follows.get(nickname):
+                       hide_follows.get(nickname):
                         followers = {}
 
                 msg_str = json.dumps(followers,
@@ -901,8 +923,8 @@ def show_followers_feed(self, authorized: bool,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          self.server.onion_domain,
-                                          self.server.i2p_domain)
+                                          onion_domain,
+                                          i2p_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -912,9 +934,8 @@ def show_followers_feed(self, authorized: bool,
                             None, calling_domain, False)
                 write2(self, msg)
                 fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_followers_feed json',
-                                    debug)
+                                    fitness, '_GET',
+                                    '_show_followers_feed json', debug)
             else:
                 http_404(self, 85)
         return True
