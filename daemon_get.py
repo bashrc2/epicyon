@@ -3261,7 +3261,9 @@ def daemon_http_get(self) -> None:
                         self.server.iconsCache,
                         self.server.account_timezone,
                         self.server.bold_reading,
-                        self.server.min_images_for_accounts)
+                        self.server.min_images_for_accounts,
+                        self.server.session_onion,
+                        self.server.session_i2p)
         self.server.getreq_busy = False
         return
 
@@ -3288,7 +3290,9 @@ def daemon_http_get(self) -> None:
                              curr_session,
                              self.server.iconsCache,
                              self.server.project_version,
-                             self.server.fitness)
+                             self.server.fitness,
+                             self.server.session_onion,
+                             self.server.session_i2p)
         self.server.getreq_busy = False
         return
 
@@ -3358,7 +3362,10 @@ def daemon_http_get(self) -> None:
                               self.server.system_language,
                               self.server.fitness,
                               self.server.signing_priv_key_pem,
-                              self.server.followers_sync_cache)
+                              self.server.followers_sync_cache,
+                              self.server.session_onion,
+                              self.server.session_i2p,
+                              self.server.session)
         self.server.getreq_busy = False
         return
 
@@ -3390,7 +3397,10 @@ def daemon_http_get(self) -> None:
                            self.server.followers_sync_cache,
                            self.server.sites_unavailable,
                            self.server.system_language,
-                           self.server.fitness)
+                           self.server.fitness,
+                           self.server.session,
+                           self.server.session_onion,
+                           self.server.session_i2p)
         self.server.getreq_busy = False
         return
 
@@ -3438,7 +3448,9 @@ def daemon_http_get(self) -> None:
                     self.server.account_timezone,
                     self.server.iconsCache,
                     self.server.bold_reading,
-                    self.server.min_images_for_accounts)
+                    self.server.min_images_for_accounts,
+                    self.server.session_onion,
+                    self.server.session_i2p)
         self.server.getreq_busy = False
         return
 
@@ -3485,7 +3497,9 @@ def daemon_http_get(self) -> None:
                          self.server.account_timezone,
                          self.server.bold_reading,
                          self.server.min_images_for_accounts,
-                         self.server.iconsCache)
+                         self.server.iconsCache,
+                         self.server.session_onion,
+                         self.server.session_i2p)
         self.server.getreq_busy = False
         return
 
@@ -3534,7 +3548,9 @@ def daemon_http_get(self) -> None:
                         self.server.fitness,
                         self.server.account_timezone,
                         self.server.bold_reading,
-                        self.server.min_images_for_accounts)
+                        self.server.min_images_for_accounts,
+                        self.server.session_onion,
+                        self.server.session_i2p)
         self.server.getreq_busy = False
         return
 
@@ -3582,7 +3598,9 @@ def daemon_http_get(self) -> None:
                              self.server.fitness,
                              self.server.account_timezone,
                              self.server.bold_reading,
-                             self.server.min_images_for_accounts)
+                             self.server.min_images_for_accounts,
+                             self.server.session_onion,
+                             self.server.session_i2p)
         self.server.getreq_busy = False
         return
 
@@ -3630,7 +3648,9 @@ def daemon_http_get(self) -> None:
                         self.server.iconsCache,
                         self.server.account_timezone,
                         self.server.bold_reading,
-                        self.server.min_images_for_accounts)
+                        self.server.min_images_for_accounts,
+                        self.server.session_onion,
+                        self.server.session_i2p)
         self.server.getreq_busy = False
         return
 
@@ -3719,7 +3739,9 @@ def daemon_http_get(self) -> None:
                              self.server.iconsCache,
                              self.server.account_timezone,
                              self.server.bold_reading,
-                             self.server.min_images_for_accounts)
+                             self.server.min_images_for_accounts,
+                             self.server.session_onion,
+                             self.server.session_i2p)
         self.server.getreq_busy = False
         return
 
@@ -3761,7 +3783,9 @@ def daemon_http_get(self) -> None:
                       self.server.buy_sites,
                       self.server.auto_cw_cache,
                       self.server.fitness,
-                      self.server.allow_deletion)
+                      self.server.allow_deletion,
+                      self.server.session_onion,
+                      self.server.session_i2p)
         self.server.getreq_busy = False
         return
 

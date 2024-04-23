@@ -84,7 +84,8 @@ def announce_button(self, calling_domain: str, path: str,
                     icons_cache: {},
                     account_timezone: {},
                     bold_reading_nicknames: {},
-                    min_images_for_accounts: int) -> None:
+                    min_images_for_accounts: int,
+                    session_onion, session_i2p) -> None:
     """The announce/repeat button was pressed on a post
     """
     page_number = 1
@@ -141,11 +142,11 @@ def announce_button(self, calling_domain: str, path: str,
 
     if onion_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_onion
+            curr_session = session_onion
             proxy_type = 'tor'
     if i2p_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_i2p
+            curr_session = session_i2p
             proxy_type = 'i2p'
 
     curr_session = \
@@ -298,7 +299,8 @@ def announce_button_undo(self, calling_domain: str, path: str,
                          recent_posts_cache: {}, curr_session,
                          icons_cache: {},
                          project_version: str,
-                         fitness: {}) -> None:
+                         fitness: {},
+                         session_onion, session_i2p) -> None:
     """Undo announce/repeat button was pressed
     """
     page_number = 1
@@ -359,11 +361,11 @@ def announce_button_undo(self, calling_domain: str, path: str,
 
     if onion_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_onion
+            curr_session = session_onion
             proxy_type = 'tor'
     if i2p_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_i2p
+            curr_session = session_i2p
             proxy_type = 'i2p'
 
     curr_session = \
@@ -451,7 +453,9 @@ def follow_approve_button(self, calling_domain: str, path: str,
                           system_language: str,
                           fitness: {},
                           signing_priv_key_pem: str,
-                          followers_sync_cache: {}) -> None:
+                          followers_sync_cache: {},
+                          session_onion, session_i2p,
+                          session) -> None:
     """Follow approve button was pressed
     """
     origin_path_str = path.split('/followapprove=')[0]
@@ -470,12 +474,12 @@ def follow_approve_button(self, calling_domain: str, path: str,
     if '@' in following_handle:
         if onion_domain:
             if following_handle.endswith('.onion'):
-                curr_session = self.server.session_onion
+                curr_session = session_onion
                 proxy_type = 'tor'
                 port = 80
         if i2p_domain:
             if following_handle.endswith('.i2p'):
-                curr_session = self.server.session_i2p
+                curr_session = session_i2p
                 proxy_type = 'i2p'
                 port = 80
 
@@ -488,9 +492,9 @@ def follow_approve_button(self, calling_domain: str, path: str,
                   'when approving follow request')
             http_404(self, 50)
             return
-        manual_approve_follow_request_thread(self.server.session,
-                                             self.server.session_onion,
-                                             self.server.session_i2p,
+        manual_approve_follow_request_thread(session,
+                                             session_onion,
+                                             session_i2p,
                                              onion_domain,
                                              i2p_domain,
                                              base_dir, http_prefix,
@@ -539,7 +543,8 @@ def follow_deny_button(self, calling_domain: str, path: str,
                        followers_sync_cache: {},
                        sites_unavailable: [],
                        system_language: str,
-                       fitness: {}) -> None:
+                       fitness: {},
+                       session, session_onion, session_i2p) -> None:
     """Follow deny button was pressed
     """
     origin_path_str = path.split('/followdeny=')[0]
@@ -556,9 +561,9 @@ def follow_deny_button(self, calling_domain: str, path: str,
             handle_nickname + '@' + \
             get_full_domain(handle_domain, handle_port)
     if '@' in following_handle:
-        manual_deny_follow_request_thread(self.server.session,
-                                          self.server.session_onion,
-                                          self.server.session_i2p,
+        manual_deny_follow_request_thread(session,
+                                          session_onion,
+                                          session_i2p,
                                           onion_domain,
                                           i2p_domain,
                                           base_dir, http_prefix,
@@ -625,7 +630,9 @@ def like_button(self, calling_domain: str, path: str,
                 account_timezone: {},
                 icons_cache: {},
                 bold_reading_nicknames: {},
-                min_images_for_accounts: []) -> None:
+                min_images_for_accounts: [],
+                session_onion,
+                session_i2p) -> None:
     """Press the like button
     """
     page_number = 1
@@ -683,11 +690,11 @@ def like_button(self, calling_domain: str, path: str,
 
     if onion_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_onion
+            curr_session = session_onion
             proxy_type = 'tor'
     if i2p_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_i2p
+            curr_session = session_i2p
             proxy_type = 'i2p'
 
     curr_session = \
@@ -878,7 +885,9 @@ def like_button_undo(self, calling_domain: str, path: str,
                      account_timezone: {},
                      bold_reading_nicknames: {},
                      min_images_for_accounts: [],
-                     icons_cache: {}) -> None:
+                     icons_cache: {},
+                     session_onion,
+                     session_i2p) -> None:
     """A button is pressed to undo
     """
     page_number = 1
@@ -935,11 +944,11 @@ def like_button_undo(self, calling_domain: str, path: str,
 
     if onion_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_onion
+            curr_session = session_onion
             proxy_type = 'tor'
     if i2p_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_i2p
+            curr_session = session_i2p
             proxy_type = 'i2p'
 
     curr_session = \
@@ -1116,7 +1125,8 @@ def reaction_button(self, calling_domain: str, path: str,
                     fitness: {},
                     account_timezone: {},
                     bold_reading_nicknames: {},
-                    min_images_for_accounts: []) -> None:
+                    min_images_for_accounts: [],
+                    session_onion, session_i2p) -> None:
     """Press an emoji reaction button
     Note that this is not the emoji reaction selection icon at the
     bottom of the post
@@ -1196,11 +1206,11 @@ def reaction_button(self, calling_domain: str, path: str,
 
     if onion_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_onion
+            curr_session = session_onion
             proxy_type = 'tor'
     if i2p_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_i2p
+            curr_session = session_i2p
             proxy_type = 'i2p'
 
     curr_session = \
@@ -1396,7 +1406,9 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                          fitness: {},
                          account_timezone: {},
                          bold_reading_nicknames: {},
-                         min_images_for_accounts: []) -> None:
+                         min_images_for_accounts: [],
+                         session_onion,
+                         session_i2p) -> None:
     """A button is pressed to undo emoji reaction
     """
     page_number = 1
@@ -1474,11 +1486,11 @@ def reaction_button_undo(self, calling_domain: str, path: str,
 
     if onion_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_onion
+            curr_session = session_onion
             proxy_type = 'tor'
     if i2p_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_i2p
+            curr_session = session_i2p
             proxy_type = 'i2p'
 
     curr_session = \
@@ -1659,7 +1671,9 @@ def bookmark_button(self, calling_domain: str, path: str,
                     icons_cache: {},
                     account_timezone: {},
                     bold_reading_nicknames: {},
-                    min_images_for_accounts: []) -> None:
+                    min_images_for_accounts: [],
+                    session_onion,
+                    session_i2p) -> None:
     """Bookmark button was pressed
     """
     page_number = 1
@@ -1717,11 +1731,11 @@ def bookmark_button(self, calling_domain: str, path: str,
 
     if onion_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_onion
+            curr_session = session_onion
             proxy_type = 'tor'
     if i2p_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_i2p
+            curr_session = session_i2p
             proxy_type = 'i2p'
 
     curr_session = \
@@ -1866,7 +1880,9 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                          icons_cache: {},
                          account_timezone: {},
                          bold_reading_nicknames: {},
-                         min_images_for_accounts: []) -> None:
+                         min_images_for_accounts: [],
+                         session_onion,
+                         session_i2p) -> None:
     """Button pressed to undo a bookmark
     """
     page_number = 1
@@ -1923,11 +1939,11 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
 
     if onion_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_onion
+            curr_session = session_onion
             proxy_type = 'tor'
     if i2p_domain:
         if '.onion/' in actor:
-            curr_session = self.server.session_i2p
+            curr_session = session_i2p
             proxy_type = 'i2p'
 
     curr_session = \
@@ -2068,7 +2084,9 @@ def delete_button(self, calling_domain: str, path: str,
                   buy_sites: [],
                   auto_cw_cache: {},
                   fitness: {},
-                  allow_deletion: bool) -> None:
+                  allow_deletion: bool,
+                  session_onion,
+                  session_i2p) -> None:
     """Delete button is pressed on a post
     """
     if not cookie:
@@ -2123,11 +2141,11 @@ def delete_button(self, calling_domain: str, path: str,
 
         if onion_domain:
             if '.onion/' in actor:
-                curr_session = self.server.session_onion
+                curr_session = session_onion
                 proxy_type = 'tor'
         if i2p_domain:
             if '.onion/' in actor:
-                curr_session = self.server.session_i2p
+                curr_session = session_i2p
                 proxy_type = 'i2p'
 
         curr_session = \
