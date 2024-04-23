@@ -32,7 +32,42 @@ def show_shares_feed(self, authorized: bool,
                      domain: str, port: int, getreq_start_time,
                      proxy_type: str, cookie: str,
                      debug: str, shares_file_type: str,
-                     curr_session, shares_per_page: int) -> bool:
+                     curr_session, shares_per_page: int,
+                     access_keys: {}, key_shortcuts: {},
+                     city: str,
+                     shared_items_federated_domains: [],
+                     account_timezone: {},
+                     bold_reading_nicknames: {},
+                     signing_priv_key_pem: str,
+                     rss_icon_at_top: bool,
+                     icons_as_buttons: bool,
+                     default_timeline: str,
+                     recent_posts_cache: {},
+                     max_recent_posts: int,
+                     translate: {},
+                     project_version: str,
+                     cached_webfingers: {},
+                     person_cache: {},
+                     yt_replace_domain: str,
+                     twitter_replacement_domain: str,
+                     show_published_date_only: bool,
+                     newswire: {},
+                     theme_name: str,
+                     dormant_months: int,
+                     peertube_instances: [],
+                     allow_local_network_access: bool,
+                     text_mode_banner: str,
+                     system_language: str,
+                     max_like_count: int,
+                     cw_lists: {},
+                     lists_enabled: {},
+                     content_license_url: str,
+                     buy_sites: [],
+                     max_shares_on_profile: int,
+                     sites_unavailable: [],
+                     no_of_books: int,
+                     auto_cw_cache: {},
+                     fitness: {}) -> bool:
     """Shows the shares feed for a particular account/actor
     """
     shares = \
@@ -74,75 +109,69 @@ def show_shares_feed(self, authorized: bool,
                     self.server.getreq_busy = False
                     return True
 
-                access_keys = self.server.access_keys
                 if '/users/' in path:
                     nickname = path.split('/users/')[1]
                     if '/' in nickname:
                         nickname = nickname.split('/')[0]
-                    if self.server.key_shortcuts.get(nickname):
-                        access_keys = \
-                            self.server.key_shortcuts[nickname]
+                    if key_shortcuts.get(nickname):
+                        access_keys = key_shortcuts[nickname]
 
-                city = get_spoofed_city(self.server.city,
-                                        base_dir, nickname, domain)
-                shared_items_federated_domains = \
-                    self.server.shared_items_federated_domains
+                city = get_spoofed_city(city, base_dir, nickname, domain)
+
                 timezone = None
-                if self.server.account_timezone.get(nickname):
-                    timezone = \
-                        self.server.account_timezone.get(nickname)
+                if account_timezone.get(nickname):
+                    timezone = account_timezone.get(nickname)
                 bold_reading = False
-                if self.server.bold_reading.get(nickname):
+                if bold_reading_nicknames.get(nickname):
                     bold_reading = True
                 msg = \
-                    html_profile(self.server.signing_priv_key_pem,
-                                 self.server.rss_icon_at_top,
-                                 self.server.icons_as_buttons,
-                                 self.server.default_timeline,
-                                 self.server.recent_posts_cache,
-                                 self.server.max_recent_posts,
-                                 self.server.translate,
-                                 self.server.project_version,
+                    html_profile(signing_priv_key_pem,
+                                 rss_icon_at_top,
+                                 icons_as_buttons,
+                                 default_timeline,
+                                 recent_posts_cache,
+                                 max_recent_posts,
+                                 translate,
+                                 project_version,
                                  base_dir, http_prefix,
                                  authorized,
                                  get_person, shares_file_type,
                                  curr_session,
-                                 self.server.cached_webfingers,
-                                 self.server.person_cache,
-                                 self.server.yt_replace_domain,
-                                 self.server.twitter_replacement_domain,
-                                 self.server.show_published_date_only,
-                                 self.server.newswire,
-                                 self.server.theme_name,
-                                 self.server.dormant_months,
-                                 self.server.peertube_instances,
-                                 self.server.allow_local_network_access,
-                                 self.server.text_mode_banner,
+                                 cached_webfingers,
+                                 person_cache,
+                                 yt_replace_domain,
+                                 twitter_replacement_domain,
+                                 show_published_date_only,
+                                 newswire,
+                                 theme_name,
+                                 dormant_months,
+                                 peertube_instances,
+                                 allow_local_network_access,
+                                 text_mode_banner,
                                  debug,
                                  access_keys, city,
-                                 self.server.system_language,
-                                 self.server.max_like_count,
+                                 system_language,
+                                 max_like_count,
                                  shared_items_federated_domains,
                                  shares,
                                  page_number, shares_per_page,
-                                 self.server.cw_lists,
-                                 self.server.lists_enabled,
-                                 self.server.content_license_url,
+                                 cw_lists,
+                                 lists_enabled,
+                                 content_license_url,
                                  timezone, bold_reading,
-                                 self.server.buy_sites,
+                                 buy_sites,
                                  None,
-                                 self.server.max_shares_on_profile,
-                                 self.server.sites_unavailable,
-                                 self.server.no_of_books,
-                                 self.server.auto_cw_cache)
+                                 max_shares_on_profile,
+                                 sites_unavailable,
+                                 no_of_books,
+                                 auto_cw_cache)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
                             cookie, calling_domain, False)
                 write2(self, msg)
                 fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_shares_feed',
+                                    fitness, '_GET', '_show_shares_feed',
                                     debug)
                 self.server.getreq_busy = False
                 return True
@@ -168,8 +197,7 @@ def show_shares_feed(self, authorized: bool,
                             None, calling_domain, False)
                 write2(self, msg)
                 fitness_performance(getreq_start_time,
-                                    self.server.fitness,
-                                    '_GET', '_show_shares_feed json',
+                                    fitness, '_GET', '_show_shares_feed json',
                                     debug)
             else:
                 http_404(self, 78)
