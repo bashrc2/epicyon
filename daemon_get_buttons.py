@@ -2402,7 +2402,8 @@ def mute_button_undo(self, calling_domain: str, path: str,
                      fitness: {},
                      account_timezone: {},
                      bold_reading_nicknames: {},
-                     min_images_for_accounts: []) -> None:
+                     min_images_for_accounts: [],
+                     default_timeline: str) -> None:
     """Undo mute button is pressed
     """
     mute_url = path.split('?unmute=')[1]
@@ -2421,7 +2422,7 @@ def mute_button_undo(self, calling_domain: str, path: str,
         if '?' in timeline_bookmark:
             timeline_bookmark = timeline_bookmark.split('?')[0]
         timeline_bookmark = '#' + timeline_bookmark
-    timeline_str = self.server.default_timeline
+    timeline_str = default_timeline
     if '?tl=' in path:
         timeline_str = path.split('?tl=')[1]
         if '?' in timeline_str:
