@@ -38,7 +38,9 @@ def masto_api(self, path: str, calling_domain: str,
               show_node_info_accounts: bool,
               referer_domain: str, debug: bool,
               known_crawlers: {},
-              sites_unavailable: []) -> bool:
+              sites_unavailable: [],
+              unit_test: bool,
+              allow_local_network_access: bool) -> bool:
     if _masto_api_v2(self, path, calling_domain, ua_str, authorized,
                      http_prefix, base_dir, nickname, domain,
                      domain_full, onion_domain, i2p_domain,
@@ -46,7 +48,8 @@ def masto_api(self, path: str, calling_domain: str,
                      project_version,
                      show_node_info_accounts,
                      referer_domain, debug, 5,
-                     known_crawlers, sites_unavailable):
+                     known_crawlers, sites_unavailable, unit_test,
+                     allow_local_network_access):
         return True
     return _masto_api_v1(self, path, calling_domain, ua_str, authorized,
                          http_prefix, base_dir, nickname, domain,
@@ -55,7 +58,9 @@ def masto_api(self, path: str, calling_domain: str,
                          project_version, custom_emoji,
                          show_node_info_accounts,
                          referer_domain, debug, 5,
-                         known_crawlers, sites_unavailable)
+                         known_crawlers, sites_unavailable,
+                         unit_test,
+                         allow_local_network_access)
 
 
 def _masto_api_v1(self, path: str, calling_domain: str,
@@ -75,7 +80,9 @@ def _masto_api_v1(self, path: str, calling_domain: str,
                   debug: bool,
                   calling_site_timeout: int,
                   known_crawlers: {},
-                  sites_unavailable: []) -> bool:
+                  sites_unavailable: [],
+                  unit_test: bool,
+                  allow_local_network_access: bool) -> bool:
     """This is a vestigil mastodon API for the purpose
     of returning an empty result to sites like
     https://mastopeek.app-dist.eu
@@ -84,7 +91,7 @@ def _masto_api_v1(self, path: str, calling_domain: str,
         return False
 
     if not referer_domain:
-        if not (debug and self.server.unit_test):
+        if not (debug and unit_test):
             print('mastodon api request has no referer domain ' +
                   str(ua_str))
             http_400(self)
@@ -100,7 +107,7 @@ def _masto_api_v1(self, path: str, calling_domain: str,
         return True
     self.server.masto_api_is_active = True
     # is this a real website making the call ?
-    if not debug and not self.server.unit_test and referer_domain:
+    if not debug and not unit_test and referer_domain:
         # Does calling_domain look like a domain?
         if ' ' in referer_domain or \
            ';' in referer_domain or \
@@ -111,7 +118,7 @@ def _masto_api_v1(self, path: str, calling_domain: str,
             http_400(self)
             self.server.masto_api_is_active = False
             return True
-        if not self.server.allow_local_network_access:
+        if not allow_local_network_access:
             if local_network_host(referer_domain):
                 print('mastodon api referer domain is from the ' +
                       'local network ' + referer_domain)
@@ -202,7 +209,9 @@ def _masto_api_v2(self, path: str, calling_domain: str,
                   debug: bool,
                   calling_site_timeout: int,
                   known_crawlers: {},
-                  sites_unavailable: []) -> bool:
+                  sites_unavailable: [],
+                  unit_test: bool,
+                  allow_local_network_access: bool) -> bool:
     """This is a vestigil mastodon v2 API for the purpose
     of returning an empty result to sites like
     https://mastopeek.app-dist.eu
@@ -211,7 +220,7 @@ def _masto_api_v2(self, path: str, calling_domain: str,
         return False
 
     if not referer_domain:
-        if not (debug and self.server.unit_test):
+        if not (debug and unit_test):
             print('mastodon api v2 request has no referer domain ' +
                   str(ua_str))
             http_400(self)
@@ -227,7 +236,7 @@ def _masto_api_v2(self, path: str, calling_domain: str,
         return True
     self.server.masto_api_is_active = True
     # is this a real website making the call ?
-    if not debug and not self.server.unit_test and referer_domain:
+    if not debug and not unit_test and referer_domain:
         # Does calling_domain look like a domain?
         if ' ' in referer_domain or \
            ';' in referer_domain or \
@@ -238,7 +247,7 @@ def _masto_api_v2(self, path: str, calling_domain: str,
             http_400(self)
             self.server.masto_api_is_active = False
             return True
-        if not self.server.allow_local_network_access:
+        if not allow_local_network_access:
             if local_network_host(referer_domain):
                 print('mastodon api v2 referer domain is from the ' +
                       'local network ' + referer_domain)

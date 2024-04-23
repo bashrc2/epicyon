@@ -262,7 +262,7 @@ def get_hashtag_categories_feed2(self, calling_domain: str, path: str,
                                  base_dir: str, proxy_type: str,
                                  getreq_start_time,
                                  debug: bool,
-                                 curr_session) -> None:
+                                 curr_session, fitness: {}) -> None:
     """Returns the hashtag categories feed
     """
     curr_session = \
@@ -285,7 +285,7 @@ def get_hashtag_categories_feed2(self, calling_domain: str, path: str,
         if debug:
             print('Sent rss2 categories feed: ' +
                   path + ' ' + calling_domain)
-        fitness_performance(getreq_start_time, self.server.fitness,
+        fitness_performance(getreq_start_time, fitness,
                             '_GET', '_get_hashtag_categories_feed', debug)
         return
     if debug:

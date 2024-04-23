@@ -1250,7 +1250,9 @@ def daemon_http_get(self) -> None:
                  referer_domain,
                  self.server.debug,
                  self.server.known_crawlers,
-                 self.server.sites_unavailable):
+                 self.server.sites_unavailable,
+                 self.server.unit_test,
+                 self.server.allow_local_network_access):
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -1379,7 +1381,8 @@ def daemon_http_get(self) -> None:
                                      proxy_type,
                                      getreq_start_time,
                                      self.server.debug,
-                                     curr_session)
+                                     curr_session,
+                                     self.server.fitness)
         return
 
     if self.path == '/newswire.xml':
