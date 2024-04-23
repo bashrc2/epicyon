@@ -541,13 +541,17 @@ def daemon_http_get(self) -> None:
         if 'newswire_favicon.ico' in self.path:
             get_favicon(self, calling_domain, self.server.base_dir,
                         self.server.debug,
-                        'newswire_favicon.ico')
+                        'newswire_favicon.ico',
+                        self.server.iconsCache,
+                        self.server.domain_full)
             return
 
         # favicon image
         if 'favicon.ico' in self.path:
             get_favicon(self, calling_domain, self.server.base_dir,
-                        self.server.debug, 'favicon.ico')
+                        self.server.debug, 'favicon.ico',
+                        self.server.iconsCache,
+                        self.server.domain_full)
             return
 
     # check authorization
@@ -1308,11 +1312,16 @@ def daemon_http_get(self) -> None:
         if self.server.domain_full in self.path:
             # favicon for this instance
             get_favicon(self, calling_domain, self.server.base_dir,
-                        self.server.debug, 'favicon.ico')
+                        self.server.debug, 'favicon.ico',
+                        self.server.iconsCache,
+                        self.server.domain_full)
             return
         show_cached_favicon(self, referer_domain, self.path,
                             self.server.base_dir,
-                            getreq_start_time)
+                            getreq_start_time,
+                            self.server.favicons_cache,
+                            self.server.fitness,
+                            self.server.debug)
         return
 
     # get css

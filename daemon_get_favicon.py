@@ -23,7 +23,8 @@ from utils import binary_is_image
 
 def get_favicon(self, calling_domain: str,
                 base_dir: str, debug: bool,
-                fav_filename: str) -> None:
+                fav_filename: str,
+                icons_cache: {}, domain_full: str) -> None:
     """Return the site favicon or default newswire favicon
     """
     fav_type = 'image/x-icon'
@@ -68,12 +69,12 @@ def get_favicon(self, calling_domain: str,
             print('favicon icon has not changed: ' + calling_domain)
         http_304(self)
         return
-    if self.server.iconsCache.get(fav_filename):
-        fav_binary = self.server.iconsCache[fav_filename]
+    if icons_cache.get(fav_filename):
+        fav_binary = icons_cache[fav_filename]
         set_headers_etag(self, favicon_filename,
                          fav_type,
                          fav_binary, None,
-                         self.server.domain_full,
+                         domain_full,
                          False, None)
         write2(self, fav_binary)
         if debug:
@@ -90,10 +91,10 @@ def get_favicon(self, calling_domain: str,
             set_headers_etag(self, favicon_filename,
                              fav_type,
                              fav_binary, None,
-                             self.server.domain_full,
+                             domain_full,
                              False, None)
             write2(self, fav_binary)
-            self.server.iconsCache[fav_filename] = fav_binary
+            icons_cache[fav_filename] = fav_binary
             if debug:
                 print('Sent favicon from file: ' + calling_domain)
             return
@@ -103,14 +104,16 @@ def get_favicon(self, calling_domain: str,
 
 
 def show_cached_favicon(self, referer_domain: str, path: str,
-                        base_dir: str, getreq_start_time) -> None:
+                        base_dir: str, getreq_start_time,
+                        favicons_cache: {},
+                        fitness: {}, debug: bool) -> None:
     """Shows a favicon image obtained from the cache
     """
     fav_file = path.replace('/favicons/', '')
     fav_filename = base_dir + urllib.parse.unquote_plus(path)
     print('showCachedFavicon: ' + fav_filename)
-    if self.server.favicons_cache.get(fav_file):
-        media_binary = self.server.favicons_cache[fav_file]
+    if favicons_cache.get(fav_file):
+        media_binary = favicons_cache[fav_file]
         mime_type = media_file_mime_type(fav_filename)
         set_headers_etag(self, fav_filename,
                          mime_type,
@@ -118,9 +121,8 @@ def show_cached_favicon(self, referer_domain: str, path: str,
                          referer_domain,
                          False, None)
         write2(self, media_binary)
-        fitness_performance(getreq_start_time, self.server.fitness,
-                            '_GET', '_show_cached_favicon2',
-                            self.server.debug)
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', '_show_cached_favicon2', debug)
         return
     if not os.path.isfile(fav_filename):
         http_404(self, 44)
@@ -144,10 +146,9 @@ def show_cached_favicon(self, referer_domain: str, path: str,
                              referer_domain,
                              False, None)
             write2(self, media_binary)
-            fitness_performance(getreq_start_time, self.server.fitness,
-                                '_GET', '_show_cached_favicon',
-                                self.server.debug)
-            self.server.favicons_cache[fav_file] = media_binary
+            fitness_performance(getreq_start_time, fitness,
+                                '_GET', '_show_cached_favicon', debug)
+            favicons_cache[fav_file] = media_binary
             return
         else:
             print('WARN: favicon is not an image ' + fav_filename)
