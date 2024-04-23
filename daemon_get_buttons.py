@@ -874,7 +874,11 @@ def like_button_undo(self, calling_domain: str, path: str,
                      dogwhistles: {},
                      buy_sites: [],
                      auto_cw_cache: {},
-                     fitness: {}) -> None:
+                     fitness: {},
+                     account_timezone: {},
+                     bold_reading_nicknames: {},
+                     min_images_for_accounts: [],
+                     icons_cache: {}) -> None:
     """A button is pressed to undo
     """
     page_number = 1
@@ -985,7 +989,6 @@ def like_button_undo(self, calling_domain: str, path: str,
         liked_post_filename = locate_post(base_dir, self.post_to_nickname,
                                           domain, like_url)
     if liked_post_filename:
-        recent_posts_cache = self.server.recent_posts_cache
         liked_post_json = load_json(liked_post_filename, 0, 1)
         if orig_filename and orig_post_url:
             undo_likes_collection_entry(recent_posts_cache,
@@ -1010,19 +1013,17 @@ def like_button_undo(self, calling_domain: str, path: str,
                                          self.post_to_nickname, domain)
             show_repeats = not is_dm(liked_post_json)
             timezone = None
-            if self.server.account_timezone.get(self.post_to_nickname):
-                timezone = \
-                    self.server.account_timezone.get(self.post_to_nickname)
+            if account_timezone.get(self.post_to_nickname):
+                timezone = account_timezone.get(self.post_to_nickname)
             mitm = False
             if os.path.isfile(liked_post_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
             bold_reading = False
-            if self.server.bold_reading.get(self.post_to_nickname):
+            if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
             minimize_all_images = False
-            if self.post_to_nickname in \
-               self.server.min_images_for_accounts:
+            if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             individual_post_as_html(signing_priv_key_pem,
                                     False,
@@ -1062,8 +1063,8 @@ def like_button_undo(self, calling_domain: str, path: str,
         else:
             print('WARN: Unliked post not found: ' + liked_post_filename)
         # clear the icon from the cache so that it gets updated
-        if self.server.iconsCache.get('like_inactive.png'):
-            del self.server.iconsCache['like_inactive.png']
+        if icons_cache.get('like_inactive.png'):
+            del icons_cache['like_inactive.png']
     actor_absolute = \
         get_instance_url(calling_domain,
                          http_prefix,
@@ -1112,7 +1113,10 @@ def reaction_button(self, calling_domain: str, path: str,
                     dogwhistles: {},
                     buy_sites: [],
                     auto_cw_cache: {},
-                    fitness: {}) -> None:
+                    fitness: {},
+                    account_timezone: {},
+                    bold_reading_nicknames: {},
+                    min_images_for_accounts: []) -> None:
     """Press an emoji reaction button
     Note that this is not the emoji reaction selection icon at the
     bottom of the post
@@ -1248,7 +1252,6 @@ def reaction_button(self, calling_domain: str, path: str,
             locate_post(base_dir, self.post_to_nickname, domain,
                         reaction_url)
     if reaction_post_filename:
-        recent_posts_cache = self.server.recent_posts_cache
         reaction_post_json = load_json(reaction_post_filename, 0, 1)
         if orig_filename and orig_post_url:
             update_reaction_collection(recent_posts_cache,
@@ -1287,19 +1290,17 @@ def reaction_button(self, calling_domain: str, path: str,
                                          self.post_to_nickname, domain)
             show_repeats = not is_dm(reaction_post_json)
             timezone = None
-            if self.server.account_timezone.get(self.post_to_nickname):
-                timezone = \
-                    self.server.account_timezone.get(self.post_to_nickname)
+            if account_timezone.get(self.post_to_nickname):
+                timezone = account_timezone.get(self.post_to_nickname)
             mitm = False
             if os.path.isfile(reaction_post_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
             bold_reading = False
-            if self.server.bold_reading.get(self.post_to_nickname):
+            if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
             minimize_all_images = False
-            if self.post_to_nickname in \
-               self.server.min_images_for_accounts:
+            if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             individual_post_as_html(signing_priv_key_pem,
                                     False,
@@ -1392,7 +1393,10 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                          dogwhistles: {},
                          buy_sites: [],
                          auto_cw_cache: {},
-                         fitness: {}) -> None:
+                         fitness: {},
+                         account_timezone: {},
+                         bold_reading_nicknames: {},
+                         min_images_for_accounts: []) -> None:
     """A button is pressed to undo emoji reaction
     """
     page_number = 1
@@ -1526,7 +1530,6 @@ def reaction_button_undo(self, calling_domain: str, path: str,
             locate_post(base_dir, self.post_to_nickname, domain,
                         reaction_url)
     if reaction_post_filename:
-        recent_posts_cache = self.server.recent_posts_cache
         reaction_post_json = load_json(reaction_post_filename, 0, 1)
         if orig_filename and orig_post_url:
             undo_reaction_collection_entry(recent_posts_cache,
@@ -1553,19 +1556,17 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                                          self.post_to_nickname, domain)
             show_repeats = not is_dm(reaction_post_json)
             timezone = None
-            if self.server.account_timezone.get(self.post_to_nickname):
-                timezone = \
-                    self.server.account_timezone.get(self.post_to_nickname)
+            if account_timezone.get(self.post_to_nickname):
+                timezone = account_timezone.get(self.post_to_nickname)
             mitm = False
             if os.path.isfile(reaction_post_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
             bold_reading = False
-            if self.server.bold_reading.get(self.post_to_nickname):
+            if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
             minimize_all_images = False
-            if self.post_to_nickname in \
-               self.server.min_images_for_accounts:
+            if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             individual_post_as_html(signing_priv_key_pem,
                                     False,
@@ -1654,7 +1655,11 @@ def bookmark_button(self, calling_domain: str, path: str,
                     buy_sites: [],
                     auto_cw_cache: {},
                     fitness: {},
-                    federation_list: []) -> None:
+                    federation_list: [],
+                    icons_cache: {},
+                    account_timezone: {},
+                    bold_reading_nicknames: {},
+                    min_images_for_accounts: []) -> None:
     """Bookmark button was pressed
     """
     page_number = 1
@@ -1735,8 +1740,8 @@ def bookmark_button(self, calling_domain: str, path: str,
                   cc_list, http_prefix, bookmark_url, bookmark_actor,
                   debug)
     # clear the icon from the cache so that it gets updated
-    if self.server.iconsCache.get('bookmark.png'):
-        del self.server.iconsCache['bookmark.png']
+    if icons_cache.get('bookmark.png'):
+        del icons_cache['bookmark.png']
     bookmark_filename = \
         locate_post(base_dir, self.post_to_nickname, domain, bookmark_url)
     if bookmark_filename:
@@ -1756,19 +1761,17 @@ def bookmark_button(self, calling_domain: str, path: str,
                                          self.post_to_nickname, domain)
             show_repeats = not is_dm(bookmark_post_json)
             timezone = None
-            if self.server.account_timezone.get(self.post_to_nickname):
-                timezone = \
-                    self.server.account_timezone.get(self.post_to_nickname)
+            if account_timezone.get(self.post_to_nickname):
+                timezone = account_timezone.get(self.post_to_nickname)
             mitm = False
             if os.path.isfile(bookmark_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
             bold_reading = False
-            if self.server.bold_reading.get(self.post_to_nickname):
+            if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
             minimize_all_images = False
-            if self.post_to_nickname in \
-               self.server.min_images_for_accounts:
+            if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             individual_post_as_html(signing_priv_key_pem,
                                     False,
@@ -1858,7 +1861,12 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                          dogwhistles: {},
                          buy_sites: [],
                          auto_cw_cache: {},
-                         fitness: {}) -> None:
+                         fitness: {},
+                         federation_list: [],
+                         icons_cache: {},
+                         account_timezone: {},
+                         bold_reading_nicknames: {},
+                         min_images_for_accounts: []) -> None:
     """Button pressed to undo a bookmark
     """
     page_number = 1
@@ -1933,13 +1941,13 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
         local_actor_url(http_prefix, self.post_to_nickname, domain_full)
     cc_list = []
     undo_bookmark_post(recent_posts_cache,
-                       base_dir, self.server.federation_list,
+                       base_dir, federation_list,
                        self.post_to_nickname,
                        domain, port, cc_list, http_prefix,
                        bookmark_url, undo_actor, debug)
     # clear the icon from the cache so that it gets updated
-    if self.server.iconsCache.get('bookmark_inactive.png'):
-        del self.server.iconsCache['bookmark_inactive.png']
+    if icons_cache.get('bookmark_inactive.png'):
+        del icons_cache['bookmark_inactive.png']
     # post_to_outbox(self, undo_bookmark_json,
     #                project_version, None,
     #                curr_session, proxy_type)
@@ -1962,19 +1970,17 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                                          self.post_to_nickname, domain)
             show_repeats = not is_dm(bookmark_post_json)
             timezone = None
-            if self.server.account_timezone.get(self.post_to_nickname):
-                timezone = \
-                    self.server.account_timezone.get(self.post_to_nickname)
+            if account_timezone.get(self.post_to_nickname):
+                timezone = account_timezone.get(self.post_to_nickname)
             mitm = False
             if os.path.isfile(bookmark_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
             bold_reading = False
-            if self.server.bold_reading.get(self.post_to_nickname):
+            if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
             minimize_all_images = False
-            if self.post_to_nickname in \
-               self.server.min_images_for_accounts:
+            if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             individual_post_as_html(signing_priv_key_pem,
                                     False,
@@ -2061,7 +2067,8 @@ def delete_button(self, calling_domain: str, path: str,
                   min_images_for_accounts: [],
                   buy_sites: [],
                   auto_cw_cache: {},
-                  fitness: {}) -> None:
+                  fitness: {},
+                  allow_deletion: bool) -> None:
     """Delete button is pressed on a post
     """
     if not cookie:
@@ -2090,8 +2097,7 @@ def delete_button(self, calling_domain: str, path: str,
     users_path = path.split('?delete=')[0]
     actor = \
         http_prefix + '://' + domain_full + users_path
-    if self.server.allow_deletion or \
-       delete_url.startswith(actor):
+    if allow_deletion or delete_url.startswith(actor):
         if debug:
             print('DEBUG: delete_url=' + delete_url)
             print('DEBUG: actor=' + actor)
@@ -2202,7 +2208,10 @@ def mute_button(self, calling_domain: str, path: str,
                 dogwhistles: {},
                 buy_sites: [],
                 auto_cw_cache: {},
-                fitness: {}):
+                fitness: {},
+                account_timezone: {},
+                bold_reading_nicknames: {},
+                min_images_for_accounts: []) -> None:
     """Mute button is pressed
     """
     mute_url = path.split('?mute=')[1]
@@ -2274,18 +2283,17 @@ def mute_button(self, calling_domain: str, path: str,
             show_avatar_options = True
             avatar_url = None
             timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
+            if account_timezone.get(nickname):
+                timezone = account_timezone.get(nickname)
             mitm = False
             if os.path.isfile(mute_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
             bold_reading = False
-            if self.server.bold_reading.get(nickname):
+            if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             minimize_all_images = False
-            if nickname in self.server.min_images_for_accounts:
+            if nickname in min_images_for_accounts:
                 minimize_all_images = True
             individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads,
@@ -2371,7 +2379,10 @@ def mute_button_undo(self, calling_domain: str, path: str,
                      dogwhistles: {},
                      buy_sites: [],
                      auto_cw_cache: {},
-                     fitness: {}) -> None:
+                     fitness: {},
+                     account_timezone: {},
+                     bold_reading_nicknames: {},
+                     min_images_for_accounts: []) -> None:
     """Undo mute button is pressed
     """
     mute_url = path.split('?unmute=')[1]
@@ -2443,18 +2454,17 @@ def mute_button_undo(self, calling_domain: str, path: str,
             show_avatar_options = True
             avatar_url = None
             timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
+            if account_timezone.get(nickname):
+                timezone = account_timezone.get(nickname)
             mitm = False
             if os.path.isfile(mute_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
             bold_reading = False
-            if self.server.bold_reading.get(nickname):
+            if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             minimize_all_images = False
-            if nickname in self.server.min_images_for_accounts:
+            if nickname in min_images_for_accounts:
                 minimize_all_images = True
             individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads,
