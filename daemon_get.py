@@ -3785,7 +3785,8 @@ def daemon_http_get(self) -> None:
                       self.server.fitness,
                       self.server.allow_deletion,
                       self.server.session_onion,
-                      self.server.session_i2p)
+                      self.server.session_i2p,
+                      self.server.default_timeline)
         self.server.getreq_busy = False
         return
 
@@ -3830,7 +3831,8 @@ def daemon_http_get(self) -> None:
                     self.server.fitness,
                     self.server.account_timezone,
                     self.server.bold_reading,
-                    self.server.min_images_for_accounts)
+                    self.server.min_images_for_accounts,
+                    self.server.default_timeline)
         self.server.getreq_busy = False
         return
 

@@ -2086,7 +2086,8 @@ def delete_button(self, calling_domain: str, path: str,
                   fitness: {},
                   allow_deletion: bool,
                   session_onion,
-                  session_i2p) -> None:
+                  session_i2p,
+                  default_timeline: str) -> None:
     """Delete button is pressed on a post
     """
     if not cookie:
@@ -2107,7 +2108,7 @@ def delete_button(self, calling_domain: str, path: str,
     delete_url = path.split('?delete=')[1]
     if '?' in delete_url:
         delete_url = delete_url.split('?')[0]
-    timeline_str = self.server.default_timeline
+    timeline_str = default_timeline
     if '?tl=' in path:
         timeline_str = path.split('?tl=')[1]
         if '?' in timeline_str:
@@ -2229,7 +2230,8 @@ def mute_button(self, calling_domain: str, path: str,
                 fitness: {},
                 account_timezone: {},
                 bold_reading_nicknames: {},
-                min_images_for_accounts: []) -> None:
+                min_images_for_accounts: [],
+                default_timeline: str) -> None:
     """Mute button is pressed
     """
     mute_url = path.split('?mute=')[1]
@@ -2248,7 +2250,7 @@ def mute_button(self, calling_domain: str, path: str,
         if '?' in timeline_bookmark:
             timeline_bookmark = timeline_bookmark.split('?')[0]
         timeline_bookmark = '#' + timeline_bookmark
-    timeline_str = self.server.default_timeline
+    timeline_str = default_timeline
     if '?tl=' in path:
         timeline_str = path.split('?tl=')[1]
         if '?' in timeline_str:
