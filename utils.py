@@ -533,6 +533,16 @@ def get_media_descriptions_from_post(post_json_object: {}) -> str:
     return descriptions.strip()
 
 
+def _valid_summary(possible_summary: str) -> bool:
+    """Returns true if the given summary field is valid
+    """
+    if not isinstance(possible_summary, str):
+        return False
+    if len(possible_summary) < 2:
+        return False
+    return True
+
+
 def get_summary_from_post(post_json_object: {}, system_language: str,
                           languages_understood: []) -> str:
     """Returns the summary from the post in the given language
@@ -543,7 +553,7 @@ def get_summary_from_post(post_json_object: {}, system_language: str,
                               languages_understood, "summary")
     if summary_str:
         summary_str = summary_str.strip()
-        if len(summary_str) < 2:
+        if not _valid_summary(summary_str):
             summary_str = ''
     return summary_str
 

@@ -2716,7 +2716,16 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if isinstance(post_json_object['object']['sensitive'], bool):
             # sensitive posts should have a summary
             if post_json_object['object'].get('summary'):
-                post_is_sensitive = post_json_object['object']['sensitive']
+                possible_summary = \
+                    get_summary_from_post(post_json_object,
+                                          system_language,
+                                          languages_understood)
+                if possible_summary:
+                    post_is_sensitive = \
+                        post_json_object['object']['sensitive']
+                else:
+                    # clear the summary field if it is invalid
+                    post_json_object['object']['summary'] = ''
 
     if not post_json_object['object'].get('summary'):
         post_json_object['object']['summary'] = ''
