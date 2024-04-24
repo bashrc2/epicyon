@@ -663,6 +663,15 @@ def _contains_academic_references(content: str) -> bool:
     return False
 
 
+def remove_link_tracking(url: str) -> str:
+    """ Removes any web link tracking, such as utm_medium, utm_campaign
+    or utm_source
+    """
+    if '?utm_' not in url:
+        return url
+    return url.split('?utm_')[0]
+
+
 def add_web_links(content: str) -> str:
     """Adds markup for web links
     """
@@ -697,7 +706,7 @@ def add_web_links(content: str) -> str:
             continue
         if _contains_doi_reference(wrd, replace_dict):
             continue
-        # does the word begin with a prefix?
+        # does the word begin with a link prefix?
         prefix_found = False
         for prefix in prefixes:
             if wrd.startswith(prefix):
@@ -705,16 +714,18 @@ def add_web_links(content: str) -> str:
                 break
         if not prefix_found:
             continue
-        # the word contains a prefix
-        if wrd.endswith('.') or wrd.endswith(';'):
-            wrd = wrd[:-1]
-        markup = '<a href="' + wrd + '" tabindex="10" ' + \
+        # the word contains a link prefix
+        url = wrd
+        if url.endswith('.') or wrd.endswith(';'):
+            url = url[:-1]
+        url = remove_link_tracking(url)
+        markup = '<a href="' + url + '" tabindex="10" ' + \
             'rel="nofollow noopener noreferrer" target="_blank">'
         for prefix in prefixes:
-            if wrd.startswith(prefix):
+            if url.startswith(prefix):
                 markup += '<span class="invisible">' + prefix + '</span>'
                 break
-        link_text = wrd
+        link_text = url
         for prefix in prefixes:
             link_text = link_text.replace(prefix, '')
         # prevent links from becoming too long
@@ -725,7 +736,7 @@ def add_web_links(content: str) -> str:
                 link_text[MAX_LINK_LENGTH:] + '</span></a>'
         else:
             markup += '<span class="ellipsis">' + link_text + '</span></a>'
-        replace_dict[wrd] = markup
+        replace_dict[url] = markup
 
     # do the replacements
     for url, markup in replace_dict.items():

@@ -147,6 +147,7 @@ from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from inbox import cache_svg_images
 from categories import guess_hashtag_category
+from content import remove_link_tracking
 from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
 from content import add_name_emojis_to_tags
@@ -8758,6 +8759,26 @@ def _test_remove_tags() -> None:
     assert result == 'This is some content. Some other content'
 
 
+def _test_link_tracking() -> None:
+    print('link tracking')
+    url = 'someweblink.net/some/path'
+    expected = url
+    assert remove_link_tracking(url) == expected
+
+    url = \
+        'https://somenauseating.com/we-want-to-track-your-web-browsing-' + \
+        'habits-and-then-sell-that-to-letter-agencies?utm_medium=email&' + \
+        'utm_campaign=Latest%20from%20SomeNauseating%20DotCom' + \
+        '%20for%20April%2024%202024%20-%503948479461&utm_content=' + \
+        'Latest%20from%20SomeNeuseating%20DotCom%20for%20April%2024%' + \
+        '202024%20-%34567123+CID_34678246&utm_source=campaign_monitor_uk' + \
+        '&utm_term=wibble'
+    expected = \
+        'https://somenauseating.com/we-want-to-track-your-web-browsing-' + \
+        'habits-and-then-sell-that-to-letter-agencies'
+    assert remove_link_tracking(url) == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     print('Running tests...')
@@ -8775,6 +8796,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_link_tracking()
     _test_remove_tags()
     _test_check_individual_post_content()
     _test_uninvert2()
