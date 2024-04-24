@@ -8770,7 +8770,7 @@ def _test_link_tracking() -> None:
         'habits-and-then-sell-that-to-letter-agencies?utm_medium=email&' + \
         'utm_campaign=Latest%20from%20SomeNauseating%20DotCom' + \
         '%20for%20April%2024%202024%20-%503948479461&utm_content=' + \
-        'Latest%20from%20SomeNeuseating%20DotCom%20for%20April%2024%' + \
+        'Latest%20from%20SomeNauseating%20DotCom%20for%20April%2024%' + \
         '202024%20-%34567123+CID_34678246&utm_source=campaign_monitor_uk' + \
         '&utm_term=wibble'
     expected = \
