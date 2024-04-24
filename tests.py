@@ -147,6 +147,7 @@ from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from inbox import cache_svg_images
 from categories import guess_hashtag_category
+from content import remove_link_trackers_from_content
 from content import remove_link_tracking
 from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
@@ -8777,6 +8778,24 @@ def _test_link_tracking() -> None:
         'https://somenauseating.com/we-want-to-track-your-web-browsing-' + \
         'habits-and-then-sell-that-to-letter-agencies'
     assert remove_link_tracking(url) == expected
+
+    content = 'Some content'
+    expected = content
+    assert remove_link_trackers_from_content(content) == expected
+
+    content = \
+        'Some <a href="dreadfulsite.com/abc?utm_medium=gloop">content</a>'
+    expected = \
+        'Some <a href="dreadfulsite.com/abc">content</a>'
+    assert remove_link_trackers_from_content(content) == expected
+
+    content = \
+        'Some <a href="dreadfulsite.com/abc?utm_medium=gloop">content</a> ' + \
+        '<a href="surveillancecrap.com/def?utm_campaign=ohno">scurrilous</a>'
+    expected = \
+        'Some <a href="dreadfulsite.com/abc">content</a> ' + \
+        '<a href="surveillancecrap.com/def">scurrilous</a>'
+    assert remove_link_trackers_from_content(content) == expected
 
 
 def run_all_tests():

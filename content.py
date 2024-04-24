@@ -663,6 +663,27 @@ def _contains_academic_references(content: str) -> bool:
     return False
 
 
+def remove_link_trackers_from_content(content: str) -> str:
+    """ Removes any link trackers from urls within the content
+    """
+    if '?utm_' not in content:
+        return content
+    sections = content.split('?utm_')
+    ctr = 0
+    new_content = ''
+    for section_str in sections:
+        if ctr == 0:
+            new_content = section_str
+            ctr = 1
+            continue
+        if '"' in section_str:
+            new_content += '"' + section_str.split('"', 1)[1]
+        else:
+            new_content += section_str
+        ctr += 1
+    return new_content
+
+
 def remove_link_tracking(url: str) -> str:
     """ Removes any web link tracking, such as utm_medium, utm_campaign
     or utm_source

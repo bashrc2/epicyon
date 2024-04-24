@@ -78,6 +78,7 @@ from utils import get_attributed_to
 from utils import get_reply_to
 from utils import get_actor_from_post
 from utils import resembles_url
+from content import remove_link_trackers_from_content
 from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
 from content import detect_dogwhistles
@@ -2845,6 +2846,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                not post_is_blog:
                 content_str = bold_reading_string(content_str)
 
+            object_content = remove_link_trackers_from_content(content_str)
             object_content = \
                 remove_long_words(content_str, 40, [])
             object_content = \
