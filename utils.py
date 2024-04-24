@@ -5351,3 +5351,12 @@ def string_contains(text: str, possible_substrings: []) -> bool:
         if substring in text:
             return True
     return False
+
+
+def remove_link_tracking(url: str) -> str:
+    """ Removes any web link tracking, such as utm_medium, utm_campaign
+    or utm_source
+    """
+    if '?utm_' not in url:
+        return url
+    return url.split('?utm_')[0]

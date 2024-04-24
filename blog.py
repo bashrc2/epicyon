@@ -16,6 +16,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
+from utils import remove_link_tracking
 from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import get_attributed_to
@@ -959,7 +960,8 @@ def get_blog_address(actor_json: {}) -> str:
     result = get_actor_property_url(actor_json, 'Blog')
     if not result:
         result = get_actor_property_url(actor_json, 'My Blog')
-    return remove_html(result)
+    url = remove_html(result)
+    return remove_link_tracking(url)
 
 
 def account_has_blog(base_dir: str, nickname: str, domain: str) -> bool:

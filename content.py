@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import remove_link_tracking
 from utils import string_contains
 from utils import string_ends_with
 from utils import is_account_dir
@@ -682,15 +683,6 @@ def remove_link_trackers_from_content(content: str) -> str:
             new_content += section_str
         ctr += 1
     return new_content
-
-
-def remove_link_tracking(url: str) -> str:
-    """ Removes any web link tracking, such as utm_medium, utm_campaign
-    or utm_source
-    """
-    if '?utm_' not in url:
-        return url
-    return url.split('?utm_')[0]
 
 
 def add_web_links(content: str) -> str:

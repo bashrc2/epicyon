@@ -56,6 +56,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import remove_link_tracking
 from utils import uninvert_text
 from utils import get_url_from_post
 from utils import date_from_string_format
@@ -148,7 +149,6 @@ from inbox import valid_inbox_filenames
 from inbox import cache_svg_images
 from categories import guess_hashtag_category
 from content import remove_link_trackers_from_content
-from content import remove_link_tracking
 from content import format_mixed_right_to_left
 from content import replace_remote_hashtags
 from content import add_name_emojis_to_tags

@@ -9,6 +9,7 @@ __module_group__ = "Profile Metadata"
 
 import os
 import html
+from utils import remove_link_tracking
 from utils import acct_dir
 from utils import has_object_string_type
 from utils import text_in_file
@@ -260,5 +261,6 @@ def get_repo_url(actor_json: {}) -> str:
             repo_url = property_value[prop_value_name]
         if '.' not in repo_url:
             continue
-        return remove_html(repo_url)
+        repo_url = remove_html(repo_url)
+        return remove_link_tracking(repo_url)
     return ''
