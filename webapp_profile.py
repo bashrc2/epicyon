@@ -103,6 +103,7 @@ from webapp_timeline import page_number_buttons
 from cwlists import get_cw_list_variable
 from blocking import get_account_blocks
 from blocking import is_blocked
+from content import remove_link_trackers_from_content
 from content import bold_reading_string
 from roles import is_devops
 from session import get_json_valid
@@ -327,6 +328,8 @@ def html_profile_after_search(authorized: bool,
             profile_description = profile_json['summary']
         else:
             profile_description = remove_html(profile_json['summary'])
+    profile_description = \
+        remove_link_trackers_from_content(profile_description)
     profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
@@ -1000,6 +1003,8 @@ def html_profile(signing_priv_key_pem: str,
         profile_description = profile_json['summary']
     else:
         profile_description = remove_html(profile_json['summary'])
+    profile_description = \
+        remove_link_trackers_from_content(profile_description)
     profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
