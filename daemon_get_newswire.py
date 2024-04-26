@@ -211,7 +211,8 @@ def edit_newswire2(self, calling_domain: str, path: str,
 def edit_news_post2(self, calling_domain: str, path: str,
                     translate: {}, base_dir: str,
                     http_prefix: str, domain: str,
-                    domain_full: str, cookie: str) -> bool:
+                    domain_full: str, cookie: str,
+                    system_language: str) -> bool:
     """Show the edit screen for a news post
     """
     if '/users/' in path and '/editnewspost=' in path:
@@ -230,7 +231,7 @@ def edit_news_post2(self, calling_domain: str, path: str,
         msg = html_edit_news_post(translate, base_dir,
                                   path, domain,
                                   post_url,
-                                  self.server.system_language)
+                                  system_language)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

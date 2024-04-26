@@ -4170,7 +4170,7 @@ def daemon_http_get(self) -> None:
                            self.server.http_prefix,
                            self.server.domain,
                            self.server.domain_full,
-                           cookie):
+                           cookie, self.server.system_language):
             self.server.getreq_busy = False
             return
 
