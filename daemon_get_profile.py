@@ -473,8 +473,6 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                                 get_skills_from_list(actor_skills_list)
                             msg_str = json.dumps(skills,
                                                  ensure_ascii=False)
-                            onion_domain = self.server.onion_domain
-                            i2p_domain = self.server.i2p_domain
                             msg_str = convert_domains(calling_domain,
                                                       referer_domain,
                                                       msg_str,
