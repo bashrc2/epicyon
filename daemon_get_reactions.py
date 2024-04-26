@@ -44,7 +44,9 @@ def reaction_picker2(self, calling_domain: str, path: str,
                      dogwhistles: {},
                      min_images_for_accounts: [],
                      buy_sites: [],
-                     auto_cw_cache: {}) -> None:
+                     auto_cw_cache: {},
+                     account_timezone: {},
+                     bold_reading_nicknames: {}) -> None:
     """Press the emoji reaction picker icon at the bottom of the post
     """
     page_number = 1
@@ -111,12 +113,11 @@ def reaction_picker2(self, calling_domain: str, path: str,
         return
 
     timezone = None
-    if self.server.account_timezone.get(self.post_to_nickname):
-        timezone = \
-            self.server.account_timezone.get(self.post_to_nickname)
+    if account_timezone.get(self.post_to_nickname):
+        timezone = account_timezone.get(self.post_to_nickname)
 
     bold_reading = False
-    if self.server.bold_reading.get(self.post_to_nickname):
+    if bold_reading_nicknames.get(self.post_to_nickname):
         bold_reading = True
 
     msg = \
