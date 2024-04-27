@@ -8679,6 +8679,13 @@ def _test_uninvert2():
         print('uninverted: ' + uninverted_text)
     assert uninverted_text == 'This is a test.'
 
+    inverted_text = 'uspol'
+    uninverted_text = uninvert_text(inverted_text)
+    if uninverted_text != 'uspol':
+        print('inverted:   ' + inverted_text)
+        print('uninverted: ' + uninverted_text)
+    assert uninverted_text == 'uspol'
+
 
 def _test_check_individual_post_content():
     print('check_individual_post_content')

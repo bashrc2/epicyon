@@ -225,7 +225,7 @@ def uninvert_text(text: str) -> str:
         possible_result = ch_result + possible_result
 
     result = text
-    if matches > len(text)/3:
+    if matches > len(text)/2:
         result = possible_result
         new_result = ''
         extra_replace = {
