@@ -248,7 +248,8 @@ def daemon_http_post(self) -> None:
                      self.server.project_version,
                      self.server.translate,
                      self.server.theme_name,
-                     self.server.dyslexic_font)
+                     self.server.dyslexic_font,
+                     self.server.peertube_instances)
         self.server.postreq_busy = False
         return
 

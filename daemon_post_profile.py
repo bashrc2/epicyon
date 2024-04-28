@@ -237,12 +237,13 @@ def _profile_post_git_projects(base_dir: str, nickname: str, domain: str,
                       git_projects_filename)
 
 
-def _profile_post_peertube_instances(base_dir: str, fields: {}, self) -> None:
+def _profile_post_peertube_instances(base_dir: str, fields: {}, self,
+                                     peertube_instances: []) -> None:
     """ HTTP POST save peertube instances list
     """
     peertube_instances_file = base_dir + '/accounts/peertube.txt'
     if fields.get('ptInstances'):
-        self.server.peertube_instances.clear()
+        peertube_instances.clear()
         try:
             with open(peertube_instances_file, 'w+',
                       encoding='utf-8') as afile:
@@ -256,9 +257,9 @@ def _profile_post_peertube_instances(base_dir: str, fields: {}, self) -> None:
                 url = url.strip()
                 if not url:
                     continue
-                if url in self.server.peertube_instances:
+                if url in peertube_instances:
                     continue
-                self.server.peertube_instances.append(url)
+                peertube_instances.append(url)
     else:
         if os.path.isfile(peertube_instances_file):
             try:
@@ -266,7 +267,7 @@ def _profile_post_peertube_instances(base_dir: str, fields: {}, self) -> None:
             except OSError:
                 print('EX: _profile_edit unable to delete ' +
                       peertube_instances_file)
-        self.server.peertube_instances.clear()
+        peertube_instances.clear()
 
 
 def _profile_post_block_federated(base_dir: str, fields: {}, self) -> None:
@@ -2427,7 +2428,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                  cached_webfingers: {},
                  person_cache: {}, project_version: str,
                  translate: {}, theme_name: str,
-                 dyslexic_font: bool) -> None:
+                 dyslexic_font: bool,
+                 peertube_instances: []) -> None:
     """Updates your user profile after editing via the Edit button
     on the profile screen
     """
@@ -3053,7 +3055,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     _profile_post_crawlers_allowed(base_dir, fields, self)
                     _profile_post_buy_domains(base_dir, fields, self)
                     _profile_post_block_federated(base_dir, fields, self)
-                    _profile_post_peertube_instances(base_dir, fields, self)
+                    _profile_post_peertube_instances(base_dir, fields, self,
+                                                     peertube_instances)
 
                 _profile_post_git_projects(base_dir, nickname, domain,
                                            fields)
