@@ -3693,7 +3693,8 @@ def daemon_http_get(self) -> None:
                          self.server.buy_sites,
                          self.server.auto_cw_cache,
                          self.server.account_timezone,
-                         self.server.bold_reading)
+                         self.server.bold_reading,
+                         self.server.fitness)
         self.server.getreq_busy = False
         return
 

@@ -46,7 +46,8 @@ def reaction_picker2(self, calling_domain: str, path: str,
                      buy_sites: [],
                      auto_cw_cache: {},
                      account_timezone: {},
-                     bold_reading_nicknames: {}) -> None:
+                     bold_reading_nicknames: {},
+                     fitness: {}) -> None:
     """Press the emoji reaction picker icon at the bottom of the post
     """
     page_number = 1
@@ -154,7 +155,5 @@ def reaction_picker2(self, calling_domain: str, path: str,
     set_headers(self, 'text/html', msglen,
                 cookie, calling_domain, False)
     write2(self, msg)
-    fitness_performance(getreq_start_time,
-                        self.server.fitness,
-                        '_GET', 'reaction_picker2',
-                        debug)
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', 'reaction_picker2', debug)
