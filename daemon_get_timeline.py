@@ -2157,7 +2157,38 @@ def show_inbox(self, authorized: bool,
                yt_replace_domain: str,
                twitter_replacement_domain: str,
                ua_str: str,
-               max_posts_in_feed: int) -> bool:
+               max_posts_in_feed: int,
+               positive_voting: bool,
+               voting_time_mins: int,
+               fitness: {},
+               full_width_tl_button_header: bool,
+               access_keys: {},
+               key_shortcuts: {},
+               shared_items_federated_domains: [],
+               allow_local_network_access: bool,
+               account_timezone: {},
+               bold_reading_nicknames: {},
+               reverse_sequence_nicknames: [],
+               show_published_date_only: bool,
+               newswire: {},
+               show_publish_as_icon: bool,
+               icons_as_buttons: bool,
+               rss_icon_at_top: bool,
+               publish_button_at_top: bool,
+               theme_name: str,
+               peertube_instances: [],
+               text_mode_banner: str,
+               system_language: str,
+               max_like_count: int,
+               signing_priv_key_pem: str,
+               cw_lists: {},
+               lists_enabled: {},
+               dogwhistles: {},
+               min_images_for_accounts: [],
+               buy_sites: [],
+               auto_cw_cache: {},
+               onion_domain: str,
+               i2p_domain: str) -> bool:
     """Shows the inbox timeline
     """
     if '/users/' in path:
@@ -2172,12 +2203,11 @@ def show_inbox(self, authorized: bool,
                                 max_posts_in_feed, 'inbox',
                                 authorized,
                                 0,
-                                self.server.positive_voting,
-                                self.server.voting_time_mins)
+                                positive_voting,
+                                voting_time_mins)
             if inbox_feed:
                 if getreq_start_time:
-                    fitness_performance(getreq_start_time,
-                                        self.server.fitness,
+                    fitness_performance(getreq_start_time, fitness,
                                         '_GET', '_show_inbox',
                                         debug)
                 if request_http(self.headers, debug):
@@ -2207,34 +2237,24 @@ def show_inbox(self, authorized: bool,
                                             max_posts_in_feed, 'inbox',
                                             authorized,
                                             0,
-                                            self.server.positive_voting,
-                                            self.server.voting_time_mins)
+                                            positive_voting,
+                                            voting_time_mins)
                         if getreq_start_time:
-                            fitness_performance(getreq_start_time,
-                                                self.server.fitness,
+                            fitness_performance(getreq_start_time, fitness,
                                                 '_GET', '_show_inbox2',
                                                 debug)
-                    full_width_tl_button_header = \
-                        self.server.full_width_tl_button_header
                     minimal_nick = is_minimal(base_dir, domain, nickname)
 
-                    access_keys = self.server.access_keys
-                    if self.server.key_shortcuts.get(nickname):
-                        access_keys = \
-                            self.server.key_shortcuts[nickname]
-                    shared_items_federated_domains = \
-                        self.server.shared_items_federated_domains
-                    allow_local_network_access = \
-                        self.server.allow_local_network_access
+                    if key_shortcuts.get(nickname):
+                        access_keys = key_shortcuts[nickname]
                     timezone = None
-                    if self.server.account_timezone.get(nickname):
-                        timezone = \
-                            self.server.account_timezone.get(nickname)
+                    if account_timezone.get(nickname):
+                        timezone = account_timezone.get(nickname)
                     bold_reading = False
-                    if self.server.bold_reading.get(nickname):
+                    if bold_reading_nicknames.get(nickname):
                         bold_reading = True
                     reverse_sequence = False
-                    if nickname in self.server.reverse_sequence:
+                    if nickname in reverse_sequence_nicknames:
                         reverse_sequence = True
                     last_post_id = None
                     if ';lastpost=' in path:
@@ -2261,42 +2281,39 @@ def show_inbox(self, authorized: bool,
                                    minimal_nick,
                                    yt_replace_domain,
                                    twitter_replacement_domain,
-                                   self.server.show_published_date_only,
-                                   self.server.newswire,
-                                   self.server.positive_voting,
-                                   self.server.show_publish_as_icon,
+                                   show_published_date_only,
+                                   newswire,
+                                   positive_voting,
+                                   show_publish_as_icon,
                                    full_width_tl_button_header,
-                                   self.server.icons_as_buttons,
-                                   self.server.rss_icon_at_top,
-                                   self.server.publish_button_at_top,
+                                   icons_as_buttons,
+                                   rss_icon_at_top,
+                                   publish_button_at_top,
                                    authorized,
-                                   self.server.theme_name,
-                                   self.server.peertube_instances,
+                                   theme_name,
+                                   peertube_instances,
                                    allow_local_network_access,
-                                   self.server.text_mode_banner,
+                                   text_mode_banner,
                                    access_keys,
-                                   self.server.system_language,
-                                   self.server.max_like_count,
+                                   system_language,
+                                   max_like_count,
                                    shared_items_federated_domains,
-                                   self.server.signing_priv_key_pem,
-                                   self.server.cw_lists,
-                                   self.server.lists_enabled,
+                                   signing_priv_key_pem,
+                                   cw_lists,
+                                   lists_enabled,
                                    timezone, bold_reading,
-                                   self.server.dogwhistles,
+                                   dogwhistles,
                                    ua_str,
-                                   self.server.min_images_for_accounts,
+                                   min_images_for_accounts,
                                    reverse_sequence, last_post_id,
-                                   self.server.buy_sites,
-                                   self.server.auto_cw_cache)
+                                   buy_sites,
+                                   auto_cw_cache)
                     if getreq_start_time:
-                        fitness_performance(getreq_start_time,
-                                            self.server.fitness,
+                        fitness_performance(getreq_start_time, fitness,
                                             '_GET', '_show_inbox3',
                                             debug)
                     if msg:
                         msg_str = msg
-                        onion_domain = self.server.onion_domain
-                        i2p_domain = self.server.i2p_domain
                         msg_str = convert_domains(calling_domain,
                                                   referer_domain,
                                                   msg_str,
@@ -2311,15 +2328,12 @@ def show_inbox(self, authorized: bool,
                         write2(self, msg)
 
                     if getreq_start_time:
-                        fitness_performance(getreq_start_time,
-                                            self.server.fitness,
+                        fitness_performance(getreq_start_time, fitness,
                                             '_GET', '_show_inbox4',
                                             debug)
                 else:
                     # don't need authorized fetch here because
                     # there is already the authorization check
-                    onion_domain = self.server.onion_domain
-                    i2p_domain = self.server.i2p_domain
                     msg_str = json.dumps(inbox_feed, ensure_ascii=False)
                     msg_str = convert_domains(calling_domain,
                                               referer_domain,
@@ -2336,8 +2350,7 @@ def show_inbox(self, authorized: bool,
                     set_headers(self, protocol_str, msglen,
                                 None, calling_domain, False)
                     write2(self, msg)
-                    fitness_performance(getreq_start_time,
-                                        self.server.fitness,
+                    fitness_performance(getreq_start_time, fitness,
                                         '_GET', '_show_inbox5',
                                         debug)
                 return True
