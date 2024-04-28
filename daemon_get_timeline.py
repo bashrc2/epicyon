@@ -81,7 +81,10 @@ def show_media_timeline(self, authorized: bool,
                         min_images_for_accounts: {},
                         buy_sites: [],
                         auto_cw_cache: {},
-                        fitness: {}) -> bool:
+                        fitness: {},
+                        full_width_tl_button_header: bool,
+                        onion_domain: str,
+                        i2p_domain: str) -> bool:
     """Shows the media timeline
     """
     if '/users/' in path:
@@ -127,8 +130,6 @@ def show_media_timeline(self, authorized: bool,
                                         True,
                                         0, positive_voting,
                                         voting_time_mins)
-                full_width_tl_button_header = \
-                    self.server.full_width_tl_button_header
                 minimal_nick = is_minimal(base_dir, domain, nickname)
 
                 if key_shortcuts.get(nickname):
@@ -207,8 +208,6 @@ def show_media_timeline(self, authorized: bool,
             else:
                 # don't need authorized fetch here because there is
                 # already the authorization check
-                onion_domain = self.server.onion_domain
-                i2p_domain = self.server.i2p_domain
                 msg_str = json.dumps(inbox_media_feed,
                                      ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,
@@ -224,8 +223,7 @@ def show_media_timeline(self, authorized: bool,
                 set_headers(self, protocol_str, msglen,
                             None, calling_domain, False)
                 write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', '_show_media_timeline json',
                                     debug)
             return True

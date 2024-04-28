@@ -4718,7 +4718,10 @@ def daemon_http_get(self) -> None:
                                self.server.min_images_for_accounts,
                                self.server.buy_sites,
                                self.server.auto_cw_cache,
-                               self.server.fitness):
+                               self.server.fitness,
+                               self.server.full_width_tl_button_header,
+                               self.server.onion_domain,
+                               self.server.i2p_domain):
             self.server.getreq_busy = False
             return
 
