@@ -1351,18 +1351,60 @@ def show_outbox_timeline(self, authorized: bool,
                          cookie: str, debug: str,
                          curr_session, ua_str: str,
                          proxy_type: str,
-                         max_posts_in_feed: int) -> bool:
+                         max_posts_in_feed: int,
+                         recent_posts_cache: {},
+                         newswire_votes_threshold: int,
+                         positive_voting: bool,
+                         voting_time_mins: int,
+                         full_width_tl_button_header: bool,
+                         access_keys: {},
+                         key_shortcuts: {},
+                         account_timezone: {},
+                         bold_reading_nicknames: {},
+                         reverse_sequence_nicknames: [],
+                         default_timeline: str,
+                         max_recent_posts: int,
+                         translate: {},
+                         cached_webfingers: {},
+                         person_cache: {},
+                         allow_deletion: bool,
+                         project_version: str,
+                         yt_replace_domain: str,
+                         twitter_replacement_domain: str,
+                         show_published_date_only: bool,
+                         newswire: {},
+                         show_publish_as_icon: bool,
+                         icons_as_buttons: bool,
+                         rss_icon_at_top: bool,
+                         publish_button_at_top: bool,
+                         theme_name: str,
+                         peertube_instances: [],
+                         allow_local_network_access: bool,
+                         text_mode_banner: str,
+                         system_language: str,
+                         max_like_count: int,
+                         shared_items_federated_domains: [],
+                         signing_priv_key_pem: str,
+                         cw_lists: {},
+                         lists_enabled: {},
+                         dogwhistles: {},
+                         min_images_for_accounts: [],
+                         buy_sites: {},
+                         auto_cw_cache: {},
+                         fitness: {},
+                         onion_domain: str,
+                         i2p_domain: str) -> bool:
     """Shows the outbox timeline
     """
     # get outbox feed for a person
     outbox_feed = \
-        person_box_json(self.server.recent_posts_cache,
+        person_box_json(recent_posts_cache,
                         base_dir, domain, port, path,
                         http_prefix, max_posts_in_feed, 'outbox',
                         authorized,
-                        self.server.newswire_votes_threshold,
-                        self.server.positive_voting,
-                        self.server.voting_time_mins)
+                        newswire_votes_threshold,
+                        positive_voting,
+                        voting_time_mins)
     if outbox_feed:
         nickname = \
             path.replace('/users/', '').replace('/outbox', '')
@@ -1385,96 +1427,88 @@ def show_outbox_timeline(self, authorized: bool,
             # if a page wasn't specified then show the first one
             page_str = '?page=' + str(page_number)
             outbox_feed = \
-                person_box_json(self.server.recent_posts_cache,
+                person_box_json(recent_posts_cache,
                                 base_dir, domain, port,
                                 path + page_str,
                                 http_prefix,
                                 max_posts_in_feed, 'outbox',
                                 authorized,
-                                self.server.newswire_votes_threshold,
-                                self.server.positive_voting,
-                                self.server.voting_time_mins)
+                                newswire_votes_threshold,
+                                positive_voting,
+                                voting_time_mins)
         else:
             page_number = 1
 
         if request_http(self.headers, debug):
-            full_width_tl_button_header = \
-                self.server.full_width_tl_button_header
             minimal_nick = is_minimal(base_dir, domain, nickname)
 
-            access_keys = self.server.access_keys
-            if self.server.key_shortcuts.get(nickname):
-                access_keys = \
-                    self.server.key_shortcuts[nickname]
+            if key_shortcuts.get(nickname):
+                access_keys = key_shortcuts[nickname]
 
             timezone = None
-            if self.server.account_timezone.get(nickname):
-                timezone = \
-                    self.server.account_timezone.get(nickname)
+            if account_timezone.get(nickname):
+                timezone = account_timezone.get(nickname)
             bold_reading = False
-            if self.server.bold_reading.get(nickname):
+            if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             reverse_sequence = False
-            if nickname in self.server.reverse_sequence:
+            if nickname in reverse_sequence_nicknames:
                 reverse_sequence = True
             msg = \
-                html_outbox(self.server.default_timeline,
-                            self.server.recent_posts_cache,
-                            self.server.max_recent_posts,
-                            self.server.translate,
+                html_outbox(default_timeline,
+                            recent_posts_cache,
+                            max_recent_posts,
+                            translate,
                             page_number, max_posts_in_feed,
                             curr_session,
                             base_dir,
-                            self.server.cached_webfingers,
-                            self.server.person_cache,
+                            cached_webfingers,
+                            person_cache,
                             nickname, domain, port,
                             outbox_feed,
-                            self.server.allow_deletion,
+                            allow_deletion,
                             http_prefix,
-                            self.server.project_version,
+                            project_version,
                             minimal_nick,
-                            self.server.yt_replace_domain,
-                            self.server.twitter_replacement_domain,
-                            self.server.show_published_date_only,
-                            self.server.newswire,
-                            self.server.positive_voting,
-                            self.server.show_publish_as_icon,
+                            yt_replace_domain,
+                            twitter_replacement_domain,
+                            show_published_date_only,
+                            newswire,
+                            positive_voting,
+                            show_publish_as_icon,
                             full_width_tl_button_header,
-                            self.server.icons_as_buttons,
-                            self.server.rss_icon_at_top,
-                            self.server.publish_button_at_top,
+                            icons_as_buttons,
+                            rss_icon_at_top,
+                            publish_button_at_top,
                             authorized,
-                            self.server.theme_name,
-                            self.server.peertube_instances,
-                            self.server.allow_local_network_access,
-                            self.server.text_mode_banner,
+                            theme_name,
+                            peertube_instances,
+                            allow_local_network_access,
+                            text_mode_banner,
                             access_keys,
-                            self.server.system_language,
-                            self.server.max_like_count,
-                            self.server.shared_items_federated_domains,
-                            self.server.signing_priv_key_pem,
-                            self.server.cw_lists,
-                            self.server.lists_enabled,
+                            system_language,
+                            max_like_count,
+                            shared_items_federated_domains,
+                            signing_priv_key_pem,
+                            cw_lists,
+                            lists_enabled,
                             timezone, bold_reading,
-                            self.server.dogwhistles, ua_str,
-                            self.server.min_images_for_accounts,
+                            dogwhistles, ua_str,
+                            min_images_for_accounts,
                             reverse_sequence,
-                            self.server.buy_sites,
-                            self.server.auto_cw_cache)
+                            buy_sites,
+                            auto_cw_cache)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
                         cookie, calling_domain, False)
             write2(self, msg)
-            fitness_performance(getreq_start_time,
-                                self.server.fitness,
+            fitness_performance(getreq_start_time, fitness,
                                 '_GET', '_show_outbox_timeline',
                                 debug)
         else:
             if secure_mode(curr_session, proxy_type, False,
                            self.server, self.headers, self.path):
-                onion_domain = self.server.onion_domain
-                i2p_domain = self.server.i2p_domain
                 msg_str = json.dumps(outbox_feed,
                                      ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,
@@ -1491,8 +1525,7 @@ def show_outbox_timeline(self, authorized: bool,
                 set_headers(self, protocol_str, msglen,
                             None, calling_domain, False)
                 write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', '_show_outbox_timeline json',
                                     debug)
             else:
