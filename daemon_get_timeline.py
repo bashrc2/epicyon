@@ -455,13 +455,55 @@ def show_news_timeline(self, authorized: bool,
                        getreq_start_time,
                        cookie: str, debug: str,
                        curr_session, ua_str: str,
-                       max_posts_in_news_feed: int) -> bool:
+                       max_posts_in_news_feed: int,
+                       recent_posts_cache: {},
+                       newswire_votes_threshold: int,
+                       positive_voting: bool,
+                       voting_time_mins: int,
+                       full_width_tl_button_header: bool,
+                       access_keys: {},
+                       key_shortcuts: {},
+                       shared_items_federated_domains: [],
+                       account_timezone: {},
+                       bold_reading_nicknames: {},
+                       reverse_sequence_nicknames: [],
+                       default_timeline: str,
+                       max_recent_posts: int,
+                       translate: {},
+                       cached_webfingers: {},
+                       person_cache: {},
+                       allow_deletion: bool,
+                       project_version: str,
+                       yt_replace_domain: str,
+                       twitter_replacement_domain: str,
+                       show_published_date_only: bool,
+                       newswire: {},
+                       show_publish_as_icon: bool,
+                       icons_as_buttons: bool,
+                       rss_icon_at_top: bool,
+                       publish_button_at_top: bool,
+                       theme_name: str,
+                       peertube_instances: [],
+                       allow_local_network_access: bool,
+                       text_mode_banner: str,
+                       system_language: str,
+                       max_like_count: int,
+                       signing_priv_key_pem: str,
+                       cw_lists: {},
+                       lists_enabled: {},
+                       dogwhistles: {},
+                       min_images_for_accounts: [],
+                       buy_sites: [],
+                       auto_cw_cache: {},
+                       fitness: {},
+                       onion_domain: str,
+                       i2p_domain: str) -> bool:
     """Shows the news timeline
     """
     if '/users/' in path:
         if authorized:
             inbox_news_feed = \
-                person_box_json(self.server.recent_posts_cache,
+                person_box_json(recent_posts_cache,
                                 base_dir,
                                 domain,
                                 port,
@@ -469,9 +511,9 @@ def show_news_timeline(self, authorized: bool,
                                 http_prefix,
                                 max_posts_in_news_feed, 'tlnews',
                                 True,
-                                self.server.newswire_votes_threshold,
-                                self.server.positive_voting,
-                                self.server.voting_time_mins)
+                                newswire_votes_threshold,
+                                positive_voting,
+                                voting_time_mins)
             if not inbox_news_feed:
                 inbox_news_feed = []
             if request_http(self.headers, debug):
@@ -490,11 +532,9 @@ def show_news_timeline(self, authorized: bool,
                     else:
                         page_number = 1
                 if 'page=' not in path:
-                    newswire_votes_threshold = \
-                        self.server.newswire_votes_threshold
                     # if no page was specified then show the first
                     inbox_news_feed = \
-                        person_box_json(self.server.recent_posts_cache,
+                        person_box_json(recent_posts_cache,
                                         base_dir,
                                         domain,
                                         port,
@@ -503,96 +543,87 @@ def show_news_timeline(self, authorized: bool,
                                         max_posts_in_news_feed, 'tlnews',
                                         True,
                                         newswire_votes_threshold,
-                                        self.server.positive_voting,
-                                        self.server.voting_time_mins)
+                                        positive_voting,
+                                        voting_time_mins)
                 curr_nickname = path.split('/users/')[1]
                 if '/' in curr_nickname:
                     curr_nickname = curr_nickname.split('/')[0]
                 moderator = is_moderator(base_dir, curr_nickname)
                 editor = is_editor(base_dir, curr_nickname)
                 artist = is_artist(base_dir, curr_nickname)
-                full_width_tl_button_header = \
-                    self.server.full_width_tl_button_header
                 minimal_nick = is_minimal(base_dir, domain, nickname)
 
-                access_keys = self.server.access_keys
-                if self.server.key_shortcuts.get(nickname):
-                    access_keys = \
-                        self.server.key_shortcuts[nickname]
-                fed_domains = \
-                    self.server.shared_items_federated_domains
+                if key_shortcuts.get(nickname):
+                    access_keys = key_shortcuts[nickname]
+                fed_domains = shared_items_federated_domains
 
                 timezone = None
-                if self.server.account_timezone.get(nickname):
-                    timezone = \
-                        self.server.account_timezone.get(nickname)
+                if account_timezone.get(nickname):
+                    timezone = account_timezone.get(nickname)
                 bold_reading = False
-                if self.server.bold_reading.get(nickname):
+                if bold_reading_nicknames.get(nickname):
                     bold_reading = True
                 reverse_sequence = False
-                if nickname in self.server.reverse_sequence:
+                if nickname in reverse_sequence_nicknames:
                     reverse_sequence = True
                 msg = \
-                    html_inbox_news(self.server.default_timeline,
-                                    self.server.recent_posts_cache,
-                                    self.server.max_recent_posts,
-                                    self.server.translate,
+                    html_inbox_news(default_timeline,
+                                    recent_posts_cache,
+                                    max_recent_posts,
+                                    translate,
                                     page_number, max_posts_in_news_feed,
                                     curr_session,
                                     base_dir,
-                                    self.server.cached_webfingers,
-                                    self.server.person_cache,
+                                    cached_webfingers,
+                                    person_cache,
                                     nickname,
                                     domain,
                                     port,
                                     inbox_news_feed,
-                                    self.server.allow_deletion,
+                                    allow_deletion,
                                     http_prefix,
-                                    self.server.project_version,
+                                    project_version,
                                     minimal_nick,
-                                    self.server.yt_replace_domain,
-                                    self.server.twitter_replacement_domain,
-                                    self.server.show_published_date_only,
-                                    self.server.newswire,
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    newswire,
                                     moderator, editor, artist,
-                                    self.server.positive_voting,
-                                    self.server.show_publish_as_icon,
+                                    positive_voting,
+                                    show_publish_as_icon,
                                     full_width_tl_button_header,
-                                    self.server.icons_as_buttons,
-                                    self.server.rss_icon_at_top,
-                                    self.server.publish_button_at_top,
+                                    icons_as_buttons,
+                                    rss_icon_at_top,
+                                    publish_button_at_top,
                                     authorized,
-                                    self.server.theme_name,
-                                    self.server.peertube_instances,
-                                    self.server.allow_local_network_access,
-                                    self.server.text_mode_banner,
+                                    theme_name,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    text_mode_banner,
                                     access_keys,
-                                    self.server.system_language,
-                                    self.server.max_like_count,
+                                    system_language,
+                                    max_like_count,
                                     fed_domains,
-                                    self.server.signing_priv_key_pem,
-                                    self.server.cw_lists,
-                                    self.server.lists_enabled,
+                                    signing_priv_key_pem,
+                                    cw_lists,
+                                    lists_enabled,
                                     timezone, bold_reading,
-                                    self.server.dogwhistles, ua_str,
-                                    self.server.min_images_for_accounts,
+                                    dogwhistles, ua_str,
+                                    min_images_for_accounts,
                                     reverse_sequence,
-                                    self.server.buy_sites,
-                                    self.server.auto_cw_cache)
+                                    buy_sites,
+                                    auto_cw_cache)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
                             cookie, calling_domain, False)
                 write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', '_show_news_timeline',
                                     debug)
             else:
                 # don't need authorized fetch here because there is
                 # already the authorization check
-                onion_domain = self.server.onion_domain
-                i2p_domain = self.server.i2p_domain
                 msg_str = json.dumps(inbox_news_feed,
                                      ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,
@@ -608,8 +639,7 @@ def show_news_timeline(self, authorized: bool,
                 set_headers(self, protocol_str, msglen,
                             None, calling_domain, False)
                 write2(self, msg)
-                fitness_performance(getreq_start_time,
-                                    self.server.fitness,
+                fitness_performance(getreq_start_time, fitness,
                                     '_GET', '_show_news_timeline json',
                                     debug)
             return True
