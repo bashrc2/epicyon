@@ -635,24 +635,26 @@ def _profile_post_low_bandwidth(base_dir: str, path: str,
 
 def _profile_post_dyslexic_font(base_dir: str, path: str,
                                 nickname: str, admin_nickname: str,
-                                fields: {}, self) -> None:
+                                fields: {}, self,
+                                theme_name: str,
+                                domain: str,
+                                allow_local_network_access: bool,
+                                system_language: str) -> None:
     """ HTTP POST dyslexic font
     """
     if path.startswith('/users/' + admin_nickname + '/') or \
        is_artist(base_dir, nickname):
-        dyslexic_font = False
+        dyslexic_font2 = False
         if fields.get('dyslexicFont'):
             if fields['dyslexicFont'] == 'on':
-                dyslexic_font = True
-        if dyslexic_font != self.server.dyslexic_font:
-            self.server.dyslexic_font = dyslexic_font
+                dyslexic_font2 = True
+        if dyslexic_font2 != self.server.dyslexic_font:
+            self.server.dyslexic_font = dyslexic_font2
             set_config_param(base_dir, 'dyslexicFont',
                              self.server.dyslexic_font)
-            set_theme(base_dir,
-                      self.server.theme_name,
-                      self.server.domain,
-                      self.server.allow_local_network_access,
-                      self.server.system_language,
+            set_theme(base_dir, theme_name, domain,
+                      allow_local_network_access,
+                      system_language,
                       self.server.dyslexic_font, False)
 
 
@@ -3015,7 +3017,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                               fields)
                 _profile_post_dyslexic_font(base_dir, path,
                                             nickname, admin_nickname,
-                                            fields, self)
+                                            fields, self, theme_name,
+                                            domain,
+                                            allow_local_network_access,
+                                            system_language)
                 _profile_post_low_bandwidth(base_dir, path,
                                             nickname, admin_nickname,
                                             fields, self)
