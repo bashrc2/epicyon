@@ -830,8 +830,6 @@ def show_features_timeline(self, authorized: bool,
             else:
                 # don't need authorized fetch here because there is
                 # already the authorization check
-                onion_domain = self.server.onion_domain
-                i2p_domain = self.server.i2p_domain
                 msg_str = json.dumps(inbox_features_feed,
                                      ensure_ascii=False)
                 msg_str = convert_domains(calling_domain,
