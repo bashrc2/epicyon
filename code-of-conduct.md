@@ -52,7 +52,7 @@ If you're raising concerns about something or someone, there must be demonstrabl
 
 This is not a big project and so there is no division of labor or special enforcement committee or bureaucratic process.
 
-Complaints should be either reported in the Matrix chat room **#epicyon:matrix.libreserver.org** or sent to bob@libreserver.org, preferably via XMPP/Conversations with OMEMO enabled but you can also use the same address for email correspondence.
+Complaints should be either reported in the Matrix chat room **#epicyon:conduit.libreserver.org** or sent to bob@libreserver.org, preferably via XMPP/Conversations with OMEMO enabled but you can also use the same address for email correspondence.
 
 ## In case of violations
 

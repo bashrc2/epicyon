@@ -4,7 +4,7 @@ By submitting code, documentation or artwork you agree that it will be licensed 
 
 ## Security Vulnerability Disclosure
 
-Create an issue on https://gitlab.com/bashrc2/epicyon/issues. If the vulnerability is especially sensitive then send an XMPP message to **bob@libreserver.org** or a Matrix message to **@bob:matrix.libreserver.org**.
+Create an issue on https://gitlab.com/bashrc2/epicyon/issues. If the vulnerability is especially sensitive then send an XMPP message to **bob@libreserver.org** or a Matrix message to **@bob:conduit.libreserver.org**.
 
 ## Code of Conduct
 
