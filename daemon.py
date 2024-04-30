@@ -406,6 +406,185 @@ class PubServerUnitTest(PubServer):
 
 
 class EpicyonServer(ThreadingHTTPServer):
+    starting_daemon = True
+    no_of_books = 0
+    max_api_blocks = 32000
+    block_federated_endpoints = None
+    block_federated = []
+    books_cache = {}
+    max_recent_books = 1000
+    max_cached_readers = 24
+    auto_cw_cache = {}
+    sites_unavailable = None
+    max_shares_on_profile = 0
+    block_military = []
+    followers_synchronization = False
+    followers_sync_cache = {}
+    buy_sites = None
+    min_images_for_accounts = 0
+    default_post_language = None
+    css_cache = {}
+    reverse_sequence = None
+    clacks = None
+    public_replies_unlisted = False
+    dogwhistles = {}
+    preferred_podcast_formats = []
+    bold_reading = {}
+    hide_follows = {}
+    account_timezone = None
+    post_to_nickname = None
+    nodeinfo_is_active = False
+    security_txt_is_active = False
+    vcard_is_active = False
+    masto_api_is_active = False
+    map_format = None
+    dyslexic_font = False
+    content_license_url = ''
+    dm_license_url = ''
+    fitness = {}
+    signing_priv_key_pem = None
+    show_node_info_accounts = False
+    show_node_info_version = False
+    text_mode_banner = ''
+    access_keys = {}
+    rss_timeout_sec = 20
+    check_actor_timeout = 2
+    default_reply_interval_hrs = 9999999
+    recent_dav_etags = {}
+    key_shortcuts = {}
+    low_bandwidth = False
+    user_agents_blocked = None
+    crawlers_allowed = None
+    known_bots = None
+    unit_test = False
+    allow_local_network_access = False
+    yt_replace_domain = ''
+    twitter_replacement_domain = ''
+    newswire = {}
+    max_newswire_posts = 0
+    verify_all_signatures = False
+    blocklistUpdateCtr = 0
+    blocklistUpdateInterval = 100
+    domainBlocklist = None
+    manual_follower_approval = True
+    onion_domain = None
+    i2p_domain = None
+    media_instance = False
+    blogs_instance = False
+    translate = {}
+    system_language = 'en'
+    city = ''
+    voting_time_mins = 30
+    positive_voting = False
+    newswire_votes_threshold = 1
+    max_newswire_feed_size_kb = 1
+    max_newswire_posts_per_source = 1
+    show_published_date_only = False
+    max_mirrored_articles = 0
+    max_news_posts = 0
+    maxTags = 32
+    max_followers = 2000
+    show_publish_as_icon = False
+    full_width_tl_button_header = False
+    icons_as_buttons = False
+    rss_icon_at_top = True
+    publish_button_at_top = False
+    max_feed_item_size_kb = 100
+    maxCategoriesFeedItemSizeKb = 1024
+    dormant_months = 6
+    max_like_count = 10
+    followingItemsPerPage = 12
+    registration = False
+    enable_shared_inbox = True
+    outboxThread = {}
+    outbox_thread_index = {}
+    new_post_thread = {}
+    project_version = __version__
+    secure_mode = True
+    max_post_length = 0
+    maxMediaSize = 0
+    maxMessageLength = 64000
+    maxPostsInBox = 32000
+    maxCacheAgeDays = 30
+    domain = ''
+    port = 43
+    domain_full = ''
+    http_prefix = 'https'
+    debug = False
+    federation_list = []
+    shared_items_federated_domains = []
+    base_dir = ''
+    instance_id = ''
+    person_cache = {}
+    cached_webfingers = {}
+    favicons_cache = {}
+    proxy_type = None
+    session = None
+    session_onion = None
+    session_i2p = None
+    last_getreq = 0
+    last_postreq = 0
+    getreq_busy = False
+    postreq_busy = False
+    received_message = False
+    inbox_queue = []
+    send_threads = None
+    postLog = []
+    max_queue_length = 64
+    allow_deletion = True
+    last_login_time = 0
+    last_login_failure = 0
+    login_failure_count = {}
+    log_login_failures = True
+    max_replies = 10
+    tokens = {}
+    tokens_lookup = {}
+    instance_only_skills_search = True
+    followers_threads = []
+    blocked_cache = []
+    blocked_cache_last_updated = 0
+    blocked_cache_update_secs = 120
+    blocked_cache_last_updated = 0
+    custom_emoji = {}
+    known_crawlers = {}
+    last_known_crawler = 0
+    lists_enabled = None
+    cw_lists = {}
+    theme_name = ''
+    news_instance = False
+    default_timeline = 'inbox'
+    thrFitness = None
+    recent_posts_cache = {}
+    thrCache = None
+    send_threads_timeout_mins = 3
+    thrPostsQueue = None
+    thrPostsWatchdog = None
+    thrSharesExpire = None
+    thrSharesExpireWatchdog = None
+    max_recent_posts = 1
+    iconsCache = {}
+    fontsCache = {}
+    shared_item_federation_tokens = None
+    shared_item_federation_tokens = None
+    peertube_instances = []
+    max_mentions = 10
+    max_emoji = 10
+    max_hashtags = 10
+    thrInboxQueue = None
+    thrPostSchedule = None
+    thrNewswireDaemon = None
+    thrFederatedSharesDaemon = None
+    restart_inbox_queue_in_progress = False
+    restart_inbox_queue = False
+    signing_priv_key_pem = ''
+    thrCheckActor = {}
+    thrImportFollowing = None
+    thrWatchdog = None
+    thrWatchdogSchedule = None
+    thrNewswireWatchdog = None
+    thrFederatedSharesWatchdog = None
+    thrFederatedBlocksDaemon = None
+
     def handle_error(self, request, client_address):
         # surpress connection reset errors
         cls, e_ret = sys.exc_info()[:2]
@@ -582,6 +761,7 @@ def run_daemon(no_of_books: int,
         print('Creating accounts directory')
         os.mkdir(base_dir + '/accounts')
 
+    httpd = None
     try:
         httpd = EpicyonServer(server_address, pub_handler)
     except SocketError as ex:
@@ -592,6 +772,10 @@ def run_daemon(no_of_books: int,
 
         print('EX: HTTP server failed to start. ' + str(ex))
         print('server_address: ' + str(server_address))
+        return False
+
+    if not httpd:
+        print('Unable to start daemon')
         return False
 
     httpd.starting_daemon = True
