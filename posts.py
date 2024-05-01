@@ -4984,8 +4984,8 @@ def _expire_posts_cache_for_person(base_dir: str,
 
 def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                   recent_posts_cache: {},
-                  max_posts_in_box: int = 32000,
-                  max_cache_age_days: int = 30) -> None:
+                  max_posts_in_box: int,
+                  max_cache_age_days: int) -> None:
     """Archives posts for all accounts
     """
     if max_posts_in_box == 0:
