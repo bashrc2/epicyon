@@ -503,7 +503,7 @@ def html_profile_after_search(authorized: bool,
     user_feed = \
         parse_user_feed(signing_priv_key_pem,
                         session, outbox_url, as_header, project_version,
-                        http_prefix, from_domain, debug)
+                        http_prefix, from_domain, debug, 0)
     if not user_feed:
         if debug:
             print('DEBUG: no user feed in profile preview')

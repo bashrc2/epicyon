@@ -234,7 +234,7 @@ def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
 def parse_user_feed(signing_priv_key_pem: str,
                     session, feed_url: str, as_header: {},
                     project_version: str, http_prefix: str,
-                    origin_domain: str, debug: bool, depth: int = 0) -> []:
+                    origin_domain: str, debug: bool, depth: int) -> []:
     """Returns a feed of posts for an account url
     """
     if depth > 10:
@@ -600,7 +600,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
         user_feed = parse_user_feed(signing_priv_key_pem,
                                     session, outbox_url, as_header,
                                     project_version, http_prefix,
-                                    origin_domain, debug)
+                                    origin_domain, debug, 0)
         if user_feed:
             for item in user_feed:
                 result.append(item)
@@ -615,7 +615,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
                                 project_version, http_prefix,
-                                origin_domain, debug)
+                                origin_domain, debug, 0)
     if not user_feed:
         return person_posts
 
@@ -832,7 +832,8 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
     i = 0
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
-                                project_version, http_prefix, domain, debug)
+                                project_version, http_prefix, domain,
+                                debug, 0)
     if not user_feed:
         return post_domains
 
@@ -900,7 +901,8 @@ def _get_posts_for_blocked_domains(base_dir: str,
     i = 0
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
-                                project_version, http_prefix, domain, debug)
+                                project_version, http_prefix, domain,
+                                debug, 0)
     if not user_feed:
         return blocked_posts
 

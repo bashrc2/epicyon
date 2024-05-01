@@ -47,7 +47,7 @@ from cache import get_person_from_cache
 
 def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
                         nickname: str, domain: str, domain_full: str,
-                        post_id: str, depth: int = 0) -> int:
+                        post_id: str, depth: int) -> int:
     """Returns the number of replies on the post
     This is recursive, so can handle replies to replies
     """
@@ -116,7 +116,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
 
 def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                       nickname: str, domain: str, domain_full: str,
-                      post_id: str, depth: int = 0) -> str:
+                      post_id: str, depth: int) -> str:
     """Returns a string containing html blog posts
     """
     if depth > 4:
@@ -337,7 +337,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
 
     replies = _no_of_blog_replies(base_dir, http_prefix, translate,
                                   nickname, domain, domain_full,
-                                  post_json_object['object']['id'])
+                                  post_json_object['object']['id'], 0)
 
     # separator between blogs should be centered
     if '<center>' not in blog_separator:
@@ -357,13 +357,13 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
             blog_str += \
                 _get_blog_replies(base_dir, http_prefix, translate,
                                   nickname, domain, domain_full,
-                                  post_json_object['object']['id'])
+                                  post_json_object['object']['id'], 0)
         else:
             obj_id = post_json_object['object']['id']
             blog_replies_str = \
                 _get_blog_replies(base_dir, http_prefix,
                                   translate, nickname,
-                                  domain, domain_full, obj_id)
+                                  domain, domain_full, obj_id, 0)
             blog_str += blog_replies_str.replace('>' + title_str + '<', '')
 
     return blog_str
