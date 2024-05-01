@@ -584,6 +584,7 @@ class EpicyonServer(ThreadingHTTPServer):
     thrNewswireWatchdog = None
     thrFederatedSharesWatchdog = None
     thrFederatedBlocksDaemon = None
+    qrcode_scale = 6
 
     def handle_error(self, request, client_address):
         # surpress connection reset errors
@@ -1124,12 +1125,14 @@ def run_daemon(no_of_books: int,
     httpd.domain = domain
     httpd.port = port
     httpd.domain_full = get_full_domain(domain, port)
+    httpd.qrcode_scale = 6
     if onion_domain:
-        save_domain_qrcode(base_dir, 'http', onion_domain)
+        save_domain_qrcode(base_dir, 'http', onion_domain, httpd.qrcode_scale)
     elif i2p_domain:
-        save_domain_qrcode(base_dir, 'http', i2p_domain)
+        save_domain_qrcode(base_dir, 'http', i2p_domain, httpd.qrcode_scale)
     else:
-        save_domain_qrcode(base_dir, http_prefix, httpd.domain_full)
+        save_domain_qrcode(base_dir, http_prefix, httpd.domain_full,
+                           httpd.qrcode_scale)
     clear_person_qrcodes(base_dir)
     httpd.http_prefix = http_prefix
     httpd.debug = debug
