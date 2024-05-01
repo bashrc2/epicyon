@@ -11,7 +11,7 @@ import os
 
 
 def _text_in_file2(text: str, filename: str,
-                   case_sensitive: bool = True) -> bool:
+                   case_sensitive: bool) -> bool:
     """is the given text in the given file?
     """
     if not case_sensitive:
