@@ -2379,7 +2379,7 @@ def _profile_post_skill_level(actor_json: {},
         skills_str = translate['Skills']
         skills_str = skills_str.lower()
         set_hashtag_category(base_dir, skill_name,
-                             skills_str, False)
+                             skills_str, False, False)
         skill_ctr += 1
     if no_of_actor_skills(actor_json) != actor_skills_ctr:
         actor_changed = True

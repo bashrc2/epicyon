@@ -453,7 +453,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                     guess_hashtag_category(tag_name, hashtag_categories, 6)
                 if category_str:
                     set_hashtag_category(base_dir, tag_name,
-                                         category_str, False)
+                                         category_str, False, False)
 
     # if some hashtags were found then recalculate the swarm
     # ready for later display

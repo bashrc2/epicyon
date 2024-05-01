@@ -229,7 +229,7 @@ def _valid_hashtag_category(category: str) -> bool:
 
 
 def set_hashtag_category(base_dir: str, hashtag: str, category: str,
-                         update: bool, force: bool = False) -> bool:
+                         update: bool, force: bool) -> bool:
     """Sets the category for the hashtag
     """
     if not _valid_hashtag_category(category):

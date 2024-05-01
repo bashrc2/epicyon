@@ -125,7 +125,7 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
                not is_filtered(base_dir, nickname, domain, category_str,
                                system_language):
                 set_hashtag_category(base_dir, hashtag,
-                                     category_str, False)
+                                     category_str, False, False)
         else:
             category_filename = base_dir + '/tags/' + hashtag + '.category'
             if os.path.isfile(category_filename):
