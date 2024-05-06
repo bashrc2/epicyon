@@ -126,16 +126,27 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
     if agent_str:
         # is this a web crawler? If so then block it by default
         # unless this is a news instance or if it is in the allowed list
-        bot_strings = ('bot/', 'bot-', '/bot', '/robot', 'gptbot',
-                       '-ai/', ' ai/', '-ai ', ' ai ', 'spider/',
-                       'externalhit/', 'chatgpt', 'google',
-                       'anthropic', 'facebook', 'slurp', 'crawler',
-                       'crawling', 'gigablast', 'archive.org')
+        bot_strings = ('bot/', 'bot-', '/bot', '_bot', 'bot_', 'bot;', ' bot ',
+                       '/robot', 'gptbot', '-ai/', ' ai/', '-ai ',
+                       ' ai ', 'spider/', 'spider.ht', '/spider.', '-spider',
+                       'externalhit/', 'chatgpt', 'google', 'anthropic',
+                       'facebook', 'slurp', 'crawler', 'crawling', ' crawl ',
+                       'gigablast', 'archive.org', 'httrack', 'spider/',
+                       'spider-', ' spider ', 'findlink', 'ips-agent',
+                       'woriobot', 'mlbot', 'webbot', 'webcrawl',
+                       'voilabot', 'rank/', 'ezooms', 'heritrix', 'indeedbot',
+                       'woobot', 'infobot', 'viewbot', 'swimgbot', 'eright',
+                       'apercite', 'bot (', 'summify', 'ccbot', 'linkfind',
+                       'linkanalyze', 'analyzer', 'wotbox', 'ichiro',
+                       'drupact', 'searchengine', 'coccoc',
+                       'explorer/', 'explorer;', 'crystalsemantics',
+                       'scraper/', ' scraper ', ' scrape ', 'scraping')
         contains_bot_string = False
         for bot_str in bot_strings:
             if bot_str in agent_str_lower:
                 if '://bot' not in agent_str_lower and \
                    '://robot' not in agent_str_lower and \
+                   '://spider' not in agent_str_lower and \
                    'pixelfedbot/' not in agent_str_lower:
                     contains_bot_string = True
                     break
