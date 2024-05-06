@@ -129,7 +129,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
         bot_strings = ('bot/', 'bot-', '/bot', '/robot', 'gptbot',
                        '-ai/', ' ai/', '-ai ', ' ai ', 'spider/',
                        'externalhit/', 'chatgpt', 'google',
-                       'anthropic')
+                       'anthropic', 'facebook', 'slurp', 'crawler',
+                       'crawling', 'gigablast', 'archive.org')
         contains_bot_string = False
         for bot_str in bot_strings:
             if bot_str in agent_str_lower:
