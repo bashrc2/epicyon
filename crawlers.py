@@ -109,7 +109,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
                        blocked_cache_update_secs: int,
                        crawlers_allowed: [],
                        known_bots: [], path: str,
-                       block_military: {}):
+                       block_military: {}) -> (bool,):
     """Should a GET or POST be blocked based upon its user agent?
     """
     if not agent_str:
