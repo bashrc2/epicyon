@@ -46,44 +46,57 @@ def get_individual_post_context() -> []:
     ]
 
 
+def _has_valid_context_list(post_json_object: {}) -> bool:
+    """Are the links within the @context of a post recognised?
+    """
+    for url in post_json_object['@context']:
+        if not isinstance(url, str):
+            continue
+        if url in VALID_CONTEXTS:
+            continue
+        # is this a wildcard context?
+        wildcard_found = False
+        for cont in VALID_CONTEXTS:
+            if cont.startswith('*'):
+                cont = cont.replace('*', '')
+                if url.endswith(cont):
+                    wildcard_found = True
+                    break
+        if not wildcard_found:
+            print('Unrecognized @context: ' + url)
+            return False
+    return True
+
+
+def _has_valid_context_str(post_json_object: {}) -> bool:
+    """Are the links within the @context of a post recognised?
+    """
+    url = post_json_object['@context']
+    if url not in VALID_CONTEXTS:
+        wildcard_found = False
+        for cont in VALID_CONTEXTS:
+            if cont.startswith('*'):
+                cont = cont.replace('*', '')
+                if url.endswith(cont):
+                    wildcard_found = True
+                    break
+        if not wildcard_found:
+            print('Unrecognized @context: ' + url)
+            return False
+    return True
+
+
 def has_valid_context(post_json_object: {}) -> bool:
     """Are the links within the @context of a post recognised?
     """
     if not post_json_object.get('@context'):
         return False
     if isinstance(post_json_object['@context'], list):
-        for url in post_json_object['@context']:
-            if not isinstance(url, str):
-                continue
-            if url not in VALID_CONTEXTS:
-                # is this a wildcard context?
-                wildcard_found = False
-                for cont in VALID_CONTEXTS:
-                    if cont.startswith('*'):
-                        cont = cont.replace('*', '')
-                        if url.endswith(cont):
-                            wildcard_found = True
-                            break
-                if not wildcard_found:
-                    print('Unrecognized @context: ' + url)
-                    return False
-    elif isinstance(post_json_object['@context'], str):
-        url = post_json_object['@context']
-        if url not in VALID_CONTEXTS:
-            wildcard_found = False
-            for cont in VALID_CONTEXTS:
-                if cont.startswith('*'):
-                    cont = cont.replace('*', '')
-                    if url.endswith(cont):
-                        wildcard_found = True
-                        break
-            if not wildcard_found:
-                print('Unrecognized @context: ' + url)
-                return False
-    else:
-        # not a list or string
-        return False
-    return True
+        return _has_valid_context_list(post_json_object)
+    if isinstance(post_json_object['@context'], str):
+        return _has_valid_context_str(post_json_object)
+    # not a list or string
+    return False
 
 
 def get_data_integrity_v1_schema() -> {}:
