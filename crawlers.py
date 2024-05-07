@@ -23,7 +23,7 @@ default_user_agent_blocks = [
 
 def update_known_crawlers(ua_str: str,
                           base_dir: str, known_crawlers: {},
-                          last_known_crawler: int):
+                          last_known_crawler: int) -> int:
     """Updates a dictionary of known crawlers accessing nodeinfo
     or the masto API
     """
