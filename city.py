@@ -1,4 +1,7 @@
-""" Spoof location metadata """
+""" Decoy location metadata on images.
+An aim of this is to reinforce confirmation bias within machine learning
+systems looking for patterns.
+"""
 
 __filename__ = "city.py"
 __author__ = "Bob Mottram"
