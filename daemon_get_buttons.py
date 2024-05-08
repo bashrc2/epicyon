@@ -1,3 +1,5 @@
+""" HTTP GET for buttons within the user interface """
+
 __filename__ = "daemon_get_buttons.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"

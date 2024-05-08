@@ -1,3 +1,5 @@
+""" ActivityPub Accept or Reject json """
+
 __filename__ = "acceptreject.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
@@ -25,7 +27,7 @@ from utils import has_object_string_type
 from utils import get_actor_from_post
 
 
-def _create_accept_reject(base_dir: str, federation_list: [],
+def _create_accept_reject(federation_list: [],
                           nickname: str, domain: str, port: int,
                           to_url: str, cc_url: str, http_prefix: str,
                           object_json: {}, accept_type: str) -> {}:
@@ -58,21 +60,23 @@ def _create_accept_reject(base_dir: str, federation_list: [],
     return new_accept
 
 
-def create_accept(base_dir: str, federation_list: [],
+def create_accept(federation_list: [],
                   nickname: str, domain: str, port: int,
                   to_url: str, cc_url: str, http_prefix: str,
                   object_json: {}) -> {}:
-    return _create_accept_reject(base_dir, federation_list,
+    """ Create json for ActivityPub Accept """
+    return _create_accept_reject(federation_list,
                                  nickname, domain, port,
                                  to_url, cc_url, http_prefix,
                                  object_json, 'Accept')
 
 
-def create_reject(base_dir: str, federation_list: [],
+def create_reject(federation_list: [],
                   nickname: str, domain: str, port: int,
                   to_url: str, cc_url: str, http_prefix: str,
                   object_json: {}) -> {}:
-    return _create_accept_reject(base_dir, federation_list,
+    """ Create json for ActivityPub Reject """
+    return _create_accept_reject(federation_list,
                                  nickname, domain, port,
                                  to_url, cc_url,
                                  http_prefix, object_json, 'Reject')
@@ -82,7 +86,7 @@ def _accept_follow(base_dir: str, message_json: {},
                    federation_list: [], debug: bool,
                    curr_domain: str,
                    onion_domain: str, i2p_domain: str) -> None:
-    """Receiving a follow Accept activity
+    """ Receiving an ActivityPub follow Accept activity
     """
     if not has_object_string_type(message_json, debug):
         return

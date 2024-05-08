@@ -777,7 +777,7 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
           'follow request which arrived at ' +
           nickname_to_follow + '@' + domain_to_follow +
           ' back to ' + accept_handle)
-    accept_json = create_accept(base_dir, federation_list,
+    accept_json = create_accept(federation_list,
                                 nickname_to_follow, domain_to_follow, port,
                                 person_url, '', http_prefix,
                                 follow_json)
@@ -864,7 +864,7 @@ def followed_account_rejects(session, session_onion, session_i2p,
 
     # create the reject activity
     reject_json = \
-        create_reject(base_dir, federation_list,
+        create_reject(federation_list,
                       nickname_to_follow, domain_to_follow, port,
                       person_url, '', http_prefix, follow_json)
     if debug:
