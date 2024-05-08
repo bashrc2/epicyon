@@ -207,7 +207,7 @@ def receive_accept_reject(base_dir: str, domain: str, message_json: {},
                           onion_domain: str, i2p_domain: str) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
-    if message_json['type'] != 'Accept' and message_json['type'] != 'Reject':
+    if message_json['type'] not in ('Accept', 'Reject'):
         return False
     if not has_actor(message_json, debug):
         return False
