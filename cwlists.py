@@ -42,6 +42,68 @@ def load_cw_lists(base_dir: str, verbose: bool) -> {}:
     return result
 
 
+def _add_cw_match_tags(item: {}, post_tags: {}, cw_text: str,
+                       warning: str) -> (bool, str):
+    """Updates content warning text using hashtags from within
+    the post content
+    """
+    matched = False
+    for tag in item['hashtags']:
+        tag = tag.strip()
+        if not tag:
+            continue
+        if not tag.startswith('#'):
+            tag = '#' + tag
+        tag = tag.lower()
+        for tag_dict in post_tags:
+            if not isinstance(tag_dict, dict):
+                continue
+            if not tag_dict.get('Hashtag'):
+                continue
+            if not tag_dict.get('name'):
+                continue
+            if tag_dict['name'].lower() == tag:
+                if cw_text:
+                    cw_text = warning + ' / ' + cw_text
+                else:
+                    cw_text = warning
+                matched = True
+                break
+        if matched:
+            break
+    return matched, cw_text
+
+
+def _add_cw_match_domains(item: {}, content: str, cw_text: str,
+                          warning: str) -> (bool, str):
+    """Updates content warning text using domains from within
+    the post content
+    """
+    matched = False
+    for domain in item['domains']:
+        if '.' in domain:
+            first_section = domain.split('.')[0]
+            if len(first_section) < 4:
+                if '.' + domain in content or \
+                   '/' + domain in content:
+                    if cw_text:
+                        cw_text = warning + ' / ' + cw_text
+                    else:
+                        cw_text = warning
+                    matched = True
+                    break
+                continue
+
+        if domain in content:
+            if cw_text:
+                cw_text = warning + ' / ' + cw_text
+            else:
+                cw_text = warning
+            matched = True
+            break
+    return matched, cw_text
+
+
 def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
                       lists_enabled: str, system_language: str,
                       languages_understood: []) -> None:
@@ -86,56 +148,16 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
 
         # match hashtags within the post
         if post_tags and item.get('hashtags'):
-            for tag in item['hashtags']:
-                tag = tag.strip()
-                if not tag:
-                    continue
-                if not tag.startswith('#'):
-                    tag = '#' + tag
-                tag = tag.lower()
-                for tag_dict in post_tags:
-                    if not isinstance(tag_dict, dict):
-                        continue
-                    if not tag_dict.get('Hashtag'):
-                        continue
-                    if not tag_dict.get('name'):
-                        continue
-                    if tag_dict['name'].lower() == tag:
-                        if cw_text:
-                            cw_text = warning + ' / ' + cw_text
-                        else:
-                            cw_text = warning
-                        matched = True
-                        break
-                if matched:
-                    break
+            matched, cw_text = \
+                _add_cw_match_tags(item, post_tags, cw_text, warning)
 
         if matched:
             continue
 
         # match domains within the content
         if item.get('domains'):
-            for domain in item['domains']:
-                if '.' in domain:
-                    first_section = domain.split('.')[0]
-                    if len(first_section) < 4:
-                        if '.' + domain in content or \
-                           '/' + domain in content:
-                            if cw_text:
-                                cw_text = warning + ' / ' + cw_text
-                            else:
-                                cw_text = warning
-                            matched = True
-                            break
-                        continue
-
-                if domain in content:
-                    if cw_text:
-                        cw_text = warning + ' / ' + cw_text
-                    else:
-                        cw_text = warning
-                    matched = True
-                    break
+            matched, cw_text = \
+                _add_cw_match_domains(item, content, cw_text, warning)
 
         if matched:
             continue
