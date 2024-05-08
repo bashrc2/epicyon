@@ -1,3 +1,5 @@
+""" ActivityPub Announce (aka retweet/boost) """
+
 __filename__ = "announce.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
