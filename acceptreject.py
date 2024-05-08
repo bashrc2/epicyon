@@ -90,9 +90,8 @@ def _accept_follow(base_dir: str, message_json: {},
     """
     if not has_object_string_type(message_json, debug):
         return
-    if not message_json['object']['type'] == 'Follow':
-        if not message_json['object']['type'] == 'Join':
-            return
+    if message_json['object']['type'] not in ('Follow', 'Join'):
+        return
     if debug:
         print('DEBUG: receiving Follow activity')
     if not message_json['object'].get('actor'):
