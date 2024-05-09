@@ -1175,8 +1175,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 return -1
             book_rating = 0.0
             if fields.get('bookrating'):
-                if isinstance(fields['bookrating'], float) or \
-                   isinstance(fields['bookrating'], int):
+                if isinstance(fields['bookrating'], (float, int)):
                     book_rating = fields['bookrating']
             media_license_url = content_license_url
             if fields.get('mediaLicense'):
