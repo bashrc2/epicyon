@@ -227,6 +227,111 @@ def _receive_new_post_process_newpost(self, fields: {},
     return -1
 
 
+def _receive_new_post_process_newblog(self, fields: {},
+                                      citations_button_press: bool,
+                                      base_dir: str, nickname: str,
+                                      newswire: {}, theme_name: str,
+                                      domain: str, domain_full: str,
+                                      port: int, translate: {},
+                                      cookie: str, calling_domain: str,
+                                      http_prefix: str, person_cache: {},
+                                      content_license_url: str,
+                                      comments_enabled: bool,
+                                      filename: str,
+                                      attachment_media_type: str,
+                                      low_bandwidth: bool,
+                                      buy_url: str, chat_url: str,
+                                      project_version: str, curr_session,
+                                      proxy_type: str, max_replies: int,
+                                      debug: bool) -> int:
+    """A new blog post has been received from the New Post screen and
+    is then sent to the outbox
+    """
+    # citations button on newblog screen
+    if citations_button_press:
+        message_json = \
+            html_citations(base_dir, nickname,
+                           domain, translate,
+                           newswire,
+                           fields['subject'],
+                           fields['message'],
+                           theme_name)
+        if message_json:
+            message_json = message_json.encode('utf-8')
+            message_json_len = len(message_json)
+            set_headers(self, 'text/html',
+                        message_json_len,
+                        cookie, calling_domain, False)
+            write2(self, message_json)
+            return 1
+        return -1
+    if not fields['subject']:
+        print('WARN: blog posts must have a title')
+        return -1
+    if not fields['message']:
+        print('WARN: blog posts must have content')
+        return -1
+    # submit button on newblog screen
+    save_to_file = False
+    client_to_server = False
+    city = None
+    conversation_id = None
+    if fields.get('conversationId'):
+        conversation_id = fields['conversationId']
+    languages_understood = \
+        get_understood_languages(base_dir, http_prefix,
+                                 nickname, domain_full,
+                                 person_cache)
+    media_license_url = content_license_url
+    if fields.get('mediaLicense'):
+        media_license_url = fields['mediaLicense']
+        if '://' not in media_license_url:
+            media_license_url = \
+                license_link_from_name(media_license_url)
+    media_creator = ''
+    if fields.get('mediaCreator'):
+        media_creator = fields['mediaCreator']
+    video_transcript = ''
+    if fields.get('videoTranscript'):
+        video_transcript = fields['videoTranscript']
+    message_json = \
+        create_blog_post(base_dir, nickname,
+                         domain, port, http_prefix,
+                         fields['message'], save_to_file,
+                         client_to_server, comments_enabled,
+                         filename, attachment_media_type,
+                         fields['imageDescription'],
+                         video_transcript, city,
+                         fields['replyTo'], fields['replyTo'],
+                         fields['subject'],
+                         fields['schedulePost'],
+                         fields['eventDate'],
+                         fields['eventTime'],
+                         fields['eventEndTime'],
+                         fields['location'],
+                         fields['languagesDropdown'],
+                         conversation_id,
+                         low_bandwidth,
+                         content_license_url,
+                         media_license_url, media_creator,
+                         languages_understood,
+                         translate, buy_url, chat_url)
+    if message_json:
+        if fields['schedulePost']:
+            return 1
+        if post_to_outbox(self, message_json,
+                          project_version,
+                          nickname,
+                          curr_session, proxy_type):
+            refresh_newswire(base_dir)
+            populate_replies(base_dir, http_prefix, domain_full,
+                             message_json,
+                             max_replies,
+                             debug)
+            return 1
+    return -1
+
+
 def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               length: int, post_bytes, boundary: str,
                               calling_domain: str, cookie: str,
@@ -515,89 +620,22 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 proxy_type,
                 max_replies)
         elif post_type == 'newblog':
-            # citations button on newblog screen
-            if citations_button_press:
-                message_json = \
-                    html_citations(base_dir, nickname,
-                                   domain, translate,
-                                   newswire,
-                                   fields['subject'],
-                                   fields['message'],
-                                   theme_name)
-                if message_json:
-                    message_json = message_json.encode('utf-8')
-                    message_json_len = len(message_json)
-                    set_headers(self, 'text/html',
-                                message_json_len,
-                                cookie, calling_domain, False)
-                    write2(self, message_json)
-                    return 1
-                return -1
-            if not fields['subject']:
-                print('WARN: blog posts must have a title')
-                return -1
-            if not fields['message']:
-                print('WARN: blog posts must have content')
-                return -1
-            # submit button on newblog screen
-            save_to_file = False
-            client_to_server = False
-            city = None
-            conversation_id = None
-            if fields.get('conversationId'):
-                conversation_id = fields['conversationId']
-            languages_understood = \
-                get_understood_languages(base_dir, http_prefix,
-                                         nickname, domain_full,
-                                         person_cache)
-            media_license_url = content_license_url
-            if fields.get('mediaLicense'):
-                media_license_url = fields['mediaLicense']
-                if '://' not in media_license_url:
-                    media_license_url = \
-                        license_link_from_name(media_license_url)
-            media_creator = ''
-            if fields.get('mediaCreator'):
-                media_creator = fields['mediaCreator']
-            video_transcript = ''
-            if fields.get('videoTranscript'):
-                video_transcript = fields['videoTranscript']
-            message_json = \
-                create_blog_post(base_dir, nickname,
-                                 domain, port, http_prefix,
-                                 fields['message'], save_to_file,
-                                 client_to_server, comments_enabled,
-                                 filename, attachment_media_type,
-                                 fields['imageDescription'],
-                                 video_transcript, city,
-                                 fields['replyTo'], fields['replyTo'],
-                                 fields['subject'],
-                                 fields['schedulePost'],
-                                 fields['eventDate'],
-                                 fields['eventTime'],
-                                 fields['eventEndTime'],
-                                 fields['location'],
-                                 fields['languagesDropdown'],
-                                 conversation_id,
-                                 low_bandwidth,
-                                 content_license_url,
-                                 media_license_url, media_creator,
-                                 languages_understood,
-                                 translate, buy_url, chat_url)
-            if message_json:
-                if fields['schedulePost']:
-                    return 1
-                if post_to_outbox(self, message_json,
-                                  project_version,
-                                  nickname,
-                                  curr_session, proxy_type):
-                    refresh_newswire(base_dir)
-                    populate_replies(base_dir, http_prefix, domain_full,
-                                     message_json,
-                                     max_replies,
-                                     debug)
-                    return 1
-            return -1
+            return _receive_new_post_process_newblog(
+                self, fields,
+                citations_button_press,
+                base_dir, nickname,
+                newswire, theme_name,
+                domain, domain_full,
+                port, translate,
+                cookie, calling_domain,
+                http_prefix, person_cache,
+                content_license_url,
+                comments_enabled, filename,
+                attachment_media_type,
+                low_bandwidth,
+                buy_url, chat_url,
+                project_version, curr_session,
+                proxy_type, max_replies, debug)
         elif post_type == 'editblogpost':
             print('Edited blog post received')
             post_filename = \
