@@ -442,8 +442,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                 cookie, calling_domain, False)
                     write2(self, message_json)
                     return 1
-                else:
-                    return -1
+                return -1
             if not fields['subject']:
                 print('WARN: blog posts must have a title')
                 return -1
