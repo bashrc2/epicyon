@@ -423,7 +423,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                      max_replies,
                                      debug)
                     return 1
-                return -1
+            return -1
         elif post_type == 'newblog':
             # citations button on newblog screen
             if citations_button_press:
@@ -508,7 +508,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                      max_replies,
                                      debug)
                     return 1
-                return -1
+            return -1
         elif post_type == 'editblogpost':
             print('Edited blog post received')
             post_filename = \
@@ -717,7 +717,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                      max_replies,
                                      debug)
                     return 1
-                return -1
+            return -1
         elif post_type == 'newfollowers':
             city = get_spoofed_city(city, base_dir, nickname, domain)
             save_to_file = False
@@ -823,7 +823,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                      max_replies,
                                      debug)
                     return 1
-                return -1
+            return -1
         elif post_type == 'newdm':
             message_json = None
             print('A DM was posted')
@@ -943,7 +943,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                      max_replies,
                                      debug)
                     return 1
-                return -1
+            return -1
         elif post_type == 'newreminder':
             message_json = None
             handle = nickname + '@' + domain_full
@@ -1047,7 +1047,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   nickname,
                                   curr_session, proxy_type):
                     return 1
-                return -1
+            return -1
         elif post_type == 'newreport':
             if attachment_media_type:
                 if attachment_media_type != 'image':
@@ -1094,7 +1094,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                   nickname,
                                   curr_session, proxy_type):
                     return 1
-                return -1
+            return -1
         elif post_type == 'newquestion':
             if not fields.get('duration'):
                 return -1
@@ -1286,7 +1286,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                                      max_replies,
                                      debug)
                     return 1
-                return -1
+            return -1
         elif post_type in ('newshare', 'newwanted'):
             if not fields.get('itemQty'):
                 print(post_type + ' no itemQty')
