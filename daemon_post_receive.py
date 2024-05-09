@@ -1397,6 +1397,143 @@ def _receive_new_post_process_newreading(self, fields: {},
     return -1
 
 
+def _receive_new_post_process_newshare(self, fields: {},
+                                       post_type: str,
+                                       attachment_media_type: str,
+                                       city: str, base_dir: str,
+                                       nickname: str, domain: str,
+                                       http_prefix: str, port: int,
+                                       filename: str, debug: bool,
+                                       translate: {},
+                                       low_bandwidth: bool,
+                                       content_license_url: str,
+                                       block_federated: bool,
+                                       calling_domain: str,
+                                       domain_full: str,
+                                       onion_domain: str,
+                                       i2p_domain: str,
+                                       person_cache: {},
+                                       max_shares_on_profile: int,
+                                       project_version: str,
+                                       curr_session,
+                                       proxy_type: str) -> int:
+    """Shared/Wanted item post has been received from New Post screen
+    and is then sent to the outbox
+    """
+    if not fields.get('itemQty'):
+        print(post_type + ' no itemQty')
+        return -1
+    if not fields.get('itemType'):
+        print(post_type + ' no itemType')
+        return -1
+    if 'itemPrice' not in fields:
+        print(post_type + ' no itemPrice')
+        return -1
+    if 'itemCurrency' not in fields:
+        print(post_type + ' no itemCurrency')
+        return -1
+    if not fields.get('category'):
+        print(post_type + ' no category')
+        return -1
+    if not fields.get('duration'):
+        print(post_type + ' no duratio')
+        return -1
+    if attachment_media_type:
+        if attachment_media_type != 'image':
+            print('Attached media is not an image')
+            return -1
+    duration_str = fields['duration']
+    if duration_str:
+        if ' ' not in duration_str:
+            duration_str = duration_str + ' days'
+    city = get_spoofed_city(city, base_dir, nickname, domain)
+    item_qty = 1
+    if fields['itemQty']:
+        if is_float(fields['itemQty']):
+            item_qty = float(fields['itemQty'])
+    item_price = "0.00"
+    item_currency = "EUR"
+    if fields['itemPrice']:
+        item_price, item_currency = \
+            get_price_from_string(fields['itemPrice'])
+    if fields['itemCurrency']:
+        item_currency = fields['itemCurrency']
+    if post_type == 'newshare':
+        print('Adding shared item')
+        shares_file_type = 'shares'
+    else:
+        print('Adding wanted item')
+        shares_file_type = 'wanted'
+    share_on_profile = False
+    if fields.get('shareOnProfile'):
+        if fields['shareOnProfile'] == 'on':
+            share_on_profile = True
+    add_share(base_dir, http_prefix, nickname, domain, port,
+              fields['subject'],
+              fields['message'],
+              filename,
+              item_qty, fields['itemType'],
+              fields['category'],
+              fields['location'],
+              duration_str,
+              debug,
+              city, item_price, item_currency,
+              fields['languagesDropdown'],
+              translate, shares_file_type,
+              low_bandwidth,
+              content_license_url,
+              share_on_profile,
+              block_federated)
+    if post_type == 'newshare':
+        # add shareOnProfile items to the actor attachments
+        # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
+        actor = \
+            get_instance_url(calling_domain,
+                             http_prefix, domain_full,
+                             onion_domain,
+                             i2p_domain) + \
+            '/users/' + nickname
+        actor_json = get_person_from_cache(base_dir,
+                                           actor, person_cache)
+        if not actor_json:
+            actor_filename = \
+                acct_dir(base_dir, nickname, domain) + '.json'
+            if os.path.isfile(actor_filename):
+                actor_json = load_json(actor_filename, 1, 1)
+        if actor_json:
+            if add_shares_to_actor(base_dir, nickname, domain,
+                                   actor_json,
+                                   max_shares_on_profile):
+                remove_person_from_cache(base_dir,
+                                         actor, person_cache)
+                store_person_in_cache(base_dir, actor,
+                                      actor_json, person_cache,
+                                      True)
+                actor_filename = \
+                    acct_dir(base_dir, nickname, domain) + '.json'
+                save_json(actor_json, actor_filename)
+                # send profile update to followers
+                update_actor_json = \
+                    get_actor_update_json(actor_json)
+                print('Sending actor update ' +
+                      'after change to attached shares: ' +
+                      str(update_actor_json))
+                post_to_outbox(self, update_actor_json,
+                               project_version,
+                               nickname,
+                               curr_session, proxy_type)
+
+    if filename:
+        if os.path.isfile(filename):
+            try:
+                os.remove(filename)
+            except OSError:
+                print('EX: _receive_new_post_process ' +
+                      'unable to delete ' + filename)
+    self.post_to_nickname = nickname
+    return 1
+
+
 def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               length: int, post_bytes, boundary: str,
                               calling_domain: str, cookie: str,
@@ -1684,7 +1821,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 project_version,
                 proxy_type,
                 max_replies)
-        elif post_type == 'newblog':
+        if post_type == 'newblog':
             return _receive_new_post_process_newblog(
                 self, fields,
                 citations_button_press,
@@ -1701,7 +1838,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 buy_url, chat_url,
                 project_version, curr_session,
                 proxy_type, max_replies, debug)
-        elif post_type == 'editblogpost':
+        if post_type == 'editblogpost':
             return _receive_new_post_process_editblog(
                 self, fields, base_dir, nickname, domain,
                 recent_posts_cache,
@@ -1714,7 +1851,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 low_bandwidth,
                 yt_replace_domain,
                 twitter_replacement_domain)
-        elif post_type == 'newunlisted':
+        if post_type == 'newunlisted':
             return _receive_new_post_process_newunlisted(
                 self, fields,
                 city, base_dir,
@@ -1758,7 +1895,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 project_version,
                 proxy_type,
                 max_replies)
-        elif post_type == 'newfollowers':
+        if post_type == 'newfollowers':
             return _receive_new_post_process_newfollowers(
                 self, fields,
                 city, base_dir,
@@ -1802,7 +1939,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 project_version,
                 proxy_type,
                 max_replies)
-        elif post_type == 'newdm':
+        if post_type == 'newdm':
             return _receive_new_post_process_newdm(
                 self, fields,
                 mentions_str,
@@ -1847,7 +1984,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 project_version,
                 proxy_type,
                 max_replies)
-        elif post_type == 'newreminder':
+        if post_type == 'newreminder':
             return _receive_new_post_process_newreminder(
                 self, fields,
                 nickname,
@@ -1891,7 +2028,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 buy_sites,
                 project_version,
                 proxy_type)
-        elif post_type == 'newreport':
+        if post_type == 'newreport':
             return _receive_new_post_process_newreport(
                 self, fields,
                 attachment_media_type,
@@ -1908,7 +2045,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 translate, auto_cw_cache,
                 project_version,
                 curr_session, proxy_type)
-        elif post_type == 'newquestion':
+        if post_type == 'newquestion':
             return _receive_new_post_process_newquestion(
                 self, fields, city, base_dir, nickname,
                 domain, domain_full, http_prefix,
@@ -1918,7 +2055,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 low_bandwidth, translate, auto_cw_cache,
                 debug, project_version, curr_session,
                 proxy_type)
-        elif post_type in ('newreadingstatus'):
+        if post_type == 'newreadingstatus':
             return _receive_new_post_process_newreading(
                 self, fields,
                 post_type,
@@ -1963,119 +2100,28 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 project_version,
                 proxy_type,
                 max_replies)
-        elif post_type in ('newshare', 'newwanted'):
-            if not fields.get('itemQty'):
-                print(post_type + ' no itemQty')
-                return -1
-            if not fields.get('itemType'):
-                print(post_type + ' no itemType')
-                return -1
-            if 'itemPrice' not in fields:
-                print(post_type + ' no itemPrice')
-                return -1
-            if 'itemCurrency' not in fields:
-                print(post_type + ' no itemCurrency')
-                return -1
-            if not fields.get('category'):
-                print(post_type + ' no category')
-                return -1
-            if not fields.get('duration'):
-                print(post_type + ' no duratio')
-                return -1
-            if attachment_media_type:
-                if attachment_media_type != 'image':
-                    print('Attached media is not an image')
-                    return -1
-            duration_str = fields['duration']
-            if duration_str:
-                if ' ' not in duration_str:
-                    duration_str = duration_str + ' days'
-            city = get_spoofed_city(city, base_dir, nickname, domain)
-            item_qty = 1
-            if fields['itemQty']:
-                if is_float(fields['itemQty']):
-                    item_qty = float(fields['itemQty'])
-            item_price = "0.00"
-            item_currency = "EUR"
-            if fields['itemPrice']:
-                item_price, item_currency = \
-                    get_price_from_string(fields['itemPrice'])
-            if fields['itemCurrency']:
-                item_currency = fields['itemCurrency']
-            if post_type == 'newshare':
-                print('Adding shared item')
-                shares_file_type = 'shares'
-            else:
-                print('Adding wanted item')
-                shares_file_type = 'wanted'
-            share_on_profile = False
-            if fields.get('shareOnProfile'):
-                if fields['shareOnProfile'] == 'on':
-                    share_on_profile = True
-            add_share(base_dir, http_prefix, nickname, domain, port,
-                      fields['subject'],
-                      fields['message'],
-                      filename,
-                      item_qty, fields['itemType'],
-                      fields['category'],
-                      fields['location'],
-                      duration_str,
-                      debug,
-                      city, item_price, item_currency,
-                      fields['languagesDropdown'],
-                      translate, shares_file_type,
-                      low_bandwidth,
-                      content_license_url,
-                      share_on_profile,
-                      block_federated)
-            if post_type == 'newshare':
-                # add shareOnProfile items to the actor attachments
-                # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
-                actor = \
-                    get_instance_url(calling_domain,
-                                     http_prefix, domain_full,
-                                     onion_domain,
-                                     i2p_domain) + \
-                    '/users/' + nickname
-                actor_json = get_person_from_cache(base_dir,
-                                                   actor, person_cache)
-                if not actor_json:
-                    actor_filename = \
-                        acct_dir(base_dir, nickname, domain) + '.json'
-                    if os.path.isfile(actor_filename):
-                        actor_json = load_json(actor_filename, 1, 1)
-                if actor_json:
-                    if add_shares_to_actor(base_dir, nickname, domain,
-                                           actor_json,
-                                           max_shares_on_profile):
-                        remove_person_from_cache(base_dir,
-                                                 actor, person_cache)
-                        store_person_in_cache(base_dir, actor,
-                                              actor_json, person_cache,
-                                              True)
-                        actor_filename = \
-                            acct_dir(base_dir, nickname, domain) + '.json'
-                        save_json(actor_json, actor_filename)
-                        # send profile update to followers
-                        update_actor_json = \
-                            get_actor_update_json(actor_json)
-                        print('Sending actor update ' +
-                              'after change to attached shares: ' +
-                              str(update_actor_json))
-                        post_to_outbox(self, update_actor_json,
-                                       project_version,
-                                       nickname,
-                                       curr_session, proxy_type)
-
-            if filename:
-                if os.path.isfile(filename):
-                    try:
-                        os.remove(filename)
-                    except OSError:
-                        print('EX: _receive_new_post_process ' +
-                              'unable to delete ' + filename)
-            self.post_to_nickname = nickname
-            return 1
+        if post_type in ('newshare', 'newwanted'):
+            return _receive_new_post_process_newshare(
+                self, fields,
+                post_type,
+                attachment_media_type,
+                city, base_dir,
+                nickname, domain,
+                http_prefix, port,
+                filename, debug,
+                translate,
+                low_bandwidth,
+                content_license_url,
+                block_federated,
+                calling_domain,
+                domain_full,
+                onion_domain,
+                i2p_domain,
+                person_cache,
+                max_shares_on_profile,
+                project_version,
+                curr_session,
+                proxy_type)
     return -1
 
 
