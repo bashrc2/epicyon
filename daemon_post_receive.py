@@ -61,6 +61,10 @@ from cache import get_person_from_cache
 from shares import add_shares_to_actor
 from person import get_actor_update_json
 
+NEW_POST_SUCCESS = 1
+NEW_POST_FAILED = -1
+NEW_POST_CANCELLED = 2
+
 
 def _receive_new_post_process_newpost(self, fields: {},
                                       base_dir: str, nickname: str,
@@ -115,7 +119,7 @@ def _receive_new_post_process_newpost(self, fields: {},
         if not fields['message']:
             # remove the pinned content from profile screen
             undo_pinned_post(base_dir, nickname, domain)
-            return 1
+            return NEW_POST_SUCCESS
 
     city = get_spoofed_city(city, base_dir, nickname, domain)
 
@@ -204,7 +208,7 @@ def _receive_new_post_process_newpost(self, fields: {},
             print('DEBUG: sending edited public post ' +
                   str(message_json))
         if fields['schedulePost']:
-            return 1
+            return NEW_POST_SUCCESS
         if pin_to_profile:
             sys_language = system_language
             content_str = \
@@ -212,7 +216,7 @@ def _receive_new_post_process_newpost(self, fields: {},
                                            sys_language)
             pin_post2(base_dir,
                       nickname, domain, content_str)
-            return 1
+            return NEW_POST_SUCCESS
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
@@ -223,8 +227,8 @@ def _receive_new_post_process_newpost(self, fields: {},
                              message_json,
                              max_replies,
                              debug)
-            return 1
-    return -1
+            return NEW_POST_SUCCESS
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_newblog(self, fields: {},
@@ -263,14 +267,14 @@ def _receive_new_post_process_newblog(self, fields: {},
                         message_json_len,
                         cookie, calling_domain, False)
             write2(self, message_json)
-            return 1
-        return -1
+            return NEW_POST_SUCCESS
+        return NEW_POST_FAILED
     if not fields['subject']:
         print('WARN: blog posts must have a title')
-        return -1
+        return NEW_POST_FAILED
     if not fields['message']:
         print('WARN: blog posts must have content')
-        return -1
+        return NEW_POST_FAILED
     # submit button on newblog screen
     save_to_file = False
     client_to_server = False
@@ -318,7 +322,7 @@ def _receive_new_post_process_newblog(self, fields: {},
                          translate, buy_url, chat_url)
     if message_json:
         if fields['schedulePost']:
-            return 1
+            return NEW_POST_SUCCESS
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
@@ -328,8 +332,8 @@ def _receive_new_post_process_newblog(self, fields: {},
                              message_json,
                              max_replies,
                              debug)
-            return 1
-    return -1
+            return NEW_POST_SUCCESS
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_editblog(self, fields: {},
@@ -446,14 +450,14 @@ def _receive_new_post_process_editblog(self, fields: {},
                                           '#users#news#')
                 save_json(post_json_object, post_filename)
             print('Edited blog post, resaved ' + post_filename)
-            return 1
+            return NEW_POST_SUCCESS
         else:
             print('Edited blog post, unable to load json for ' +
                   post_filename)
     else:
         print('Edited blog post not found ' +
               str(fields['postUrl']))
-    return -1
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_newunlisted(self, fields: {},
@@ -590,7 +594,7 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                   str(message_json))
 
         if fields['schedulePost']:
-            return 1
+            return NEW_POST_SUCCESS
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
@@ -599,8 +603,8 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                              message_json,
                              max_replies,
                              debug)
-            return 1
-    return -1
+            return NEW_POST_SUCCESS
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_newfollowers(self, fields: {},
@@ -742,7 +746,7 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                   str(message_json))
 
         if fields['schedulePost']:
-            return 1
+            return NEW_POST_SUCCESS
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
@@ -751,8 +755,8 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                              message_json,
                              max_replies,
                              debug)
-            return 1
-    return -1
+            return NEW_POST_SUCCESS
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_newdm(self, fields: {},
@@ -907,7 +911,7 @@ def _receive_new_post_process_newdm(self, fields: {},
                   str(message_json))
 
         if fields['schedulePost']:
-            return 1
+            return NEW_POST_SUCCESS
         print('Sending new DM to ' +
               str(message_json['object']['to']))
         if post_to_outbox(self, message_json,
@@ -918,8 +922,8 @@ def _receive_new_post_process_newdm(self, fields: {},
                              message_json,
                              max_replies,
                              debug)
-            return 1
-    return -1
+            return NEW_POST_SUCCESS
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
@@ -1023,7 +1027,7 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                    auto_cw_cache)
     if message_json:
         if fields['schedulePost']:
-            return 1
+            return NEW_POST_SUCCESS
         print('DEBUG: new reminder to ' +
               str(message_json['object']['to']) + ' ' +
               str(edited_postid))
@@ -1067,8 +1071,8 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                           project_version,
                           nickname,
                           curr_session, proxy_type):
-            return 1
-    return -1
+            return NEW_POST_SUCCESS
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_newreport(self, fields: {},
@@ -1091,7 +1095,7 @@ def _receive_new_post_process_newreport(self, fields: {},
     """
     if attachment_media_type:
         if attachment_media_type != 'image':
-            return -1
+            return NEW_POST_FAILED
     # So as to be sure that this only goes to moderators
     # and not accounts being reported we disable any
     # included fediverse addresses by replacing '@' with '-at-'
@@ -1133,8 +1137,8 @@ def _receive_new_post_process_newreport(self, fields: {},
                           project_version,
                           nickname,
                           curr_session, proxy_type):
-            return 1
-    return -1
+            return NEW_POST_SUCCESS
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_newquestion(self, fields: {},
@@ -1159,20 +1163,20 @@ def _receive_new_post_process_newquestion(self, fields: {},
     and is then sent to the outbox
     """
     if not fields.get('duration'):
-        return -1
+        return NEW_POST_FAILED
     if not fields.get('message'):
-        return -1
+        return NEW_POST_FAILED
     q_options = []
     for question_ctr in range(8):
         if fields.get('questionOption' + str(question_ctr)):
             q_options.append(fields['questionOption' +
                                     str(question_ctr)])
     if not q_options:
-        return -1
+        return NEW_POST_FAILED
     city = get_spoofed_city(city, base_dir, nickname, domain)
     if isinstance(fields['duration'], str):
         if len(fields['duration']) > 5:
-            return -1
+            return NEW_POST_FAILED
     int_duration_days = int(fields['duration'])
     languages_understood = \
         get_understood_languages(base_dir, http_prefix,
@@ -1216,8 +1220,8 @@ def _receive_new_post_process_newquestion(self, fields: {},
                           project_version,
                           nickname,
                           curr_session, proxy_type):
-            return 1
-    return -1
+            return NEW_POST_SUCCESS
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_newreading(self, fields: {},
@@ -1268,20 +1272,20 @@ def _receive_new_post_process_newreading(self, fields: {},
     """
     if not fields.get('readingupdatetype'):
         print(post_type + ' no readingupdatetype')
-        return -1
+        return NEW_POST_FAILED
     if fields['readingupdatetype'] not in ('readingupdatewant',
                                            'readingupdateread',
                                            'readingupdatefinished',
                                            'readingupdaterating'):
         print(post_type + ' not recognised ' +
               fields['readingupdatetype'])
-        return -1
+        return NEW_POST_FAILED
     if not fields.get('booktitle'):
         print(post_type + ' no booktitle')
-        return -1
+        return NEW_POST_FAILED
     if not fields.get('bookurl'):
         print(post_type + ' no bookurl')
-        return -1
+        return NEW_POST_FAILED
     book_rating = 0.0
     if fields.get('bookrating'):
         if isinstance(fields['bookrating'], (float, int)):
@@ -1372,7 +1376,7 @@ def _receive_new_post_process_newreading(self, fields: {},
             print('DEBUG: sending edited reading status post ' +
                   str(message_json))
         if fields['schedulePost']:
-            return 1
+            return NEW_POST_SUCCESS
         if not fields.get('pinToProfile'):
             pin_to_profile = False
         else:
@@ -1383,7 +1387,7 @@ def _receive_new_post_process_newreading(self, fields: {},
                 get_base_content_from_post(message_json,
                                            sys_language)
             pin_post2(base_dir, nickname, domain, content_str)
-            return 1
+            return NEW_POST_SUCCESS
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
@@ -1393,8 +1397,8 @@ def _receive_new_post_process_newreading(self, fields: {},
                              message_json,
                              max_replies,
                              debug)
-            return 1
-    return -1
+            return NEW_POST_SUCCESS
+    return NEW_POST_FAILED
 
 
 def _receive_new_post_process_newshare(self, fields: {},
@@ -1422,26 +1426,26 @@ def _receive_new_post_process_newshare(self, fields: {},
     """
     if not fields.get('itemQty'):
         print(post_type + ' no itemQty')
-        return -1
+        return NEW_POST_FAILED
     if not fields.get('itemType'):
         print(post_type + ' no itemType')
-        return -1
+        return NEW_POST_FAILED
     if 'itemPrice' not in fields:
         print(post_type + ' no itemPrice')
-        return -1
+        return NEW_POST_FAILED
     if 'itemCurrency' not in fields:
         print(post_type + ' no itemCurrency')
-        return -1
+        return NEW_POST_FAILED
     if not fields.get('category'):
         print(post_type + ' no category')
-        return -1
+        return NEW_POST_FAILED
     if not fields.get('duration'):
         print(post_type + ' no duratio')
-        return -1
+        return NEW_POST_FAILED
     if attachment_media_type:
         if attachment_media_type != 'image':
             print('Attached media is not an image')
-            return -1
+            return NEW_POST_FAILED
     duration_str = fields['duration']
     if duration_str:
         if ' ' not in duration_str:
@@ -1531,7 +1535,7 @@ def _receive_new_post_process_newshare(self, fields: {},
                 print('EX: _receive_new_post_process ' +
                       'unable to delete ' + filename)
     self.post_to_nickname = nickname
-    return 1
+    return NEW_POST_SUCCESS
 
 
 def _receive_new_post_process(self, post_type: str, path: str, headers: {},
@@ -1583,7 +1587,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         print('DEBUG: receiving POST')
 
     if ' boundary=' not in headers['Content-Type']:
-        return -1
+        return NEW_POST_FAILED
 
     if debug:
         print('DEBUG: receiving POST headers ' +
@@ -1602,7 +1606,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
     if not nickname:
         print('WARN: no nickname found when receiving ' + post_type +
               ' path ' + path)
-        return -1
+        return NEW_POST_FAILED
 
     # get the message id of an edited post
     edited_postid = None
@@ -1626,7 +1630,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
     length = int(headers['Content-Length'])
     if length > max_post_length:
         print('POST size too large')
-        return -1
+        return NEW_POST_FAILED
 
     boundary = headers['Content-Type'].split('boundary=')[1]
     if ';' in boundary:
@@ -1701,7 +1705,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
            not fields.get('imageDescription') and \
            not fields.get('pinToProfile'):
             print('WARN: no message, image description or pin')
-            return -1
+            return NEW_POST_FAILED
         submit_text1 = translate['Publish']
         submit_text2 = translate['Send']
         submit_text3 = submit_text2
@@ -1714,10 +1718,10 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                fields['submitPost'] != submit_text2 and \
                fields['submitPost'] != submit_text3:
                 print('WARN: no submit field ' + fields['submitPost'])
-                return -1
+                return NEW_POST_FAILED
         else:
             print('WARN: no submitPost')
-            return 2
+            return NEW_POST_CANCELLED
 
     if not fields.get('imageDescription'):
         fields['imageDescription'] = None
@@ -2124,7 +2128,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             project_version,
             curr_session,
             proxy_type)
-    return -1
+    return NEW_POST_FAILED
 
 
 def receive_new_post(self, post_type, path: str,
