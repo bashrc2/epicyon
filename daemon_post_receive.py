@@ -1137,6 +1137,89 @@ def _receive_new_post_process_newreport(self, fields: {},
     return -1
 
 
+def _receive_new_post_process_newquestion(self, fields: {},
+                                          city: str, base_dir: str,
+                                          nickname: str,
+                                          domain: str, domain_full: str,
+                                          http_prefix: str,
+                                          person_cache: {},
+                                          content_license_url: str,
+                                          port: int,
+                                          comments_enabled: bool,
+                                          filename: str,
+                                          attachment_media_type: str,
+                                          low_bandwidth: bool,
+                                          translate: {},
+                                          auto_cw_cache: {},
+                                          debug: bool,
+                                          project_version: str,
+                                          curr_session,
+                                          proxy_type: str) -> int:
+    """Question/poll post has been received from New Post screen
+    and is then sent to the outbox
+    """
+    if not fields.get('duration'):
+        return -1
+    if not fields.get('message'):
+        return -1
+    q_options = []
+    for question_ctr in range(8):
+        if fields.get('questionOption' + str(question_ctr)):
+            q_options.append(fields['questionOption' +
+                                    str(question_ctr)])
+    if not q_options:
+        return -1
+    city = get_spoofed_city(city, base_dir, nickname, domain)
+    if isinstance(fields['duration'], str):
+        if len(fields['duration']) > 5:
+            return -1
+    int_duration_days = int(fields['duration'])
+    languages_understood = \
+        get_understood_languages(base_dir, http_prefix,
+                                 nickname, domain_full,
+                                 person_cache)
+    media_license_url = content_license_url
+    if fields.get('mediaLicense'):
+        media_license_url = fields['mediaLicense']
+        if '://' not in media_license_url:
+            media_license_url = \
+                license_link_from_name(media_license_url)
+    media_creator = ''
+    if fields.get('mediaCreator'):
+        media_creator = fields['mediaCreator']
+    video_transcript = ''
+    if fields.get('videoTranscript'):
+        video_transcript = fields['videoTranscript']
+    message_json = \
+        create_question_post(base_dir, nickname, domain,
+                             port, http_prefix,
+                             fields['message'], q_options,
+                             False, False,
+                             comments_enabled,
+                             filename, attachment_media_type,
+                             fields['imageDescription'],
+                             video_transcript,
+                             city,
+                             fields['subject'],
+                             int_duration_days,
+                             fields['languagesDropdown'],
+                             low_bandwidth,
+                             content_license_url,
+                             media_license_url, media_creator,
+                             languages_understood,
+                             translate,
+                             auto_cw_cache)
+    if message_json:
+        if debug:
+            print('DEBUG: new Question')
+        if post_to_outbox(self, message_json,
+                          project_version,
+                          nickname,
+                          curr_session, proxy_type):
+            return 1
+    return -1
+
+
 def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               length: int, post_bytes, boundary: str,
                               calling_domain: str, cookie: str,
@@ -1649,66 +1732,15 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 project_version,
                 curr_session, proxy_type)
         elif post_type == 'newquestion':
-            if not fields.get('duration'):
-                return -1
-            if not fields.get('message'):
-                return -1
-            q_options = []
-            for question_ctr in range(8):
-                if fields.get('questionOption' + str(question_ctr)):
-                    q_options.append(fields['questionOption' +
-                                            str(question_ctr)])
-            if not q_options:
-                return -1
-            city = get_spoofed_city(city, base_dir, nickname, domain)
-            if isinstance(fields['duration'], str):
-                if len(fields['duration']) > 5:
-                    return -1
-            int_duration_days = int(fields['duration'])
-            languages_understood = \
-                get_understood_languages(base_dir, http_prefix,
-                                         nickname, domain_full,
-                                         person_cache)
-            media_license_url = content_license_url
-            if fields.get('mediaLicense'):
-                media_license_url = fields['mediaLicense']
-                if '://' not in media_license_url:
-                    media_license_url = \
-                        license_link_from_name(media_license_url)
-            media_creator = ''
-            if fields.get('mediaCreator'):
-                media_creator = fields['mediaCreator']
-            video_transcript = ''
-            if fields.get('videoTranscript'):
-                video_transcript = fields['videoTranscript']
-            message_json = \
-                create_question_post(base_dir, nickname, domain,
-                                     port, http_prefix,
-                                     fields['message'], q_options,
-                                     False, False,
-                                     comments_enabled,
-                                     filename, attachment_media_type,
-                                     fields['imageDescription'],
-                                     video_transcript,
-                                     city,
-                                     fields['subject'],
-                                     int_duration_days,
-                                     fields['languagesDropdown'],
-                                     low_bandwidth,
-                                     content_license_url,
-                                     media_license_url, media_creator,
-                                     languages_understood,
-                                     translate,
-                                     auto_cw_cache)
-            if message_json:
-                if debug:
-                    print('DEBUG: new Question')
-                if post_to_outbox(self, message_json,
-                                  project_version,
-                                  nickname,
-                                  curr_session, proxy_type):
-                    return 1
-            return -1
+            return _receive_new_post_process_newquestion(
+                self, fields, city, base_dir, nickname,
+                domain, domain_full, http_prefix,
+                person_cache, content_license_url,
+                port, comments_enabled, filename,
+                attachment_media_type,
+                low_bandwidth, translate, auto_cw_cache,
+                debug, project_version, curr_session,
+                proxy_type)
         elif post_type in ('newreadingstatus'):
             if not fields.get('readingupdatetype'):
                 print(post_type + ' no readingupdatetype')
