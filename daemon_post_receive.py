@@ -332,6 +332,130 @@ def _receive_new_post_process_newblog(self, fields: {},
     return -1
 
 
+def _receive_new_post_process_editblog(self, fields: {},
+                                       base_dir: str,
+                                       nickname: str, domain: str,
+                                       recent_posts_cache: {},
+                                       http_prefix: str, translate: {},
+                                       curr_session, debug: bool,
+                                       system_language: str,
+                                       port: int, filename: str,
+                                       city: str, content_license_url: str,
+                                       attachment_media_type: str,
+                                       low_bandwidth: bool,
+                                       yt_replace_domain: str,
+                                       twitter_replacement_domain: str) -> int:
+    """Edited blog post has been received and is then sent to the outbox
+    """
+    print('Edited blog post received')
+    post_filename = \
+        locate_post(base_dir, nickname, domain, fields['postUrl'])
+    if os.path.isfile(post_filename):
+        post_json_object = load_json(post_filename)
+        if post_json_object:
+            cached_filename = \
+                acct_dir(base_dir, nickname, domain) + \
+                '/postcache/' + \
+                fields['postUrl'].replace('/', '#') + '.html'
+            if os.path.isfile(cached_filename):
+                print('Edited blog post, removing cached html')
+                try:
+                    os.remove(cached_filename)
+                except OSError:
+                    print('EX: _receive_new_post_process ' +
+                          'unable to delete ' + cached_filename)
+            # remove from memory cache
+            remove_post_from_cache(post_json_object,
+                                   recent_posts_cache)
+            # change the blog post title
+            post_json_object['object']['summary'] = \
+                fields['subject']
+            # format message
+            tags = []
+            hashtags_dict = {}
+            mentioned_recipients = []
+            fields['message'] = \
+                add_html_tags(base_dir, http_prefix,
+                              nickname, domain,
+                              fields['message'],
+                              mentioned_recipients,
+                              hashtags_dict,
+                              translate, True)
+            # replace emoji with unicode
+            tags = []
+            for _, tag in hashtags_dict.items():
+                tags.append(tag)
+            # get list of tags
+            fields['message'] = \
+                replace_emoji_from_tags(curr_session,
+                                        base_dir,
+                                        fields['message'],
+                                        tags, 'content',
+                                        debug, True)
+
+            post_json_object['object']['content'] = \
+                fields['message']
+            content_map = post_json_object['object']['contentMap']
+            content_map[system_language] = \
+                fields['message']
+
+            img_description = ''
+            if fields.get('imageDescription'):
+                img_description = fields['imageDescription']
+            video_transcript = ''
+            if fields.get('videoTranscript'):
+                video_transcript = fields['videoTranscript']
+
+            if filename:
+                city = get_spoofed_city(city, base_dir, nickname,
+                                        domain)
+                license_url = content_license_url
+                if fields.get('mediaLicense'):
+                    license_url = fields['mediaLicense']
+                    if '://' not in license_url:
+                        license_url = \
+                            license_link_from_name(license_url)
+                creator = ''
+                if fields.get('mediaCreator'):
+                    creator = fields['mediaCreator']
+                post_json_object['object'] = \
+                    attach_media(base_dir,
+                                 http_prefix, nickname,
+                                 domain, port,
+                                 post_json_object['object'],
+                                 filename,
+                                 attachment_media_type,
+                                 img_description,
+                                 video_transcript,
+                                 city, low_bandwidth,
+                                 license_url, creator,
+                                 fields['languagesDropdown'])
+
+            replace_you_tube(post_json_object,
+                             yt_replace_domain,
+                             system_language)
+            replace_twitter(post_json_object,
+                            twitter_replacement_domain,
+                            system_language)
+            save_json(post_json_object, post_filename)
+            # also save to the news actor
+            if nickname != 'news':
+                post_filename = \
+                    post_filename.replace('#users#' +
+                                          nickname + '#',
+                                          '#users#news#')
+                save_json(post_json_object, post_filename)
+            print('Edited blog post, resaved ' + post_filename)
+            return 1
+        else:
+            print('Edited blog post, unable to load json for ' +
+                  post_filename)
+    else:
+        print('Edited blog post not found ' +
+              str(fields['postUrl']))
+    return -1
+
+
 def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               length: int, post_bytes, boundary: str,
                               calling_domain: str, cookie: str,
@@ -637,113 +761,18 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 project_version, curr_session,
                 proxy_type, max_replies, debug)
         elif post_type == 'editblogpost':
-            print('Edited blog post received')
-            post_filename = \
-                locate_post(base_dir, nickname, domain, fields['postUrl'])
-            if os.path.isfile(post_filename):
-                post_json_object = load_json(post_filename)
-                if post_json_object:
-                    cached_filename = \
-                        acct_dir(base_dir, nickname, domain) + \
-                        '/postcache/' + \
-                        fields['postUrl'].replace('/', '#') + '.html'
-                    if os.path.isfile(cached_filename):
-                        print('Edited blog post, removing cached html')
-                        try:
-                            os.remove(cached_filename)
-                        except OSError:
-                            print('EX: _receive_new_post_process ' +
-                                  'unable to delete ' + cached_filename)
-                    # remove from memory cache
-                    remove_post_from_cache(post_json_object,
-                                           recent_posts_cache)
-                    # change the blog post title
-                    post_json_object['object']['summary'] = \
-                        fields['subject']
-                    # format message
-                    tags = []
-                    hashtags_dict = {}
-                    mentioned_recipients = []
-                    fields['message'] = \
-                        add_html_tags(base_dir, http_prefix,
-                                      nickname, domain,
-                                      fields['message'],
-                                      mentioned_recipients,
-                                      hashtags_dict,
-                                      translate, True)
-                    # replace emoji with unicode
-                    tags = []
-                    for _, tag in hashtags_dict.items():
-                        tags.append(tag)
-                    # get list of tags
-                    fields['message'] = \
-                        replace_emoji_from_tags(curr_session,
-                                                base_dir,
-                                                fields['message'],
-                                                tags, 'content',
-                                                debug, True)
-
-                    post_json_object['object']['content'] = \
-                        fields['message']
-                    content_map = post_json_object['object']['contentMap']
-                    content_map[system_language] = \
-                        fields['message']
-
-                    img_description = ''
-                    if fields.get('imageDescription'):
-                        img_description = fields['imageDescription']
-                    video_transcript = ''
-                    if fields.get('videoTranscript'):
-                        video_transcript = fields['videoTranscript']
-
-                    if filename:
-                        city = get_spoofed_city(city, base_dir, nickname,
-                                                domain)
-                        license_url = content_license_url
-                        if fields.get('mediaLicense'):
-                            license_url = fields['mediaLicense']
-                            if '://' not in license_url:
-                                license_url = \
-                                    license_link_from_name(license_url)
-                        creator = ''
-                        if fields.get('mediaCreator'):
-                            creator = fields['mediaCreator']
-                        post_json_object['object'] = \
-                            attach_media(base_dir,
-                                         http_prefix, nickname,
-                                         domain, port,
-                                         post_json_object['object'],
-                                         filename,
-                                         attachment_media_type,
-                                         img_description,
-                                         video_transcript,
-                                         city, low_bandwidth,
-                                         license_url, creator,
-                                         fields['languagesDropdown'])
-
-                    replace_you_tube(post_json_object,
-                                     yt_replace_domain,
-                                     system_language)
-                    replace_twitter(post_json_object,
-                                    twitter_replacement_domain,
-                                    system_language)
-                    save_json(post_json_object, post_filename)
-                    # also save to the news actor
-                    if nickname != 'news':
-                        post_filename = \
-                            post_filename.replace('#users#' +
-                                                  nickname + '#',
-                                                  '#users#news#')
-                        save_json(post_json_object, post_filename)
-                    print('Edited blog post, resaved ' + post_filename)
-                    return 1
-                else:
-                    print('Edited blog post, unable to load json for ' +
-                          post_filename)
-            else:
-                print('Edited blog post not found ' +
-                      str(fields['postUrl']))
-            return -1
+            return _receive_new_post_process_editblog(
+                self, fields, base_dir, nickname, domain,
+                recent_posts_cache,
+                http_prefix, translate,
+                curr_session, debug,
+                system_language,
+                port, filename,
+                city, content_license_url,
+                attachment_media_type,
+                low_bandwidth,
+                yt_replace_domain,
+                twitter_replacement_domain)
         elif post_type == 'newunlisted':
             city = get_spoofed_city(city, base_dir, nickname, domain)
             save_to_file = False
