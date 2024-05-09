@@ -1071,6 +1071,72 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
     return -1
 
 
+def _receive_new_post_process_newreport(self, fields: {},
+                                        attachment_media_type: str,
+                                        city: str, base_dir: str,
+                                        nickname: str, domain: str,
+                                        domain_full: str,
+                                        http_prefix: str,
+                                        person_cache: {},
+                                        content_license_url: str,
+                                        port: int, mentions_str: str,
+                                        filename: str,
+                                        low_bandwidth: bool,
+                                        debug: bool,
+                                        translate: {}, auto_cw_cache: {},
+                                        project_version: str,
+                                        curr_session, proxy_type: str) -> int:
+    """Report post has been received from New Post screen
+    and is then sent to the outbox
+    """
+    if attachment_media_type:
+        if attachment_media_type != 'image':
+            return -1
+    # So as to be sure that this only goes to moderators
+    # and not accounts being reported we disable any
+    # included fediverse addresses by replacing '@' with '-at-'
+    fields['message'] = fields['message'].replace('@', '-at-')
+    city = get_spoofed_city(city, base_dir, nickname, domain)
+    languages_understood = \
+        get_understood_languages(base_dir, http_prefix,
+                                 nickname, domain_full,
+                                 person_cache)
+    media_license_url = content_license_url
+    if fields.get('mediaLicense'):
+        media_license_url = fields['mediaLicense']
+        if '://' not in media_license_url:
+            media_license_url = \
+                license_link_from_name(media_license_url)
+    media_creator = ''
+    if fields.get('mediaCreator'):
+        media_creator = fields['mediaCreator']
+    video_transcript = ''
+    if fields.get('videoTranscript'):
+        video_transcript = fields['videoTranscript']
+    message_json = \
+        create_report_post(base_dir, nickname, domain, port,
+                           http_prefix,
+                           mentions_str + fields['message'],
+                           False, False, True,
+                           filename, attachment_media_type,
+                           fields['imageDescription'],
+                           video_transcript,
+                           city, debug, fields['subject'],
+                           fields['languagesDropdown'],
+                           low_bandwidth,
+                           content_license_url,
+                           media_license_url, media_creator,
+                           languages_understood,
+                           translate, auto_cw_cache)
+    if message_json:
+        if post_to_outbox(self, message_json,
+                          project_version,
+                          nickname,
+                          curr_session, proxy_type):
+            return 1
+    return -1
+
+
 def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               length: int, post_bytes, boundary: str,
                               calling_domain: str, cookie: str,
@@ -1566,52 +1632,22 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 project_version,
                 proxy_type)
         elif post_type == 'newreport':
-            if attachment_media_type:
-                if attachment_media_type != 'image':
-                    return -1
-            # So as to be sure that this only goes to moderators
-            # and not accounts being reported we disable any
-            # included fediverse addresses by replacing '@' with '-at-'
-            fields['message'] = fields['message'].replace('@', '-at-')
-            city = get_spoofed_city(city, base_dir, nickname, domain)
-            languages_understood = \
-                get_understood_languages(base_dir, http_prefix,
-                                         nickname, domain_full,
-                                         person_cache)
-            media_license_url = content_license_url
-            if fields.get('mediaLicense'):
-                media_license_url = fields['mediaLicense']
-                if '://' not in media_license_url:
-                    media_license_url = \
-                        license_link_from_name(media_license_url)
-            media_creator = ''
-            if fields.get('mediaCreator'):
-                media_creator = fields['mediaCreator']
-            video_transcript = ''
-            if fields.get('videoTranscript'):
-                video_transcript = fields['videoTranscript']
-            message_json = \
-                create_report_post(base_dir, nickname, domain, port,
-                                   http_prefix,
-                                   mentions_str + fields['message'],
-                                   False, False, True,
-                                   filename, attachment_media_type,
-                                   fields['imageDescription'],
-                                   video_transcript,
-                                   city, debug, fields['subject'],
-                                   fields['languagesDropdown'],
-                                   low_bandwidth,
-                                   content_license_url,
-                                   media_license_url, media_creator,
-                                   languages_understood,
-                                   translate, auto_cw_cache)
-            if message_json:
-                if post_to_outbox(self, message_json,
-                                  project_version,
-                                  nickname,
-                                  curr_session, proxy_type):
-                    return 1
-            return -1
+            return _receive_new_post_process_newreport(
+                self, fields,
+                attachment_media_type,
+                city, base_dir,
+                nickname, domain,
+                domain_full,
+                http_prefix,
+                person_cache,
+                content_license_url,
+                port, mentions_str,
+                filename,
+                low_bandwidth,
+                debug,
+                translate, auto_cw_cache,
+                project_version,
+                curr_session, proxy_type)
         elif post_type == 'newquestion':
             if not fields.get('duration'):
                 return -1
