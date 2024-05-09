@@ -1578,550 +1578,552 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
     # 0=this is not a new post
     # 1=new post success
     # -1=new post failed
-    # 2=new post canceled
+    # 2=new post cancelled
     if debug:
         print('DEBUG: receiving POST')
 
-    if ' boundary=' in headers['Content-Type']:
-        if debug:
-            print('DEBUG: receiving POST headers ' +
-                  headers['Content-Type'] +
-                  ' path ' + path)
-        nickname = None
-        nickname_str = path.split('/users/')[1]
-        if '?' in nickname_str:
-            nickname_str = nickname_str.split('?')[0]
-        if '/' in nickname_str:
-            nickname = nickname_str.split('/')[0]
+    if ' boundary=' not in headers['Content-Type']:
+        return -1
+
+    if debug:
+        print('DEBUG: receiving POST headers ' +
+              headers['Content-Type'] +
+              ' path ' + path)
+    nickname = None
+    nickname_str = path.split('/users/')[1]
+    if '?' in nickname_str:
+        nickname_str = nickname_str.split('?')[0]
+    if '/' in nickname_str:
+        nickname = nickname_str.split('/')[0]
+    else:
+        nickname = nickname_str
+    if debug:
+        print('DEBUG: POST nickname ' + str(nickname))
+    if not nickname:
+        print('WARN: no nickname found when receiving ' + post_type +
+              ' path ' + path)
+        return -1
+
+    # get the message id of an edited post
+    edited_postid = None
+    print('DEBUG: edited_postid path ' + path)
+    if '?editid=' in path:
+        edited_postid = path.split('?editid=')[1]
+        if '?' in edited_postid:
+            edited_postid = edited_postid.split('?')[0]
+        print('DEBUG: edited_postid ' + edited_postid)
+
+    # get the published date of an edited post
+    edited_published = None
+    if '?editpub=' in path:
+        edited_published = path.split('?editpub=')[1]
+        if '?' in edited_published:
+            edited_published = \
+                edited_published.split('?')[0]
+        print('DEBUG: edited_published ' +
+              edited_published)
+
+    length = int(headers['Content-Length'])
+    if length > max_post_length:
+        print('POST size too large')
+        return -1
+
+    boundary = headers['Content-Type'].split('boundary=')[1]
+    if ';' in boundary:
+        boundary = boundary.split(';')[0]
+
+    # Note: we don't use cgi here because it's due to be deprecated
+    # in Python 3.8/3.10
+    # Instead we use the multipart mime parser from the email module
+    if debug:
+        print('DEBUG: extracting media from POST')
+    media_bytes, post_bytes = \
+        extract_media_in_form_post(post_bytes, boundary, 'attachpic')
+    if debug:
+        if media_bytes:
+            print('DEBUG: media was found. ' +
+                  str(len(media_bytes)) + ' bytes')
         else:
-            nickname = nickname_str
-        if debug:
-            print('DEBUG: POST nickname ' + str(nickname))
-        if not nickname:
-            print('WARN: no nickname found when receiving ' + post_type +
-                  ' path ' + path)
-            return -1
+            print('DEBUG: no media was found in POST')
 
-        # get the message id of an edited post
-        edited_postid = None
-        print('DEBUG: edited_postid path ' + path)
-        if '?editid=' in path:
-            edited_postid = path.split('?editid=')[1]
-            if '?' in edited_postid:
-                edited_postid = edited_postid.split('?')[0]
-            print('DEBUG: edited_postid ' + edited_postid)
+    # Note: a .temp extension is used here so that at no time is
+    # an image with metadata publicly exposed, even for a few mS
+    filename_base = \
+        acct_dir(base_dir, nickname, domain) + '/upload.temp'
 
-        # get the published date of an edited post
-        edited_published = None
-        if '?editpub=' in path:
-            edited_published = path.split('?editpub=')[1]
-            if '?' in edited_published:
-                edited_published = \
-                    edited_published.split('?')[0]
-            print('DEBUG: edited_published ' +
-                  edited_published)
-
-        length = int(headers['Content-Length'])
-        if length > max_post_length:
-            print('POST size too large')
-            return -1
-
-        boundary = headers['Content-Type'].split('boundary=')[1]
-        if ';' in boundary:
-            boundary = boundary.split(';')[0]
-
-        # Note: we don't use cgi here because it's due to be deprecated
-        # in Python 3.8/3.10
-        # Instead we use the multipart mime parser from the email module
-        if debug:
-            print('DEBUG: extracting media from POST')
-        media_bytes, post_bytes = \
-            extract_media_in_form_post(post_bytes, boundary, 'attachpic')
-        if debug:
-            if media_bytes:
-                print('DEBUG: media was found. ' +
-                      str(len(media_bytes)) + ' bytes')
-            else:
-                print('DEBUG: no media was found in POST')
-
-        # Note: a .temp extension is used here so that at no time is
-        # an image with metadata publicly exposed, even for a few mS
-        filename_base = \
-            acct_dir(base_dir, nickname, domain) + '/upload.temp'
-
-        filename, attachment_media_type = \
-            save_media_in_form_post(media_bytes, debug, filename_base)
-        if debug:
-            if filename:
-                print('DEBUG: POST media filename is ' + filename)
-            else:
-                print('DEBUG: no media filename in POST')
-
+    filename, attachment_media_type = \
+        save_media_in_form_post(media_bytes, debug, filename_base)
+    if debug:
         if filename:
-            if is_image_file(filename):
-                post_image_filename = filename.replace('.temp', '')
-                print('Removing metadata from ' + post_image_filename)
-                city = get_spoofed_city(city, base_dir, nickname, domain)
-                if low_bandwidth:
-                    convert_image_to_low_bandwidth(filename)
-                process_meta_data(base_dir, nickname, domain,
-                                  filename, post_image_filename, city,
-                                  content_license_url)
-                if os.path.isfile(post_image_filename):
-                    print('POST media saved to ' + post_image_filename)
-                else:
-                    print('ERROR: POST media could not be saved to ' +
-                          post_image_filename)
+            print('DEBUG: POST media filename is ' + filename)
+        else:
+            print('DEBUG: no media filename in POST')
+
+    if filename:
+        if is_image_file(filename):
+            post_image_filename = filename.replace('.temp', '')
+            print('Removing metadata from ' + post_image_filename)
+            city = get_spoofed_city(city, base_dir, nickname, domain)
+            if low_bandwidth:
+                convert_image_to_low_bandwidth(filename)
+            process_meta_data(base_dir, nickname, domain,
+                              filename, post_image_filename, city,
+                              content_license_url)
+            if os.path.isfile(post_image_filename):
+                print('POST media saved to ' + post_image_filename)
             else:
-                if os.path.isfile(filename):
-                    new_filename = filename.replace('.temp', '')
-                    os.rename(filename, new_filename)
-                    filename = new_filename
+                print('ERROR: POST media could not be saved to ' +
+                      post_image_filename)
+        else:
+            if os.path.isfile(filename):
+                new_filename = filename.replace('.temp', '')
+                os.rename(filename, new_filename)
+                filename = new_filename
 
-        fields = \
-            extract_text_fields_in_post(post_bytes, boundary, debug, None)
-        if debug:
-            if fields:
-                print('DEBUG: text field extracted from POST ' +
-                      str(fields))
-            else:
-                print('WARN: no text fields could be extracted from POST')
+    fields = \
+        extract_text_fields_in_post(post_bytes, boundary, debug, None)
+    if debug:
+        if fields:
+            print('DEBUG: text field extracted from POST ' +
+                  str(fields))
+        else:
+            print('WARN: no text fields could be extracted from POST')
 
-        # was the citations button pressed on the newblog screen?
-        citations_button_press = False
-        if post_type == 'newblog' and fields.get('submitCitations'):
-            if fields['submitCitations'] == translate['Citations']:
-                citations_button_press = True
+    # was the citations button pressed on the newblog screen?
+    citations_button_press = False
+    if post_type == 'newblog' and fields.get('submitCitations'):
+        if fields['submitCitations'] == translate['Citations']:
+            citations_button_press = True
 
-        if not citations_button_press:
-            # process the received text fields from the POST
-            if not fields.get('message') and \
-               not fields.get('imageDescription') and \
-               not fields.get('pinToProfile'):
-                print('WARN: no message, image description or pin')
+    if not citations_button_press:
+        # process the received text fields from the POST
+        if not fields.get('message') and \
+           not fields.get('imageDescription') and \
+           not fields.get('pinToProfile'):
+            print('WARN: no message, image description or pin')
+            return -1
+        submit_text1 = translate['Publish']
+        submit_text2 = translate['Send']
+        submit_text3 = submit_text2
+        custom_submit_text = \
+            get_config_param(base_dir, 'customSubmitText')
+        if custom_submit_text:
+            submit_text3 = custom_submit_text
+        if fields.get('submitPost'):
+            if fields['submitPost'] != submit_text1 and \
+               fields['submitPost'] != submit_text2 and \
+               fields['submitPost'] != submit_text3:
+                print('WARN: no submit field ' + fields['submitPost'])
                 return -1
-            submit_text1 = translate['Publish']
-            submit_text2 = translate['Send']
-            submit_text3 = submit_text2
-            custom_submit_text = \
-                get_config_param(base_dir, 'customSubmitText')
-            if custom_submit_text:
-                submit_text3 = custom_submit_text
-            if fields.get('submitPost'):
-                if fields['submitPost'] != submit_text1 and \
-                   fields['submitPost'] != submit_text2 and \
-                   fields['submitPost'] != submit_text3:
-                    print('WARN: no submit field ' + fields['submitPost'])
-                    return -1
-            else:
-                print('WARN: no submitPost')
-                return 2
-
-        if not fields.get('imageDescription'):
-            fields['imageDescription'] = None
-        if not fields.get('videoTranscript'):
-            fields['videoTranscript'] = None
-        if not fields.get('subject'):
-            fields['subject'] = None
-        if not fields.get('replyTo'):
-            fields['replyTo'] = None
-
-        if not fields.get('schedulePost'):
-            fields['schedulePost'] = False
         else:
-            fields['schedulePost'] = True
-        print('DEBUG: shedulePost ' + str(fields['schedulePost']))
+            print('WARN: no submitPost')
+            return 2
 
-        if not fields.get('eventDate'):
-            fields['eventDate'] = None
-        if not fields.get('eventTime'):
-            fields['eventTime'] = None
-        if not fields.get('eventEndTime'):
-            fields['eventEndTime'] = None
-        if not fields.get('location'):
-            fields['location'] = None
-        if not fields.get('languagesDropdown'):
-            fields['languagesDropdown'] = system_language
-        set_default_post_language(base_dir, nickname, domain,
-                                  fields['languagesDropdown'])
-        self.server.default_post_language[nickname] = \
-            fields['languagesDropdown']
+    if not fields.get('imageDescription'):
+        fields['imageDescription'] = None
+    if not fields.get('videoTranscript'):
+        fields['videoTranscript'] = None
+    if not fields.get('subject'):
+        fields['subject'] = None
+    if not fields.get('replyTo'):
+        fields['replyTo'] = None
 
-        if not citations_button_press:
-            # Store a file which contains the time in seconds
-            # since epoch when an attempt to post something was made.
-            # This is then used for active monthly users counts
-            last_used_filename = \
-                acct_dir(base_dir, nickname, domain) + '/.lastUsed'
-            try:
-                with open(last_used_filename, 'w+',
-                          encoding='utf-8') as lastfile:
-                    lastfile.write(str(int(time.time())))
-            except OSError:
-                print('EX: _receive_new_post_process unable to write ' +
-                      last_used_filename)
+    if not fields.get('schedulePost'):
+        fields['schedulePost'] = False
+    else:
+        fields['schedulePost'] = True
+    print('DEBUG: shedulePost ' + str(fields['schedulePost']))
 
-        mentions_str = ''
-        if fields.get('mentions'):
-            mentions_str = fields['mentions'].strip() + ' '
-        if not fields.get('commentsEnabled'):
-            comments_enabled = False
-        else:
-            comments_enabled = True
+    if not fields.get('eventDate'):
+        fields['eventDate'] = None
+    if not fields.get('eventTime'):
+        fields['eventTime'] = None
+    if not fields.get('eventEndTime'):
+        fields['eventEndTime'] = None
+    if not fields.get('location'):
+        fields['location'] = None
+    if not fields.get('languagesDropdown'):
+        fields['languagesDropdown'] = system_language
+    set_default_post_language(base_dir, nickname, domain,
+                              fields['languagesDropdown'])
+    self.server.default_post_language[nickname] = \
+        fields['languagesDropdown']
 
-        buy_url = ''
-        if fields.get('buyUrl'):
-            buy_url = fields['buyUrl']
+    if not citations_button_press:
+        # Store a file which contains the time in seconds
+        # since epoch when an attempt to post something was made.
+        # This is then used for active monthly users counts
+        last_used_filename = \
+            acct_dir(base_dir, nickname, domain) + '/.lastUsed'
+        try:
+            with open(last_used_filename, 'w+',
+                      encoding='utf-8') as lastfile:
+                lastfile.write(str(int(time.time())))
+        except OSError:
+            print('EX: _receive_new_post_process unable to write ' +
+                  last_used_filename)
 
-        chat_url = ''
-        if fields.get('chatUrl'):
-            chat_url = fields['chatUrl']
+    mentions_str = ''
+    if fields.get('mentions'):
+        mentions_str = fields['mentions'].strip() + ' '
+    if not fields.get('commentsEnabled'):
+        comments_enabled = False
+    else:
+        comments_enabled = True
 
-        if post_type == 'newpost':
-            return _receive_new_post_process_newpost(
-                self, fields,
-                base_dir, nickname,
-                domain, domain_full, port,
-                city, http_prefix,
-                person_cache,
-                content_license_url,
-                mentions_str,
-                comments_enabled,
-                filename,
-                attachment_media_type,
-                low_bandwidth,
-                translate,
-                buy_url,
-                chat_url,
-                auto_cw_cache,
-                edited_postid,
-                edited_published,
-                recent_posts_cache,
-                max_mentions,
-                max_emoji,
-                allow_local_network_access,
-                debug,
-                system_language,
-                signing_priv_key_pem,
-                max_recent_posts,
-                curr_session,
-                cached_webfingers,
-                allow_deletion,
-                yt_replace_domain,
-                twitter_replacement_domain,
-                show_published_date_only,
-                peertube_instances,
-                theme_name,
-                max_like_count,
-                cw_lists,
-                dogwhistles,
-                min_images_for_accounts,
-                max_hashtags,
-                buy_sites,
-                project_version,
-                proxy_type,
-                max_replies)
-        if post_type == 'newblog':
-            return _receive_new_post_process_newblog(
-                self, fields,
-                citations_button_press,
-                base_dir, nickname,
-                newswire, theme_name,
-                domain, domain_full,
-                port, translate,
-                cookie, calling_domain,
-                http_prefix, person_cache,
-                content_license_url,
-                comments_enabled, filename,
-                attachment_media_type,
-                low_bandwidth,
-                buy_url, chat_url,
-                project_version, curr_session,
-                proxy_type, max_replies, debug)
-        if post_type == 'editblogpost':
-            return _receive_new_post_process_editblog(
-                self, fields, base_dir, nickname, domain,
-                recent_posts_cache,
-                http_prefix, translate,
-                curr_session, debug,
-                system_language,
-                port, filename,
-                city, content_license_url,
-                attachment_media_type,
-                low_bandwidth,
-                yt_replace_domain,
-                twitter_replacement_domain)
-        if post_type == 'newunlisted':
-            return _receive_new_post_process_newunlisted(
-                self, fields,
-                city, base_dir,
-                nickname, domain,
-                domain_full,
-                http_prefix,
-                person_cache,
-                content_license_url,
-                port, mentions_str,
-                comments_enabled,
-                filename,
-                attachment_media_type,
-                low_bandwidth,
-                translate, buy_url,
-                chat_url,
-                auto_cw_cache,
-                edited_postid,
-                edited_published,
-                recent_posts_cache,
-                max_mentions,
-                max_emoji,
-                allow_local_network_access,
-                debug,
-                system_language,
-                signing_priv_key_pem,
-                max_recent_posts,
-                curr_session,
-                cached_webfingers,
-                allow_deletion,
-                yt_replace_domain,
-                twitter_replacement_domain,
-                show_published_date_only,
-                peertube_instances,
-                theme_name,
-                max_like_count,
-                cw_lists,
-                dogwhistles,
-                min_images_for_accounts,
-                max_hashtags,
-                buy_sites,
-                project_version,
-                proxy_type,
-                max_replies)
-        if post_type == 'newfollowers':
-            return _receive_new_post_process_newfollowers(
-                self, fields,
-                city, base_dir,
-                nickname, domain,
-                domain_full,
-                mentions_str,
-                http_prefix,
-                person_cache,
-                content_license_url,
-                port, comments_enabled,
-                filename,
-                attachment_media_type,
-                low_bandwidth,
-                translate,
-                buy_url, chat_url,
-                auto_cw_cache,
-                edited_postid,
-                edited_published,
-                recent_posts_cache,
-                max_mentions,
-                max_emoji,
-                allow_local_network_access,
-                debug,
-                system_language,
-                signing_priv_key_pem,
-                max_recent_posts,
-                curr_session,
-                cached_webfingers,
-                allow_deletion,
-                yt_replace_domain,
-                twitter_replacement_domain,
-                show_published_date_only,
-                peertube_instances,
-                theme_name,
-                max_like_count,
-                cw_lists,
-                dogwhistles,
-                min_images_for_accounts,
-                max_hashtags,
-                buy_sites,
-                project_version,
-                proxy_type,
-                max_replies)
-        if post_type == 'newdm':
-            return _receive_new_post_process_newdm(
-                self, fields,
-                mentions_str,
-                city, base_dir,
-                nickname, domain,
-                domain_full,
-                http_prefix,
-                person_cache,
-                content_license_url,
-                port, comments_enabled,
-                filename,
-                attachment_media_type,
-                low_bandwidth,
-                dm_license_url,
-                translate,
-                buy_url, chat_url,
-                auto_cw_cache,
-                edited_postid,
-                edited_published,
-                recent_posts_cache,
-                max_mentions,
-                max_emoji,
-                allow_local_network_access,
-                debug,
-                system_language,
-                signing_priv_key_pem,
-                max_recent_posts,
-                curr_session,
-                cached_webfingers,
-                allow_deletion,
-                yt_replace_domain,
-                twitter_replacement_domain,
-                show_published_date_only,
-                peertube_instances,
-                theme_name,
-                max_like_count,
-                cw_lists,
-                dogwhistles,
-                min_images_for_accounts,
-                max_hashtags,
-                buy_sites,
-                project_version,
-                proxy_type,
-                max_replies)
-        if post_type == 'newreminder':
-            return _receive_new_post_process_newreminder(
-                self, fields,
-                nickname,
-                domain, domain_full,
-                mentions_str,
-                city, base_dir,
-                http_prefix,
-                person_cache,
-                content_license_url,
-                port,
-                filename,
-                attachment_media_type,
-                low_bandwidth,
-                dm_license_url,
-                translate,
-                buy_url, chat_url,
-                auto_cw_cache,
-                edited_postid,
-                edited_published,
-                recent_posts_cache,
-                max_mentions,
-                max_emoji,
-                allow_local_network_access,
-                debug,
-                system_language,
-                signing_priv_key_pem,
-                max_recent_posts,
-                curr_session,
-                cached_webfingers,
-                allow_deletion,
-                yt_replace_domain,
-                twitter_replacement_domain,
-                show_published_date_only,
-                peertube_instances,
-                theme_name,
-                max_like_count,
-                cw_lists,
-                dogwhistles,
-                min_images_for_accounts,
-                max_hashtags,
-                buy_sites,
-                project_version,
-                proxy_type)
-        if post_type == 'newreport':
-            return _receive_new_post_process_newreport(
-                self, fields,
-                attachment_media_type,
-                city, base_dir,
-                nickname, domain,
-                domain_full,
-                http_prefix,
-                person_cache,
-                content_license_url,
-                port, mentions_str,
-                filename,
-                low_bandwidth,
-                debug,
-                translate, auto_cw_cache,
-                project_version,
-                curr_session, proxy_type)
-        if post_type == 'newquestion':
-            return _receive_new_post_process_newquestion(
-                self, fields, city, base_dir, nickname,
-                domain, domain_full, http_prefix,
-                person_cache, content_license_url,
-                port, comments_enabled, filename,
-                attachment_media_type,
-                low_bandwidth, translate, auto_cw_cache,
-                debug, project_version, curr_session,
-                proxy_type)
-        if post_type == 'newreadingstatus':
-            return _receive_new_post_process_newreading(
-                self, fields,
-                post_type,
-                content_license_url,
-                base_dir,
-                http_prefix,
-                nickname, domain_full,
-                person_cache, city,
-                domain, port,
-                mentions_str,
-                comments_enabled,
-                filename,
-                attachment_media_type,
-                low_bandwidth,
-                translate, buy_url,
-                chat_url,
-                auto_cw_cache,
-                edited_published,
-                edited_postid,
-                recent_posts_cache,
-                max_mentions,
-                max_emoji,
-                allow_local_network_access,
-                debug,
-                system_language,
-                signing_priv_key_pem,
-                max_recent_posts,
-                curr_session,
-                cached_webfingers,
-                allow_deletion,
-                yt_replace_domain,
-                twitter_replacement_domain,
-                show_published_date_only,
-                peertube_instances,
-                theme_name,
-                max_like_count,
-                cw_lists,
-                dogwhistles,
-                min_images_for_accounts,
-                max_hashtags,
-                buy_sites,
-                project_version,
-                proxy_type,
-                max_replies)
-        if post_type in ('newshare', 'newwanted'):
-            return _receive_new_post_process_newshare(
-                self, fields,
-                post_type,
-                attachment_media_type,
-                city, base_dir,
-                nickname, domain,
-                http_prefix, port,
-                filename, debug,
-                translate,
-                low_bandwidth,
-                content_license_url,
-                block_federated,
-                calling_domain,
-                domain_full,
-                onion_domain,
-                i2p_domain,
-                person_cache,
-                max_shares_on_profile,
-                project_version,
-                curr_session,
-                proxy_type)
+    buy_url = ''
+    if fields.get('buyUrl'):
+        buy_url = fields['buyUrl']
+
+    chat_url = ''
+    if fields.get('chatUrl'):
+        chat_url = fields['chatUrl']
+
+    if post_type == 'newpost':
+        return _receive_new_post_process_newpost(
+            self, fields,
+            base_dir, nickname,
+            domain, domain_full, port,
+            city, http_prefix,
+            person_cache,
+            content_license_url,
+            mentions_str,
+            comments_enabled,
+            filename,
+            attachment_media_type,
+            low_bandwidth,
+            translate,
+            buy_url,
+            chat_url,
+            auto_cw_cache,
+            edited_postid,
+            edited_published,
+            recent_posts_cache,
+            max_mentions,
+            max_emoji,
+            allow_local_network_access,
+            debug,
+            system_language,
+            signing_priv_key_pem,
+            max_recent_posts,
+            curr_session,
+            cached_webfingers,
+            allow_deletion,
+            yt_replace_domain,
+            twitter_replacement_domain,
+            show_published_date_only,
+            peertube_instances,
+            theme_name,
+            max_like_count,
+            cw_lists,
+            dogwhistles,
+            min_images_for_accounts,
+            max_hashtags,
+            buy_sites,
+            project_version,
+            proxy_type,
+            max_replies)
+    if post_type == 'newblog':
+        return _receive_new_post_process_newblog(
+            self, fields,
+            citations_button_press,
+            base_dir, nickname,
+            newswire, theme_name,
+            domain, domain_full,
+            port, translate,
+            cookie, calling_domain,
+            http_prefix, person_cache,
+            content_license_url,
+            comments_enabled, filename,
+            attachment_media_type,
+            low_bandwidth,
+            buy_url, chat_url,
+            project_version, curr_session,
+            proxy_type, max_replies, debug)
+    if post_type == 'editblogpost':
+        return _receive_new_post_process_editblog(
+            self, fields, base_dir, nickname, domain,
+            recent_posts_cache,
+            http_prefix, translate,
+            curr_session, debug,
+            system_language,
+            port, filename,
+            city, content_license_url,
+            attachment_media_type,
+            low_bandwidth,
+            yt_replace_domain,
+            twitter_replacement_domain)
+    if post_type == 'newunlisted':
+        return _receive_new_post_process_newunlisted(
+            self, fields,
+            city, base_dir,
+            nickname, domain,
+            domain_full,
+            http_prefix,
+            person_cache,
+            content_license_url,
+            port, mentions_str,
+            comments_enabled,
+            filename,
+            attachment_media_type,
+            low_bandwidth,
+            translate, buy_url,
+            chat_url,
+            auto_cw_cache,
+            edited_postid,
+            edited_published,
+            recent_posts_cache,
+            max_mentions,
+            max_emoji,
+            allow_local_network_access,
+            debug,
+            system_language,
+            signing_priv_key_pem,
+            max_recent_posts,
+            curr_session,
+            cached_webfingers,
+            allow_deletion,
+            yt_replace_domain,
+            twitter_replacement_domain,
+            show_published_date_only,
+            peertube_instances,
+            theme_name,
+            max_like_count,
+            cw_lists,
+            dogwhistles,
+            min_images_for_accounts,
+            max_hashtags,
+            buy_sites,
+            project_version,
+            proxy_type,
+            max_replies)
+    if post_type == 'newfollowers':
+        return _receive_new_post_process_newfollowers(
+            self, fields,
+            city, base_dir,
+            nickname, domain,
+            domain_full,
+            mentions_str,
+            http_prefix,
+            person_cache,
+            content_license_url,
+            port, comments_enabled,
+            filename,
+            attachment_media_type,
+            low_bandwidth,
+            translate,
+            buy_url, chat_url,
+            auto_cw_cache,
+            edited_postid,
+            edited_published,
+            recent_posts_cache,
+            max_mentions,
+            max_emoji,
+            allow_local_network_access,
+            debug,
+            system_language,
+            signing_priv_key_pem,
+            max_recent_posts,
+            curr_session,
+            cached_webfingers,
+            allow_deletion,
+            yt_replace_domain,
+            twitter_replacement_domain,
+            show_published_date_only,
+            peertube_instances,
+            theme_name,
+            max_like_count,
+            cw_lists,
+            dogwhistles,
+            min_images_for_accounts,
+            max_hashtags,
+            buy_sites,
+            project_version,
+            proxy_type,
+            max_replies)
+    if post_type == 'newdm':
+        return _receive_new_post_process_newdm(
+            self, fields,
+            mentions_str,
+            city, base_dir,
+            nickname, domain,
+            domain_full,
+            http_prefix,
+            person_cache,
+            content_license_url,
+            port, comments_enabled,
+            filename,
+            attachment_media_type,
+            low_bandwidth,
+            dm_license_url,
+            translate,
+            buy_url, chat_url,
+            auto_cw_cache,
+            edited_postid,
+            edited_published,
+            recent_posts_cache,
+            max_mentions,
+            max_emoji,
+            allow_local_network_access,
+            debug,
+            system_language,
+            signing_priv_key_pem,
+            max_recent_posts,
+            curr_session,
+            cached_webfingers,
+            allow_deletion,
+            yt_replace_domain,
+            twitter_replacement_domain,
+            show_published_date_only,
+            peertube_instances,
+            theme_name,
+            max_like_count,
+            cw_lists,
+            dogwhistles,
+            min_images_for_accounts,
+            max_hashtags,
+            buy_sites,
+            project_version,
+            proxy_type,
+            max_replies)
+    if post_type == 'newreminder':
+        return _receive_new_post_process_newreminder(
+            self, fields,
+            nickname,
+            domain, domain_full,
+            mentions_str,
+            city, base_dir,
+            http_prefix,
+            person_cache,
+            content_license_url,
+            port,
+            filename,
+            attachment_media_type,
+            low_bandwidth,
+            dm_license_url,
+            translate,
+            buy_url, chat_url,
+            auto_cw_cache,
+            edited_postid,
+            edited_published,
+            recent_posts_cache,
+            max_mentions,
+            max_emoji,
+            allow_local_network_access,
+            debug,
+            system_language,
+            signing_priv_key_pem,
+            max_recent_posts,
+            curr_session,
+            cached_webfingers,
+            allow_deletion,
+            yt_replace_domain,
+            twitter_replacement_domain,
+            show_published_date_only,
+            peertube_instances,
+            theme_name,
+            max_like_count,
+            cw_lists,
+            dogwhistles,
+            min_images_for_accounts,
+            max_hashtags,
+            buy_sites,
+            project_version,
+            proxy_type)
+    if post_type == 'newreport':
+        return _receive_new_post_process_newreport(
+            self, fields,
+            attachment_media_type,
+            city, base_dir,
+            nickname, domain,
+            domain_full,
+            http_prefix,
+            person_cache,
+            content_license_url,
+            port, mentions_str,
+            filename,
+            low_bandwidth,
+            debug,
+            translate, auto_cw_cache,
+            project_version,
+            curr_session, proxy_type)
+    if post_type == 'newquestion':
+        return _receive_new_post_process_newquestion(
+            self, fields, city, base_dir, nickname,
+            domain, domain_full, http_prefix,
+            person_cache, content_license_url,
+            port, comments_enabled, filename,
+            attachment_media_type,
+            low_bandwidth, translate, auto_cw_cache,
+            debug, project_version, curr_session,
+            proxy_type)
+    if post_type == 'newreadingstatus':
+        return _receive_new_post_process_newreading(
+            self, fields,
+            post_type,
+            content_license_url,
+            base_dir,
+            http_prefix,
+            nickname, domain_full,
+            person_cache, city,
+            domain, port,
+            mentions_str,
+            comments_enabled,
+            filename,
+            attachment_media_type,
+            low_bandwidth,
+            translate, buy_url,
+            chat_url,
+            auto_cw_cache,
+            edited_published,
+            edited_postid,
+            recent_posts_cache,
+            max_mentions,
+            max_emoji,
+            allow_local_network_access,
+            debug,
+            system_language,
+            signing_priv_key_pem,
+            max_recent_posts,
+            curr_session,
+            cached_webfingers,
+            allow_deletion,
+            yt_replace_domain,
+            twitter_replacement_domain,
+            show_published_date_only,
+            peertube_instances,
+            theme_name,
+            max_like_count,
+            cw_lists,
+            dogwhistles,
+            min_images_for_accounts,
+            max_hashtags,
+            buy_sites,
+            project_version,
+            proxy_type,
+            max_replies)
+    if post_type in ('newshare', 'newwanted'):
+        return _receive_new_post_process_newshare(
+            self, fields,
+            post_type,
+            attachment_media_type,
+            city, base_dir,
+            nickname, domain,
+            http_prefix, port,
+            filename, debug,
+            translate,
+            low_bandwidth,
+            content_license_url,
+            block_federated,
+            calling_domain,
+            domain_full,
+            onion_domain,
+            i2p_domain,
+            person_cache,
+            max_shares_on_profile,
+            project_version,
+            curr_session,
+            proxy_type)
     return -1
 
 
