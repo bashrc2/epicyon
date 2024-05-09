@@ -451,9 +451,8 @@ def _receive_new_post_process_editblog(self, fields: {},
                 save_json(post_json_object, post_filename)
             print('Edited blog post, resaved ' + post_filename)
             return NEW_POST_SUCCESS
-        else:
-            print('Edited blog post, unable to load json for ' +
-                  post_filename)
+        print('Edited blog post, unable to load json for ' +
+              post_filename)
     else:
         print('Edited blog post not found ' +
               str(fields['postUrl']))
@@ -2266,40 +2265,44 @@ def receive_new_post(self, post_type, path: str,
             # otherwise any attachments can get mangled if
             # other events happen during their decoding
             print('Creating new post from: ' + new_post_thread_name)
-            _receive_new_post_process(self, post_type,
-                                      original_path,
-                                      headers, length,
-                                      post_bytes, boundary,
-                                      calling_domain, cookie,
-                                      content_license_url,
-                                      curr_session, proxy_type,
-                                      base_dir, debug, max_post_length,
-                                      domain, city, low_bandwidth,
-                                      translate, system_language,
-                                      http_prefix, domain_full,
-                                      person_cache,
-                                      port, auto_cw_cache,
-                                      recent_posts_cache,
-                                      allow_local_network_access,
-                                      yt_replace_domain,
-                                      twitter_replacement_domain,
-                                      signing_priv_key_pem,
-                                      show_published_date_only,
-                                      min_images_for_accounts,
-                                      peertube_instances,
-                                      max_mentions, max_emoji,
-                                      max_recent_posts,
-                                      cached_webfingers,
-                                      allow_deletion,
-                                      theme_name,
-                                      max_like_count,
-                                      cw_lists,
-                                      dogwhistles,
-                                      max_hashtags,
-                                      buy_sites, project_version,
-                                      max_replies, newswire,
-                                      dm_license_url, block_federated,
-                                      onion_domain,
-                                      i2p_domain,
-                                      max_shares_on_profile)
+            retval = \
+                _receive_new_post_process(self, post_type,
+                                          original_path,
+                                          headers, length,
+                                          post_bytes, boundary,
+                                          calling_domain, cookie,
+                                          content_license_url,
+                                          curr_session, proxy_type,
+                                          base_dir, debug, max_post_length,
+                                          domain, city, low_bandwidth,
+                                          translate, system_language,
+                                          http_prefix, domain_full,
+                                          person_cache,
+                                          port, auto_cw_cache,
+                                          recent_posts_cache,
+                                          allow_local_network_access,
+                                          yt_replace_domain,
+                                          twitter_replacement_domain,
+                                          signing_priv_key_pem,
+                                          show_published_date_only,
+                                          min_images_for_accounts,
+                                          peertube_instances,
+                                          max_mentions, max_emoji,
+                                          max_recent_posts,
+                                          cached_webfingers,
+                                          allow_deletion,
+                                          theme_name,
+                                          max_like_count,
+                                          cw_lists,
+                                          dogwhistles,
+                                          max_hashtags,
+                                          buy_sites, project_version,
+                                          max_replies, newswire,
+                                          dm_license_url, block_federated,
+                                          onion_domain,
+                                          i2p_domain,
+                                          max_shares_on_profile)
+            if debug:
+                print('DEBUG: _receive_new_post_process returned ' +
+                      str(retval))
     return page_number
