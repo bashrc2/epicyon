@@ -456,6 +456,153 @@ def _receive_new_post_process_editblog(self, fields: {},
     return -1
 
 
+def _receive_new_post_process_newunlisted(self, fields: {},
+                                          city: str, base_dir: str,
+                                          nickname: str, domain: str,
+                                          domain_full: str,
+                                          http_prefix: str,
+                                          person_cache: {},
+                                          content_license_url: str,
+                                          port: int, mentions_str: str,
+                                          comments_enabled: bool,
+                                          filename: str,
+                                          attachment_media_type: str,
+                                          low_bandwidth: bool,
+                                          translate: {}, buy_url: str,
+                                          chat_url: str,
+                                          auto_cw_cache: {},
+                                          edited_postid: str,
+                                          edited_published: str,
+                                          recent_posts_cache: {},
+                                          max_mentions: int,
+                                          max_emoji: int,
+                                          allow_local_network_access: bool,
+                                          debug: bool,
+                                          system_language: str,
+                                          signing_priv_key_pem: str,
+                                          max_recent_posts: int,
+                                          curr_session,
+                                          cached_webfingers: {},
+                                          allow_deletion: bool,
+                                          yt_replace_domain: str,
+                                          twitter_replacement_domain: str,
+                                          show_published_date_only: bool,
+                                          peertube_instances: [],
+                                          theme_name: str,
+                                          max_like_count: int,
+                                          cw_lists: {},
+                                          dogwhistles: {},
+                                          min_images_for_accounts: {},
+                                          max_hashtags: int,
+                                          buy_sites: [],
+                                          project_version: str,
+                                          proxy_type: str,
+                                          max_replies: int) -> int:
+    """Unlisted post has been received from New Post screen
+    and is then sent to the outbox
+    """
+    city = get_spoofed_city(city, base_dir, nickname, domain)
+    save_to_file = False
+    client_to_server = False
+
+    conversation_id = None
+    if fields.get('conversationId'):
+        conversation_id = fields['conversationId']
+
+    languages_understood = \
+        get_understood_languages(base_dir, http_prefix, nickname,
+                                 domain_full, person_cache)
+    media_license_url = content_license_url
+    if fields.get('mediaLicense'):
+        media_license_url = fields['mediaLicense']
+        if '://' not in media_license_url:
+            media_license_url = \
+                license_link_from_name(media_license_url)
+    media_creator = ''
+    if fields.get('mediaCreator'):
+        media_creator = fields['mediaCreator']
+    video_transcript = ''
+    if fields.get('videoTranscript'):
+        video_transcript = fields['videoTranscript']
+    message_json = \
+        create_unlisted_post(base_dir, nickname, domain, port,
+                             http_prefix,
+                             mentions_str + fields['message'],
+                             save_to_file,
+                             client_to_server, comments_enabled,
+                             filename, attachment_media_type,
+                             fields['imageDescription'],
+                             video_transcript,
+                             city,
+                             fields['replyTo'],
+                             fields['replyTo'],
+                             fields['subject'],
+                             fields['schedulePost'],
+                             fields['eventDate'],
+                             fields['eventTime'],
+                             fields['eventEndTime'],
+                             fields['location'],
+                             fields['languagesDropdown'],
+                             conversation_id,
+                             low_bandwidth,
+                             content_license_url,
+                             media_license_url, media_creator,
+                             languages_understood,
+                             translate, buy_url,
+                             chat_url,
+                             auto_cw_cache)
+    if message_json:
+        if edited_postid:
+            update_edited_post(base_dir, nickname, domain,
+                               message_json,
+                               edited_published,
+                               edited_postid,
+                               recent_posts_cache,
+                               'outbox',
+                               max_mentions,
+                               max_emoji,
+                               allow_local_network_access,
+                               debug,
+                               system_language,
+                               http_prefix,
+                               domain_full,
+                               person_cache,
+                               signing_priv_key_pem,
+                               max_recent_posts,
+                               translate,
+                               curr_session,
+                               cached_webfingers,
+                               port,
+                               allow_deletion,
+                               yt_replace_domain,
+                               twitter_replacement_domain,
+                               show_published_date_only,
+                               peertube_instances,
+                               theme_name,
+                               max_like_count,
+                               cw_lists,
+                               dogwhistles,
+                               min_images_for_accounts,
+                               max_hashtags,
+                               buy_sites,
+                               auto_cw_cache)
+            print('DEBUG: sending edited unlisted post ' +
+                  str(message_json))
+
+        if fields['schedulePost']:
+            return 1
+        if post_to_outbox(self, message_json,
+                          project_version,
+                          nickname,
+                          curr_session, proxy_type):
+            populate_replies(base_dir, http_prefix, domain,
+                             message_json,
+                             max_replies,
+                             debug)
+            return 1
+    return -1
+
+
 def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               length: int, post_bytes, boundary: str,
                               calling_domain: str, cookie: str,
@@ -774,106 +921,49 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 yt_replace_domain,
                 twitter_replacement_domain)
         elif post_type == 'newunlisted':
-            city = get_spoofed_city(city, base_dir, nickname, domain)
-            save_to_file = False
-            client_to_server = False
-
-            conversation_id = None
-            if fields.get('conversationId'):
-                conversation_id = fields['conversationId']
-
-            languages_understood = \
-                get_understood_languages(base_dir, http_prefix, nickname,
-                                         domain_full, person_cache)
-            media_license_url = content_license_url
-            if fields.get('mediaLicense'):
-                media_license_url = fields['mediaLicense']
-                if '://' not in media_license_url:
-                    media_license_url = \
-                        license_link_from_name(media_license_url)
-            media_creator = ''
-            if fields.get('mediaCreator'):
-                media_creator = fields['mediaCreator']
-            video_transcript = ''
-            if fields.get('videoTranscript'):
-                video_transcript = fields['videoTranscript']
-            message_json = \
-                create_unlisted_post(base_dir, nickname, domain, port,
-                                     http_prefix,
-                                     mentions_str + fields['message'],
-                                     save_to_file,
-                                     client_to_server, comments_enabled,
-                                     filename, attachment_media_type,
-                                     fields['imageDescription'],
-                                     video_transcript,
-                                     city,
-                                     fields['replyTo'],
-                                     fields['replyTo'],
-                                     fields['subject'],
-                                     fields['schedulePost'],
-                                     fields['eventDate'],
-                                     fields['eventTime'],
-                                     fields['eventEndTime'],
-                                     fields['location'],
-                                     fields['languagesDropdown'],
-                                     conversation_id,
-                                     low_bandwidth,
-                                     content_license_url,
-                                     media_license_url, media_creator,
-                                     languages_understood,
-                                     translate, buy_url,
-                                     chat_url,
-                                     auto_cw_cache)
-            if message_json:
-                if edited_postid:
-                    update_edited_post(base_dir, nickname, domain,
-                                       message_json,
-                                       edited_published,
-                                       edited_postid,
-                                       recent_posts_cache,
-                                       'outbox',
-                                       max_mentions,
-                                       max_emoji,
-                                       allow_local_network_access,
-                                       debug,
-                                       system_language,
-                                       http_prefix,
-                                       domain_full,
-                                       person_cache,
-                                       signing_priv_key_pem,
-                                       max_recent_posts,
-                                       translate,
-                                       curr_session,
-                                       cached_webfingers,
-                                       port,
-                                       allow_deletion,
-                                       yt_replace_domain,
-                                       twitter_replacement_domain,
-                                       show_published_date_only,
-                                       peertube_instances,
-                                       theme_name,
-                                       max_like_count,
-                                       cw_lists,
-                                       dogwhistles,
-                                       min_images_for_accounts,
-                                       max_hashtags,
-                                       buy_sites,
-                                       auto_cw_cache)
-                    print('DEBUG: sending edited unlisted post ' +
-                          str(message_json))
-
-                if fields['schedulePost']:
-                    return 1
-                if post_to_outbox(self, message_json,
-                                  project_version,
-                                  nickname,
-                                  curr_session, proxy_type):
-                    populate_replies(base_dir, http_prefix, domain,
-                                     message_json,
-                                     max_replies,
-                                     debug)
-                    return 1
-            return -1
+            return _receive_new_post_process_newunlisted(
+                self, fields,
+                city, base_dir,
+                nickname, domain,
+                domain_full,
+                http_prefix,
+                person_cache,
+                content_license_url,
+                port, mentions_str,
+                comments_enabled,
+                filename,
+                attachment_media_type,
+                low_bandwidth,
+                translate, buy_url,
+                chat_url,
+                auto_cw_cache,
+                edited_postid,
+                edited_published,
+                recent_posts_cache,
+                max_mentions,
+                max_emoji,
+                allow_local_network_access,
+                debug,
+                system_language,
+                signing_priv_key_pem,
+                max_recent_posts,
+                curr_session,
+                cached_webfingers,
+                allow_deletion,
+                yt_replace_domain,
+                twitter_replacement_domain,
+                show_published_date_only,
+                peertube_instances,
+                theme_name,
+                max_like_count,
+                cw_lists,
+                dogwhistles,
+                min_images_for_accounts,
+                max_hashtags,
+                buy_sites,
+                project_version,
+                proxy_type,
+                max_replies)
         elif post_type == 'newfollowers':
             city = get_spoofed_city(city, base_dir, nickname, domain)
             save_to_file = False
