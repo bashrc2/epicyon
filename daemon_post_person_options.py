@@ -49,6 +49,229 @@ from notifyOnPost import remove_notify_on_post
 from posts import is_moderator
 
 
+def _person_options_page_number(options_confirm_params: str) -> int:
+    """Get the page number
+    """
+    page_number = 1
+    if 'pageNumber=' in options_confirm_params:
+        page_number_str = options_confirm_params.split('pageNumber=')[1]
+        if '&' in page_number_str:
+            page_number_str = page_number_str.split('&')[0]
+        if len(page_number_str) < 5:
+            if page_number_str.isdigit():
+                page_number = int(page_number_str)
+    return page_number
+
+
+def _person_options_actor(options_confirm_params: str) -> str:
+    """Get the actor
+    """
+    options_actor = options_confirm_params.split('actor=')[1]
+    if '&' in options_actor:
+        options_actor = options_actor.split('&')[0]
+    return options_actor
+
+
+def _person_options_moved_to(options_confirm_params: str) -> str:
+    """actor for movedTo
+    """
+    options_actor_moved = None
+    if 'movedToActor=' in options_confirm_params:
+        options_actor_moved = \
+            options_confirm_params.split('movedToActor=')[1]
+        if '&' in options_actor_moved:
+            options_actor_moved = options_actor_moved.split('&')[0]
+    return options_actor_moved
+
+
+def _person_options_avatar_url(options_confirm_params: str) -> str:
+    """url of the avatar
+    """
+    options_avatar_url = options_confirm_params.split('avatarUrl=')[1]
+    if '&' in options_avatar_url:
+        options_avatar_url = options_avatar_url.split('&')[0]
+    return options_avatar_url
+
+
+def _person_options_post_url(options_confirm_params: str) -> str:
+    """link to a post, which can then be included in reports
+    """
+    post_url = None
+    if 'postUrl' in options_confirm_params:
+        post_url = options_confirm_params.split('postUrl=')[1]
+        if '&' in post_url:
+            post_url = post_url.split('&')[0]
+    return post_url
+
+
+def _person_options_petname(options_confirm_params: str) -> str:
+    """petname for this person
+    """
+    petname = None
+    if 'optionpetname' in options_confirm_params:
+        petname = options_confirm_params.split('optionpetname=')[1]
+        if '&' in petname:
+            petname = petname.split('&')[0]
+        # Limit the length of the petname
+        if len(petname) > 20 or \
+           ' ' in petname or '/' in petname or \
+           '?' in petname or '#' in petname:
+            petname = None
+    return petname
+
+
+def _person_options_notes(options_confirm_params: str) -> str:
+    """notes about this person
+    """
+    person_notes = None
+    if 'optionnotes' in options_confirm_params:
+        person_notes = options_confirm_params.split('optionnotes=')[1]
+        if '&' in person_notes:
+            person_notes = person_notes.split('&')[0]
+        person_notes = urllib.parse.unquote_plus(person_notes.strip())
+        # Limit the length of the notes
+        if len(person_notes) > 64000:
+            person_notes = None
+    return person_notes
+
+
+def _person_options_view(self, options_confirm_params: str,
+                         debug: bool,
+                         options_actor: str,
+                         key_shortcuts: {},
+                         chooser_nickname: str,
+                         account_timezone: {},
+                         proxy_type: str,
+                         bold_reading_nicknames: {},
+                         authorized: bool,
+                         recent_posts_cache: {},
+                         max_recent_posts: int,
+                         translate: {},
+                         base_dir: str,
+                         users_path: str,
+                         http_prefix: str,
+                         domain: str,
+                         port: int,
+                         cached_webfingers: {},
+                         person_cache: {},
+                         project_version: str,
+                         yt_replace_domain: str,
+                         twitter_replacement_domain: str,
+                         show_published_date_only: bool,
+                         default_timeline: str,
+                         peertube_instances: [],
+                         allow_local_network_access: bool,
+                         theme_name: str,
+                         system_language: str,
+                         max_like_count: int,
+                         signing_priv_key_pem: str,
+                         cw_lists: {},
+                         lists_enabled: {},
+                         onion_domain: str,
+                         i2p_domain: str,
+                         dogwhistles: {},
+                         min_images_for_accounts: {},
+                         buy_sites: [],
+                         max_shares_on_profile: int,
+                         no_of_books: int,
+                         auto_cw_cache: {},
+                         cookie: str,
+                         calling_domain: str) -> bool:
+    """Person options screen, view button
+    See html_person_options
+    """
+    if '&submitView=' in options_confirm_params:
+        if debug:
+            print('Viewing ' + options_actor)
+
+        if key_shortcuts.get(chooser_nickname):
+            access_keys = key_shortcuts[chooser_nickname]
+
+        timezone = None
+        if account_timezone.get(chooser_nickname):
+            timezone = account_timezone.get(chooser_nickname)
+
+        profile_handle = remove_eol(options_actor).strip()
+
+        # establish the session
+        curr_proxy_type = proxy_type
+        if '.onion/' in profile_handle or \
+           profile_handle.endswith('.onion'):
+            curr_proxy_type = 'tor'
+            curr_session = self.server.session_onion
+        elif ('.i2p/' in profile_handle or
+              profile_handle.endswith('.i2p')):
+            curr_proxy_type = 'i2p'
+            curr_session = self.server.session_i2p
+
+        curr_session = \
+            establish_session("handle search",
+                              curr_session,
+                              curr_proxy_type,
+                              self.server)
+        if not curr_session:
+            self.server.postreq_busy = False
+            return True
+
+        bold_reading = False
+        if bold_reading_nicknames.get(chooser_nickname):
+            bold_reading = True
+
+        profile_str = \
+            html_profile_after_search(authorized,
+                                      recent_posts_cache,
+                                      max_recent_posts,
+                                      translate,
+                                      base_dir,
+                                      users_path,
+                                      http_prefix,
+                                      chooser_nickname,
+                                      domain,
+                                      port,
+                                      profile_handle,
+                                      curr_session,
+                                      cached_webfingers,
+                                      person_cache,
+                                      debug,
+                                      project_version,
+                                      yt_replace_domain,
+                                      twitter_replacement_domain,
+                                      show_published_date_only,
+                                      default_timeline,
+                                      peertube_instances,
+                                      allow_local_network_access,
+                                      theme_name,
+                                      access_keys,
+                                      system_language,
+                                      max_like_count,
+                                      signing_priv_key_pem,
+                                      cw_lists,
+                                      lists_enabled,
+                                      timezone,
+                                      onion_domain,
+                                      i2p_domain,
+                                      bold_reading,
+                                      dogwhistles,
+                                      min_images_for_accounts,
+                                      buy_sites,
+                                      max_shares_on_profile,
+                                      no_of_books,
+                                      auto_cw_cache)
+        if profile_str:
+            msg = profile_str.encode('utf-8')
+            msglen = len(msg)
+            login_headers(self, 'text/html',
+                          msglen, calling_domain)
+            write2(self, msg)
+            self.server.postreq_busy = False
+            return True
+        redirect_headers(self, options_actor,
+                         cookie, calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
 def person_options2(self, path: str,
                     calling_domain: str, cookie: str,
                     base_dir: str, http_prefix: str,
@@ -129,62 +352,19 @@ def person_options2(self, path: str,
     options_confirm_params = \
         urllib.parse.unquote_plus(options_confirm_params)
 
-    # page number to return to
-    if 'pageNumber=' in options_confirm_params:
-        page_number_str = options_confirm_params.split('pageNumber=')[1]
-        if '&' in page_number_str:
-            page_number_str = page_number_str.split('&')[0]
-        if len(page_number_str) < 5:
-            if page_number_str.isdigit():
-                page_number = int(page_number_str)
+    page_number = _person_options_page_number(options_confirm_params)
 
-    # actor for the person
-    options_actor = options_confirm_params.split('actor=')[1]
-    if '&' in options_actor:
-        options_actor = options_actor.split('&')[0]
+    options_actor = _person_options_actor(options_confirm_params)
 
-    # actor for the movedTo
-    options_actor_moved = None
-    if 'movedToActor=' in options_confirm_params:
-        options_actor_moved = \
-            options_confirm_params.split('movedToActor=')[1]
-        if '&' in options_actor_moved:
-            options_actor_moved = options_actor_moved.split('&')[0]
+    options_actor_moved = _person_options_moved_to(options_confirm_params)
 
-    # url of the avatar
-    options_avatar_url = options_confirm_params.split('avatarUrl=')[1]
-    if '&' in options_avatar_url:
-        options_avatar_url = options_avatar_url.split('&')[0]
+    options_avatar_url = _person_options_avatar_url(options_confirm_params)
 
-    # link to a post, which can then be included in reports
-    post_url = None
-    if 'postUrl' in options_confirm_params:
-        post_url = options_confirm_params.split('postUrl=')[1]
-        if '&' in post_url:
-            post_url = post_url.split('&')[0]
+    post_url = _person_options_post_url(options_confirm_params)
 
-    # petname for this person
-    petname = None
-    if 'optionpetname' in options_confirm_params:
-        petname = options_confirm_params.split('optionpetname=')[1]
-        if '&' in petname:
-            petname = petname.split('&')[0]
-        # Limit the length of the petname
-        if len(petname) > 20 or \
-           ' ' in petname or '/' in petname or \
-           '?' in petname or '#' in petname:
-            petname = None
+    petname = _person_options_petname(options_confirm_params)
 
-    # notes about this person
-    person_notes = None
-    if 'optionnotes' in options_confirm_params:
-        person_notes = options_confirm_params.split('optionnotes=')[1]
-        if '&' in person_notes:
-            person_notes = person_notes.split('&')[0]
-        person_notes = urllib.parse.unquote_plus(person_notes.strip())
-        # Limit the length of the notes
-        if len(person_notes) > 64000:
-            person_notes = None
+    person_notes = _person_options_notes(options_confirm_params)
 
     # get the nickname
     options_nickname = get_nickname_from_actor(options_actor)
@@ -216,96 +396,48 @@ def person_options2(self, path: str,
         if debug:
             print('You cannot perform an option action on yourself')
 
-    # person options screen, view button
-    # See html_person_options
-    if '&submitView=' in options_confirm_params:
-        if debug:
-            print('Viewing ' + options_actor)
-
-        if key_shortcuts.get(chooser_nickname):
-            access_keys = key_shortcuts[chooser_nickname]
-
-        timezone = None
-        if account_timezone.get(chooser_nickname):
-            timezone = account_timezone.get(chooser_nickname)
-
-        profile_handle = remove_eol(options_actor).strip()
-
-        # establish the session
-        curr_proxy_type = proxy_type
-        if '.onion/' in profile_handle or \
-           profile_handle.endswith('.onion'):
-            curr_proxy_type = 'tor'
-            curr_session = self.server.session_onion
-        elif ('.i2p/' in profile_handle or
-              profile_handle.endswith('.i2p')):
-            curr_proxy_type = 'i2p'
-            curr_session = self.server.session_i2p
-
-        curr_session = \
-            establish_session("handle search",
-                              curr_session,
-                              curr_proxy_type,
-                              self.server)
-        if not curr_session:
-            self.server.postreq_busy = False
-            return
-
-        bold_reading = False
-        if bold_reading_nicknames.get(chooser_nickname):
-            bold_reading = True
-
-        profile_str = \
-            html_profile_after_search(authorized,
-                                      recent_posts_cache,
-                                      max_recent_posts,
-                                      translate,
-                                      base_dir,
-                                      users_path,
-                                      http_prefix,
-                                      chooser_nickname,
-                                      domain,
-                                      port,
-                                      profile_handle,
-                                      curr_session,
-                                      cached_webfingers,
-                                      person_cache,
-                                      debug,
-                                      project_version,
-                                      yt_replace_domain,
-                                      twitter_replacement_domain,
-                                      show_published_date_only,
-                                      default_timeline,
-                                      peertube_instances,
-                                      allow_local_network_access,
-                                      theme_name,
-                                      access_keys,
-                                      system_language,
-                                      max_like_count,
-                                      signing_priv_key_pem,
-                                      cw_lists,
-                                      lists_enabled,
-                                      timezone,
-                                      onion_domain,
-                                      i2p_domain,
-                                      bold_reading,
-                                      dogwhistles,
-                                      min_images_for_accounts,
-                                      buy_sites,
-                                      max_shares_on_profile,
-                                      no_of_books,
-                                      auto_cw_cache)
-        if profile_str:
-            msg = profile_str.encode('utf-8')
-            msglen = len(msg)
-            login_headers(self, 'text/html',
-                          msglen, calling_domain)
-            write2(self, msg)
-            self.server.postreq_busy = False
-            return
-        redirect_headers(self, options_actor,
-                         cookie, calling_domain, 303)
-        self.server.postreq_busy = False
+    if _person_options_view(self, options_confirm_params,
+                            debug,
+                            options_actor,
+                            key_shortcuts,
+                            chooser_nickname,
+                            account_timezone,
+                            proxy_type,
+                            bold_reading_nicknames,
+                            authorized,
+                            recent_posts_cache,
+                            max_recent_posts,
+                            translate,
+                            base_dir,
+                            users_path,
+                            http_prefix,
+                            domain,
+                            port,
+                            cached_webfingers,
+                            person_cache,
+                            project_version,
+                            yt_replace_domain,
+                            twitter_replacement_domain,
+                            show_published_date_only,
+                            default_timeline,
+                            peertube_instances,
+                            allow_local_network_access,
+                            theme_name,
+                            system_language,
+                            max_like_count,
+                            signing_priv_key_pem,
+                            cw_lists,
+                            lists_enabled,
+                            onion_domain,
+                            i2p_domain,
+                            dogwhistles,
+                            min_images_for_accounts,
+                            buy_sites,
+                            max_shares_on_profile,
+                            no_of_books,
+                            auto_cw_cache,
+                            cookie,
+                            calling_domain):
         return
 
     # person options screen, petname submit button
