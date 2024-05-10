@@ -181,6 +181,117 @@ def _receive_search_skills(self, search_str: str,
     return False
 
 
+def _receive_search_my_posts(self, search_str: str,
+                             actor_str: str,
+                             account_timezone: {},
+                             bold_reading_nicknames: {},
+                             translate: {},
+                             base_dir: str,
+                             http_prefix: str,
+                             domain: str,
+                             max_posts_in_feed: int,
+                             page_number: int,
+                             project_version: str,
+                             recent_posts_cache: {},
+                             max_recent_posts: int,
+                             curr_session,
+                             cached_webfingers: {},
+                             person_cache: {},
+                             port: int,
+                             yt_replace_domain: str,
+                             twitter_replacement_domain: str,
+                             show_published_date_only: bool,
+                             peertube_instances: [],
+                             allow_local_network_access: bool,
+                             theme_name: str,
+                             system_language: str,
+                             max_like_count: int,
+                             signing_priv_key_pem: str,
+                             cw_lists: {},
+                             lists_enabled: {},
+                             dogwhistles: {},
+                             access_keys: {},
+                             min_images_for_accounts: {},
+                             buy_sites: [],
+                             auto_cw_cache: {},
+                             calling_domain: str) -> bool:
+    """Receive a search for your own posts from the search screen
+    """
+    # your post history search
+    possible_endings = (
+        ' in my posts',
+        ' in my history',
+        ' in my outbox',
+        ' in sent posts',
+        ' in outgoing posts',
+        ' in sent items',
+        ' in history',
+        ' in outbox',
+        ' in outgoing',
+        ' in sent',
+        ' history'
+    )
+    for poss_ending in possible_endings:
+        if search_str.endswith(poss_ending):
+            search_str = search_str.replace(poss_ending, '')
+            break
+    nickname = get_nickname_from_actor(actor_str)
+    if not nickname:
+        self.send_response(400)
+        self.end_headers()
+        self.server.postreq_busy = False
+        return True
+    search_str = search_str.replace("'", '', 1).strip()
+    timezone = None
+    if account_timezone.get(nickname):
+        timezone = account_timezone.get(nickname)
+    bold_reading = False
+    if bold_reading_nicknames.get(nickname):
+        bold_reading = True
+    history_str = \
+        html_history_search(translate,
+                            base_dir,
+                            http_prefix,
+                            nickname,
+                            domain,
+                            search_str,
+                            max_posts_in_feed,
+                            page_number,
+                            project_version,
+                            recent_posts_cache,
+                            max_recent_posts,
+                            curr_session,
+                            cached_webfingers,
+                            person_cache,
+                            port,
+                            yt_replace_domain,
+                            twitter_replacement_domain,
+                            show_published_date_only,
+                            peertube_instances,
+                            allow_local_network_access,
+                            theme_name, 'outbox',
+                            system_language,
+                            max_like_count,
+                            signing_priv_key_pem,
+                            cw_lists,
+                            lists_enabled,
+                            timezone, bold_reading,
+                            dogwhistles,
+                            access_keys,
+                            min_images_for_accounts,
+                            buy_sites,
+                            auto_cw_cache)
+    if history_str:
+        msg = history_str.encode('utf-8')
+        msglen = len(msg)
+        login_headers(self, 'text/html',
+                      msglen, calling_domain)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
 def receive_search_query(self, calling_domain: str, cookie: str,
                          authorized: bool, path: str,
                          base_dir: str, http_prefix: str,
@@ -341,77 +452,40 @@ def receive_search_query(self, calling_domain: str, cookie: str,
             return
     elif (search_str.startswith("'") or
           string_ends_with(search_str, my_posts_endings)):
-        # your post history search
-        possible_endings = (
-            ' in my posts',
-            ' in my history',
-            ' in my outbox',
-            ' in sent posts',
-            ' in outgoing posts',
-            ' in sent items',
-            ' in history',
-            ' in outbox',
-            ' in outgoing',
-            ' in sent',
-            ' history'
-        )
-        for poss_ending in possible_endings:
-            if search_str.endswith(poss_ending):
-                search_str = search_str.replace(poss_ending, '')
-                break
-        nickname = get_nickname_from_actor(actor_str)
-        if not nickname:
-            self.send_response(400)
-            self.end_headers()
-            self.server.postreq_busy = False
-            return
-        search_str = search_str.replace("'", '', 1).strip()
-        timezone = None
-        if account_timezone.get(nickname):
-            timezone = account_timezone.get(nickname)
-        bold_reading = False
-        if bold_reading_nicknames.get(nickname):
-            bold_reading = True
-        history_str = \
-            html_history_search(translate,
-                                base_dir,
-                                http_prefix,
-                                nickname,
-                                domain,
-                                search_str,
-                                max_posts_in_feed,
-                                page_number,
-                                project_version,
-                                recent_posts_cache,
-                                max_recent_posts,
-                                curr_session,
-                                cached_webfingers,
-                                person_cache,
-                                port,
-                                yt_replace_domain,
-                                twitter_replacement_domain,
-                                show_published_date_only,
-                                peertube_instances,
-                                allow_local_network_access,
-                                theme_name, 'outbox',
-                                system_language,
-                                max_like_count,
-                                signing_priv_key_pem,
-                                cw_lists,
-                                lists_enabled,
-                                timezone, bold_reading,
-                                dogwhistles,
-                                access_keys,
-                                min_images_for_accounts,
-                                buy_sites,
-                                auto_cw_cache)
-        if history_str:
-            msg = history_str.encode('utf-8')
-            msglen = len(msg)
-            login_headers(self, 'text/html',
-                          msglen, calling_domain)
-            write2(self, msg)
-            self.server.postreq_busy = False
+        if _receive_search_my_posts(self, search_str,
+                                    actor_str,
+                                    account_timezone,
+                                    bold_reading_nicknames,
+                                    translate,
+                                    base_dir,
+                                    http_prefix,
+                                    domain,
+                                    max_posts_in_feed,
+                                    page_number,
+                                    project_version,
+                                    recent_posts_cache,
+                                    max_recent_posts,
+                                    curr_session,
+                                    cached_webfingers,
+                                    person_cache,
+                                    port,
+                                    yt_replace_domain,
+                                    twitter_replacement_domain,
+                                    show_published_date_only,
+                                    peertube_instances,
+                                    allow_local_network_access,
+                                    theme_name,
+                                    system_language,
+                                    max_like_count,
+                                    signing_priv_key_pem,
+                                    cw_lists,
+                                    lists_enabled,
+                                    dogwhistles,
+                                    access_keys,
+                                    min_images_for_accounts,
+                                    buy_sites,
+                                    auto_cw_cache,
+                                    calling_domain):
             return
     elif (search_str.startswith('-') or
           string_ends_with(search_str, bookmark_endings)):
