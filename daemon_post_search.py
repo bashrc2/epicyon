@@ -52,6 +52,98 @@ def _receive_search_redirect(self, calling_domain: str,
     self.server.postreq_busy = False
 
 
+def _receive_search_hashtag(self, actor_str: str,
+                            account_timezone: {},
+                            bold_reading_nicknames: {},
+                            domain: str, port: int,
+                            recent_posts_cache: {},
+                            max_recent_posts: int,
+                            translate: {},
+                            base_dir: str,
+                            search_str: str,
+                            max_posts_in_hashtag_feed: int,
+                            curr_session,
+                            cached_webfingers: {},
+                            person_cache: {},
+                            http_prefix: str,
+                            project_version: str,
+                            yt_replace_domain: str,
+                            twitter_replacement_domain: str,
+                            show_published_date_only: bool,
+                            peertube_instances: [],
+                            allow_local_network_access: bool,
+                            theme_name: str,
+                            system_language: str,
+                            max_like_count: int,
+                            signing_priv_key_pem: str,
+                            cw_lists: {},
+                            lists_enabled: {},
+                            dogwhistles: {},
+                            map_format: str,
+                            access_keys: {},
+                            min_images_for_accounts: {},
+                            buy_sites: [],
+                            auto_cw_cache: {},
+                            calling_domain: str) -> None:
+    """Receive a search for a hashtag from the search screen
+    """
+    nickname = get_nickname_from_actor(actor_str)
+    if not nickname:
+        self.send_response(400)
+        self.end_headers()
+        self.server.postreq_busy = False
+        return True
+
+    # hashtag search
+    timezone = None
+    if account_timezone.get(nickname):
+        timezone = account_timezone.get(nickname)
+    bold_reading = False
+    if bold_reading_nicknames.get(nickname):
+        bold_reading = True
+    hashtag_str = \
+        html_hashtag_search(nickname, domain, port,
+                            recent_posts_cache,
+                            max_recent_posts,
+                            translate,
+                            base_dir,
+                            search_str[1:], 1,
+                            max_posts_in_hashtag_feed,
+                            curr_session,
+                            cached_webfingers,
+                            person_cache,
+                            http_prefix,
+                            project_version,
+                            yt_replace_domain,
+                            twitter_replacement_domain,
+                            show_published_date_only,
+                            peertube_instances,
+                            allow_local_network_access,
+                            theme_name,
+                            system_language,
+                            max_like_count,
+                            signing_priv_key_pem,
+                            cw_lists,
+                            lists_enabled,
+                            timezone, bold_reading,
+                            dogwhistles,
+                            map_format,
+                            access_keys,
+                            'search',
+                            min_images_for_accounts,
+                            buy_sites,
+                            auto_cw_cache)
+    if hashtag_str:
+        msg = hashtag_str.encode('utf-8')
+        msglen = len(msg)
+        login_headers(self, 'text/html',
+                      msglen, calling_domain)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
 def receive_search_query(self, calling_domain: str, cookie: str,
                          authorized: bool, path: str,
                          base_dir: str, http_prefix: str,
@@ -165,59 +257,39 @@ def receive_search_query(self, calling_domain: str, cookie: str,
         ' in saved', ' in saves', ' bookmark')
 
     if search_str.startswith('#'):
-        nickname = get_nickname_from_actor(actor_str)
-        if not nickname:
-            self.send_response(400)
-            self.end_headers()
-            self.server.postreq_busy = False
-            return
-
-        # hashtag search
-        timezone = None
-        if account_timezone.get(nickname):
-            timezone = account_timezone.get(nickname)
-        bold_reading = False
-        if bold_reading_nicknames.get(nickname):
-            bold_reading = True
-        hashtag_str = \
-            html_hashtag_search(nickname, domain, port,
-                                recent_posts_cache,
-                                max_recent_posts,
-                                translate,
-                                base_dir,
-                                search_str[1:], 1,
-                                max_posts_in_hashtag_feed,
-                                curr_session,
-                                cached_webfingers,
-                                person_cache,
-                                http_prefix,
-                                project_version,
-                                yt_replace_domain,
-                                twitter_replacement_domain,
-                                show_published_date_only,
-                                peertube_instances,
-                                allow_local_network_access,
-                                theme_name,
-                                system_language,
-                                max_like_count,
-                                signing_priv_key_pem,
-                                cw_lists,
-                                lists_enabled,
-                                timezone, bold_reading,
-                                dogwhistles,
-                                map_format,
-                                access_keys,
-                                'search',
-                                min_images_for_accounts,
-                                buy_sites,
-                                auto_cw_cache)
-        if hashtag_str:
-            msg = hashtag_str.encode('utf-8')
-            msglen = len(msg)
-            login_headers(self, 'text/html',
-                          msglen, calling_domain)
-            write2(self, msg)
-            self.server.postreq_busy = False
+        if _receive_search_hashtag(self, actor_str,
+                                   account_timezone,
+                                   bold_reading_nicknames,
+                                   domain, port,
+                                   recent_posts_cache,
+                                   max_recent_posts,
+                                   translate,
+                                   base_dir,
+                                   search_str,
+                                   max_posts_in_hashtag_feed,
+                                   curr_session,
+                                   cached_webfingers,
+                                   person_cache,
+                                   http_prefix,
+                                   project_version,
+                                   yt_replace_domain,
+                                   twitter_replacement_domain,
+                                   show_published_date_only,
+                                   peertube_instances,
+                                   allow_local_network_access,
+                                   theme_name,
+                                   system_language,
+                                   max_like_count,
+                                   signing_priv_key_pem,
+                                   cw_lists,
+                                   lists_enabled,
+                                   dogwhistles,
+                                   map_format,
+                                   access_keys,
+                                   min_images_for_accounts,
+                                   buy_sites,
+                                   auto_cw_cache,
+                                   calling_domain):
             return
     elif (search_str.startswith('*') or
           search_str.endswith(' skill')):
