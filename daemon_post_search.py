@@ -450,14 +450,14 @@ def _receive_search_handle(self, search_str: str,
         redirect_headers(self, actor_str + '/search',
                          cookie, calling_domain, 303)
         self.server.postreq_busy = False
-        return
+        return True
     # profile search
     nickname = get_nickname_from_actor(actor_str)
     if not nickname:
         self.send_response(400)
         self.end_headers()
         self.server.postreq_busy = False
-        return
+        return True
     profile_path_str = path.replace('/searchhandle', '')
 
     # are we already following or followed by the searched
@@ -477,7 +477,7 @@ def _receive_search_handle(self, search_str: str,
                 self.send_response(400)
                 self.end_headers()
                 self.server.postreq_busy = False
-                return
+                return True
             search_domain_full = \
                 get_full_domain(search_domain, search_port)
             actor = \
@@ -500,7 +500,7 @@ def _receive_search_handle(self, search_str: str,
                               curr_proxy_type, self.server)
         if not curr_session:
             self.server.postreq_busy = False
-            return
+            return True
 
         # get the avatar url for the actor
         avatar_url = \
@@ -517,7 +517,7 @@ def _receive_search_handle(self, search_str: str,
                             getreq_start_time,
                             cookie, debug, authorized,
                             curr_session)
-        return
+        return True
     else:
         if key_shortcuts.get(nickname):
             access_keys = key_shortcuts[nickname]
@@ -544,7 +544,7 @@ def _receive_search_handle(self, search_str: str,
                               curr_proxy_type, self.server)
         if not curr_session:
             self.server.postreq_busy = False
-            return
+            return True
 
         bold_reading = False
         if bold_reading_nicknames.get(nickname):
@@ -597,7 +597,7 @@ def _receive_search_handle(self, search_str: str,
                       msglen, calling_domain)
         write2(self, msg)
         self.server.postreq_busy = False
-        return
+        return True
     actor_str = \
         get_instance_url(calling_domain,
                          http_prefix, domain_full,
@@ -606,7 +606,35 @@ def _receive_search_handle(self, search_str: str,
     redirect_headers(self, actor_str + '/search',
                      cookie, calling_domain, 303)
     self.server.postreq_busy = False
-    return
+    return True
+
+
+def _receive_search_emoji(self, search_str: str,
+                          actor_str: str, translate: {},
+                          base_dir: str, domain: str,
+                          theme_name: str, access_keys: {},
+                          calling_domain: str) -> bool:
+    """Receive a search for an emoji from the search screen
+    """
+    # eg. "cat emoji"
+    if search_str.endswith(' emoji'):
+        search_str = \
+            search_str.replace(' emoji', '')
+    # emoji search
+    nickname = get_nickname_from_actor(actor_str)
+    emoji_str = \
+        html_search_emoji(translate,
+                          base_dir, search_str,
+                          nickname, domain,
+                          theme_name, access_keys)
+    if emoji_str:
+        msg = emoji_str.encode('utf-8')
+        msglen = len(msg)
+        login_headers(self, 'text/html', msglen, calling_domain)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
 
 
 def receive_search_query(self, calling_domain: str, cookie: str,
@@ -880,23 +908,11 @@ def receive_search_query(self, calling_domain: str, cookie: str,
             return
     elif (search_str.startswith(':') or
           search_str.endswith(' emoji')):
-        # eg. "cat emoji"
-        if search_str.endswith(' emoji'):
-            search_str = \
-                search_str.replace(' emoji', '')
-        # emoji search
-        nickname = get_nickname_from_actor(actor_str)
-        emoji_str = \
-            html_search_emoji(translate,
-                              base_dir, search_str,
-                              nickname, domain,
-                              theme_name, access_keys)
-        if emoji_str:
-            msg = emoji_str.encode('utf-8')
-            msglen = len(msg)
-            login_headers(self, 'text/html', msglen, calling_domain)
-            write2(self, msg)
-            self.server.postreq_busy = False
+        if _receive_search_emoji(self, search_str,
+                                 actor_str, translate,
+                                 base_dir, domain,
+                                 theme_name, access_keys,
+                                 calling_domain):
             return
     elif search_str.startswith('.'):
         # wanted items search
