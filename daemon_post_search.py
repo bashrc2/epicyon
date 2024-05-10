@@ -676,6 +676,40 @@ def _receive_search_wanted(self, search_str: str,
     return False
 
 
+def _receive_search_shared(self, search_str: str,
+                           actor_str: str,
+                           translate: {}, base_dir: str,
+                           page_number: int,
+                           max_posts_in_feed: int,
+                           http_prefix: str, domain_full: str,
+                           calling_domain: str,
+                           shared_items_federated_domains: [],
+                           domain: str,
+                           theme_name: str, access_keys: {}) -> bool:
+    """Receive a search for shared items from the search screen
+    """
+    # shared items search
+    nickname = get_nickname_from_actor(actor_str)
+    shared_items_str = \
+        html_search_shared_items(translate, base_dir,
+                                 search_str, page_number,
+                                 max_posts_in_feed,
+                                 http_prefix, domain_full,
+                                 actor_str, calling_domain,
+                                 shared_items_federated_domains,
+                                 'shares', nickname, domain,
+                                 theme_name, access_keys)
+    if shared_items_str:
+        msg = shared_items_str.encode('utf-8')
+        msglen = len(msg)
+        login_headers(self, 'text/html',
+                      msglen, calling_domain)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
 def receive_search_query(self, calling_domain: str, cookie: str,
                          authorized: bool, path: str,
                          base_dir: str, http_prefix: str,
@@ -965,24 +999,16 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                   access_keys):
             return
     else:
-        # shared items search
-        nickname = get_nickname_from_actor(actor_str)
-        shared_items_str = \
-            html_search_shared_items(translate, base_dir,
-                                     search_str, page_number,
-                                     max_posts_in_feed,
-                                     http_prefix, domain_full,
-                                     actor_str, calling_domain,
-                                     shared_items_federated_domains,
-                                     'shares', nickname, domain,
-                                     theme_name, access_keys)
-        if shared_items_str:
-            msg = shared_items_str.encode('utf-8')
-            msglen = len(msg)
-            login_headers(self, 'text/html',
-                          msglen, calling_domain)
-            write2(self, msg)
-            self.server.postreq_busy = False
+        if _receive_search_shared(self, search_str,
+                                  actor_str,
+                                  translate, base_dir,
+                                  page_number,
+                                  max_posts_in_feed,
+                                  http_prefix, domain_full,
+                                  calling_domain,
+                                  shared_items_federated_domains,
+                                  domain,
+                                  theme_name, access_keys):
             return
 
     _receive_search_redirect(self, calling_domain,
