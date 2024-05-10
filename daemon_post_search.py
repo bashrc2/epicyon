@@ -84,7 +84,7 @@ def _receive_search_hashtag(self, actor_str: str,
                             min_images_for_accounts: {},
                             buy_sites: [],
                             auto_cw_cache: {},
-                            calling_domain: str) -> None:
+                            calling_domain: str) -> bool:
     """Receive a search for a hashtag from the search screen
     """
     nickname = get_nickname_from_actor(actor_str)
@@ -135,6 +135,43 @@ def _receive_search_hashtag(self, actor_str: str,
                             auto_cw_cache)
     if hashtag_str:
         msg = hashtag_str.encode('utf-8')
+        msglen = len(msg)
+        login_headers(self, 'text/html',
+                      msglen, calling_domain)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _receive_search_skills(self, search_str: str,
+                           actor_str: str,
+                           translate: {},
+                           base_dir: str,
+                           instance_only_skills_search: bool,
+                           domain: str,
+                           theme_name: str, access_keys: {},
+                           calling_domain: str) -> bool:
+    """Receive a search for a skill from the search screen
+    """
+    possible_endings = (
+        ' skill'
+    )
+    for poss_ending in possible_endings:
+        if search_str.endswith(poss_ending):
+            search_str = search_str.replace(poss_ending, '')
+            break
+    # skill search
+    search_str = search_str.replace('*', '').strip()
+    nickname = get_nickname_from_actor(actor_str)
+    skill_str = \
+        html_skills_search(actor_str, translate,
+                           base_dir, search_str,
+                           instance_only_skills_search,
+                           64, nickname, domain,
+                           theme_name, access_keys)
+    if skill_str:
+        msg = skill_str.encode('utf-8')
         msglen = len(msg)
         login_headers(self, 'text/html',
                       msglen, calling_domain)
@@ -293,29 +330,14 @@ def receive_search_query(self, calling_domain: str, cookie: str,
             return
     elif (search_str.startswith('*') or
           search_str.endswith(' skill')):
-        possible_endings = (
-            ' skill'
-        )
-        for poss_ending in possible_endings:
-            if search_str.endswith(poss_ending):
-                search_str = search_str.replace(poss_ending, '')
-                break
-        # skill search
-        search_str = search_str.replace('*', '').strip()
-        nickname = get_nickname_from_actor(actor_str)
-        skill_str = \
-            html_skills_search(actor_str, translate,
-                               base_dir, search_str,
-                               instance_only_skills_search,
-                               64, nickname, domain,
-                               theme_name, access_keys)
-        if skill_str:
-            msg = skill_str.encode('utf-8')
-            msglen = len(msg)
-            login_headers(self, 'text/html',
-                          msglen, calling_domain)
-            write2(self, msg)
-            self.server.postreq_busy = False
+        if _receive_search_skills(self, search_str,
+                                  actor_str,
+                                  translate,
+                                  base_dir,
+                                  instance_only_skills_search,
+                                  domain,
+                                  theme_name, access_keys,
+                                  calling_domain):
             return
     elif (search_str.startswith("'") or
           string_ends_with(search_str, my_posts_endings)):
