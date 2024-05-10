@@ -120,6 +120,39 @@ def _person_options_petname(options_confirm_params: str) -> str:
     return petname
 
 
+def _person_option_receive_petname(self, options_confirm_params: str,
+                                   petname: str, debug: bool,
+                                   options_nickname: str,
+                                   options_domain_full: str,
+                                   base_dir: str,
+                                   chooser_nickname: str,
+                                   domain: str,
+                                   users_path: str,
+                                   default_timeline: str,
+                                   page_number: int,
+                                   cookie: str,
+                                   calling_domain: str) -> bool:
+    """person options screen, petname submit button
+    See html_person_options
+    """
+    if '&submitPetname=' in options_confirm_params and petname:
+        if debug:
+            print('Change petname to ' + petname)
+        handle = options_nickname + '@' + options_domain_full
+        set_pet_name(base_dir,
+                     chooser_nickname,
+                     domain,
+                     handle, petname)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
 def _person_options_notes(options_confirm_params: str) -> str:
     """notes about this person
     """
@@ -133,6 +166,42 @@ def _person_options_notes(options_confirm_params: str) -> str:
         if len(person_notes) > 64000:
             person_notes = None
     return person_notes
+
+
+def _person_options_receive_notes(self, options_confirm_params: str,
+                                  debug: bool,
+                                  options_nickname: str,
+                                  options_domain_full: str,
+                                  person_notes: str,
+                                  base_dir: str,
+                                  chooser_nickname: str,
+                                  domain: str,
+                                  users_path: str,
+                                  default_timeline: str,
+                                  page_number: int,
+                                  cookie: str,
+                                  calling_domain: str) -> bool:
+    """Person options screen, person notes submit button
+    See html_person_options
+    """
+    if '&submitPersonNotes=' in options_confirm_params:
+        if debug:
+            print('Change person notes')
+        handle = options_nickname + '@' + options_domain_full
+        if not person_notes:
+            person_notes = ''
+        set_person_notes(base_dir,
+                         chooser_nickname,
+                         domain,
+                         handle, person_notes)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
 
 
 def _person_options_view(self, options_confirm_params: str,
@@ -267,6 +336,91 @@ def _person_options_view(self, options_confirm_params: str,
             return True
         redirect_headers(self, options_actor,
                          cookie, calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_on_calendar(self, options_confirm_params: str,
+                                base_dir: str,
+                                chooser_nickname: str,
+                                domain: str,
+                                options_nickname: str,
+                                options_domain_full: str,
+                                users_path: str,
+                                default_timeline: str,
+                                page_number: int,
+                                cookie: str,
+                                calling_domain: str) -> bool:
+    """Person options screen, on calendar checkbox
+    See html_person_options
+    """
+    if '&submitOnCalendar=' in options_confirm_params:
+        on_calendar = None
+        if 'onCalendar=' in options_confirm_params:
+            on_calendar = options_confirm_params.split('onCalendar=')[1]
+            if '&' in on_calendar:
+                on_calendar = on_calendar.split('&')[0]
+        if on_calendar == 'on':
+            add_person_to_calendar(base_dir,
+                                   chooser_nickname,
+                                   domain,
+                                   options_nickname,
+                                   options_domain_full)
+        else:
+            remove_person_from_calendar(base_dir,
+                                        chooser_nickname,
+                                        domain,
+                                        options_nickname,
+                                        options_domain_full)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_min_images(self, options_confirm_params: str,
+                               base_dir: str,
+                               chooser_nickname: str,
+                               domain: str,
+                               options_nickname: str,
+                               options_domain_full: str,
+                               users_path: str,
+                               default_timeline: str,
+                               page_number: int,
+                               cookie: str,
+                               calling_domain: str) -> bool:
+    """Person options screen, minimize images checkbox
+    See html_person_options
+    """
+    if '&submitMinimizeImages=' in options_confirm_params:
+        minimize_images = None
+        if 'minimizeImages=' in options_confirm_params:
+            minimize_images = \
+                options_confirm_params.split('minimizeImages=')[1]
+            if '&' in minimize_images:
+                minimize_images = minimize_images.split('&')[0]
+        if minimize_images == 'on':
+            person_minimize_images(base_dir,
+                                   chooser_nickname,
+                                   domain,
+                                   options_nickname,
+                                   options_domain_full)
+        else:
+            person_undo_minimize_images(base_dir,
+                                        chooser_nickname,
+                                        domain,
+                                        options_nickname,
+                                        options_domain_full)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
         self.server.postreq_busy = False
         return True
     return False
@@ -440,99 +594,59 @@ def person_options2(self, path: str,
                             calling_domain):
         return
 
-    # person options screen, petname submit button
-    # See html_person_options
-    if '&submitPetname=' in options_confirm_params and petname:
-        if debug:
-            print('Change petname to ' + petname)
-        handle = options_nickname + '@' + options_domain_full
-        set_pet_name(base_dir,
-                     chooser_nickname,
-                     domain,
-                     handle, petname)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
+    if _person_option_receive_petname(self, options_confirm_params,
+                                      petname, debug,
+                                      options_nickname,
+                                      options_domain_full,
+                                      base_dir,
+                                      chooser_nickname,
+                                      domain,
+                                      users_path,
+                                      default_timeline,
+                                      page_number,
+                                      cookie,
+                                      calling_domain):
         return
 
-    # person options screen, person notes submit button
-    # See html_person_options
-    if '&submitPersonNotes=' in options_confirm_params:
-        if debug:
-            print('Change person notes')
-        handle = options_nickname + '@' + options_domain_full
-        if not person_notes:
-            person_notes = ''
-        set_person_notes(base_dir,
-                         chooser_nickname,
-                         domain,
-                         handle, person_notes)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
+    if _person_options_receive_notes(self, options_confirm_params,
+                                     debug,
+                                     options_nickname,
+                                     options_domain_full,
+                                     person_notes,
+                                     base_dir,
+                                     chooser_nickname,
+                                     domain,
+                                     users_path,
+                                     default_timeline,
+                                     page_number,
+                                     cookie,
+                                     calling_domain):
         return
 
-    # person options screen, on calendar checkbox
-    # See html_person_options
-    if '&submitOnCalendar=' in options_confirm_params:
-        on_calendar = None
-        if 'onCalendar=' in options_confirm_params:
-            on_calendar = options_confirm_params.split('onCalendar=')[1]
-            if '&' in on_calendar:
-                on_calendar = on_calendar.split('&')[0]
-        if on_calendar == 'on':
-            add_person_to_calendar(base_dir,
+    if _person_options_on_calendar(self, options_confirm_params,
+                                   base_dir,
                                    chooser_nickname,
                                    domain,
                                    options_nickname,
-                                   options_domain_full)
-        else:
-            remove_person_from_calendar(base_dir,
-                                        chooser_nickname,
-                                        domain,
-                                        options_nickname,
-                                        options_domain_full)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
+                                   options_domain_full,
+                                   users_path,
+                                   default_timeline,
+                                   page_number,
+                                   cookie,
+                                   calling_domain):
         return
 
-    # person options screen, minimize images checkbox
-    # See html_person_options
-    if '&submitMinimizeImages=' in options_confirm_params:
-        minimize_images = None
-        if 'minimizeImages=' in options_confirm_params:
-            minimize_images = \
-                options_confirm_params.split('minimizeImages=')[1]
-            if '&' in minimize_images:
-                minimize_images = minimize_images.split('&')[0]
-        if minimize_images == 'on':
-            person_minimize_images(base_dir,
-                                   chooser_nickname,
-                                   domain,
-                                   options_nickname,
-                                   options_domain_full)
-        else:
-            person_undo_minimize_images(base_dir,
-                                        chooser_nickname,
-                                        domain,
-                                        options_nickname,
-                                        options_domain_full)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
+    if _person_options_min_images(self, options_confirm_params,
+                                  base_dir,
+                                  chooser_nickname,
+                                  domain,
+                                  options_nickname,
+                                  options_domain_full,
+                                  users_path,
+                                  default_timeline,
+                                  page_number,
+                                  cookie,
+                                  calling_domain):
         return
 
     # person options screen, allow announces checkbox
