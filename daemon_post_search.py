@@ -637,6 +637,45 @@ def _receive_search_emoji(self, search_str: str,
     return False
 
 
+def _receive_search_wanted(self, search_str: str,
+                           actor_str: str,
+                           translate: {},
+                           base_dir: str,
+                           page_number: int,
+                           max_posts_in_feed: int,
+                           http_prefix: str,
+                           domain_full: str,
+                           calling_domain: str,
+                           shared_items_federated_domains: [],
+                           domain: str,
+                           theme_name: str,
+                           access_keys: {}) -> bool:
+    """Receive a search for wanted items from the search screen
+    """
+    # wanted items search
+    nickname = get_nickname_from_actor(actor_str)
+    wanted_items_str = \
+        html_search_shared_items(translate,
+                                 base_dir,
+                                 search_str[1:], page_number,
+                                 max_posts_in_feed,
+                                 http_prefix,
+                                 domain_full,
+                                 actor_str, calling_domain,
+                                 shared_items_federated_domains,
+                                 'wanted', nickname, domain,
+                                 theme_name,
+                                 access_keys)
+    if wanted_items_str:
+        msg = wanted_items_str.encode('utf-8')
+        msglen = len(msg)
+        login_headers(self, 'text/html', msglen, calling_domain)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
 def receive_search_query(self, calling_domain: str, cookie: str,
                          authorized: bool, path: str,
                          base_dir: str, http_prefix: str,
@@ -915,26 +954,15 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                  calling_domain):
             return
     elif search_str.startswith('.'):
-        # wanted items search
-        nickname = get_nickname_from_actor(actor_str)
-        wanted_items_str = \
-            html_search_shared_items(translate,
-                                     base_dir,
-                                     search_str[1:], page_number,
-                                     max_posts_in_feed,
-                                     http_prefix,
-                                     domain_full,
-                                     actor_str, calling_domain,
-                                     shared_items_federated_domains,
-                                     'wanted', nickname, domain,
-                                     theme_name,
-                                     access_keys)
-        if wanted_items_str:
-            msg = wanted_items_str.encode('utf-8')
-            msglen = len(msg)
-            login_headers(self, 'text/html', msglen, calling_domain)
-            write2(self, msg)
-            self.server.postreq_busy = False
+        if _receive_search_wanted(self, search_str,
+                                  actor_str, translate,
+                                  base_dir, page_number,
+                                  max_posts_in_feed,
+                                  http_prefix, domain_full,
+                                  calling_domain,
+                                  shared_items_federated_domains,
+                                  domain, theme_name,
+                                  access_keys):
             return
     else:
         # shared items search
