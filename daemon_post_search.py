@@ -34,6 +34,24 @@ from session import establish_session
 from daemon_utils import show_person_options
 
 
+def _receive_search_redirect(self, calling_domain: str,
+                             http_prefix: str,
+                             domain_full: str,
+                             onion_domain: str,
+                             i2p_domain: str,
+                             users_path: str,
+                             default_timeline: str,
+                             cookie: str) -> None:
+    """Redirect to a different screen after search
+    """
+    actor_str = \
+        get_instance_url(calling_domain, http_prefix,
+                         domain_full, onion_domain, i2p_domain) + users_path
+    redirect_headers(self, actor_str + '/' + default_timeline,
+                     cookie, calling_domain, 303)
+    self.server.postreq_busy = False
+
+
 def receive_search_query(self, calling_domain: str, cookie: str,
                          authorized: bool, path: str,
                          base_dir: str, http_prefix: str,
@@ -119,12 +137,11 @@ def receive_search_query(self, calling_domain: str, cookie: str,
         self.server.postreq_busy = False
         return
     if 'searchtext=' not in search_params:
-        actor_str = \
-            get_instance_url(calling_domain, http_prefix, domain_full,
-                             onion_domain, i2p_domain) + users_path
-        redirect_headers(self, actor_str + '/' + default_timeline,
-                         cookie, calling_domain, 303)
-        self.server.postreq_busy = False
+        _receive_search_redirect(self, calling_domain,
+                                 http_prefix, domain_full,
+                                 onion_domain, i2p_domain,
+                                 users_path, default_timeline,
+                                 cookie)
         return
 
     search_str = search_params.split('searchtext=')[1]
@@ -612,9 +629,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
             self.server.postreq_busy = False
             return
 
-    actor_str = \
-        get_instance_url(calling_domain, http_prefix,
-                         domain_full, onion_domain, i2p_domain) + users_path
-    redirect_headers(self, actor_str + '/' + default_timeline,
-                     cookie, calling_domain, 303)
-    self.server.postreq_busy = False
+    _receive_search_redirect(self, calling_domain,
+                             http_prefix, domain_full,
+                             onion_domain, i2p_domain,
+                             users_path, default_timeline,
+                             cookie)
