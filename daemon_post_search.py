@@ -520,78 +520,78 @@ def _receive_search_handle(self, search_str: str,
                             cookie, debug, authorized,
                             curr_session)
         return True
-    else:
-        if key_shortcuts.get(nickname):
-            access_keys = key_shortcuts[nickname]
 
-        timezone = None
-        if account_timezone.get(nickname):
-            timezone = account_timezone.get(nickname)
+    if key_shortcuts.get(nickname):
+        access_keys = key_shortcuts[nickname]
 
-        profile_handle = remove_eol(search_str).strip()
+    timezone = None
+    if account_timezone.get(nickname):
+        timezone = account_timezone.get(nickname)
 
-        # establish the session
-        curr_proxy_type = proxy_type
-        if '.onion/' in profile_handle or \
-           profile_handle.endswith('.onion'):
-            curr_proxy_type = 'tor'
-            curr_session = self.server.session_onion
-        elif ('.i2p/' in profile_handle or
-              profile_handle.endswith('.i2p')):
-            curr_proxy_type = 'i2p'
-            curr_session = self.server.session_i2p
+    profile_handle = remove_eol(search_str).strip()
 
-        curr_session = \
-            establish_session("handle search", curr_session,
-                              curr_proxy_type, self.server)
-        if not curr_session:
-            self.server.postreq_busy = False
-            return True
+    # establish the session
+    curr_proxy_type = proxy_type
+    if '.onion/' in profile_handle or \
+       profile_handle.endswith('.onion'):
+        curr_proxy_type = 'tor'
+        curr_session = self.server.session_onion
+    elif ('.i2p/' in profile_handle or
+          profile_handle.endswith('.i2p')):
+        curr_proxy_type = 'i2p'
+        curr_session = self.server.session_i2p
 
-        bold_reading = False
-        if bold_reading_nicknames.get(nickname):
-            bold_reading = True
+    curr_session = \
+        establish_session("handle search", curr_session,
+                          curr_proxy_type, self.server)
+    if not curr_session:
+        self.server.postreq_busy = False
+        return True
 
-        profile_str = \
-            html_profile_after_search(authorized,
-                                      recent_posts_cache,
-                                      max_recent_posts,
-                                      translate,
-                                      base_dir,
-                                      profile_path_str,
-                                      http_prefix,
-                                      nickname,
-                                      domain,
-                                      port,
-                                      profile_handle,
-                                      curr_session,
-                                      cached_webfingers,
-                                      person_cache,
-                                      debug,
-                                      project_version,
-                                      yt_replace_domain,
-                                      twitter_replacement_domain,
-                                      show_published_date_only,
-                                      default_timeline,
-                                      peertube_instances,
-                                      allow_local_network_access,
-                                      theme_name,
-                                      access_keys,
-                                      system_language,
-                                      max_like_count,
-                                      signing_priv_key_pem,
-                                      cw_lists,
-                                      lists_enabled,
-                                      timezone,
-                                      onion_domain,
-                                      i2p_domain,
-                                      bold_reading,
-                                      dogwhistles,
-                                      min_images_for_accounts,
-                                      buy_sites,
-                                      max_shares_on_profile,
-                                      no_of_books,
-                                      auto_cw_cache)
+    bold_reading = False
+    if bold_reading_nicknames.get(nickname):
+        bold_reading = True
+
+    profile_str = \
+        html_profile_after_search(authorized,
+                                  recent_posts_cache,
+                                  max_recent_posts,
+                                  translate,
+                                  base_dir,
+                                  profile_path_str,
+                                  http_prefix,
+                                  nickname,
+                                  domain,
+                                  port,
+                                  profile_handle,
+                                  curr_session,
+                                  cached_webfingers,
+                                  person_cache,
+                                  debug,
+                                  project_version,
+                                  yt_replace_domain,
+                                  twitter_replacement_domain,
+                                  show_published_date_only,
+                                  default_timeline,
+                                  peertube_instances,
+                                  allow_local_network_access,
+                                  theme_name,
+                                  access_keys,
+                                  system_language,
+                                  max_like_count,
+                                  signing_priv_key_pem,
+                                  cw_lists,
+                                  lists_enabled,
+                                  timezone,
+                                  onion_domain,
+                                  i2p_domain,
+                                  bold_reading,
+                                  dogwhistles,
+                                  min_images_for_accounts,
+                                  buy_sites,
+                                  max_shares_on_profile,
+                                  no_of_books,
+                                  auto_cw_cache)
     if profile_str:
         msg = profile_str.encode('utf-8')
         msglen = len(msg)
@@ -600,11 +600,11 @@ def _receive_search_handle(self, search_str: str,
         write2(self, msg)
         self.server.postreq_busy = False
         return True
+
     actor_str = \
         get_instance_url(calling_domain,
                          http_prefix, domain_full,
-                         onion_domain, i2p_domain) + \
-        users_path
+                         onion_domain, i2p_domain) + users_path
     redirect_headers(self, actor_str + '/search',
                      cookie, calling_domain, 303)
     self.server.postreq_busy = False
