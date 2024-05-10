@@ -437,7 +437,7 @@ def _receive_search_handle(self, search_str: str,
                            no_of_books: int,
                            auto_cw_cache: {},
                            actor_str: str,
-                           curr_session) -> bool:
+                           curr_session, access_keys: {}) -> bool:
     """Receive a search for a fediverse handle or url from the search screen
     """
     remote_only = False
@@ -980,7 +980,7 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                   max_shares_on_profile,
                                   no_of_books,
                                   auto_cw_cache, actor_str,
-                                  curr_session):
+                                  curr_session, access_keys):
             return
     elif (search_str.startswith(':') or
           search_str.endswith(' emoji')):
