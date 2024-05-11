@@ -911,7 +911,8 @@ def _person_options_dm(self, options_confirm_params: str,
                        min_images_for_accounts: {},
                        buy_sites: [],
                        auto_cw_cache: {},
-                       cookie: str, calling_domain: str) -> bool:
+                       cookie: str, calling_domain: str,
+                       access_keys: {}) -> bool:
     """Person options screen, DM button
     See html_person_options
     """
@@ -1142,7 +1143,8 @@ def _person_options_report(self, options_confirm_params: str,
                            min_images_for_accounts: {},
                            buy_sites: [],
                            auto_cw_cache: {},
-                           cookie: str, calling_domain: str) -> bool:
+                           cookie: str, calling_domain: str,
+                           access_keys: {}) -> bool:
     """Person options screen, report button
     See html_person_options
     """
@@ -1606,7 +1608,8 @@ def person_options2(self, path: str,
                           min_images_for_accounts,
                           buy_sites,
                           auto_cw_cache,
-                          cookie, calling_domain):
+                          cookie, calling_domain,
+                          access_keys):
         return
 
     if _person_options_info(self, options_confirm_params,
@@ -1672,7 +1675,8 @@ def person_options2(self, path: str,
                               min_images_for_accounts,
                               buy_sites,
                               auto_cw_cache,
-                              cookie, calling_domain):
+                              cookie, calling_domain,
+                              access_keys):
         return
 
     # redirect back from person options screen
