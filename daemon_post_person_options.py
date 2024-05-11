@@ -881,6 +881,356 @@ def _person_options_unfollow(self, options_confirm_params: str,
     return False
 
 
+def _person_options_dm(self, options_confirm_params: str,
+                       debug: bool, options_actor: str,
+                       path: str, key_shortcuts: {},
+                       base_dir: str, bold_reading_nicknames: {},
+                       chooser_nickname: str, http_prefix: str,
+                       domain_full: str, person_cache: {},
+                       system_language: str,
+                       default_post_language: {},
+                       translate: {}, page_number: int,
+                       domain: str, default_timeline: str,
+                       newswire: str, theme_name: str,
+                       recent_posts_cache: {},
+                       max_recent_posts: int,
+                       curr_session,
+                       cached_webfingers: {},
+                       port: int, project_version: str,
+                       yt_replace_domain: str,
+                       twitter_replacement_domain: str,
+                       show_published_date_only: bool,
+                       peertube_instances: [],
+                       allow_local_network_access: bool,
+                       max_like_count: int,
+                       signing_priv_key_pem: str,
+                       cw_lists: {},
+                       lists_enabled: {},
+                       dogwhistles: {},
+                       min_images_for_accounts: {},
+                       buy_sites: [],
+                       auto_cw_cache: {},
+                       cookie: str, calling_domain: str) -> bool:
+    """Person options screen, DM button
+    See html_person_options
+    """
+    if '&submitDM=' in options_confirm_params:
+        if debug:
+            print('Sending DM to ' + options_actor)
+        report_path = path.replace('/personoptions', '') + '/newdm'
+
+        if '/users/' in path:
+            nickname = path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if key_shortcuts.get(nickname):
+                access_keys = key_shortcuts[nickname]
+
+        custom_submit_text = get_config_param(base_dir, 'customSubmitText')
+        conversation_id = None
+        reply_is_chat = False
+
+        bold_reading = False
+        if bold_reading_nicknames.get(chooser_nickname):
+            bold_reading = True
+
+        languages_understood = \
+            get_understood_languages(base_dir,
+                                     http_prefix,
+                                     chooser_nickname,
+                                     domain_full,
+                                     person_cache)
+
+        default_post_language2 = system_language
+        if default_post_language.get(nickname):
+            default_post_language2 = default_post_language[nickname]
+        default_buy_site = ''
+        msg = \
+            html_new_post({}, False, translate,
+                          base_dir,
+                          http_prefix,
+                          report_path, None,
+                          [options_actor], None, None,
+                          page_number, '',
+                          chooser_nickname,
+                          domain,
+                          domain_full,
+                          default_timeline,
+                          newswire,
+                          theme_name,
+                          True, access_keys,
+                          custom_submit_text,
+                          conversation_id,
+                          recent_posts_cache,
+                          max_recent_posts,
+                          curr_session,
+                          cached_webfingers,
+                          person_cache,
+                          port,
+                          None,
+                          project_version,
+                          yt_replace_domain,
+                          twitter_replacement_domain,
+                          show_published_date_only,
+                          peertube_instances,
+                          allow_local_network_access,
+                          system_language,
+                          languages_understood,
+                          max_like_count,
+                          signing_priv_key_pem,
+                          cw_lists,
+                          lists_enabled,
+                          default_timeline,
+                          reply_is_chat,
+                          bold_reading,
+                          dogwhistles,
+                          min_images_for_accounts,
+                          None, None, default_post_language2,
+                          buy_sites,
+                          default_buy_site,
+                          auto_cw_cache)
+        if msg:
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            set_headers(self, 'text/html', msglen,
+                        cookie, calling_domain, False)
+            write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_info(self, options_confirm_params: str,
+                         base_dir: str, chooser_nickname: str,
+                         debug: bool, options_actor: str,
+                         translate: {}, http_prefix: str,
+                         domain: str, system_language: str,
+                         signing_priv_key_pem: str,
+                         block_federated: [],
+                         cookie: str, calling_domain: str) -> bool:
+    """Person options screen, Info button
+    See html_person_options
+    """
+    if '&submitPersonInfo=' in options_confirm_params:
+        if is_moderator(base_dir, chooser_nickname):
+            if debug:
+                print('Showing info for ' + options_actor)
+            msg = \
+                html_account_info(translate,
+                                  base_dir,
+                                  http_prefix,
+                                  chooser_nickname,
+                                  domain,
+                                  options_actor,
+                                  debug,
+                                  system_language,
+                                  signing_priv_key_pem,
+                                  None,
+                                  block_federated)
+            if msg:
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                set_headers(self, 'text/html', msglen,
+                            cookie, calling_domain, False)
+                write2(self, msg)
+            self.server.postreq_busy = False
+            return True
+        http_404(self, 11)
+        return True
+    return False
+
+
+def _person_options_snooze(self, options_confirm_params: str,
+                           path: str, http_prefix: str,
+                           domain_full: str, debug: bool,
+                           options_actor: str, base_dir: str,
+                           domain: str, calling_domain: str,
+                           onion_domain: str, i2p_domain: str,
+                           default_timeline: str,
+                           page_number: int,
+                           cookie: str) -> bool:
+    """Person options screen, snooze button
+    See html_person_options
+    """
+    if '&submitSnooze=' in options_confirm_params:
+        users_path = path.split('/personoptions')[0]
+        this_actor = http_prefix + '://' + domain_full + users_path
+        if debug:
+            print('Snoozing ' + options_actor + ' ' + this_actor)
+        if '/users/' in this_actor:
+            nickname = this_actor.split('/users/')[1]
+            person_snooze(base_dir, nickname,
+                          domain, options_actor)
+            if calling_domain.endswith('.onion') and onion_domain:
+                this_actor = 'http://' + onion_domain + users_path
+            elif (calling_domain.endswith('.i2p') and i2p_domain):
+                this_actor = 'http://' + i2p_domain + users_path
+            actor_path_str = \
+                this_actor + '/' + default_timeline + \
+                '?page=' + str(page_number)
+            redirect_headers(self, actor_path_str, cookie,
+                             calling_domain, 303)
+            self.server.postreq_busy = False
+            return True
+    return False
+
+
+def _person_options_unsnooze(self, options_confirm_params: str,
+                             path: str, http_prefix: str,
+                             domain_full: str, debug: bool,
+                             options_actor: str,
+                             base_dir: str, domain: str,
+                             calling_domain: str,
+                             onion_domain: str, i2p_domain: str,
+                             default_timeline: str,
+                             page_number: int, cookie: str) -> bool:
+    """Person options screen, unsnooze button
+    See html_person_options
+    """
+    if '&submitUnsnooze=' in options_confirm_params:
+        users_path = path.split('/personoptions')[0]
+        this_actor = http_prefix + '://' + domain_full + users_path
+        if debug:
+            print('Unsnoozing ' + options_actor + ' ' + this_actor)
+        if '/users/' in this_actor:
+            nickname = this_actor.split('/users/')[1]
+            person_unsnooze(base_dir, nickname,
+                            domain, options_actor)
+            if calling_domain.endswith('.onion') and onion_domain:
+                this_actor = 'http://' + onion_domain + users_path
+            elif (calling_domain.endswith('.i2p') and i2p_domain):
+                this_actor = 'http://' + i2p_domain + users_path
+            actor_path_str = \
+                this_actor + '/' + default_timeline + \
+                '?page=' + str(page_number)
+            redirect_headers(self, actor_path_str, cookie,
+                             calling_domain, 303)
+            self.server.postreq_busy = False
+            return True
+    return False
+
+
+def _person_options_report(self, options_confirm_params: str,
+                           debug: bool, path: str,
+                           options_actor: str, key_shortcuts: {},
+                           base_dir: str, bold_reading_nicknames: {},
+                           chooser_nickname: str,
+                           http_prefix: str, domain_full: str,
+                           person_cache: {}, system_language: str,
+                           default_post_language: {},
+                           translate: {}, post_url: str,
+                           page_number: int,
+                           domain: str, default_timeline: str,
+                           newswire: {},
+                           theme_name: str,
+                           recent_posts_cache: {},
+                           max_recent_posts: int,
+                           curr_session,
+                           cached_webfingers: {}, port: int,
+                           project_version: str,
+                           yt_replace_domain: str,
+                           twitter_replacement_domain: str,
+                           show_published_date_only: bool,
+                           peertube_instances: [],
+                           allow_local_network_access: bool,
+                           max_like_count: int,
+                           signing_priv_key_pem: str,
+                           cw_lists: {},
+                           lists_enabled: {},
+                           dogwhistles: {},
+                           min_images_for_accounts: {},
+                           buy_sites: [],
+                           auto_cw_cache: {},
+                           cookie: str, calling_domain: str) -> bool:
+    """Person options screen, report button
+    See html_person_options
+    """
+    if '&submitReport=' in options_confirm_params:
+        if debug:
+            print('Reporting ' + options_actor)
+        report_path = \
+            path.replace('/personoptions', '') + '/newreport'
+
+        if '/users/' in path:
+            nickname = path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if key_shortcuts.get(nickname):
+                access_keys = key_shortcuts[nickname]
+
+        custom_submit_text = get_config_param(base_dir, 'customSubmitText')
+        conversation_id = None
+        reply_is_chat = False
+
+        bold_reading = False
+        if bold_reading_nicknames.get(chooser_nickname):
+            bold_reading = True
+
+        languages_understood = \
+            get_understood_languages(base_dir,
+                                     http_prefix,
+                                     chooser_nickname,
+                                     domain_full,
+                                     person_cache)
+
+        default_post_language2 = system_language
+        if default_post_language.get(nickname):
+            default_post_language2 = default_post_language[nickname]
+        default_buy_site = ''
+        msg = \
+            html_new_post({}, False, translate,
+                          base_dir,
+                          http_prefix,
+                          report_path, None, [],
+                          None, post_url, page_number, '',
+                          chooser_nickname,
+                          domain,
+                          domain_full,
+                          default_timeline,
+                          newswire,
+                          theme_name,
+                          True, access_keys,
+                          custom_submit_text,
+                          conversation_id,
+                          recent_posts_cache,
+                          max_recent_posts,
+                          curr_session,
+                          cached_webfingers,
+                          person_cache,
+                          port,
+                          None,
+                          project_version,
+                          yt_replace_domain,
+                          twitter_replacement_domain,
+                          show_published_date_only,
+                          peertube_instances,
+                          allow_local_network_access,
+                          system_language,
+                          languages_understood,
+                          max_like_count,
+                          signing_priv_key_pem,
+                          cw_lists,
+                          lists_enabled,
+                          default_timeline,
+                          reply_is_chat,
+                          bold_reading,
+                          dogwhistles,
+                          min_images_for_accounts,
+                          None, None, default_post_language2,
+                          buy_sites,
+                          default_buy_site,
+                          auto_cw_cache)
+        if msg:
+            msg = msg.encode('utf-8')
+            msglen = len(msg)
+            set_headers(self, 'text/html', msglen,
+                        cookie, calling_domain, False)
+            write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
 def person_options2(self, path: str,
                     calling_domain: str, cookie: str,
                     base_dir: str, http_prefix: str,
@@ -1225,251 +1575,102 @@ def person_options2(self, path: str,
                                 cookie, calling_domain):
         return
 
-    # person options screen, DM button
-    # See html_person_options
-    if '&submitDM=' in options_confirm_params:
-        if debug:
-            print('Sending DM to ' + options_actor)
-        report_path = path.replace('/personoptions', '') + '/newdm'
-
-        if '/users/' in path:
-            nickname = path.split('/users/')[1]
-            if '/' in nickname:
-                nickname = nickname.split('/')[0]
-            if key_shortcuts.get(nickname):
-                access_keys = key_shortcuts[nickname]
-
-        custom_submit_text = get_config_param(base_dir, 'customSubmitText')
-        conversation_id = None
-        reply_is_chat = False
-
-        bold_reading = False
-        if bold_reading_nicknames.get(chooser_nickname):
-            bold_reading = True
-
-        languages_understood = \
-            get_understood_languages(base_dir,
-                                     http_prefix,
-                                     chooser_nickname,
-                                     domain_full,
-                                     person_cache)
-
-        default_post_language2 = system_language
-        if default_post_language.get(nickname):
-            default_post_language2 = default_post_language[nickname]
-        default_buy_site = ''
-        msg = \
-            html_new_post({}, False, translate,
-                          base_dir,
-                          http_prefix,
-                          report_path, None,
-                          [options_actor], None, None,
-                          page_number, '',
-                          chooser_nickname,
-                          domain,
-                          domain_full,
-                          default_timeline,
-                          newswire,
-                          theme_name,
-                          True, access_keys,
-                          custom_submit_text,
-                          conversation_id,
+    if _person_options_dm(self, options_confirm_params,
+                          debug, options_actor,
+                          path, key_shortcuts,
+                          base_dir, bold_reading_nicknames,
+                          chooser_nickname, http_prefix,
+                          domain_full, person_cache,
+                          system_language,
+                          default_post_language,
+                          translate, page_number,
+                          domain, default_timeline,
+                          newswire, theme_name,
                           recent_posts_cache,
                           max_recent_posts,
                           curr_session,
                           cached_webfingers,
-                          person_cache,
-                          port,
-                          None,
-                          project_version,
+                          port, project_version,
                           yt_replace_domain,
                           twitter_replacement_domain,
                           show_published_date_only,
                           peertube_instances,
                           allow_local_network_access,
-                          system_language,
-                          languages_understood,
                           max_like_count,
                           signing_priv_key_pem,
                           cw_lists,
                           lists_enabled,
-                          default_timeline,
-                          reply_is_chat,
-                          bold_reading,
                           dogwhistles,
                           min_images_for_accounts,
-                          None, None, default_post_language2,
                           buy_sites,
-                          default_buy_site,
-                          auto_cw_cache)
-        if msg:
-            msg = msg.encode('utf-8')
-            msglen = len(msg)
-            set_headers(self, 'text/html', msglen,
-                        cookie, calling_domain, False)
-            write2(self, msg)
-        self.server.postreq_busy = False
+                          auto_cw_cache,
+                          cookie, calling_domain):
         return
 
-    # person options screen, Info button
-    # See html_person_options
-    if '&submitPersonInfo=' in options_confirm_params:
-        if is_moderator(base_dir, chooser_nickname):
-            if debug:
-                print('Showing info for ' + options_actor)
-            msg = \
-                html_account_info(translate,
-                                  base_dir,
-                                  http_prefix,
-                                  chooser_nickname,
-                                  domain,
-                                  options_actor,
-                                  debug,
-                                  system_language,
-                                  signing_priv_key_pem,
-                                  None,
-                                  block_federated)
-            if msg:
-                msg = msg.encode('utf-8')
-                msglen = len(msg)
-                set_headers(self, 'text/html', msglen,
-                            cookie, calling_domain, False)
-                write2(self, msg)
-            self.server.postreq_busy = False
-            return
-        http_404(self, 11)
+    if _person_options_info(self, options_confirm_params,
+                            base_dir, chooser_nickname,
+                            debug, options_actor,
+                            translate, http_prefix,
+                            domain, system_language,
+                            signing_priv_key_pem,
+                            block_federated,
+                            cookie, calling_domain):
         return
 
-    # person options screen, snooze button
-    # See html_person_options
-    if '&submitSnooze=' in options_confirm_params:
-        users_path = path.split('/personoptions')[0]
-        this_actor = http_prefix + '://' + domain_full + users_path
-        if debug:
-            print('Snoozing ' + options_actor + ' ' + this_actor)
-        if '/users/' in this_actor:
-            nickname = this_actor.split('/users/')[1]
-            person_snooze(base_dir, nickname,
-                          domain, options_actor)
-            if calling_domain.endswith('.onion') and onion_domain:
-                this_actor = 'http://' + onion_domain + users_path
-            elif (calling_domain.endswith('.i2p') and i2p_domain):
-                this_actor = 'http://' + i2p_domain + users_path
-            actor_path_str = \
-                this_actor + '/' + default_timeline + \
-                '?page=' + str(page_number)
-            redirect_headers(self, actor_path_str, cookie,
-                             calling_domain, 303)
-            self.server.postreq_busy = False
-            return
+    if _person_options_snooze(self, options_confirm_params,
+                              path, http_prefix,
+                              domain_full, debug,
+                              options_actor, base_dir,
+                              domain, calling_domain,
+                              onion_domain, i2p_domain,
+                              default_timeline,
+                              page_number,
+                              cookie):
+        return
 
-    # person options screen, unsnooze button
-    # See html_person_options
-    if '&submitUnsnooze=' in options_confirm_params:
-        users_path = path.split('/personoptions')[0]
-        this_actor = http_prefix + '://' + domain_full + users_path
-        if debug:
-            print('Unsnoozing ' + options_actor + ' ' + this_actor)
-        if '/users/' in this_actor:
-            nickname = this_actor.split('/users/')[1]
-            person_unsnooze(base_dir, nickname,
-                            domain, options_actor)
-            if calling_domain.endswith('.onion') and onion_domain:
-                this_actor = 'http://' + onion_domain + users_path
-            elif (calling_domain.endswith('.i2p') and i2p_domain):
-                this_actor = 'http://' + i2p_domain + users_path
-            actor_path_str = \
-                this_actor + '/' + default_timeline + \
-                '?page=' + str(page_number)
-            redirect_headers(self, actor_path_str, cookie,
-                             calling_domain, 303)
-            self.server.postreq_busy = False
-            return
+    if _person_options_unsnooze(self, options_confirm_params,
+                                path, http_prefix,
+                                domain_full, debug,
+                                options_actor,
+                                base_dir, domain,
+                                calling_domain,
+                                onion_domain, i2p_domain,
+                                default_timeline,
+                                page_number, cookie):
+        return
 
-    # person options screen, report button
-    # See html_person_options
-    if '&submitReport=' in options_confirm_params:
-        if debug:
-            print('Reporting ' + options_actor)
-        report_path = \
-            path.replace('/personoptions', '') + '/newreport'
-
-        if '/users/' in path:
-            nickname = path.split('/users/')[1]
-            if '/' in nickname:
-                nickname = nickname.split('/')[0]
-            if key_shortcuts.get(nickname):
-                access_keys = key_shortcuts[nickname]
-
-        custom_submit_text = get_config_param(base_dir, 'customSubmitText')
-        conversation_id = None
-        reply_is_chat = False
-
-        bold_reading = False
-        if bold_reading_nicknames.get(chooser_nickname):
-            bold_reading = True
-
-        languages_understood = \
-            get_understood_languages(base_dir,
-                                     http_prefix,
-                                     chooser_nickname,
-                                     domain_full,
-                                     person_cache)
-
-        default_post_language2 = system_language
-        if default_post_language.get(nickname):
-            default_post_language2 = default_post_language[nickname]
-        default_buy_site = ''
-        msg = \
-            html_new_post({}, False, translate,
-                          base_dir,
-                          http_prefix,
-                          report_path, None, [],
-                          None, post_url, page_number, '',
-                          chooser_nickname,
-                          domain,
-                          domain_full,
-                          default_timeline,
-                          newswire,
-                          theme_name,
-                          True, access_keys,
-                          custom_submit_text,
-                          conversation_id,
-                          recent_posts_cache,
-                          max_recent_posts,
-                          curr_session,
-                          cached_webfingers,
-                          person_cache,
-                          port,
-                          None,
-                          project_version,
-                          yt_replace_domain,
-                          twitter_replacement_domain,
-                          show_published_date_only,
-                          peertube_instances,
-                          allow_local_network_access,
-                          system_language,
-                          languages_understood,
-                          max_like_count,
-                          signing_priv_key_pem,
-                          cw_lists,
-                          lists_enabled,
-                          default_timeline,
-                          reply_is_chat,
-                          bold_reading,
-                          dogwhistles,
-                          min_images_for_accounts,
-                          None, None, default_post_language2,
-                          buy_sites,
-                          default_buy_site,
-                          auto_cw_cache)
-        if msg:
-            msg = msg.encode('utf-8')
-            msglen = len(msg)
-            set_headers(self, 'text/html', msglen,
-                        cookie, calling_domain, False)
-            write2(self, msg)
-        self.server.postreq_busy = False
+    if _person_options_report(self, options_confirm_params,
+                              debug, path,
+                              options_actor, key_shortcuts,
+                              base_dir, bold_reading_nicknames,
+                              chooser_nickname,
+                              http_prefix, domain_full,
+                              person_cache, system_language,
+                              default_post_language,
+                              translate, post_url,
+                              page_number,
+                              domain, default_timeline,
+                              newswire,
+                              theme_name,
+                              recent_posts_cache,
+                              max_recent_posts,
+                              curr_session,
+                              cached_webfingers, port,
+                              project_version,
+                              yt_replace_domain,
+                              twitter_replacement_domain,
+                              show_published_date_only,
+                              peertube_instances,
+                              allow_local_network_access,
+                              max_like_count,
+                              signing_priv_key_pem,
+                              cw_lists,
+                              lists_enabled,
+                              dogwhistles,
+                              min_images_for_accounts,
+                              buy_sites,
+                              auto_cw_cache,
+                              cookie, calling_domain):
         return
 
     # redirect back from person options screen
