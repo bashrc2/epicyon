@@ -246,7 +246,7 @@ def _person_options_view(self, options_confirm_params: str,
                          auto_cw_cache: {},
                          cookie: str,
                          calling_domain: str,
-                         curr_session) -> bool:
+                         curr_session, access_keys: {}) -> bool:
     """Person options screen, view button
     See html_person_options
     """
@@ -1398,7 +1398,7 @@ def person_options2(self, path: str,
                             auto_cw_cache,
                             cookie,
                             calling_domain,
-                            curr_session):
+                            curr_session, access_keys):
         return
 
     if _person_option_receive_petname(self, options_confirm_params,
