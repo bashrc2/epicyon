@@ -426,6 +426,461 @@ def _person_options_min_images(self, options_confirm_params: str,
     return False
 
 
+def _person_options_allow_announce(self, options_confirm_params: str,
+                                   base_dir: str,
+                                   chooser_nickname: str,
+                                   domain: str,
+                                   options_nickname: str,
+                                   options_domain_full: str,
+                                   users_path: str,
+                                   default_timeline: str,
+                                   page_number: int,
+                                   cookie: str,
+                                   calling_domain: str) -> bool:
+    """Person options screen, allow announces checkbox
+    See html_person_options
+    """
+    if '&submitAllowAnnounce=' in options_confirm_params:
+        allow_announce = None
+        if 'allowAnnounce=' in options_confirm_params:
+            allow_announce = \
+                options_confirm_params.split('allowAnnounce=')[1]
+            if '&' in allow_announce:
+                allow_announce = allow_announce.split('&')[0]
+        if allow_announce == 'on':
+            allowed_announce_add(base_dir,
+                                 chooser_nickname,
+                                 domain,
+                                 options_nickname,
+                                 options_domain_full)
+        else:
+            allowed_announce_remove(base_dir,
+                                    chooser_nickname,
+                                    domain,
+                                    options_nickname,
+                                    options_domain_full)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_allow_quotes(self, options_confirm_params: str,
+                                 base_dir: str,
+                                 chooser_nickname: str,
+                                 domain: str,
+                                 options_nickname: str,
+                                 options_domain_full: str,
+                                 users_path: str,
+                                 default_timeline: str,
+                                 page_number: int,
+                                 cookie: str,
+                                 calling_domain: str) -> bool:
+    """Person options screen, allow quote toots checkbox
+    See html_person_options
+    """
+    if '&submitAllowQuotes=' in options_confirm_params:
+        allow_quote_toots = None
+        if 'allowQuotes=' in options_confirm_params:
+            allow_quote_toots = \
+                options_confirm_params.split('allowQuotes=')[1]
+            if '&' in allow_quote_toots:
+                allow_quote_toots = allow_quote_toots.split('&')[0]
+        if allow_quote_toots != 'on':
+            blocked_quote_toots_add(base_dir,
+                                    chooser_nickname,
+                                    domain,
+                                    options_nickname,
+                                    options_domain_full)
+        else:
+            blocked_quote_toots_remove(base_dir,
+                                       chooser_nickname,
+                                       domain,
+                                       options_nickname,
+                                       options_domain_full)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_notify(self, options_confirm_params: str,
+                           base_dir: str,
+                           chooser_nickname: str,
+                           domain: str,
+                           options_nickname: str,
+                           options_domain_full: str,
+                           users_path: str,
+                           default_timeline: str,
+                           page_number: int,
+                           cookie: str,
+                           calling_domain: str) -> bool:
+    """Person options screen, on notify checkbox
+    See html_person_options
+    """
+    if '&submitNotifyOnPost=' in options_confirm_params:
+        notify = None
+        if 'notifyOnPost=' in options_confirm_params:
+            notify = options_confirm_params.split('notifyOnPost=')[1]
+            if '&' in notify:
+                notify = notify.split('&')[0]
+        if notify == 'on':
+            add_notify_on_post(base_dir,
+                               chooser_nickname,
+                               domain,
+                               options_nickname,
+                               options_domain_full)
+        else:
+            remove_notify_on_post(base_dir,
+                                  chooser_nickname,
+                                  domain,
+                                  options_nickname,
+                                  options_domain_full)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_post_to_news(self, options_confirm_params: str,
+                                 chooser_nickname: str,
+                                 base_dir: str,
+                                 options_nickname: str,
+                                 options_domain: str,
+                                 users_path: str,
+                                 default_timeline: str,
+                                 page_number: int,
+                                 cookie: str,
+                                 calling_domain: str) -> bool:
+    """Person options screen, permission to post to newswire
+    See html_person_options
+    """
+    if '&submitPostToNews=' in options_confirm_params:
+        admin_nickname = get_config_param(base_dir, 'admin')
+        if (chooser_nickname != options_nickname and
+            (chooser_nickname == admin_nickname or
+             (is_moderator(base_dir, chooser_nickname) and
+              not is_moderator(base_dir, options_nickname)))):
+            posts_to_news = None
+            if 'postsToNews=' in options_confirm_params:
+                posts_to_news = \
+                    options_confirm_params.split('postsToNews=')[1]
+                if '&' in posts_to_news:
+                    posts_to_news = posts_to_news.split('&')[0]
+            account_dir = acct_dir(base_dir,
+                                   options_nickname, options_domain)
+            newswire_blocked_filename = account_dir + '/.nonewswire'
+            if posts_to_news == 'on':
+                if os.path.isfile(newswire_blocked_filename):
+                    try:
+                        os.remove(newswire_blocked_filename)
+                    except OSError:
+                        print('EX: _person_options unable to delete ' +
+                              newswire_blocked_filename)
+                    refresh_newswire(base_dir)
+            else:
+                if os.path.isdir(account_dir):
+                    nw_filename = newswire_blocked_filename
+                    nw_written = False
+                    try:
+                        with open(nw_filename, 'w+',
+                                  encoding='utf-8') as nofile:
+                            nofile.write('\n')
+                            nw_written = True
+                    except OSError as ex:
+                        print('EX: unable to write ' + nw_filename +
+                              ' ' + str(ex))
+                    if nw_written:
+                        refresh_newswire(base_dir)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_post_to_features(self, options_confirm_params: str,
+                                     chooser_nickname: str,
+                                     options_nickname: str,
+                                     base_dir: str,
+                                     options_domain: str,
+                                     users_path: str,
+                                     default_timeline: str,
+                                     page_number: int,
+                                     cookie: str,
+                                     calling_domain: str) -> bool:
+    """Person options screen, permission to post to featured articles
+    See html_person_options
+    """
+    if '&submitPostToFeatures=' in options_confirm_params:
+        admin_nickname = get_config_param(base_dir, 'admin')
+        if (chooser_nickname != options_nickname and
+            (chooser_nickname == admin_nickname or
+             (is_moderator(base_dir, chooser_nickname) and
+              not is_moderator(base_dir, options_nickname)))):
+            posts_to_features = None
+            if 'postsToFeatures=' in options_confirm_params:
+                posts_to_features = \
+                    options_confirm_params.split('postsToFeatures=')[1]
+                if '&' in posts_to_features:
+                    posts_to_features = posts_to_features.split('&')[0]
+            account_dir = acct_dir(base_dir,
+                                   options_nickname, options_domain)
+            features_blocked_filename = account_dir + '/.nofeatures'
+            if posts_to_features == 'on':
+                if os.path.isfile(features_blocked_filename):
+                    try:
+                        os.remove(features_blocked_filename)
+                    except OSError:
+                        print('EX: _person_options unable to delete ' +
+                              features_blocked_filename)
+                    refresh_newswire(base_dir)
+            else:
+                if os.path.isdir(account_dir):
+                    feat_filename = features_blocked_filename
+                    feat_written = False
+                    try:
+                        with open(feat_filename, 'w+',
+                                  encoding='utf-8') as nofile:
+                            nofile.write('\n')
+                            feat_written = True
+                    except OSError as ex:
+                        print('EX: unable to write ' + feat_filename +
+                              ' ' + str(ex))
+                    if feat_written:
+                        refresh_newswire(base_dir)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_mod_news(self, options_confirm_params: str,
+                             base_dir: str,
+                             chooser_nickname: str,
+                             options_nickname: str,
+                             options_domain: str,
+                             users_path: str,
+                             default_timeline: str,
+                             page_number: int,
+                             cookie: str,
+                             calling_domain: str) -> bool:
+    """Person options screen, permission to post to newswire
+    See html_person_options
+    """
+    if '&submitModNewsPosts=' in options_confirm_params:
+        admin_nickname = get_config_param(base_dir, 'admin')
+        if (chooser_nickname != options_nickname and
+            (chooser_nickname == admin_nickname or
+             (is_moderator(base_dir, chooser_nickname) and
+              not is_moderator(base_dir, options_nickname)))):
+            mod_posts_to_news = None
+            if 'modNewsPosts=' in options_confirm_params:
+                mod_posts_to_news = \
+                    options_confirm_params.split('modNewsPosts=')[1]
+                if '&' in mod_posts_to_news:
+                    mod_posts_to_news = mod_posts_to_news.split('&')[0]
+            account_dir = acct_dir(base_dir,
+                                   options_nickname, options_domain)
+            newswire_mod_filename = account_dir + '/.newswiremoderated'
+            if mod_posts_to_news != 'on':
+                if os.path.isfile(newswire_mod_filename):
+                    try:
+                        os.remove(newswire_mod_filename)
+                    except OSError:
+                        print('EX: _person_options unable to delete ' +
+                              newswire_mod_filename)
+            else:
+                if os.path.isdir(account_dir):
+                    nw_filename = newswire_mod_filename
+                    try:
+                        with open(nw_filename, 'w+',
+                                  encoding='utf-8') as modfile:
+                            modfile.write('\n')
+                    except OSError:
+                        print('EX: unable to write ' + nw_filename)
+        users_path_str = \
+            users_path + '/' + default_timeline + \
+            '?page=' + str(page_number)
+        redirect_headers(self, users_path_str, cookie,
+                         calling_domain, 303)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_block(self, options_confirm_params: str,
+                          debug: bool,
+                          options_actor: str,
+                          translate: {},
+                          base_dir: str,
+                          users_path: str,
+                          options_avatar_url: str,
+                          cookie: str, calling_domain: str) -> bool:
+    """Person options screen, block button
+    See html_person_options
+    """
+    if '&submitBlock=' in options_confirm_params:
+        if debug:
+            print('Blocking ' + options_actor)
+        msg = \
+            html_confirm_block(translate,
+                               base_dir,
+                               users_path,
+                               options_actor,
+                               options_avatar_url).encode('utf-8')
+        msglen = len(msg)
+        set_headers(self, 'text/html', msglen,
+                    cookie, calling_domain, False)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_unblock(self, options_confirm_params: str,
+                            debug: bool,
+                            options_actor: str,
+                            translate: {},
+                            base_dir: str,
+                            users_path: str,
+                            options_avatar_url: str,
+                            cookie: str, calling_domain: str) -> bool:
+    """Person options screen, unblock button
+    See html_person_options
+    """
+    if '&submitUnblock=' in options_confirm_params:
+        if debug:
+            print('Unblocking ' + options_actor)
+        msg = \
+            html_confirm_unblock(translate,
+                                 base_dir,
+                                 users_path,
+                                 options_actor,
+                                 options_avatar_url).encode('utf-8')
+        msglen = len(msg)
+        set_headers(self, 'text/html', msglen,
+                    cookie, calling_domain, False)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_follow(self, options_confirm_params: str,
+                           debug: bool, options_actor: str,
+                           translate: {},
+                           base_dir: str,
+                           users_path: str,
+                           options_avatar_url: str,
+                           chooser_nickname: str,
+                           domain: str,
+                           cookie: str, calling_domain: str) -> bool:
+    """Person options screen, follow button
+    See html_person_options followStr
+    """
+    if '&submitFollow=' in options_confirm_params or \
+       '&submitJoin=' in options_confirm_params:
+        if debug:
+            print('Following ' + options_actor)
+        msg = \
+            html_confirm_follow(translate,
+                                base_dir,
+                                users_path,
+                                options_actor,
+                                options_avatar_url,
+                                chooser_nickname,
+                                domain).encode('utf-8')
+        msglen = len(msg)
+        set_headers(self, 'text/html', msglen,
+                    cookie, calling_domain, False)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_move(self, options_confirm_params: str,
+                         options_actor_moved: str,
+                         debug: bool,
+                         translate: {},
+                         base_dir: str,
+                         users_path: str,
+                         options_avatar_url: str,
+                         chooser_nickname: str,
+                         domain: str,
+                         cookie: str, calling_domain: str) -> bool:
+    """Person options screen, move button
+    See html_person_options followStr
+    """
+    if '&submitMove=' in options_confirm_params and options_actor_moved:
+        if debug:
+            print('Moving ' + options_actor_moved)
+        msg = \
+            html_confirm_follow(translate,
+                                base_dir,
+                                users_path,
+                                options_actor_moved,
+                                options_avatar_url,
+                                chooser_nickname,
+                                domain).encode('utf-8')
+        if msg:
+            msglen = len(msg)
+            set_headers(self, 'text/html', msglen,
+                        cookie, calling_domain, False)
+            write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
+def _person_options_unfollow(self, options_confirm_params: str,
+                             options_actor: str,
+                             translate: {},
+                             base_dir: str,
+                             users_path: str,
+                             options_avatar_url: str,
+                             cookie: str, calling_domain: str) -> bool:
+    """Person options screen, unfollow button
+    See html_person_options followStr
+    """
+    if '&submitUnfollow=' in options_confirm_params or \
+       '&submitLeave=' in options_confirm_params:
+        print('Unfollowing ' + options_actor)
+        msg = \
+            html_confirm_unfollow(translate,
+                                  base_dir,
+                                  users_path,
+                                  options_actor,
+                                  options_avatar_url).encode('utf-8')
+        msglen = len(msg)
+        set_headers(self, 'text/html', msglen,
+                    cookie, calling_domain, False)
+        write2(self, msg)
+        self.server.postreq_busy = False
+        return True
+    return False
+
+
 def person_options2(self, path: str,
                     calling_domain: str, cookie: str,
                     base_dir: str, http_prefix: str,
@@ -649,321 +1104,125 @@ def person_options2(self, path: str,
                                   calling_domain):
         return
 
-    # person options screen, allow announces checkbox
-    # See html_person_options
-    if '&submitAllowAnnounce=' in options_confirm_params:
-        allow_announce = None
-        if 'allowAnnounce=' in options_confirm_params:
-            allow_announce = \
-                options_confirm_params.split('allowAnnounce=')[1]
-            if '&' in allow_announce:
-                allow_announce = allow_announce.split('&')[0]
-        if allow_announce == 'on':
-            allowed_announce_add(base_dir,
-                                 chooser_nickname,
-                                 domain,
-                                 options_nickname,
-                                 options_domain_full)
-        else:
-            allowed_announce_remove(base_dir,
+    if _person_options_allow_announce(self, options_confirm_params,
+                                      base_dir,
+                                      chooser_nickname,
+                                      domain,
+                                      options_nickname,
+                                      options_domain_full,
+                                      users_path,
+                                      default_timeline,
+                                      page_number,
+                                      cookie,
+                                      calling_domain):
+        return
+
+    if _person_options_allow_quotes(self, options_confirm_params,
+                                    base_dir,
                                     chooser_nickname,
                                     domain,
                                     options_nickname,
-                                    options_domain_full)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
+                                    options_domain_full,
+                                    users_path,
+                                    default_timeline,
+                                    page_number,
+                                    cookie,
+                                    calling_domain):
         return
 
-    # person options screen, allow quote toots checkbox
-    # See html_person_options
-    if '&submitAllowQuotes=' in options_confirm_params:
-        allow_quote_toots = None
-        if 'allowQuotes=' in options_confirm_params:
-            allow_quote_toots = \
-                options_confirm_params.split('allowQuotes=')[1]
-            if '&' in allow_quote_toots:
-                allow_quote_toots = allow_quote_toots.split('&')[0]
-        if allow_quote_toots != 'on':
-            blocked_quote_toots_add(base_dir,
+    if _person_options_notify(self, options_confirm_params,
+                              base_dir,
+                              chooser_nickname,
+                              domain,
+                              options_nickname,
+                              options_domain_full,
+                              users_path,
+                              default_timeline,
+                              page_number,
+                              cookie,
+                              calling_domain):
+        return
+
+    if _person_options_post_to_news(self, options_confirm_params,
                                     chooser_nickname,
-                                    domain,
+                                    base_dir,
                                     options_nickname,
-                                    options_domain_full)
-        else:
-            blocked_quote_toots_remove(base_dir,
-                                       chooser_nickname,
-                                       domain,
-                                       options_nickname,
-                                       options_domain_full)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
+                                    options_domain,
+                                    users_path,
+                                    default_timeline,
+                                    page_number,
+                                    cookie,
+                                    calling_domain):
         return
 
-    # person options screen, on notify checkbox
-    # See html_person_options
-    if '&submitNotifyOnPost=' in options_confirm_params:
-        notify = None
-        if 'notifyOnPost=' in options_confirm_params:
-            notify = options_confirm_params.split('notifyOnPost=')[1]
-            if '&' in notify:
-                notify = notify.split('&')[0]
-        if notify == 'on':
-            add_notify_on_post(base_dir,
-                               chooser_nickname,
-                               domain,
-                               options_nickname,
-                               options_domain_full)
-        else:
-            remove_notify_on_post(base_dir,
-                                  chooser_nickname,
-                                  domain,
-                                  options_nickname,
-                                  options_domain_full)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
+    if _person_options_post_to_features(self, options_confirm_params,
+                                        chooser_nickname,
+                                        options_nickname,
+                                        base_dir,
+                                        options_domain,
+                                        users_path,
+                                        default_timeline,
+                                        page_number,
+                                        cookie,
+                                        calling_domain):
         return
 
-    # person options screen, permission to post to newswire
-    # See html_person_options
-    if '&submitPostToNews=' in options_confirm_params:
-        admin_nickname = get_config_param(base_dir, 'admin')
-        if (chooser_nickname != options_nickname and
-            (chooser_nickname == admin_nickname or
-             (is_moderator(base_dir, chooser_nickname) and
-              not is_moderator(base_dir, options_nickname)))):
-            posts_to_news = None
-            if 'postsToNews=' in options_confirm_params:
-                posts_to_news = \
-                    options_confirm_params.split('postsToNews=')[1]
-                if '&' in posts_to_news:
-                    posts_to_news = posts_to_news.split('&')[0]
-            account_dir = acct_dir(base_dir,
-                                   options_nickname, options_domain)
-            newswire_blocked_filename = account_dir + '/.nonewswire'
-            if posts_to_news == 'on':
-                if os.path.isfile(newswire_blocked_filename):
-                    try:
-                        os.remove(newswire_blocked_filename)
-                    except OSError:
-                        print('EX: _person_options unable to delete ' +
-                              newswire_blocked_filename)
-                    refresh_newswire(base_dir)
-            else:
-                if os.path.isdir(account_dir):
-                    nw_filename = newswire_blocked_filename
-                    nw_written = False
-                    try:
-                        with open(nw_filename, 'w+',
-                                  encoding='utf-8') as nofile:
-                            nofile.write('\n')
-                            nw_written = True
-                    except OSError as ex:
-                        print('EX: unable to write ' + nw_filename +
-                              ' ' + str(ex))
-                    if nw_written:
-                        refresh_newswire(base_dir)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
+    if _person_options_mod_news(self, options_confirm_params,
+                                base_dir,
+                                chooser_nickname,
+                                options_nickname,
+                                options_domain,
+                                users_path,
+                                default_timeline,
+                                page_number,
+                                cookie,
+                                calling_domain):
         return
 
-    # person options screen, permission to post to featured articles
-    # See html_person_options
-    if '&submitPostToFeatures=' in options_confirm_params:
-        admin_nickname = get_config_param(base_dir, 'admin')
-        if (chooser_nickname != options_nickname and
-            (chooser_nickname == admin_nickname or
-             (is_moderator(base_dir, chooser_nickname) and
-              not is_moderator(base_dir, options_nickname)))):
-            posts_to_features = None
-            if 'postsToFeatures=' in options_confirm_params:
-                posts_to_features = \
-                    options_confirm_params.split('postsToFeatures=')[1]
-                if '&' in posts_to_features:
-                    posts_to_features = posts_to_features.split('&')[0]
-            account_dir = acct_dir(base_dir,
-                                   options_nickname, options_domain)
-            features_blocked_filename = account_dir + '/.nofeatures'
-            if posts_to_features == 'on':
-                if os.path.isfile(features_blocked_filename):
-                    try:
-                        os.remove(features_blocked_filename)
-                    except OSError:
-                        print('EX: _person_options unable to delete ' +
-                              features_blocked_filename)
-                    refresh_newswire(base_dir)
-            else:
-                if os.path.isdir(account_dir):
-                    feat_filename = features_blocked_filename
-                    feat_written = False
-                    try:
-                        with open(feat_filename, 'w+',
-                                  encoding='utf-8') as nofile:
-                            nofile.write('\n')
-                            feat_written = True
-                    except OSError as ex:
-                        print('EX: unable to write ' + feat_filename +
-                              ' ' + str(ex))
-                    if feat_written:
-                        refresh_newswire(base_dir)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
+    if _person_options_block(self, options_confirm_params,
+                             debug,
+                             options_actor,
+                             translate,
+                             base_dir,
+                             users_path,
+                             options_avatar_url,
+                             cookie, calling_domain):
         return
 
-    # person options screen, permission to post to newswire
-    # See html_person_options
-    if '&submitModNewsPosts=' in options_confirm_params:
-        admin_nickname = get_config_param(base_dir, 'admin')
-        if (chooser_nickname != options_nickname and
-            (chooser_nickname == admin_nickname or
-             (is_moderator(base_dir, chooser_nickname) and
-              not is_moderator(base_dir, options_nickname)))):
-            mod_posts_to_news = None
-            if 'modNewsPosts=' in options_confirm_params:
-                mod_posts_to_news = \
-                    options_confirm_params.split('modNewsPosts=')[1]
-                if '&' in mod_posts_to_news:
-                    mod_posts_to_news = mod_posts_to_news.split('&')[0]
-            account_dir = acct_dir(base_dir,
-                                   options_nickname, options_domain)
-            newswire_mod_filename = account_dir + '/.newswiremoderated'
-            if mod_posts_to_news != 'on':
-                if os.path.isfile(newswire_mod_filename):
-                    try:
-                        os.remove(newswire_mod_filename)
-                    except OSError:
-                        print('EX: _person_options unable to delete ' +
-                              newswire_mod_filename)
-            else:
-                if os.path.isdir(account_dir):
-                    nw_filename = newswire_mod_filename
-                    try:
-                        with open(nw_filename, 'w+',
-                                  encoding='utf-8') as modfile:
-                            modfile.write('\n')
-                    except OSError:
-                        print('EX: unable to write ' + nw_filename)
-        users_path_str = \
-            users_path + '/' + default_timeline + \
-            '?page=' + str(page_number)
-        redirect_headers(self, users_path_str, cookie,
-                         calling_domain, 303)
-        self.server.postreq_busy = False
-        return
-
-    # person options screen, block button
-    # See html_person_options
-    if '&submitBlock=' in options_confirm_params:
-        if debug:
-            print('Blocking ' + options_actor)
-        msg = \
-            html_confirm_block(translate,
+    if _person_options_unblock(self, options_confirm_params,
+                               debug,
+                               options_actor,
+                               translate,
                                base_dir,
                                users_path,
-                               options_actor,
-                               options_avatar_url).encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/html', msglen,
-                    cookie, calling_domain, False)
-        write2(self, msg)
-        self.server.postreq_busy = False
+                               options_avatar_url,
+                               cookie, calling_domain):
         return
 
-    # person options screen, unblock button
-    # See html_person_options
-    if '&submitUnblock=' in options_confirm_params:
-        if debug:
-            print('Unblocking ' + options_actor)
-        msg = \
-            html_confirm_unblock(translate,
-                                 base_dir,
-                                 users_path,
-                                 options_actor,
-                                 options_avatar_url).encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/html', msglen,
-                    cookie, calling_domain, False)
-        write2(self, msg)
-        self.server.postreq_busy = False
+    if _person_options_follow(self, options_confirm_params,
+                              debug, options_actor,
+                              translate,
+                              base_dir,
+                              users_path,
+                              options_avatar_url,
+                              chooser_nickname,
+                              domain,
+                              cookie, calling_domain):
         return
 
-    # person options screen, follow button
-    # See html_person_options followStr
-    if '&submitFollow=' in options_confirm_params or \
-       '&submitJoin=' in options_confirm_params:
-        if debug:
-            print('Following ' + options_actor)
-        msg = \
-            html_confirm_follow(translate,
-                                base_dir,
-                                users_path,
-                                options_actor,
-                                options_avatar_url,
-                                chooser_nickname,
-                                domain).encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/html', msglen,
-                    cookie, calling_domain, False)
-        write2(self, msg)
-        self.server.postreq_busy = False
+    if _person_options_move(self, options_confirm_params,
+                            options_actor_moved,
+                            debug, translate,
+                            base_dir, users_path,
+                            options_avatar_url,
+                            chooser_nickname, domain,
+                            cookie, calling_domain):
         return
 
-    # person options screen, move button
-    # See html_person_options followStr
-    if '&submitMove=' in options_confirm_params and options_actor_moved:
-        if debug:
-            print('Moving ' + options_actor_moved)
-        msg = \
-            html_confirm_follow(translate,
-                                base_dir,
-                                users_path,
-                                options_actor_moved,
-                                options_avatar_url,
-                                chooser_nickname,
-                                domain).encode('utf-8')
-        if msg:
-            msglen = len(msg)
-            set_headers(self, 'text/html', msglen,
-                        cookie, calling_domain, False)
-            write2(self, msg)
-        self.server.postreq_busy = False
-        return
-
-    # person options screen, unfollow button
-    # See html_person_options followStr
-    if '&submitUnfollow=' in options_confirm_params or \
-       '&submitLeave=' in options_confirm_params:
-        print('Unfollowing ' + options_actor)
-        msg = \
-            html_confirm_unfollow(translate,
-                                  base_dir,
-                                  users_path,
-                                  options_actor,
-                                  options_avatar_url).encode('utf-8')
-        msglen = len(msg)
-        set_headers(self, 'text/html', msglen,
-                    cookie, calling_domain, False)
-        write2(self, msg)
-        self.server.postreq_busy = False
+    if _person_options_unfollow(self, options_confirm_params,
+                                options_actor, translate, base_dir,
+                                users_path, options_avatar_url,
+                                cookie, calling_domain):
         return
 
     # person options screen, DM button
