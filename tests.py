@@ -56,6 +56,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import data_dir
 from utils import remove_link_tracking
 from utils import uninvert_text
 from utils import get_url_from_post
@@ -1414,9 +1415,9 @@ def test_post_message_between_servers(base_dir: str) -> None:
     city = 'London, England'
     # nothing in Alice's outbox
     last_pub_filename = \
-        alice_dir + '/accounts/alice@' + alice_domain + '/.last_published'
+        data_dir(alice_dir) + '/alice@' + alice_domain + '/.last_published'
     assert not os.path.isfile(last_pub_filename)
-    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    outbox_path = data_dir(alice_dir) + '/alice@' + alice_domain + '/outbox'
     assert len([name for name in os.listdir(outbox_path)
                 if os.path.isfile(os.path.join(outbox_path, name))]) == 0
     low_bandwidth = False
@@ -1445,8 +1446,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
-    queue_path = bob_dir + '/accounts/bob@' + bob_domain + '/queue'
-    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
+    inbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/inbox'
     m_path = get_media_path()
     media_path = alice_dir + '/' + m_path
     for _ in range(30):
@@ -1468,7 +1469,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     assert os.path.isfile(last_pub_filename)
 
     # check that a news account exists
-    news_actor_dir = alice_dir + '/accounts/news@' + alice_domain
+    news_actor_dir = data_dir(alice_dir) + '/news@' + alice_domain
     print("news_actor_dir: " + news_actor_dir)
     assert os.path.isdir(news_actor_dir)
     news_actor_file = news_actor_dir + '.json'
@@ -1546,7 +1547,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     sites_unavailable = []
     status_number = None
     outbox_post_filename = None
-    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    outbox_path = data_dir(alice_dir) + '/alice@' + alice_domain + '/outbox'
     for name in os.listdir(outbox_path):
         if '#statuses#' in name:
             status_number = \
@@ -1606,8 +1607,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
     object_url = \
         http_prefix + '://' + alice_domain + ':' + str(alice_port) + \
         '/users/alice/statuses/' + str(status_number)
-    inbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/inbox'
-    outbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/outbox'
+    inbox_path = data_dir(alice_dir) + '/alice@' + alice_domain + '/inbox'
+    outbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/outbox'
     outbox_before_announce_count = \
         len([name for name in os.listdir(outbox_path)
              if os.path.isfile(os.path.join(outbox_path, name))])
@@ -1779,12 +1780,14 @@ def test_follow_between_servers(base_dir: str) -> None:
                             system_language)
     print('send_result: ' + str(send_result))
 
+    alice_dir_str = data_dir(alice_dir)
+    bob_dir_str = data_dir(bob_dir)
     for _ in range(16):
-        if os.path.isfile(bob_dir + '/accounts/bob@' +
+        if os.path.isfile(bob_dir_str + '/bob@' +
                           bob_domain + '/followers.txt'):
-            if os.path.isfile(alice_dir + '/accounts/alice@' +
+            if os.path.isfile(alice_dir_str + '/alice@' +
                               alice_domain + '/following.txt'):
-                if os.path.isfile(alice_dir + '/accounts/alice@' +
+                if os.path.isfile(alice_dir_str + '/alice@' +
                                   alice_domain + '/followingCalendar.txt'):
                     break
         time.sleep(1)
@@ -1792,13 +1795,13 @@ def test_follow_between_servers(base_dir: str) -> None:
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
-    assert text_in_file('alice@' + alice_domain, bob_dir + '/accounts/bob@' +
+    assert text_in_file('alice@' + alice_domain, bob_dir_str + '/bob@' +
                         bob_domain + '/followers.txt')
     assert text_in_file('bob@' + bob_domain,
-                        alice_dir + '/accounts/alice@' +
+                        alice_dir_str + '/alice@' +
                         alice_domain + '/following.txt')
     assert text_in_file('bob@' + bob_domain,
-                        alice_dir + '/accounts/alice@' +
+                        alice_dir_str + '/alice@' +
                         alice_domain + '/followingCalendar.txt')
     assert not is_group_actor(alice_dir, bob_actor, alice_person_cache)
     assert not is_group_account(alice_dir, 'alice', alice_domain)
@@ -1837,8 +1840,8 @@ def test_follow_between_servers(base_dir: str) -> None:
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
-    queue_path = bob_dir + '/accounts/bob@' + bob_domain + '/queue'
-    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
+    inbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/inbox'
     alice_message_arrived = False
     for _ in range(20):
         time.sleep(1)
@@ -2012,12 +2015,14 @@ def test_shared_items_federation(base_dir: str) -> None:
                             system_language)
     print('send_result: ' + str(send_result))
 
+    alice_dir_str = data_dir(alice_dir)
+    bob_dir_str = data_dir(bob_dir)
     for _ in range(16):
-        if os.path.isfile(bob_dir + '/accounts/bob@' +
+        if os.path.isfile(bob_dir_str + '/bob@' +
                           bob_domain + '/followers.txt'):
-            if os.path.isfile(alice_dir + '/accounts/alice@' +
+            if os.path.isfile(alice_dir_str + '/alice@' +
                               alice_domain + '/following.txt'):
-                if os.path.isfile(alice_dir + '/accounts/alice@' +
+                if os.path.isfile(alice_dir_str + '/alice@' +
                                   alice_domain + '/followingCalendar.txt'):
                     break
         time.sleep(1)
@@ -2026,13 +2031,13 @@ def test_shared_items_federation(base_dir: str) -> None:
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
     assert text_in_file('alice@' + alice_domain,
-                        bob_dir + '/accounts/bob@' +
+                        bob_dir_str + '/bob@' +
                         bob_domain + '/followers.txt')
     assert text_in_file('bob@' + bob_domain,
-                        alice_dir + '/accounts/alice@' +
+                        alice_dir_str + '/alice@' +
                         alice_domain + '/following.txt')
     assert text_in_file('bob@' + bob_domain,
-                        alice_dir + '/accounts/alice@' +
+                        alice_dir_str + '/alice@' +
                         alice_domain + '/followingCalendar.txt')
     assert not is_group_actor(alice_dir, bob_actor, alice_person_cache)
     assert not is_group_account(bob_dir, 'bob', bob_domain)
@@ -2144,7 +2149,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     print('\n\n*********************************************************')
     print('Bob has a shares.json file containing the uploaded items')
 
-    shares_filename = bob_dir + '/accounts/bob@' + bob_domain + '/shares.json'
+    shares_filename = data_dir(bob_dir) + '/bob@' + bob_domain + '/shares.json'
     assert os.path.isfile(shares_filename)
     shares_json = load_json(shares_filename)
     assert shares_json
@@ -2194,7 +2199,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
     alice_tokens_filename = \
-        alice_dir + '/accounts/sharedItemsFederationTokens.json'
+        data_dir(alice_dir) + '/sharedItemsFederationTokens.json'
     assert os.path.isfile(alice_tokens_filename)
     alice_shared_item_federation_tokens = load_json(alice_tokens_filename)
     assert alice_shared_item_federation_tokens
@@ -2234,8 +2239,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                   in_reply_to, in_reply_to_atom_uri, subject)
     print('send_result: ' + str(send_result))
 
-    queue_path = bob_dir + '/accounts/bob@' + bob_domain + '/queue'
-    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
+    inbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/inbox'
     alice_message_arrived = False
     for _ in range(20):
         time.sleep(1)
@@ -2253,9 +2258,9 @@ def test_shared_items_federation(base_dir: str) -> None:
     print('Check that Alice received the shared items authorization')
     print('token from Bob')
     alice_tokens_filename = \
-        alice_dir + '/accounts/sharedItemsFederationTokens.json'
+        data_dir(alice_dir) + '/sharedItemsFederationTokens.json'
     bob_tokens_filename = \
-        bob_dir + '/accounts/sharedItemsFederationTokens.json'
+        data_dir(bob_dir) + '/sharedItemsFederationTokens.json'
     assert os.path.isfile(alice_tokens_filename)
     assert os.path.isfile(bob_tokens_filename)
     alice_tokens = load_json(alice_tokens_filename)
@@ -2460,7 +2465,7 @@ def test_group_follow(base_dir: str) -> None:
     assert len(outbox_json['orderedItems']) == 3
 
     queue_path = \
-        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + '/queue'
+        data_dir(testgroup_dir) + '/testgroup@' + testgroup_domain + '/queue'
 
     # In the beginning the test group had no followers
 
@@ -2498,12 +2503,12 @@ def test_group_follow(base_dir: str) -> None:
     print('send_result: ' + str(send_result))
 
     alice_following_filename = \
-        alice_dir + '/accounts/alice@' + alice_domain + '/following.txt'
+        data_dir(alice_dir) + '/alice@' + alice_domain + '/following.txt'
     alice_following_calendar_filename = \
-        alice_dir + '/accounts/alice@' + alice_domain + \
+        data_dir(alice_dir) + '/alice@' + alice_domain + \
         '/followingCalendar.txt'
     testgroup_followers_filename = \
-        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + \
+        data_dir(testgroup_dir) + '/testgroup@' + testgroup_domain + \
         '/followers.txt'
 
     for _ in range(16):
@@ -2578,12 +2583,11 @@ def test_group_follow(base_dir: str) -> None:
     print('send_result: ' + str(send_result))
 
     bob_following_filename = \
-        bob_dir + '/accounts/bob@' + bob_domain + '/following.txt'
+        data_dir(bob_dir) + '/bob@' + bob_domain + '/following.txt'
     bob_following_calendar_filename = \
-        bob_dir + '/accounts/bob@' + bob_domain + \
-        '/followingCalendar.txt'
+        data_dir(bob_dir) + '/bob@' + bob_domain + '/followingCalendar.txt'
     testgroup_followers_filename = \
-        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + \
+        data_dir(testgroup_dir) + '/testgroup@' + testgroup_domain + \
         '/followers.txt'
 
     for _ in range(16):
@@ -2624,7 +2628,7 @@ def test_group_follow(base_dir: str) -> None:
     print('\n\n*********************************************************')
     print('Alice posts to the test group')
     inbox_path_bob = \
-        bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+        data_dir(bob_dir) + '/bob@' + bob_domain + '/inbox'
     start_posts_bob = \
         len([name for name in os.listdir(inbox_path_bob)
              if os.path.isfile(os.path.join(inbox_path_bob, name))])
@@ -2641,11 +2645,11 @@ def test_group_follow(base_dir: str) -> None:
     signing_priv_key_pem = None
 
     queue_path = \
-        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + '/queue'
+        data_dir(testgroup_dir) + '/testgroup@' + testgroup_domain + '/queue'
     inbox_path = \
-        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + '/inbox'
+        data_dir(testgroup_dir) + '/testgroup@' + testgroup_domain + '/inbox'
     outbox_path = \
-        testgroup_dir + '/accounts/testgroup@' + testgroup_domain + '/outbox'
+        data_dir(testgroup_dir) + '/testgroup@' + testgroup_domain + '/outbox'
     alice_message_arrived = False
     start_posts_inbox = \
         len([name for name in os.listdir(inbox_path)
@@ -3021,7 +3025,8 @@ def _test_create_person_account(base_dir: str):
     assert public_key_pem
     assert person
     assert wf_endpoint
-    assert os.path.isfile(base_dir + '/accounts/passwords')
+    dir_str = data_dir(base_dir)
+    assert os.path.isfile(dir_str + '/passwords')
     delete_all_posts(base_dir, nickname, domain, 'inbox')
     delete_all_posts(base_dir, nickname, domain, 'outbox')
     set_display_nickname(base_dir, nickname, domain, 'badger')
@@ -3254,7 +3259,7 @@ def test_client_to_server(base_dir: str):
     # set bob to be following the calendar of alice
     print('Bob follows the calendar of Alice')
     following_cal_path = \
-        bob_dir + '/accounts/bob@' + bob_domain + '/followingCalendar.txt'
+        data_dir(bob_dir) + '/bob@' + bob_domain + '/followingCalendar.txt'
     with open(following_cal_path, 'w+', encoding='utf-8') as fp_foll:
         fp_foll.write('alice@' + alice_domain + '\n')
 
@@ -3272,14 +3277,15 @@ def test_client_to_server(base_dir: str):
     password = 'alicepass'
     conversation_id = None
 
-    alice_inbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/inbox'
+    alice_inbox_path = \
+        data_dir(alice_dir) + '/alice@' + alice_domain + '/inbox'
     alice_outbox_path = \
-        alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
-    bob_inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
-    bob_outbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/outbox'
+        data_dir(alice_dir) + '/alice@' + alice_domain + '/outbox'
+    bob_inbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/inbox'
+    bob_outbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/outbox'
 
-    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
-    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
+    outbox_path = data_dir(alice_dir) + '/alice@' + alice_domain + '/outbox'
+    inbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/inbox'
     show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
     show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
     assert len([name for name in os.listdir(alice_inbox_path)
@@ -3356,7 +3362,7 @@ def test_client_to_server(base_dir: str):
 
     time.sleep(2)
 
-    calendar_path = bob_dir + '/accounts/bob@' + bob_domain + '/calendar'
+    calendar_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/calendar'
     if not os.path.isdir(calendar_path):
         print('Missing calendar path: ' + calendar_path)
     assert os.path.isdir(calendar_path)
@@ -3396,12 +3402,12 @@ def test_client_to_server(base_dir: str):
                                    cached_webfingers, person_cache,
                                    True, __version__, signing_priv_key_pem,
                                    system_language)
-    alice_petnames_filename = alice_dir + '/accounts/' + \
+    alice_petnames_filename = data_dir(alice_dir) + '/' + \
         'alice@' + alice_domain + '/petnames.txt'
     alice_following_filename = \
-        alice_dir + '/accounts/alice@' + alice_domain + '/following.txt'
+        data_dir(alice_dir) + '/alice@' + alice_domain + '/following.txt'
     bob_followers_filename = \
-        bob_dir + '/accounts/bob@' + bob_domain + '/followers.txt'
+        data_dir(bob_dir) + '/bob@' + bob_domain + '/followers.txt'
     for _ in range(10):
         if os.path.isfile(bob_followers_filename):
             test_str = 'alice@' + alice_domain + ':' + str(alice_port)
@@ -3438,47 +3444,49 @@ def test_client_to_server(base_dir: str):
                                    cached_webfingers, person_cache,
                                    True, __version__, signing_priv_key_pem,
                                    system_language)
+    alice_dir_str = data_dir(alice_dir)
+    bob_dir_str = data_dir(bob_dir)
     for _ in range(20):
-        if os.path.isfile(alice_dir + '/accounts/alice@' + alice_domain +
+        if os.path.isfile(alice_dir_str + '/alice@' + alice_domain +
                           '/followers.txt'):
             test_str = 'bob@' + bob_domain + ':' + str(bob_port)
             test_filename = \
-                alice_dir + '/accounts/alice@' + \
+                alice_dir_str + '/alice@' + \
                 alice_domain + '/followers.txt'
             if text_in_file(test_str, test_filename):
-                if os.path.isfile(bob_dir + '/accounts/bob@' + bob_domain +
+                if os.path.isfile(bob_dir_str + '/bob@' + bob_domain +
                                   '/following.txt'):
                     alice_handle_str = \
                         'alice@' + alice_domain + ':' + str(alice_port)
                     if text_in_file(alice_handle_str,
-                                    bob_dir + '/accounts/bob@' + bob_domain +
+                                    bob_dir_str + '/bob@' + bob_domain +
                                     '/following.txt'):
-                        if os.path.isfile(bob_dir + '/accounts/bob@' +
+                        if os.path.isfile(bob_dir_str + '/bob@' +
                                           bob_domain +
                                           '/followingCalendar.txt'):
                             if text_in_file(alice_handle_str,
-                                            bob_dir + '/accounts/bob@' +
+                                            bob_dir_str + '/bob@' +
                                             bob_domain +
                                             '/followingCalendar.txt'):
                                 break
         time.sleep(1)
 
-    assert os.path.isfile(alice_dir + '/accounts/alice@' + alice_domain +
+    assert os.path.isfile(alice_dir_str + '/alice@' + alice_domain +
                           '/followers.txt')
-    assert os.path.isfile(bob_dir + '/accounts/bob@' + bob_domain +
+    assert os.path.isfile(bob_dir_str + '/bob@' + bob_domain +
                           '/following.txt')
     test_str = 'bob@' + bob_domain + ':' + str(bob_port)
-    assert text_in_file(test_str, alice_dir + '/accounts/alice@' +
+    assert text_in_file(test_str, alice_dir_str + '/alice@' +
                         alice_domain + '/followers.txt')
     test_str = 'alice@' + alice_domain + ':' + str(alice_port)
     assert text_in_file(test_str,
-                        bob_dir + '/accounts/bob@' +
+                        bob_dir_str + '/bob@' +
                         bob_domain + '/following.txt')
 
     session_bob = create_session(proxy_type)
     password = 'bobpass'
-    outbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/outbox'
-    inbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/inbox'
+    outbox_path = bob_dir_str + '/bob@' + bob_domain + '/outbox'
+    inbox_path = alice_dir_str + '/alice@' + alice_domain + '/inbox'
     print(str(len([name for name in os.listdir(bob_outbox_path)
                    if os.path.isfile(os.path.join(bob_outbox_path, name))])))
     show_test_boxes('alice', alice_inbox_path, alice_outbox_path)
@@ -3631,8 +3639,8 @@ def test_client_to_server(base_dir: str):
     assert alice_inbox_path_ctr == 1
     print('EVENT: Post repeated')
 
-    inbox_path = bob_dir + '/accounts/bob@' + bob_domain + '/inbox'
-    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    inbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/inbox'
+    outbox_path = data_dir(alice_dir) + '/alice@' + alice_domain + '/outbox'
     bob_posts_before = \
         len([name for name in os.listdir(inbox_path)
              if os.path.isfile(os.path.join(inbox_path, name))])
@@ -6398,9 +6406,9 @@ def test_update_actor(base_dir: str):
     cached_webfingers = {}
     person_cache = {}
     password = 'alicepass'
-    outbox_path = alice_dir + '/accounts/alice@' + alice_domain + '/outbox'
+    outbox_path = data_dir(alice_dir) + '/alice@' + alice_domain + '/outbox'
     actor_filename = \
-        alice_dir + '/accounts/' + 'alice@' + alice_domain + '.json'
+        data_dir(alice_dir) + '/' + 'alice@' + alice_domain + '.json'
     assert os.path.isfile(actor_filename)
     assert len([name for name in os.listdir(outbox_path)
                 if os.path.isfile(os.path.join(outbox_path, name))]) == 0

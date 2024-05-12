@@ -31,7 +31,7 @@ def _text_in_file2(text: str, filename: str,
                 if text in content:
                     return True
     except OSError:
-        print('EX: unable to find text in missing file ' + filename)
+        print('EX: unable to find text in missing file 2 ' + filename)
     return False
 
 
