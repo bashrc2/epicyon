@@ -10,6 +10,7 @@ __module_group__ = "Core POST"
 import os
 import errno
 from socket import error as SocketError
+from utils import data_dir
 from utils import clear_from_post_caches
 from utils import remove_id_ending
 from utils import save_json
@@ -95,7 +96,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
         self.server.postreq_busy = False
         return
 
-    newswire_filename = base_dir + '/accounts/newswire.txt'
+    newswire_filename = data_dir(base_dir) + '/newswire.txt'
 
     if not boundary:
         if b'--LYNX' in post_bytes:
@@ -140,8 +141,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
 
         # save filtered words list for the newswire
         filter_newswire_filename = \
-            base_dir + '/accounts/' + \
-            'news@' + domain + '/filters.txt'
+            data_dir(base_dir) + '/' + 'news@' + domain + '/filters.txt'
         if fields.get('filteredWordsNewswire'):
             try:
                 with open(filter_newswire_filename, 'w+',
@@ -158,7 +158,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
                           filter_newswire_filename)
 
         # save dogwhistle words list
-        dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
+        dogwhistles_filename = data_dir(base_dir) + '/dogwhistles.txt'
         if fields.get('dogwhistleWords'):
             try:
                 with open(dogwhistles_filename, 'w+',
@@ -179,8 +179,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
             self.server.dogwhistles = {}
 
         # save news tagging rules
-        hashtag_rules_filename = \
-            base_dir + '/accounts/hashtagrules.txt'
+        hashtag_rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
         if fields.get('hashtagRulesList'):
             try:
                 with open(hashtag_rules_filename, 'w+',
@@ -196,8 +195,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
                     print('EX: _newswire_update unable to delete ' +
                           hashtag_rules_filename)
 
-        newswire_tusted_filename = \
-            base_dir + '/accounts/newswiretrusted.txt'
+        newswire_tusted_filename = data_dir(base_dir) + '/newswiretrusted.txt'
         if fields.get('trustedNewswire'):
             newswire_trusted = fields['trustedNewswire']
             if not newswire_trusted.endswith('\n'):
@@ -448,7 +446,7 @@ def news_post_edit(self, calling_domain: str, cookie: str,
                         first_paragraph_from_string(news_post_content)
                     # save newswire
                     newswire_state_filename = \
-                        base_dir + '/accounts/.newswirestate.json'
+                        data_dir(base_dir) + '/.newswirestate.json'
                     try:
                         save_json(newswire, newswire_state_filename)
                     except BaseException as ex:

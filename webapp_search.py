@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 import urllib.parse
+from utils import data_dir
 from utils import get_post_attachments
 from utils import get_url_from_post
 from utils import date_from_string_format
@@ -306,7 +307,8 @@ def html_search_shared_items(translate: {},
         '<center><h1>' + \
         '<a href="' + actor + '/search">' + title_str + '</a></h1></center>'
     results_exist = False
-    for _, dirs, files in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, files in os.walk(dir_str):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
@@ -547,7 +549,8 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
 
     results = []
     # search instance accounts
-    for subdir, _, files in os.walk(base_dir + '/accounts/'):
+    dir_str = data_dir(base_dir)
+    for subdir, _, files in os.walk(dir_str + '/'):
         for fname in files:
             if not fname.endswith('.json'):
                 continue

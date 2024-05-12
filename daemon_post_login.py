@@ -25,6 +25,7 @@ from httpheaders import redirect_headers
 from httpheaders import clear_login_details
 from webapp_login import html_get_login_credentials
 from webapp_suspended import html_suspended
+from utils import data_dir
 from utils import acct_dir
 from utils import is_suspended
 from utils import is_local_network_address
@@ -191,8 +192,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             self.server.tokens[login_nickname] = token
             login_handle = login_nickname + '@' + domain
             token_filename = \
-                base_dir + '/accounts/' + \
-                login_handle + '/.token'
+                data_dir(base_dir) + '/' + login_handle + '/.token'
             try:
                 with open(token_filename, 'w+',
                           encoding='utf-8') as fp_tok:
@@ -201,9 +201,9 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                 print('EX: Unable to save token for ' +
                       login_nickname + ' ' + str(ex))
 
+            dir_str = data_dir(base_dir)
             person_upgrade_actor(base_dir, None,
-                                 base_dir + '/accounts/' +
-                                 login_handle + '.json')
+                                 dir_str + '/' + login_handle + '.json')
 
             index = self.server.tokens[login_nickname]
             self.server.tokens_lookup[index] = login_nickname

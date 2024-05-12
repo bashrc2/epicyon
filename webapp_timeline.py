@@ -10,6 +10,7 @@ __module_group__ = "Timeline"
 import os
 import time
 from shutil import copyfile
+from utils import data_dir
 from utils import is_artist
 from utils import dangerous_markup
 from utils import get_config_param
@@ -60,7 +61,7 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
     """Shows help text for the given timeline
     """
     # get the filename for help for this timeline
-    help_filename = base_dir + '/accounts/help_' + box_name + '.md'
+    help_filename = data_dir(base_dir) + '/help_' + box_name + '.md'
     if not os.path.isfile(help_filename):
         language = \
             get_config_param(base_dir, 'language')

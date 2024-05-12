@@ -11,6 +11,7 @@ import os
 import re
 import urllib.parse
 from pprint import pprint
+from utils import data_dir
 from utils import has_object_string
 from utils import has_object_string_object
 from utils import has_object_string_type
@@ -463,7 +464,7 @@ def outbox_undo_reaction(recent_posts_cache: {},
 def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
     """Updates the list of commonly used reactions
     """
-    common_reactions_filename = base_dir + '/accounts/common_reactions.txt'
+    common_reactions_filename = data_dir(base_dir) + '/common_reactions.txt'
     common_reactions = None
     if os.path.isfile(common_reactions_filename):
         try:

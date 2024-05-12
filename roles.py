@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 import os
+from utils import data_dir
 from utils import load_json
 from utils import save_json
 from utils import get_status_number
@@ -22,14 +23,15 @@ def _clear_role_status(base_dir: str, role: str) -> None:
     This could be slow if there are many users, but only happens
     rarely when roles are appointed or removed
     """
-    directory = os.fsencode(base_dir + '/accounts/')
+    dir_str = data_dir(base_dir)
+    directory = os.fsencode(dir_str + '/')
     for fname in os.scandir(directory):
         filename = os.fsdecode(fname.name)
         if '@' not in filename:
             continue
         if not filename.endswith(".json"):
             continue
-        filename = os.path.join(base_dir + '/accounts/', filename)
+        filename = os.path.join(dir_str + '/', filename)
         if not text_in_file('"' + role + '"', filename):
             continue
         actor_json = load_json(filename)
@@ -48,7 +50,7 @@ def _add_role(base_dir: str, nickname: str, domain: str,
     This is a file containing the nicknames of accounts having this role
     """
     domain = remove_domain_port(domain)
-    role_file = base_dir + '/accounts/' + role_filename
+    role_file = data_dir(base_dir) + '/' + role_filename
     if os.path.isfile(role_file):
         # is this nickname already in the file?
 
@@ -71,7 +73,8 @@ def _add_role(base_dir: str, nickname: str, domain: str,
                     role_nickname = role_nickname.strip('\n').strip('\r')
                     if len(role_nickname) < 2:
                         continue
-                    if os.path.isdir(base_dir + '/accounts/' +
+                    dir_str = data_dir(base_dir)
+                    if os.path.isdir(dir_str + '/' +
                                      role_nickname + '@' + domain):
                         fp_role.write(role_nickname + '\n')
         except OSError:
@@ -90,7 +93,7 @@ def _remove_role(base_dir: str, nickname: str, role_filename: str) -> None:
     """Removes a role nickname from the file.
     This is a file containing the nicknames of accounts having this role
     """
-    role_file = base_dir + '/accounts/' + role_filename
+    role_file = data_dir(base_dir) + '/' + role_filename
     if not os.path.isfile(role_file):
         return
 
@@ -270,7 +273,7 @@ def actor_has_role(actor_json: {}, role_name: str) -> bool:
 def is_devops(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname has the devops role
     """
-    devops_file = base_dir + '/accounts/devops.txt'
+    devops_file = data_dir(base_dir) + '/devops.txt'
 
     if not os.path.isfile(devops_file):
         admin_name = get_config_param(base_dir, 'admin')
@@ -305,7 +308,7 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
     # check for admin user
     if not path.startswith('/users/' + admin_nickname + '/'):
         return
-    roles_filename = base_dir + '/accounts/' + list_filename
+    roles_filename = data_dir(base_dir) + '/' + list_filename
     if not fields.get(list_name):
         if os.path.isfile(roles_filename):
             _clear_role_status(base_dir, role_name)

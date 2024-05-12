@@ -16,6 +16,7 @@ from httpheaders import set_headers
 from newswire import get_rss_from_dict
 from fitnessFunctions import fitness_performance
 from posts import is_moderator
+from utils import data_dir
 from utils import local_actor_url
 from utils import save_json
 from webapp_column_right import html_edit_news_post
@@ -89,7 +90,7 @@ def newswire_vote(self, calling_domain: str, path: str,
                 newswire_item[votes_index].append('vote:' + nickname)
                 filename = newswire_item[filename_index]
                 newswire_state_filename = \
-                    base_dir + '/accounts/.newswirestate.json'
+                    data_dir(base_dir) + '/.newswirestate.json'
                 try:
                     save_json(newswire, newswire_state_filename)
                 except BaseException as ex:
@@ -144,7 +145,7 @@ def newswire_unvote(self, calling_domain: str, path: str,
                 newswire_item[votes_index].remove('vote:' + nickname)
                 filename = newswire_item[filename_index]
                 newswire_state_filename = \
-                    base_dir + '/accounts/.newswirestate.json'
+                    data_dir(base_dir) + '/.newswirestate.json'
                 try:
                     save_json(newswire, newswire_state_filename)
                 except BaseException as ex:

@@ -10,6 +10,7 @@ __module_group__ = "Web Interface Columns"
 import os
 from content import remove_long_words
 from content import limit_repeated_words
+from utils import data_dir
 from utils import get_image_extensions
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
@@ -131,7 +132,8 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
 
     # show the edit icon
     if editor:
-        if os.path.isfile(base_dir + '/accounts/newswiremoderation.txt'):
+        dir_str = data_dir(base_dir)
+        if os.path.isfile(dir_str + '/newswiremoderation.txt'):
             # show the edit icon highlighted
             html_str += \
                 '        <a href="' + \
@@ -606,7 +608,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
     edit_newswire_form += \
         '    </div>\n'
 
-    newswire_filename = base_dir + '/accounts/newswire.txt'
+    newswire_filename = data_dir(base_dir) + '/newswire.txt'
     newswire_str = ''
     if os.path.isfile(newswire_filename):
         with open(newswire_filename, 'r', encoding='utf-8') as fp_news:
@@ -629,7 +631,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
 
     filter_str = ''
     filter_filename = \
-        base_dir + '/accounts/news@' + domain + '/filters.txt'
+        data_dir(base_dir) + '/news@' + domain + '/filters.txt'
     if os.path.isfile(filter_filename):
         with open(filter_filename, 'r', encoding='utf-8') as filterfile:
             filter_str = filterfile.read()
@@ -660,8 +662,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
         'spellcheck="true">' + dogwhistle_str + '</textarea>\n'
 
     hashtag_rules_str = ''
-    hashtag_rules_filename = \
-        base_dir + '/accounts/hashtagrules.txt'
+    hashtag_rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
     if os.path.isfile(hashtag_rules_filename):
         with open(hashtag_rules_filename, 'r', encoding='utf-8') as rulesfile:
             hashtag_rules_str = rulesfile.read()

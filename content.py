@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import data_dir
 from utils import remove_link_tracking
 from utils import string_contains
 from utils import string_ends_with
@@ -383,7 +384,7 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
         emoji_content = _get_emoji_name_from_code(base_dir, emoji_code)
         if not emoji_content:
             return
-    common_emoji_filename = base_dir + '/accounts/common_emoji.txt'
+    common_emoji_filename = data_dir(base_dir) + '/common_emoji.txt'
     common_emoji = None
     if os.path.isfile(common_emoji_filename):
         try:
@@ -2297,7 +2298,8 @@ def load_auto_cw_cache(base_dir: str) -> {}:
     for each account
     """
     auto_cw_cache = {}
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue

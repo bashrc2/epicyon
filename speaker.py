@@ -11,6 +11,7 @@ import os
 import html
 import random
 import urllib.parse
+from utils import data_dir
 from utils import get_post_attachments
 from utils import get_cached_post_filename
 from utils import remove_id_ending
@@ -77,7 +78,7 @@ def _speaker_pronounce(base_dir: str, say_text: str, translate: {}) -> str:
     line items such as:
     Epicyon -> Epi-cyon
     """
-    pronounce_filename = base_dir + '/accounts/speaker_pronounce.txt'
+    pronounce_filename = data_dir(base_dir) + '/speaker_pronounce.txt'
     convert_dict = {}
     if translate:
         convert_dict = {

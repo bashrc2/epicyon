@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
+from utils import data_dir
 from utils import get_config_param
 from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
@@ -21,19 +22,19 @@ def html_about(base_dir: str, http_prefix: str,
     """Show the about screen
     """
     admin_nickname = get_config_param(base_dir, 'admin')
-    if not os.path.isfile(base_dir + '/accounts/about.md'):
+    dir_str = data_dir(base_dir)
+    if not os.path.isfile(dir_str + '/about.md'):
         copyfile(base_dir + '/default_about.md',
-                 base_dir + '/accounts/about.md')
+                 dir_str + '/about.md')
 
-    if os.path.isfile(base_dir + '/accounts/login-background-custom.jpg'):
-        if not os.path.isfile(base_dir + '/accounts/login-background.jpg'):
-            copyfile(base_dir + '/accounts/login-background-custom.jpg',
-                     base_dir + '/accounts/login-background.jpg')
+    if os.path.isfile(dir_str + '/login-background-custom.jpg'):
+        if not os.path.isfile(dir_str + '/login-background.jpg'):
+            copyfile(dir_str + '/login-background-custom.jpg',
+                     dir_str + '/login-background.jpg')
 
     about_text = 'Information about this instance goes here.'
-    if os.path.isfile(base_dir + '/accounts/about.md'):
-        with open(base_dir + '/accounts/about.md', 'r',
-                  encoding='utf-8') as fp_about:
+    if os.path.isfile(dir_str + '/about.md'):
+        with open(dir_str + '/about.md', 'r', encoding='utf-8') as fp_about:
             about_text = markdown_to_html(fp_about.read())
 
     about_form = ''

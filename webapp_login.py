@@ -11,6 +11,7 @@ import os
 import time
 import filecmp
 from shutil import copyfile
+from utils import data_dir
 from utils import get_image_extensions
 from utils import get_config_param
 from utils import no_of_accounts
@@ -85,7 +86,7 @@ def html_login(translate: {},
             '/' + login_image
         if os.path.isfile(theme_image):
             login_image_filename = \
-                base_dir + '/accounts/' + login_image
+                data_dir(base_dir) + '/' + login_image
             if os.path.isfile(login_image_filename):
                 if not filecmp.cmp(theme_image,
                                    login_image_filename):
@@ -98,7 +99,7 @@ def html_login(translate: {},
     if not login_image_filename:
         for ext in extensions:
             login_image = 'login.' + ext
-            image_filename = base_dir + '/accounts/' + login_image
+            image_filename = data_dir(base_dir) + '/' + login_image
             if os.path.isfile(image_filename):
                 login_image_filename = image_filename
                 break
@@ -106,7 +107,7 @@ def html_login(translate: {},
     # no login image found, so use the default
     if not login_image_filename:
         login_image = 'login.png'
-        login_image_filename = base_dir + '/accounts/' + login_image
+        login_image_filename = data_dir(base_dir) + '/' + login_image
         source_image = base_dir + '/img/login.png'
         copyfile(source_image, login_image_filename)
 
@@ -129,10 +130,10 @@ def html_login(translate: {},
             '<p class="login-text">' + \
             translate['You will become the admin of this site.'] + \
             '</p>'
-    if os.path.isfile(base_dir + '/accounts/login.txt'):
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/login.txt'):
         # custom login message
-        with open(base_dir + '/accounts/login.txt', 'r',
-                  encoding='utf-8') as file:
+        with open(dir_str + '/login.txt', 'r', encoding='utf-8') as file:
             login_text = '<p class="login-text">' + file.read() + '</p>'
 
     css_filename = base_dir + '/epicyon-login.css'

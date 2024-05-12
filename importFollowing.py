@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 import time
 import random
+from utils import data_dir
 from utils import get_full_domain
 from utils import is_account_dir
 from utils import get_nickname_from_actor
@@ -184,12 +185,13 @@ def _update_import_following(base_dir: str,
 def run_import_following(base_dir: str, httpd):
     """Sends out follow requests for imported following csv files
     """
+    dir_str = data_dir(base_dir)
     while True:
         time.sleep(20)
 
         # get a list of accounts on the instance, in random sequence
         accounts_list = []
-        for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        for _, dirs, _ in os.walk(dir_str):
             for account in dirs:
                 if '@' not in account:
                     continue
@@ -203,7 +205,7 @@ def run_import_following(base_dir: str, httpd):
         # check if each accounts has an import csv
         random.shuffle(accounts_list)
         for account in accounts_list:
-            account_dir = base_dir + '/accounts/' + account
+            account_dir = dir_str + '/' + account
             import_filename = account_dir + '/import_following.csv'
 
             if not os.path.isfile(import_filename):

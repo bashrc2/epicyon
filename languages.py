@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import json
 import os
 from urllib import request, parse
+from utils import data_dir
 from utils import is_account_dir
 from utils import acct_dir
 from utils import get_actor_languages_list
@@ -364,7 +365,8 @@ def load_default_post_languages(base_dir: str) -> {}:
     for new posts for each account
     """
     result = {}
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue

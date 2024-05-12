@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
+from utils import data_dir
 from utils import is_account_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -219,7 +220,8 @@ def migrate_accounts(base_dir: str, session,
     """
     # update followers and following lists for each account
     ctr = 0
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue

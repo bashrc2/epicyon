@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
+from utils import data_dir
 from utils import string_ends_with
 from utils import valid_url_prefix
 
@@ -16,7 +17,7 @@ def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
     """Loads peertube instances from file into the given list
     """
     peertube_list = None
-    peertube_instances_filename = base_dir + '/accounts/peertube.txt'
+    peertube_instances_filename = data_dir(base_dir) + '/peertube.txt'
     if os.path.isfile(peertube_instances_filename):
         with open(peertube_instances_filename, 'r',
                   encoding='utf-8') as fp_inst:

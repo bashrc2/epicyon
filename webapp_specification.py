@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
+from utils import data_dir
 from utils import get_config_param
 from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
@@ -23,13 +24,14 @@ def html_specification(base_dir: str, http_prefix: str,
     """
     specification_filename = base_dir + '/specification/activitypub.md'
     admin_nickname = get_config_param(base_dir, 'admin')
-    if os.path.isfile(base_dir + '/accounts/activitypub.md'):
-        specification_filename = base_dir + '/accounts/activitypub.md'
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/activitypub.md'):
+        specification_filename = dir_str + '/activitypub.md'
 
-    if os.path.isfile(base_dir + '/accounts/login-background-custom.jpg'):
-        if not os.path.isfile(base_dir + '/accounts/login-background.jpg'):
-            copyfile(base_dir + '/accounts/login-background-custom.jpg',
-                     base_dir + '/accounts/login-background.jpg')
+    if os.path.isfile(dir_str + '/login-background-custom.jpg'):
+        if not os.path.isfile(dir_str + '/login-background.jpg'):
+            copyfile(dir_str + '/login-background-custom.jpg',
+                     dir_str + '/login-background.jpg')
 
     specification_text = 'ActivityPub Protocol Specification.'
     if os.path.isfile(specification_filename):

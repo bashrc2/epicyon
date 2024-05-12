@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core GET"
 
 import os
+from utils import data_dir
 from utils import is_account_dir
 from utils import acct_dir
 from session import establish_session
@@ -97,7 +98,8 @@ def get_rss2site(self, calling_domain: str, path: str,
         return
 
     msg = ''
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue

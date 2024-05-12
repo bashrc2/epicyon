@@ -23,6 +23,7 @@ from session import post_json
 from session import post_image
 from session import create_session
 from session import get_json_valid
+from utils import data_dir
 from utils import resembles_url
 from utils import date_utcnow
 from utils import dangerous_markup
@@ -282,7 +283,8 @@ def _indicate_new_share_available(base_dir: str, http_prefix: str,
                                   block_federated: []) -> None:
     """Indicate to each account that a new share is available
     """
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
@@ -417,7 +419,8 @@ def expire_shares(base_dir: str, max_shares_on_profile: int,
                   person_cache: {}) -> None:
     """Removes expired items from shares
     """
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
             if not is_account_dir(account):
                 continue
@@ -1401,7 +1404,8 @@ def shares_catalog_endpoint(base_dir: str, http_prefix: str,
     curr_date = date_utcnow()
     curr_date_str = curr_date.strftime("%Y-%m-%d")
 
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
@@ -1505,7 +1509,7 @@ def generate_shared_item_federation_tokens(shared_items_federated_domains: [],
     tokens_json = {}
     if base_dir:
         tokens_filename = \
-            base_dir + '/accounts/sharedItemsFederationTokens.json'
+            data_dir(base_dir) + '/sharedItemsFederationTokens.json'
         if os.path.isfile(tokens_filename):
             tokens_json = load_json(tokens_filename, 1, 2)
             if tokens_json is None:
@@ -1536,7 +1540,7 @@ def update_shared_item_federation_token(base_dir: str,
         tokens_json = {}
     if base_dir:
         tokens_filename = \
-            base_dir + '/accounts/sharedItemsFederationTokens.json'
+            data_dir(base_dir) + '/sharedItemsFederationTokens.json'
         if os.path.isfile(tokens_filename):
             if debug:
                 print('Update loading tokens for ' + token_domain_full)
@@ -1581,7 +1585,7 @@ def merge_shared_item_tokens(base_dir: str, domain_full: str,
             changed = True
     if base_dir and changed:
         tokens_filename = \
-            base_dir + '/accounts/sharedItemsFederationTokens.json'
+            data_dir(base_dir) + '/sharedItemsFederationTokens.json'
         save_json(tokens_json, tokens_filename)
     return tokens_json
 
@@ -1596,7 +1600,7 @@ def create_shared_item_federation_token(base_dir: str,
         tokens_json = {}
     if base_dir:
         tokens_filename = \
-            base_dir + '/accounts/sharedItemsFederationTokens.json'
+            data_dir(base_dir) + '/sharedItemsFederationTokens.json'
         if os.path.isfile(tokens_filename):
             tokens_json = load_json(tokens_filename, 1, 2)
             if tokens_json is None:
@@ -1642,7 +1646,7 @@ def authorize_shared_items(shared_items_federated_domains: [],
         return False
     if not tokens_json:
         tokens_filename = \
-            base_dir + '/accounts/sharedItemsFederationTokens.json'
+            data_dir(base_dir) + '/sharedItemsFederationTokens.json'
         if not os.path.isfile(tokens_filename):
             if debug:
                 print('DEBUG: shared item federation tokens file missing ' +
@@ -1758,7 +1762,7 @@ def _generate_next_shares_token_update(base_dir: str,
     """Creates a file containing the next date when the shared items token
     for this instance will be updated
     """
-    token_update_dir = base_dir + '/accounts'
+    token_update_dir = data_dir(base_dir)
     if not os.path.isdir(base_dir):
         os.mkdir(base_dir)
     if not os.path.isdir(token_update_dir):
@@ -1810,7 +1814,7 @@ def _regenerate_shares_token(base_dir: str, domain_full: str,
     federated shares list of domains continue to follow and communicate
     then they will receive the new token automatically
     """
-    token_update_filename = base_dir + '/accounts/.tokenUpdate'
+    token_update_filename = data_dir(base_dir) + '/.tokenUpdate'
     if not os.path.isfile(token_update_filename):
         return
     next_update_sec = None
@@ -1870,7 +1874,7 @@ def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
 
         # load the tokens
         tokens_filename = \
-            base_dir + '/accounts/sharedItemsFederationTokens.json'
+            data_dir(base_dir) + '/sharedItemsFederationTokens.json'
         if not os.path.isfile(tokens_filename):
             time.sleep(file_check_interval_sec)
             continue

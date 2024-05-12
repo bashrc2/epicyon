@@ -10,6 +10,7 @@ __module_group__ = "Core POST"
 import os
 import errno
 from socket import error as SocketError
+from utils import data_dir
 from utils import dangerous_markup
 from utils import get_instance_url
 from utils import get_nickname_from_actor
@@ -194,10 +195,10 @@ def links_update(self, calling_domain: str, cookie: str,
         self.server.postreq_busy = False
         return
 
-    links_filename = base_dir + '/accounts/links.txt'
-    about_filename = base_dir + '/accounts/about.md'
-    tos_filename = base_dir + '/accounts/tos.md'
-    specification_filename = base_dir + '/accounts/activitypub.md'
+    links_filename = data_dir(base_dir) + '/links.txt'
+    about_filename = data_dir(base_dir) + '/about.md'
+    tos_filename = data_dir(base_dir) + '/tos.md'
+    specification_filename = data_dir(base_dir) + '/activitypub.md'
 
     if not boundary:
         if b'--LYNX' in post_bytes:

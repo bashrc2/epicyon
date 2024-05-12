@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import data_dir
 from utils import string_ends_with
 from utils import is_account_dir
 from utils import load_json
@@ -153,6 +154,7 @@ def _copy_theme_help_files(base_dir: str, theme_name: str,
     theme_dir = base_dir + '/theme/' + theme_name + '/welcome'
     if not os.path.isdir(theme_dir):
         theme_dir = base_dir + '/defaultwelcome'
+    dir_str = data_dir(base_dir)
     for _, _, files in os.walk(theme_dir):
         for help_markdown_file in files:
             if not help_markdown_file.endswith('_' + system_language + '.md'):
@@ -162,9 +164,9 @@ def _copy_theme_help_files(base_dir: str, theme_name: str,
                                            '.md')
             if dest_help_markdown_file in ('profile.md', 'final.md'):
                 dest_help_markdown_file = 'welcome_' + dest_help_markdown_file
-            if os.path.isdir(base_dir + '/accounts'):
+            if os.path.isdir(dir_str):
                 copyfile(theme_dir + '/' + help_markdown_file,
-                         base_dir + '/accounts/' + dest_help_markdown_file)
+                         dir_str + '/' + dest_help_markdown_file)
         break
 
 
@@ -453,7 +455,7 @@ def enable_grayscale(base_dir: str) -> None:
         except OSError as ex:
             print('EX: enable_grayscale unable to read ' +
                   template_filename + ' ' + str(ex))
-    grayscale_filename = base_dir + '/accounts/.grayscale'
+    grayscale_filename = data_dir(base_dir) + '/.grayscale'
     if not os.path.isfile(grayscale_filename):
         try:
             with open(grayscale_filename, 'w+', encoding='utf-8') as grayfile:
@@ -483,7 +485,7 @@ def disable_grayscale(base_dir: str) -> None:
         except OSError as ex:
             print('EX: disable_grayscale unable to read ' +
                   template_filename + ' ' + str(ex))
-    grayscale_filename = base_dir + '/accounts/.grayscale'
+    grayscale_filename = data_dir(base_dir) + '/.grayscale'
     if os.path.isfile(grayscale_filename):
         try:
             os.remove(grayscale_filename)
@@ -563,7 +565,7 @@ def set_theme_from_designer(base_dir: str, theme_name: str, domain: str,
                             allow_local_network_access: bool,
                             system_language: str,
                             dyslexic_font: bool):
-    custom_theme_filename = base_dir + '/accounts/theme.json'
+    custom_theme_filename = data_dir(base_dir) + '/theme.json'
     save_json(theme_params, custom_theme_filename)
     set_theme(base_dir, theme_name, domain,
               allow_local_network_access, system_language,
@@ -573,7 +575,7 @@ def set_theme_from_designer(base_dir: str, theme_name: str, domain: str,
 def reset_theme_designer_settings(base_dir: str) -> None:
     """Resets the theme designer settings
     """
-    custom_variables_file = base_dir + '/accounts/theme.json'
+    custom_variables_file = data_dir(base_dir) + '/theme.json'
     if os.path.isfile(custom_variables_file):
         try:
             os.remove(custom_variables_file)
@@ -593,7 +595,7 @@ def _read_variables_file(base_dir: str, theme_name: str,
         return
 
     # set custom theme parameters
-    custom_variables_file = base_dir + '/accounts/theme.json'
+    custom_variables_file = data_dir(base_dir) + '/theme.json'
     if os.path.isfile(custom_variables_file):
         custom_theme_params = load_json(custom_variables_file, 0)
         if custom_theme_params:
@@ -667,7 +669,7 @@ def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
 def get_text_mode_banner(base_dir: str) -> str:
     """Returns the banner used for shell browsers, like Lynx
     """
-    text_mode_banner_filename = base_dir + '/accounts/banner.txt'
+    text_mode_banner_filename = data_dir(base_dir) + '/banner.txt'
     if os.path.isfile(text_mode_banner_filename):
         with open(text_mode_banner_filename, 'r',
                   encoding='utf-8') as fp_text:
@@ -680,7 +682,7 @@ def get_text_mode_banner(base_dir: str) -> str:
 def get_text_mode_logo(base_dir: str) -> str:
     """Returns the login screen logo used for shell browsers, like Lynx
     """
-    text_mode_logo_filename = base_dir + '/accounts/logo.txt'
+    text_mode_logo_filename = data_dir(base_dir) + '/logo.txt'
     if not os.path.isfile(text_mode_logo_filename):
         text_mode_logo_filename = base_dir + '/img/logo.txt'
 
@@ -696,40 +698,38 @@ def _set_text_mode_theme(base_dir: str, name: str) -> None:
     # in browsers such as Lynx
     text_mode_logo_filename = \
         base_dir + '/theme/' + name + '/logo.txt'
+    dir_str = data_dir(base_dir)
     if os.path.isfile(text_mode_logo_filename):
         try:
-            copyfile(text_mode_logo_filename,
-                     base_dir + '/accounts/logo.txt')
+            copyfile(text_mode_logo_filename, dir_str + '/logo.txt')
         except OSError:
             print('EX: _set_text_mode_theme unable to copy ' +
                   text_mode_logo_filename + ' ' +
-                  base_dir + '/accounts/logo.txt')
+                  dir_str + '/logo.txt')
     else:
+        dir_str = data_dir(base_dir)
         try:
-            copyfile(base_dir + '/img/logo.txt',
-                     base_dir + '/accounts/logo.txt')
+            copyfile(base_dir + '/img/logo.txt', dir_str + '/logo.txt')
         except OSError:
             print('EX: _set_text_mode_theme unable to copy ' +
-                  base_dir + '/img/logo.txt ' +
-                  base_dir + '/accounts/logo.txt')
+                  base_dir + '/img/logo.txt ' + dir_str + '/logo.txt')
 
     # set the text mode banner which appears in browsers such as Lynx
     text_mode_banner_filename = \
         base_dir + '/theme/' + name + '/banner.txt'
-    if os.path.isfile(base_dir + '/accounts/banner.txt'):
+    if os.path.isfile(dir_str + '/banner.txt'):
         try:
-            os.remove(base_dir + '/accounts/banner.txt')
+            os.remove(dir_str + '/banner.txt')
         except OSError:
             print('EX: _set_text_mode_theme unable to delete ' +
-                  base_dir + '/accounts/banner.txt')
+                  dir_str + '/banner.txt')
     if os.path.isfile(text_mode_banner_filename):
         try:
-            copyfile(text_mode_banner_filename,
-                     base_dir + '/accounts/banner.txt')
+            copyfile(text_mode_banner_filename, dir_str + '/banner.txt')
         except OSError:
             print('EX: _set_text_mode_theme unable to copy ' +
                   text_mode_banner_filename + ' ' +
-                  base_dir + '/accounts/banner.txt')
+                  dir_str + '/banner.txt')
 
 
 def _set_theme_images(base_dir: str, name: str) -> None:
@@ -756,11 +756,12 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                         'welcome')
     extensions = get_image_extensions()
 
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            account_dir = os.path.join(base_dir + '/accounts', acct)
+            account_dir = os.path.join(dir_str, acct)
 
             for background_type in background_names:
                 for ext in extensions:
@@ -776,7 +777,7 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                     if os.path.isfile(background_image_filename):
                         try:
                             copyfile(background_image_filename,
-                                     base_dir + '/accounts/' +
+                                     dir_str + '/' +
                                      background_type + '-background.' + ext)
                             continue
                         except OSError:
@@ -784,14 +785,14 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                                   background_image_filename)
                     # background image was not found
                     # so remove any existing file
-                    if os.path.isfile(base_dir + '/accounts/' +
+                    if os.path.isfile(dir_str + '/' +
                                       background_type + '-background.' + ext):
                         try:
-                            os.remove(base_dir + '/accounts/' +
+                            os.remove(dir_str + '/' +
                                       background_type + '-background.' + ext)
                         except OSError:
                             print('EX: _set_theme_images unable to delete ' +
-                                  base_dir + '/accounts/' +
+                                  dir_str + '/' +
                                   background_type + '-background.' + ext)
 
             if os.path.isfile(profile_image_filename) and \
@@ -883,9 +884,10 @@ def _set_clear_cache_flag(base_dir: str) -> None:
     """Sets a flag which can be used by an external system
     (eg. a script in a cron job) to clear the browser cache
     """
-    if not os.path.isdir(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    if not os.path.isdir(dir_str):
         return
-    flag_filename = base_dir + '/accounts/.clear_cache'
+    flag_filename = dir_str + '/.clear_cache'
     try:
         with open(flag_filename, 'w+', encoding='utf-8') as fp_flag:
             fp_flag.write('\n')
@@ -944,13 +946,13 @@ def set_theme(base_dir: str, name: str, domain: str,
     # set the news avatar
     news_avatar_theme_filename = \
         base_dir + '/theme/' + name + '/icons/avatar_news.png'
-    if os.path.isdir(base_dir + '/accounts/news@' + domain):
+    dir_str = data_dir(base_dir)
+    if os.path.isdir(dir_str + '/news@' + domain):
         if os.path.isfile(news_avatar_theme_filename):
-            news_avatar_filename = \
-                base_dir + '/accounts/news@' + domain + '/avatar.png'
+            news_avatar_filename = dir_str + '/news@' + domain + '/avatar.png'
             copyfile(news_avatar_theme_filename, news_avatar_filename)
 
-    grayscale_filename = base_dir + '/accounts/.grayscale'
+    grayscale_filename = dir_str + '/.grayscale'
     if os.path.isfile(grayscale_filename):
         enable_grayscale(base_dir)
     else:

@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 import os
+from utils import data_dir
 from utils import acct_dir
 from utils import text_in_file
 from utils import remove_eol
@@ -42,7 +43,7 @@ def add_global_filter(base_dir: str, words: str) -> bool:
         return False
     if len(words) < 2:
         return False
-    filters_filename = base_dir + '/accounts/filters.txt'
+    filters_filename = data_dir(base_dir) + '/filters.txt'
     if os.path.isfile(filters_filename):
         if text_in_file(words, filters_filename):
             return False
@@ -85,7 +86,7 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
 def remove_global_filter(base_dir: str, words: str) -> bool:
     """Removes a global word filter
     """
-    filters_filename = base_dir + '/accounts/filters.txt'
+    filters_filename = data_dir(base_dir) + '/filters.txt'
     if not os.path.isfile(filters_filename):
         return False
     if not text_in_file(words, filters_filename):
@@ -161,7 +162,7 @@ def is_filtered_globally(base_dir: str, content: str,
                          system_language: str) -> bool:
     """Is the given content globally filtered?
     """
-    global_filters_filename = base_dir + '/accounts/filters.txt'
+    global_filters_filename = data_dir(base_dir) + '/filters.txt'
     if _is_filtered_base(global_filters_filename, content,
                          system_language):
         return True

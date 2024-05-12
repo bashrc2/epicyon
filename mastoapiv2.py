@@ -20,6 +20,7 @@ from utils import get_video_extensions
 from utils import get_audio_extensions
 from utils import get_image_mime_type
 from utils import lines_in_file
+from utils import data_dir
 
 
 def _get_masto_api_v2id_from_nickname(nickname: str) -> int:
@@ -37,7 +38,7 @@ def _meta_data_instance_v2(show_accounts: bool,
                            version: str, translate: {}) -> {}:
     """ /api/v2/instance endpoint
     """
-    account_dir = base_dir + '/accounts/' + admin_nickname + '@' + domain
+    account_dir = data_dir(base_dir) + '/' + admin_nickname + '@' + domain
     admin_actor_filename = account_dir + '.json'
     if not os.path.isfile(admin_actor_filename):
         return {}
@@ -48,8 +49,7 @@ def _meta_data_instance_v2(show_accounts: bool,
         return {}
 
     rules_list = []
-    rules_filename = \
-        base_dir + '/accounts/tos.md'
+    rules_filename = data_dir(base_dir) + '/tos.md'
     if os.path.isfile(rules_filename):
         with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
             rules_lines = fp_rules.readlines()

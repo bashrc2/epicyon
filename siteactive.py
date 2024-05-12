@@ -9,8 +9,9 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import http.client
-from urllib.parse import urlparse
 import ssl
+from urllib.parse import urlparse
+from utils import data_dir
 
 
 class Result:
@@ -157,7 +158,7 @@ def referer_is_active(http_prefix: str,
 def save_unavailable_sites(base_dir: str, sites_unavailable: []) -> None:
     """Save a list of unavailable sites
     """
-    unavailable_sites_filename = base_dir + '/accounts/unavailable_sites.txt'
+    unavailable_sites_filename = data_dir(base_dir) + '/unavailable_sites.txt'
     sites_unavailable.sort()
     try:
         with open(unavailable_sites_filename, 'w+',
@@ -172,7 +173,7 @@ def save_unavailable_sites(base_dir: str, sites_unavailable: []) -> None:
 def load_unavailable_sites(base_dir: str) -> []:
     """load a list of unavailable sites
     """
-    unavailable_sites_filename = base_dir + '/accounts/unavailable_sites.txt'
+    unavailable_sites_filename = data_dir(base_dir) + '/unavailable_sites.txt'
     sites_unavailable = []
     try:
         with open(unavailable_sites_filename, 'r',

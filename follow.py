@@ -34,6 +34,7 @@ from utils import local_actor_url
 from utils import text_in_file
 from utils import remove_eol
 from utils import get_actor_from_post
+from utils import data_dir
 from acceptreject import create_accept
 from acceptreject import create_reject
 from webfinger import webfinger_handle
@@ -49,11 +50,12 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
     The lastseen files are used to generate the Zzz icons on
     follows/following lists on the profile screen.
     """
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            account_dir = os.path.join(base_dir + '/accounts', acct)
+            account_dir = os.path.join(dir_str, acct)
             following_filename = account_dir + '/following.txt'
             if not os.path.isfile(following_filename):
                 continue
@@ -318,8 +320,9 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
     handle_to_unfollow = follow_nickname + '@' + follow_domain
     if group_account:
         handle_to_unfollow = '!' + handle_to_unfollow
-    if not os.path.isdir(base_dir + '/accounts'):
-        os.mkdir(base_dir + '/accounts')
+    dir_str = data_dir(base_dir)
+    if not os.path.isdir(dir_str):
+        os.mkdir(dir_str)
     handle_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(handle_dir):
         os.mkdir(handle_dir)
@@ -390,8 +393,9 @@ def clear_follows(base_dir: str, nickname: str, domain: str,
                   follow_file: str) -> None:
     """Removes all follows
     """
-    if not os.path.isdir(base_dir + '/accounts'):
-        os.mkdir(base_dir + '/accounts')
+    dir_str = data_dir(base_dir)
+    if not os.path.isdir(dir_str):
+        os.mkdir(dir_str)
     accounts_dir = acct_dir(base_dir, nickname, domain)
     if not os.path.isdir(accounts_dir):
         os.mkdir(accounts_dir)
@@ -602,7 +606,7 @@ def follow_approval_required(base_dir: str, nickname_to_follow: str,
 
     manually_approve_follows = False
     domain_to_follow = remove_domain_port(domain_to_follow)
-    actor_filename = base_dir + '/accounts/' + \
+    actor_filename = data_dir(base_dir) + '/' + \
         nickname_to_follow + '@' + domain_to_follow + '.json'
     if os.path.isfile(actor_filename):
         actor = load_json(actor_filename)
@@ -1428,7 +1432,8 @@ def get_followers_of_actor(base_dir: str, actor: str, debug: bool) -> {}:
     if debug:
         print('DEBUG: searching for handle ' + actor_handle)
     # for each of the accounts
-    for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for subdir, dirs, _ in os.walk(dir_str):
         for account in dirs:
             if '@' not in account:
                 continue

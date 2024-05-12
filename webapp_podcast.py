@@ -12,6 +12,7 @@ import html
 import datetime
 import urllib.parse
 from shutil import copyfile
+from utils import data_dir
 from utils import get_url_from_post
 from utils import get_config_param
 from utils import remove_html
@@ -310,10 +311,11 @@ def html_podcast_episode(translate: {},
     if os.path.isfile(base_dir + '/podcast.css'):
         css_filename = base_dir + '/podcast.css'
 
-    if os.path.isfile(base_dir + '/accounts/podcast-background-custom.jpg'):
-        if not os.path.isfile(base_dir + '/accounts/podcast-background.jpg'):
-            copyfile(base_dir + '/accounts/podcast-background.jpg',
-                     base_dir + '/accounts/podcast-background.jpg')
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/podcast-background-custom.jpg'):
+        if not os.path.isfile(dir_str + '/podcast-background.jpg'):
+            copyfile(dir_str + '/podcast-background.jpg',
+                     dir_str + '/podcast-background.jpg')
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     podcast_str = \

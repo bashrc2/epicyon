@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from datetime import datetime, timezone
+from utils import data_dir
 from utils import get_nickname_from_actor
 from utils import get_config_param
 from utils import escape_text
@@ -82,7 +83,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     # Load the blocked hashtags into memory.
     # This avoids needing to repeatedly load the blocked file for each hashtag
     blocked_str = ''
-    global_blocking_filename = base_dir + '/accounts/blocking.txt'
+    global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
     if os.path.isfile(global_blocking_filename):
         with open(global_blocking_filename, 'r',
                   encoding='utf-8') as fp_block:

@@ -10,6 +10,12 @@ __module_group__ = "Calendar"
 import os
 
 
+def _data_dir2(base_dir) -> str:
+    """Returns the directory where account data is stored
+    """
+    return base_dir + '/accounts'
+
+
 def _text_in_file2(text: str, filename: str,
                    case_sensitive: bool) -> bool:
     """is the given text in the given file?
@@ -32,7 +38,7 @@ def _text_in_file2(text: str, filename: str,
 def _dir_acct(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the directory of an account
     """
-    return base_dir + '/accounts/' + nickname + '@' + domain
+    return _data_dir2(base_dir) + '/' + nickname + '@' + domain
 
 
 def _port_domain_remove(domain: str) -> str:

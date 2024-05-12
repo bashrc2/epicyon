@@ -74,6 +74,7 @@ from utils import dangerous_svg
 from utils import text_in_file
 from utils import contains_statuses
 from utils import get_actor_from_post
+from utils import data_dir
 from session import get_json_valid
 from session import create_session
 from session import get_json
@@ -564,21 +565,21 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
 
     if save_to_file:
         # save person to file
-        people_subdir = '/accounts'
-        if not os.path.isdir(base_dir + people_subdir):
-            os.mkdir(base_dir + people_subdir)
-        if not os.path.isdir(base_dir + people_subdir + '/' + handle):
-            os.mkdir(base_dir + people_subdir + '/' + handle)
-        if not os.path.isdir(base_dir + people_subdir + '/' +
+        people_subdir = data_dir(base_dir)
+        if not os.path.isdir(people_subdir):
+            os.mkdir(people_subdir)
+        if not os.path.isdir(people_subdir + '/' + handle):
+            os.mkdir(people_subdir + '/' + handle)
+        if not os.path.isdir(people_subdir + '/' +
                              handle + '/inbox'):
-            os.mkdir(base_dir + people_subdir + '/' + handle + '/inbox')
-        if not os.path.isdir(base_dir + people_subdir + '/' +
+            os.mkdir(people_subdir + '/' + handle + '/inbox')
+        if not os.path.isdir(people_subdir + '/' +
                              handle + '/outbox'):
-            os.mkdir(base_dir + people_subdir + '/' + handle + '/outbox')
-        if not os.path.isdir(base_dir + people_subdir + '/' +
+            os.mkdir(people_subdir + '/' + handle + '/outbox')
+        if not os.path.isdir(people_subdir + '/' +
                              handle + '/queue'):
-            os.mkdir(base_dir + people_subdir + '/' + handle + '/queue')
-        filename = base_dir + people_subdir + '/' + handle + '.json'
+            os.mkdir(people_subdir + '/' + handle + '/queue')
+        filename = people_subdir + '/' + handle + '.json'
         save_json(new_person, filename)
 
         # save to cache
@@ -662,7 +663,8 @@ def create_group(base_dir: str, nickname: str, domain: str, port: int,
 def clear_person_qrcodes(base_dir: str) -> None:
     """Clears qrcodes for all accounts
     """
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
             if '@' not in handle:
                 continue
@@ -720,7 +722,8 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
             if registrations_remaining <= 0:
                 return None, None, None, None
     else:
-        if os.path.isdir(base_dir + '/accounts/news@' + domain):
+        dir_str = data_dir(base_dir)
+        if os.path.isdir(dir_str + '/news@' + domain):
             # news account already exists
             return None, None, None, None
 
@@ -742,8 +745,9 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
             set_role(base_dir, nickname, domain, 'moderator')
             set_role(base_dir, nickname, domain, 'editor')
 
-    if not os.path.isdir(base_dir + '/accounts'):
-        os.mkdir(base_dir + '/accounts')
+    dir_str = data_dir(base_dir)
+    if not os.path.isdir(dir_str):
+        os.mkdir(dir_str)
     account_dir = acct_dir(base_dir, nickname, domain)
     if not os.path.isdir(account_dir):
         os.mkdir(account_dir)
@@ -1002,14 +1006,14 @@ def person_upgrade_actor(base_dir: str, person_json: {},
 
         # also update the actor within the cache
         actor_cache_filename = \
-            base_dir + '/accounts/cache/actors/' + \
+            data_dir(base_dir) + '/cache/actors/' + \
             person_json['id'].replace('/', '#') + '.json'
         if os.path.isfile(actor_cache_filename):
             save_json(person_json, actor_cache_filename)
 
         # update domain/@nickname in actors cache
         actor_cache_filename = \
-            base_dir + '/accounts/cache/actors/' + \
+            data_dir(base_dir) + '/cache/actors/' + \
             replace_users_with_at(person_json['id']).replace('/', '#') + \
             '.json'
         if os.path.isfile(actor_cache_filename):
@@ -1244,7 +1248,7 @@ def set_bio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
 def reenable_account(base_dir: str, nickname: str) -> None:
     """Removes an account suspension
     """
-    suspended_filename = base_dir + '/accounts/suspended.txt'
+    suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
         lines = []
         with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
@@ -1270,7 +1274,7 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
         return
 
     # Don't suspend moderators
-    moderators_file = base_dir + '/accounts/moderators.txt'
+    moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
         with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
             lines = fp_mod.readlines()
@@ -1291,7 +1295,7 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
         except OSError:
             print('EX: suspend_account unable to delete ' + token_filename)
 
-    suspended_filename = base_dir + '/accounts/suspended.txt'
+    suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
         with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
             lines = fp_sus.readlines()
@@ -1328,7 +1332,7 @@ def can_remove_post(base_dir: str,
         return False
 
     # is the post by a moderator?
-    moderators_file = base_dir + '/accounts/moderators.txt'
+    moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
         with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
             lines = fp_mod.readlines()
@@ -1386,7 +1390,7 @@ def remove_account(base_dir: str, nickname: str,
         return False
 
     # Don't remove moderators
-    moderators_file = base_dir + '/accounts/moderators.txt'
+    moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
         with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
             lines = fp_mod.readlines()
@@ -2192,11 +2196,12 @@ def update_memorial_flags(base_dir: str, person_cache: {}) -> None:
     """
     memorials = get_memorials(base_dir).split('\n')
 
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
             if not is_account_dir(account):
                 continue
-            actor_filename = base_dir + '/accounts/' + account + '.json'
+            actor_filename = data_dir(base_dir) + '/' + account + '.json'
             if not os.path.isfile(actor_filename):
                 continue
             actor_json = load_json(actor_filename)

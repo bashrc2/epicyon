@@ -72,6 +72,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import data_dir
 from utils import string_ends_with
 from utils import remove_html
 from utils import remove_eol
@@ -3090,7 +3091,7 @@ def _command_options() -> None:
         if not os.path.isdir(account_dir):
             print('Account ' + nickname + '@' + domain + ' not found')
             sys.exit()
-        password_file = base_dir + '/accounts/passwords'
+        password_file = data_dir(base_dir) + '/passwords'
         if os.path.isfile(password_file):
             if text_in_file(nickname + ':', password_file):
                 store_basic_credentials(base_dir, nickname, new_password)
@@ -3496,8 +3497,9 @@ def _command_options() -> None:
         if os.path.isdir(base_dir + '/tags'):
             shutil.rmtree(base_dir + '/tags',
                           ignore_errors=False, onerror=None)
-        if os.path.isdir(base_dir + '/accounts'):
-            shutil.rmtree(base_dir + '/accounts',
+        dir_str = data_dir(base_dir)
+        if os.path.isdir(dir_str):
+            shutil.rmtree(dir_str,
                           ignore_errors=False, onerror=None)
         if os.path.isdir(base_dir + '/keys'):
             shutil.rmtree(base_dir + '/keys',

@@ -9,6 +9,7 @@ __module_group__ = "Calendar"
 
 import os
 import time
+from utils import data_dir
 from utils import date_from_string_format
 from utils import date_epoch
 from utils import acct_handle_dir
@@ -196,7 +197,8 @@ def run_post_schedule(base_dir: str, httpd, max_scheduled_posts: int):
     while True:
         time.sleep(60)
         # for each account
-        for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        dir_str = data_dir(base_dir)
+        for _, dirs, _ in os.walk(dir_str):
             for account in dirs:
                 if '@' not in account:
                     continue
@@ -204,7 +206,7 @@ def run_post_schedule(base_dir: str, httpd, max_scheduled_posts: int):
                     continue
                 # scheduled posts index for this account
                 schedule_index_filename = \
-                    base_dir + '/accounts/' + account + '/schedule.index'
+                    dir_str + '/' + account + '/schedule.index'
                 if not os.path.isfile(schedule_index_filename):
                     continue
                 _update_post_schedule(base_dir, account,

@@ -11,6 +11,7 @@ import os
 import time
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
+from utils import data_dir
 from utils import get_config_param
 from utils import save_json
 
@@ -125,7 +126,7 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
 def fitness_thread(base_dir: str, fitness: {}) -> None:
     """Thread used to save fitness function scores
     """
-    fitness_filename = base_dir + '/accounts/fitness.json'
+    fitness_filename = data_dir(base_dir) + '/fitness.json'
     while True:
         # every 10 mins
         time.sleep(60 * 10)

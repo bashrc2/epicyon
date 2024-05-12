@@ -85,6 +85,7 @@ from httpcodes import http_304
 from httpcodes import http_400
 from httpcodes import http_503
 from httpcodes import write2
+from utils import data_dir
 from utils import user_agent_domain
 from utils import local_network_host
 from utils import permitted_dir
@@ -2409,8 +2410,7 @@ def daemon_http_get(self) -> None:
     if (is_image_file(self.path) and
         (self.path.startswith('/login.') or
          self.path.startswith('/qrcode.png'))):
-        icon_filename = \
-            self.server.base_dir + '/accounts' + self.path
+        icon_filename = data_dir(self.server.base_dir) + self.path
         if os.path.isfile(icon_filename):
             if etag_exists(self, icon_filename):
                 # The file has not changed

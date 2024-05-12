@@ -9,6 +9,7 @@ __module_group__ = "Core"
 
 import os
 import time
+from utils import data_dir
 from utils import save_json
 from utils import user_agent_domain
 from utils import remove_eol
@@ -49,15 +50,15 @@ def update_known_crawlers(ua_str: str,
         for uagent in remove_crawlers:
             del known_crawlers[uagent]
         # save the list of crawlers
-        save_json(known_crawlers,
-                  base_dir + '/accounts/knownCrawlers.json')
+        dir_str = data_dir(base_dir)
+        save_json(known_crawlers, dir_str + '/knownCrawlers.json')
     return curr_time
 
 
 def load_known_web_bots(base_dir: str) -> []:
     """Returns a list of known web bots
     """
-    known_bots_filename = base_dir + '/accounts/knownBots.txt'
+    known_bots_filename = data_dir(base_dir) + '/knownBots.txt'
     if not os.path.isfile(known_bots_filename):
         return []
     crawlers_str = None
@@ -85,7 +86,7 @@ def load_known_web_bots(base_dir: str) -> []:
 def _save_known_web_bots(base_dir: str, known_bots: []) -> bool:
     """Saves a list of known web bots
     """
-    known_bots_filename = base_dir + '/accounts/knownBots.txt'
+    known_bots_filename = data_dir(base_dir) + '/knownBots.txt'
     known_bots_str = ''
     for crawler in known_bots:
         known_bots_str += crawler.strip() + '\n'

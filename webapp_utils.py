@@ -12,6 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
+from utils import data_dir
 from utils import string_contains
 from utils import get_post_attachments
 from utils import image_mime_types_dict
@@ -471,7 +472,8 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
     by sharing a large number of things
     """
     all_shares_json = {}
-    for _, dirs, files in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, files in os.walk(dir_str):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
@@ -2093,10 +2095,11 @@ def set_custom_background(base_dir: str, background: str,
     if os.path.isfile(base_dir + '/img/' + background + '.' + ext):
         if not new_background:
             new_background = background
-        if not os.path.isfile(base_dir + '/accounts/' +
+        dir_str = data_dir(base_dir)
+        if not os.path.isfile(dir_str + '/' +
                               new_background + '.' + ext):
             copyfile(base_dir + '/img/' + background + '.' + ext,
-                     base_dir + '/accounts/' + new_background + '.' + ext)
+                     dir_str + '/' + new_background + '.' + ext)
         return ext
     return None
 
@@ -2109,7 +2112,7 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
         emojis_filename = base_dir + '/emoji/default_emoji.json'
     emojis_json = load_json(emojis_filename)
 
-    common_emoji_filename = base_dir + '/accounts/common_emoji.txt'
+    common_emoji_filename = data_dir(base_dir) + '/common_emoji.txt'
     if not os.path.isfile(common_emoji_filename):
         return ''
     common_emoji = None
@@ -2365,7 +2368,7 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
 def load_buy_sites(base_dir: str) -> {}:
     """Loads domains from which buying is permitted
     """
-    buy_sites_filename = base_dir + '/accounts/buy_sites.json'
+    buy_sites_filename = data_dir(base_dir) + '/buy_sites.json'
     if os.path.isfile(buy_sites_filename):
         buy_sites_json = load_json(buy_sites_filename)
         if buy_sites_json:

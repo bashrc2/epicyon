@@ -19,6 +19,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import data_dir
 from utils import string_contains
 from utils import image_mime_types_dict
 from utils import resembles_url
@@ -1623,7 +1624,8 @@ def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
     moderation_dict = {}
 
     # go through each account
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
             if not is_account_dir(handle):
                 continue
@@ -1639,7 +1641,7 @@ def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
                 continue
 
             # is there a blogs timeline for this account?
-            account_dir = os.path.join(base_dir + '/accounts', handle)
+            account_dir = os.path.join(dir_str, handle)
             blogs_index = account_dir + '/tlblogs.index'
             if os.path.isfile(blogs_index):
                 domain = handle.split('@')[1]
@@ -1655,7 +1657,7 @@ def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
         OrderedDict(sorted(moderation_dict.items(), reverse=True))
     # save the moderation queue details for later display
     newswire_moderation_filename = \
-        base_dir + '/accounts/newswiremoderation.txt'
+        data_dir(base_dir) + '/newswiremoderation.txt'
     if sorted_moderation_dict:
         save_json(sorted_moderation_dict, newswire_moderation_filename)
     else:
@@ -1678,7 +1680,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
                            timeout_sec: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
-    subscriptions_filename = base_dir + '/accounts/newswire.txt'
+    subscriptions_filename = data_dir(base_dir) + '/newswire.txt'
     if not os.path.isfile(subscriptions_filename):
         return {}
 

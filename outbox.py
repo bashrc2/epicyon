@@ -15,6 +15,7 @@ from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
+from utils import data_dir
 from utils import quote_toots_allowed
 from utils import get_post_attachments
 from utils import get_attributed_to
@@ -435,7 +436,7 @@ def post_message_to_outbox(session, translate: {},
                         break
 
                 media_dir = \
-                    base_dir + '/accounts/' + \
+                    data_dir(base_dir) + '/' + \
                     post_to_nickname + '@' + domain
                 upload_media_filename = media_dir + '/upload.' + file_extension
                 if not os.path.isfile(upload_media_filename):
@@ -537,7 +538,7 @@ def post_message_to_outbox(session, translate: {},
             if is_featured_writer(base_dir, post_to_nickname, domain):
                 saved_post_id = saved_filename.split('/')[-1]
                 blogs_dir = \
-                    base_dir + '/accounts/news@' + domain + '/tlblogs'
+                    data_dir(base_dir) + '/news@' + domain + '/tlblogs'
                 if not os.path.isdir(blogs_dir):
                     os.mkdir(blogs_dir)
                 copyfile(saved_filename, blogs_dir + '/' + saved_post_id)
@@ -547,7 +548,7 @@ def post_message_to_outbox(session, translate: {},
 
             # clear the citations file if it exists
             citations_filename = \
-                base_dir + '/accounts/' + \
+                data_dir(base_dir) + '/' + \
                 post_to_nickname + '@' + domain + '/.citations.txt'
             if os.path.isfile(citations_filename):
                 try:

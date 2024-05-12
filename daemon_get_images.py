@@ -18,6 +18,7 @@ from httpcodes import write2
 from httpcodes import http_304
 from httpcodes import http_404
 from httpheaders import set_headers_etag
+from utils import data_dir
 from utils import get_nickname_from_actor
 from utils import media_file_mime_type
 from utils import get_image_mime_type
@@ -689,7 +690,7 @@ def show_background_image(self, path: str,
             # follow screen background image
             if path.endswith('/' + bg_im + '-background.' + ext):
                 bg_filename = \
-                    base_dir + '/accounts/' + \
+                    data_dir(base_dir) + '/' + \
                     bg_im + '-background.' + ext
                 if os.path.isfile(bg_filename):
                     if etag_exists(self, bg_filename):

@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import data_dir
 from utils import is_premium_account
 from utils import time_days_ago
 from utils import uninvert_text
@@ -960,7 +961,7 @@ def html_profile(signing_priv_key_pem: str,
     """
     show_moved_accounts = False
     if authorized:
-        moved_accounts_filename = base_dir + '/accounts/actors_moved.txt'
+        moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
         if os.path.isfile(moved_accounts_filename):
             show_moved_accounts = True
 
@@ -1826,7 +1827,8 @@ def _html_profile_shares(actor: str, translate: {},
 def _grayscale_enabled(base_dir: str) -> bool:
     """Is grayscale UI enabled?
     """
-    return os.path.isfile(base_dir + '/accounts/.grayscale')
+    dir_str = data_dir(base_dir)
+    return os.path.isfile(dir_str + '/.grayscale')
 
 
 def _html_themes_dropdown(base_dir: str, translate: {}) -> str:
@@ -2051,7 +2053,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     # site moderators
     moderators = ''
-    moderators_file = base_dir + '/accounts/moderators.txt'
+    moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
         with open(moderators_file, 'r', encoding='utf-8') as mod_file:
             moderators = mod_file.read()
@@ -2061,7 +2063,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
                        'moderators', moderators, 200, '', False)
     # site editors
     editors = ''
-    editors_file = base_dir + '/accounts/editors.txt'
+    editors_file = data_dir(base_dir) + '/editors.txt'
     if os.path.isfile(editors_file):
         with open(editors_file, 'r', encoding='utf-8') as edit_file:
             editors = edit_file.read()
@@ -2072,7 +2074,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     # counselors
     counselors = ''
-    counselors_file = base_dir + '/accounts/counselors.txt'
+    counselors_file = data_dir(base_dir) + '/counselors.txt'
     if os.path.isfile(counselors_file):
         with open(counselors_file, 'r', encoding='utf-8') as co_file:
             counselors = co_file.read()
@@ -2082,7 +2084,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     # artists
     artists = ''
-    artists_file = base_dir + '/accounts/artists.txt'
+    artists_file = data_dir(base_dir) + '/artists.txt'
     if os.path.isfile(artists_file):
         with open(artists_file, 'r', encoding='utf-8') as art_file:
             artists = art_file.read()
@@ -2092,7 +2094,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
 
     # site devops
     devops = ''
-    devops_file = base_dir + '/accounts/devops.txt'
+    devops_file = data_dir(base_dir) + '/devops.txt'
     if os.path.isfile(devops_file):
         with open(devops_file, 'r', encoding='utf-8') as edit_file:
             devops = edit_file.read()

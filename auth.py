@@ -12,6 +12,7 @@ import hashlib
 import binascii
 import os
 import secrets
+from utils import data_dir
 from utils import is_system_account
 from utils import is_memorial_account
 from utils import has_users_path
@@ -143,7 +144,7 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
         print('basic auth - attempted login using memorial account ' +
               nickname + ' in Auth header')
         return False
-    password_file = base_dir + '/accounts/passwords'
+    password_file = data_dir(base_dir) + '/passwords'
     if not os.path.isfile(password_file):
         if debug:
             print('DEBUG: passwords file missing')
@@ -178,10 +179,11 @@ def store_basic_credentials(base_dir: str,
     nickname = remove_eol(nickname).strip()
     password = remove_eol(password).strip()
 
-    if not os.path.isdir(base_dir + '/accounts'):
-        os.mkdir(base_dir + '/accounts')
+    dir_str = data_dir(base_dir)
+    if not os.path.isdir(dir_str):
+        os.mkdir(dir_str)
 
-    password_file = base_dir + '/accounts/passwords'
+    password_file = dir_str + '/passwords'
     store_str = nickname + ':' + _hash_password(password)
     if os.path.isfile(password_file):
         if text_in_file(nickname + ':', password_file):
@@ -226,7 +228,7 @@ def remove_password(base_dir: str, nickname: str) -> None:
     """Removes the password entry for the given nickname
     This is called during account removal
     """
-    password_file = base_dir + '/accounts/passwords'
+    password_file = data_dir(base_dir) + '/passwords'
     if os.path.isfile(password_file):
         try:
             with open(password_file, 'r', encoding='utf-8') as fin:
@@ -291,7 +293,7 @@ def record_login_failure(base_dir: str, ip_address: str,
     if not log_to_file:
         return
 
-    failure_log = base_dir + '/accounts/loginfailures.log'
+    failure_log = data_dir(base_dir) + '/loginfailures.log'
     write_type = 'a+'
     if not os.path.isfile(failure_log):
         write_type = 'w+'

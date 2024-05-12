@@ -50,6 +50,7 @@ from shares import expire_shares
 from categories import load_city_hashtags
 from categories import update_hashtag_categories
 from languages import load_default_post_languages
+from utils import data_dir
 from utils import string_contains
 from utils import check_bad_path
 from utils import acct_handle_dir
@@ -161,7 +162,8 @@ class PubServer(BaseHTTPRequestHandler):
             print(endpoint_type.upper() + ' no nickname ' + self.path)
             http_400(self)
             return
-        if not os.path.isdir(self.server.base_dir + '/accounts/' +
+        dir_str = data_dir(self.server.base_dir)
+        if not os.path.isdir(dir_str + '/' +
                              nickname + '@' + self.server.domain):
             print(endpoint_type.upper() +
                   ' for non-existent account ' + self.path)
@@ -333,7 +335,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if avatar_file.startswith('avatar'):
                         avatar_file = 'avatar.' + avatar_file_ext
                     media_filename = \
-                        self.server.base_dir + '/accounts/' + \
+                        data_dir(self.server.base_dir) + '/' + \
                         nickname + '@' + self.server.domain + '/' + \
                         avatar_file
                 else:
@@ -348,7 +350,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if banner_file.startswith('banner'):
                         banner_file = 'banner.' + banner_file_ext
                     media_filename = \
-                        self.server.base_dir + '/accounts/' + \
+                        data_dir(self.server.base_dir) + '/' + \
                         nickname + '@' + self.server.domain + '/' + \
                         banner_file
 
@@ -654,7 +656,8 @@ def run_shares_expire_watchdog(project_version: str, httpd) -> None:
 def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
     """Loads shared items access tokens for each account
     """
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
             if '@' in handle:
                 token_filename = acct_handle_dir(base_dir, handle) + '/.token'
@@ -767,9 +770,10 @@ def run_daemon(no_of_books: int,
         server_address = ('', proxy_port)
         pub_handler = partial(PubServer)
 
-    if not os.path.isdir(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    if not os.path.isdir(dir_str):
         print('Creating accounts directory')
-        os.mkdir(base_dir + '/accounts')
+        os.mkdir(dir_str)
 
     httpd = None
     try:
@@ -850,7 +854,7 @@ def run_daemon(no_of_books: int,
     httpd.public_replies_unlisted = public_replies_unlisted
 
     # load a list of dogwhistle words
-    dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
+    dogwhistles_filename = data_dir(base_dir) + '/dogwhistles.txt'
     if not os.path.isfile(dogwhistles_filename):
         dogwhistles_filename = base_dir + '/default_dogwhistles.txt'
     httpd.dogwhistles = load_dogwhistles(dogwhistles_filename)
@@ -886,7 +890,7 @@ def run_daemon(no_of_books: int,
     httpd.dm_license_url = ''
 
     # fitness metrics
-    fitness_filename = base_dir + '/accounts/fitness.json'
+    fitness_filename = data_dir(base_dir) + '/fitness.json'
     httpd.fitness = {}
     if os.path.isfile(fitness_filename):
         fitness = load_json(fitness_filename)
@@ -1186,11 +1190,12 @@ def run_daemon(no_of_books: int,
     # whether to enable broch mode, which locks down the instance
     set_broch_mode(base_dir, httpd.domain_full, broch_mode)
 
-    if not os.path.isdir(base_dir + '/accounts/inbox@' + domain):
+    dir_str = data_dir(base_dir)
+    if not os.path.isdir(dir_str + '/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)
         create_shared_inbox(base_dir, 'inbox', domain, port, http_prefix)
 
-    if not os.path.isdir(base_dir + '/accounts/news@' + domain):
+    if not os.path.isdir(dir_str + '/news@' + domain):
         print('Creating news inbox: news@' + domain)
         create_news_inbox(base_dir, domain, port, http_prefix)
         set_config_param(base_dir, "listsEnabled", "Murdoch press")
@@ -1198,7 +1203,7 @@ def run_daemon(no_of_books: int,
     # dict of known web crawlers accessing nodeinfo or the masto API
     # and how many times they have been seen
     httpd.known_crawlers = {}
-    known_crawlers_filename = base_dir + '/accounts/knownCrawlers.json'
+    known_crawlers_filename = dir_str + '/knownCrawlers.json'
     if os.path.isfile(known_crawlers_filename):
         httpd.known_crawlers = load_json(known_crawlers_filename)
     # when was the last crawler seen?

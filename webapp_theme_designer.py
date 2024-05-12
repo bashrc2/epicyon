@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import data_dir
 from utils import load_json
 from utils import get_config_param
 from webapp_utils import html_header_with_external_style
@@ -178,7 +179,7 @@ def html_theme_designer(base_dir: str,
         theme_json = load_json(theme_filename)
 
     # set custom theme parameters
-    custom_variables_file = base_dir + '/accounts/theme.json'
+    custom_variables_file = data_dir(base_dir) + '/theme.json'
     if os.path.isfile(custom_variables_file):
         custom_theme_params = load_json(custom_variables_file, 0)
         if custom_theme_params:

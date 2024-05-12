@@ -570,12 +570,22 @@ def get_base_content_from_post(post_json_object: {},
     return this_post_json['content']
 
 
+def data_dir(base_dir) -> str:
+    """Returns the directory where account data is stored
+    """
+    return base_dir + '/accounts'
+
+
 def acct_dir(base_dir: str, nickname: str, domain: str) -> str:
-    return base_dir + '/accounts/' + nickname + '@' + domain
+    """Returns the directory for an account on this instance
+    """
+    return data_dir(base_dir) + '/' + nickname + '@' + domain
 
 
 def acct_handle_dir(base_dir: str, handle: str) -> str:
-    return base_dir + '/accounts/' + handle
+    """Returns the directory for an account on this instance
+    """
+    return data_dir(base_dir) + '/' + handle
 
 
 def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
@@ -590,7 +600,7 @@ def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
 def refresh_newswire(base_dir: str):
     """Causes the newswire to be updates after a change to user accounts
     """
-    refresh_newswire_filename = base_dir + '/accounts/.refresh_newswire'
+    refresh_newswire_filename = data_dir(base_dir) + '/.refresh_newswire'
     if os.path.isfile(refresh_newswire_filename):
         return
     try:
@@ -750,7 +760,7 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
 def is_editor(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an editor
     """
-    editors_file = base_dir + '/accounts/editors.txt'
+    editors_file = data_dir(base_dir) + '/editors.txt'
 
     if not os.path.isfile(editors_file):
         admin_name = get_config_param(base_dir, 'admin')
@@ -776,7 +786,7 @@ def is_editor(base_dir: str, nickname: str) -> bool:
 def is_artist(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an artist
     """
-    artists_file = base_dir + '/accounts/artists.txt'
+    artists_file = data_dir(base_dir) + '/artists.txt'
 
     if not os.path.isfile(artists_file):
         admin_name = get_config_param(base_dir, 'admin')
@@ -986,7 +996,7 @@ def is_system_account(nickname: str) -> bool:
 def get_memorials(base_dir: str) -> str:
     """Returns the nicknames for memorial accounts
     """
-    memorial_file = base_dir + '/accounts/memorial'
+    memorial_file = data_dir(base_dir) + '/memorial'
     if not os.path.isfile(memorial_file):
         return ''
 
@@ -1013,7 +1023,7 @@ def set_memorials(base_dir: str, domain: str, memorial_str) -> None:
     memorial_str = new_memorial_str
 
     # save the accounts
-    memorial_file = base_dir + '/accounts/memorial'
+    memorial_file = data_dir(base_dir) + '/memorial'
     try:
         with open(memorial_file, 'w+', encoding='utf-8') as fp_memorial:
             fp_memorial.write(memorial_str)
@@ -1024,7 +1034,7 @@ def set_memorials(base_dir: str, domain: str, memorial_str) -> None:
 def is_memorial_account(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is a memorial account
     """
-    memorial_file = base_dir + '/accounts/memorial'
+    memorial_file = data_dir(base_dir) + '/memorial'
     if not os.path.isfile(memorial_file):
         return False
     memorial_list = []
@@ -1085,7 +1095,7 @@ def is_suspended(base_dir: str, nickname: str) -> bool:
     if nickname == admin_nickname:
         return False
 
-    suspended_filename = base_dir + '/accounts/suspended.txt'
+    suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
         with open(suspended_filename, 'r', encoding='utf-8') as susp_file:
             lines = susp_file.readlines()
@@ -1125,7 +1135,8 @@ def get_followers_of_person(base_dir: str,
     handle_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(handle_dir):
         return followers
-    for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for subdir, dirs, _ in os.walk(dir_str):
         for account in dirs:
             filename = os.path.join(subdir, account) + '/' + follow_file
             if account == handle or \
@@ -1942,8 +1953,9 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                 print('EX: follow_person unable to write ' +
                       unfollowed_filename)
 
-    if not os.path.isdir(base_dir + '/accounts'):
-        os.mkdir(base_dir + '/accounts')
+    dir_str = data_dir(base_dir)
+    if not os.path.isdir(dir_str):
+        os.mkdir(dir_str)
     handle_to_follow = follow_nickname + '@' + follow_domain
     if group_account:
         handle_to_follow = '!' + handle_to_follow
@@ -2019,7 +2031,7 @@ def locate_news_votes(base_dir: str, domain: str,
     else:
         post_url = post_url + '.json.votes'
 
-    account_dir = base_dir + '/accounts/news@' + domain + '/'
+    account_dir = data_dir(base_dir) + '/news@' + domain + '/'
     post_filename = account_dir + 'outbox/' + post_url
     if os.path.isfile(post_filename):
         return post_filename
@@ -2043,7 +2055,7 @@ def locate_news_arrival(base_dir: str, domain: str,
     else:
         post_url = post_url + '.json.arrived'
 
-    account_dir = base_dir + '/accounts/news@' + domain + '/'
+    account_dir = data_dir(base_dir) + '/news@' + domain + '/'
     post_filename = account_dir + 'outbox/' + post_url
     if os.path.isfile(post_filename):
         with open(post_filename, 'r', encoding='utf-8') as arrival_file:
@@ -2063,13 +2075,14 @@ def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
     to news will appear
     """
     filename = '/postcache/' + post_id + '.html'
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if '@' not in acct:
                 continue
             if acct.startswith('inbox@') or acct.startswith('Actor@'):
                 continue
-            cache_dir = os.path.join(base_dir + '/accounts', acct)
+            cache_dir = os.path.join(dir_str, acct)
             post_filename = cache_dir + filename
             if os.path.isfile(post_filename):
                 try:
@@ -2114,7 +2127,7 @@ def locate_post(base_dir: str, nickname: str, domain: str,
             return post_filename
 
     # check news posts
-    account_dir = base_dir + '/accounts/news' + '@' + domain + '/'
+    account_dir = data_dir(base_dir) + '/news' + '@' + domain + '/'
     post_filename = account_dir + 'outbox/' + post_url
     if os.path.isfile(post_filename):
         return post_filename
@@ -2265,7 +2278,7 @@ def remove_moderation_post_from_index(base_dir: str, post_url: str,
                                       debug: bool) -> None:
     """Removes a url from the moderation index
     """
-    moderation_index_file = base_dir + '/accounts/moderation.txt'
+    moderation_index_file = data_dir(base_dir) + '/moderation.txt'
     if not os.path.isfile(moderation_index_file):
         return
     post_id = remove_id_ending(post_url)
@@ -2843,7 +2856,8 @@ def no_of_accounts(base_dir: str) -> bool:
     """Returns the number of accounts on the system
     """
     account_ctr = 0
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
             if is_account_dir(account):
                 account_ctr += 1
@@ -2857,12 +2871,13 @@ def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
     account_ctr = 0
     curr_time = int(time.time())
     month_seconds = int(60*60*24*30*months)
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
             if not is_account_dir(account):
                 continue
             last_used_filename = \
-                base_dir + '/accounts/' + account + '/.lastUsed'
+                dir_str + '/' + account + '/.lastUsed'
             if not os.path.isfile(last_used_filename):
                 continue
             with open(last_used_filename, 'r',
@@ -4358,13 +4373,14 @@ def load_account_timezones(base_dir: str) -> {}:
     """Returns a dictionary containing the preferred timezone for each account
     """
     account_timezone = {}
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if '@' not in acct:
                 continue
             if acct.startswith('inbox@') or acct.startswith('Actor@'):
                 continue
-            acct_directory = os.path.join(base_dir + '/accounts', acct)
+            acct_directory = os.path.join(dir_str, acct)
             tz_filename = acct_directory + '/timezone.txt'
             if not os.path.isfile(tz_filename):
                 continue
@@ -4382,14 +4398,14 @@ def load_bold_reading(base_dir: str) -> {}:
     """Returns a dictionary containing the bold reading status for each account
     """
     bold_reading = {}
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if '@' not in acct:
                 continue
             if acct.startswith('inbox@') or acct.startswith('Actor@'):
                 continue
-            bold_reading_filename = \
-                base_dir + '/accounts/' + acct + '/.boldReading'
+            bold_reading_filename = dir_str + '/' + acct + '/.boldReading'
             if os.path.isfile(bold_reading_filename):
                 nickname = acct.split('@')[0]
                 bold_reading[nickname] = True
@@ -4401,14 +4417,14 @@ def load_hide_follows(base_dir: str) -> {}:
     """Returns a dictionary containing the hide follows status for each account
     """
     hide_follows = {}
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if '@' not in acct:
                 continue
             if acct.startswith('inbox@') or acct.startswith('Actor@'):
                 continue
-            hide_follows_filename = \
-                base_dir + '/accounts/' + acct + '/.hideFollows'
+            hide_follows_filename = dir_str + '/' + acct + '/.hideFollows'
             if os.path.isfile(hide_follows_filename):
                 nickname = acct.split('@')[0]
                 hide_follows[nickname] = True
@@ -4682,7 +4698,8 @@ def load_min_images_for_accounts(base_dir: str) -> []:
     be minimized by default
     """
     min_images_for_accounts = []
-    for subdir, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for subdir, dirs, _ in os.walk(dir_str):
         for account in dirs:
             if not is_account_dir(account):
                 continue
@@ -4726,7 +4743,8 @@ def load_reverse_timeline(base_dir: str) -> []:
     see reversed timelines
     """
     reverse_sequence = []
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
@@ -4745,7 +4763,8 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
     """Saves flags for each user indicating whether they prefer to
     see reversed timelines
     """
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
@@ -5043,7 +5062,7 @@ def get_status_count(base_dir: str) -> int:
     """Get the total number of posts
     """
     status_ctr = 0
-    accounts_dir = base_dir + '/accounts'
+    accounts_dir = data_dir(base_dir)
     for _, dirs, _ in os.walk(accounts_dir):
         for acct in dirs:
             if not is_account_dir(acct):

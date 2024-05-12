@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
+from utils import data_dir
 from utils import get_config_param
 from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
@@ -23,13 +24,14 @@ def html_manual(base_dir: str, http_prefix: str,
     """
     manual_filename = base_dir + '/manual/manual.md'
     admin_nickname = get_config_param(base_dir, 'admin')
-    if os.path.isfile(base_dir + '/accounts/manual.md'):
-        manual_filename = base_dir + '/accounts/manual.md'
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/manual.md'):
+        manual_filename = dir_str + '/manual.md'
 
-    if os.path.isfile(base_dir + '/accounts/login-background-custom.jpg'):
-        if not os.path.isfile(base_dir + '/accounts/login-background.jpg'):
-            copyfile(base_dir + '/accounts/login-background-custom.jpg',
-                     base_dir + '/accounts/login-background.jpg')
+    if os.path.isfile(dir_str + '/login-background-custom.jpg'):
+        if not os.path.isfile(dir_str + '/login-background.jpg'):
+            copyfile(dir_str + '/login-background-custom.jpg',
+                     dir_str + '/login-background.jpg')
 
     manual_text = 'User Manual.'
     if os.path.isfile(manual_filename):

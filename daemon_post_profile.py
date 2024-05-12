@@ -14,6 +14,7 @@ from socket import error as SocketError
 from blocking import save_blocked_military
 from httpheaders import redirect_headers
 from httpheaders import clear_login_details
+from utils import data_dir
 from utils import set_premium_account
 from utils import is_premium_account
 from utils import remove_avatar_from_cache
@@ -241,7 +242,7 @@ def _profile_post_peertube_instances(base_dir: str, fields: {}, self,
                                      peertube_instances: []) -> None:
     """ HTTP POST save peertube instances list
     """
-    peertube_instances_file = base_dir + '/accounts/peertube.txt'
+    peertube_instances_file = data_dir(base_dir) + '/peertube.txt'
     if fields.get('ptInstances'):
         peertube_instances.clear()
         try:
@@ -309,7 +310,7 @@ def _profile_post_buy_domains(base_dir: str, fields: {}, self) -> None:
             buy_sites[buy_icon_text] = site_url.strip()
     if str(self.server.buy_sites) != str(buy_sites):
         self.server.buy_sites = buy_sites
-        buy_sites_filename = base_dir + '/accounts/buy_sites.json'
+        buy_sites_filename = data_dir(base_dir) + '/buy_sites.json'
         if buy_sites:
             save_json(buy_sites, buy_sites_filename)
         else:
@@ -2538,7 +2539,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
             # time is an image with metadata publicly exposed,
             # even for a few mS
             if m_type == 'instanceLogo':
-                filename_base = base_dir + '/accounts/login.temp'
+                filename_base = data_dir(base_dir) + '/login.temp'
             elif m_type == 'importTheme':
                 if not os.path.isdir(base_dir + '/imports'):
                     os.mkdir(base_dir + '/imports')

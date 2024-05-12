@@ -12,6 +12,7 @@ from shutil import copyfile
 from petnames import get_pet_name
 from person import is_person_snoozed
 from posts import is_moderator
+from utils import data_dir
 from utils import quote_toots_allowed
 from utils import get_full_domain
 from utils import get_config_param
@@ -177,10 +178,11 @@ def html_person_options(default_timeline: str,
         return None
     options_domain_full = get_full_domain(options_domain, options_port)
 
-    if os.path.isfile(base_dir + '/accounts/options-background-custom.jpg'):
-        if not os.path.isfile(base_dir + '/accounts/options-background.jpg'):
-            copyfile(base_dir + '/accounts/options-background.jpg',
-                     base_dir + '/accounts/options-background.jpg')
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/options-background-custom.jpg'):
+        if not os.path.isfile(dir_str + '/options-background.jpg'):
+            copyfile(dir_str + '/options-background.jpg',
+                     dir_str + '/options-background.jpg')
 
     dormant = False
     offline = False
@@ -558,7 +560,7 @@ def html_person_options(default_timeline: str,
                     (is_moderator(base_dir, nickname) and
                      not is_moderator(base_dir, options_nickname))):
                     newswire_blocked_filename = \
-                        base_dir + '/accounts/' + \
+                        dir_str + '/' + \
                         options_nickname + '@' + options_domain + \
                         '/.nonewswire'
                     checkbox_str = \
@@ -579,7 +581,7 @@ def html_person_options(default_timeline: str,
             # the newswire
             if newswire_posts_permitted:
                 moderated_filename = \
-                    base_dir + '/accounts/' + \
+                    dir_str + '/' + \
                     options_nickname + '@' + \
                     options_domain + '/.newswiremoderated'
                 checkbox_str = \

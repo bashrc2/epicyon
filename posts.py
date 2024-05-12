@@ -92,6 +92,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import get_reply_to
 from utils import get_actor_from_post
+from utils import data_dir
 from media import get_music_metadata
 from media import attach_media
 from media import replace_you_tube
@@ -151,7 +152,7 @@ def convert_post_content_to_html(message_json: {}) -> None:
 def is_moderator(base_dir: str, nickname: str) -> bool:
     """Returns true if the given nickname is a moderator
     """
-    moderators_file = base_dir + '/accounts/moderators.txt'
+    moderators_file = data_dir(base_dir) + '/moderators.txt'
 
     if not os.path.isfile(moderators_file):
         admin_name = get_config_param(base_dir, 'admin')
@@ -1592,7 +1593,7 @@ def _create_post_mod_report(base_dir: str,
     else:
         new_post['moderationStatus'] = 'pending'
     # save to index file
-    moderation_index_file = base_dir + '/accounts/moderation.txt'
+    moderation_index_file = data_dir(base_dir) + '/moderation.txt'
     try:
         with open(moderation_index_file, 'a+', encoding='utf-8') as mod_file:
             mod_file.write(new_post_id + '\n')
@@ -2626,7 +2627,7 @@ def create_report_post(base_dir: str,
 
     # create the list of moderators from the moderators file
     moderators_list = []
-    moderators_file = base_dir + '/accounts/moderators.txt'
+    moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
         with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
             for line in fp_mod:
@@ -4348,7 +4349,7 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
     }
 
     if is_moderator(base_dir, nickname):
-        moderation_index_file = base_dir + '/accounts/moderation.txt'
+        moderation_index_file = data_dir(base_dir) + '/moderation.txt'
         if os.path.isfile(moderation_index_file):
             with open(moderation_index_file, 'r',
                       encoding='utf-8') as index_file:
@@ -5001,7 +5002,8 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
         if not os.path.isdir(archive_dir + '/accounts'):
             os.mkdir(archive_dir + '/accounts')
 
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
             if '@' in handle:
                 nickname = handle.split('@')[0]
@@ -5134,7 +5136,8 @@ def expire_posts(base_dir: str, http_prefix: str,
     """Expires posts for instance accounts
     """
     expired_post_count = 0
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
             if '@' not in handle:
                 continue
@@ -5590,7 +5593,7 @@ def get_public_post_domains_blocked(session, base_dir: str,
     if not post_domains:
         return []
 
-    blocking_filename = base_dir + '/accounts/blocking.txt'
+    blocking_filename = data_dir(base_dir) + '/blocking.txt'
     if not os.path.isfile(blocking_filename):
         return []
 
@@ -5644,7 +5647,7 @@ def check_domains(session, base_dir: str,
     if not non_mutuals:
         print('No non-mutual followers were found')
         return
-    follower_warning_filename = base_dir + '/accounts/followerWarnings.txt'
+    follower_warning_filename = data_dir(base_dir) + '/followerWarnings.txt'
     update_follower_warnings = False
     follower_warning_str = ''
     if os.path.isfile(follower_warning_filename):
@@ -5749,8 +5752,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
             if not reply_found:
                 message_id2 = remove_eol(message_id)
                 search_filename = \
-                    base_dir + \
-                    '/accounts/inbox@' + \
+                    data_dir(base_dir) + '/inbox@' + \
                     domain + '/inbox/' + \
                     message_id2.replace('/', '#') + '.json'
                 if os.path.isfile(search_filename):
@@ -6533,7 +6535,7 @@ def post_is_muted(base_dir: str, nickname: str, domain: str,
             is_muted = True
         else:
             mute_filename = \
-                base_dir + '/accounts/cache/announce/' + nickname + \
+                data_dir(base_dir) + '/cache/announce/' + nickname + \
                 '/' + message_id.replace('/', '#') + '.json.muted'
             if os.path.isfile(mute_filename):
                 is_muted = True

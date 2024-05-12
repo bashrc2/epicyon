@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import pyqrcode
+from utils import data_dir
 
 
 def save_domain_qrcode(base_dir: str, http_prefix: str,
@@ -15,6 +16,6 @@ def save_domain_qrcode(base_dir: str, http_prefix: str,
     """Saves a qrcode image for the domain name
     This helps to transfer onion or i2p domains to a mobile device
     """
-    qrcode_filename = base_dir + '/accounts/qrcode.png'
+    qrcode_filename = data_dir(base_dir) + '/qrcode.png'
     url = pyqrcode.create(http_prefix + '://' + domain_full)
     url.png(qrcode_filename, scale)

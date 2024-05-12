@@ -9,6 +9,7 @@ __module_group__ = "RSS Feeds"
 
 import os
 import datetime
+from utils import data_dir
 from utils import date_utcnow
 from utils import date_epoch
 
@@ -181,7 +182,7 @@ def get_hashtag_categories(base_dir: str,
 def update_hashtag_categories(base_dir: str) -> None:
     """Regenerates the list of hashtag categories
     """
-    category_list_filename = base_dir + '/accounts/categoryList.txt'
+    category_list_filename = data_dir(base_dir) + '/categoryList.txt'
     hashtag_categories = get_hashtag_categories(base_dir, False, None)
     if not hashtag_categories:
         if os.path.isfile(category_list_filename):

@@ -36,6 +36,7 @@ from utils import clear_from_post_caches
 from utils import dangerous_markup
 from utils import local_actor_url
 from utils import text_in_file
+from utils import data_dir
 from inbox import store_hash_tags
 from session import create_session
 from threads import begin_thread
@@ -45,7 +46,7 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
                                post_id: str) -> None:
     """Updates the index used for imported RSS feeds
     """
-    base_path = base_dir + '/accounts/news@' + domain
+    base_path = data_dir(base_dir) + '/news@' + domain
     index_filename = base_path + '/outbox.index'
 
     if os.path.isfile(index_filename):
@@ -387,7 +388,7 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
     Returns true if the post should be saved to the news timeline
     of this instance
     """
-    rules_filename = base_dir + '/accounts/hashtagrules.txt'
+    rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
     if not os.path.isfile(rules_filename):
         return True
     rules = []
@@ -447,7 +448,7 @@ def _create_news_mirror(base_dir: str, domain: str,
     if '|' in url or '>' in url:
         return True
 
-    mirror_dir = base_dir + '/accounts/newsmirror'
+    mirror_dir = data_dir(base_dir) + '/newsmirror'
     if not os.path.isdir(mirror_dir):
         os.mkdir(mirror_dir)
 
@@ -457,7 +458,7 @@ def _create_news_mirror(base_dir: str, domain: str,
         no_of_dirs = len(dirs)
         break
 
-    mirror_index_filename = base_dir + '/accounts/newsmirror.txt'
+    mirror_index_filename = data_dir(base_dir) + '/newsmirror.txt'
 
     if max_mirrored_articles > 0 and no_of_dirs > max_mirrored_articles:
         if not os.path.isfile(mirror_index_filename):
@@ -558,7 +559,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         print('No newswire to convert')
         return
 
-    base_path = base_dir + '/accounts/news@' + domain + '/outbox'
+    base_path = data_dir(base_dir) + '/news@' + domain + '/outbox'
     if not os.path.isdir(base_path):
         os.mkdir(base_path)
 
@@ -787,8 +788,8 @@ def run_newswire_daemon(base_dir: str, httpd,
                         translate: {}) -> None:
     """Periodically updates RSS feeds
     """
-    newswire_state_filename = base_dir + '/accounts/.newswirestate.json'
-    refresh_filename = base_dir + '/accounts/.refresh_newswire'
+    newswire_state_filename = data_dir(base_dir) + '/.newswirestate.json'
+    refresh_filename = data_dir(base_dir) + '/.refresh_newswire'
 
     print('Starting newswire daemon')
     # initial sleep to allow the system to start up

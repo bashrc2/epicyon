@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
+from utils import data_dir
 from utils import get_user_paths
 from utils import is_dormant
 from utils import acct_dir
@@ -26,7 +27,7 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
                        filename: str) -> {}:
     """returns a dict of moved accounts
     """
-    moved_accounts_filename = base_dir + '/accounts/actors_moved.txt'
+    moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
     if not os.path.isfile(moved_accounts_filename):
         return {}
     refollow_str = ''
@@ -230,12 +231,12 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
 
     # get the handles to be checked for movedTo attribute
     handles_to_check = []
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
             if not is_account_dir(account):
                 continue
-            following_filename = \
-                base_dir + '/accounts/' + account + '/following.txt'
+            following_filename = dir_str + '/' + account + '/following.txt'
             if not os.path.isfile(following_filename):
                 continue
             following_str = ''
@@ -288,7 +289,7 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
     else:
         print('No moved accounts detected')
 
-    moved_accounts_filename = base_dir + '/accounts/actors_moved.txt'
+    moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
     if not moved_str:
         if os.path.isfile(moved_accounts_filename):
             try:

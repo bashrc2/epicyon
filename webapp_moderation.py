@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 import os
+from utils import data_dir
 from utils import get_url_from_post
 from utils import remove_html
 from utils import is_artist
@@ -361,7 +362,8 @@ def html_moderation_info(translate: {}, base_dir: str,
     info_shown = False
 
     accounts = []
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
@@ -382,9 +384,10 @@ def html_moderation_info(translate: {}, base_dir: str,
     info_form += '<tr>\n'
 
     col = 0
+    dir_str = data_dir(base_dir)
     for acct in accounts:
         acct_nickname = acct.split('@')[0]
-        account_dir = os.path.join(base_dir + '/accounts', acct)
+        account_dir = os.path.join(dir_str, acct)
         actor_json = load_json(account_dir + '.json')
         if not actor_json:
             continue
@@ -420,7 +423,7 @@ def html_moderation_info(translate: {}, base_dir: str,
     if len(accounts) > 10:
         info_form += '</details>\n'
 
-    suspended_filename = base_dir + '/accounts/suspended.txt'
+    suspended_filename = dir_str + '/suspended.txt'
     if os.path.isfile(suspended_filename):
         with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
             suspended_str = fp_sus.read()
@@ -436,10 +439,9 @@ def html_moderation_info(translate: {}, base_dir: str,
             info_form += '</div>\n'
             info_shown = True
 
-    blocking_filename = base_dir + '/accounts/blocking.txt'
+    blocking_filename = dir_str + '/blocking.txt'
     if os.path.isfile(blocking_filename):
-        blocking_reasons_filename = \
-            base_dir + '/accounts/blocking_reasons.txt'
+        blocking_reasons_filename = dir_str + '/blocking_reasons.txt'
         blocking_reasons_exist = False
         if os.path.isfile(blocking_reasons_filename):
             blocking_reasons_exist = True
@@ -475,7 +477,7 @@ def html_moderation_info(translate: {}, base_dir: str,
             info_form += '</div>\n'
             info_shown = True
 
-    filters_filename = base_dir + '/accounts/filters.txt'
+    filters_filename = dir_str + '/filters.txt'
     if os.path.isfile(filters_filename):
         with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
             filtered_str = fp_filt.read()

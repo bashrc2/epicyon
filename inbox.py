@@ -87,6 +87,7 @@ from utils import valid_hash_tag
 from utils import get_attributed_to
 from utils import get_reply_to
 from utils import get_actor_from_post
+from utils import data_dir
 from categories import get_hashtag_categories
 from categories import set_hashtag_category
 from httpsig import get_digest_algorithm_from_headers
@@ -193,7 +194,7 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
     actor = 'unknown'
     if post_attachments:
         actor = get_attributed_to(obj['attributedTo'])
-    log_filename = base_dir + '/accounts/svg_scripts_log.txt'
+    log_filename = data_dir(base_dir) + '/svg_scripts_log.txt'
     for index in range(len(post_attachments)):
         attach = post_attachments[index]
         if not attach.get('mediaType'):
@@ -855,7 +856,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     inbox_queue_dir = create_inbox_queue_dir(nickname, domain, base_dir)
 
     handle = nickname + '@' + domain
-    destination = base_dir + '/accounts/' + \
+    destination = data_dir(base_dir) + '/' + \
         handle + '/inbox/' + post_id.replace('/', '#') + '.json'
     filename = inbox_queue_dir + '/' + post_id.replace('/', '#') + '.json'
 
@@ -930,7 +931,7 @@ def _inbox_post_recipients_add(base_dir: str, to_list: [],
                 recipients_dict[handle] = None
             else:
                 if debug:
-                    print('DEBUG: ' + base_dir + '/accounts/' +
+                    print('DEBUG: ' + data_dir(base_dir) + '/' +
                           handle + ' does not exist')
         else:
             if debug:
@@ -1190,11 +1191,12 @@ def _notify_moved(base_dir: str, domain_full: str,
                   http_prefix: str) -> None:
     """Notify that an actor has moved
     """
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
             if not is_account_dir(account):
                 continue
-            account_dir = base_dir + '/accounts/' + account
+            account_dir = dir_str + '/' + account
             following_filename = account_dir + '/following.txt'
             if not os.path.isfile(following_filename):
                 continue
@@ -1321,7 +1323,7 @@ def _person_receive_update(base_dir: str,
             new_actor = prev_nickname + '@' + prev_domain_full + ' ' + \
                 new_nickname + '@' + new_domain_full
             refollow_str = ''
-            refollow_filename = base_dir + '/accounts/actors_moved.txt'
+            refollow_filename = data_dir(base_dir) + '/actors_moved.txt'
             refollow_file_exists = False
             if os.path.isfile(refollow_filename):
                 try:
@@ -5534,9 +5536,10 @@ def clear_queue_items(base_dir: str, queue: []) -> None:
     """
     ctr = 0
     queue.clear()
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
-            queue_dir = base_dir + '/accounts/' + account + '/queue'
+            queue_dir = dir_str + '/' + account + '/queue'
             if not os.path.isdir(queue_dir):
                 continue
             for _, _, queuefiles in os.walk(queue_dir):
@@ -5557,9 +5560,10 @@ def _restore_queue_items(base_dir: str, queue: []) -> None:
     """Checks the queue for each account and appends filenames
     """
     queue.clear()
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
-            queue_dir = base_dir + '/accounts/' + account + '/queue'
+            queue_dir = dir_str + '/' + account + '/queue'
             if not os.path.isdir(queue_dir):
                 continue
             for _, _, queuefiles in os.walk(queue_dir):
@@ -5715,7 +5719,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
             has_json_signature = True
         else:
             unknown_contexts_file = \
-                base_dir + '/accounts/unknownContexts.txt'
+                data_dir(base_dir) + '/unknownContexts.txt'
             unknown_context = str(original_json['@context'])
 
             print('unrecognized @context: ' + unknown_context)
@@ -5736,7 +5740,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
         print('Unrecognized jsonld signature type: ' + jwebsig_type)
 
         unknown_signatures_file = \
-            base_dir + '/accounts/unknownJsonSignatures.txt'
+            data_dir(base_dir) + '/unknownJsonSignatures.txt'
 
         already_unknown = False
         if os.path.isfile(unknown_signatures_file):
@@ -6446,7 +6450,7 @@ def run_inbox_queue(server,
                                     debug)
                 inbox_start_time = time.time()
 
-        dogwhistles_filename = base_dir + '/accounts/dogwhistles.txt'
+        dogwhistles_filename = data_dir(base_dir) + '/dogwhistles.txt'
         if not os.path.isfile(dogwhistles_filename):
             dogwhistles_filename = base_dir + '/default_dogwhistles.txt'
         dogwhistles = load_dogwhistles(dogwhistles_filename)

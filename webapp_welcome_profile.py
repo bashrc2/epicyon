@@ -9,6 +9,7 @@ __module_group__ = "Onboarding"
 
 import os
 from shutil import copyfile
+from utils import data_dir
 from utils import remove_html
 from utils import load_json
 from utils import get_config_param
@@ -29,13 +30,14 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
     """Returns the welcome profile screen to set avatar and bio
     """
     # set a custom background for the welcome screen
-    if os.path.isfile(base_dir + '/accounts/welcome-background-custom.jpg'):
-        if not os.path.isfile(base_dir + '/accounts/welcome-background.jpg'):
-            copyfile(base_dir + '/accounts/welcome-background-custom.jpg',
-                     base_dir + '/accounts/welcome-background.jpg')
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/welcome-background-custom.jpg'):
+        if not os.path.isfile(dir_str + '/welcome-background.jpg'):
+            copyfile(dir_str + '/welcome-background-custom.jpg',
+                     dir_str + '/welcome-background.jpg')
 
     profile_text = 'Welcome to Epicyon'
-    profile_filename = base_dir + '/accounts/welcome_profile.md'
+    profile_filename = dir_str + '/welcome_profile.md'
     if not os.path.isfile(profile_filename):
         default_filename = None
         if theme_name:

@@ -11,6 +11,7 @@ import os
 import errno
 import urllib.parse
 from socket import error as SocketError
+from utils import data_dir
 from utils import delete_post
 from utils import locate_post
 from utils import get_full_domain
@@ -146,8 +147,8 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                         # is this a local nickname on this instance?
                         local_handle = \
                             search_handle + '@' + domain
-                        if os.path.isdir(base_dir +
-                                         '/accounts/' + local_handle):
+                        dir_str = data_dir(base_dir)
+                        if os.path.isdir(dir_str + '/' + local_handle):
                             search_handle = local_handle
                         else:
                             search_handle = ''

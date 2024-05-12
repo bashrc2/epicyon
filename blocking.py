@@ -12,6 +12,7 @@ import json
 import time
 from session import get_json_valid
 from session import create_session
+from utils import data_dir
 from utils import string_contains
 from utils import date_from_string_format
 from utils import date_utcnow
@@ -240,7 +241,7 @@ def _add_global_block_reason(base_dir: str,
         return False
 
     blocking_reasons_filename = \
-        base_dir + '/accounts/blocking_reasons.txt'
+        data_dir(base_dir) + '/blocking_reasons.txt'
 
     if not block_nickname.startswith('#'):
         # is the handle already blocked?
@@ -302,7 +303,7 @@ def add_global_block(base_dir: str,
                              block_nickname, block_domain,
                              reason)
 
-    blocking_filename = base_dir + '/accounts/blocking.txt'
+    blocking_filename = data_dir(base_dir) + '/blocking.txt'
     if not block_nickname.startswith('#'):
         # is the handle already blocked?
         block_handle = block_nickname + '@' + block_domain
@@ -481,7 +482,7 @@ def _remove_global_block_reason(base_dir: str,
                                 unblock_domain: str) -> bool:
     """Remove a globla block reason
     """
-    unblocking_filename = base_dir + '/accounts/blocking_reasons.txt'
+    unblocking_filename = data_dir(base_dir) + '/blocking_reasons.txt'
     if not os.path.isfile(unblocking_filename):
         return False
 
@@ -524,7 +525,7 @@ def remove_global_block(base_dir: str,
                                 unblock_nickname,
                                 unblock_domain)
 
-    unblocking_filename = base_dir + '/accounts/blocking.txt'
+    unblocking_filename = data_dir(base_dir) + '/blocking.txt'
     if not unblock_nickname.startswith('#'):
         unblock_handle = unblock_nickname + '@' + unblock_domain
         if os.path.isfile(unblocking_filename):
@@ -621,7 +622,7 @@ def is_blocked_hashtag(base_dir: str, hashtag: str) -> bool:
     # avoid very long hashtags
     if len(hashtag) > 32:
         return True
-    global_blocking_filename = base_dir + '/accounts/blocking.txt'
+    global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
     if os.path.isfile(global_blocking_filename):
         hashtag = hashtag.strip('\n').strip('\r')
         if not hashtag.startswith('#'):
@@ -641,7 +642,7 @@ def get_domain_blocklist(base_dir: str) -> str:
     for evil in evil_domains:
         blocked_str += evil + '\n'
 
-    global_blocking_filename = base_dir + '/accounts/blocking.txt'
+    global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
     if not os.path.isfile(global_blocking_filename):
         return blocked_str
     try:
@@ -666,7 +667,7 @@ def update_blocked_cache(base_dir: str,
     seconds_since_last_update = curr_time - blocked_cache_last_updated
     if seconds_since_last_update < blocked_cache_update_secs:
         return blocked_cache_last_updated
-    global_blocking_filename = base_dir + '/accounts/blocking.txt'
+    global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
     if not os.path.isfile(global_blocking_filename):
         return blocked_cache_last_updated
     try:
@@ -724,7 +725,7 @@ def is_blocked_domain(base_dir: str, domain: str,
                         return True
         else:
             # instance block list
-            global_blocking_filename = base_dir + '/accounts/blocking.txt'
+            global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
             if os.path.isfile(global_blocking_filename):
                 search_str += '\n'
                 search_str_short = None
@@ -743,7 +744,7 @@ def is_blocked_domain(base_dir: str, domain: str,
                     print('EX: unable to read ' + global_blocking_filename +
                           ' ' + str(ex))
     else:
-        allow_filename = base_dir + '/accounts/allowedinstances.txt'
+        allow_filename = data_dir(base_dir) + '/allowedinstances.txt'
         # instance allow list
         if not short_domain:
             if not text_in_file(domain, allow_filename):
@@ -766,7 +767,7 @@ def is_blocked_nickname(base_dir: str, nickname: str,
                 return True
     else:
         # instance-wide block list
-        global_blocking_filename = base_dir + '/accounts/blocking.txt'
+        global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
         if os.path.isfile(global_blocking_filename):
             search_str += '\n'
             try:
@@ -818,7 +819,7 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                     if blocked_str == block_handle:
                         return True
         else:
-            global_blocks_filename = base_dir + '/accounts/blocking.txt'
+            global_blocks_filename = data_dir(base_dir) + '/blocking.txt'
             if os.path.isfile(global_blocks_filename):
                 if block_nickname:
                     if text_in_file(block_nickname + '@*\n',
@@ -832,7 +833,7 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                         return True
             if not block_federated:
                 federated_blocks_filename = \
-                    base_dir + '/accounts/block_api.txt'
+                    data_dir(base_dir) + '/block_api.txt'
                 if os.path.isfile(federated_blocks_filename):
                     block_federated = []
                     try:
@@ -849,7 +850,7 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                             return True
     else:
         # instance allow list
-        allow_filename = base_dir + '/accounts/allowedinstances.txt'
+        allow_filename = data_dir(base_dir) + '/allowedinstances.txt'
         short_domain = _get_short_domain(block_domain)
         if not short_domain and block_domain:
             if not text_in_file(block_domain + '\n', allow_filename):
@@ -904,7 +905,7 @@ def allowed_announce(base_dir: str, nickname: str, domain: str,
 
     # non-cached instance level announce blocks
     global_announce_blocks_filename = \
-        base_dir + '/accounts/noannounce.txt'
+        data_dir(base_dir) + '/noannounce.txt'
     if os.path.isfile(global_announce_blocks_filename):
         if block_nickname:
             if text_in_file(block_nickname + '@*',
@@ -1563,7 +1564,7 @@ def outbox_undo_mute(base_dir: str, http_prefix: str,
 def broch_mode_is_active(base_dir: str) -> bool:
     """Returns true if broch mode is active
     """
-    allow_filename = base_dir + '/accounts/allowedinstances.txt'
+    allow_filename = data_dir(base_dir) + '/allowedinstances.txt'
     return os.path.isfile(allow_filename)
 
 
@@ -1576,7 +1577,7 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
     to construct an instance level allow list. Anything arriving
     which is then not from one of the allowed domains will be dropped
     """
-    allow_filename = base_dir + '/accounts/allowedinstances.txt'
+    allow_filename = data_dir(base_dir) + '/allowedinstances.txt'
 
     if not enabled:
         # remove instance allow list
@@ -1595,11 +1596,12 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
         # generate instance allow list
         allowed_domains = [domain_full]
         follow_files = ('following.txt', 'followers.txt')
-        for _, dirs, _ in os.walk(base_dir + '/accounts'):
+        dir_str = data_dir(base_dir)
+        for _, dirs, _ in os.walk(dir_str):
             for acct in dirs:
                 if not is_account_dir(acct):
                     continue
-                account_dir = os.path.join(base_dir + '/accounts', acct)
+                account_dir = os.path.join(dir_str, acct)
                 for follow_file_type in follow_files:
                     following_filename = account_dir + '/' + follow_file_type
                     if not os.path.isfile(following_filename):
@@ -1639,7 +1641,7 @@ def broch_modeLapses(base_dir: str, lapse_days: int) -> bool:
     """After broch mode is enabled it automatically
     elapses after a period of time
     """
-    allow_filename = base_dir + '/accounts/allowedinstances.txt'
+    allow_filename = data_dir(base_dir) + '/allowedinstances.txt'
     if not os.path.isfile(allow_filename):
         return False
     last_modified = file_last_modified(allow_filename)
@@ -1858,7 +1860,7 @@ def get_blocks_via_server(session, nickname: str, password: str,
 def load_blocked_military(base_dir: str) -> {}:
     """Loads a list of nicknames for accounts which block military instances
     """
-    block_military_filename = base_dir + '/accounts/block_military.txt'
+    block_military_filename = data_dir(base_dir) + '/block_military.txt'
     nicknames_list = []
     if os.path.isfile(block_military_filename):
         try:
@@ -1883,7 +1885,7 @@ def save_blocked_military(base_dir: str, block_military: {}) -> None:
     for nickname, _ in block_military.items():
         nicknames_str += nickname + '\n'
 
-    block_military_filename = base_dir + '/accounts/block_military.txt'
+    block_military_filename = data_dir(base_dir) + '/block_military.txt'
     try:
         with open(block_military_filename, 'w+',
                   encoding='utf-8') as fp_mil:
@@ -1921,7 +1923,7 @@ def load_federated_blocks_endpoints(base_dir: str) -> []:
     """
     block_federated_endpoints = []
     block_api_endpoints_filename = \
-        base_dir + '/accounts/block_api_endpoints.txt'
+        data_dir(base_dir) + '/block_api_endpoints.txt'
     if os.path.isfile(block_api_endpoints_filename):
         new_block_federated_endpoints = []
         try:
@@ -2033,7 +2035,7 @@ def _update_federated_blocks(session, base_dir: str,
                             block_federated.append(handle)
 
     block_api_filename = \
-        base_dir + '/accounts/block_api.txt'
+        data_dir(base_dir) + '/block_api.txt'
     if not new_block_api_str:
         print('DEBUG: federated blocklist not loaded: ' + block_api_filename)
         if os.path.isfile(block_api_filename):
@@ -2057,7 +2059,7 @@ def save_block_federated_endpoints(base_dir: str,
     """Saves a list of blocking API endpoints
     """
     block_api_endpoints_filename = \
-        base_dir + '/accounts/block_api_endpoints.txt'
+        data_dir(base_dir) + '/block_api_endpoints.txt'
     result = []
     block_federated_endpoints_str = ''
     for endpoint in block_federated_endpoints:
@@ -2079,7 +2081,7 @@ def save_block_federated_endpoints(base_dir: str,
             except OSError:
                 print('EX: unable to delete block_api_endpoints.txt')
         block_api_filename = \
-            base_dir + '/accounts/block_api.txt'
+            data_dir(base_dir) + '/block_api.txt'
         if os.path.isfile(block_api_filename):
             try:
                 os.remove(block_api_filename)

@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from shutil import copyfile
+from utils import data_dir
 from utils import get_full_domain
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -212,10 +213,11 @@ def html_confirm_follow(translate: {}, base_dir: str,
     """
     follow_domain, _ = get_domain_from_actor(follow_actor)
 
-    if os.path.isfile(base_dir + '/accounts/follow-background-custom.jpg'):
-        if not os.path.isfile(base_dir + '/accounts/follow-background.jpg'):
-            copyfile(base_dir + '/accounts/follow-background-custom.jpg',
-                     base_dir + '/accounts/follow-background.jpg')
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/follow-background-custom.jpg'):
+        if not os.path.isfile(dir_str + '/follow-background.jpg'):
+            copyfile(dir_str + '/follow-background-custom.jpg',
+                     dir_str + '/follow-background.jpg')
 
     css_filename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):
@@ -270,10 +272,11 @@ def html_confirm_unfollow(translate: {}, base_dir: str,
     """
     follow_domain, _ = get_domain_from_actor(follow_actor)
 
-    if os.path.isfile(base_dir + '/accounts/follow-background-custom.jpg'):
-        if not os.path.isfile(base_dir + '/accounts/follow-background.jpg'):
-            copyfile(base_dir + '/accounts/follow-background-custom.jpg',
-                     base_dir + '/accounts/follow-background.jpg')
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/follow-background-custom.jpg'):
+        if not os.path.isfile(dir_str + '/follow-background.jpg'):
+            copyfile(dir_str + '/follow-background-custom.jpg',
+                     dir_str + '/follow-background.jpg')
 
     css_filename = base_dir + '/epicyon-follow.css'
     if os.path.isfile(base_dir + '/follow.css'):

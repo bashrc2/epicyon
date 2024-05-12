@@ -24,6 +24,7 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import data_dir
 from utils import get_quote_toot_url
 from utils import get_post_attachments
 from utils import get_url_from_post
@@ -1905,7 +1906,7 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
         "twitter.com": twitter_onion
     }
 
-    onion_domains_filename = base_dir + '/accounts/onion_domains.txt'
+    onion_domains_filename = data_dir(base_dir) + '/onion_domains.txt'
     if os.path.isfile(onion_domains_filename):
         onion_domains_list = []
         try:

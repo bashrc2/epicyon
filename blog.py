@@ -16,6 +16,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
+from utils import data_dir
 from utils import remove_link_tracking
 from utils import get_url_from_post
 from utils import date_from_string_format
@@ -704,11 +705,12 @@ def _no_of_blog_accounts(base_dir: str) -> int:
     """Returns the number of blog accounts
     """
     ctr = 0
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            account_dir = os.path.join(base_dir + '/accounts', acct)
+            account_dir = os.path.join(dir_str, acct)
             blogs_index = account_dir + '/tlblogs.index'
             if os.path.isfile(blogs_index):
                 ctr += 1
@@ -719,11 +721,12 @@ def _no_of_blog_accounts(base_dir: str) -> int:
 def _single_blog_account_nickname(base_dir: str) -> str:
     """Returns the nickname of a single blog account
     """
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            account_dir = os.path.join(base_dir + '/accounts', acct)
+            account_dir = os.path.join(dir_str, acct)
             blogs_index = account_dir + '/tlblogs.index'
             if os.path.isfile(blogs_index):
                 return acct.split('@')[0]
@@ -760,11 +763,12 @@ def html_blog_view(authorized: bool,
 
     domain_full = get_full_domain(domain, port)
 
-    for _, dirs, _ in os.walk(base_dir + '/accounts'):
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
             if not is_account_dir(acct):
                 continue
-            account_dir = os.path.join(base_dir + '/accounts', acct)
+            account_dir = os.path.join(dir_str, acct)
             blogs_index = account_dir + '/tlblogs.index'
             if os.path.isfile(blogs_index):
                 blog_str += '<p class="blogaccount">'
@@ -796,13 +800,13 @@ def html_edit_blog(media_instance: bool, translate: {},
     edit_blog_text = \
         '<h1">' + translate['Write your post text below.'] + '</h1>'
 
-    if os.path.isfile(base_dir + '/accounts/newpost.txt'):
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/newpost.txt'):
         try:
-            with open(base_dir + '/accounts/newpost.txt', 'r',
-                      encoding='utf-8') as file:
+            with open(dir_str + '/newpost.txt', 'r', encoding='utf-8') as file:
                 edit_blog_text = '<p>' + file.read() + '</p>'
         except OSError:
-            print('EX: unable to read ' + base_dir + '/accounts/newpost.txt')
+            print('EX: unable to read ' + dir_str + '/newpost.txt')
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):

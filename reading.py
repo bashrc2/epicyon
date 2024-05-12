@@ -10,6 +10,7 @@ __module_group__ = "Core"
 
 import os
 from collections import OrderedDict
+from utils import data_dir
 from utils import get_post_attachments
 from utils import get_content_from_post
 from utils import has_object_dict
@@ -259,7 +260,7 @@ def remove_reading_event(base_dir: str,
     if not book_event_type:
         print('remove_reading_event no book event')
         return False
-    reading_path = base_dir + '/accounts/reading'
+    reading_path = data_dir(base_dir) + '/reading'
     readers_path = reading_path + '/readers'
     reader_books_filename = \
         readers_path + '/' + actor.replace('/', '#') + '.json'
@@ -391,7 +392,7 @@ def _update_recent_books_list(base_dir: str, book_id: str,
                               debug: bool) -> None:
     """prepend a book to the recent books list
     """
-    recent_books_filename = base_dir + '/accounts/recent_books.txt'
+    recent_books_filename = data_dir(base_dir) + '/recent_books.txt'
     if os.path.isfile(recent_books_filename):
         try:
             with open(recent_books_filename, 'r+',
@@ -419,7 +420,7 @@ def _deduplicate_recent_books_list(base_dir: str,
                                    max_recent_books: int) -> None:
     """ Deduplicate and limit the length of the recent books list
     """
-    recent_books_filename = base_dir + '/accounts/recent_books.txt'
+    recent_books_filename = data_dir(base_dir) + '/recent_books.txt'
     if not os.path.isfile(recent_books_filename):
         return
 
@@ -485,9 +486,10 @@ def store_book_events(base_dir: str,
         if debug:
             print('DEBUG: no book event')
         return False
-    reading_path = base_dir + '/accounts/reading'
-    if not os.path.isdir(base_dir + '/accounts'):
-        os.mkdir(base_dir + '/accounts')
+    dir_str = data_dir(base_dir)
+    reading_path = dir_str + '/reading'
+    if not os.path.isdir(dir_str):
+        os.mkdir(dir_str)
     if not os.path.isdir(reading_path):
         os.mkdir(reading_path)
     books_path = reading_path + '/books'
@@ -558,7 +560,7 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
                            authorized: bool) -> str:
     """Returns html for displaying a list of books on a profile screen
     """
-    reading_path = base_dir + '/accounts/reading'
+    reading_path = data_dir(base_dir) + '/reading'
     readers_path = reading_path + '/readers'
     reader_books_filename = \
         readers_path + '/' + actor.replace('/', '#') + '.json'

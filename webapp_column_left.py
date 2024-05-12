@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
 import os
+from utils import data_dir
 from utils import get_config_param
 from utils import get_nickname_from_actor
 from utils import is_editor
@@ -28,7 +29,7 @@ from shares import share_category_icon
 def _links_exist(base_dir: str) -> bool:
     """Returns true if links have been created
     """
-    links_filename = base_dir + '/accounts/links.txt'
+    links_filename = data_dir(base_dir) + '/links.txt'
     return os.path.isfile(links_filename)
 
 
@@ -214,7 +215,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     # flag used not to show the first separator
     first_separator_added = False
 
-    links_filename = base_dir + '/accounts/links.txt'
+    links_filename = data_dir(base_dir) + '/links.txt'
     links_file_contains_entries = False
     links_list = None
     if os.path.isfile(links_filename):
@@ -490,7 +491,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
     edit_links_form += \
         '    </div>\n'
 
-    links_filename = base_dir + '/accounts/links.txt'
+    links_filename = data_dir(base_dir) + '/links.txt'
     links_str = ''
     if os.path.isfile(links_filename):
         with open(links_filename, 'r', encoding='utf-8') as fp_links:
@@ -515,7 +516,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
     admin_nickname = get_config_param(base_dir, 'admin')
     if admin_nickname:
         if nickname == admin_nickname:
-            about_filename = base_dir + '/accounts/about.md'
+            about_filename = data_dir(base_dir) + '/about.md'
             about_str = ''
             if os.path.isfile(about_filename):
                 with open(about_filename, 'r', encoding='utf-8') as fp_about:
@@ -534,7 +535,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
             edit_links_form += \
                 '</div>'
 
-            tos_filename = base_dir + '/accounts/tos.md'
+            tos_filename = data_dir(base_dir) + '/tos.md'
             tos_str = ''
             if os.path.isfile(tos_filename):
                 with open(tos_filename, 'r', encoding='utf-8') as fp_tos:
@@ -553,7 +554,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
             edit_links_form += \
                 '</div>'
 
-            specification_filename = base_dir + '/accounts/activitypub.md'
+            specification_filename = data_dir(base_dir) + '/activitypub.md'
             specification_str = ''
             if os.path.isfile(specification_filename):
                 with open(specification_filename, 'r',

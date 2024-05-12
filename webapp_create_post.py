@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from utils import data_dir
 from utils import is_premium_account
 from utils import dangerous_markup
 from utils import remove_html
@@ -510,8 +511,9 @@ def html_new_post(edit_post_params: {},
                 '<h1>' + translate['Write your report below.'] + '</h1>\n'
 
             # custom report header with any additional instructions
-            if os.path.isfile(base_dir + '/accounts/report.txt'):
-                with open(base_dir + '/accounts/report.txt', 'r',
+            dir_str = data_dir(base_dir)
+            if os.path.isfile(dir_str + '/report.txt'):
+                with open(dir_str + '/report.txt', 'r',
                           encoding='utf-8') as file:
                     custom_report_text = file.read()
                     if '</p>' not in custom_report_text:
@@ -548,11 +550,10 @@ def html_new_post(edit_post_params: {},
             translate['Enter the choices for your question below.'] + \
             '</h1>\n'
 
-    if os.path.isfile(base_dir + '/accounts/newpost.txt'):
-        with open(base_dir + '/accounts/newpost.txt', 'r',
-                  encoding='utf-8') as file:
-            new_post_text = \
-                '<p>' + file.read() + '</p>\n'
+    dir_str = data_dir(base_dir)
+    if os.path.isfile(dir_str + '/newpost.txt'):
+        with open(dir_str + '/newpost.txt', 'r', encoding='utf-8') as file:
+            new_post_text = '<p>' + file.read() + '</p>\n'
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
