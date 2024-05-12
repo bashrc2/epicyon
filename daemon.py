@@ -50,6 +50,7 @@ from shares import expire_shares
 from categories import load_city_hashtags
 from categories import update_hashtag_categories
 from languages import load_default_post_languages
+from utils import set_accounts_data_dir
 from utils import data_dir
 from utils import string_contains
 from utils import check_bad_path
@@ -679,7 +680,8 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
         break
 
 
-def run_daemon(no_of_books: int,
+def run_daemon(accounts_data_dir: str,
+               no_of_books: int,
                public_replies_unlisted: int,
                max_shares_on_profile: int,
                max_hashtags: int,
@@ -769,6 +771,9 @@ def run_daemon(no_of_books: int,
     else:
         server_address = ('', proxy_port)
         pub_handler = partial(PubServer)
+
+    if accounts_data_dir:
+        set_accounts_data_dir(base_dir, accounts_data_dir)
 
     dir_str = data_dir(base_dir)
     if not os.path.isdir(dir_str):

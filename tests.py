@@ -892,8 +892,10 @@ def create_server_alice(path: str, domain: str, port: int,
     max_shares_on_profile = 8
     public_replies_unlisted = False
     no_of_books = 10
+    accounts_data_dir = None
     print('Server running: Alice')
-    run_daemon(no_of_books, public_replies_unlisted,
+    run_daemon(accounts_data_dir,
+               no_of_books, public_replies_unlisted,
                max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
@@ -1076,8 +1078,10 @@ def create_server_bob(path: str, domain: str, port: int,
     max_shares_on_profile = 8
     public_replies_unlisted = False
     no_of_books = 10
+    accounts_data_dir = None
     print('Server running: Bob')
-    run_daemon(no_of_books, public_replies_unlisted,
+    run_daemon(accounts_data_dir,
+               no_of_books, public_replies_unlisted,
                max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,
@@ -1168,8 +1172,9 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     no_of_books = 10
     domain_max_posts_per_day = 1000
     account_max_posts_per_day = 1000
+    accounts_data_dir = None
     print('Server running: Eve')
-    run_daemon(no_of_books,
+    run_daemon(accounts_data_dir, no_of_books,
                public_replies_unlisted,
                max_shares_on_profile,
                max_hashtags,
@@ -1283,8 +1288,10 @@ def create_server_group(path: str, domain: str, port: int,
     max_shares_on_profile = 8
     public_replies_unlisted = False
     no_of_books = 10
+    accounts_data_dir = None
     print('Server running: Group')
-    run_daemon(no_of_books, public_replies_unlisted,
+    run_daemon(accounts_data_dir,
+               no_of_books, public_replies_unlisted,
                max_shares_on_profile, max_hashtags, map_format,
                clacks, preferred_podcast_formats,
                check_actor_timeout,

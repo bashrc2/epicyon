@@ -582,6 +582,34 @@ def data_dir_testing(base_dir: str) -> None:
     print('Data directory is in testing mode')
 
 
+def set_accounts_data_dir(base_dir: str, accounts_data_path: str) -> None:
+    """Sets the directory used to store instance accounts data
+    """
+    if not accounts_data_path:
+        return
+
+    accounts_data_path_filename = base_dir + '/data_path.txt'
+    if os.path.isfile(accounts_data_path_filename):
+        # read the existing path
+        path = None
+        try:
+            with open(accounts_data_path_filename, 'r',
+                      encoding='utf-8') as file:
+                path = file.read()
+        except OSError:
+            print('EX: unable to read ' + accounts_data_path_filename)
+        if path.strip() == accounts_data_path:
+            # path is already set, so avoid writing it again
+            return
+
+    try:
+        with open(accounts_data_path_filename, 'w+',
+                  encoding='utf-8') as file:
+            file.write(accounts_data_path)
+    except OSError:
+        print('EX: unable to write ' + accounts_data_path_filename)
+
+
 def data_dir(base_dir: str) -> str:
     """Returns the directory where account data is stored
     """

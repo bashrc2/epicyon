@@ -4,6 +4,12 @@ This system can be administrated from the command-line.
 
 ## Account Management
 
+Ordinarily accounts data is stored within a subdirectory of the application directory. This can also be changed using the **accounts-dir** option, which may be used together with other options as needed:
+
+``` bash
+python3 epicyon.py --accounts-dir [dir]
+```
+
 The first thing you will need to do is to create an account. You can do this with the command:
 
 ``` bash

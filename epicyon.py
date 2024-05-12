@@ -72,6 +72,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import set_accounts_data_dir
 from utils import data_dir
 from utils import data_dir_testing
 from utils import string_ends_with
@@ -326,6 +327,9 @@ def _command_options() -> None:
     parser.add_argument('--path', dest='base_dir',
                         type=str, default=os.getcwd(),
                         help='Directory in which to store posts')
+    parser.add_argument('--accounts-dir', dest='accounts_data_dir',
+                        type=str, default=None,
+                        help='Directory where accounts data is to be stored')
     parser.add_argument('--podcast-formats', dest='podcast_formats',
                         type=str, default=None,
                         help='Preferred podcast formats separated ' +
@@ -820,6 +824,10 @@ def _command_options() -> None:
     else:
         if os.path.isfile('debug'):
             debug = True
+
+    if argb.accounts_data_dir:
+        base_dir = os.getcwd()
+        set_accounts_data_dir(base_dir, argb.accounts_data_dir)
 
     if argb.tests:
         run_all_tests()
@@ -4004,7 +4012,8 @@ def _command_options() -> None:
 if __name__ == "__main__":
     argb2, opt2 = _command_options()
     print('allowdeletion: ' + str(argb2.allowdeletion))
-    run_daemon(argb2.no_of_books,
+    run_daemon(argb2.accounts_data_dir,
+               argb2.no_of_books,
                argb2.public_replies_unlisted,
                argb2.max_shares_on_profile,
                argb2.max_hashtags,
