@@ -565,6 +565,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
 
     if save_to_file:
         # save person to file
+        if not os.path.isdir(base_dir):
+            os.mkdir(base_dir)
         people_subdir = data_dir(base_dir)
         if not os.path.isdir(people_subdir):
             os.mkdir(people_subdir)

@@ -6,6 +6,8 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
+__accounts_data_path__ = None
+__accounts_data_path_tests__ = False
 
 import os
 import re
@@ -570,10 +572,44 @@ def get_base_content_from_post(post_json_object: {},
     return this_post_json['content']
 
 
-def data_dir(base_dir) -> str:
+def data_dir_testing(base_dir: str) -> None:
+    """During unit tests __accounts_data_path__ should not be retained
+    """
+    global __accounts_data_path__
+    global __accounts_data_path_tests__
+    __accounts_data_path_tests__ = True
+    __accounts_data_path__ = base_dir + '/accounts'
+    print('Data directory is in testing mode')
+
+
+def data_dir(base_dir: str) -> str:
     """Returns the directory where account data is stored
     """
-    return base_dir + '/accounts'
+    global __accounts_data_path__
+    global __accounts_data_path_tests__
+    if __accounts_data_path_tests__:
+        __accounts_data_path__ = base_dir + '/accounts'
+        return __accounts_data_path__
+
+    if not __accounts_data_path__:
+        # the default path for accounts data
+        __accounts_data_path__ = base_dir + '/accounts'
+
+        # is an alternative path set?
+        accounts_data_path_filename = base_dir + '/data_path.txt'
+        if os.path.isfile(accounts_data_path_filename):
+            path = None
+            try:
+                with open(accounts_data_path_filename, 'r',
+                          encoding='utf-8') as file:
+                    path = file.read()
+            except OSError:
+                print('EX: unable to read ' + accounts_data_path_filename)
+            if path:
+                __accounts_data_path__ = path.strip()
+                print('Accounts data path set to ' + __accounts_data_path__)
+
+    return __accounts_data_path__
 
 
 def acct_dir(base_dir: str, nickname: str, domain: str) -> str:

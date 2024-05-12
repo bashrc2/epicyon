@@ -73,6 +73,7 @@ from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
 from utils import data_dir
+from utils import data_dir_testing
 from utils import string_ends_with
 from utils import remove_html
 from utils import remove_eol
@@ -826,6 +827,7 @@ def _command_options() -> None:
     if argb.testsnetwork:
         print('Network Tests')
         base_dir = os.getcwd()
+        data_dir_testing(base_dir)
         test_shared_items_federation(base_dir)
         test_group_follow(base_dir)
         test_post_message_between_servers(base_dir)

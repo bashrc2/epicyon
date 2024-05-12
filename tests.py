@@ -57,6 +57,7 @@ from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
 from utils import data_dir
+from utils import data_dir_testing
 from utils import remove_link_tracking
 from utils import uninvert_text
 from utils import get_url_from_post
@@ -8358,10 +8359,10 @@ def _test_book_link(base_dir: str):
     max_recent_books = 1000
     max_cached_readers = 10
 
-    base_dir += '/.testbookevents'
-    if os.path.isdir(base_dir):
-        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
-    os.mkdir(base_dir)
+    base_dir2 = base_dir + '/.testbookevents'
+    if os.path.isdir(base_dir2):
+        shutil.rmtree(base_dir2, ignore_errors=False, onerror=None)
+    os.mkdir(base_dir2)
 
     content = 'Not a link'
     result = get_book_link_from_content(content)
@@ -8440,7 +8441,7 @@ def _test_book_link(base_dir: str):
     assert result['name'] == title
     assert result['id'] == id_str
 
-    assert store_book_events(base_dir,
+    assert store_book_events(base_dir2,
                              post_json_object,
                              system_language,
                              languages_understood,
@@ -8557,7 +8558,7 @@ def _test_book_link(base_dir: str):
     assert result['name'] == title
     assert result['id'] == id_str
 
-    assert store_book_events(base_dir,
+    assert store_book_events(base_dir2,
                              post_json_object,
                              system_language,
                              languages_understood,
@@ -8609,7 +8610,7 @@ def _test_book_link(base_dir: str):
     assert result['name'] == title
     assert result['id'] == id_str
 
-    assert store_book_events(base_dir,
+    assert store_book_events(base_dir2,
                              post_json_object,
                              system_language,
                              languages_understood,
@@ -8658,7 +8659,7 @@ def _test_book_link(base_dir: str):
     assert result['rating'] == rating
     assert result['id'] == id_str
 
-    assert store_book_events(base_dir,
+    assert store_book_events(base_dir2,
                              post_json_object,
                              system_language,
                              languages_understood,
@@ -8678,8 +8679,8 @@ def _test_book_link(base_dir: str):
     assert books_cache['reader_list'][expected_readers - 1] == actor
     assert books_cache['readers'].get(actor)
 
-    if os.path.isdir(base_dir):
-        shutil.rmtree(base_dir, ignore_errors=False, onerror=None)
+    if os.path.isdir(base_dir2):
+        shutil.rmtree(base_dir2, ignore_errors=False, onerror=None)
 
 
 def _test_uninvert2():
@@ -8840,6 +8841,7 @@ def _test_link_tracking() -> None:
 
 def run_all_tests():
     base_dir = os.getcwd()
+    data_dir_testing(base_dir)
     print('Running tests...')
     update_default_themes_list(os.getcwd())
     _test_source_contains_no_tabs()
