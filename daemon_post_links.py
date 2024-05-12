@@ -19,6 +19,111 @@ from httpheaders import redirect_headers
 from content import extract_text_fields_in_post
 
 
+def _links_update_edited(fields: {}, links_filename: str) -> None:
+    """Moderators can update the links column
+    """
+    if fields.get('editedLinks'):
+        links_str = fields['editedLinks']
+        if fields.get('newColLink'):
+            if links_str:
+                if not links_str.endswith('\n'):
+                    links_str += '\n'
+            links_str += fields['newColLink'] + '\n'
+        try:
+            with open(links_filename, 'w+',
+                      encoding='utf-8') as linksfile:
+                linksfile.write(links_str)
+        except OSError:
+            print('EX: _links_update unable to write ' +
+                  links_filename)
+    else:
+        if fields.get('newColLink'):
+            # the text area is empty but there is a new link added
+            links_str = fields['newColLink'] + '\n'
+            try:
+                with open(links_filename, 'w+',
+                          encoding='utf-8') as linksfile:
+                    linksfile.write(links_str)
+            except OSError:
+                print('EX: _links_update unable to write ' +
+                      links_filename)
+        else:
+            if os.path.isfile(links_filename):
+                try:
+                    os.remove(links_filename)
+                except OSError:
+                    print('EX: _links_update unable to delete ' +
+                          links_filename)
+
+
+def _links_update_about(fields: {}, allow_local_network_access: bool,
+                        about_filename: str) -> None:
+    """Administrator can update the instance About screen
+    """
+    if fields.get('editedAbout'):
+        about_str = fields['editedAbout']
+        if not dangerous_markup(about_str,
+                                allow_local_network_access, []):
+            try:
+                with open(about_filename, 'w+',
+                          encoding='utf-8') as aboutfile:
+                    aboutfile.write(about_str)
+            except OSError:
+                print('EX: unable to write about ' +
+                      about_filename)
+    else:
+        if os.path.isfile(about_filename):
+            try:
+                os.remove(about_filename)
+            except OSError:
+                print('EX: _links_update unable to delete ' +
+                      about_filename)
+
+
+def _links_update_tos(fields: {}, allow_local_network_access: bool,
+                      tos_filename: str) -> None:
+    """Administrator can update the terms of service
+    """
+    if fields.get('editedTOS'):
+        tos_str = fields['editedTOS']
+        if not dangerous_markup(tos_str,
+                                allow_local_network_access, []):
+            try:
+                with open(tos_filename, 'w+', encoding='utf-8') as tosfile:
+                    tosfile.write(tos_str)
+            except OSError:
+                print('EX: unable to write TOS ' + tos_filename)
+    else:
+        if os.path.isfile(tos_filename):
+            try:
+                os.remove(tos_filename)
+            except OSError:
+                print('EX: _links_update unable to delete ' +
+                      tos_filename)
+
+
+def _links_update_sepcification(fields: {},
+                                specification_filename: str) -> None:
+    """Administrator can update the ActivityPub specification
+    """
+    if fields.get('editedSpecification'):
+        specification_str = fields['editedSpecification']
+        try:
+            with open(specification_filename, 'w+',
+                      encoding='utf-8') as specificationfile:
+                specificationfile.write(specification_str)
+        except OSError:
+            print('EX: unable to write specification ' +
+                  specification_filename)
+    else:
+        if os.path.isfile(specification_filename):
+            try:
+                os.remove(specification_filename)
+            except OSError:
+                print('EX: _links_update_specification unable to delete ' +
+                      specification_filename)
+
+
 def links_update(self, calling_domain: str, cookie: str,
                  path: str, base_dir: str, debug: bool,
                  default_timeline: str,
@@ -103,95 +208,15 @@ def links_update(self, calling_domain: str, cookie: str,
         fields = \
             extract_text_fields_in_post(post_bytes, boundary, debug, None)
 
-        if fields.get('editedLinks'):
-            links_str = fields['editedLinks']
-            if fields.get('newColLink'):
-                if links_str:
-                    if not links_str.endswith('\n'):
-                        links_str += '\n'
-                links_str += fields['newColLink'] + '\n'
-            try:
-                with open(links_filename, 'w+',
-                          encoding='utf-8') as linksfile:
-                    linksfile.write(links_str)
-            except OSError:
-                print('EX: _links_update unable to write ' +
-                      links_filename)
-        else:
-            if fields.get('newColLink'):
-                # the text area is empty but there is a new link added
-                links_str = fields['newColLink'] + '\n'
-                try:
-                    with open(links_filename, 'w+',
-                              encoding='utf-8') as linksfile:
-                        linksfile.write(links_str)
-                except OSError:
-                    print('EX: _links_update unable to write ' +
-                          links_filename)
-            else:
-                if os.path.isfile(links_filename):
-                    try:
-                        os.remove(links_filename)
-                    except OSError:
-                        print('EX: _links_update unable to delete ' +
-                              links_filename)
+        _links_update_edited(fields, links_filename)
 
-        admin_nickname = \
-            get_config_param(base_dir, 'admin')
+        # administrator can do a few extra things other than editing links
+        admin_nickname = get_config_param(base_dir, 'admin')
         if nickname == admin_nickname:
-            if fields.get('editedAbout'):
-                about_str = fields['editedAbout']
-                if not dangerous_markup(about_str,
-                                        allow_local_network_access, []):
-                    try:
-                        with open(about_filename, 'w+',
-                                  encoding='utf-8') as aboutfile:
-                            aboutfile.write(about_str)
-                    except OSError:
-                        print('EX: unable to write about ' +
-                              about_filename)
-            else:
-                if os.path.isfile(about_filename):
-                    try:
-                        os.remove(about_filename)
-                    except OSError:
-                        print('EX: _links_update unable to delete ' +
-                              about_filename)
-
-            if fields.get('editedTOS'):
-                tos_str = fields['editedTOS']
-                if not dangerous_markup(tos_str,
-                                        allow_local_network_access, []):
-                    try:
-                        with open(tos_filename, 'w+',
-                                  encoding='utf-8') as tosfile:
-                            tosfile.write(tos_str)
-                    except OSError:
-                        print('EX: unable to write TOS ' + tos_filename)
-            else:
-                if os.path.isfile(tos_filename):
-                    try:
-                        os.remove(tos_filename)
-                    except OSError:
-                        print('EX: _links_update unable to delete ' +
-                              tos_filename)
-
-            if fields.get('editedSpecification'):
-                specification_str = fields['editedSpecification']
-                try:
-                    with open(specification_filename, 'w+',
-                              encoding='utf-8') as specificationfile:
-                        specificationfile.write(specification_str)
-                except OSError:
-                    print('EX: unable to write specification ' +
-                          specification_filename)
-            else:
-                if os.path.isfile(specification_filename):
-                    try:
-                        os.remove(specification_filename)
-                    except OSError:
-                        print('EX: _links_update unable to delete ' +
-                              specification_filename)
+            _links_update_about(fields, allow_local_network_access,
+                                about_filename)
+            _links_update_tos(fields, allow_local_network_access, tos_filename)
+            _links_update_sepcification(fields, specification_filename)
 
     # redirect back to the default timeline
     redirect_headers(self, actor_str + '/' + default_timeline,
