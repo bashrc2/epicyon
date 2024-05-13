@@ -84,7 +84,8 @@ def show_media_timeline(self, authorized: bool,
                         fitness: {},
                         full_width_tl_button_header: bool,
                         onion_domain: str,
-                        i2p_domain: str) -> bool:
+                        i2p_domain: str,
+                        hide_announces: {}) -> bool:
     """Shows the media timeline
     """
     if '/users/' in path:
@@ -150,6 +151,9 @@ def show_media_timeline(self, authorized: bool,
                     last_post_id = path.split(';lastpost=')[1]
                     if ';' in last_post_id:
                         last_post_id = last_post_id.split(';')[0]
+                show_announces = True
+                if hide_announces.get(nickname):
+                    show_announces = False
                 msg = \
                     html_inbox_media(default_timeline,
                                      recent_posts_cache,
@@ -195,7 +199,8 @@ def show_media_timeline(self, authorized: bool,
                                      min_images_for_accounts,
                                      reverse_sequence, last_post_id,
                                      buy_sites,
-                                     auto_cw_cache)
+                                     auto_cw_cache,
+                                     show_announces)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -1391,7 +1396,8 @@ def show_outbox_timeline(self, authorized: bool,
                          auto_cw_cache: {},
                          fitness: {},
                          onion_domain: str,
-                         i2p_domain: str) -> bool:
+                         i2p_domain: str,
+                         hide_announces: {}) -> bool:
     """Shows the outbox timeline
     """
     # get outbox feed for a person
@@ -1452,6 +1458,9 @@ def show_outbox_timeline(self, authorized: bool,
             reverse_sequence = False
             if nickname in reverse_sequence_nicknames:
                 reverse_sequence = True
+            show_announces = True
+            if hide_announces.get(nickname):
+                show_announces = False
             msg = \
                 html_outbox(default_timeline,
                             recent_posts_cache,
@@ -1495,7 +1504,8 @@ def show_outbox_timeline(self, authorized: bool,
                             min_images_for_accounts,
                             reverse_sequence,
                             buy_sites,
-                            auto_cw_cache)
+                            auto_cw_cache,
+                            show_announces)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
@@ -2186,7 +2196,8 @@ def show_inbox(self, authorized: bool,
                buy_sites: [],
                auto_cw_cache: {},
                onion_domain: str,
-               i2p_domain: str) -> bool:
+               i2p_domain: str,
+               hide_announces: {}) -> bool:
     """Shows the inbox timeline
     """
     if '/users/' in path:
@@ -2259,6 +2270,9 @@ def show_inbox(self, authorized: bool,
                         last_post_id = path.split(';lastpost=')[1]
                         if ';' in last_post_id:
                             last_post_id = last_post_id.split(';')[0]
+                    show_announces = True
+                    if hide_announces.get(nickname):
+                        show_announces = False
                     msg = \
                         html_inbox(default_timeline,
                                    recent_posts_cache,
@@ -2305,7 +2319,8 @@ def show_inbox(self, authorized: bool,
                                    min_images_for_accounts,
                                    reverse_sequence, last_post_id,
                                    buy_sites,
-                                   auto_cw_cache)
+                                   auto_cw_cache,
+                                   show_announces)
                     if getreq_start_time:
                         fitness_performance(getreq_start_time, fitness,
                                             '_GET', '_show_inbox3',

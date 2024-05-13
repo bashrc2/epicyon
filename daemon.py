@@ -799,6 +799,9 @@ def run_daemon(accounts_data_dir: str,
 
     httpd.starting_daemon = True
 
+    # for each account whether to hide announces
+    httpd.hide_announces = {}
+
     # number of book events which show on profile screens
     httpd.no_of_books = no_of_books
 

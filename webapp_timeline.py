@@ -40,6 +40,7 @@ from webapp_column_left import get_left_column_content
 from webapp_column_right import get_right_column_content
 from webapp_headerbuttons import header_buttons_timeline
 from posts import is_moderator
+from announce import is_announce
 from announce import is_self_announce
 from question import is_html_question
 from question import is_question
@@ -513,7 +514,8 @@ def html_timeline(default_timeline: str,
                   reverse_sequence: bool,
                   last_post_id: str,
                   buy_sites: {},
-                  auto_cw_cache: {}) -> str:
+                  auto_cw_cache: {},
+                  show_announces: bool) -> str:
     """Show the timeline as html
     """
     enable_timing_log = False
@@ -1008,8 +1010,11 @@ def html_timeline(default_timeline: str,
                 if is_person_snoozed(base_dir, nickname, domain,
                                      item['actor']):
                     continue
-                if is_self_announce(item):
-                    continue
+                if is_announce(item):
+                    if not show_announces:
+                        continue
+                    if is_self_announce(item):
+                        continue
                 # is this a poll/vote/question?
                 if not show_vote_posts:
                     if is_question(item):
@@ -1360,6 +1365,7 @@ def html_shares(default_timeline: str,
     manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
+    show_announces = True
 
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
@@ -1388,7 +1394,7 @@ def html_shares(default_timeline: str,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
                          reverse_sequence, None, buy_sites,
-                         auto_cw_cache)
+                         auto_cw_cache, show_announces)
 
 
 def html_wanted(default_timeline: str,
@@ -1428,6 +1434,7 @@ def html_wanted(default_timeline: str,
     manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
+    show_announces = True
 
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
@@ -1456,7 +1463,7 @@ def html_wanted(default_timeline: str,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
                          reverse_sequence, None, buy_sites,
-                         auto_cw_cache)
+                         auto_cw_cache, show_announces)
 
 
 def html_inbox(default_timeline: str,
@@ -1492,7 +1499,8 @@ def html_inbox(default_timeline: str,
                reverse_sequence: bool,
                last_post_id: str,
                buy_sites: {},
-               auto_cw_cache: {}) -> str:
+               auto_cw_cache: {},
+               show_announces: bool) -> str:
     """Show the inbox as html
     """
     manually_approve_followers = \
@@ -1526,7 +1534,7 @@ def html_inbox(default_timeline: str,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
                          reverse_sequence, last_post_id,
-                         buy_sites, auto_cw_cache)
+                         buy_sites, auto_cw_cache, show_announces)
 
 
 def html_bookmarks(default_timeline: str,
@@ -1567,6 +1575,7 @@ def html_bookmarks(default_timeline: str,
     manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     artist = is_artist(base_dir, nickname)
+    show_announces = True
 
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
@@ -1594,7 +1603,7 @@ def html_bookmarks(default_timeline: str,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
                          reverse_sequence, None, buy_sites,
-                         auto_cw_cache)
+                         auto_cw_cache, show_announces)
 
 
 def html_inbox_dms(default_timeline: str,
@@ -1634,6 +1643,7 @@ def html_inbox_dms(default_timeline: str,
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
+    show_announces = False
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
@@ -1659,7 +1669,7 @@ def html_inbox_dms(default_timeline: str,
                          bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts,
                          reverse_sequence, last_post_id,
-                         buy_sites, auto_cw_cache)
+                         buy_sites, auto_cw_cache, show_announces)
 
 
 def html_inbox_replies(default_timeline: str,
@@ -1699,6 +1709,7 @@ def html_inbox_replies(default_timeline: str,
     """Show the replies timeline as html
     """
     artist = is_artist(base_dir, nickname)
+    show_announces = True
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
@@ -1722,7 +1733,7 @@ def html_inbox_replies(default_timeline: str,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
                          reverse_sequence, last_post_id, buy_sites,
-                         auto_cw_cache)
+                         auto_cw_cache, show_announces)
 
 
 def html_inbox_media(default_timeline: str,
@@ -1758,7 +1769,8 @@ def html_inbox_media(default_timeline: str,
                      reverse_sequence: bool,
                      last_post_id: str,
                      buy_sites: {},
-                     auto_cw_cache: {}) -> str:
+                     auto_cw_cache: {},
+                     show_announces: bool) -> str:
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1785,7 +1797,7 @@ def html_inbox_media(default_timeline: str,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
                          reverse_sequence, last_post_id, buy_sites,
-                         auto_cw_cache)
+                         auto_cw_cache, show_announces)
 
 
 def html_inbox_blogs(default_timeline: str,
@@ -1825,6 +1837,7 @@ def html_inbox_blogs(default_timeline: str,
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
+    show_announces = True
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
@@ -1848,7 +1861,7 @@ def html_inbox_blogs(default_timeline: str,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
                          reverse_sequence, last_post_id, buy_sites,
-                         auto_cw_cache)
+                         auto_cw_cache, show_announces)
 
 
 def html_inbox_features(default_timeline: str,
@@ -1887,6 +1900,7 @@ def html_inbox_features(default_timeline: str,
                         auto_cw_cache: {}) -> str:
     """Show the features timeline as html
     """
+    show_announces = True
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
@@ -1910,7 +1924,7 @@ def html_inbox_features(default_timeline: str,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
                          reverse_sequence, None, buy_sites,
-                         auto_cw_cache)
+                         auto_cw_cache, show_announces)
 
 
 def html_inbox_news(default_timeline: str,
@@ -1948,6 +1962,7 @@ def html_inbox_news(default_timeline: str,
                     auto_cw_cache: {}) -> str:
     """Show the news timeline as html
     """
+    show_announces = True
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
@@ -1971,7 +1986,7 @@ def html_inbox_news(default_timeline: str,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
                          reverse_sequence, None, buy_sites,
-                         auto_cw_cache)
+                         auto_cw_cache, show_announces)
 
 
 def html_outbox(default_timeline: str,
@@ -2006,7 +2021,8 @@ def html_outbox(default_timeline: str,
                 min_images_for_accounts: [],
                 reverse_sequence: bool,
                 buy_sites: {},
-                auto_cw_cache: {}) -> str:
+                auto_cw_cache: {},
+                show_announces: bool) -> str:
     """Show the Outbox as html
     """
     manually_approve_followers = \
@@ -2034,4 +2050,5 @@ def html_outbox(default_timeline: str,
                          shared_items_federated_domains, signing_priv_key_pem,
                          cw_lists, lists_enabled, timezone, bold_reading,
                          dogwhistles, ua_str, min_images_for_accounts,
-                         reverse_sequence, None, buy_sites, auto_cw_cache)
+                         reverse_sequence, None, buy_sites, auto_cw_cache,
+                         show_announces)

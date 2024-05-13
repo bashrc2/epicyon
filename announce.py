@@ -53,6 +53,16 @@ def no_of_announces(post_json_object: {}) -> int:
     return len(obj['shares']['items'])
 
 
+def is_announce(post_json_object: {}) -> bool:
+    """Is the given post an announce?
+    """
+    if not post_json_object.get('type'):
+        return False
+    if post_json_object['type'] != 'Announce':
+        return False
+    return True
+
+
 def is_self_announce(post_json_object: {}) -> bool:
     """Is the given post a self announce?
     """

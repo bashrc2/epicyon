@@ -4653,7 +4653,8 @@ def daemon_http_get(self) -> None:
                       self.server.buy_sites,
                       self.server.auto_cw_cache,
                       self.server.onion_domain,
-                      self.server.i2p_domain):
+                      self.server.i2p_domain,
+                      self.server.hide_announces):
             self.server.getreq_busy = False
             return
 
@@ -4834,7 +4835,8 @@ def daemon_http_get(self) -> None:
                                self.server.fitness,
                                self.server.full_width_tl_button_header,
                                self.server.onion_domain,
-                               self.server.i2p_domain):
+                               self.server.i2p_domain,
+                               self.server.hide_announces):
             self.server.getreq_busy = False
             return
 
@@ -5339,7 +5341,8 @@ def daemon_http_get(self) -> None:
                                 self.server.auto_cw_cache,
                                 self.server.fitness,
                                 self.server.onion_domain,
-                                self.server.i2p_domain):
+                                self.server.i2p_domain,
+                                self.server.hide_announces):
             self.server.getreq_busy = False
             return
 

@@ -71,6 +71,7 @@ def html_moderation(default_timeline: str,
     This is what you see when selecting the "mod" timeline
     """
     artist = is_artist(base_dir, nickname)
+    show_announces = True
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,
@@ -94,7 +95,7 @@ def html_moderation(default_timeline: str,
                          signing_priv_key_pem, cw_lists, lists_enabled,
                          timezone, bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts, reverse_sequence, None,
-                         buy_sites, auto_cw_cache)
+                         buy_sites, auto_cw_cache, show_announces)
 
 
 def html_account_info(translate: {},
