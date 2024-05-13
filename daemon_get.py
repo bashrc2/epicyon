@@ -3021,10 +3021,10 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-        if self.server.hide_announces.get('nickname'):
-            del self.server.hide_announces['nickname']
+        if self.server.hide_announces.get(nickname):
+            del self.server.hide_announces[nickname]
         else:
-            self.server.hide_announces['nickname'] = True
+            self.server.hide_announces[nickname] = True
         hide_announces_filename = \
             data_dir(self.server.base_dir) + '/hide_announces.json'
         save_json(self.server.hide_announces, hide_announces_filename)
