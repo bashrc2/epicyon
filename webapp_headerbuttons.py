@@ -47,7 +47,8 @@ def header_buttons_timeline(default_timeline: str,
                             follow_approvals: str,
                             icons_as_buttons: bool,
                             access_keys: {},
-                            is_text_browser: str) -> str:
+                            is_text_browser: str,
+                            show_announces: bool) -> str:
     """Returns the header at the top of the timeline, containing
     buttons for inbox, outbox, search, calendar, etc
     """
@@ -324,20 +325,27 @@ def header_buttons_timeline(default_timeline: str,
 
         if not features_header:
             # the hide announces button
+            if show_announces:
+                hide_announces_icon = 'repeat_inactive.png'
+                hide_announces_text = translate['Hide Announces']
+            else:
+                hide_announces_icon = 'repeat_inactive.png'
+                hide_announces_text = translate['Show Announces']
+
             if not icons_as_buttons:
                 tl_str += \
                     '      <a class="imageAnchor" href="' + \
                     users_path + '/hideannounces" tabindex="3">' + \
                     '<img loading="lazy" decoding="async" src="/icons' + \
-                    '/repeat_inactive.png" title="' + \
-                    translate['Hide Announces'] + \
+                    '/' + hide_announces_icon + '" title="' + \
+                    hide_announces_text + \
                     '" alt="| ' + translate['Hide Announces'] + \
                     '" class="timelineicon"/></a>\n'
             else:
                 tl_str += \
                     '<a href="' + users_path + '/hideannounces' + \
                     '" tabindex="3"><button class="button">' + \
-                    '<span>' + translate['Hide Announces'] + \
+                    '<span>' + hide_announces_text + \
                     '</span></button></a>'
 
             # the show/hide button, for a simpler header appearance

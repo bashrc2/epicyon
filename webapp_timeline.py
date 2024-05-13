@@ -820,7 +820,7 @@ def html_timeline(default_timeline: str,
                                     new_calendar_event, calendar_path,
                                     calendar_image, follow_approvals,
                                     icons_as_buttons, access_keys,
-                                    is_text_browser)
+                                    is_text_browser, show_announces)
 
     # start the timeline
     tl_str += \
@@ -872,7 +872,7 @@ def html_timeline(default_timeline: str,
                                     new_calendar_event, calendar_path,
                                     calendar_image, follow_approvals,
                                     icons_as_buttons, access_keys,
-                                    is_text_browser)
+                                    is_text_browser, show_announces)
 
     tl_str += \
         '  <div id="timelineposts" class="timeline-posts" ' + \
