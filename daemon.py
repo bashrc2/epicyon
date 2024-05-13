@@ -410,6 +410,7 @@ class PubServerUnitTest(PubServer):
 
 class EpicyonServer(ThreadingHTTPServer):
     starting_daemon = True
+    hide_announces = {}
     no_of_books = 0
     max_api_blocks = 32000
     block_federated_endpoints = None
@@ -801,6 +802,9 @@ def run_daemon(accounts_data_dir: str,
 
     # for each account whether to hide announces
     httpd.hide_announces = {}
+    hide_announces_filename = data_dir(base_dir) + '/hide_announces.json'
+    if os.path.isfile(hide_announces_filename):
+        httpd.hide_announces = load_json(hide_announces_filename)
 
     # number of book events which show on profile screens
     httpd.no_of_books = no_of_books

@@ -85,6 +85,7 @@ from httpcodes import http_304
 from httpcodes import http_400
 from httpcodes import http_503
 from httpcodes import write2
+from utils import save_json
 from utils import data_dir
 from utils import user_agent_domain
 from utils import local_network_host
@@ -3013,6 +3014,24 @@ def daemon_http_get(self) -> None:
                         '_GET', 'hashtag search done',
                         self.server.debug)
 
+    # hide announces button in the web interface
+    if html_getreq and users_in_path and \
+       self.path.endswith('/hideannounces') and \
+       authorized:
+        nickname = self.path.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if self.server.hide_announces.get('nickname'):
+            del self.server.hide_announces['nickname']
+        else:
+            self.server.hide_announces['nickname'] = True
+        hide_announces_filename = \
+            data_dir(self.server.base_dir) + '/hide_announces.json'
+        save_json(self.server.hide_announces, hide_announces_filename)
+        self.path = get_default_path(self.server.media_instance,
+                                     self.server.blogs_instance,
+                                     nickname)
+
     # show or hide buttons in the web interface
     if html_getreq and users_in_path and \
        self.path.endswith('/minimal') and \
@@ -3020,13 +3039,13 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-            not_min = not is_minimal(self.server.base_dir,
-                                     self.server.domain, nickname)
-            set_minimal(self.server.base_dir,
-                        self.server.domain, nickname, not_min)
-            self.path = get_default_path(self.server.media_instance,
-                                         self.server.blogs_instance,
-                                         nickname)
+        not_min = not is_minimal(self.server.base_dir,
+                                 self.server.domain, nickname)
+        set_minimal(self.server.base_dir,
+                    self.server.domain, nickname, not_min)
+        self.path = get_default_path(self.server.media_instance,
+                                     self.server.blogs_instance,
+                                     nickname)
 
     # search for a fediverse address, shared item or emoji
     # from the web interface by selecting search icon
