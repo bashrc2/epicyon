@@ -323,6 +323,23 @@ def header_buttons_timeline(default_timeline: str,
                     '</span></button></a>'
 
         if not features_header:
+            # the hide announces button
+            if not icons_as_buttons:
+                tl_str += \
+                    '      <a class="imageAnchor" href="' + \
+                    users_path + '/hideannounces" tabindex="3">' + \
+                    '<img loading="lazy" decoding="async" src="/icons' + \
+                    '/repeat_inactive.png" title="' + \
+                    translate['Hide Announces'] + \
+                    '" alt="| ' + translate['Hide Announces'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                tl_str += \
+                    '<a href="' + users_path + '/hideannounces' + \
+                    '" tabindex="3"><button class="button">' + \
+                    '<span>' + translate['Hide Announces'] + \
+                    '</span></button></a>'
+
             # the show/hide button, for a simpler header appearance
             if not icons_as_buttons:
                 tl_str += \
