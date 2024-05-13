@@ -326,10 +326,10 @@ def header_buttons_timeline(default_timeline: str,
         if not features_header:
             # the hide announces button
             if show_announces:
-                hide_announces_icon = 'repeat_inactive.png'
+                hide_announces_icon = 'repeat_hide.png'
                 hide_announces_text = translate['Hide Announces']
             else:
-                hide_announces_icon = 'repeat_inactive.png'
+                hide_announces_icon = 'repeat_show.png'
                 hide_announces_text = translate['Show Announces']
 
             if not icons_as_buttons:
