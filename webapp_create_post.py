@@ -472,8 +472,9 @@ def html_new_post(edit_post_params: {},
                                                               attrib_url,
                                                               person_cache)
                                     if reply_to_actor:
-                                        summary = \
-                                            reply_to_actor['summary']
+                                        summary = None
+                                        if reply_to_actor.get('summary'):
+                                            summary = reply_to_actor['summary']
                                         if summary:
                                             if not dangerous_markup(summary,
                                                                     False, []):
