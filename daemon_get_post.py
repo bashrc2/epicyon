@@ -1028,118 +1028,117 @@ def show_replies_to_post(self, authorized: bool,
             else:
                 http_404(self, 62)
         return True
+
+    # replies exist. Itterate through the
+    # text file containing message ids
+    context_str = 'https://www.w3.org/ns/activitystreams'
+
+    id_str = \
+        local_actor_url(http_prefix, nickname, domain_full) + \
+        '/statuses/' + status_number + '?page=true'
+
+    part_of_str = \
+        local_actor_url(http_prefix, nickname, domain_full) + \
+        '/statuses/' + status_number
+
+    replies_json = {
+        '@context': context_str,
+        'id': id_str,
+        'orderedItems': [
+        ],
+        'partOf': part_of_str,
+        'type': 'OrderedCollectionPage'
+    }
+
+    # if the original post is public then return the replies
+    replies_are_public = \
+        is_public_post_from_url(base_dir, nickname, domain,
+                                orig_post_url)
+    if replies_are_public:
+        authorized = True
+
+    # populate the items list with replies
+    populate_replies_json(base_dir, nickname, domain,
+                          post_replies_filename,
+                          authorized, replies_json)
+
+    # send the replies json
+    if request_http(self.headers, debug):
+        curr_session = \
+            establish_session("showRepliesToPost2",
+                              curr_session, proxy_type,
+                              self.server)
+        if not curr_session:
+            http_404(self, 63)
+            return True
+        yt_domain = yt_replace_domain
+        timezone = None
+        if account_timezone.get(nickname):
+            timezone = account_timezone.get(nickname)
+        bold_reading = False
+        if bold_reading_nicknames.get(nickname):
+            bold_reading = True
+        msg = \
+            html_post_replies(recent_posts_cache,
+                              max_recent_posts,
+                              translate,
+                              base_dir,
+                              curr_session,
+                              cached_webfingers,
+                              person_cache,
+                              nickname,
+                              domain,
+                              port,
+                              replies_json,
+                              http_prefix,
+                              project_version,
+                              yt_domain,
+                              twitter_replacement_domain,
+                              show_published_date_only,
+                              peertube_instances,
+                              allow_local_network_access,
+                              theme_name,
+                              system_language,
+                              max_like_count,
+                              signing_priv_key_pem,
+                              cw_lists,
+                              lists_enabled,
+                              timezone, bold_reading,
+                              dogwhistles,
+                              min_images_for_accounts,
+                              buy_sites,
+                              auto_cw_cache)
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        set_headers(self, 'text/html', msglen,
+                    cookie, calling_domain, False)
+        write2(self, msg)
+        fitness_performance(getreq_start_time, fitness,
+                            '_GET', 'show_replies_to_post',
+                            debug)
     else:
-        # replies exist. Itterate through the
-        # text file containing message ids
-        context_str = 'https://www.w3.org/ns/activitystreams'
-
-        id_str = \
-            local_actor_url(http_prefix, nickname, domain_full) + \
-            '/statuses/' + status_number + '?page=true'
-
-        part_of_str = \
-            local_actor_url(http_prefix, nickname, domain_full) + \
-            '/statuses/' + status_number
-
-        replies_json = {
-            '@context': context_str,
-            'id': id_str,
-            'orderedItems': [
-            ],
-            'partOf': part_of_str,
-            'type': 'OrderedCollectionPage'
-        }
-
-        # if the original post is public then return the replies
-        replies_are_public = \
-            is_public_post_from_url(base_dir, nickname, domain,
-                                    orig_post_url)
-        if replies_are_public:
-            authorized = True
-
-        # populate the items list with replies
-        populate_replies_json(base_dir, nickname, domain,
-                              post_replies_filename,
-                              authorized, replies_json)
-
-        # send the replies json
-        if request_http(self.headers, debug):
-            curr_session = \
-                establish_session("showRepliesToPost2",
-                                  curr_session, proxy_type,
-                                  self.server)
-            if not curr_session:
-                http_404(self, 63)
-                return True
-            yt_domain = yt_replace_domain
-            timezone = None
-            if account_timezone.get(nickname):
-                timezone = account_timezone.get(nickname)
-            bold_reading = False
-            if bold_reading_nicknames.get(nickname):
-                bold_reading = True
-            msg = \
-                html_post_replies(recent_posts_cache,
-                                  max_recent_posts,
-                                  translate,
-                                  base_dir,
-                                  curr_session,
-                                  cached_webfingers,
-                                  person_cache,
-                                  nickname,
-                                  domain,
-                                  port,
-                                  replies_json,
-                                  http_prefix,
-                                  project_version,
-                                  yt_domain,
-                                  twitter_replacement_domain,
-                                  show_published_date_only,
-                                  peertube_instances,
-                                  allow_local_network_access,
-                                  theme_name,
-                                  system_language,
-                                  max_like_count,
-                                  signing_priv_key_pem,
-                                  cw_lists,
-                                  lists_enabled,
-                                  timezone, bold_reading,
-                                  dogwhistles,
-                                  min_images_for_accounts,
-                                  buy_sites,
-                                  auto_cw_cache)
-            msg = msg.encode('utf-8')
+        if secure_mode(curr_session, proxy_type, False,
+                       self.server, self.headers, path):
+            msg_str = json.dumps(replies_json, ensure_ascii=False)
+            msg_str = convert_domains(calling_domain,
+                                      referer_domain,
+                                      msg_str, http_prefix,
+                                      domain,
+                                      onion_domain,
+                                      i2p_domain)
+            msg = msg_str.encode('utf-8')
+            protocol_str = \
+                get_json_content_from_accept(self.headers['Accept'])
             msglen = len(msg)
-            set_headers(self, 'text/html', msglen,
-                        cookie, calling_domain, False)
+            set_headers(self, protocol_str, msglen,
+                        None, calling_domain, False)
             write2(self, msg)
             fitness_performance(getreq_start_time, fitness,
-                                '_GET', 'show_replies_to_post',
+                                '_GET', 'show_replies_to_post json',
                                 debug)
         else:
-            if secure_mode(curr_session, proxy_type, False,
-                           self.server, self.headers, path):
-                msg_str = json.dumps(replies_json, ensure_ascii=False)
-                msg_str = convert_domains(calling_domain,
-                                          referer_domain,
-                                          msg_str, http_prefix,
-                                          domain,
-                                          onion_domain,
-                                          i2p_domain)
-                msg = msg_str.encode('utf-8')
-                protocol_str = \
-                    get_json_content_from_accept(self.headers['Accept'])
-                msglen = len(msg)
-                set_headers(self, protocol_str, msglen,
-                            None, calling_domain, False)
-                write2(self, msg)
-                fitness_performance(getreq_start_time, fitness,
-                                    '_GET', 'show_replies_to_post json',
-                                    debug)
-            else:
-                http_404(self, 64)
-        return True
-    return False
+            http_404(self, 64)
+    return True
 
 
 def show_notify_post(self, authorized: bool,
