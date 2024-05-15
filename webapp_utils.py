@@ -841,7 +841,9 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
                 first_entry = False
             skills_markup += '\n        ],\n'
 
-    description = remove_html(actor_json['summary'])
+    description = ''
+    if actor_json.get('summary'):
+        description = remove_html(actor_json['summary'])
     name_str = remove_html(actor_json['name'])
     domain_full = actor_json['id'].split('://')[1].split('/')[0]
     handle = actor_json['preferredUsername'] + '@' + domain_full

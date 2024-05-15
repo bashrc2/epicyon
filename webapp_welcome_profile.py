@@ -112,8 +112,10 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
         edit_text_field(translate['Nickname'], 'displayNickname',
                         display_nickname)
 
-    bio_str = \
-        actor_json['summary'].replace('<p>', '').replace('</p>', '')
+    bio_str = ''
+    if actor_json.get('summary'):
+        bio_str = \
+            actor_json['summary'].replace('<p>', '').replace('</p>', '')
     if not bio_str:
         bio_str = translate['Your bio']
     profile_form += '  <label class="labels">' + \
