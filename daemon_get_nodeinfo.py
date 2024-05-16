@@ -123,7 +123,8 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
                                about_url, terms_of_service_url,
                                registration,
                                node_info_version,
-                               show_node_info_accounts)
+                               show_node_info_accounts,
+                               domain)
     if info:
         msg_str = json.dumps(info)
         msg_str = convert_domains(calling_domain, referer_domain,

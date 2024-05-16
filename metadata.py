@@ -17,7 +17,8 @@ def meta_data_node_info(base_dir: str,
                         about_url: str,
                         terms_of_service_url: str,
                         registration: bool, version: str,
-                        show_accounts: bool) -> {}:
+                        show_accounts: bool,
+                        domain: str) -> {}:
     """ /nodeinfo/2.1 endpoint
     Also see https://socialhub.activitypub.rocks/t/
     https://github.com/jhass/nodeinfo/blob/main/schemas/2.1/example.json
@@ -65,7 +66,25 @@ def meta_data_node_info(base_dir: str,
             }
         },
         'metadata': {
+            'accountActivationRequired': False,
+            'features': [
+                'editing',
+                'exposable_reactions'
+            ],
             'chat_enabled': False,
+            'federatedTimelineAvailable': False,
+            'federation': {
+                'enabled': True
+            },
+            'suggestions': {
+                'enabled': False
+            },
+            'invitesEnabled': False,
+            'private': True,
+            'privilegedStaff': True,
+            'nodeName': domain,
+            'mailerEnabled': False,
+            'publicTimelineVisibility': {},
             'postFormats': ['text/plain', 'text/html', 'text/markdown'],
             'FEPs': ['c648', '521a', '8fcf', '4ccd', 'c118', 'fffd',
                      '1970', '0837', '7628', '2677']
