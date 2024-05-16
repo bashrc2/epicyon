@@ -521,6 +521,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         },
         'inbox': inbox_str,
         'manuallyApprovesFollowers': approve_followers,
+        'capabilities': {'acceptsChatMessages': False},
         'discoverable': True,
         'indexable': False,
         'searchableBy': [],
@@ -856,6 +857,14 @@ def person_upgrade_actor(base_dir: str, person_json: {},
             person_json['postingRestrictedToMods'] = False
             person_id = person_json['id']
             person_json['moderators'] = person_id + '/moderators'
+            update_actor = True
+
+    if 'capabilities' not in person_json:
+        person_json['capabilities'] = {'acceptsChatMessages': False}
+        update_actor = True
+    else:
+        if 'acceptsChatMessages' not in person_json['capabilities']:
+            person_json['capabilities']['acceptsChatMessages'] = False
             update_actor = True
 
     if 'memorial' not in person_json:
