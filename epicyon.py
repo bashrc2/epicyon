@@ -3505,24 +3505,18 @@ def _command_options() -> None:
         print('Generating some test data for user: ' + nickname)
 
         if os.path.isdir(base_dir + '/tags'):
-            shutil.rmtree(base_dir + '/tags',
-                          ignore_errors=False, onerror=None)
+            shutil.rmtree(base_dir + '/tags', ignore_errors=False)
         dir_str = data_dir(base_dir)
         if os.path.isdir(dir_str):
-            shutil.rmtree(dir_str,
-                          ignore_errors=False, onerror=None)
+            shutil.rmtree(dir_str, ignore_errors=False)
         if os.path.isdir(base_dir + '/keys'):
-            shutil.rmtree(base_dir + '/keys',
-                          ignore_errors=False, onerror=None)
+            shutil.rmtree(base_dir + '/keys', ignore_errors=False)
         if os.path.isdir(base_dir + '/media'):
-            shutil.rmtree(base_dir + '/media',
-                          ignore_errors=False, onerror=None)
+            shutil.rmtree(base_dir + '/media', ignore_errors=False)
         if os.path.isdir(base_dir + '/sharefiles'):
-            shutil.rmtree(base_dir + '/sharefiles',
-                          ignore_errors=False, onerror=None)
+            shutil.rmtree(base_dir + '/sharefiles', ignore_errors=False)
         if os.path.isdir(base_dir + '/wfendpoints'):
-            shutil.rmtree(base_dir + '/wfendpoints',
-                          ignore_errors=False, onerror=None)
+            shutil.rmtree(base_dir + '/wfendpoints', ignore_errors=False)
 
         set_config_param(base_dir, 'registrationsRemaining',
                          str(max_registrations))

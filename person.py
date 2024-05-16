@@ -1424,11 +1424,10 @@ def remove_account(base_dir: str, nickname: str,
     _remove_tags_for_nickname(base_dir, nickname, domain, port)
     if os.path.isdir(base_dir + '/deactivated/' + handle):
         shutil.rmtree(base_dir + '/deactivated/' + handle,
-                      ignore_errors=False, onerror=None)
+                      ignore_errors=False)
     handle_dir = acct_handle_dir(base_dir, handle)
     if os.path.isdir(handle_dir):
-        shutil.rmtree(handle_dir,
-                      ignore_errors=False, onerror=None)
+        shutil.rmtree(handle_dir, ignore_errors=False)
     if os.path.isfile(handle_dir + '.json'):
         try:
             os.remove(handle_dir + '.json')
@@ -1455,7 +1454,7 @@ def remove_account(base_dir: str, nickname: str,
                   base_dir + '/keys/public/' + handle + '.pem')
     if os.path.isdir(base_dir + '/sharefiles/' + nickname):
         shutil.rmtree(base_dir + '/sharefiles/' + nickname,
-                      ignore_errors=False, onerror=None)
+                      ignore_errors=False)
     if os.path.isfile(base_dir + '/wfdeactivated/' + handle + '.json'):
         try:
             os.remove(base_dir + '/wfdeactivated/' + handle + '.json')
@@ -1464,7 +1463,7 @@ def remove_account(base_dir: str, nickname: str,
                   base_dir + '/wfdeactivated/' + handle + '.json')
     if os.path.isdir(base_dir + '/sharefilesdeactivated/' + nickname):
         shutil.rmtree(base_dir + '/sharefilesdeactivated/' + nickname,
-                      ignore_errors=False, onerror=None)
+                      ignore_errors=False)
 
     refresh_newswire(base_dir)
 
