@@ -396,6 +396,7 @@ def _add_block_reason(base_dir: str,
         except OSError:
             print('EX: unable to save blocking reason 2 ' +
                   block_id + ' ' + blocking_reasons_filename)
+    return True
 
 
 def add_block(base_dir: str, nickname: str, domain: str,
