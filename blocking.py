@@ -516,6 +516,7 @@ def _remove_global_block_reason(base_dir: str,
     except OSError:
         print('EX: unable to save blocking reasons 2' +
               unblocking_filename)
+    return True
 
 
 def remove_global_block(base_dir: str,
