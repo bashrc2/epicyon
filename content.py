@@ -315,7 +315,7 @@ def switch_words(base_dir: str, nickname: str, domain: str, content: str,
     return content
 
 
-def _save_custom_emoji(session, base_dir: str, emojiName: str, url: str,
+def _save_custom_emoji(session, base_dir: str, emoji_name: str, url: str,
                        debug: bool) -> None:
     """Saves custom emoji to file
     """
@@ -330,11 +330,11 @@ def _save_custom_emoji(session, base_dir: str, emojiName: str, url: str,
         if debug:
             print('EX: Custom emoji is wrong format ' + url)
         return
-    emojiName = emojiName.replace(':', '').strip().lower()
+    emoji_name = emoji_name.replace(':', '').strip().lower()
     custom_emoji_dir = base_dir + '/emojicustom'
     if not os.path.isdir(custom_emoji_dir):
         os.mkdir(custom_emoji_dir)
-    emoji_image_filename = custom_emoji_dir + '/' + emojiName + '.' + ext
+    emoji_image_filename = custom_emoji_dir + '/' + emoji_name + '.' + ext
     if not download_image(session, url,
                           emoji_image_filename, debug, False):
         if debug:
@@ -346,8 +346,8 @@ def _save_custom_emoji(session, base_dir: str, emojiName: str, url: str,
         emoji_json = load_json(emoji_json_filename, 0, 1)
         if not emoji_json:
             emoji_json = {}
-    if not emoji_json.get(emojiName):
-        emoji_json[emojiName] = emojiName
+    if not emoji_json.get(emoji_name):
+        emoji_json[emoji_name] = emoji_name
         save_json(emoji_json, emoji_json_filename)
         if debug:
             print('EX: Saved custom emoji ' + emoji_json_filename)
@@ -1897,12 +1897,12 @@ def words_similarity(content1: str, content2: str, min_words: int) -> int:
     histogram2 = _words_similarity_histogram(words2)
 
     diff = 0
-    for combined_words, _ in histogram1.items():
+    for combined_words, histogram1_value in histogram1.items():
         if not histogram2.get(combined_words):
             diff += 1
         else:
             diff += \
-                abs(histogram2[combined_words] - histogram1[combined_words])
+                abs(histogram2[combined_words] - histogram1_value)
     return 100 - int(diff * 100 / len(histogram1.items()))
 
 
