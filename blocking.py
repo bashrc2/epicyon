@@ -292,6 +292,7 @@ def _add_global_block_reason(base_dir: str,
         except OSError:
             print('EX: unable to save blocking reason ' +
                   block_id + ' ' + blocking_reasons_filename)
+    return True
 
 
 def add_global_block(base_dir: str,
