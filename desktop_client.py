@@ -1159,8 +1159,12 @@ def _desktop_show_box(indent: str,
                         _format_published(post_json_object['published'])
                     announced_nickname = \
                         get_nickname_from_actor(post_json_object['object'])
+                    if not announced_nickname:
+                        continue
                     announced_domain, _ = \
                         get_domain_from_actor(post_json_object['object'])
+                    if not announced_domain:
+                        continue
                     announced_handle = \
                         announced_nickname + '@' + announced_domain
                     line_str = \
