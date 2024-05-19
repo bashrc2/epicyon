@@ -171,7 +171,11 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
     home_dir = str(Path.home())
     _create_desktop_config(actor)
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return
     domain, port = get_domain_from_actor(actor)
+    if not domain:
+        return
     handle = nickname + '@' + domain
     if port not in (443, 80):
         handle += '_' + str(port)
@@ -206,7 +210,11 @@ def _has_read_post(actor: str, post_id: str, post_category: str) -> bool:
     home_dir = str(Path.home())
     _create_desktop_config(actor)
     nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return True
     domain, port = get_domain_from_actor(actor)
+    if not domain:
+        return True
     handle = nickname + '@' + domain
     if port not in (443, 80):
         handle += '_' + str(port)
@@ -515,7 +523,11 @@ def _desktop_reply_to_post(session, post_id: str,
     if '://' not in post_id:
         return
     to_nickname = get_nickname_from_actor(post_id)
+    if not to_nickname:
+        return
     to_domain, to_port = get_domain_from_actor(post_id)
+    if not to_domain:
+        return
     say_str = 'Replying to ' + to_nickname + '@' + to_domain
     _say_command(say_str, say_str,
                  screenreader, system_language, espeak)
@@ -810,6 +822,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
     if post_json_object['type'] == 'Announce':
         actor = get_actor_from_post(post_json_object)
         name_str = get_nickname_from_actor(actor)
+        if not name_str:
+            return {}
         recent_posts_cache = {}
         allow_local_network_access = False
         yt_replace_domain = None
@@ -848,8 +862,11 @@ def _read_local_box_post(session, nickname: str, domain: str,
                                                    system_language)
                     if attributed_to and content:
                         actor = attributed_to
+                        name_str1 = get_nickname_from_actor(actor)
+                        if not name_str1:
+                            return {}
                         name_str += ' ' + translate['announces'] + ' ' + \
-                            get_nickname_from_actor(actor)
+                            name_str1
                         say_str = name_str
                         _say_command(say_str, say_str, screenreader,
                                      system_language, espeak)
@@ -879,6 +896,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
         return {}
     actor = attributed_to
     name_str = get_nickname_from_actor(actor)
+    if not name_str:
+        return {}
     content = _text_only_content(content)
     content += _get_image_description(post_json_object)
 
@@ -938,6 +957,8 @@ def _desktop_show_actor(http_prefix: str,
     """
     actor = actor_json['id']
     actor_nickname = get_nickname_from_actor(actor)
+    if not actor_nickname:
+        return
     actor_domain, actor_port = get_domain_from_actor(actor)
     actor_domain_full = get_full_domain(actor_domain, actor_port)
     handle = '@' + actor_nickname + '@' + actor_domain_full
@@ -1151,7 +1172,10 @@ def _desktop_show_box(indent: str,
                 if isinstance(post_json_object['object'], str):
                     author_actor = \
                         get_actor_from_post(post_json_object)
-                    name = get_nickname_from_actor(author_actor) + ' ⮌'
+                    name1 = get_nickname_from_actor(author_actor)
+                    if not name1:
+                        continue
+                    name = name1 + ' ⮌'
                     name = _pad_to_width(name, name_width)
                     ctr_str = str(ctr)
                     pos_str = _pad_to_width(ctr_str, number_width)
@@ -1192,6 +1216,8 @@ def _desktop_show_box(indent: str,
                 _pad_to_width(post_json_object['object']['summary'],
                               content_width)
         name = get_nickname_from_actor(author_actor)
+        if not name:
+            continue
 
         # append icons to the end of the name
         space_added = False
@@ -1331,13 +1357,21 @@ def _desktop_new_dm_base(session, to_handle: str,
     to_port = port
     if '://' in to_handle:
         to_nickname = get_nickname_from_actor(to_handle)
+        if not to_nickname:
+            return
         to_domain, to_port = get_domain_from_actor(to_handle)
+        if not to_domain:
+            return
         to_handle = to_nickname + '@' + to_domain
     else:
         if to_handle.startswith('@'):
             to_handle = to_handle[1:]
         to_nickname = to_handle.split('@')[0]
+        if not to_nickname:
+            return
         to_domain = to_handle.split('@')[1]
+        if not to_domain:
+            return
 
     say_str = 'Create new direct message to ' + to_handle
     _say_command(say_str, say_str, screenreader, system_language, espeak)
@@ -1999,21 +2033,23 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         attrib_field = \
                             post_json_object['object']['attributedTo']
                         like_actor = get_attributed_to(attrib_field)
-                        say_str = 'Liking post by ' + \
-                            get_nickname_from_actor(like_actor)
-                        _say_command(say_str, say_str,
-                                     screenreader,
-                                     system_language, espeak)
-                        session_like = create_session(proxy_type)
-                        send_like_via_server(base_dir, session_like,
-                                             nickname, password,
-                                             domain, port, http_prefix,
-                                             post_json_object['id'],
-                                             cached_webfingers, person_cache,
-                                             False, __version__,
-                                             signing_priv_key_pem,
-                                             system_language)
-                        refresh_timeline = True
+                        say_str1 = get_nickname_from_actor(like_actor)
+                        if say_str1:
+                            say_str = 'Liking post by ' + say_str1
+                            _say_command(say_str, say_str,
+                                         screenreader,
+                                         system_language, espeak)
+                            session_like = create_session(proxy_type)
+                            send_like_via_server(base_dir, session_like,
+                                                 nickname, password,
+                                                 domain, port, http_prefix,
+                                                 post_json_object['id'],
+                                                 cached_webfingers,
+                                                 person_cache,
+                                                 False, __version__,
+                                                 signing_priv_key_pem,
+                                                 system_language)
+                            refresh_timeline = True
                 print('')
             elif (command_str == 'undo mute' or
                   command_str == 'undo ignore' or
@@ -2043,23 +2079,24 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         attrib_field = \
                             post_json_object['object']['attributedTo']
                         mute_actor = get_attributed_to(attrib_field)
-                        say_str = 'Unmuting post by ' + \
-                            get_nickname_from_actor(mute_actor)
-                        _say_command(say_str, say_str,
-                                     screenreader,
-                                     system_language, espeak)
-                        session_mute = create_session(proxy_type)
-                        send_undo_mute_via_server(base_dir, session_mute,
-                                                  nickname, password,
-                                                  domain, port,
-                                                  http_prefix,
-                                                  post_json_object['id'],
-                                                  cached_webfingers,
-                                                  person_cache,
-                                                  False, __version__,
-                                                  signing_priv_key_pem,
-                                                  system_language)
-                        refresh_timeline = True
+                        say_str1 = get_nickname_from_actor(mute_actor)
+                        if say_str1:
+                            say_str = 'Unmuting post by ' + say_str1
+                            _say_command(say_str, say_str,
+                                         screenreader,
+                                         system_language, espeak)
+                            session_mute = create_session(proxy_type)
+                            send_undo_mute_via_server(base_dir, session_mute,
+                                                      nickname, password,
+                                                      domain, port,
+                                                      http_prefix,
+                                                      post_json_object['id'],
+                                                      cached_webfingers,
+                                                      person_cache,
+                                                      False, __version__,
+                                                      signing_priv_key_pem,
+                                                      system_language)
+                            refresh_timeline = True
                 print('')
             elif (command_str == 'mute' or
                   command_str == 'ignore' or
@@ -2080,22 +2117,24 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         attrib_field = \
                             post_json_object['object']['attributedTo']
                         mute_actor = get_attributed_to(attrib_field)
-                        say_str = 'Muting post by ' + \
-                            get_nickname_from_actor(mute_actor)
-                        _say_command(say_str, say_str,
-                                     screenreader,
-                                     system_language, espeak)
-                        session_mute = create_session(proxy_type)
-                        send_mute_via_server(base_dir, session_mute,
-                                             nickname, password,
-                                             domain, port,
-                                             http_prefix,
-                                             post_json_object['id'],
-                                             cached_webfingers, person_cache,
-                                             False, __version__,
-                                             signing_priv_key_pem,
-                                             system_language)
-                        refresh_timeline = True
+                        say_str1 = get_nickname_from_actor(mute_actor)
+                        say_str = 'Muting post by ' + say_str1
+                        if say_str1:
+                            _say_command(say_str, say_str,
+                                         screenreader,
+                                         system_language, espeak)
+                            session_mute = create_session(proxy_type)
+                            send_mute_via_server(base_dir, session_mute,
+                                                 nickname, password,
+                                                 domain, port,
+                                                 http_prefix,
+                                                 post_json_object['id'],
+                                                 cached_webfingers,
+                                                 person_cache,
+                                                 False, __version__,
+                                                 signing_priv_key_pem,
+                                                 system_language)
+                            refresh_timeline = True
                 print('')
             elif (command_str == 'undo bookmark' or
                   command_str == 'remove bookmark' or
@@ -2127,23 +2166,25 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         attrib_field = \
                             post_json_object['object']['attributedTo']
                         bm_actor = get_attributed_to(attrib_field)
-                        say_str = 'Unbookmarking post by ' + \
-                            get_nickname_from_actor(bm_actor)
-                        _say_command(say_str, say_str,
-                                     screenreader,
-                                     system_language, espeak)
-                        sessionbm = create_session(proxy_type)
-                        send_undo_bookmark_via_server(base_dir, sessionbm,
-                                                      nickname, password,
-                                                      domain, port,
-                                                      http_prefix,
-                                                      post_json_object['id'],
-                                                      cached_webfingers,
-                                                      person_cache,
-                                                      False, __version__,
-                                                      signing_priv_key_pem,
-                                                      system_language)
-                        refresh_timeline = True
+                        say_str1 = get_nickname_from_actor(bm_actor)
+                        if say_str1:
+                            say_str = 'Unbookmarking post by ' + say_str1
+                            _say_command(say_str, say_str,
+                                         screenreader,
+                                         system_language, espeak)
+                            sessionbm = create_session(proxy_type)
+                            id_str = post_json_object['id']
+                            send_undo_bookmark_via_server(base_dir, sessionbm,
+                                                          nickname, password,
+                                                          domain, port,
+                                                          http_prefix,
+                                                          id_str,
+                                                          cached_webfingers,
+                                                          person_cache,
+                                                          False, __version__,
+                                                          signing_priv_key_pem,
+                                                          system_language)
+                            refresh_timeline = True
                 print('')
             elif (command_str == 'bookmark' or
                   command_str == 'bm' or
@@ -2164,22 +2205,23 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         attrib_field = \
                             post_json_object['object']['attributedTo']
                         bm_actor = get_attributed_to(attrib_field)
-                        say_str = 'Bookmarking post by ' + \
-                            get_nickname_from_actor(bm_actor)
-                        _say_command(say_str, say_str,
-                                     screenreader,
-                                     system_language, espeak)
-                        sessionbm = create_session(proxy_type)
-                        send_bookmark_via_server(base_dir, sessionbm,
-                                                 nickname, password,
-                                                 domain, port, http_prefix,
-                                                 post_json_object['id'],
-                                                 cached_webfingers,
-                                                 person_cache,
-                                                 False, __version__,
-                                                 signing_priv_key_pem,
-                                                 system_language)
-                        refresh_timeline = True
+                        say_str1 = get_nickname_from_actor(bm_actor)
+                        if say_str1:
+                            say_str = 'Bookmarking post by ' + say_str1
+                            _say_command(say_str, say_str,
+                                         screenreader,
+                                         system_language, espeak)
+                            sessionbm = create_session(proxy_type)
+                            send_bookmark_via_server(base_dir, sessionbm,
+                                                     nickname, password,
+                                                     domain, port, http_prefix,
+                                                     post_json_object['id'],
+                                                     cached_webfingers,
+                                                     person_cache,
+                                                     False, __version__,
+                                                     signing_priv_key_pem,
+                                                     system_language)
+                            refresh_timeline = True
                 print('')
             elif (command_str.startswith('undo block ') or
                   command_str.startswith('remove block ') or
@@ -2203,24 +2245,28 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                 attrib_field = \
                                     post_json_object['object']['attributedTo']
                                 block_actor = get_attributed_to(attrib_field)
-                                say_str = 'Unblocking ' + \
-                                    get_nickname_from_actor(block_actor)
-                                _say_command(say_str, say_str,
-                                             screenreader,
-                                             system_language, espeak)
-                                session_block = create_session(proxy_type)
-                                sign_priv_key_pem = signing_priv_key_pem
-                                send_undo_block_via_server(base_dir,
-                                                           session_block,
-                                                           nickname, password,
-                                                           domain, port,
-                                                           http_prefix,
-                                                           block_actor,
-                                                           cached_webfingers,
-                                                           person_cache,
-                                                           False, __version__,
-                                                           sign_priv_key_pem,
-                                                           system_language)
+                                say_str1 = get_nickname_from_actor(block_actor)
+                                if say_str1:
+                                    say_str = 'Unblocking ' + say_str1
+                                    _say_command(say_str, say_str,
+                                                 screenreader,
+                                                 system_language, espeak)
+                                    session_block = create_session(proxy_type)
+                                    sign_key_pem = signing_priv_key_pem
+                                    cached_wf = cached_webfingers
+                                    send_undo_block_via_server(base_dir,
+                                                               session_block,
+                                                               nickname,
+                                                               password,
+                                                               domain, port,
+                                                               http_prefix,
+                                                               block_actor,
+                                                               cached_wf,
+                                                               person_cache,
+                                                               False,
+                                                               __version__,
+                                                               sign_key_pem,
+                                                               system_language)
                 refresh_timeline = True
                 print('')
             elif command_str.startswith('block '):
@@ -2256,22 +2302,23 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                     post_json_object['object']['attributedTo']
                                 block_actor = get_attributed_to(attrib_field)
                 if block_actor:
-                    say_str = 'Blocking ' + \
-                        get_nickname_from_actor(block_actor)
-                    _say_command(say_str, say_str,
-                                 screenreader,
-                                 system_language, espeak)
-                    session_block = create_session(proxy_type)
-                    send_block_via_server(base_dir, session_block,
-                                          nickname, password,
-                                          domain, port,
-                                          http_prefix,
-                                          block_actor,
-                                          cached_webfingers,
-                                          person_cache,
-                                          False, __version__,
-                                          signing_priv_key_pem,
-                                          system_language)
+                    say_str1 = get_nickname_from_actor(block_actor)
+                    if say_str1:
+                        say_str = 'Blocking ' + say_str1
+                        _say_command(say_str, say_str,
+                                     screenreader,
+                                     system_language, espeak)
+                        session_block = create_session(proxy_type)
+                        send_block_via_server(base_dir, session_block,
+                                              nickname, password,
+                                              domain, port,
+                                              http_prefix,
+                                              block_actor,
+                                              cached_webfingers,
+                                              person_cache,
+                                              False, __version__,
+                                              signing_priv_key_pem,
+                                              system_language)
                 refresh_timeline = True
                 print('')
             elif command_str in ('unlike', 'undo like'):
@@ -2290,23 +2337,26 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         attrib_field = \
                             post_json_object['object']['attributedTo']
                         unlike_actor = get_attributed_to(attrib_field)
-                        say_str = \
-                            'Undoing like of post by ' + \
-                            get_nickname_from_actor(unlike_actor)
-                        _say_command(say_str, say_str,
-                                     screenreader,
-                                     system_language, espeak)
-                        session_unlike = create_session(proxy_type)
-                        send_undo_like_via_server(base_dir, session_unlike,
-                                                  nickname, password,
-                                                  domain, port, http_prefix,
-                                                  post_json_object['id'],
-                                                  cached_webfingers,
-                                                  person_cache,
-                                                  False, __version__,
-                                                  signing_priv_key_pem,
-                                                  system_language)
-                        refresh_timeline = True
+                        say_str1 = get_nickname_from_actor(unlike_actor)
+                        if say_str1:
+                            say_str = \
+                                'Undoing like of post by ' + \
+                                say_str1
+                            _say_command(say_str, say_str,
+                                         screenreader,
+                                         system_language, espeak)
+                            session_unlike = create_session(proxy_type)
+                            send_undo_like_via_server(base_dir, session_unlike,
+                                                      nickname, password,
+                                                      domain, port,
+                                                      http_prefix,
+                                                      post_json_object['id'],
+                                                      cached_webfingers,
+                                                      person_cache,
+                                                      False, __version__,
+                                                      signing_priv_key_pem,
+                                                      system_language)
+                            refresh_timeline = True
                 print('')
             elif (command_str.startswith('announce') or
                   command_str.startswith('boost') or
@@ -2341,22 +2391,23 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                             attrib_field = \
                                 post_json_object['object']['attributedTo']
                             announce_actor = get_attributed_to(attrib_field)
-                            say_str = 'Announcing post by ' + \
-                                get_nickname_from_actor(announce_actor)
-                            _say_command(say_str, say_str,
-                                         screenreader,
-                                         system_language, espeak)
-                            session_announce = create_session(proxy_type)
-                            send_announce_via_server(base_dir,
-                                                     session_announce,
-                                                     nickname, password,
-                                                     domain, port,
-                                                     http_prefix, post_id,
-                                                     cached_webfingers,
-                                                     person_cache,
-                                                     True, __version__,
-                                                     signing_priv_key_pem,
-                                                     system_language)
+                            say_str1 = get_nickname_from_actor(announce_actor)
+                            if say_str1:
+                                say_str = 'Announcing post by ' + say_str1
+                                _say_command(say_str, say_str,
+                                             screenreader,
+                                             system_language, espeak)
+                                session_announce = create_session(proxy_type)
+                                send_announce_via_server(base_dir,
+                                                         session_announce,
+                                                         nickname, password,
+                                                         domain, port,
+                                                         http_prefix, post_id,
+                                                         cached_webfingers,
+                                                         person_cache,
+                                                         True, __version__,
+                                                         signing_priv_key_pem,
+                                                         system_language)
                     refresh_timeline = True
                 print('')
             elif (command_str.startswith('unannounce') or
@@ -2380,24 +2431,25 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         attrib_field = \
                             post_json_object['object']['attributedTo']
                         announce_actor = get_attributed_to(attrib_field)
-                        say_str = 'Undoing announce post by ' + \
-                            get_nickname_from_actor(announce_actor)
-                        _say_command(say_str, say_str,
-                                     screenreader,
-                                     system_language, espeak)
-                        session_announce = create_session(proxy_type)
-                        send_undo_announce_via_server(base_dir,
-                                                      session_announce,
-                                                      post_json_object,
-                                                      nickname, password,
-                                                      domain, port,
-                                                      http_prefix,
-                                                      cached_webfingers,
-                                                      person_cache,
-                                                      True, __version__,
-                                                      signing_priv_key_pem,
-                                                      system_language)
-                        refresh_timeline = True
+                        say_str1 = get_nickname_from_actor(announce_actor)
+                        if say_str1:
+                            say_str = 'Undoing announce post by ' + say_str1
+                            _say_command(say_str, say_str,
+                                         screenreader,
+                                         system_language, espeak)
+                            session_announce = create_session(proxy_type)
+                            send_undo_announce_via_server(base_dir,
+                                                          session_announce,
+                                                          post_json_object,
+                                                          nickname, password,
+                                                          domain, port,
+                                                          http_prefix,
+                                                          cached_webfingers,
+                                                          person_cache,
+                                                          True, __version__,
+                                                          signing_priv_key_pem,
+                                                          system_language)
+                            refresh_timeline = True
                 print('')
             elif (command_str == 'follow requests' or
                   command_str.startswith('follow requests ')):
