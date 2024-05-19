@@ -728,8 +728,15 @@ def _get_image_description(post_json_object: {}) -> str:
             continue
         if not img.get('name'):
             continue
+        if not img.get('mediaType'):
+            continue
         if not isinstance(img['name'], str):
             continue
+        if not isinstance(img['mediaType'], str):
+            continue
+        if not img['mediaType'].startswith('image/'):
+            if not img['mediaType'].startswith('video/'):
+                continue
         message_str = img['name']
         if message_str:
             message_str = message_str.strip()
@@ -875,7 +882,11 @@ def _read_local_box_post(session, nickname: str, domain: str,
                             time.sleep(2)
                         content = \
                             _text_only_content(content)
-                        content += _get_image_description(post_json_object2)
+                        im_desc = _get_image_description(post_json_object2)
+                        if im_desc:
+                            if not content.endswith('.'):
+                                content += '.'
+                            content += ' ' + im_desc
                         message_str, _ = \
                             speakable_text(http_prefix,
                                            nickname, domain, domain_full,
@@ -899,7 +910,11 @@ def _read_local_box_post(session, nickname: str, domain: str,
     if not name_str:
         return {}
     content = _text_only_content(content)
-    content += _get_image_description(post_json_object)
+    im_desc = _get_image_description(post_json_object)
+    if im_desc:
+        if not content.endswith('.'):
+            content += '.'
+        content += ' ' + im_desc
 
     if is_pgp_encrypted(content):
         say_str = 'Encrypted message. Please enter your passphrase.'
