@@ -58,7 +58,7 @@ if [ ! -f /usr/bin/python3 ]; then
 fi
 
 if [ ! -d ${HOME}/.epicyon ]; then
-    git clone https://gitlab.com/bashrc2/epicyon ${HOME}/.epicyon
+    git clone --depth 1 https://gitlab.com/bashrc2/epicyon ${HOME}/.epicyon
 else
     cd ${HOME}/.epicyon || exit 1
     git pull
