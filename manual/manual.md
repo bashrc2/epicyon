@@ -58,7 +58,7 @@ The following instructions install Epicyon to the **/opt** directory. It's not e
 Clone the repo, or if you downloaded the tarball then extract it into the **/opt** directory.
 ``` bash
 cd /opt
-git clone https://gitlab.com/bashrc2/epicyon
+git clone --depth 1 https://gitlab.com/bashrc2/epicyon
 ```
 ## Set permissions
 Create a user for the server to run as:

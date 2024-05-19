@@ -2,7 +2,7 @@
 sudo apt update -y
 sudo apt install -y tor python3-socks imagemagick python3-setuptools python3-cryptography python3-dateutil python3-idna python3-requests python3-flake8 python3-django-timezone-field python3-pyqrcode python3-png python3-bandit libimage-exiftool-perl certbot nginx wget
 cd /opt || exit
-sudo git clone https://gitlab.com/bashrc2/epicyon
+sudo git clone --depth 1 https://gitlab.com/bashrc2/epicyon
 cd /opt/epicyon || exit
 sudo adduser --system --home=/opt/epicyon --group epicyon
 sudo mkdir /var/www/$domain

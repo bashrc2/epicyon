@@ -84,7 +84,7 @@ Clone the repo, or if you downloaded the tarball then extract it into the **/opt
 
 ``` bash
 cd /opt
-git clone https://gitlab.com/bashrc2/epicyon
+git clone --depth 1 https://gitlab.com/bashrc2/epicyon
 ```
 
 Add a dedicated user so that we don't have to run as root.

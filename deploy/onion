@@ -65,7 +65,7 @@ fi
 
 echo 'Cloning the epicyon repo'
 if [ ! -d ${install_destination} ]; then
-    git clone https://gitlab.com/bashrc2/epicyon ${install_destination}
+    git clone --depth 1 https://gitlab.com/bashrc2/epicyon ${install_destination}
 
     if [ ! -d ${install_destination} ]; then
         echo 'Epicyon repo failed to clone'
