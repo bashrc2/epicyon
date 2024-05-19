@@ -531,28 +531,28 @@ def _desktop_reply_to_post(session, post_id: str,
     say_str = 'Replying to ' + to_nickname + '@' + to_domain
     _say_command(say_str, say_str,
                  screenreader, system_language, espeak)
-    say_str = 'Type your reply message, then press Enter.'
+    say_str = translate['Type your reply message, then press Enter'] + '.'
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     reply_message = input()
     if not reply_message:
-        say_str = 'No reply was entered.'
+        say_str = translate['No reply was entered'] + '.'
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     reply_message = reply_message.strip()
     if not reply_message:
-        say_str = 'No reply was entered.'
+        say_str = translate['No reply was entered'] + '.'
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     print('')
-    say_str = 'You entered this reply:'
+    say_str = translate['You entered this reply'] + ':'
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     _say_command(reply_message, reply_message, screenreader,
                  system_language, espeak)
-    say_str = 'Send this reply, yes or no?'
+    say_str = translate['Send this reply, yes or no?']
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     yesno = input()
     if 'y' not in yesno.lower():
-        say_str = 'Abandoning reply'
+        say_str = translate['Abandoning reply']
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     cc_url = None
@@ -589,9 +589,9 @@ def _desktop_reply_to_post(session, post_id: str,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, post_id, post_id,
                             conversation_id, subject) == 0:
-        say_str = 'Reply sent'
+        say_str = translate['Sent']
     else:
-        say_str = 'Reply failed'
+        say_str = translate['Post failed']
     _say_command(say_str, say_str, screenreader, system_language, espeak)
 
 
@@ -610,30 +610,30 @@ def _desktop_new_post(session,
     """Use the desktop client to create a new post
     """
     conversation_id = None
-    say_str = 'Create new post'
+    say_str = translate['Create a new post']
     _say_command(say_str, say_str, screenreader, system_language, espeak)
-    say_str = 'Type your post, then press Enter.'
+    say_str = translate['Type your post, then press Enter'] + '.'
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     new_message = input()
     if not new_message:
-        say_str = 'No post was entered.'
+        say_str = translate['No post was entered'] + '.'
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     new_message = new_message.strip()
     if not new_message:
-        say_str = 'No post was entered.'
+        say_str = translate['No post was entered'] + '.'
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     print('')
-    say_str = 'You entered this public post:'
+    say_str = translate['You entered this public post'] + ':'
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     _say_command(new_message, new_message,
                  screenreader, system_language, espeak)
-    say_str = 'Send this post, yes or no?'
+    say_str = translate['Send this post, yes or no?']
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     yesno = input()
     if 'y' not in yesno.lower():
-        say_str = 'Abandoning new post'
+        say_str = translate['Abandoning new post']
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     cc_url = None
@@ -670,9 +670,9 @@ def _desktop_new_post(session,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
                             conversation_id, subject) == 0:
-        say_str = 'Post sent'
+        say_str = translate['Sent']
     else:
-        say_str = 'Post failed'
+        say_str = translate['Post failed']
     _say_command(say_str, say_str, screenreader, system_language, espeak)
 
 
@@ -917,11 +917,11 @@ def _read_local_box_post(session, nickname: str, domain: str,
         content += ' ' + im_desc
 
     if is_pgp_encrypted(content):
-        say_str = 'Encrypted message. Please enter your passphrase.'
+        say_str = translate['Encrypted message. Please enter your passphrase.']
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         content = pgp_decrypt(domain, content, actor, signing_priv_key_pem)
         if is_pgp_encrypted(content):
-            say_str = 'Message could not be decrypted'
+            say_str = translate['Message could not be decrypted']
             _say_command(say_str, say_str,
                          screenreader, system_language, espeak)
             return {}
@@ -941,7 +941,7 @@ def _read_local_box_post(session, nickname: str, domain: str,
 
     reply_id = get_reply_to(post_json_object['object'])
     if reply_id:
-        print('Replying to ' + reply_id + '\n')
+        print(translate['replying to'].title() + ' ' + reply_id + '\n')
 
     if screenreader:
         time.sleep(2)
@@ -978,7 +978,7 @@ def _desktop_show_actor(http_prefix: str,
     actor_domain_full = get_full_domain(actor_domain, actor_port)
     handle = '@' + actor_nickname + '@' + actor_domain_full
 
-    say_str = 'Profile for ' + html.unescape(handle)
+    say_str = translate['Profile for'] + ' ' + html.unescape(handle)
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     print(actor)
     if actor_json.get('movedTo'):
@@ -993,7 +993,8 @@ def _desktop_show_actor(http_prefix: str,
             ctr += 1
             also_known_as_str += alt_actor
 
-        say_str = 'Also known as ' + html.unescape(also_known_as_str)
+        say_str = translate['Other accounts'] + ' ' + \
+            html.unescape(also_known_as_str)
         _say_command(say_str, say_str, screenreader, system_language, espeak)
     if actor_json.get('summary'):
         say_str = html.unescape(remove_html(actor_json['summary']))
@@ -1388,21 +1389,22 @@ def _desktop_new_dm_base(session, to_handle: str,
         if not to_domain:
             return
 
-    say_str = 'Create new direct message to ' + to_handle
+    say_str = translate['Create new direct message to'] + ' ' + to_handle
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     say_str = 'Type your direct message, then press Enter.'
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     new_message = input()
     if not new_message:
-        say_str = 'No direct message was entered.'
+        say_str = translate['No direct message was entered'] + '.'
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
     new_message = new_message.strip()
     if not new_message:
-        say_str = 'No direct message was entered.'
+        say_str = translate['No direct message was entered'] + '.'
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
-    say_str = 'You entered this direct message to ' + to_handle + ':'
+    say_str = translate['You entered this direct message to'] + \
+        ' ' + to_handle + ':'
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     _say_command(new_message, new_message,
                  screenreader, system_language, espeak)
@@ -1442,15 +1444,15 @@ def _desktop_new_dm_base(session, to_handle: str,
                          screenreader, system_language, espeak)
         else:
             new_message = cipher_text
-            say_str = 'Message encrypted'
+            say_str = translate['Message encrypted']
             _say_command(say_str, say_str,
                          screenreader, system_language, espeak)
 
-    say_str = 'Send this direct message, yes or no?'
+    say_str = translate['Send this direct message, yes or no?']
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     yesno = input()
     if 'y' not in yesno.lower():
-        say_str = 'Abandoning new direct message'
+        say_str = translate['Abandoning new direct message']
         _say_command(say_str, say_str, screenreader, system_language, espeak)
         return
 
@@ -1480,9 +1482,9 @@ def _desktop_new_dm_base(session, to_handle: str,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
                             conversation_id, subject) == 0:
-        say_str = 'Direct message sent'
+        say_str = translate['Sent']
     else:
-        say_str = 'Direct message failed'
+        say_str = translate['Post failed']
     _say_command(say_str, say_str, screenreader, system_language, espeak)
 
 
@@ -1498,7 +1500,7 @@ def _desktop_show_follow_requests(follow_requests_json: {},
         return
     indent = '   '
     print('')
-    print(indent + 'Follow requests:')
+    print(indent + translate['Approve follow requests'] + ':')
     print('')
     for item in follow_requests_json['orderedItems']:
         handle_nickname = get_nickname_from_actor(item)
@@ -1867,7 +1869,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                              blocked_cache, block_federated,
                                              bold_reading)
                     print('')
-                    say_str = 'Press Enter to continue...'
+                    say_str = translate['Press Enter to continue'] + '...'
                     say_str2 = _highlight_text(say_str)
                     _say_command(say_str2, say_str,
                                  screenreader, system_language, espeak)
@@ -1909,7 +1911,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                       espeak, translate,
                                                       signing_priv_key_pem,
                                                       http_prefix)
-                    say_str = 'Press Enter to continue...'
+                    say_str = translate['Press Enter to continue'] + '...'
                     say_str2 = _highlight_text(say_str)
                     _say_command(say_str2, say_str,
                                  screenreader, system_language, espeak)
@@ -1931,7 +1933,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               espeak, translate,
                                               None, signing_priv_key_pem,
                                               http_prefix)
-                    say_str = 'Press Enter to continue...'
+                    say_str = translate['Press Enter to continue'] + '...'
                     say_str2 = _highlight_text(say_str)
                     _say_command(say_str2, say_str,
                                  screenreader, system_language, espeak)
@@ -2792,7 +2794,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 print('')
             elif command_str.startswith('h'):
                 _desktop_help()
-                say_str = 'Press Enter to continue...'
+                say_str = translate['Press Enter to continue'] + '...'
                 say_str2 = _highlight_text(say_str)
                 _say_command(say_str2, say_str,
                              screenreader, system_language, espeak)
