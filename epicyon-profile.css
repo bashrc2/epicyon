@@ -598,10 +598,6 @@ a:focus {
     width: 10%;
 }
 
-.timelineIcon:focus {
-    border: 2px solid var(--focus-color);
-}
-
 .timeline-posts {
     background-color: var(--timeline-posts-background-color);
 }
@@ -615,8 +611,16 @@ a:focus {
     filter: brightness(var(--icon-brightness-change));
 }
 
+.container img.timelineicon:focus{
+    border: 2px solid var(--focus-color);
+}
+
 .containerHeader img.timelineicon:hover {
     filter: brightness(var(--icon-brightness-change));
+}
+
+.containerHeader img.timelineicon:focus {
+    border: 2px solid var(--focus-color);
 }
 
 .containerHeader a:link {
