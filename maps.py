@@ -194,6 +194,32 @@ def _geocoords_from_osmand_link(url: str) -> (int, float, float):
     return zoom, latitude, longitude
 
 
+def _geocoords_from_geo_link(url: str) -> (int, float, float):
+    """Returns geocoordinates from an geo link
+    https://en.wikipedia.org/wiki/Geo_URI_scheme
+    """
+    latitude = None
+    longitude = None
+    zoom = 10
+
+    coords_str = url.split('geo:')[1]
+    if ',' in coords_str:
+        coords_sections = coords_str.split(',')
+        if len(coords_sections) == 2:
+            latitude_str = coords_sections[0]
+            longitude_str = coords_sections[1]
+            if ';' in longitude_str:
+                longitude_str = longitude_str.split(';')[0]
+            if '?' in longitude_str:
+                longitude_str = longitude_str.split('?')[0]
+            if ' ' in longitude_str:
+                longitude_str = longitude_str.split(' ')[0]
+            if is_float(latitude_str) and is_float(longitude_str):
+                latitude = float(latitude_str)
+                longitude = float(longitude_str)
+    return zoom, latitude, longitude
+
+
 def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
     """Returns geocoordinates from a Gmaps link
     """
@@ -373,6 +399,8 @@ def geocoords_from_map_link(url: str,
         return _geocoords_from_waze_link(url)
     if 'wego.here.co' in url:
         return _geocoords_from_wego_link(url)
+    if 'geo:' in url and ',' in url:
+        return _geocoords_from_geo_link(url)
     return None, None, None
 
 
@@ -506,6 +534,33 @@ def get_map_links_from_post_content(content: str) -> []:
         if url not in map_links:
             map_links.append(url)
         ctr += 1
+
+    # https://en.wikipedia.org/wiki/Geo_URI_scheme
+    ctr = 0
+    sections = content.split('geo:')
+    for link_str in sections:
+        if ctr == 0:
+            ctr += 1
+            continue
+        if ',' not in link_str:
+            continue
+        coords_str = ''
+        for char in link_str:
+            if not char.isnumeric() and char not in (',', '-', '.'):
+                break
+            coords_str += char
+        if ',' not in coords_str:
+            continue
+        coord_sections = coords_str.split(',')
+        if len(coord_sections) != 2:
+            continue
+        if not is_float(coord_sections[0]) or \
+           not is_float(coord_sections[1]):
+            continue
+        url = 'geo:' + coords_str
+        map_links.append(url)
+        ctr += 1
+
     return map_links
 
 

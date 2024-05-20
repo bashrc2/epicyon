@@ -7947,6 +7947,17 @@ def _test_combine_lines():
 
 def _test_hashtag_maps():
     print('hashtag_maps')
+
+    content = \
+        "<p>This is a test, with a geo link " + \
+        "geo:52.90820,-3.59817;u=35, and some other stuff," + \
+        " with commas</p>"
+    map_links = get_map_links_from_post_content(content)
+    link = "geo:52.90820,-3.59817"
+    if link not in map_links:
+        print('map_links: ' + str(map_links))
+    assert link in map_links
+
     content = \
         "<p>This is a test, with a couple of links and a " + \
         "<a href=\"https://epicyon.libreserver.org/tags/Hashtag\" " + \
