@@ -467,6 +467,7 @@ a:link:hover {
 
 a:link:focus{
     border: 2px solid var(--focus-color);
+    filter: brightness(var(--icon-brightness-change));
 }
 
 a:visited:hover {
@@ -475,6 +476,7 @@ a:visited:hover {
 
 a:visited:focus{
     border: 2px solid var(--focus-color);
+    filter: brightness(var(--icon-brightness-change));
 }
 
 .buttonevent:hover {
@@ -486,6 +488,10 @@ a:visited:focus{
 }
 
 a:focus {
+    border: 2px solid var(--focus-color);
+}
+a:focus img{
+    filter: brightness(var(--icon-brightness-change));
     border: 2px solid var(--focus-color);
 }
 
@@ -619,16 +625,8 @@ a:focus {
     filter: brightness(var(--icon-brightness-change));
 }
 
-.container img.timelineicon:focus{
-    border: 2px solid var(--focus-color);
-}
-
 .containerHeader img.timelineicon:hover {
     filter: brightness(var(--icon-brightness-change));
-}
-
-.containerHeader img.timelineicon:focus {
-    border: 2px solid var(--focus-color);
 }
 
 .containerHeader a:link {
@@ -732,10 +730,6 @@ a:focus {
     border: 2px solid var(--focus-color);
 }
 
-.message img:focus {
-    border: 2px solid var(--focus-color);
-}
-
 .gitpatch {
     width: 90%;
     font-family: 'Arial, Helvetica, sans-serif';
@@ -773,10 +767,6 @@ a:focus {
 .containericons {
     padding: 0px 0px;
     margin: 0px var(--containericons-horizontal-offset);
-}
-
-.containericons img:focus {
-    border: 2px solid var(--focus-color);
 }
 
 .replyingto {
@@ -1430,9 +1420,6 @@ h3 {
     .col-left img.leftColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
     }
-    .col-left img.leftColEditImage:focus {
-        border: 2px solid var(--focus-color);
-    }
     .col-left img.leftColEdit {
         background: var(--column-left-color);
         width: var(--column-left-icon-size);
@@ -1479,9 +1466,6 @@ h3 {
     }
     .col-right img.rightColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
-    }
-    .col-right img.rightColEditImage:focus {
-        border: 2px solid var(--focus-color);
     }
     .col-right img.rightColEdit {
         float: right;
@@ -1593,9 +1577,6 @@ h3 {
         margin: 0px 0px;
         width: var(--timeline-icon-width);
     }
-    .container img.timelineicon:focus{
-        border: 2px solid var(--focus-color);
-    }
     .containerHeader img.timelineicon {
         float: var(--icons-side);
         margin-left: 0px;
@@ -1603,9 +1584,6 @@ h3 {
         padding: 0 0;
         margin: 0 0;
         width: var(--timeline-icon-width);
-    }
-    .containerHeader img.timelineicon:focus{
-        border: 2px solid var(--focus-color);
     }
     .container img.emojiheader {
         float: none;
@@ -2315,9 +2293,6 @@ h3 {
     .col-left img.leftColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
     }
-    .col-left img.leftColEditImage:focus {
-        border: 2px solid var(--focus-color);
-    }
     .col-center {
         width: 100vw;
     }
@@ -2332,9 +2307,6 @@ h3 {
     }
     .col-right img.rightColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
-    }
-    .col-right img.rightColEditImage:focus {
-        border: 2px solid var(--focus-color);
     }
     .column-right {
         display: none;
@@ -3166,9 +3138,6 @@ h3 {
     .col-left img.leftColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
     }
-    .col-left img.leftColEditImage:focus {
-        border: 2px solid var(--focus-color);
-    }
     .col-center {
         width: 100vw;
     }
@@ -3183,9 +3152,6 @@ h3 {
     }
     .col-right img.rightColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
-    }
-    .col-right img.rightColEditImage:focus {
-        border: 2px solid var(--focus-color);
     }
     .column-right {
         display: none;
