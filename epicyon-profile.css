@@ -613,6 +613,7 @@ a:focus {
 
 .container img.timelineicon:focus{
     border: 2px solid var(--focus-color);
+    filter: brightness(var(--icon-brightness-change));
 }
 
 .containerHeader img.timelineicon:hover {
@@ -621,6 +622,7 @@ a:focus {
 
 .containerHeader img.timelineicon:focus {
     border: 2px solid var(--focus-color);
+    filter: brightness(var(--icon-brightness-change));
 }
 
 .containerHeader a:link {
