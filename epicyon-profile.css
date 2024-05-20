@@ -463,24 +463,22 @@ a:link[type=application/activity+json]::before {
 
 a:link:hover {
     color: var(--main-link-color-hover);
-    display: block;
-    vertical-align: top;
 }
 
 a:link:focus{
     border: 2px solid var(--focus-color);
     filter: brightness(var(--icon-brightness-change));
+    display: block;
 }
 
 a:visited:hover {
     color: var(--main-link-color-hover);
-    display: block;
-    vertical-align: top;
 }
 
 a:visited:focus{
     border: 2px solid var(--focus-color);
     filter: brightness(var(--icon-brightness-change));
+    display: block;
 }
 
 .buttonevent:hover {
