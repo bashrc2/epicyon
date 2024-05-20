@@ -463,6 +463,7 @@ a:link[type=application/activity+json]::before {
 
 a:link:hover {
     color: var(--main-link-color-hover);
+    display: block;
 }
 
 a:link:focus{
@@ -472,6 +473,7 @@ a:link:focus{
 
 a:visited:hover {
     color: var(--main-link-color-hover);
+    display: block;
 }
 
 a:visited:focus{
