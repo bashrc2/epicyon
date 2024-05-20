@@ -392,6 +392,7 @@ details {
 .headericons {
     display: inline-block;
     float: right;
+    flex-direction: row-reverse;
 }
 
 blockquote {
