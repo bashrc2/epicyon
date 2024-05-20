@@ -133,7 +133,43 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
     # start of newswire column icons
     html_str += '        <div class="headernewswireicons">\n'
 
-    # show the edit icon
+    # 1. show publish icon at top
+    if show_publish_button:
+        if show_publish_as_icon:
+            title_str = translate['Publish a blog article']
+            if default_timeline == 'tlfeatures':
+                title_str = translate['Publish a news article']
+            html_str += \
+                '        <a href="' + \
+                '/users/' + nickname + '/newblog?nodropdown" ' + \
+                'accesskey="' + access_keys['menuNewBlog'] + \
+                '" class="imageAnchor" tabindex="4">' + \
+                '<img class="' + edit_image_class + \
+                '" loading="lazy" decoding="async" alt="' + \
+                title_str + '" title="' + \
+                title_str + '" src="/' + \
+                'icons/publish.png" /></a>\n'
+
+    # 2. show the RSS and categories icons
+    rss_icon_str = \
+        '        <a href="/newswire.xml" tabindex="4" class="imageAnchor">' + \
+        '<img class="' + edit_image_class + \
+        '" loading="lazy" decoding="async" alt="' + \
+        translate['Newswire RSS Feed'] + ' | " title="' + \
+        translate['Newswire RSS Feed'] + '" src="/' + \
+        'icons/logorss.png" /></a>\n'
+    rss_icon_str += \
+        '        <a href="/categories.xml" tabindex="4" ' + \
+        'class="imageAnchor">' + \
+        '<img class="' + edit_image_class + \
+        '" loading="lazy" decoding="async" alt="' + \
+        translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
+        translate['Hashtag Categories RSS Feed'] + '" src="/' + \
+        'icons/categoriesrss.png" /></a>\n'
+    if rss_icon_at_top:
+        html_str += rss_icon_str
+
+    # 3. show the edit icon
     if editor:
         dir_str = data_dir(base_dir)
         if os.path.isfile(dir_str + '/newswiremoderation.txt'):
@@ -160,42 +196,6 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
                 translate['Edit newswire'] + ' | " title="' + \
                 translate['Edit newswire'] + '" src="/' + \
                 'icons/edit.png" /></a>\n'
-
-    # show the RSS icons
-    rss_icon_str = \
-        '        <a href="/categories.xml" tabindex="4" ' + \
-        'class="imageAnchor">' + \
-        '<img class="' + edit_image_class + \
-        '" loading="lazy" decoding="async" alt="' + \
-        translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
-        translate['Hashtag Categories RSS Feed'] + '" src="/' + \
-        'icons/categoriesrss.png" /></a>\n'
-    rss_icon_str += \
-        '        <a href="/newswire.xml" tabindex="4" class="imageAnchor">' + \
-        '<img class="' + edit_image_class + \
-        '" loading="lazy" decoding="async" alt="' + \
-        translate['Newswire RSS Feed'] + ' | " title="' + \
-        translate['Newswire RSS Feed'] + '" src="/' + \
-        'icons/logorss.png" /></a>\n'
-    if rss_icon_at_top:
-        html_str += rss_icon_str
-
-    # show publish icon at top
-    if show_publish_button:
-        if show_publish_as_icon:
-            title_str = translate['Publish a blog article']
-            if default_timeline == 'tlfeatures':
-                title_str = translate['Publish a news article']
-            html_str += \
-                '        <a href="' + \
-                '/users/' + nickname + '/newblog?nodropdown" ' + \
-                'accesskey="' + access_keys['menuNewBlog'] + \
-                '" class="imageAnchor" tabindex="4">' + \
-                '<img class="' + edit_image_class + \
-                '" loading="lazy" decoding="async" alt="' + \
-                title_str + '" title="' + \
-                title_str + '" src="/' + \
-                'icons/publish.png" /></a>\n'
 
     # end of newswire column icons
     html_str += '        </div>\n'
