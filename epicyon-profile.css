@@ -598,7 +598,7 @@ a:focus {
     width: 10%;
 }
 
-.timelineIcon img:focus {
+.timelineIcon:focus {
     border: 2px solid var(--focus-color);
 }
 
