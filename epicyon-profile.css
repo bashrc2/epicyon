@@ -465,18 +465,8 @@ a:link:hover {
     color: var(--main-link-color-hover);
 }
 
-a:link:focus{
-    outline: 2px solid var(--focus-color);
-    filter: brightness(var(--icon-brightness-change));
-}
-
 a:visited:hover {
     color: var(--main-link-color-hover);
-}
-
-a:visited:focus{
-    outline: 2px solid var(--focus-color);
-    filter: brightness(var(--icon-brightness-change));
 }
 
 .buttonevent:hover {
