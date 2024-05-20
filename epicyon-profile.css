@@ -466,10 +466,7 @@ a:link:hover {
 }
 
 a:link:focus{
-    border: 2px solid var(--focus-color);
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box;         /* Opera/IE 8+ */
+    outline: 2px solid var(--focus-color);
     filter: brightness(var(--icon-brightness-change));
     display: block;
 }
@@ -479,10 +476,7 @@ a:visited:hover {
 }
 
 a:visited:focus{
-    border: 2px solid var(--focus-color);
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box;         /* Opera/IE 8+ */
+    outline: 2px solid var(--focus-color);
     filter: brightness(var(--icon-brightness-change));
     display: block;
 }
