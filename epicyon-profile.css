@@ -464,6 +464,7 @@ a:link[type=application/activity+json]::before {
 a:link:hover {
     color: var(--main-link-color-hover);
     display: block;
+    vertical-align: top;
 }
 
 a:link:focus{
@@ -474,6 +475,7 @@ a:link:focus{
 a:visited:hover {
     color: var(--main-link-color-hover);
     display: block;
+    vertical-align: top;
 }
 
 a:visited:focus{
