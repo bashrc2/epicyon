@@ -157,31 +157,10 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     if edit_image_class == 'leftColEdit':
         html_str += '\n      <center>\n'
 
+    # start of links column icons
     html_str += '      <div class="leftColIcons">\n'
 
-    if editor:
-        # show the edit icon
-        html_str += \
-            '      <a href="/users/' + nickname + '/editlinks" ' + \
-            'accesskey="' + access_keys['menuEdit'] + '" tabindex="5" ' + \
-            'class="imageAnchor">' + \
-            '<img class="' + edit_image_class + \
-            '" loading="lazy" decoding="async" alt="' + \
-            translate['Edit Links'] + ' | " title="' + \
-            translate['Edit Links'] + '" src="/icons/edit.png" /></a>\n'
-
-    if artist:
-        # show the theme designer icon
-        html_str += \
-            '      <a href="/users/' + nickname + '/themedesigner" ' + \
-            'accesskey="' + access_keys['menuThemeDesigner'] + \
-            '" tabindex="5" class="imageAnchor">' + \
-            '<img class="' + edit_image_class + \
-            '" loading="lazy" decoding="async" alt="' + \
-            translate['Theme Designer'] + ' | " title="' + \
-            translate['Theme Designer'] + '" src="/icons/theme.png" /></a>\n'
-
-    # RSS icon
+    # 1. RSS icon
     if nickname != 'news':
         # rss feed for this account
         rss_url = http_prefix + '://' + domain_full + \
@@ -201,6 +180,30 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         '" src="/icons/logorss.png" /></a>\n'
     if rss_icon_at_top:
         html_str += rss_icon_str
+
+    if artist:
+        # 2. show the theme designer icon
+        html_str += \
+            '      <a href="/users/' + nickname + '/themedesigner" ' + \
+            'accesskey="' + access_keys['menuThemeDesigner'] + \
+            '" tabindex="5" class="imageAnchor">' + \
+            '<img class="' + edit_image_class + \
+            '" loading="lazy" decoding="async" alt="' + \
+            translate['Theme Designer'] + ' | " title="' + \
+            translate['Theme Designer'] + '" src="/icons/theme.png" /></a>\n'
+
+    if editor:
+        # 3. show the edit icon
+        html_str += \
+            '      <a href="/users/' + nickname + '/editlinks" ' + \
+            'accesskey="' + access_keys['menuEdit'] + '" tabindex="5" ' + \
+            'class="imageAnchor">' + \
+            '<img class="' + edit_image_class + \
+            '" loading="lazy" decoding="async" alt="' + \
+            translate['Edit Links'] + ' | " title="' + \
+            translate['Edit Links'] + '" src="/icons/edit.png" /></a>\n'
+
+    # end of links column icons
     html_str += '      </div>\n'
 
     if edit_image_class == 'leftColEdit':
