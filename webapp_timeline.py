@@ -770,14 +770,14 @@ def html_timeline(default_timeline: str,
     if default_timeline == 'tlfeatures' and box_name == 'tlfeatures':
         news_header = True
 
-    new_post_button_str = ''
+    header_icons_str = ''
     # start of headericons div
     if not news_header:
         if not icons_as_buttons:
-            new_post_button_str += '<div class="headericons">'
+            header_icons_str = '<div class="headericons">'
 
     # what screen to go to when a new post is created
-    new_post_button_str += \
+    new_post_button_str = \
         _html_timeline_new_post(manually_approve_followers, box_name,
                                 icons_as_buttons, users_path, translate,
                                 access_keys)
@@ -815,6 +815,7 @@ def html_timeline(default_timeline: str,
                                     shares_button_str, wanted_button_str,
                                     bookmarks_button_str,
                                     events_button_str, moderation_button_str,
+                                    header_icons_str,
                                     new_post_button_str, base_dir, nickname,
                                     domain, timeline_start_time,
                                     new_calendar_event, calendar_path,
@@ -867,6 +868,7 @@ def html_timeline(default_timeline: str,
                                     shares_button_str, wanted_button_str,
                                     bookmarks_button_str,
                                     events_button_str, moderation_button_str,
+                                    header_icons_str,
                                     new_post_button_str, base_dir, nickname,
                                     domain, timeline_start_time,
                                     new_calendar_event, calendar_path,

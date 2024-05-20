@@ -37,6 +37,7 @@ def header_buttons_timeline(default_timeline: str,
                             bookmarks_button_str: str,
                             events_button_str: str,
                             moderation_button_str: str,
+                            header_icons_str: str,
                             new_post_button_str: str,
                             base_dir: str,
                             nickname: str, domain: str,
@@ -266,39 +267,65 @@ def header_buttons_timeline(default_timeline: str,
             tl_str += \
                 shares_button_str + wanted_button_str + \
                 bookmarks_button_str + events_button_str + \
-                moderation_button_str + happening_str + new_post_button_str
+                moderation_button_str + happening_str
     else:
         tl_str += happening_str
 
+    # start of headericons div
     if not is_text_browser:
         if not features_header:
-            if not icons_as_buttons:
-                # the search icon
-                tl_str += \
-                    '<a class="imageAnchor" href="' + users_path + \
-                    '/search" accesskey="' + access_keys['menuSearch'] + \
-                    '" tabindex="3">' + \
-                    '<img loading="lazy" decoding="async" src="/' + \
-                    'icons/search.png" title="' + \
-                    translate['Search and follow'] + '" alt="| ' + \
-                    translate['Search and follow'] + \
-                    '" class="timelineicon"/></a>'
-            else:
-                # the search button
-                tl_str += \
-                    '<a href="' + users_path + \
-                    '/search" tabindex="3">' + \
-                    '<button class="button" ' + \
-                    'accesskey="' + access_keys['menuSearch'] + '>' + \
-                    '<span>' + translate['Search'] + \
-                    '</span></button></a>'
+            tl_str += header_icons_str
 
-    # benchmark 5
-    time_diff = int((time.time() - timeline_start_time) * 1000)
-    if time_diff > 100:
-        print('TIMELINE TIMING ' + box_name + ' 5 = ' + str(time_diff))
+    # 1. follow request icon
+    if not features_header:
+        tl_str += follow_approvals
 
-    # the calendar button
+    # 2. edit profile on features header
+    if features_header:
+        tl_str += \
+            '<a href="' + users_path + '/editprofile" tabindex="2">' + \
+            '<button class="buttonDesktop">' + \
+            '<span>' + translate['Settings'] + '</span></button></a>'
+
+    # 3. the newswire and links button to show right column links
+    if not is_text_browser:
+        # the links button to show left column links
+        if not icons_as_buttons:
+            tl_str += \
+                '<a class="imageAnchorMobile" href="' + \
+                users_path + '/linksmobile">' + \
+                '<img loading="lazy" decoding="async" src="/icons' + \
+                '/links.png" title="' + translate['Edit Links'] + \
+                '" alt="| ' + translate['Edit Links'] + \
+                '" class="timelineicon"/></a>'
+        else:
+            # NOTE: deliberately no \n at end of line
+            tl_str += \
+                '<a href="' + \
+                users_path + '/linksmobile' + \
+                '" tabindex="2"><button class="buttonMobile">' + \
+                '<span>' + translate['Links'] + \
+                '</span></button></a>'
+
+        # the newswire button to show left column links
+        if not icons_as_buttons:
+            tl_str += \
+                '<a class="imageAnchorMobile" href="' + \
+                users_path + '/newswiremobile">' + \
+                '<img loading="lazy" decoding="async" src="/icons' + \
+                '/newswire.png" title="' + translate['News'] + \
+                '" alt="| ' + translate['News'] + \
+                '" class="timelineicon"/></a>'
+        else:
+            # NOTE: deliberately no \n at end of line
+            tl_str += \
+                '<a href="' + \
+                users_path + '/newswiremobile' + \
+                '" tabindex="2"><button class="buttonMobile">' + \
+                '<span>' + translate['Newswire'] + \
+                '</span></button></a>'
+
+    # 4. the calendar button
     if not is_text_browser:
         if not features_header:
             calendar_alt_text = translate['Calendar']
@@ -374,54 +401,42 @@ def header_buttons_timeline(default_timeline: str,
             '><button class="button">' + \
             '<span>' + translate['User'] + '</span></button></a>'
 
+    # 5. search button
     if not is_text_browser:
-        # the newswire button to show right column links
-        if not icons_as_buttons:
-            tl_str += \
-                '<a class="imageAnchorMobile" href="' + \
-                users_path + '/newswiremobile">' + \
-                '<img loading="lazy" decoding="async" src="/icons' + \
-                '/newswire.png" title="' + translate['News'] + \
-                '" alt="| ' + translate['News'] + \
-                '" class="timelineicon"/></a>'
-        else:
-            # NOTE: deliberately no \n at end of line
-            tl_str += \
-                '<a href="' + \
-                users_path + '/newswiremobile' + \
-                '" tabindex="2"><button class="buttonMobile">' + \
-                '<span>' + translate['Newswire'] + \
-                '</span></button></a>'
+        if not features_header:
+            if not icons_as_buttons:
+                # the search icon
+                tl_str += \
+                    '<a class="imageAnchor" href="' + users_path + \
+                    '/search" accesskey="' + access_keys['menuSearch'] + \
+                    '" tabindex="3">' + \
+                    '<img loading="lazy" decoding="async" src="/' + \
+                    'icons/search.png" title="' + \
+                    translate['Search and follow'] + '" alt="| ' + \
+                    translate['Search and follow'] + \
+                    '" class="timelineicon"/></a>'
+            else:
+                # the search button
+                tl_str += \
+                    '<a href="' + users_path + \
+                    '/search" tabindex="3">' + \
+                    '<button class="button" ' + \
+                    'accesskey="' + access_keys['menuSearch'] + '>' + \
+                    '<span>' + translate['Search'] + \
+                    '</span></button></a>'
 
-        # the links button to show left column links
-        if not icons_as_buttons:
-            tl_str += \
-                '<a class="imageAnchorMobile" href="' + \
-                users_path + '/linksmobile">' + \
-                '<img loading="lazy" decoding="async" src="/icons' + \
-                '/links.png" title="' + translate['Edit Links'] + \
-                '" alt="| ' + translate['Edit Links'] + \
-                '" class="timelineicon"/></a>'
-        else:
-            # NOTE: deliberately no \n at end of line
-            tl_str += \
-                '<a href="' + \
-                users_path + '/linksmobile' + \
-                '" tabindex="2"><button class="buttonMobile">' + \
-                '<span>' + translate['Links'] + \
-                '</span></button></a>'
+    # 6. new post
+    if not is_text_browser:
+        if not features_header:
+            tl_str += new_post_button_str
 
-    if features_header:
-        tl_str += \
-            '<a href="' + users_path + '/editprofile" tabindex="2">' + \
-            '<button class="buttonDesktop">' + \
-            '<span>' + translate['Settings'] + '</span></button></a>'
+    # benchmark 5
+    time_diff = int((time.time() - timeline_start_time) * 1000)
+    if time_diff > 100:
+        print('TIMELINE TIMING ' + box_name + ' 5 = ' + str(time_diff))
 
-    if not features_header:
-        tl_str += follow_approvals
-
+    # end of headericons div
     if not icons_as_buttons:
-        # end of headericons div
         tl_str += '</div>'
 
     # end of the button header with inbox, outbox, etc
