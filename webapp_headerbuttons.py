@@ -328,29 +328,23 @@ def header_buttons_timeline(default_timeline: str,
     # 4. the calendar button
     if not is_text_browser:
         if not features_header:
-            calendar_alt_text = translate['Calendar']
-            if new_calendar_event:
-                # indicate that the calendar icon is highlighted
-                calendar_alt_text = '*' + calendar_alt_text + '*'
+            # the show/hide button, for a simpler header appearance
             if not icons_as_buttons:
                 tl_str += \
                     '      <a class="imageAnchor" href="' + \
-                    users_path + calendar_path + \
-                    '" accesskey="' + access_keys['menuCalendar'] + \
-                    '" tabindex="3">' + \
-                    '<img loading="lazy" decoding="async" src="/icons/' + \
-                    calendar_image + '" title="' + translate['Calendar'] + \
-                    '" alt="| ' + calendar_alt_text + \
+                    users_path + '/minimal" tabindex="3">' + \
+                    '<img loading="lazy" decoding="async" src="/icons' + \
+                    '/showhide.png" title="' + \
+                    translate['Show/Hide Buttons'] + \
+                    '" alt="| ' + translate['Show/Hide Buttons'] + \
                     '" class="timelineicon"/></a>\n'
             else:
                 tl_str += \
-                    '<a href="' + users_path + calendar_path + \
-                    '" tabindex="3"><button class="button" accesskey="' + \
-                    access_keys['menuCalendar'] + '">' + \
-                    '<span>' + translate['Calendar'] + \
+                    '<a href="' + users_path + '/minimal' + \
+                    '" tabindex="3"><button class="button">' + \
+                    '<span>' + translate['Show/Hide Buttons'] + \
                     '</span></button></a>'
 
-        if not features_header:
             # the hide announces button
             if show_announces:
                 hide_announces_icon = 'repeat_hide.png'
@@ -375,21 +369,28 @@ def header_buttons_timeline(default_timeline: str,
                     '<span>' + hide_announces_text + \
                     '</span></button></a>'
 
-            # the show/hide button, for a simpler header appearance
+        # calendar button
+        if not features_header:
+            calendar_alt_text = translate['Calendar']
+            if new_calendar_event:
+                # indicate that the calendar icon is highlighted
+                calendar_alt_text = '*' + calendar_alt_text + '*'
             if not icons_as_buttons:
                 tl_str += \
                     '      <a class="imageAnchor" href="' + \
-                    users_path + '/minimal" tabindex="3">' + \
-                    '<img loading="lazy" decoding="async" src="/icons' + \
-                    '/showhide.png" title="' + \
-                    translate['Show/Hide Buttons'] + \
-                    '" alt="| ' + translate['Show/Hide Buttons'] + \
+                    users_path + calendar_path + \
+                    '" accesskey="' + access_keys['menuCalendar'] + \
+                    '" tabindex="3">' + \
+                    '<img loading="lazy" decoding="async" src="/icons/' + \
+                    calendar_image + '" title="' + translate['Calendar'] + \
+                    '" alt="| ' + calendar_alt_text + \
                     '" class="timelineicon"/></a>\n'
             else:
                 tl_str += \
-                    '<a href="' + users_path + '/minimal' + \
-                    '" tabindex="3"><button class="button">' + \
-                    '<span>' + translate['Show/Hide Buttons'] + \
+                    '<a href="' + users_path + calendar_path + \
+                    '" tabindex="3"><button class="button" accesskey="' + \
+                    access_keys['menuCalendar'] + '">' + \
+                    '<span>' + translate['Calendar'] + \
                     '</span></button></a>'
 
     if features_header:
