@@ -435,7 +435,7 @@ blockquote p {
     font-family:   var(--header-font);
 }
 
-.imageAnchor:focus img{
+.imageAnchor img:focus {
     border: 2px solid var(--focus-color);
 }
 
@@ -598,6 +598,10 @@ a:focus {
     width: 10%;
 }
 
+.timelineIcon img:focus {
+    border: 2px solid var(--focus-color);
+}
+
 .timeline-posts {
     background-color: var(--timeline-posts-background-color);
 }
@@ -716,7 +720,7 @@ a:focus {
     border: 2px solid var(--focus-color);
 }
 
-.message:focus img{
+.message img:focus {
     border: 2px solid var(--focus-color);
 }
 
@@ -757,6 +761,10 @@ a:focus {
 .containericons {
     padding: 0px 0px;
     margin: 0px var(--containericons-horizontal-offset);
+}
+
+.containericons img:focus {
+    border: 2px solid var(--focus-color);
 }
 
 .replyingto {
@@ -1410,6 +1418,9 @@ h3 {
     .col-left img.leftColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
     }
+    .col-left img.leftColEditImage:focus {
+        border: 2px solid var(--focus-color);
+    }
     .col-left img.leftColEdit {
         background: var(--column-left-color);
         width: var(--column-left-icon-size);
@@ -1456,6 +1467,9 @@ h3 {
     }
     .col-right img.rightColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
+    }
+    .col-right img.rightColEditImage:focus {
+        border: 2px solid var(--focus-color);
     }
     .col-right img.rightColEdit {
         float: right;
@@ -2280,6 +2294,12 @@ h3 {
         width: 0%;
         display: none;
     }
+    .col-left img.leftColEditImage:hover {
+        filter: brightness(var(--icon-brightness-change));
+    }
+    .col-left img.leftColEditImage:focus {
+        border: 2px solid var(--focus-color);
+    }
     .col-center {
         width: 100vw;
     }
@@ -2291,6 +2311,12 @@ h3 {
         float: right;
         width: 0%;
         display: none;
+    }
+    .col-right img.rightColEditImage:hover {
+        filter: brightness(var(--icon-brightness-change));
+    }
+    .col-right img.rightColEditImage:focus {
+        border: 2px solid var(--focus-color);
     }
     .column-right {
         display: none;
@@ -3119,6 +3145,12 @@ h3 {
         width: 0%;
         display: none;
     }
+    .col-left img.leftColEditImage:hover {
+        filter: brightness(var(--icon-brightness-change));
+    }
+    .col-left img.leftColEditImage:focus {
+        border: 2px solid var(--focus-color);
+    }
     .col-center {
         width: 100vw;
     }
@@ -3130,6 +3162,12 @@ h3 {
         float: right;
         width: 0%;
         display: none;
+    }
+    .col-right img.rightColEditImage:hover {
+        filter: brightness(var(--icon-brightness-change));
+    }
+    .col-right img.rightColEditImage:focus {
+        border: 2px solid var(--focus-color);
     }
     .column-right {
         display: none;
