@@ -487,12 +487,8 @@ a:visited:focus{
     text-decoration: underline;
 }
 
-a:focus {
-    outline: 2px solid var(--focus-color);
-}
 a:focus img{
     filter: brightness(var(--icon-brightness-change));
-    outline: 2px solid var(--focus-color);
 }
 
 .profileHeader {
