@@ -613,7 +613,6 @@ a:focus {
 
 .container img.timelineicon:focus{
     border: 2px solid var(--focus-color);
-    filter: brightness(var(--icon-brightness-change));
 }
 
 .containerHeader img.timelineicon:hover {
@@ -622,7 +621,6 @@ a:focus {
 
 .containerHeader img.timelineicon:focus {
     border: 2px solid var(--focus-color);
-    filter: brightness(var(--icon-brightness-change));
 }
 
 .containerHeader a:link {
@@ -1587,6 +1585,9 @@ h3 {
         margin: 0px 0px;
         width: var(--timeline-icon-width);
     }
+    .container img.timelineicon:focus{
+        border: 2px solid var(--focus-color);
+    }
     .containerHeader img.timelineicon {
         float: var(--icons-side);
         margin-left: 0px;
@@ -1594,6 +1595,9 @@ h3 {
         padding: 0 0;
         margin: 0 0;
         width: var(--timeline-icon-width);
+    }
+    .containerHeader img.timelineicon:focus{
+        border: 2px solid var(--focus-color);
     }
     .container img.emojiheader {
         float: none;
