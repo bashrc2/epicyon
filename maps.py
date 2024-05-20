@@ -205,7 +205,7 @@ def _geocoords_from_geo_link(url: str) -> (int, float, float):
     coords_str = url.split('geo:')[1]
     if ',' in coords_str:
         coords_sections = coords_str.split(',')
-        if len(coords_sections) == 2:
+        if len(coords_sections) >= 2:
             latitude_str = coords_sections[0]
             longitude_str = coords_sections[1]
             if ';' in longitude_str:
@@ -552,7 +552,7 @@ def get_map_links_from_post_content(content: str) -> []:
         if ',' not in coords_str:
             continue
         coord_sections = coords_str.split(',')
-        if len(coord_sections) != 2:
+        if len(coord_sections) < 2:
             continue
         if not is_float(coord_sections[0]) or \
            not is_float(coord_sections[1]):
