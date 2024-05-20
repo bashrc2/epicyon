@@ -325,10 +325,9 @@ def header_buttons_timeline(default_timeline: str,
                 '<span>' + translate['Newswire'] + \
                 '</span></button></a>'
 
-    # 4. the calendar button
     if not is_text_browser:
         if not features_header:
-            # the show/hide button, for a simpler header appearance
+            # 4. the show/hide button, for a simpler header appearance
             if not icons_as_buttons:
                 tl_str += \
                     '      <a class="imageAnchor" href="' + \
@@ -345,7 +344,7 @@ def header_buttons_timeline(default_timeline: str,
                     '<span>' + translate['Show/Hide Buttons'] + \
                     '</span></button></a>'
 
-            # the hide announces button
+            # 5. the hide announces button
             if show_announces:
                 hide_announces_icon = 'repeat_hide.png'
                 hide_announces_text = translate['Hide Announces']
@@ -369,7 +368,7 @@ def header_buttons_timeline(default_timeline: str,
                     '<span>' + hide_announces_text + \
                     '</span></button></a>'
 
-        # calendar button
+        # 6. calendar button
         if not features_header:
             calendar_alt_text = translate['Calendar']
             if new_calendar_event:
@@ -402,7 +401,7 @@ def header_buttons_timeline(default_timeline: str,
             '><button class="button">' + \
             '<span>' + translate['User'] + '</span></button></a>'
 
-    # 5. search button
+    # 7. search button
     if not is_text_browser:
         if not features_header:
             if not icons_as_buttons:
@@ -426,7 +425,7 @@ def header_buttons_timeline(default_timeline: str,
                     '<span>' + translate['Search'] + \
                     '</span></button></a>'
 
-    # 6. new post
+    # 8. new post
     if not is_text_browser:
         if not features_header:
             tl_str += new_post_button_str

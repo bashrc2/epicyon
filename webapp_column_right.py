@@ -130,6 +130,9 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
         if not show_publish_as_icon:
             html_str += publish_button_str
 
+    # start of newswire column icons
+    html_str += '        <div class="headernewswireicons">\n'
+
     # show the edit icon
     if editor:
         dir_str = data_dir(base_dir)
@@ -193,6 +196,9 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
                 title_str + '" title="' + \
                 title_str + '" src="/' + \
                 'icons/publish.png" /></a>\n'
+
+    # end of newswire column icons
+    html_str += '        </div>\n'
 
     if edit_image_class == 'rightColEdit':
         html_str += '      </center>\n'

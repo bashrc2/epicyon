@@ -394,6 +394,11 @@ details {
     float: right;
 }
 
+.headernewswireicons {
+    display: flex;
+    float: right;
+}
+
 blockquote {
     border-left: 10px;
     margin: 1.5em 10px;
