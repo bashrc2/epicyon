@@ -466,7 +466,6 @@ a:link:hover {
 }
 
 a:link:focus{
-    outline: 2px solid var(--focus-color);
     filter: brightness(var(--icon-brightness-change));
     display: block;
 }
@@ -476,7 +475,6 @@ a:visited:hover {
 }
 
 a:visited:focus{
-    outline: 2px solid var(--focus-color);
     filter: brightness(var(--icon-brightness-change));
     display: block;
 }
