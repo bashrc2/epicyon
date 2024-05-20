@@ -390,9 +390,8 @@ details {
 }
 
 .headericons {
-    display: inline-block;
+    display: flex;
     float: right;
-    direction: rtl;
 }
 
 blockquote {
