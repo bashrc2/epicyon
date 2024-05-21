@@ -2417,11 +2417,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
             translate['Scheduled note to yourself'] + ':" alt="' + \
             translate['Scheduled note to yourself'] + ':"/>\n'
 
+    # show the display name or handle
     display_name = get_display_name(base_dir, post_actor, person_cache)
     if display_name:
         if len(display_name) < 2 or \
            display_name_is_emoji(display_name):
             display_name = None
+    actor_handle = actor_nickname + '@' + actor_domain
     if display_name:
         display_name = _enforce_max_display_name_length(display_name)
         # add emojis
@@ -2434,7 +2436,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
-            '" tabindex="10">' + \
+            '" tabindex="10" title="' + actor_handle + '">' + \
             '<span itemprop="author">' + display_name + '</span>' + \
             '</a>\n'
     else:
@@ -2447,7 +2449,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not actor_domain:
             # pprint(post_json_object)
             print('ERROR: no actor_domain')
-        actor_handle = actor_nickname + '@' + actor_domain
         title_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + post_actor + \
