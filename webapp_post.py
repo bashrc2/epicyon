@@ -1571,7 +1571,8 @@ def _reply_with_unknown_path_html(translate: {},
 def _get_reply_html(translate: {},
                     in_reply_to: str, reply_display_name: str,
                     nickname: str,
-                    post_json_object: {}) -> str:
+                    post_json_object: {},
+                    reply_handle: str) -> str:
     """Returns html title for a reply
     """
     if not in_reply_to:
@@ -1586,8 +1587,8 @@ def _get_reply_html(translate: {},
         'icons/reply.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + post_link + \
-        '" class="announceOrReply" tabindex="10">' + \
-        '<span itemprop="audience">' + \
+        '" class="announceOrReply" tabindex="10" title="' + \
+        reply_handle + '">' + '<span itemprop="audience">' + \
         reply_display_name + '</span></a>\n'
 
 
@@ -1697,6 +1698,9 @@ def _get_post_title_reply_html(base_dir: str,
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
+    reply_handle = ''
+    if reply_nickname and reply_domain:
+        reply_handle = reply_nickname + '@' + reply_domain
     get_person_from_cache(base_dir, reply_actor, person_cache)
     reply_display_name = \
         get_display_name(base_dir, reply_actor, person_cache)
@@ -1705,7 +1709,7 @@ def _get_post_title_reply_html(base_dir: str,
            display_name_is_emoji(reply_display_name):
             reply_display_name = None
     if not reply_display_name:
-        reply_display_name = reply_nickname + '@' + reply_domain
+        reply_display_name = reply_handle
 
     # add emoji to the display name
     if ':' in reply_display_name:
@@ -1723,7 +1727,7 @@ def _get_post_title_reply_html(base_dir: str,
     else:
         title_str += \
             _get_reply_html(translate, in_reply_to, reply_display_name,
-                            nickname, post_json_object)
+                            nickname, post_json_object, reply_handle)
 
     if mitm:
         title_str += _mitm_warning_html(translate)
