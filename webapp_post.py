@@ -1350,7 +1350,8 @@ def _announce_unattributed_html(translate: {},
 def _announce_with_display_name_html(translate: {},
                                      post_json_object: {},
                                      announce_display_name: str,
-                                     nickname: str) -> str:
+                                     nickname: str,
+                                     announce_handle: str) -> str:
     """Returns html for an announce having a display name
     """
     announces_str = 'announces'
@@ -1365,8 +1366,8 @@ def _announce_with_display_name_html(translate: {},
         'icons/repeat_inactive.png" ' + \
         'class="announceOrReply"/>\n' + \
         '        <a href="' + post_link + '" ' + \
-        'class="announceOrReply" tabindex="10">' + \
-        '<span itemprop="author">' + \
+        'class="announceOrReply" tabindex="10" title="' + \
+        announce_handle + '">' + '<span itemprop="author">' + \
         announce_display_name + '</span></a>\n'
 
 
@@ -1422,6 +1423,9 @@ def _get_post_title_announce_html(base_dir: str,
 
     announce_domain, _ = get_domain_from_actor(attributed_to)
     get_person_from_cache(base_dir, attributed_to, person_cache)
+    announce_handle = ''
+    if announce_nickname and announce_domain:
+        announce_handle = announce_nickname + '@' + announce_domain
     announce_display_name = \
         get_display_name(base_dir, attributed_to, person_cache)
     if announce_display_name:
@@ -1433,7 +1437,7 @@ def _get_post_title_announce_html(base_dir: str,
         announce_display_name = \
             _enforce_max_display_name_length(announce_display_name)
     if not announce_display_name and announce_domain:
-        announce_display_name = announce_nickname + '@' + announce_domain
+        announce_display_name = announce_handle
 
     _log_post_timing(enable_timing_log, post_start_time, '13.3')
 
@@ -1448,7 +1452,7 @@ def _get_post_title_announce_html(base_dir: str,
     title_str += \
         _announce_with_display_name_html(translate, post_json_object,
                                          announce_display_name,
-                                         nickname)
+                                         nickname, announce_handle)
 
     if mitm:
         title_str += _mitm_warning_html(translate)
