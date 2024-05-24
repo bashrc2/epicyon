@@ -5547,7 +5547,10 @@ def _test_functions():
                 method_args = []
                 module_line = 0
                 curr_return_types = ''
+                is_comment = False
                 for line in lines:
+                    if '"""' in line:
+                        is_comment = not is_comment
                     module_line += 1
                     # what group is this module in?
                     if '__module_group__' in line:
@@ -5587,16 +5590,44 @@ def _test_functions():
                                     method_loc.append(loc_str)
                                     line_count = 0
 
-                        # check return statements are of the expected type
-                        if curr_return_types and \
-                           '"""' not in line and \
-                           line.endswith(' return\n'):
-                            if curr_return_types != 'None':
-                                print(method_name + ' in module ' +
-                                      mod_name + ' has unexpected return')
-                                print('Expected: return ' + curr_return_types)
-                                print('Actual:   ' + line.strip())
-                                assert False
+                        is_return_statement = False
+                        if ' return' in line:
+                            before_return = line.split(' return')[0].strip()
+                            if not before_return:
+                                is_return_statement = True
+
+                        if curr_return_types and is_return_statement and \
+                           not is_comment and '#' not in line and \
+                           '"""' not in line:
+                            # check return statements are of the expected type
+                            if line.endswith(' return\n'):
+                                if curr_return_types != 'None':
+                                    print(method_name + ' in module ' +
+                                          mod_name + ' has unexpected return')
+                                    print('Expected: return ' +
+                                          str(curr_return_types))
+                                    print('Actual:   ' + line.strip())
+                                    assert False
+                            elif (' return' in line and
+                                  not line.endswith(',\n') and
+                                  not line.endswith('\\\n') and
+                                  ',' in curr_return_types):
+                                # check the number of return values
+                                ret_types = line.split(' return', 1)[1]
+                                no_of_args1 = \
+                                    len(curr_return_types.split(','))
+                                no_of_args2 = \
+                                    len(ret_types.split(','))
+                                if no_of_args1 != no_of_args2:
+                                    print(method_name + ' in module ' +
+                                          mod_name +
+                                          ' has unexpected ' +
+                                          'number of arguments')
+                                    print('Expected: return ' +
+                                          str(curr_return_types))
+                                    print('Actual:   ' + line.strip())
+                                    assert False
+
                         prev_line = line
                         continue
                     # reading function def
@@ -5606,15 +5637,18 @@ def _test_functions():
                     # get list of arguments with spaces removed
                     method_args = \
                         source_str.split('def ' + method_name + '(')[1]
-                    return_types = method_args.split(')')[1]
+                    return_types = method_args.split(')', 1)[1]
                     if ':' in return_types:
                         return_types = return_types.split(':')[0]
                     if '->' in return_types:
                         return_types = return_types.split('->')[1].strip()
+                        if return_types.startswith('(') and \
+                           not return_types.endswith(')'):
+                            return_types += ')'
                     else:
-                        return_types = ''
+                        return_types = []
                     curr_return_types = return_types
-                    method_args = method_args.split(')')[0]
+                    method_args = method_args.split(')', 1)[0]
                     method_args = method_args.replace(' ', '').split(',')
                     if function.get(mod_name):
                         function[mod_name].append(method_name)

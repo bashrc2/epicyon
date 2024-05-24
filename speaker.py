@@ -423,7 +423,8 @@ def speakable_text(http_prefix: str,
     # replace all double spaces
     while '  ' in say_content:
         say_content = say_content.replace('  ', ' ')
-    return say_content.replace(' . ', '. ').strip(), detected_links
+    say_str = say_content.replace(' . ', '. ').strip()
+    return say_str, detected_links
 
 
 def _post_to_speaker_json(base_dir: str, http_prefix: str,

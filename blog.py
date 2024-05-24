@@ -955,7 +955,8 @@ def path_contains_blog_link(base_dir: str,
         return None, None
     message_id = local_actor_url(http_prefix, nickname, domain_full) + \
         '/statuses/' + user_ending2[1]
-    return locate_post(base_dir, nickname, domain, message_id), nickname
+    filename = locate_post(base_dir, nickname, domain, message_id)
+    return filename, nickname
 
 
 def get_blog_address(actor_json: {}) -> str:

@@ -667,7 +667,9 @@ def get_banner_file(base_dir: str,
     """Gets the image for the timeline banner
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'banner', account_dir, theme)
+    banner_file, banner_filename = \
+        _get_image_file(base_dir, 'banner', account_dir, theme)
+    return banner_file, banner_filename
 
 
 def get_profile_background_file(base_dir: str,
@@ -676,7 +678,9 @@ def get_profile_background_file(base_dir: str,
     """Gets the image for the profile background
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'image', account_dir, theme)
+    banner_file, banner_filename = \
+        _get_image_file(base_dir, 'image', account_dir, theme)
+    return banner_file, banner_filename
 
 
 def get_search_banner_file(base_dir: str,
@@ -685,7 +689,9 @@ def get_search_banner_file(base_dir: str,
     """Gets the image for the search banner
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'search_banner', account_dir, theme)
+    banner_file, banner_filename = \
+        _get_image_file(base_dir, 'search_banner', account_dir, theme)
+    return banner_file, banner_filename
 
 
 def get_left_image_file(base_dir: str,
@@ -693,7 +699,9 @@ def get_left_image_file(base_dir: str,
     """Gets the image for the left column
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'left_col_image', account_dir, theme)
+    banner_file, banner_filename = \
+        _get_image_file(base_dir, 'left_col_image', account_dir, theme)
+    return banner_file, banner_filename
 
 
 def get_right_image_file(base_dir: str,
@@ -701,7 +709,9 @@ def get_right_image_file(base_dir: str,
     """Gets the image for the right column
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    return _get_image_file(base_dir, 'right_col_image', account_dir, theme)
+    banner_file, banner_filename = \
+        _get_image_file(base_dir, 'right_col_image', account_dir, theme)
+    return banner_file, banner_filename
 
 
 def html_header_with_external_style(css_filename: str, instance_title: str,

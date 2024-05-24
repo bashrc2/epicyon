@@ -386,21 +386,37 @@ def geocoords_from_map_link(url: str,
     """Returns geocoordinates from a map link url
     """
     if osm_domain in url:
-        return _geocoords_from_osm_link(url, osm_domain)
+        zoom, latitude, longitude = \
+            _geocoords_from_osm_link(url, osm_domain)
+        return zoom, latitude, longitude
     if 'osm.org' in url and 'mlat=' in url:
-        return _geocoords_from_osmorg_link(url)
+        zoom, latitude, longitude = \
+            _geocoords_from_osmorg_link(url)
+        return zoom, latitude, longitude
     if 'osmand.net' in url and '/map' in url:
-        return _geocoords_from_osmand_link(url)
+        zoom, latitude, longitude = \
+            _geocoords_from_osmand_link(url)
+        return zoom, latitude, longitude
     if '.google.co' in url:
-        return _geocoords_from_gmaps_link(url)
+        zoom, latitude, longitude = \
+            _geocoords_from_gmaps_link(url)
+        return zoom, latitude, longitude
     if '.bing.co' in url:
-        return _geocoords_from_bmaps_link(url)
+        zoom, latitude, longitude = \
+            _geocoords_from_bmaps_link(url)
+        return zoom, latitude, longitude
     if '.waze.co' in url:
-        return _geocoords_from_waze_link(url)
+        zoom, latitude, longitude = \
+            _geocoords_from_waze_link(url)
+        return zoom, latitude, longitude
     if 'wego.here.co' in url:
-        return _geocoords_from_wego_link(url)
+        zoom, latitude, longitude = \
+            _geocoords_from_wego_link(url)
+        return zoom, latitude, longitude
     if 'geo:' in url and ',' in url:
-        return _geocoords_from_geo_link(url)
+        zoom, latitude, longitude = \
+            _geocoords_from_geo_link(url)
+        return zoom, latitude, longitude
     return None, None, None
 
 
