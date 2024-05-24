@@ -437,11 +437,11 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     format for speech synthesis
     """
     if not has_object_dict(post_json_object):
-        return
+        return {}
     if not post_json_object['object'].get('content'):
-        return
+        return {}
     if not isinstance(post_json_object['object']['content'], str):
-        return
+        return {}
     detected_links = []
     content = urllib.parse.unquote_plus(post_json_object['object']['content'])
     content = html.unescape(content)
@@ -499,7 +499,7 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     speaker_name = \
         get_display_name(base_dir, actor_url, person_cache)
     if not speaker_name:
-        return
+        return {}
     speaker_name = _remove_emoji_from_text(speaker_name)
     speaker_name = speaker_name.replace('_', ' ')
     speaker_name = camel_case_split(speaker_name)

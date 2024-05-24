@@ -338,7 +338,7 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
         if debug:
             print('DEBUG: handle to unfollow ' + handle_to_unfollow +
                   ' is not in ' + filename)
-        return
+        return False
     lines = []
     try:
         with open(filename, 'r', encoding='utf-8') as fp_unfoll:

@@ -87,7 +87,7 @@ def _reactionpost(recent_posts_cache: {},
         return None
     if not valid_emoji_content(emoji_content):
         print('_reaction: Invalid emoji reaction: "' + emoji_content + '"')
-        return
+        return None
 
     full_domain = get_full_domain(domain, port)
 

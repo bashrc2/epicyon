@@ -24,7 +24,7 @@ def is_welcome_screen_complete(base_dir: str,
     """
     account_path = acct_dir(base_dir, nickname, domain)
     if not os.path.isdir(account_path):
-        return
+        return False
     complete_filename = account_path + '/.welcome_complete'
     return os.path.isfile(complete_filename)
 

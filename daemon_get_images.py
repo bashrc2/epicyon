@@ -507,7 +507,7 @@ def show_qrcode(self, calling_domain: str, path: str,
         if etag_exists(self, qr_filename):
             # The file has not changed
             http_304(self)
-            return
+            return True
 
         tries = 0
         media_binary = None

@@ -700,9 +700,9 @@ def _get_first_item_id(box_json: {}) -> str:
     """Returns the id of the first item in the timeline
     """
     if _timeline_is_empty(box_json):
-        return
+        return ''
     if len(box_json['orderedItems']) == 0:
-        return
+        return ''
     return box_json['orderedItems'][0]['id']
 
 

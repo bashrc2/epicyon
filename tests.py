@@ -5546,6 +5546,7 @@ def _test_functions():
                 method_name = ''
                 method_args = []
                 module_line = 0
+                curr_return_types = ''
                 for line in lines:
                     module_line += 1
                     # what group is this module in?
@@ -5585,6 +5586,17 @@ def _test_functions():
                                 if loc_str not in method_loc:
                                     method_loc.append(loc_str)
                                     line_count = 0
+
+                        # check return statements are of the expected type
+                        if curr_return_types and \
+                           '"""' not in line and \
+                           line.endswith(' return\n'):
+                            if curr_return_types != 'None':
+                                print(method_name + ' in module ' +
+                                      mod_name + ' has unexpected return')
+                                print('Expected: return ' + curr_return_types)
+                                print('Actual:   ' + line.strip())
+                                assert False
                         prev_line = line
                         continue
                     # reading function def
@@ -5594,6 +5606,14 @@ def _test_functions():
                     # get list of arguments with spaces removed
                     method_args = \
                         source_str.split('def ' + method_name + '(')[1]
+                    return_types = method_args.split(')')[1]
+                    if ':' in return_types:
+                        return_types = return_types.split(':')[0]
+                    if '->' in return_types:
+                        return_types = return_types.split('->')[1].strip()
+                    else:
+                        return_types = ''
+                    curr_return_types = return_types
                     method_args = method_args.split(')')[0]
                     method_args = method_args.replace(' ', '').split(',')
                     if function.get(mod_name):
@@ -5606,7 +5626,8 @@ def _test_functions():
                     function_properties[method_name] = {
                         "args": method_args,
                         "module": mod_name,
-                        "calledInModule": []
+                        "calledInModule": [],
+                        "returns": return_types
                     }
                 # LOC count for the last function
                 if line_count > 2:
@@ -5684,8 +5705,7 @@ def _test_functions():
                     continue
                 # detect a call to this function
                 if name + '(' in line:
-                    mod_list = \
-                        properties['calledInModule']
+                    mod_list = properties['calledInModule']
                     if mod_name not in mod_list:
                         mod_list.append(mod_name)
                     if mod_name in exclude_func_args:
