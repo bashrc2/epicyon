@@ -3228,7 +3228,8 @@ def _receive_announce(recent_posts_cache: {},
             print('DEBUG: self-boost rejected')
         return False
     if not has_users_path(message_json['object']):
-        print('WARN: unknown users path ' + message_json['object'])
+        if '/objects/' not in str(message_json['object']):
+            print('WARN: unknown users path ' + str(message_json['object']))
         if debug:
             print('DEBUG: ' +
                   '"users", "channel" or "profile" missing in ' +
