@@ -3217,6 +3217,7 @@ def _receive_announce(recent_posts_cache: {},
         return False
     actor_url = get_actor_from_post(message_json)
     if not has_users_path(actor_url):
+        print('WARN: unknown users path ' + actor_url)
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
@@ -3227,6 +3228,7 @@ def _receive_announce(recent_posts_cache: {},
             print('DEBUG: self-boost rejected')
         return False
     if not has_users_path(message_json['object']):
+        print('WARN: unknown users path ' + message_json['object'])
         if debug:
             print('DEBUG: ' +
                   '"users", "channel" or "profile" missing in ' +
