@@ -1654,7 +1654,7 @@ def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
 def _get_statuses_list() -> []:
     """Returns a list of statuses path strings
     """
-    return ('/statuses/', '/objects/', '/honk/', '/p/', '/h/')
+    return ('/statuses/', '/objects/', '/honk/', '/p/', '/h/', '/api/posts/')
 
 
 def contains_statuses(url: str) -> bool:
@@ -1878,7 +1878,7 @@ def get_user_paths() -> []:
     return ('/users/', '/profile/', '/accounts/', '/channel/',
             '/u/', '/c/', '/m/', '/a/', '/video-channels/', '/author/',
             '/activitypub/', '/actors/', '/snac/', '/@/', '/~/',
-            '/fediverse/blog/', '/user/', '/@')
+            '/fediverse/blog/', '/user/', '/@', '/api/collections/')
 
 
 def get_group_paths() -> []:
