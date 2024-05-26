@@ -3738,7 +3738,7 @@ def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
     if not has_users_path(lookup_actor):
         return
 
-    if '/statuses/' in lookup_actor:
+    if contains_statuses(lookup_actor):
         lookup_actor = get_actor_from_post_id(lookup_actor)
 
     if debug:
