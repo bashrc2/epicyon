@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import get_statuses_list
 from utils import quote_toots_allowed
 from utils import get_post_attachments
 from utils import lines_in_file
@@ -3228,7 +3229,15 @@ def _receive_announce(recent_posts_cache: {},
             print('DEBUG: self-boost rejected')
         return False
     if not has_users_path(message_json['object']):
-        if '/objects/' not in str(message_json['object']):
+        # does the object contain a statuses path?
+        statuses = get_statuses_list()
+        status_path_found = False
+        for status_str in statuses:
+            if status_str in str(message_json['object']):
+                status_path_found = True
+                break
+        # log any unrecognised statuses
+        if not status_path_found:
             print('WARN: unknown users path ' + str(message_json['object']))
         if debug:
             print('DEBUG: ' +

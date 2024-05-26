@@ -1651,7 +1651,7 @@ def dangerous_svg(content: str, allow_local_network_access: bool) -> bool:
                                     separators, invalid_strings)
 
 
-def _get_statuses_list() -> []:
+def get_statuses_list() -> []:
     """Returns a list of statuses path strings
     """
     return ('/statuses/', '/objects/', '/honk/', '/p/', '/h/', '/api/posts/',
@@ -1661,7 +1661,7 @@ def _get_statuses_list() -> []:
 def contains_statuses(url: str) -> bool:
     """Whether the given url contains /statuses/
     """
-    statuses_list = _get_statuses_list()
+    statuses_list = get_statuses_list()
     for status_str in statuses_list:
         if status_str in url:
             return True
@@ -1674,7 +1674,7 @@ def get_actor_from_post_id(post_id: str) -> str:
     https://somedomain/users/nick
     """
     actor = post_id
-    statuses_list = _get_statuses_list()
+    statuses_list = get_statuses_list()
     pixelfed_style_statuses = ['/p/']
     for status_str in statuses_list:
         if status_str not in actor:
