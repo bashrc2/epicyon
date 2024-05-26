@@ -1665,6 +1665,12 @@ def contains_statuses(url: str) -> bool:
     for status_str in statuses_list:
         if status_str in url:
             return True
+
+    # wordpress-style blog post
+    today = datetime.date.today()
+    if '/' + str(today.year) + '/' in url or \
+       '/' + str(today.year - 1) + '/' in url:
+        return True
     return False
 
 
