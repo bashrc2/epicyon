@@ -24,6 +24,8 @@ from posts import post_is_muted
 from posts import get_person_box
 from posts import download_announce
 from posts import populate_replies_json
+from utils import get_actor_from_post_id
+from utils import contains_statuses
 from utils import data_dir
 from utils import get_quote_toot_url
 from utils import get_post_attachments
@@ -1634,7 +1636,7 @@ def _get_post_title_reply_html(base_dir: str,
     # has a reply
     reply_actor = None
     in_reply_to = None
-    if '/statuses/' not in reply_id:
+    if contains_statuses(reply_id):
         reply_url = reply_id
         post_domain = reply_url
         prefixes = get_protocol_prefixes()
@@ -1683,7 +1685,7 @@ def _get_post_title_reply_html(base_dir: str,
         if isinstance(reply_id, str):
             in_reply_to = reply_id
     if in_reply_to and not reply_actor:
-        reply_actor = in_reply_to.split('/statuses/')[0]
+        reply_actor = get_actor_from_post_id(in_reply_to)
     reply_nickname = get_nickname_from_actor(reply_actor)
     if not reply_nickname or not in_reply_to:
         title_str += \
