@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import get_actor_from_post_id
 from utils import string_contains
 from utils import get_post_attachments
 from utils import is_premium_account
@@ -3600,8 +3601,9 @@ def add_to_field(activity_type: str, post_json_object: {},
                               'add_to_field1 "to" field assigned to ' +
                               activity_type)
                     to_address = post_json_object['object']
-                    if '/statuses/' in to_address:
-                        to_address = to_address.split('/statuses/')[0]
+                    if contains_statuses(to_address):
+                        if has_users_path(to_address):
+                            to_address = get_actor_from_post_id(to_address)
                     post_json_object['to'] = [to_address]
                     if debug:
                         print('DEBUG: "to" address added: ' + to_address)
@@ -3629,8 +3631,9 @@ def add_to_field(activity_type: str, post_json_object: {},
                                   '"to" field assigned to ' +
                                   activity_type)
                         to_address = post_json_object['object']['object']
-                        if '/statuses/' in to_address:
-                            to_address = to_address.split('/statuses/')[0]
+                        if contains_statuses(to_address):
+                            if has_users_path(to_address):
+                                to_address = get_actor_from_post_id(to_address)
                         post_json_object['object']['to'] = [to_address]
                         post_json_object['to'] = [to_address]
                         if debug:
