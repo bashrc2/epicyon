@@ -1655,7 +1655,7 @@ def _get_statuses_list() -> []:
     """Returns a list of statuses path strings
     """
     return ('/statuses/', '/objects/', '/honk/', '/p/', '/h/', '/api/posts/',
-            '/notes/', '/comment/')
+            '/notes/', '/comment/', '/post/')
 
 
 def contains_statuses(url: str) -> bool:
