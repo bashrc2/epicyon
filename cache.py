@@ -11,6 +11,7 @@ import os
 from session import url_exists
 from session import get_json
 from session import get_json_valid
+from utils import contains_statuses
 from utils import load_json
 from utils import save_json
 from utils import get_file_case_insensitive
@@ -82,7 +83,7 @@ def store_person_in_cache(base_dir: str, person_url: str,
                           allow_write_to_file: bool) -> None:
     """Store an actor in the cache
     """
-    if 'statuses' in person_url or person_url.endswith('/actor'):
+    if contains_statuses(person_url) or person_url.endswith('/actor'):
         # This is not an actor or person account
         return
 

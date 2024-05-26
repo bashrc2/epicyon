@@ -3739,7 +3739,7 @@ def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
         return
 
     if '/statuses/' in lookup_actor:
-        lookup_actor = lookup_actor.split('/statuses/')[0]
+        lookup_actor = get_actor_from_post_id(lookup_actor)
 
     if debug:
         print('DEBUG: Obtaining actor for reply post ' + lookup_actor)
