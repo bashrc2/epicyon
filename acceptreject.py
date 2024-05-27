@@ -10,6 +10,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+from utils import get_user_paths
 from utils import text_in_file
 from utils import has_object_string_object
 from utils import has_users_path
@@ -131,7 +132,14 @@ def _accept_follow(base_dir: str, message_json: {},
                 print('DEBUG: unrecognized actor ' + this_actor)
             return
     else:
-        if not '/' + accepted_domain + '/users/' + nickname in this_actor:
+        actor_found = False
+        users_list = get_user_paths()
+        for users_str in users_list:
+            if '/' + accepted_domain + users_str + nickname in this_actor:
+                actor_found = True
+                break
+
+        if not actor_found:
             if debug:
                 print('Expected: /' + accepted_domain + '/users/' + nickname)
                 print('Actual:   ' + this_actor)

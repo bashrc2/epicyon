@@ -12,6 +12,8 @@ import json
 import time
 from session import get_json_valid
 from session import create_session
+from utils import get_user_paths
+from utils import contains_statuses
 from utils import data_dir
 from utils import string_contains
 from utils import date_from_string_format
@@ -1469,7 +1471,15 @@ def outbox_mute(base_dir: str, http_prefix: str,
         return
     domain_full = get_full_domain(domain, port)
     actor_url = get_actor_from_post(message_json)
-    if not actor_url.endswith(domain_full + '/users/' + nickname):
+
+    actor_found = False
+    users_paths = get_user_paths()
+    for possible_path in users_paths:
+        if actor_url.endswith(domain_full + possible_path + nickname):
+            actor_found = True
+            break
+
+    if not actor_found:
         return
     if not message_json['type'] == 'Ignore':
         return
@@ -1479,7 +1489,7 @@ def outbox_mute(base_dir: str, http_prefix: str,
         print('DEBUG: c2s mute request arrived in outbox')
 
     message_id = remove_id_ending(message_json['object'])
-    if '/statuses/' not in message_id:
+    if not contains_statuses(message_id):
         if debug:
             print('DEBUG: c2s mute object is not a status')
         return
@@ -1519,7 +1529,15 @@ def outbox_undo_mute(base_dir: str, http_prefix: str,
         return
     domain_full = get_full_domain(domain, port)
     actor_url = get_actor_from_post(message_json)
-    if not actor_url.endswith(domain_full + '/users/' + nickname):
+
+    actor_found = False
+    users_paths = get_user_paths()
+    for possible_path in users_paths:
+        if actor_url.endswith(domain_full + possible_path + nickname):
+            actor_found = True
+            break
+
+    if not actor_found:
         return
     if not message_json['type'] == 'Undo':
         return
@@ -1535,7 +1553,7 @@ def outbox_undo_mute(base_dir: str, http_prefix: str,
         print('DEBUG: c2s undo mute request arrived in outbox')
 
     message_id = remove_id_ending(message_json['object']['object'])
-    if '/statuses/' not in message_id:
+    if not contains_statuses(message_id):
         if debug:
             print('DEBUG: c2s undo mute object is not a status')
         return

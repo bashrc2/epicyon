@@ -9,6 +9,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+from utils import get_user_paths
 from utils import has_object_string_object
 from utils import has_group_type
 from utils import has_object_dict
@@ -149,9 +150,11 @@ def announced_by_person(is_announced: bool, post_actor: str,
     """
     if not post_actor:
         return False
-    if is_announced and \
-       post_actor.endswith(domain_full + '/users/' + nickname):
-        return True
+    if is_announced:
+        users_paths = get_user_paths()
+        for possible_path in users_paths:
+            if post_actor.endswith(domain_full + possible_path + nickname):
+                return True
     return False
 
 
