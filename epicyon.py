@@ -45,6 +45,7 @@ from posts import send_post_via_server
 from posts import get_public_posts_of_person
 from posts import get_user_url
 from posts import check_domains
+from session import get_json_valid
 from session import create_session
 from session import get_json
 from session import get_vcard
@@ -1239,7 +1240,7 @@ def _command_options() -> None:
         test_json = get_json(signing_priv_key_pem, session, argb.json,
                              as_header, None, debug, __version__,
                              http_prefix, domain)
-        if test_json:
+        if get_json_valid(test_json):
             pprint(test_json)
         sys.exit()
 
