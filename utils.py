@@ -1655,7 +1655,8 @@ def _get_statuses_list() -> []:
     """Returns a list of statuses path strings
     """
     return ('/statuses/', '/objects/', '/honk/', '/p/', '/h/', '/api/posts/',
-            '/notes/', '/comment/', '/post/', '/item/', '/videos/')
+            '/notes/', '/comment/', '/post/', '/item/', '/videos/',
+            '/button/')
 
 
 def contains_statuses(url: str) -> bool:
@@ -2877,7 +2878,8 @@ def _get_reserved_words() -> str:
             'mention', 'http', 'https', 'ipfs', 'ipns',
             'ontologies', 'data', 'postedit', 'moved',
             'inactive', 'activitypub', 'actors',
-            'notes', 'offers', 'wanted', 'honk')
+            'notes', 'offers', 'wanted', 'honk',
+            'button')
 
 
 def get_nickname_validation_pattern() -> str:
