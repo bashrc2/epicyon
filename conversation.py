@@ -112,6 +112,90 @@ def unmute_conversation(base_dir: str, nickname: str, domain: str,
               conversation_filename + '.muted')
 
 
+def _get_replies_to_post(post_json_object: {},
+                         signing_priv_key_pem: str,
+                         session, as_header, debug: bool,
+                         http_prefix: str, domain: str) -> []:
+    """Returns a list of reply posts to the given post as json
+    """
+    result = []
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+    if not post_obj.get('replies'):
+        return result
+
+    # get the replies collection url
+    replies_connection_id = None
+    if isinstance(post_obj['replies'], dict):
+        if post_obj['replies'].get('id'):
+            replies_connection_id = post_obj['replies']['id']
+    elif isinstance(post_obj['replies'], str):
+        replies_connection_id = post_obj['replies']
+
+    if replies_connection_id:
+        replies_collection = \
+            get_json(signing_priv_key_pem, session, replies_connection_id,
+                     as_header, None, debug, __version__,
+                     http_prefix, domain)
+        if not get_json_valid(replies_collection):
+            return result
+
+        # get the list of replies
+        if not replies_collection.get('first'):
+            return result
+        if not isinstance(replies_collection['first'], dict):
+            return result
+        if not replies_collection['first'].get('items'):
+            return result
+
+        # check each item in the list
+        items_list = replies_collection['first']['items']
+        for item in items_list:
+            if not isinstance(item, dict):
+                continue
+            if not has_object_dict(item):
+                if not item.get('attributedTo'):
+                    continue
+                attrib_str = get_attributed_to(item['attributedTo'])
+                if not attrib_str:
+                    continue
+                if not item.get('published'):
+                    continue
+                if not item.get('id'):
+                    continue
+                if not isinstance(item['id'], str):
+                    continue
+                if not item.get('to'):
+                    continue
+                if not isinstance(item['to'], list):
+                    continue
+                if 'cc' not in item:
+                    continue
+                if not isinstance(item['cc'], list):
+                    continue
+                wrapped_post = {
+                    "@context": "https://www.w3.org/ns/activitystreams",
+                    'id': item['id'] + '/activity',
+                    'type': 'Create',
+                    'actor': attrib_str,
+                    'published': item['published'],
+                    'to': item['to'],
+                    'cc': item['cc'],
+                    'object': item
+                }
+                item = wrapped_post
+            if not item['object'].get('published'):
+                continue
+
+            # render harmless any dangerous markup
+            harmless_markup(item)
+
+            # add it to the list
+            result.append(item)
+    return result
+
+
 def download_conversation_posts(authorized: bool, session,
                                 http_prefix: str, base_dir: str,
                                 nickname: str, domain: str,
@@ -142,6 +226,16 @@ def download_conversation_posts(authorized: bool, session,
     if debug:
         if not get_json_valid(post_json_object):
             print(post_id + ' returned no json')
+
+    # get any replies
+    replies_to_post = []
+    if get_json_valid(post_json_object):
+        replies_to_post = \
+            _get_replies_to_post(post_json_object,
+                                 signing_priv_key_pem,
+                                 session, as_header, debug,
+                                 http_prefix, domain)
+
     while get_json_valid(post_json_object):
         if not isinstance(post_json_object, dict):
             break
@@ -211,4 +305,5 @@ def download_conversation_posts(authorized: bool, session,
         if debug:
             if not get_json_valid(post_json_object):
                 print(post_id + ' returned no json')
-    return conversation_view
+
+    return conversation_view + replies_to_post
