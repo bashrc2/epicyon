@@ -375,7 +375,4 @@ def download_conversation_posts(authorized: bool, session,
             if not get_json_valid(post_json_object):
                 print(post_id + ' returned no json')
 
-    if replies_to_post:
-        conversation_view += '<hr>\n' + replies_to_post
-
-    return conversation_view
+    return conversation_view + replies_to_post

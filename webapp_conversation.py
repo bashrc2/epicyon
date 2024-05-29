@@ -10,6 +10,7 @@ __module_group__ = "Timeline"
 
 import os
 from conversation import download_conversation_posts
+from utils import remove_id_ending
 from utils import get_config_param
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -125,6 +126,11 @@ def html_conversation_view(authorized: bool, post_id: str,
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache)
         if post_str:
+            if post_json_object.get('id'):
+                if isinstance(post_json_object['id'], str):
+                    id_str = remove_id_ending(post_json_object['id'])
+                    if post_id in id_str:
+                        post_str += '<hr>\n'
             conv_str += text_mode_separator + separator_str + post_str
 
     # if using a text mode browser then don't show SHOW MORE because there
