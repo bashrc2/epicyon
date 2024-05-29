@@ -156,7 +156,9 @@ def _get_replies_to_post(post_json_object: {},
             if not replies_collection['first'].get('next'):
                 return result
 
-        items_list = replies_collection['first']['items']
+        items_list = []
+        if replies_collection['first'].get('items'):
+            items_list = replies_collection['first']['items']
         if not items_list:
             # if there are no items try the next one
             next_page_id = replies_collection['first']['next']
@@ -166,6 +168,8 @@ def _get_replies_to_post(post_json_object: {},
                 get_json(signing_priv_key_pem, session, next_page_id,
                          as_header, None, debug, __version__,
                          http_prefix, domain)
+            print('DEBUG: get_replies_to_post next replies_collection ' +
+                  str(replies_collection))
             if not get_json_valid(replies_collection):
                 return result
             if not replies_collection.get('first'):
