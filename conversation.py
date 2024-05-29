@@ -136,8 +136,9 @@ def _get_replies_to_post(post_json_object: {},
         replies_collection_id = post_obj['replies']
 
     if replies_collection_id:
-        print('DEBUG: get_replies_to_post replies_collection_id ' +
-              str(replies_collection_id))
+        if debug:
+            print('DEBUG: get_replies_to_post replies_collection_id ' +
+                  str(replies_collection_id))
 
         replies_collection = \
             get_json(signing_priv_key_pem, session, replies_collection_id,
@@ -146,8 +147,9 @@ def _get_replies_to_post(post_json_object: {},
         if not get_json_valid(replies_collection):
             return result
 
-        print('DEBUG: get_replies_to_post replies_collection ' +
-              str(replies_collection))
+        if debug:
+            print('DEBUG: get_replies_to_post replies_collection ' +
+                  str(replies_collection))
         # get the list of replies
         if not replies_collection.get('first'):
             return result
@@ -169,8 +171,9 @@ def _get_replies_to_post(post_json_object: {},
                 get_json(signing_priv_key_pem, session, next_page_id,
                          as_header, None, debug, __version__,
                          http_prefix, domain)
-            print('DEBUG: get_replies_to_post next replies_collection ' +
-                  str(replies_collection))
+            if debug:
+                print('DEBUG: get_replies_to_post next replies_collection ' +
+                      str(replies_collection))
             if not get_json_valid(replies_collection):
                 return result
             if not replies_collection.get('items'):
@@ -179,8 +182,9 @@ def _get_replies_to_post(post_json_object: {},
                 return result
             items_list = replies_collection['items']
 
-        print('DEBUG: get_replies_to_post items_list ' +
-              str(items_list))
+        if debug:
+            print('DEBUG: get_replies_to_post items_list ' +
+                  str(items_list))
 
         if not isinstance(items_list, list):
             return result
