@@ -245,7 +245,7 @@ def _get_replies_to_post(post_json_object: {},
             if depth < 10 and item.get('id'):
                 if isinstance(item['id'], str):
                     result += \
-                        _get_replies_to_post(post_json_object,
+                        _get_replies_to_post(item,
                                              signing_priv_key_pem,
                                              session, as_header,
                                              debug,
