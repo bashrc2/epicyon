@@ -116,7 +116,8 @@ def unmute_conversation(base_dir: str, nickname: str, domain: str,
 def _get_replies_to_post(post_json_object: {},
                          signing_priv_key_pem: str,
                          session, as_header, debug: bool,
-                         http_prefix: str, domain: str) -> []:
+                         http_prefix: str, domain: str,
+                         depth: int) -> []:
     """Returns a list of reply posts to the given post as json
     """
     result = []
@@ -240,6 +241,16 @@ def _get_replies_to_post(post_json_object: {},
 
             # add it to the list
             result.append(item)
+
+            if depth < 10 and item.get('id'):
+                if isinstance(item['id'], str):
+                    result += \
+                        _get_replies_to_post(post_json_object,
+                                             signing_priv_key_pem,
+                                             session, as_header,
+                                             debug,
+                                             http_prefix, domain,
+                                             depth + 1)
     return result
 
 
@@ -281,7 +292,7 @@ def download_conversation_posts(authorized: bool, session,
             _get_replies_to_post(post_json_object,
                                  signing_priv_key_pem,
                                  session, as_header, debug,
-                                 http_prefix, domain)
+                                 http_prefix, domain, 0)
 
     while get_json_valid(post_json_object):
         if not isinstance(post_json_object, dict):
