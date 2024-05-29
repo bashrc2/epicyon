@@ -80,6 +80,7 @@ def html_conversation_view(authorized: bool, post_id: str,
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
+    current_reading_str = ''
     for post_json_object in conv_posts:
         show_individual_post_icons = True
         # if not authorized then only show public posts
@@ -126,12 +127,17 @@ def html_conversation_view(authorized: bool, post_id: str,
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache)
         if post_str:
-            if post_json_object.get('id'):
-                if isinstance(post_json_object['id'], str):
-                    id_str = remove_id_ending(post_json_object['id'])
-                    if post_id in id_str:
-                        post_str += '<br><hr><br>\n'
-            conv_str += text_mode_separator + separator_str + post_str
+            conv_str += \
+                current_reading_str + text_mode_separator + \
+                separator_str + post_str
+
+        # show separator at the current reading point
+        current_reading_str = ''
+        if post_json_object.get('id'):
+            if isinstance(post_json_object['id'], str):
+                id_str = remove_id_ending(post_json_object['id'])
+                if post_id in id_str:
+                    current_reading_str = '<br><hr><br>\n'
 
     # if using a text mode browser then don't show SHOW MORE because there
     # is no way to hide/expand sections
