@@ -117,7 +117,7 @@ def _get_replies_to_post(post_json_object: {},
                          signing_priv_key_pem: str,
                          session, as_header, debug: bool,
                          http_prefix: str, domain: str,
-                         depth: int) -> []:
+                         depth: int, ids: []) -> []:
     """Returns a list of reply posts to the given post as json
     """
     result = []
@@ -243,18 +243,26 @@ def _get_replies_to_post(post_json_object: {},
             # render harmless any dangerous markup
             harmless_markup(item)
 
+            # keep a list of ids encountered, to avoid circularity
+            reply_post_id = None
+            if item.get('id'):
+                if isinstance(item['id'], str):
+                    reply_post_id = item['id']
+                    if reply_post_id in ids:
+                        continue
+                    ids.append(reply_post_id)
+
             # add it to the list
             result.append(item)
 
-            if depth < 10 and item.get('id'):
-                if isinstance(item['id'], str):
-                    result += \
-                        _get_replies_to_post(item,
-                                             signing_priv_key_pem,
-                                             session, as_header,
-                                             debug,
-                                             http_prefix, domain,
-                                             depth + 1)
+            if depth < 10 and reply_post_id:
+                result += \
+                    _get_replies_to_post(item,
+                                         signing_priv_key_pem,
+                                         session, as_header,
+                                         debug,
+                                         http_prefix, domain,
+                                         depth + 1, ids)
     return result
 
 
@@ -296,7 +304,7 @@ def download_conversation_posts(authorized: bool, session,
             _get_replies_to_post(post_json_object,
                                  signing_priv_key_pem,
                                  session, as_header, debug,
-                                 http_prefix, domain, 0)
+                                 http_prefix, domain, 0, [])
 
     while get_json_valid(post_json_object):
         if not isinstance(post_json_object, dict):
