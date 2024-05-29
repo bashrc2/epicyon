@@ -127,25 +127,25 @@ def _get_replies_to_post(post_json_object: {},
         return result
 
     # get the replies collection url
-    replies_connection_id = None
+    replies_collection_id = None
     if isinstance(post_obj['replies'], dict):
         if post_obj['replies'].get('id'):
-            replies_connection_id = post_obj['replies']['id']
+            replies_collection_id = post_obj['replies']['id']
     elif isinstance(post_obj['replies'], str):
-        replies_connection_id = post_obj['replies']
+        replies_collection_id = post_obj['replies']
 
-    if replies_connection_id:
-        print('DEBUG: get_replies_to_post replies_connection_id ' +
-              str(replies_connection_id))
+    if replies_collection_id:
+        print('DEBUG: get_replies_to_post replies_collection_id ' +
+              str(replies_collection_id))
 
         replies_collection = \
-            get_json(signing_priv_key_pem, session, replies_connection_id,
+            get_json(signing_priv_key_pem, session, replies_collection_id,
                      as_header, None, debug, __version__,
                      http_prefix, domain)
         if not get_json_valid(replies_collection):
             return result
 
-        print('DEBUG: get_replies_to_post replies_connection ' +
+        print('DEBUG: get_replies_to_post replies_collection ' +
               str(replies_collection))
         # get the list of replies
         if not replies_collection.get('first'):
