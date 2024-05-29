@@ -135,6 +135,9 @@ def _get_replies_to_post(post_json_object: {},
         replies_connection_id = post_obj['replies']
 
     if replies_connection_id:
+        print('DEBUG: get_replies_to_post replies_connection_id ' +
+              str(replies_connection_id))
+
         replies_collection = \
             get_json(signing_priv_key_pem, session, replies_connection_id,
                      as_header, None, debug, __version__,
@@ -142,6 +145,8 @@ def _get_replies_to_post(post_json_object: {},
         if not get_json_valid(replies_collection):
             return result
 
+        print('DEBUG: get_replies_to_post replies_connection ' +
+              str(replies_collection))
         # get the list of replies
         if not replies_collection.get('first'):
             return result
@@ -170,6 +175,9 @@ def _get_replies_to_post(post_json_object: {},
             if not replies_collection['first'].get('items'):
                 return result
             items_list = replies_collection['first']['items']
+
+        print('DEBUG: get_replies_to_post items_list ' +
+              str(items_list))
 
         if not isinstance(items_list, list):
             return result
