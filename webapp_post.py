@@ -131,6 +131,14 @@ from session import get_json
 MAX_DISPLAY_NAME_LENGTH = 42
 
 
+def _bookmark_from_id(post_id: str) -> str:
+    """ Converts a post id into a bookmark
+    """
+    timeline_post_bookmark = remove_id_ending(post_id)
+    timeline_post_bookmark = timeline_post_bookmark.replace('://', '-')
+    return timeline_post_bookmark.replace('/', '-')
+
+
 def _enforce_max_display_name_length(display_name: str) -> str:
     """Ensures that the display name does not get too long
     """
@@ -1338,7 +1346,7 @@ def _announce_unattributed_html(translate: {},
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
-    post_bookmark = '#' + post_id.replace('://', '-').replace('/', '-')
+    post_bookmark = '#' + _bookmark_from_id(post_id)
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '    <img loading="lazy" decoding="async" title="' + \
@@ -1361,7 +1369,7 @@ def _announce_with_display_name_html(translate: {},
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
-    post_bookmark = '#' + post_id.replace('://', '-').replace('/', '-')
+    post_bookmark = '#' + _bookmark_from_id(post_id)
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '          <img loading="lazy" decoding="async" title="' + \
@@ -1530,7 +1538,7 @@ def _reply_to_unknown_html(translate: {},
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_id = get_reply_to(post_json_object['object'])
-    post_bookmark = '#' + post_id.replace('://', '-').replace('/', '-')
+    post_bookmark = '#' + _bookmark_from_id(post_id)
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '        <img loading="lazy" decoding="async" title="' + \
@@ -1561,7 +1569,7 @@ def _reply_with_unknown_path_html(translate: {},
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_id = get_reply_to(post_json_object['object'])
-    post_bookmark = '#' + post_id.replace('://', '-').replace('/', '-')
+    post_bookmark = '#' + _bookmark_from_id(post_id)
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '        <img loading="lazy" decoding="async" title="' + \
@@ -1584,7 +1592,7 @@ def _get_reply_html(translate: {},
     if not in_reply_to:
         return ''
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
-    post_bookmark = '#' + in_reply_to.replace('://', '-').replace('/', '-')
+    post_bookmark = '#' + _bookmark_from_id(in_reply_to)
     post_link = '/users/' + nickname + '?convthread=' + \
         in_reply_to.replace('--', '/') + post_bookmark
     return '        ' + \
@@ -1859,8 +1867,7 @@ def _get_footer_with_icons(show_icons: bool,
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
         # show the date
-        post_bookmark = \
-            '#' + published_link.replace('://', '-').replace('/', '-')
+        post_bookmark = '#' + _bookmark_from_id(published_link)
         date_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('--', '/') + post_bookmark
         footer_str += '<a href="' + date_link + '" class="' + \
@@ -2267,9 +2274,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     avatar_image_in_post = \
         '      <div class="timeline-avatar">' + avatar_link + '</div>\n'
 
-    timeline_post_bookmark = remove_id_ending(post_json_object['id'])
-    timeline_post_bookmark = timeline_post_bookmark.replace('://', '-')
-    timeline_post_bookmark = timeline_post_bookmark.replace('/', '-')
+    timeline_post_bookmark = _bookmark_from_id(post_json_object['id'])
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     show_repeat_icon = show_repeats
@@ -2709,8 +2714,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if content_license_url and not is_reminder(post_json_object):
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
-        post_bookmark = \
-            '#' + published_link.replace('://', '-').replace('/', '-')
+        post_bookmark = '#' + _bookmark_from_id(published_link)
         conv_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('--', '/') + post_bookmark
         footer_str += '<a href="' + conv_link + \
