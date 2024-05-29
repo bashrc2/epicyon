@@ -1338,8 +1338,9 @@ def _announce_unattributed_html(translate: {},
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
+    post_bookmark = '#' + post_id.replace('--', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
-        post_id.replace('--', '/')
+        post_id.replace('--', '/') + post_bookmark
     return '    <img loading="lazy" decoding="async" title="' + \
         announces_str + '" alt="' + \
         announces_str + '" src="/icons' + \
@@ -1360,8 +1361,9 @@ def _announce_with_display_name_html(translate: {},
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
+    post_bookmark = '#' + post_id.replace('--', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
-        post_id.replace('--', '/')
+        post_id.replace('--', '/') + post_bookmark
     return '          <img loading="lazy" decoding="async" title="' + \
         announces_str + '" alt="' + \
         announces_str + '" src="/' + \
@@ -1528,8 +1530,9 @@ def _reply_to_unknown_html(translate: {},
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_id = get_reply_to(post_json_object['object'])
+    post_bookmark = '#' + post_id.replace('--', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
-        post_id.replace('--', '/')
+        post_id.replace('--', '/') + post_bookmark
     return '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
         replying_to_str + '" src="/icons' + \
@@ -1558,8 +1561,9 @@ def _reply_with_unknown_path_html(translate: {},
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_id = get_reply_to(post_json_object['object'])
+    post_bookmark = '#' + post_id.replace('--', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
-        post_id.replace('--', '/')
+        post_id.replace('--', '/') + post_bookmark
     return '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + \
         '" alt="' + replying_to_str + \
@@ -1580,8 +1584,9 @@ def _get_reply_html(translate: {},
     if not in_reply_to:
         return ''
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
+    post_bookmark = '#' + in_reply_to.replace('--', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
-        in_reply_to.replace('--', '/')
+        in_reply_to.replace('--', '/') + post_bookmark
     return '        ' + \
         '<img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
@@ -1854,8 +1859,9 @@ def _get_footer_with_icons(show_icons: bool,
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
         # show the date
+        post_bookmark = '#' + published_link.replace('--', '-')
         date_link = '/users/' + nickname + '?convthread=' + \
-            published_link.replace('--', '/')
+            published_link.replace('--', '/') + post_bookmark
         footer_str += '<a href="' + date_link + '" class="' + \
             time_class + '" tabindex="10"><span itemprop="datePublished">' + \
             published_str + '</span></a>\n'
@@ -2702,8 +2708,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if content_license_url and not is_reminder(post_json_object):
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
+        post_bookmark = '#' + published_link.replace('--', '-')
         conv_link = '/users/' + nickname + '?convthread=' + \
-            published_link.replace('--', '/')
+            published_link.replace('--', '/') + post_bookmark
         footer_str += '<a href="' + conv_link + \
             '" class="' + time_class + '" tabindex="10">' + \
             published_str + '</a>\n'
