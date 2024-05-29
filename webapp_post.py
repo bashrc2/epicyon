@@ -1338,7 +1338,7 @@ def _announce_unattributed_html(translate: {},
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
-    post_bookmark = '#' + post_id.replace('//', '-').replace('/', '-')
+    post_bookmark = '#' + post_id.replace('://', '-').replace('/', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '    <img loading="lazy" decoding="async" title="' + \
@@ -1361,7 +1361,7 @@ def _announce_with_display_name_html(translate: {},
     if translate.get(announces_str):
         announces_str = translate[announces_str]
     post_id = remove_id_ending(post_json_object['object']['id'])
-    post_bookmark = '#' + post_id.replace('//', '-').replace('/', '-')
+    post_bookmark = '#' + post_id.replace('://', '-').replace('/', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '          <img loading="lazy" decoding="async" title="' + \
@@ -1530,7 +1530,7 @@ def _reply_to_unknown_html(translate: {},
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_id = get_reply_to(post_json_object['object'])
-    post_bookmark = '#' + post_id.replace('//', '-').replace('/', '-')
+    post_bookmark = '#' + post_id.replace('://', '-').replace('/', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '        <img loading="lazy" decoding="async" title="' + \
@@ -1561,7 +1561,7 @@ def _reply_with_unknown_path_html(translate: {},
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_id = get_reply_to(post_json_object['object'])
-    post_bookmark = '#' + post_id.replace('//', '-').replace('/', '-')
+    post_bookmark = '#' + post_id.replace('://', '-').replace('/', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
     return '        <img loading="lazy" decoding="async" title="' + \
@@ -1584,7 +1584,7 @@ def _get_reply_html(translate: {},
     if not in_reply_to:
         return ''
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
-    post_bookmark = '#' + in_reply_to.replace('//', '-').replace('/', '-')
+    post_bookmark = '#' + in_reply_to.replace('://', '-').replace('/', '-')
     post_link = '/users/' + nickname + '?convthread=' + \
         in_reply_to.replace('--', '/') + post_bookmark
     return '        ' + \
@@ -1860,7 +1860,7 @@ def _get_footer_with_icons(show_icons: bool,
                                                 translate)
         # show the date
         post_bookmark = \
-            '#' + published_link.replace('//', '-').replace('/', '-')
+            '#' + published_link.replace('://', '-').replace('/', '-')
         date_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('--', '/') + post_bookmark
         footer_str += '<a href="' + date_link + '" class="' + \
@@ -2710,7 +2710,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
         post_bookmark = \
-            '#' + published_link.replace('//', '-').replace('/', '-')
+            '#' + published_link.replace('://', '-').replace('/', '-')
         conv_link = '/users/' + nickname + '?convthread=' + \
             published_link.replace('--', '/') + post_bookmark
         footer_str += '<a href="' + conv_link + \
