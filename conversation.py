@@ -306,6 +306,7 @@ def download_conversation_posts(authorized: bool, session,
                                  session, as_header, debug,
                                  http_prefix, domain, 0, [])
 
+    ids = []
     while get_json_valid(post_json_object):
         if not isinstance(post_json_object, dict):
             break
@@ -354,6 +355,13 @@ def download_conversation_posts(authorized: bool, session,
             post_json_object = wrapped_post
         if not post_json_object['object'].get('published'):
             break
+
+        # avoid any circularity in previous conversation posts
+        if post_json_object.get('id'):
+            if isinstance(post_json_object['id'], str):
+                if post_json_object['id'] in ids:
+                    break
+                ids.append(post_json_object['id'])
 
         # render harmless any dangerous markup
         harmless_markup(post_json_object)
