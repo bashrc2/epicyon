@@ -240,33 +240,40 @@ def download_conversation_posts(authorized: bool, session,
         if not isinstance(post_json_object, dict):
             break
         if not has_object_dict(post_json_object):
+            if not post_json_object.get('id'):
+                break
+            if not isinstance(post_json_object['id'], str):
+                break
             if not post_json_object.get('attributedTo'):
-                print(str(post_json_object))
                 if debug:
-                    print(post_id + ' has no attributedTo')
+                    print(str(post_json_object))
+                    print(post_json_object['id'] + ' has no attributedTo')
                 break
             attrib_str = get_attributed_to(post_json_object['attributedTo'])
             if not attrib_str:
                 break
             if not post_json_object.get('published'):
                 if debug:
-                    print(post_id + ' has no published date')
+                    print(str(post_json_object))
+                    print(post_json_object['id'] + ' has no published date')
                 break
             if not post_json_object.get('to'):
                 if debug:
-                    print(post_id + ' has no "to" list')
+                    print(str(post_json_object))
+                    print(post_json_object['id'] + ' has no "to" list')
                 break
             if not isinstance(post_json_object['to'], list):
                 break
             if 'cc' not in post_json_object:
                 if debug:
-                    print(post_id + ' has no "cc" list')
+                    print(str(post_json_object))
+                    print(post_json_object['id'] + ' has no "cc" list')
                 break
             if not isinstance(post_json_object['cc'], list):
                 break
             wrapped_post = {
                 "@context": "https://www.w3.org/ns/activitystreams",
-                'id': post_id + '/activity',
+                'id': post_json_object['id'] + '/activity',
                 'type': 'Create',
                 'actor': attrib_str,
                 'published': post_json_object['published'],
