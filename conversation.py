@@ -17,6 +17,7 @@ from utils import load_json
 from utils import harmless_markup
 from utils import get_attributed_to
 from utils import get_reply_to
+from utils import resembles_url
 from keys import get_instance_actor_key
 from session import get_json
 from session import get_json_valid
@@ -147,11 +148,47 @@ def _get_replies_to_post(post_json_object: {},
         if not isinstance(replies_collection['first'], dict):
             return result
         if not replies_collection['first'].get('items'):
+            if not replies_collection['first'].get('next'):
+                return result
+
+        items_list = replies_collection['first']['items']
+        if not items_list:
+            # if there are no items try the next one
+            next_page_id = replies_collection['first']['next']
+            if not isinstance(next_page_id, str):
+                return result
+            replies_collection = \
+                get_json(signing_priv_key_pem, session, next_page_id,
+                         as_header, None, debug, __version__,
+                         http_prefix, domain)
+            if not get_json_valid(replies_collection):
+                return result
+            if not replies_collection.get('first'):
+                return result
+            if not isinstance(replies_collection['first'], dict):
+                return result
+            if not replies_collection['first'].get('items'):
+                return result
+            items_list = replies_collection['first']['items']
+
+        if not isinstance(items_list, list):
             return result
 
         # check each item in the list
-        items_list = replies_collection['first']['items']
         for item in items_list:
+            # download the item if needed
+            if isinstance(item, str):
+                if resembles_url(item):
+                    if debug:
+                        print('Downloading conversation item ' + item)
+                    item_dict = \
+                        get_json(signing_priv_key_pem, session, item,
+                                 as_header, None, debug, __version__,
+                                 http_prefix, domain)
+                    if not get_json_valid(item_dict):
+                        continue
+                    item = item_dict
+
             if not isinstance(item, dict):
                 continue
             if not has_object_dict(item):
