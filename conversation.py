@@ -172,13 +172,11 @@ def _get_replies_to_post(post_json_object: {},
                   str(replies_collection))
             if not get_json_valid(replies_collection):
                 return result
-            if not replies_collection.get('first'):
+            if not replies_collection.get('items'):
                 return result
-            if not isinstance(replies_collection['first'], dict):
+            if not isinstance(replies_collection['items'], list):
                 return result
-            if not replies_collection['first'].get('items'):
-                return result
-            items_list = replies_collection['first']['items']
+            items_list = replies_collection['items']
 
         print('DEBUG: get_replies_to_post items_list ' +
               str(items_list))
