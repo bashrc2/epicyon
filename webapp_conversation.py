@@ -130,7 +130,7 @@ def html_conversation_view(authorized: bool, post_id: str,
                 if isinstance(post_json_object['id'], str):
                     id_str = remove_id_ending(post_json_object['id'])
                     if post_id in id_str:
-                        post_str += '<hr>\n'
+                        post_str += '<br><hr><br>\n'
             conv_str += text_mode_separator + separator_str + post_str
 
     # if using a text mode browser then don't show SHOW MORE because there
