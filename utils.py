@@ -1655,7 +1655,7 @@ def _get_statuses_list() -> []:
     """Returns a list of statuses path strings
     """
     return ('/statuses/', '/objects/', '/honk/', '/p/', '/h/', '/api/posts/',
-            '/notes/', '/comment/', '/post/', '/item/', '/videos/',
+            '/note/', '/notes/', '/comment/', '/post/', '/item/', '/videos/',
             '/button/')
 
 
