@@ -2857,10 +2857,13 @@ def _is_valid_language(text: str) -> bool:
 
 
 def _get_reserved_words() -> str:
+    """Returns a list of reserved words which should not be
+    used for nicknames in order to avoid confusion
+    """
     return ('inbox', 'dm', 'outbox', 'following',
             'public', 'followers', 'category',
             'channel', 'calendar', 'video-channels',
-            'tlreplies', 'tlmedia', 'tlblogs',
+            'videos', 'tlreplies', 'tlmedia', 'tlblogs',
             'tlblogs', 'tlfeatures',
             'moderation', 'moderationaction',
             'activity', 'undo', 'pinned',
@@ -2879,8 +2882,8 @@ def _get_reserved_words() -> str:
             'mention', 'http', 'https', 'ipfs', 'ipns',
             'ontologies', 'data', 'postedit', 'moved',
             'inactive', 'activitypub', 'actors',
-            'notes', 'offers', 'wanted', 'honk',
-            'button')
+            'note', 'notes', 'offers', 'wanted', 'honk',
+            'button', 'post', 'item', 'comment')
 
 
 def get_nickname_validation_pattern() -> str:
