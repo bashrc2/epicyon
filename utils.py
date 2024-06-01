@@ -1656,7 +1656,7 @@ def _get_statuses_list() -> []:
     """
     return ('/statuses/', '/objects/', '/honk/', '/p/', '/h/', '/api/posts/',
             '/note/', '/notes/', '/comment/', '/post/', '/item/', '/videos/',
-            '/button/', '/x/')
+            '/button/', '/x/', '/o/')
 
 
 def contains_statuses(url: str) -> bool:
