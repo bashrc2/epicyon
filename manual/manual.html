@@ -120,7 +120,7 @@ there, and it could be in any other preferred directory.</p>
 the <strong>/opt</strong> directory.</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /opt</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://gitlab.com/bashrc2/epicyon</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">--depth</span> 1 https://gitlab.com/bashrc2/epicyon</span></code></pre></div>
 <h2 id="set-permissions">Set permissions</h2>
 <p>Create a user for the server to run as:</p>
 <div class="sourceCode" id="cb3"><pre
@@ -426,12 +426,15 @@ people within your timeline which you can’t read.</p>
 <h3 id="expiring-posts">Expiring posts</h3>
 <p>You can set your posts to expire after a number of days. If this
 value is zero then the instance will keep your posts indefinitely.</p>
-<h3 id="quitting-twitter">Quitting Twitter</h3>
+<h3 id="quitting-the-website-formerly-known-as-twitter">Quitting the
+website formerly known as Twitter</h3>
 <p>If you are coming to the fediverse as an exile from the website
 formerly known as Twitter then you may want to select the option to
 remove any Twitter posts from your timeline. Sometimes people want to
 make a clean break from Twitter and have no further involvement with
 it.</p>
+<p>As Twitter turns into an information black hole it’s expected that
+posts on that site may become no longer visible on the open web.</p>
 <h3 id="alternative-contact-details">Alternative contact details</h3>
 <p>You can set additional contact details, such as email, XMPP and
 Matrix addresses. So if people want to contact you for private <a
@@ -462,7 +465,7 @@ blog</h3>
 linking it to your profile screen. Within the <em>head</em> html section
 of your website or blog index page include a line similar to:</p>
 <div class="sourceCode" id="cb18"><pre
-class="sourceCode html"><code class="sourceCode html"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">&lt;link</span> <span class="er">rel</span><span class="ot">=</span><span class="st">&quot;me&quot;</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;https://YourEpicyonDomain/@YourNickname&quot;</span> <span class="kw">/&gt;</span></span></code></pre></div>
+class="sourceCode html"><code class="sourceCode html"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">link</span> <span class="er">rel</span><span class="ot">=</span><span class="st">&quot;me&quot;</span> <span class="er">href</span><span class="ot">=</span><span class="st">&quot;https://YourEpicyonDomain/@YourNickname&quot;</span> <span class="dt">/&gt;</span></span></code></pre></div>
 <p>If you edit and then publish your profile, with the <em>website</em>
 and/or <em>blog</em> fields completed then if the above link is found
 your sites will be indicated to be verified on your profile screen. When
@@ -1185,11 +1188,13 @@ fediverse is more about conversation rather than one-way broadcast.
 Sites like Twitter encourage you to become an “influencer” and adopt a
 style of communication where you are shouting to a large audience
 without much expectation of dialogue.</p>
-<p>On Twitter there is an algorithm which will make follow suggestions
-and dump all manner of aggravating trash into your timeline. On the
-fediverse if you want to connect with people then you will need to be
-more proactive in going out to <em>find the others</em>. There is no
-algorithm trying to guess what you want without your participation.</p>
+<p>On the website formerly known as Twitter there is an algorithm which
+will make follow suggestions and dump all manner of aggravating trash
+into your timeline. On the fediverse if you want to connect with people
+then you will need to be more proactive in going out to <em>find the
+others</em>. There is no algorithm trying to guess what you want without
+your participation. Zuckerberg’s Threads is an exception to this, but
+the less said about that the better.</p>
 <p><strong>Robustly remove bad actors</strong></p>
 <p>If people are creating a problem or bringing trouble and are not
 amenable to changing their ways, whether they are members of your

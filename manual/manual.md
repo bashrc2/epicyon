@@ -337,8 +337,10 @@ If you have any other fediverse accounts on different instances then you might w
 ### Expiring posts
 You can set your posts to expire after a number of days. If this value is zero then the instance will keep your posts indefinitely.
 
-### Quitting Twitter
+### Quitting the website formerly known as Twitter
 If you are coming to the fediverse as an exile from the website formerly known as Twitter then you may want to select the option to remove any Twitter posts from your timeline. Sometimes people want to make a clean break from Twitter and have no further involvement with it.
+
+As Twitter turns into an information black hole it's expected that posts on that site may become no longer visible on the open web.
 
 ### Alternative contact details
 You can set additional contact details, such as email, XMPP and Matrix addresses. So if people want to contact you for private [end-to-end secure](https://en.wikipedia.org/wiki/End-to-end_encryption) chat then they can do so. The fediverse was never designed for end-to-end security - it is primarily for public communications - and so it's better to leave secure private chat to the apps which are specialized for that purpose.
@@ -838,7 +840,7 @@ Keeping backups is very important, and fortunately with Epicyon this is a simple
 
 This sounds like a trite comment, but if you have members on your instance coming from Twitter and expecting it to be the same sort of thing then they will be disappointed. A major difference is that the fediverse is more about conversation rather than one-way broadcast. Sites like Twitter encourage you to become an "influencer" and adopt a style of communication where you are shouting to a large audience without much expectation of dialogue.
 
-On Twitter there is an algorithm which will make follow suggestions and dump all manner of aggravating trash into your timeline. On the fediverse if you want to connect with people then you will need to be more proactive in going out to *find the others*. There is no algorithm trying to guess what you want without your participation.
+On the website formerly known as Twitter there is an algorithm which will make follow suggestions and dump all manner of aggravating trash into your timeline. On the fediverse if you want to connect with people then you will need to be more proactive in going out to *find the others*. There is no algorithm trying to guess what you want without your participation. Zuckerberg's Threads is an exception to this, but the less said about that the better.
 
 **Robustly remove bad actors**
 
