@@ -22,6 +22,7 @@ def login_headers(self, file_format: str, length: int,
     self.send_header('Host', calling_domain)
     self.send_header('WWW-Authenticate',
                      'title="Login to Epicyon", Basic realm="epicyon"')
+    self.send_header('Sec-GPC', '1')
     self.end_headers()
 
 
@@ -66,6 +67,7 @@ def logout_redirect(self, redirect: str, calling_domain: str) -> None:
     self.send_header('Host', calling_domain)
     self.send_header('X-AP-Instance-ID', self.server.instance_id)
     self.send_header('Content-Length', '0')
+    self.send_header('Sec-GPC', '1')
     self.end_headers()
 
 
@@ -102,6 +104,7 @@ def redirect_headers(self, redirect: str, cookie: str,
     self.send_header('Host', calling_domain)
     self.send_header('X-AP-Instance-ID', self.server.instance_id)
     self.send_header('Content-Length', '0')
+    self.send_header('Sec-GPC', '1')
     self.end_headers()
 
 
@@ -137,6 +140,7 @@ def _set_headers_base(self, file_format: str, length: int, cookie: str,
         return
     self.send_header('X-AP-Instance-ID', self.server.instance_id)
     self.send_header('X-Clacks-Overhead', self.server.clacks)
+    self.send_header('Sec-GPC', '1')
     self.send_header('User-Agent',
                      'Epicyon/' + __version__ +
                      '; +' + self.server.http_prefix + '://' +
