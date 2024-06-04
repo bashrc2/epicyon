@@ -806,6 +806,12 @@ def run_daemon(accounts_data_dir: str,
     if os.path.isfile(hide_announces_filename):
         httpd.hide_announces = load_json(hide_announces_filename)
 
+    # description of the instance
+    httpd.instance_description = \
+        get_config_param(base_dir, 'instanceDescription')
+    if httpd.instance_description is None:
+        httpd.instance_description = ''
+
     # number of book events which show on profile screens
     httpd.no_of_books = no_of_books
 

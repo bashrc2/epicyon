@@ -1954,7 +1954,7 @@ def _profile_post_memorial_accounts(base_dir: str, domain: str,
             update_memorial_flags(base_dir, person_cache)
 
 
-def _profile_post_instance_desc(base_dir: str, fields: {}) -> None:
+def _profile_post_instance_desc(self, base_dir: str, fields: {}) -> None:
     """ HTTP POST change instance description
     """
     curr_instance_description = \
@@ -1964,10 +1964,13 @@ def _profile_post_instance_desc(base_dir: str, fields: {}) -> None:
             set_config_param(base_dir,
                              'instanceDescription',
                              fields['instanceDescription'])
+            self.server.instance_description = \
+                fields['instanceDescription']
     else:
         if curr_instance_description:
             set_config_param(base_dir,
                              'instanceDescription', '')
+            self.server.instance_description = ''
 
 
 def _profile_post_instance_short_desc(base_dir: str, fields: {}) -> None:
@@ -2753,7 +2756,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                     _profile_post_instance_short_desc(base_dir, fields)
 
-                    _profile_post_instance_desc(base_dir, fields)
+                    _profile_post_instance_desc(self, base_dir, fields)
 
                     _profile_post_memorial_accounts(base_dir, domain,
                                                     person_cache, fields)

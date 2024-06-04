@@ -347,7 +347,8 @@ def daemon_http_get(self) -> None:
                     self.server.show_node_info_version,
                     self.server.show_node_info_accounts,
                     self.server.registration,
-                    self.server.domain):
+                    self.server.domain,
+                    self.server.instance_description):
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,

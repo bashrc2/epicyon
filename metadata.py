@@ -18,10 +18,11 @@ def meta_data_node_info(base_dir: str,
                         terms_of_service_url: str,
                         registration: bool, version: str,
                         show_accounts: bool,
-                        domain: str) -> {}:
-    """ /nodeinfo/2.1 endpoint
+                        domain: str,
+                        instance_description: str) -> {}:
+    """ /nodeinfo/2.2 endpoint
     Also see https://socialhub.activitypub.rocks/t/
-    https://github.com/jhass/nodeinfo/blob/main/schemas/2.1/example.json
+    https://github.com/jhass/nodeinfo/blob/main/schemas/2.2/example.json
     fep-f1d5-nodeinfo-in-fediverse-software/1190/4
 
     Note that there are security considerations with this. If an adversary
@@ -42,54 +43,59 @@ def meta_data_node_info(base_dir: str,
         local_posts = 1
 
     nodeinfo = {
-        'openRegistrations': registration,
-        'protocols': ['activitypub'],
-        'services': {
-            'outbound': ['rss2.0']
-        },
-        'software': {
-            'name': 'epicyon',
-            'repository': 'https://gitlab.com/bashrc2/epicyon',
-            'homepage': 'https://gitlab.com/bashrc2/epicyon',
-            'version': version
-        },
+        "version": "2.2",
         'documents': {
             'about': about_url,
             'terms': terms_of_service_url
         },
-        'usage': {
-            'localPosts': local_posts,
-            'users': {
-                'activeHalfyear': active_accounts_half_year,
-                'activeMonth': active_accounts_monthly,
-                'total': active_accounts
+        "instance": {
+            "name": "Epicyon",
+            "description": instance_description
+        },
+        "software": {
+            "name": "epicyon",
+            "repository": "https://gitlab.com/bashrc2/epicyon",
+            "homepage": "https://gitlab.com/bashrc2/epicyon",
+            "version": version
+        },
+        "protocols": ["activitypub"],
+        "services": {
+            "outbound": ["rss2.0"]
+        },
+        "openRegistrations": registration,
+        "usage": {
+            "localComments": 0,
+            "localPosts": local_posts,
+            "users": {
+                "activeHalfyear": active_accounts_half_year,
+                "activeMonth": active_accounts_monthly,
+                "total": active_accounts
             }
         },
-        'metadata': {
-            'accountActivationRequired': False,
-            'features': [
-                'editing',
-                'exposable_reactions'
+        "metadata": {
+            "accountActivationRequired": False,
+            "features": [
+                "editing",
+                "exposable_reactions"
             ],
-            'chat_enabled': False,
-            'federatedTimelineAvailable': False,
-            'federation': {
-                'enabled': True
+            "chat_enabled": False,
+            "federatedTimelineAvailable": False,
+            "federation": {
+                "enabled": True
             },
-            'suggestions': {
-                'enabled': False
+            "suggestions": {
+                "enabled": False
             },
-            'invitesEnabled': False,
-            'private': True,
-            'privilegedStaff': True,
-            'nodeName': domain,
-            'mailerEnabled': False,
-            'publicTimelineVisibility': {},
-            'postFormats': ['text/plain', 'text/html', 'text/markdown'],
-            'FEPs': ['c648', '521a', '8fcf', '4ccd', 'c118', 'fffd',
-                     '1970', '0837', '7628', '2677']
-        },
-        'version': '2.1'
+            "invitesEnabled": False,
+            "private": True,
+            "privilegedStaff": True,
+            "nodeName": domain,
+            "mailerEnabled": False,
+            "publicTimelineVisibility": {},
+            "postFormats": ["text/plain", "text/html", "text/markdown"],
+            "FEPs": ["c648", "521a", "8fcf", "4ccd", "c118", "fffd",
+                     "1970", "0837", "7628", "2677"]
+        }
     }
     return nodeinfo
 
