@@ -38,6 +38,7 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
                  show_node_info_version: bool,
                  show_node_info_accounts: bool,
                  registration: bool, domain: str,
+                 instance_description_short: str,
                  instance_description: str) -> bool:
     if path.startswith('/nodeinfo/1.0'):
         http_400(self)
@@ -126,6 +127,7 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
                                node_info_version,
                                show_node_info_accounts,
                                domain,
+                               instance_description_short,
                                instance_description)
     if info:
         msg_str = json.dumps(info)

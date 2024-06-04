@@ -589,6 +589,8 @@ class EpicyonServer(ThreadingHTTPServer):
     thrFederatedSharesWatchdog = None
     thrFederatedBlocksDaemon = None
     qrcode_scale = 6
+    instance_description = ''
+    instance_description_short = 'Epicyon'
 
     def handle_error(self, request, client_address):
         # surpress connection reset errors
@@ -805,6 +807,12 @@ def run_daemon(accounts_data_dir: str,
     hide_announces_filename = data_dir(base_dir) + '/hide_announces.json'
     if os.path.isfile(hide_announces_filename):
         httpd.hide_announces = load_json(hide_announces_filename)
+
+    # short description of the instance
+    httpd.instance_description_short = \
+        get_config_param(base_dir, 'instanceDescriptionShort')
+    if httpd.instance_description_short is None:
+        httpd.instance_description_short = 'Epicyon'
 
     # description of the instance
     httpd.instance_description = \

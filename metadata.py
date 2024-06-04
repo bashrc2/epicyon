@@ -19,6 +19,7 @@ def meta_data_node_info(base_dir: str,
                         registration: bool, version: str,
                         show_accounts: bool,
                         domain: str,
+                        instance_description_short: str,
                         instance_description: str) -> {}:
     """ /nodeinfo/2.2 endpoint
     Also see https://socialhub.activitypub.rocks/t/
@@ -49,7 +50,7 @@ def meta_data_node_info(base_dir: str,
             'terms': terms_of_service_url
         },
         "instance": {
-            "name": "Epicyon",
+            "name": instance_description_short,
             "description": instance_description
         },
         "software": {

@@ -348,6 +348,7 @@ def daemon_http_get(self) -> None:
                     self.server.show_node_info_accounts,
                     self.server.registration,
                     self.server.domain,
+                    self.server.instance_description_short,
                     self.server.instance_description):
         return
 

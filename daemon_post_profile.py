@@ -1973,7 +1973,7 @@ def _profile_post_instance_desc(self, base_dir: str, fields: {}) -> None:
             self.server.instance_description = ''
 
 
-def _profile_post_instance_short_desc(base_dir: str, fields: {}) -> None:
+def _profile_post_instance_short_desc(self, base_dir: str, fields: {}) -> None:
     """ HTTP POST change instance short description
     """
     curr_instance_description_short = \
@@ -1984,10 +1984,12 @@ def _profile_post_instance_short_desc(base_dir: str, fields: {}) -> None:
             idesc = fields['instanceDescriptionShort']
             set_config_param(base_dir,
                              'instanceDescriptionShort', idesc)
+            self.server.instance_description_short = idesc
     else:
         if curr_instance_description_short:
             set_config_param(base_dir,
                              'instanceDescriptionShort', '')
+            self.server.instance_description_short = 'Epicyon'
 
 
 def _profile_post_content_license(base_dir: str, fields: {}, self) -> None:
@@ -2754,7 +2756,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                     _profile_post_content_license(base_dir, fields, self)
 
-                    _profile_post_instance_short_desc(base_dir, fields)
+                    _profile_post_instance_short_desc(self, base_dir, fields)
 
                     _profile_post_instance_desc(self, base_dir, fields)
 
