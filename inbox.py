@@ -765,6 +765,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             if not allow_quotes:
                 if post_json_object.get('id'):
                     print('REJECT: inbox quote toot ' +
+                          nickname + '@' + domain + ' ' +
                           str(post_json_object['id']))
                 return None
 
