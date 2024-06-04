@@ -717,6 +717,10 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
         if post_json_object['object'].get('attributedTo'):
             sending_actor = \
                 get_attributed_to(post_json_object['object']['attributedTo'])
+    else:
+        if post_json_object.get('attributedTo'):
+            sending_actor = \
+                get_attributed_to(post_json_object['attributedTo'])
     if not sending_actor:
         if post_json_object.get('actor'):
             sending_actor = get_actor_from_post(post_json_object)
