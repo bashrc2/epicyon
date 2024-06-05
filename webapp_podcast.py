@@ -463,7 +463,7 @@ def html_podcast_episode(translate: {},
         podcast_domain, _ = get_domain_from_actor(fediverse_handle)
         if podcast_nickname and podcast_domain:
             podcast_str += \
-                '<p><a href="' + fediverse_handle + '">' + \
+                '<p><a href="' + fediverse_handle + '">@' + \
                 podcast_nickname + '@' + podcast_domain + '</a></p>\n'
 
     extra_links = []
