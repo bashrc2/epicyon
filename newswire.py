@@ -19,6 +19,7 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
+from utils import is_local_network_address
 from utils import data_dir
 from utils import string_contains
 from utils import image_mime_types_dict
@@ -213,7 +214,8 @@ def _add_newswire_dict_entry(base_dir: str,
                              tags: [],
                              max_tags: int, session, debug: bool,
                              podcast_properties: {},
-                             system_language: str) -> None:
+                             system_language: str,
+                             fediverse_handle: str) -> None:
     """Update the newswire dictionary
     """
     # remove any markup
@@ -265,7 +267,8 @@ def _add_newswire_dict_entry(base_dir: str,
         moderated,
         post_tags,
         mirrored,
-        podcast_properties
+        podcast_properties,
+        fediverse_handle
     ]
 
 
@@ -868,13 +871,15 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                     xml_podcast_to_dict(base_dir, rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
+                fediverse_handle = ''
                 _add_newswire_dict_entry(base_dir,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug,
-                                         podcast_properties, system_language)
+                                         podcast_properties, system_language,
+                                         fediverse_handle)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -982,13 +987,15 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                     xml_podcast_to_dict(base_dir, rss_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = link_mime_type
+                fediverse_handle = ''
                 _add_newswire_dict_entry(base_dir,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug,
-                                         podcast_properties, system_language)
+                                         podcast_properties, system_language,
+                                         fediverse_handle)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -1059,6 +1066,24 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 description = remove_script(description, None, None, None)
                 description = remove_html(description)
 
+        # is there a fediverse handle
+        fediverse_handle = ''
+        if '<author>' in atom_item and '</author>' in atom_item:
+            actor_str = atom_item.split('<author>')[1]
+            actor_str = unescaped_text(actor_str.split('</author>')[0])
+            actor_str = remove_script(actor_str, None, None, None)
+            if '<activity:object-type>' in actor_str and \
+               '</activity:object-type>' in actor_str and \
+               '<uri>' in actor_str and '</uri>' in actor_str:
+                obj_type = actor_str.split('<activity:object-type>')[1]
+                obj_type = obj_type.split('</activity:object-type>')[0]
+                if obj_type == 'Person':
+                    actor_uri = actor_str.split('<uri>')[1]
+                    actor_uri = actor_uri.split('</uri>')[0]
+                    if resembles_url(actor_uri) and \
+                       not is_local_network_address(actor_uri):
+                        fediverse_handle = actor_uri
+
         proxy_type = None
         if domain.endswith('.onion'):
             proxy_type = 'tor'
@@ -1096,7 +1121,8 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                                          votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug,
-                                         podcast_properties, system_language)
+                                         podcast_properties, system_language,
+                                         fediverse_handle)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -1205,13 +1231,15 @@ def _json_feed_v1to_dict(base_dir: str, xml_str: str,
             if _valid_feed_date(pub_date_str):
                 post_filename = ''
                 votes_status = []
+                fediverse_handle = ''
                 _add_newswire_dict_entry(base_dir,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated,
                                          mirrored, [], 32, session, debug,
-                                         None, system_language)
+                                         None, system_language,
+                                         fediverse_handle)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -1308,13 +1336,15 @@ def _atom_feed_yt_to_dict(base_dir: str, xml_str: str,
                     xml_podcast_to_dict(base_dir, atom_item, xml_str)
                 if podcast_properties:
                     podcast_properties['linkMimeType'] = 'video/youtube'
+                fediverse_handle = ''
                 _add_newswire_dict_entry(base_dir,
                                          result, pub_date_str,
                                          title, link,
                                          votes_status, post_filename,
                                          description, moderated, mirrored,
                                          [], 32, session, debug,
-                                         podcast_properties, system_language)
+                                         podcast_properties, system_language,
+                                         fediverse_handle)
                 post_ctr += 1
                 if post_ctr >= max_posts_per_source:
                     break
@@ -1602,6 +1632,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                     url_str = \
                         get_url_from_post(post_json_object['object']['url'])
                     url2 = remove_html(url_str)
+                    fediverse_handle = ''
                     _add_newswire_dict_entry(base_dir,
                                              newswire, published,
                                              summary, url2,
@@ -1609,7 +1640,8 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                                              description, moderated, False,
                                              tags_from_post,
                                              max_tags, session, debug,
-                                             None, system_language)
+                                             None, system_language,
+                                             fediverse_handle)
 
             ctr += 1
             if ctr >= max_blogs_per_account:
