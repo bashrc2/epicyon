@@ -1005,6 +1005,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                        preferred_podcast_formats: [],
                        system_language: str) -> {}:
     """Converts an atom feed string to a dictionary
+    Also see https://activitystrea.ms/specs/atom/1.0/
     """
     if '<entry>' not in xml_str:
         return {}
