@@ -769,14 +769,14 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                 newswire[original_date_str][3] = filename
 
 
-def _merge_with_previous_newswire(oldNewswire: {}, new_newswire: {}) -> None:
+def _merge_with_previous_newswire(old_newswire: {}, new_newswire: {}) -> None:
     """Preserve any votes or generated activitypub post filename
     as rss feeds are updated
     """
-    if not oldNewswire:
+    if not old_newswire:
         return
 
-    for published, fields in oldNewswire.items():
+    for published, fields in old_newswire.items():
         if not new_newswire.get(published):
             continue
         for i in range(1, 5):
