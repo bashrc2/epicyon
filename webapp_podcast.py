@@ -12,6 +12,8 @@ import html
 import datetime
 import urllib.parse
 from shutil import copyfile
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
 from utils import data_dir
 from utils import get_url_from_post
 from utils import get_config_param
@@ -340,19 +342,19 @@ def html_podcast_episode(translate: {},
         '<div class="options" itemscope ' + \
         'itemtype="http://schema.org/PodcastEpisode">\n'
     podcast_str += '  <div class="optionsAvatar">\n'
-    podcast_str += '  <center>\n'
-    podcast_str += '  <a href="' + link_url + '" itemprop="url">\n'
-    podcast_str += '  <span itemprop="image">\n'
+    podcast_str += '    <center>\n'
+    podcast_str += '    <a href="' + link_url + '" itemprop="url">\n'
+    podcast_str += '    <span itemprop="image">\n'
     if image_src == 'srcset':
-        podcast_str += '  <img loading="lazy" decoding="async" ' + \
+        podcast_str += '    <img loading="lazy" decoding="async" ' + \
             'srcset="' + image_url + \
             '" alt="" ' + get_broken_link_substitute() + '/>\n'
     else:
-        podcast_str += '  <img loading="lazy" decoding="async" ' + \
+        podcast_str += '    <img loading="lazy" decoding="async" ' + \
             'src="' + image_url + \
             '" alt="" ' + get_broken_link_substitute() + '/>\n'
-    podcast_str += '  </span></a>\n'
-    podcast_str += '  </center>\n'
+    podcast_str += '    </span></a>\n'
+    podcast_str += '    </center>\n'
     podcast_str += '  </div>\n'
 
     podcast_str += '  <center>\n'
@@ -452,6 +454,15 @@ def html_podcast_episode(translate: {},
                 '<p><span itemprop="funding"><a href="' + donate_url + \
                 '" rel="donation"><button class="donateButton">' + \
                 translate['Donate'] + '</button></a></span></p>\n'
+
+    fediverse_handle = ''
+    if len(newswire_item) > 9:
+        fediverse_handle = newswire_item[9]
+        podcast_nickname = get_nickname_from_actor(fediverse_handle)
+        podcast_domain, _ = get_domain_from_actor(fediverse_handle)
+        podcast_str += \
+            '<p><a href="' + fediverse_handle + '">' + \
+            podcast_nickname + '@' + podcast_domain + '</a></p>\n'
 
     if podcast_properties['categories']:
         tags_str = ''
