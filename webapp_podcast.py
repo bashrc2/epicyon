@@ -477,6 +477,8 @@ def html_podcast_episode(translate: {},
                 link_str = remove_html(link_str)
                 if not resembles_url(link_str):
                     continue
+                if link_str in podcast_str:
+                    continue
                 if not links_text:
                     links_text = '<p>\n'
                 link_url = link_str
