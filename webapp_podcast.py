@@ -28,6 +28,8 @@ from webapp_utils import html_keyboard_navigation
 from session import get_json_valid
 from session import get_json
 
+MAX_LINK_LENGTH = 40
+
 
 def _html_podcast_chapters(link_url: str,
                            session, session_onion, session_i2p,
@@ -477,8 +479,11 @@ def html_podcast_episode(translate: {},
                     continue
                 if not links_text:
                     links_text = '<p>\n'
+                link_url = link_str
+                if len(link_str) > MAX_LINK_LENGTH:
+                    link_str = link_str[:MAX_LINK_LENGTH-1]
                 links_text += \
-                    '<a href="' + link_str + '">' + link_str + '</a><br>\n'
+                    '<a href="' + link_url + '">' + link_str + '</a><br>\n'
             if links_text:
                 links_text += '</p>\n'
                 podcast_str += links_text
