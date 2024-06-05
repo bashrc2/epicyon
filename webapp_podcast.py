@@ -480,6 +480,8 @@ def html_podcast_episode(translate: {},
                 if not links_text:
                     links_text = '<p>\n'
                 link_url = link_str
+                # check that the link is not too long so that it does not
+                # mess up display on mobile
                 if len(link_str) > MAX_LINK_LENGTH:
                     link_str = link_str[:MAX_LINK_LENGTH-1]
                 links_text += \
