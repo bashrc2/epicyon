@@ -12,6 +12,7 @@ import html
 import datetime
 import urllib.parse
 from shutil import copyfile
+from utils import resembles_url
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import data_dir
@@ -460,9 +461,27 @@ def html_podcast_episode(translate: {},
         fediverse_handle = newswire_item[9]
         podcast_nickname = get_nickname_from_actor(fediverse_handle)
         podcast_domain, _ = get_domain_from_actor(fediverse_handle)
-        podcast_str += \
-            '<p><a href="' + fediverse_handle + '">' + \
-            podcast_nickname + '@' + podcast_domain + '</a></p>\n'
+        if podcast_nickname and podcast_domain:
+            podcast_str += \
+                '<p><a href="' + fediverse_handle + '">' + \
+                podcast_nickname + '@' + podcast_domain + '</a></p>\n'
+
+    extra_links = []
+    if len(newswire_item) > 10:
+        extra_links = newswire_item[10]
+        if extra_links:
+            links_text = ''
+            for link_str in extra_links:
+                link_str = remove_html(link_str)
+                if not resembles_url(link_str):
+                    continue
+                if not links_text:
+                    links_text = '<p>\n'
+                links_text += \
+                    '<a href="' + link_str + '">' + link_str + '</a><br>\n'
+            if links_text:
+                links_text += '</p>\n'
+                podcast_str += links_text
 
     if podcast_properties['categories']:
         tags_str = ''
