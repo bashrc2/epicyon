@@ -192,7 +192,7 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
     cached = False
     post_id = remove_id_ending(obj['id']).replace('/', '--')
     actor = 'unknown'
-    if post_attachments:
+    if post_attachments and obj.get('attributedTo'):
         actor = get_attributed_to(obj['attributedTo'])
     log_filename = data_dir(base_dir) + '/svg_scripts_log.txt'
     for index in range(len(post_attachments)):
