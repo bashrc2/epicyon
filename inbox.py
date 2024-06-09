@@ -1715,10 +1715,12 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     post_history_json = {}
     if os.path.isfile(post_history_filename):
         post_history_json = load_json(post_history_filename, 1)
+    # get the updated or published date
     if post_json_object['object'].get('updated'):
         published_str = post_json_object['object']['updated']
     else:
         published_str = post_json_object['object']['published']
+    # add to the history for this date
     if not post_history_json.get(published_str):
         post_history_json[published_str] = post_json_object
         save_json(post_history_json, post_history_filename)
