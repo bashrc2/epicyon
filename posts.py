@@ -5011,7 +5011,7 @@ def _novel_fields_for_person(nickname: str, domain: str,
         post_json_object = load_json(full_filename)
         if not has_object_dict(post_json_object):
             continue
-        for fieldname, _ in post_json_object['object']:
+        for fieldname, _ in post_json_object['object'].items():
             if fieldname in expected_fields:
                 continue
             if fieldname not in fields:
