@@ -28,6 +28,7 @@ from bookmarks import send_bookmark_via_server
 from bookmarks import send_undo_bookmark_via_server
 from conversation import download_conversation_posts
 from keys import get_instance_actor_key
+from posts import novel_fields
 from posts import set_post_expiry_days
 from posts import send_mute_via_server
 from posts import send_undo_mute_via_server
@@ -544,6 +545,11 @@ def _command_options() -> None:
                         const=True, default=False,
                         help="Notification daemon does not wait for " +
                         "keypresses")
+    parser.add_argument("--novel",
+                        dest='novel_fields',
+                        type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Show any novel fields within posts")
     parser.add_argument("--notifyShowNewPosts",
                         dest='notifyShowNewPosts',
                         type=str2bool, nargs='?',
@@ -3111,6 +3117,10 @@ def _command_options() -> None:
                 print(nickname + ' is not in the passwords file')
         else:
             print('Passwords file not found')
+        sys.exit()
+
+    if argb.novel_fields:
+        novel_fields(base_dir)
         sys.exit()
 
     if argb.archive:

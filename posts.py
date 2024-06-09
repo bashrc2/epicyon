@@ -4988,6 +4988,55 @@ def _expire_posts_cache_for_person(base_dir: str,
     return expired_post_count
 
 
+def _novel_fields_for_person(nickname: str, domain: str,
+                             base_dir: str, boxname: str) -> None:
+    """Check posts for a person to report any novel fields
+    """
+    if boxname not in ('inbox'):
+        return
+    box_dir = create_person_dir(nickname, domain, base_dir, boxname)
+    posts_in_box = os.scandir(box_dir)
+
+    posts_ctr = 0
+    fields = []
+    # TODO
+    expected_fields = []
+    for post_filename in posts_in_box:
+        post_filename = post_filename.name
+        if not post_filename.endswith('.json'):
+            continue
+        full_filename = os.path.join(box_dir, post_filename)
+        if not os.path.isfile(full_filename):
+            continue
+        post_json_object = load_json(full_filename)
+        if not has_object_dict(post_json_object):
+            continue
+        for fieldname, _ in post_json_object['object']:
+            if fieldname in expected_fields:
+                continue
+            if fieldname not in fields:
+                fields.append(fieldname)
+                print(fieldname + ' ' + full_filename)
+        posts_ctr += 1
+
+    print('Checked ' + str(posts_ctr) + ' ' + boxname +
+          ' posts for ' + nickname + '@' + domain)
+
+
+def novel_fields(base_dir: str) -> None:
+    """Reports any unexpected fields within posts
+    """
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
+        for handle in dirs:
+            if '@' in handle:
+                nickname = handle.split('@')[0]
+                domain = handle.split('@')[1]
+                _novel_fields_for_person(nickname, domain, base_dir,
+                                         'inbox')
+        break
+
+
 def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                   recent_posts_cache: {},
                   max_posts_in_box: int,
