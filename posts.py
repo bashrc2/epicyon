@@ -5008,7 +5008,9 @@ def _novel_fields_for_person(nickname: str, domain: str,
         full_filename = os.path.join(box_dir, post_filename)
         if not os.path.isfile(full_filename):
             continue
-        post_json_object = load_json(full_filename)
+        post_json_object = load_json(full_filename, 0, 1)
+        if not post_json_object:
+            continue
         if not has_object_dict(post_json_object):
             continue
         for fieldname, _ in post_json_object['object'].items():
