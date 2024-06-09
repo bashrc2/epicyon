@@ -126,6 +126,7 @@ from utils import is_dm
 from utils import is_reply
 from utils import has_actor
 from httpsig import message_content_digest
+from posts import outbox_message_create_wrap
 from posts import convert_post_content_to_html
 from posts import edited_post_filename
 from posts import save_post_to_box
@@ -4744,6 +4745,107 @@ def _check_for_git_patches(base_dir: str, nickname: str, domain: str,
     return 0
 
 
+def _has_former_representations(post_json_object: {}) -> bool:
+    """Does the given post contain a list of previous edits?
+    """
+    post_obj = post_json_object['object']
+    if not isinstance(post_obj, dict):
+        return False
+    if not post_obj.get('id'):
+        return False
+    if not post_obj.get('formerRepresentations'):
+        return False
+    if not isinstance(post_obj['formerRepresentations'], dict):
+        return False
+    if not post_obj['formerRepresentations'].get('orderedItems'):
+        return False
+    if not isinstance(post_obj['formerRepresentations']['orderedItems'],
+                      list):
+        return False
+    return True
+
+
+def _former_representations_to_edits(base_dir: str,
+                                     nickname: str, domain: str,
+                                     post_json_object: {},
+                                     max_mentions: int,
+                                     max_emoji: int,
+                                     allow_local_network_access: bool,
+                                     debug: bool,
+                                     system_language: str,
+                                     http_prefix: str,
+                                     domain_full: str, person_cache: {},
+                                     max_hashtags: int,
+                                     port: int) -> bool:
+    """ Some instances use formerRepresentations to store
+    previous edits
+    """
+    if not _has_former_representations(post_json_object):
+        return False
+    post_obj = post_json_object['object']
+    prev_edits_list = post_obj['formerRepresentations']['orderedItems']
+
+    post_id = remove_id_ending(post_obj['id'])
+    post_filename = \
+        locate_post(base_dir, nickname, domain, post_id, False)
+    if not post_filename:
+        return False
+    post_history_filename = post_filename.replace('.json', '.edits')
+
+    post_history_json = {}
+    if os.path.isfile(post_history_filename):
+        post_history_json = load_json(post_history_filename)
+
+    # check each former post and add it to the edits file if needed
+    posts_added = False
+    for prev_post_json in prev_edits_list:
+        prev_post_obj = prev_post_json
+        if has_object_dict(prev_post_json):
+            prev_post_obj = prev_post_json['object']
+
+        # get the published date for the previous post
+        if not prev_post_obj.get('published'):
+            continue
+        published_str = prev_post_obj['published']
+
+        # was the previous post already logged?
+        if post_history_json.get(published_str):
+            continue
+
+        # add Create to the previous post if needed
+        if not has_object_dict(prev_post_json):
+            prev_post_id = None
+            if prev_post_json.get('id'):
+                prev_post_id = prev_post_json['id']
+
+            outbox_message_create_wrap(http_prefix,
+                                       nickname, domain, port,
+                                       prev_post_json)
+            if prev_post_id:
+                prev_post_json['id'] = prev_post_id
+                prev_post_json['object']['id'] = prev_post_id
+                prev_post_json['object']['url'] = prev_post_id
+                prev_post_json['object']['atomUri'] = prev_post_id
+
+        # validate the previous post
+        if not _valid_post_content(base_dir, nickname, domain,
+                                   prev_post_json,
+                                   max_mentions, max_emoji,
+                                   allow_local_network_access, debug,
+                                   system_language, http_prefix,
+                                   domain_full, person_cache,
+                                   max_hashtags):
+            continue
+
+        post_history_json[published_str] = prev_post_json
+        posts_added = True
+
+    if posts_added:
+        save_json(post_history_json, post_history_filename)
+        print('formerRepresentations updated for ' + post_filename)
+    return True
+
+
 def _inbox_after_initial(server, inbox_start_time,
                          recent_posts_cache: {}, max_recent_posts: int,
                          session, session_onion, session_i2p,
@@ -5337,6 +5439,27 @@ def _inbox_after_initial(server, inbox_start_time,
                                 'INBOX', 'edited_post_filename',
                                 debug)
             inbox_start_time = time.time()
+
+            # handle any previous edits
+            if _former_representations_to_edits(base_dir,
+                                                nickname, domain,
+                                                post_json_object,
+                                                max_mentions,
+                                                max_emoji,
+                                                allow_local_network_access,
+                                                debug,
+                                                system_language,
+                                                http_prefix,
+                                                domain_full,
+                                                person_cache,
+                                                max_hashtags, port):
+                # ensure that there is an updated entry
+                # for the publication date
+                if post_json_object['object'].get('published') and \
+                   not post_json_object['object'].get('updated'):
+                    post_json_object['object']['updated'] = \
+                        post_json_object['object']['published']
+                    save_json(post_json_object, destination_filename)
 
             # If this was an edit then update the edits json file and
             # delete the previous version of the post

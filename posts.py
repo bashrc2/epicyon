@@ -6621,6 +6621,7 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
     if not get_attributed_to(post_json_object['object']['attributedTo']):
         return '', None
     actor = get_attributed_to(post_json_object['object']['attributedTo'])
+    # file storing the last post id for a given actor
     actor_filename = \
         acct_dir(base_dir, nickname, domain) + '/lastpost/' + \
         actor.replace('/', '#')
