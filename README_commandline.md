@@ -429,3 +429,14 @@ If you want to allow specific web crawlers then when running the daemon (typical
 ```
 
 Typically web crawlers have names ending in "bot", but partial names can also be used.
+
+
+## Maintenance
+
+You can check for any novel ActivityPub fields with:
+
+```bash
+--novel
+```
+
+This may help with spotting unconventional uses of the protocol, or back channel signalling between admins.
