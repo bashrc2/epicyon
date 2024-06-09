@@ -5021,8 +5021,9 @@ def _novel_fields_for_person(nickname: str, domain: str,
                 print(fieldname + ' ' + full_filename)
         posts_ctr += 1
 
-    print('Checked ' + str(posts_ctr) + ' ' + boxname +
-          ' posts for ' + nickname + '@' + domain)
+    if posts_ctr > 0:
+        print('Checked ' + str(posts_ctr) + ' ' + boxname +
+              ' posts for ' + nickname + '@' + domain)
 
 
 def novel_fields(base_dir: str) -> None:
