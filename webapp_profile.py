@@ -1167,8 +1167,10 @@ def html_profile(signing_priv_key_pem: str,
                 pgp_fingerprint.replace('\n', '<br>') + '</p>\n'
         if pgp_pub_key:
             donate_section += \
-                '<p class="pgp">' + \
-                pgp_pub_key.replace('\n', '<br>') + '</p>\n'
+                '<details><summary class="cw" tabindex="10">' + \
+                'PGP</summary><div class="pgp">' + \
+                pgp_pub_key.replace('\n', '<br>') + \
+                '</div></details>\n'
         donate_section += '  </center>\n'
         donate_section += '</div>\n'
 
