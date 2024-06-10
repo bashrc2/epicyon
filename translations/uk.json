@@ -691,5 +691,6 @@
     "Message encrypted": "Повідомлення зашифровано",
     "Send this direct message, yes or no?": "Надіслати це пряме повідомлення, так чи ні?",
     "Abandoning new direct message": "Відмова від нового прямого повідомлення",
-    "Press Enter to continue": "Натисніть Enter, щоб продовжити"
+    "Press Enter to continue": "Натисніть Enter, щоб продовжити",
+    "PGP Public Key": "Відкритий ключ PGP"
 }

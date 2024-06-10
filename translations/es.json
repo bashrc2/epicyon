@@ -691,5 +691,6 @@
     "Message encrypted": "Mensaje encriptado",
     "Send this direct message, yes or no?": "Envía este mensaje directo, ¿sí o no?",
     "Abandoning new direct message": "Abandonar nuevo mensaje directo",
-    "Press Enter to continue": "Presione Entrar para continuar"
+    "Press Enter to continue": "Presione Entrar para continuar",
+    "PGP Public Key": "Clave pública PGP"
 }

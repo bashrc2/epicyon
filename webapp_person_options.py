@@ -452,11 +452,16 @@ def html_person_options(default_timeline: str,
             '  <p class="imText">Enigma: ' + \
             remove_html(enigma_pub_key) + '</p>\n'
     if pgp_fingerprint:
-        options_str += '<p class="pgp">PGP: ' + \
+        options_str += '<p class="pgp">' + \
+            translate['PGP Fingerprint'] + ': ' + \
             remove_html(pgp_fingerprint).replace('\n', '<br>') + '</p>\n'
     if pgp_pub_key:
-        options_str += '<p class="pgp">' + \
-            remove_html(pgp_pub_key).replace('\n', '<br>') + '</p>\n'
+        options_str += \
+            '<details><summary class="cw" tabindex="10">' + \
+            translate['PGP Public Key'] + \
+            '</summary><div class="pgp">' + \
+            remove_html(pgp_pub_key).replace('\n', '<br>') + \
+            '</div></details>\n'
     options_str += '    <input type="hidden" name="pageNumber" value="' + \
         str(page_number) + '">\n'
     options_str += '    <input type="hidden" name="actor" value="' + \

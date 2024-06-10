@@ -691,5 +691,6 @@
     "Message encrypted": "Το μήνυμα είναι κρυπτογραφημένο",
     "Send this direct message, yes or no?": "Στείλτε αυτό το άμεσο μήνυμα, ναι ή όχι;",
     "Abandoning new direct message": "Εγκατάλειψη νέου άμεσου μηνύματος",
-    "Press Enter to continue": "Πατήστε Enter για να συνεχίσετε"
+    "Press Enter to continue": "Πατήστε Enter για να συνεχίσετε",
+    "PGP Public Key": "Δημόσιο κλειδί PGP"
 }

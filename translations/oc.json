@@ -687,5 +687,6 @@
     "Message encrypted": "Message encrypted",
     "Send this direct message, yes or no?": "Send this direct message, yes or no?",
     "Abandoning new direct message": "Abandoning new direct message",
-    "Press Enter to continue": "Press Enter to continue"
+    "Press Enter to continue": "Press Enter to continue",
+    "PGP Public Key": "PGP Public Key"
 }

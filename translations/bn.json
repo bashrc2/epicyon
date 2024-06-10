@@ -691,5 +691,6 @@
     "Message encrypted": "বার্তা এনক্রিপ্ট করা হয়েছে",
     "Send this direct message, yes or no?": "এই সরাসরি বার্তা পাঠান, হ্যাঁ বা না?",
     "Abandoning new direct message": "নতুন সরাসরি বার্তা পরিত্যাগ",
-    "Press Enter to continue": "চালিয়ে যেতে এন্টার টিপুন"
+    "Press Enter to continue": "চালিয়ে যেতে এন্টার টিপুন",
+    "PGP Public Key": "PGP পাবলিক কী"
 }

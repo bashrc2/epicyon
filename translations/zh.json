@@ -691,5 +691,6 @@
     "Message encrypted": "消息已加密",
     "Send this direct message, yes or no?": "发送此直接消息，是还是否？",
     "Abandoning new direct message": "放弃新的私信",
-    "Press Enter to continue": "按 Enter 继续"
+    "Press Enter to continue": "按 Enter 继续",
+    "PGP Public Key": "PGP 公钥"
 }

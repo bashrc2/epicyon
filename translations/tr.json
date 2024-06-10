@@ -691,5 +691,6 @@
     "Message encrypted": "Mesaj şifrelendi",
     "Send this direct message, yes or no?": "Bu doğrudan mesajı gönder, evet mi hayır mı?",
     "Abandoning new direct message": "Yeni doğrudan mesajdan vazgeçiliyor",
-    "Press Enter to continue": "Devam etmek için Enter'a basın"
+    "Press Enter to continue": "Devam etmek için Enter'a basın",
+    "PGP Public Key": "PGP Genel Anahtarı"
 }

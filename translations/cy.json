@@ -691,5 +691,6 @@
     "Message encrypted": "Neges wedi'i hamgryptio",
     "Send this direct message, yes or no?": "Anfonwch y neges uniongyrchol hon, ie neu na?",
     "Abandoning new direct message": "Rhoi'r gorau i neges uniongyrchol newydd",
-    "Press Enter to continue": "Pwyswch Enter i barhau"
+    "Press Enter to continue": "Pwyswch Enter i barhau",
+    "PGP Public Key": "Allwedd Gyhoeddus PGP"
 }

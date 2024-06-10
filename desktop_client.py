@@ -1672,7 +1672,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       debug, False,
                                       signing_priv_key_pem,
                                       system_language)
-                say_str = indent + 'PGP public key uploaded'
+                say_str = indent + translate['PGP Public Key'] + ' uploaded'
                 _say_command(say_str, say_str, screenreader,
                              system_language, espeak)
             pgp_key_upload = True

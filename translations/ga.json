@@ -691,5 +691,6 @@
     "Message encrypted": "Teachtaireacht criptithe",
     "Send this direct message, yes or no?": "Seol an teachtaireacht dhíreach seo, tá nó níl?",
     "Abandoning new direct message": "Teachtaireacht dhíreach nua a thréigean",
-    "Press Enter to continue": "Brúigh Enter chun leanúint ar aghaidh"
+    "Press Enter to continue": "Brúigh Enter chun leanúint ar aghaidh",
+    "PGP Public Key": "Eochair Phoiblí PGP"
 }

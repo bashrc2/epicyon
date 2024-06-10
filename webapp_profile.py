@@ -1163,12 +1163,13 @@ def html_profile(signing_priv_key_pem: str,
                 enigma_pub_key + '</label></p>\n'
         if pgp_fingerprint:
             donate_section += \
-                '<p class="pgp">PGP: ' + \
+                '<p class="pgp">' + translate['PGP Fingerprint'] + ': ' + \
                 pgp_fingerprint.replace('\n', '<br>') + '</p>\n'
         if pgp_pub_key:
             donate_section += \
                 '<details><summary class="cw" tabindex="10">' + \
-                'PGP</summary><div class="pgp">' + \
+                translate['PGP Public Key'] + \
+                '</summary><div class="pgp">' + \
                 pgp_pub_key.replace('\n', '<br>') + \
                 '</div></details>\n'
         donate_section += '  </center>\n'
