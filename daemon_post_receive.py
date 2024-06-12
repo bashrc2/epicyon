@@ -107,7 +107,9 @@ def _receive_new_post_process_newpost(self, fields: {},
                                       buy_sites: [],
                                       project_version: str,
                                       proxy_type: str,
-                                      max_replies: int) -> int:
+                                      max_replies: int,
+                                      onion_domain: str,
+                                      i2p_domain: str) -> int:
     """ A new post has been received from the New Post screen and
     is then sent to the outbox
     """
@@ -204,7 +206,8 @@ def _receive_new_post_process_newpost(self, fields: {},
                                min_images_for_accounts,
                                max_hashtags,
                                buy_sites,
-                               auto_cw_cache)
+                               auto_cw_cache,
+                               onion_domain, i2p_domain)
             print('DEBUG: sending edited public post ' +
                   str(message_json))
         if fields['schedulePost']:
@@ -500,7 +503,9 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                                           buy_sites: [],
                                           project_version: str,
                                           proxy_type: str,
-                                          max_replies: int) -> int:
+                                          max_replies: int,
+                                          onion_domain: str,
+                                          i2p_domain: str) -> int:
     """Unlisted post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -588,7 +593,8 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                                min_images_for_accounts,
                                max_hashtags,
                                buy_sites,
-                               auto_cw_cache)
+                               auto_cw_cache,
+                               onion_domain, i2p_domain)
             print('DEBUG: sending edited unlisted post ' +
                   str(message_json))
 
@@ -647,7 +653,9 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                            buy_sites: [],
                                            project_version: str,
                                            proxy_type: str,
-                                           max_replies: int) -> int:
+                                           max_replies: int,
+                                           onion_domain: str,
+                                           i2p_domain: str) -> int:
     """Followers only post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -740,7 +748,8 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                min_images_for_accounts,
                                max_hashtags,
                                buy_sites,
-                               auto_cw_cache)
+                               auto_cw_cache,
+                               onion_domain, i2p_domain)
             print('DEBUG: sending edited followers post ' +
                   str(message_json))
 
@@ -800,7 +809,9 @@ def _receive_new_post_process_newdm(self, fields: {},
                                     buy_sites: [],
                                     project_version: str,
                                     proxy_type: str,
-                                    max_replies: int) -> int:
+                                    max_replies: int,
+                                    onion_domain: str,
+                                    i2p_domain: str) -> int:
     """Direct message post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -905,7 +916,8 @@ def _receive_new_post_process_newdm(self, fields: {},
                                min_images_for_accounts,
                                max_hashtags,
                                buy_sites,
-                               auto_cw_cache)
+                               auto_cw_cache,
+                               onion_domain, i2p_domain)
             print('DEBUG: sending edited dm post ' +
                   str(message_json))
 
@@ -965,7 +977,9 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                           max_hashtags: int,
                                           buy_sites: [],
                                           project_version: str,
-                                          proxy_type: str) -> int:
+                                          proxy_type: str,
+                                          onion_domain: str,
+                                          i2p_domain: str) -> int:
     """Reminder post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -1063,7 +1077,8 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                min_images_for_accounts,
                                max_hashtags,
                                buy_sites,
-                               auto_cw_cache)
+                               auto_cw_cache,
+                               onion_domain, i2p_domain)
             print('DEBUG: sending edited reminder post ' +
                   str(message_json))
         if post_to_outbox(self, message_json,
@@ -1265,7 +1280,9 @@ def _receive_new_post_process_newreading(self, fields: {},
                                          buy_sites: [],
                                          project_version: str,
                                          proxy_type: str,
-                                         max_replies: int) -> int:
+                                         max_replies: int,
+                                         onion_domain: str,
+                                         i2p_domain: str) -> int:
     """Reading status post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -1371,7 +1388,8 @@ def _receive_new_post_process_newreading(self, fields: {},
                                min_images_for_accounts,
                                max_hashtags,
                                buy_sites,
-                               auto_cw_cache)
+                               auto_cw_cache,
+                               onion_domain, i2p_domain)
             print('DEBUG: sending edited reading status post ' +
                   str(message_json))
         if fields['schedulePost']:
@@ -1825,7 +1843,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             buy_sites,
             project_version,
             proxy_type,
-            max_replies)
+            max_replies,
+            onion_domain,
+            i2p_domain)
     if post_type == 'newblog':
         return _receive_new_post_process_newblog(
             self, fields,
@@ -1899,7 +1919,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             buy_sites,
             project_version,
             proxy_type,
-            max_replies)
+            max_replies,
+            onion_domain,
+            i2p_domain)
     if post_type == 'newfollowers':
         return _receive_new_post_process_newfollowers(
             self, fields,
@@ -1943,7 +1965,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             buy_sites,
             project_version,
             proxy_type,
-            max_replies)
+            max_replies,
+            onion_domain, i2p_domain)
     if post_type == 'newdm':
         return _receive_new_post_process_newdm(
             self, fields,
@@ -1988,7 +2011,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             buy_sites,
             project_version,
             proxy_type,
-            max_replies)
+            max_replies,
+            onion_domain,
+            i2p_domain)
     if post_type == 'newreminder':
         return _receive_new_post_process_newreminder(
             self, fields,
@@ -2032,7 +2057,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             max_hashtags,
             buy_sites,
             project_version,
-            proxy_type)
+            proxy_type,
+            onion_domain, i2p_domain)
     if post_type == 'newreport':
         return _receive_new_post_process_newreport(
             self, fields,
@@ -2104,7 +2130,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             buy_sites,
             project_version,
             proxy_type,
-            max_replies)
+            max_replies,
+            onion_domain, i2p_domain)
     if post_type in ('newshare', 'newwanted'):
         return _receive_new_post_process_newshare(
             self, fields,

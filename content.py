@@ -1906,12 +1906,33 @@ def words_similarity(content1: str, content2: str, min_words: int) -> int:
     return 100 - int(diff * 100 / len(histogram1.items()))
 
 
-def contains_invalid_local_links(content: str) -> bool:
+def contains_invalid_local_links(domain_full: str,
+                                 onion_domain: str, i2p_domain: str,
+                                 content: str) -> bool:
     """Returns true if the given content has invalid links
     """
     for inv_str in INVALID_CONTENT_STRINGS:
-        if '?' + inv_str + '=' in content:
-            return True
+        match_str = '?' + inv_str + '='
+        if match_str not in content:
+            continue
+        # extract the urls and check whether they are for the local domain
+        ctr = 0
+        sections = content.split(match_str)
+        final_section_index = len(sections) - 1
+        for section_str in sections:
+            if ctr == final_section_index:
+                continue
+            if '://' in section_str:
+                url = section_str.split('://')[-1]
+                if domain_full in url:
+                    return True
+                if onion_domain:
+                    if onion_domain in url:
+                        return True
+                if i2p_domain:
+                    if i2p_domain in url:
+                        return True
+            ctr += 1
     return False
 
 

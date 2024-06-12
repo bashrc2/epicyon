@@ -24,7 +24,6 @@ from inbox import clear_queue_items
 from blocking import update_blocked_cache
 from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
-from content import contains_invalid_local_links
 from content import valid_url_lengths
 from posts import add_to_field
 from utils import get_instance_url
@@ -507,13 +506,6 @@ def update_inbox_queue(self, nickname: str, message_json: {},
     begin_save_time = time.time()
     # save the json for later queue processing
     message_bytes_decoded = message_bytes.decode('utf-8')
-
-    if debug:
-        print('INBOX: checking for invalid links')
-    if contains_invalid_local_links(message_bytes_decoded):
-        print('INBOX: post contains invalid local links ' +
-              str(original_message_json))
-        return 5
 
     self.server.blocked_cache_last_updated = \
         update_blocked_cache(self.server.base_dir,

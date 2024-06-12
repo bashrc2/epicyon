@@ -161,6 +161,7 @@ from webapp_hashtagswarm import html_hash_tag_swarm
 from person import valid_sending_actor
 from person import get_person_avatar_url
 from fitnessFunctions import fitness_performance
+from content import contains_invalid_local_links
 from content import reject_twitter_summary
 from content import load_dogwhistles
 from content import valid_url_lengths
@@ -1425,7 +1426,8 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                         system_language: str,
                         http_prefix: str, domain_full: str,
                         person_cache: {},
-                        max_hashtags: int) -> bool:
+                        max_hashtags: int,
+                        onion_domain: str, i2p_domain: str) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1536,6 +1538,15 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
         if debug:
             print('REJECT ARBITRARY HTML: bad string in post - ' +
                   content_str)
+        return False
+
+    if contains_invalid_local_links(domain_full,
+                                    onion_domain, i2p_domain,
+                                    content_str):
+        if message_json['object'].get('id'):
+            print('REJECT: post contains invalid local links ' +
+                  str(message_json['object']['id']) + ' ' +
+                  str(content_str))
         return False
 
     # check (rough) number of mentions
@@ -1650,7 +1661,9 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                           min_images_for_accounts: [],
                           max_hashtags: int,
                           buy_sites: {},
-                          auto_cw_cache: {}) -> bool:
+                          auto_cw_cache: {},
+                          onion_domain: str,
+                          i2p_domain: str) -> bool:
     """A post was edited
     """
     if not has_object_dict(message_json):
@@ -1677,7 +1690,7 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                                allow_local_network_access, debug,
                                system_language, http_prefix,
                                domain_full, person_cache,
-                               max_hashtags):
+                               max_hashtags, onion_domain, i2p_domain):
         print('EDITPOST: contains invalid content' + str(message_json))
         return False
 
@@ -1819,7 +1832,9 @@ def update_edited_post(base_dir: str,
                        min_images_for_accounts: [],
                        max_hashtags: int,
                        buy_sites: {},
-                       auto_cw_cache: {}) -> None:
+                       auto_cw_cache: {},
+                       onion_domain: str,
+                       i2p_domain: str) -> None:
     """ When an edited post is created this assigns
     a published and updated date to it, and uses
     the previous id
@@ -1868,7 +1883,8 @@ def update_edited_post(base_dir: str,
                           cw_lists, dogwhistles,
                           min_images_for_accounts,
                           max_hashtags, buy_sites,
-                          auto_cw_cache)
+                          auto_cw_cache,
+                          onion_domain, i2p_domain)
 
     # update the index
     id_str = edited_postid.split('/')[-1]
@@ -2015,7 +2031,9 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                              min_images_for_accounts: [],
                              max_hashtags: int,
                              buy_sites: {},
-                             auto_cw_cache: {}) -> bool:
+                             auto_cw_cache: {},
+                             onion_domain: str,
+                             i2p_domain: str) -> bool:
 
     """Receives an Update activity within the POST section of HTTPServer
     """
@@ -2061,7 +2079,8 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                                      cw_lists, dogwhistles,
                                      min_images_for_accounts,
                                      max_hashtags, buy_sites,
-                                     auto_cw_cache):
+                                     auto_cw_cache,
+                                     onion_domain, i2p_domain):
                 print('EDITPOST: received ' + message_json['object']['id'])
                 return True
         else:
@@ -4776,7 +4795,9 @@ def _former_representations_to_edits(base_dir: str,
                                      http_prefix: str,
                                      domain_full: str, person_cache: {},
                                      max_hashtags: int,
-                                     port: int) -> bool:
+                                     port: int,
+                                     onion_domain: str,
+                                     i2p_domain: str) -> bool:
     """ Some instances use formerRepresentations to store
     previous edits
     """
@@ -4834,7 +4855,7 @@ def _former_representations_to_edits(base_dir: str,
                                    allow_local_network_access, debug,
                                    system_language, http_prefix,
                                    domain_full, person_cache,
-                                   max_hashtags):
+                                   max_hashtags, onion_domain, i2p_domain):
             continue
 
         post_history_json[published_str] = prev_post_json
@@ -5235,7 +5256,7 @@ def _inbox_after_initial(server, inbox_start_time,
                            allow_local_network_access, debug,
                            system_language, http_prefix,
                            domain_full, person_cache,
-                           max_hashtags):
+                           max_hashtags, onion_domain, i2p_domain):
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_valid_post_content',
                             debug)
@@ -5452,7 +5473,9 @@ def _inbox_after_initial(server, inbox_start_time,
                                                 http_prefix,
                                                 domain_full,
                                                 person_cache,
-                                                max_hashtags, port):
+                                                max_hashtags, port,
+                                                onion_domain,
+                                                i2p_domain):
                 # ensure that there is an updated entry
                 # for the publication date
                 if post_json_object['object'].get('published') and \
@@ -6719,7 +6742,9 @@ def run_inbox_queue(server,
                                     cw_lists, dogwhistles,
                                     server.min_images_for_accounts,
                                     max_hashtags, server.buy_sites,
-                                    server.auto_cw_cache):
+                                    server.auto_cw_cache,
+                                    onion_domain,
+                                    i2p_domain):
             if debug:
                 print('Queue: Update accepted from ' + key_id)
             if os.path.isfile(queue_filename):
