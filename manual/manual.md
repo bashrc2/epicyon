@@ -20,6 +20,7 @@
 19. [Search](#search)
 20. [Browsing in a command shell](#browsing-in-a-command-shell)
 21. [Building fediverse communities](#building-fediverse-communities)
+22. [A Brief History of the Fediverse](#a-brief-history-of-the-fediverse)
 
 # Introduction
 *"Every new beginning comes from some other beginning’s end."*
@@ -849,3 +850,346 @@ If people are creating a problem or bringing trouble and are not amenable to cha
 **Curate your experience**
 
 Add links to the left column and blog or podcast feeds to the right. Choose links which are relevant to your community so that useful information is one click away. If you have multiple people on your instance then assign roles to them so that they have a stake in maintaining a good experience.
+
+# A Brief History of the Fediverse
+
+## The problems with Centralization
+
+### Censorship
+When everybody is in a single database the whims of whoever owns that database become paramount.
+
+Maybe this week the owner doesn't like the posts of cancer survivors. Maybe next week they don't like transgender people. Maybe another week they don't like people resisting fascists on the street. All these accounts can be speedily closed, erasing history, and in practice things like this have actually happened many times.
+
+Admittedly in the case of the website formerly known as Twitter it probably isn't a single server or a single database, but via virtualization technologies we can consider it to be such. What matters mostly is who owns and controls the system, and that the system behaves as a single cohesive entity with a unified policy.
+
+Censorship on sites like Twitter/X and Facebook has been an ongoing problem for many years. If there has been a trend it has been one of increasing pressure from nation states to comply with local laws, or just the wishes of the powerful to suppress inconvenient home truths and interfere with people organizing protests. Any event with "social action potential" can transform into a challenge to entrenched power structures.
+
+Beginning with the Arab Spring in 2011, internet shutdowns became increasingly common, but even in places where the internet is operational there can still be domain blocks against the biggest social network systems. The obvious examples of this is China's Great Firewall or Iran's national internet, but there are many other similar cases of selective blocking.
+
+Having the ability to avoid censorship, either by the centralized social networks or by governments at the ISP level is useful, and being able to run your own social networks is one way of achieving that.
+
+In a federated system some servers may get blocked by censors, but the rest of the system can still continue to be operational. You get to decide by what rules the community is governed.
+
+### Algorithmic Timelines
+The algorithmic timeline might seem like a good idea at first. After all, people have limited time to mess around on social networks so maybe they just want to see the highlights.
+
+Unfortunately it's never quite that simple. The website formerly known as Twitter started using an algorithmic timeline in 2016 and Facebook many years before that. Algorithmic timelines give whoever controls the system the ability to promote or censor content as they wish, and their wishes may bear no relationship to the wishes of the user.
+
+*"When the linear timeline was removed in favor of their own algorithmic sort, they removed our control over the conversation entirely. Instead of you and your friends in discourse with each other, you’re talking around the sources of content you’re being told to see, read, and like. You are in direct competition with a corporate notion of your personal history, identity, and relationships."*
+
+In 2012 Facebook used its algorithmic timeline [to manipulate the emotions of its users](https://www.wired.com/2014/06/everything-you-need-to-know-about-facebooks-manipulative-experiment/) in a week long experiment. None of the experimental subjects gave consent. By promoting or removing happy or sad content the collective mood could be artificially swayed one way or another. It's likely that other similar experiments have occurred quietly without any media attention.
+
+Algorithmic timelines also mean that different users see a different version of events. For any given post, maybe you see it now or maybe later or perhaps not at all, depending upon what the algorithm decides is priority. This reduces the potential for coordinated activities.
+
+A well known problem with algorithmic timelines is "shadow banning". You are sending out posts, but the algorithms decide that they all have zero ranking priority and so your friends never seem them. You think you're communicating, but actually you're not.
+
+### Echo chambers and outrage culture
+What happens when you put millions of people from many different cultures into an online space where they can't avoid each other? This is the experiment which the centralized social network systems have been performing.
+
+People have conflicting opinions and expected norms, so when they're in a confined space and don't have much control over what gets into their stream they will of course fight with each other.
+
+This can result in endless bickering, ALLCAPS RANTS, harassment, bikeshedding, egobattles and call-outs. It soon gets emotionally draining and can have serious psychological and sometimes physical consequences. The website formerly known as Twitter today is a more or less endless stream of outrage and neonazi talking points.
+
+The echo chamber is the opposite. You only talk to a small circle of friends and never meet anyone outside of your ingroup. There's a lot of complaining about bubble effects, but in practice this rarely happens since algorithmic timelines don't give the user enough control to be able to remain strictly within their bubble.
+
+The ideal is somewhere between being in a bubble and being in an overcrowded and antagonistic space suffering from endless linguistic combat. Federation provides this kind of model.
+
+### The Silo Feedback Loop
+The various features of the centralized silo systems create a feedback loop which encourages "engagement" and enables paying customers to manipulate opinions.
+
+ * Organization buys targeted ads
+ * Algorithmic timeline changes to display them
+ * User experience changes due to altered timeline
+ * Analytics of resulting user behaviour
+ * Devise new ad campaign
+ * Repeat
+
+The silo systems can use data mining and machine learning methods to maximize the engagement of users with ads. Typically the AI will learn that in order to get the biggest results the ads should target people in a manner which causes shock and outrage, resulting in furious replies and flamewars. "Look at this terrible thing!", etc.
+
+When the ads are of a political or psyops nature obviously this can have significant adverse effects upon the society if enough targeted advertising is deployed. Even if the silo system has a policy which forbids this it's hard for them to automatically detect political campaigns which may be quite subtle and manipulative in their messaging. They also have a strong incentive to take as much money as they can, regardless of its origin or intentions.
+
+The absence of centrally controlled algorithmic timelines prevents this kind of feedback loop from being deliberately created within the fediverse.
+
+If the timeline is purely chronological, or if it's controlled by the user, then it's not possible to buy influence over opinions in the same manner.
+
+### Corporate versus Community Interests
+
+*"Centralised systems lead to increasingly monotonous and unaccountable power. Over time this encourages exploitation and disinterest in user needs."*
+
+-- Irina Bolychevsky
+
+Naive people might believe that Facebook is just a place to hang out and chat with friends. But there aren't many folks that naive in existence anymore.
+
+Facebook doesn't actually care whether the user experience is good or not, so long as its advertising customers can target their users and the money keeps rolling in. This is certainly reflected in the horrible user interface.
+
+The interests of major internet companies are not necessarily the same as the interests of internet users. Often the interests are badly out of alignment.
+
+The companies - especially the big ones - are only concerned about profits and share holders. Things like keeping Mark Zuckerberg in the top ten list of oligarchs. They're not concerned about you or your community, because you're small fry and they are the Tech Geniuses living in McMansions and driving expensive CyberTrucks.
+
+Federation is one way to bring the interests back into alignment and cut the oligarchs with their inflated egos and self-entitlement out of the picture. If you keep the number of users on an instance small then there is not much power differential between the admin and the users, and probably their concerns are similar.
+
+## Dimensions of Decentralization
+Decentralized systems can be conceptualized along three axes, forming the Governance Cube.
+
+### Logical
+If you divide the system in half will they continue to function or fail catastrophically.
+
+Can you combine systems which previously ran separately into a larger one, without losing any functionality or having clashing indexes/hashes.
+
+### Political
+Is the system controlled by a single individual or a single organization, or is it controlled by many people or different organizations.
+
+Do you need anyone's permission to run the system.
+
+### Architectural
+How many computers is the system running on, and how geographically dispersed are they. Are they all in a single warehouse or in many homes and offices.
+
+### Examples
+
+Bitcoin: Logically centralized, Architecturally decentralized (apart from mining), politically decentralized (mostly)
+
+Traditional corporations: Logically centralized, Architecturally centralized, Politically centralized
+
+Fediverse: Logically decentralized, Politically decentralized, Architecturally decentralized. Fediverse might be considered politically centralized, but only at the instance level.
+
+Signal App: Logically centralized, Politically centralized, Architecturally centralized (single server)
+
+SSB: Logically decentralized, Politically decentralized, Architecturally decentralized
+
+A system which was politically centralized but logically and architecturally decentralized would be where everyone could run their own solid-like data pods and control permissions to their data, but identity would be centrally managed by a single organization.
+
+## Problems with the website formerly known as Twitter
+Particular problems with Twitter, especially from 2016 onwards after the introduction of algorithmic timelines were:
+
+ * Centralised
+ * Proprietary, so forking and doing something better wasn't an option
+ * They forced you to ID yourself with a phone number
+ * They handed your data to third party companies
+ * Most governments were using it to ID people saying bad things about them
+ * Ads and corporate campaigns
+ * Heavy handed censorship, or refusal to remove users who were violating TOS merely because of their celebrity status
+ * Refusal to deal with obvious bot accounts, used for spying or creating an economy of fake followers
+
+## Peers and Federalists
+The ideal state of the web would be peer to peer. There would be perfect scalability due to there being no bandwidth choke points. All data would be content addressible, replicated and seeded by its users. DDoS would be practically impossible. Each peer would make their own decisions about which others to connect to and what data to share.
+
+The web today is the opposite of this, and is increasingly centralised. Policies about what type of content is permitted or not tend to be global and defined by the terms of service a few megacorporations.
+
+Both of these have disadvantages. The centralised web tries to impose a single standard for connectivity and content onto the whole world. The peer to peer situation means that each individual is captain of their own ship and makes their own decisions about who to connect to and what to share, but this may sometimes involve a lot of duplicated curation effort.
+
+Federation offers a third way of doing things, in which decisions about what is or isn't acceptable may be partly collectivized, but not to a totalizing extent as in the centralized case. This allows peers to offload some of their preferences to their affinity group, which may improve the user experience and reduce cognitive workload. For example, collective defense against known bad entities.
+
+## Pseudonymity
+After the web 2.0 systems appeared in the mid 2000s so too did a consensus that "real names" were preferable to pseudonyms.
+
+The thinking was that if users are anonymous then they're more likely to indulge in antisocial behavior, because there are likely to be no real world repercussions.
+
+In the fediverse, as on earlier internet systems, pseudonyms are used predominantly and there have been no "real name" policies so far.
+
+The evolution of Facebook and to a much lesser extent Google+ provided good evidence that "real names" do not necessarily produce civility. Instead "real names" are much more about producing a consistent social graph for use by advertisers. If you know someone's specific identity then its much easier to target them with advertising and send traditional junk mail to their home address.
+
+So the obsession with "real names" was largely about commercial motives rather than improving the discourse.
+
+Full anonymity where there isn't a consistent username or where many users are on the same account is difficult to handle because it makes spammers hard to block, but pseudonymity where users have a persistent and unique username/address which is not necessarily linked to any "legal person" appears to be optimal.
+
+## GNU Socialites
+[GNU Social](https://en.wikipedia.org/wiki/GNU_social) was released in 2013, based upon the earlier StatusNet code, written in PHP.
+
+In contrast to the release announcement, which talked of "professional quality code", the software contained a large amount of cruft.
+
+Initial cruft included a lot of links to Google, including long obsolete Google projects such as [Buzz](https://en.wikipedia.org/wiki/Google_Buzz). Initial tasks were to remove any dependencies upon proprietary systems.
+
+### The Quitter Era
+
+Between 2013 and 2016 the most popular GNU Social instances ran with the Qvitter user interface, which closely resembled the earlier and more user friendly appearance of Twitter, before a lot of junk was added. It was developed primarily by Hannes Mannerheim from August 2013 onwards.
+
+These instances had domains like quitter.se or quitter.no. They had explicitly anti-capitalist branding, with "quitter" being a reference to "quitting Twitter".
+
+Unlike the classic GNU Social user interface, which was unchanged from the pre-2012 StatusNet days, Qvitter used javascript. There was widespread distrust of javascript at that time, so the more security conscious folks tended to use non-Quitter instances.
+
+During the Quitter Era most users were either Free Software developers/supporters, or anarchists seeking to socially organize autonomously from the corporate systems. Anarchist slogans intermingled with Stallman and GNU memes were common.
+
+By the end of 2016 the main focus of fediverse activity was shifting away from GNU Social and towards the shiny new Mastodon system.
+
+### PostActiv
+
+Development on GNU Social was slow, and mostly confined to international translations.
+
+As a consequence of slow developent, in 2016 a fork of GNU Social was created called postActiv . PostActiv was developed by Maiyannah Bishop, with the aim of tidying the code, adding comments and improving the message queue buffering.
+
+The postActiv fork was not an acrimonious one, and it was recommended by the main GNU Social developer, Mikael Nordfeldth.
+
+## Here come the Elephants
+Mastodon started gaining popularity towards the end of 2016. At that time it was based around a single instance called mastodon.social.
+
+It was initially viewed skeptically by the users of GNU Social instances, as being a cult based around the personality of its young developer, Eugen Rochko.
+
+This system was promoted as being like Twitter, but with a zero tolerance policy towards far right or alt-right agitators. The "lack of nazis" was enough of a motivator to get some users to move over from Twitter.
+
+Mastodon introduced a new concept to the fediverse - the content warning. Content warnings could also be considered as ultra brief content summaries, allowing the user to rapidly skip over posts which were probably not of interest.
+
+What content warnings (or one line summaries) allowed users to do was to follow numbers of other users above the Dunbar limit and without necessarily having a high degree of affinity with them, while also avoiding the cognitive overload which would otherwise result. In effect, content warnings were an alternative to the algorithmic timeline, producing the same compressing effect without the down sides of censorship and shadowbans.
+
+People on Twitter had been requesting user interface changes to improve usability and getting nowhere for years, but were happily surprised that the Mastodon developer was much more responsive to suggestions.
+
+Mastodon initially set its character limit to 500 - much higher than Twitter's 140 at the time, but typically lower than many GNU Social instances which defaulted to 2000.
+
+### Appearance
+A variety of factors contributed to the early popularity of Mastodon, and one of those factors was its similarity to an already familiar Twitter user interface, called Tweetdeck.
+
+From early on Mastodon seems to have attracted many artists, and as a consequence it tended to have better quality artwork for its logos than other fediverse projects - and Free Software projects in general.
+
+### Changing demographics
+With the rise of Mastodon in 2017 the gender composition of the fediverse noticeably changed from being mostly masculine (maybe 80% at a guess) towards being much more even. Mastodon had broad appeal and brought in new demographics which were not confined to people interested in technology.
+
+### The First Million
+At the end of 2017 Mastodon had a million user accounts. However, taking into account that many of those would be dormant, or bots, a more realistic estimate of active users would between 100 and 200 thousand.
+
+### New Design Features
+Mastodon also introduced new design features which were intended to reduce the potential for harassment. On Mastodon systems you could search on hashtags, but not do arbitrary searches of an instance for arbitrary text.
+
+This was an attempt to mitigate lowbrow adversaries who would otherwise search through the system looking for keywords (like maybe "feminist") and then dogpile those users with insulting posts.
+
+Lowbrow dogpiling attacks of this kind had been common on Twitter for a number of years, so anything which frustrated the most dim-witted adversaries was still useful.
+
+Mastodon was the first web application in production to adopt ActivityPub for server-to-server communication, and it was available at the beginning of 2018.
+
+### ActivityPub Adoption
+Mastodon adopted the ActivityPub protocol at the beginning of 2018. It only used the server-to-server part of the protocol, and not the server-to-client. The implementation of ActivityPub within Mastodon then became primary reference for other instance software, such as Pleroma. The earlier OStatus protocol continued to be supported.
+
+### The decline and fall of Ostatus
+In May 2019 the Mastodon project maintainer announced plans to deprecate the OStatus protocol, which had been superceded by ActivityPub.
+
+*"In 3.0, it is time to remove OStatus from Mastodon. Mastodon has not been designed as a multi-platform system and supporting a legacy platform creates messy and confusing code. Furthermore, the OStatus code has not been receiving the same performance and security improvements, in many parts because the OStatus protocol is inherently less secure in some aspects."*
+
+### Little Hitlers and smalltime internet tyrants
+In July 2019 the white supremacist social network gab dot com switched from its formerly proprietary codebase over to using a fork of Mastodon. This caused a lot of concern among the existing userbase, who up to that point had been mostly left wing or anarchist. The Mastodon project blog issued a statement.
+
+*"Mastodon is completely opposed to Gab’s project and philosophy, which seeks to monetize and platform racist content while hiding behind the banner of free speech."*
+
+Upon launch gab dot com claimed to have added another million users to the fediverse, but upon closer scrutiny these figures had been deliberately inflated via the inclusion of dormant legacy accounts carried over from their previous database. The site also removed the active users count which would otherwise reveal the diminutive volume of their actual userbase.
+
+The appearance of an openly neo-nazi instance accelerated interest in improving the security and moderation capabilities of Mastodon, and the discussion of Object Capabilities or "authorized fetch". Many Mastodon instances preemptively blocked gab dot com and its affiliated sites even before they had officially launched, such was the revulsion.
+
+There was also the irony of people espousing extreme hatred of minority groups adopting a software system largely created by and for those very same groups. Effectively they were admitting that the proprietary approach had failed and that software built by people they viewed as enemies was technically superior to anything that "the master race" could hamfistedly kludge together themselves.
+
+## Migrations and Exoduses
+There have been many waves of incoming users. From time to time, typically once or twice per year, the website formerly known as Twitter, Facebook or other silo systems will just decide that they don't like a certain type of user and begin closing or suspending their accounts or groups.
+
+In other cases a celebrity will be shadowbanned or suspended, which then causes a scandal among their followers and a desire for the fandom to relocate.
+
+These are the biggest exoduses so far:
+
+### 2011/12: Identi.ca in trouble
+Towards the end of 2011 identi.ca started to experience multi-day or multi-week outages. Its developer advised that anyone complaining create their own instances, and thus the first migration wave began out of the original silo system.
+
+Evan wanted to change the posts size of identi.ca from 140 characters, like Twitter at the time, to something larger. There was a harsh backlash, so some of those who wanted to maintain the traditional length created their own federated sites, or used hosted ones which could be paid for to support the main development.
+
+By that time identi.ca was running out of money and its end was immanent.
+
+### 2016: Twitter's Algorithmic Timeline
+In early 2016 the website formerly known as Twitter introduced an algorithmic timeline. Algorithmic timelines mean that the posts which other users see depend upon an opaque algorithm created by the company. The result is that it's possible to post to the system but not be seen by anyone, or whoever your target audience is. This is known as "shadow banning".
+
+The combined effects of shadow banning plus overt censorship resulted in a large influx into the fediverse. At times my GNU Social stream was a crazy firehoze of all kinds of random stuff.
+
+The established Quitter instances were soon overloaded with users, and as a consequence new instances were set up. The most notable of these was shitposter.club.
+
+### 2017: Mastodon goes Viral
+Around about April 2017 Mastodon went viral. It started getting lots of mentions on the website formerly known as Twitter, and some mainstream technology journalists were writing about it. Many people thought it was new - which was true, but only in a narrow sense - and likely to become The Next Big Thing.
+
+Once again there was a large exodus of users out of Twitter and into the fediverse. My stream was going crazy, with hundreds of posts every few minutes.
+
+This exodus was more driven by hype than by Twitter doing anything especially bad to its users. By that time most users had accepted and internalized the fact that the site had become a perpetual dumpster fire of hostility and unwanted content.
+
+The technology journalism about Mastodon was of a comically poor standard. Most journalists fundamentally misunderstood the main concepts and so ended up making irrelevant criticisms. They mostly suffered from fediverse culture shock.
+
+Prior to the Mastodon craze, its developer had placed some ads for it on the website formerly known as Twitter. Twitter being a bunch of clueless corporate drones, they weren't smart enough to realise that they were advertising a competing system. The ads almost certainly targeted technology journalists.
+
+#### End of the One True Instance
+
+In late 2016 and early 2017, prior to going viral, Mastodon had existed as a single instance - mastodon.social. During that time it was heavily criticized for its OStatus federation bugs, and there seemed to be little interest in federating with anyone. Instead it looked like mastodon.social was aiming to be a centralized single server Twitter clone. Like Twitter, but with a lot less tolerance for bad behavior and a strong stance against hitlerites.
+
+Once it went viral there was no way that Mastodon could remain a single server affair with a monolithic and insular culture, and they had to become more serious about making the federation features work for real.
+
+As is the case with each new wave of incoming users, many new instances were set up and many of them were subsequently abandoned, or failed to keep backups and then had database corruption or a failed hard drive. There is always some rate of attrition. But many Mastodon instances remained viable, with enthusiastic new communities forming around them. The fediverse was going well beyond it's traditional Free Software user base, appealing to entirely new and diverse demographics.
+
+#### Celebrity Bounce
+
+In the April time frame various celebrities from the website formerly known as Twitter tried joining the fediverse via Mastodon. At some point William Shatner tried and failed to register an account or find a journalist named Lance Ulanoff. Both of them failed to understand that this system wasn't identical to Twitter in the way it works. Adafruit and a number of others also started accounts, typically on the main mastodon.social instance.
+
+But none of these celebrity accounts lasted for long. A month or two at most. They soon realized that they would not be able to cultivate a mass audience in the fediverse, nor would the fediverse in any way shield them from legitimate criticism or spoof accounts mocking their cluelessness.
+
+It seems that the phemonena of celebrity requires a centralized broadcast culture together with a legal system able to enforce personal brands, and the fediverse does not fit that model very well at all.
+
+#### Replacing the Twitterbots
+
+Before 2017 there had been GNU Social based bots set up to import posts from the website formerly known as Twitter for certain accounts. After Mastodon went viral this was no longer needed so much, because people on Twitter either moved over or maintained a fediverse account. An example of this was Roy Schestowitz.
+
+### 2018: A perfect storm
+In 2018 the exoduses didn't let up.
+
+In April the first instance for sex workers appeared. This was in response to the SESTA act in the US, which made the more mainstream sites nervous about hosting anything which might be related to sex work of any kind, and as a consequence began the large scale purging of accounts which might be related to that. The Switter instance rapidly grew to host a large number of users displaced from various other sites by the new law.
+
+In August a combination of dreadful decisions made by the CEO of Twitter resulted in a kind of perfect storm in which at its peak 17,000 new users arrived in a single day.
+
+The factors creating the August Twitter storm were:
+
+ * Changes to the Twitter API, resulting in client apps breaking
+ * A witch hunt against Terms of Service violators, almost certainly automated via AI rather than manual vetting. Violations were often silly things taken out of context from tweets a year or more old
+ * It became increasingly obvious that the Twitter CEO's decisions were politically motivated, leading many users to consider themselves unsafe on that platform
+ * Closing the alt accounts of Twitter users in an attempt to consolidate a singular identity in the same manner as Facebook. Users often had multiple accounts for different purposes.
+
+In early December there was another exodus, this time from Tumblr which had adopted a new policy of banning adult content. Like Facebook, Tublr tried to use AI to detect images containing what it called "female-presenting nipples", but the AI was hopelessly bad and caused an avalanche of false positives resulting in account suspensions.
+
+In the same week that Tublr began its purge of adult content Facebook also changed its terms of service to follow suit in what appeared to be a coordinated takedown. Facebook's new terms forbade pretty much anything even tangentally related to sex, including things such as the discussion of sexual orientation or partner preferences.
+
+Also in 2018 Google announced that its social network service, known as Google+, would soon be closed. The fediverse gained some new people as a result, although by that time the number of users on Google+ had dwindled to a small community.
+
+By the end of 2018 Facebook's AI moderation was becoming more of a problem for the average user of that system. Even expressing frustration in some mild forms, such as "men are trash!", was enough to result in account suspension due to the misidentification of hate speech.
+
+### 2019: Tyrannical tendencies
+With its launch in 2016 and first wave of success in early 2017 Mastodon had badged itself as the system which doesn't accept nazis.
+
+Up until 2019 migrations into the fediverse had been fairly benign and with a large LGBTQ quotient. But 2019 was the first case of what might be described as a hostile migration.
+
+The neo-nazi site gab dot com moved its operations from its previously failed proprietary server over to using a fork of Mastodon. This caused a lot of alarm among existing fediverse users and instance admins. Gab had already been banned from silo sites due to its promotion of extreme hatred and support for acts of terrorism including mass shootings.
+
+Even before gab dot com officially re-launched at the beginning of July fediverse admins were pre-emptively blocking federation with the site.
+
+One fediverse Android app called Tusky took a stand by building the block on gab dot com directly into its codebase. Another app called Fedilab announced that it would do the same, but then mysteriously backpeddled on the decision, raising questions about its political bias.
+
+Anti-feminists attempting to spread hatred of people in the LGBT community also used the Gab fork of Mastodon on a site called spinster, forming an axis alliance with the nazis.
+
+But the scourge of nazi boot-lickers proved to be more of a damp squib than a Cyber-Blitzkrieg. Their instances were very isolated and their user counts were enormously over-inflated in keeping with the possession of a dictatorially grandiose mindset (windbags plotting world domination while having a handful of real followers and a large number of bots spewing conspiratorial nonsense).
+
+At the end of the year one analysis discovered that of the active users on gab dot com over 90% were news bots, with only a small number of genuinely active accounts.
+
+The lesson from the nazi migration is that containment can be a fairly successful strategy if there is enough education about the threat. Like an immune system isolating a dangerous pathogen. Left to their own devices the nazis resort to turning on their own, and their ability to mobilize and recruit becomes severely constrained.
+
+A group with a centralized way of thinking and organizing also tends to fare poorly within the jungle of decentralized horizontalists. It was only really within the silo systems that they could reach a mass audience.
+
+### 2019: India Arrives
+
+In November there was a major exodus from India into the fediverse, after an Indian supreme court lawyer, Sanjay Hegde, was banned from the website formerly known as Twitter resulting in a political storm in which the Blue Bird Site was accused, unsurprisingly, of yet another case of bias. Hegde had been critical of right wing government and had posted a classic 1930s photo of many nazis saluting but one person conspicuously refusing to do so.
+
+### 2019: Spanish exodus
+
+In December the website formerly known as Twitter had a purge of Spanish leftists. Many of them showed up in the fediverse, and on Twitter they used the hashtag **YoMigroAMastodon** to encourage others to leave.
+
+### 2019: Chaos Computer Club
+
+At the annual congress Mastodon was significantly more referenced than in the previous two years, and some speakers asked the audience to give feedback via Mastodon hashtags.
+
+### Fediverse culture shock
+This is what happens when someone has only had a presence within large corporate sites, such as the website formerly known as Twitter or Facebook, and then moves to a federated system on the open internet.
+
+Symptoms:
+
+ * Not understanding that there is no single company behind it all
+ * Someone else must take responsibility for XYZ
+ * There is no viable business model here, so this must be a passing fad
+ * I need to create my preferred username before someone else uses it
+ * I don't like the name "Mastodon"
+ * The fediverse is too fractured. I cannot spam millions of adoring fans with my latest hot take.
+ * Why are there no adverts?
+ * Registering an account on each instance
