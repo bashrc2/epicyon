@@ -913,7 +913,6 @@ The absence of centrally controlled algorithmic timelines prevents this kind of 
 If the timeline is purely chronological, or if it's controlled by the user, then it's not possible to buy influence over opinions in the same manner.
 
 ### Corporate versus Community Interests
-
 *"Centralised systems lead to increasingly monotonous and unaccountable power. Over time this encourages exploitation and disinterest in user needs."*
 
 -- Irina Bolychevsky
@@ -945,7 +944,6 @@ Do you need anyone's permission to run the system.
 How many computers is the system running on, and how geographically dispersed are they. Are they all in a single warehouse or in many homes and offices.
 
 ### Examples
-
 Bitcoin: Logically centralized, Architecturally decentralized (apart from mining), politically decentralized (mostly)
 
 Traditional corporations: Logically centralized, Architecturally centralized, Politically centralized
@@ -1000,7 +998,6 @@ In contrast to the release announcement, which talked of "professional quality c
 Initial cruft included a lot of links to Google, including long obsolete Google projects such as [Buzz](https://en.wikipedia.org/wiki/Google_Buzz). Initial tasks were to remove any dependencies upon proprietary systems.
 
 ### The Quitter Era
-
 Between 2013 and 2016 the most popular GNU Social instances ran with the Qvitter user interface, which closely resembled the earlier and more user friendly appearance of Twitter, before a lot of junk was added. It was developed primarily by Hannes Mannerheim from August 2013 onwards.
 
 These instances had domains like quitter.se or quitter.no. They had explicitly anti-capitalist branding, with "quitter" being a reference to "quitting Twitter".
@@ -1012,7 +1009,6 @@ During the Quitter Era most users were either Free Software developers/supporter
 By the end of 2016 the main focus of fediverse activity was shifting away from GNU Social and towards the shiny new Mastodon system.
 
 ### PostActiv
-
 Development on GNU Social was slow, and mostly confined to international translations.
 
 As a consequence of slow developent, in 2016 a fork of GNU Social was created called postActiv . PostActiv was developed by Maiyannah Bishop, with the aim of tidying the code, adding comments and improving the message queue buffering.
@@ -1106,7 +1102,6 @@ The technology journalism about Mastodon was of a comically poor standard. Most 
 Prior to the Mastodon craze, its developer had placed some ads for it on the website formerly known as Twitter. Twitter being a bunch of clueless corporate drones, they weren't smart enough to realise that they were advertising a competing system. The ads almost certainly targeted technology journalists.
 
 #### End of the One True Instance
-
 In late 2016 and early 2017, prior to going viral, Mastodon had existed as a single instance - mastodon.social. During that time it was heavily criticized for its OStatus federation bugs, and there seemed to be little interest in federating with anyone. Instead it looked like mastodon.social was aiming to be a centralized single server Twitter clone. Like Twitter, but with a lot less tolerance for bad behavior and a strong stance against hitlerites.
 
 Once it went viral there was no way that Mastodon could remain a single server affair with a monolithic and insular culture, and they had to become more serious about making the federation features work for real.
@@ -1114,7 +1109,6 @@ Once it went viral there was no way that Mastodon could remain a single server a
 As is the case with each new wave of incoming users, many new instances were set up and many of them were subsequently abandoned, or failed to keep backups and then had database corruption or a failed hard drive. There is always some rate of attrition. But many Mastodon instances remained viable, with enthusiastic new communities forming around them. The fediverse was going well beyond it's traditional Free Software user base, appealing to entirely new and diverse demographics.
 
 #### Celebrity Bounce
-
 In the April time frame various celebrities from the website formerly known as Twitter tried joining the fediverse via Mastodon. At some point William Shatner tried and failed to register an account or find a journalist named Lance Ulanoff. Both of them failed to understand that this system wasn't identical to Twitter in the way it works. Adafruit and a number of others also started accounts, typically on the main mastodon.social instance.
 
 But none of these celebrity accounts lasted for long. A month or two at most. They soon realized that they would not be able to cultivate a mass audience in the fediverse, nor would the fediverse in any way shield them from legitimate criticism or spoof accounts mocking their cluelessness.
@@ -1122,7 +1116,6 @@ But none of these celebrity accounts lasted for long. A month or two at most. Th
 It seems that the phemonena of celebrity requires a centralized broadcast culture together with a legal system able to enforce personal brands, and the fediverse does not fit that model very well at all.
 
 #### Replacing the Twitterbots
-
 Before 2017 there had been GNU Social based bots set up to import posts from the website formerly known as Twitter for certain accounts. After Mastodon went viral this was no longer needed so much, because people on Twitter either moved over or maintained a fediverse account. An example of this was Roy Schestowitz.
 
 ### 2018: A perfect storm
@@ -1169,15 +1162,12 @@ The lesson from the nazi migration is that containment can be a fairly successfu
 A group with a centralized way of thinking and organizing also tends to fare poorly within the jungle of decentralized horizontalists. It was only really within the silo systems that they could reach a mass audience.
 
 ### 2019: India Arrives
-
 In November there was a major exodus from India into the fediverse, after an Indian supreme court lawyer, Sanjay Hegde, was banned from the website formerly known as Twitter resulting in a political storm in which the Blue Bird Site was accused, unsurprisingly, of yet another case of bias. Hegde had been critical of right wing government and had posted a classic 1930s photo of many nazis saluting but one person conspicuously refusing to do so.
 
 ### 2019: Spanish exodus
-
 In December the website formerly known as Twitter had a purge of Spanish leftists. Many of them showed up in the fediverse, and on Twitter they used the hashtag **YoMigroAMastodon** to encourage others to leave.
 
 ### 2019: Chaos Computer Club
-
 At the annual congress Mastodon was significantly more referenced than in the previous two years, and some speakers asked the audience to give feedback via Mastodon hashtags.
 
 ### Fediverse culture shock
