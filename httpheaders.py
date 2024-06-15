@@ -138,6 +138,7 @@ def _set_headers_base(self, file_format: str, length: int, cookie: str,
     if permissive:
         self.send_header('Access-Control-Allow-Origin', '*')
         return
+    self.send_header('X-Robots-Tag', 'noai, noimageai, GPC')
     self.send_header('X-AP-Instance-ID', self.server.instance_id)
     self.send_header('X-Clacks-Overhead', self.server.clacks)
     self.send_header('Sec-GPC', '1')
