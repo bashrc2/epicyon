@@ -5050,7 +5050,14 @@ def _novel_fields_for_person(nickname: str, domain: str,
         'oneOf',
         'bookmarks',
         'formerRepresentations',
-        'anyOf'
+        'anyOf',
+        'commentsEnabled',
+        'rejectReplies',
+        'mediaType',
+        'crawlable',
+        'schema:license',
+        'license',
+        'summaryMap'
     )
     for post_filename in posts_in_box:
         post_filename = post_filename.name
