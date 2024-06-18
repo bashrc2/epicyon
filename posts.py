@@ -5057,7 +5057,8 @@ def _novel_fields_for_person(nickname: str, domain: str,
         'crawlable',
         'schema:license',
         'license',
-        'summaryMap'
+        'summaryMap',
+        'closed'
     )
     for post_filename in posts_in_box:
         post_filename = post_filename.name
