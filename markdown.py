@@ -400,11 +400,13 @@ def markdown_to_html(markdown: str) -> str:
         html_str += line
         ctr += 1
 
-    html_str = html_str.replace('<code><br>', '<code>')
-    html_str = html_str.replace('</code><br>', '</code>')
-
-    html_str = html_str.replace('<ul class="md_list"><br>',
-                                '<ul class="md_list">')
-    html_str = html_str.replace('</li><br>', '</li>')
+    replacements = (
+        ('<code><br>', '<code>'),
+        ('</code><br>', '</code>'),
+        ('<ul class="md_list"><br>', '<ul class="md_list">'),
+        ('</li><br>', '</li>')
+    )
+    for pair in replacements:
+        html_str = html_str.replace(pair[0], pair[1])
 
     return html_str
