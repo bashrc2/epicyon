@@ -136,18 +136,21 @@ def convert_post_content_to_html(message_json: {}) -> None:
         return
     if not obj_json.get('content'):
         return
-    if obj_json['mediaType'] == 'text/markdown':
-        content_str = obj_json['content']
-        obj_json['content'] = markdown_to_html(content_str)
-        obj_json['mediaType'] = 'text/html'
-        if obj_json.get('contentMap'):
-            langs_dict = obj_json['contentMap']
-            if isinstance(langs_dict, dict):
-                for lang, content_str in langs_dict.items():
-                    if not isinstance(content_str, str):
-                        continue
-                    obj_json['contentMap'][lang] = \
-                        markdown_to_html(content_str)
+    if obj_json['mediaType'] != 'text/markdown':
+        return
+    content_str = obj_json['content']
+    obj_json['content'] = markdown_to_html(content_str)
+    obj_json['mediaType'] = 'text/html'
+    if not obj_json.get('contentMap'):
+        return
+    langs_dict = obj_json['contentMap']
+    if not isinstance(langs_dict, dict):
+        return
+    for lang, content_str in langs_dict.items():
+        if not isinstance(content_str, str):
+            continue
+        obj_json['contentMap'][lang] = \
+            markdown_to_html(content_str)
 
 
 def is_moderator(base_dir: str, nickname: str) -> bool:
