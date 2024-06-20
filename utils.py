@@ -1325,11 +1325,26 @@ def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
     json_object = None
     tries = 1
     while tries <= max_tries:
+        data = None
+
+        # load from file
         try:
             with open(filename, 'r', encoding='utf-8') as json_file:
                 data = json_file.read()
-                json_object = json.loads(data)
-                break
+        except OSError as exc:
+            print('EX: load_json exception ' +
+                  str(tries) + ' ' + str(filename) + ' ' + str(exc))
+            break
+
+        # check that something was loaded
+        if not data:
+            print('EX: load_json no data ' + str(filename))
+            break
+
+        # convert to json
+        try:
+            json_object = json.loads(data)
+            break
         except BaseException as exc:
             print('EX: load_json exception ' +
                   str(tries) + ' ' + str(filename) + ' ' + str(exc))
