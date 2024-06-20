@@ -793,7 +793,7 @@ def html_timeline(default_timeline: str,
     # banner and row of buttons
     tl_str += \
         '<header>\n' + \
-        '<a href="/users/' + nickname + '" title="' + \
+        '  <a href="/users/' + nickname + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '" ' + \
         'aria-flowto="containerHeader" tabindex="1" accesskey="' + \

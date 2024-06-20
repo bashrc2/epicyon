@@ -625,7 +625,8 @@ def daemon_http_get(self) -> None:
                                 self.server.buy_sites,
                                 self.server.blocked_cache,
                                 self.server.block_federated,
-                                self.server.auto_cw_cache):
+                                self.server.auto_cw_cache,
+                                self.server.default_timeline):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_show_conversation_thread',
                             self.server.debug)

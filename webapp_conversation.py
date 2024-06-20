@@ -21,6 +21,7 @@ from webapp_utils import text_mode_browser
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_post_separator
 from webapp_utils import html_footer
+from webapp_utils import get_banner_file
 from webapp_post import individual_post_as_html
 
 
@@ -53,7 +54,8 @@ def html_conversation_view(authorized: bool, post_id: str,
                            blocked_cache: [],
                            block_federated: [],
                            auto_cw_cache: {},
-                           ua_str: str) -> str:
+                           ua_str: str,
+                           default_timeline: str) -> str:
     """Show a page containing a conversation thread
     """
     conv_posts = \
@@ -73,6 +75,22 @@ def html_conversation_view(authorized: bool, post_id: str,
         get_config_param(base_dir, 'instanceTitle')
     conv_str = \
         html_header_with_external_style(css_filename, instance_title, None)
+
+    # banner and row of buttons
+    users_path = '/users/' + nickname
+    banner_file, _ = get_banner_file(base_dir, nickname, domain, theme_name)
+    conv_str += \
+        '<header>\n' + \
+        '  <a href="/users/' + nickname + '/' + \
+        default_timeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '" ' + \
+        'aria-flowto="containerHeader" tabindex="1" accesskey="' + \
+        access_keys['menuTimeline'] + '">\n'
+    conv_str += '<img loading="lazy" decoding="async" ' + \
+        'class="timeline-banner" alt="" ' + \
+        'src="' + users_path + '/' + banner_file + '" /></a>\n' + \
+        '</header>\n'
 
     separator_str = html_post_separator(base_dir, None)
     text_mode_separator = '<div class="transparent"><hr></div>\n'
