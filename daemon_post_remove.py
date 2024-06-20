@@ -190,7 +190,7 @@ def remove_share(self, calling_domain: str, cookie: str,
                         acct_dir(base_dir, share_nickname,
                                  share_domain) + '.json'
                     if os.path.isfile(actor_filename):
-                        actor_json = load_json(actor_filename, 1, 1)
+                        actor_json = load_json(actor_filename)
                 if actor_json:
                     if add_shares_to_actor(base_dir,
                                            share_nickname, share_domain,

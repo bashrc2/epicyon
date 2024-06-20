@@ -268,7 +268,7 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
         actor_filename = base_dir + '/cache/actors/' + actors_dict[handle]
         if not os.path.isfile(actor_filename):
             continue
-        actor_json = load_json(actor_filename, 1, 1)
+        actor_json = load_json(actor_filename)
         if not actor_json:
             continue
         if not actor_json.get('movedTo'):

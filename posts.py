@@ -4576,7 +4576,7 @@ def _passed_newswire_voting(newswire_votes_threshold: int,
     if not votes_filename:
         return True
     # load the votes file and count the votes
-    votes_json = load_json(votes_filename, 0, 2)
+    votes_json = load_json(votes_filename)
     if not votes_json:
         return True
     if not positive_voting:
@@ -5070,7 +5070,7 @@ def _novel_fields_for_person(nickname: str, domain: str,
         full_filename = os.path.join(box_dir, post_filename)
         if not os.path.isfile(full_filename):
             continue
-        post_json_object = load_json(full_filename, 0, 1)
+        post_json_object = load_json(full_filename)
         if not post_json_object:
             continue
         if not has_object_dict(post_json_object):
@@ -6758,7 +6758,7 @@ def edited_post_filename(base_dir: str, nickname: str, domain: str,
         locate_post(base_dir, nickname, domain, lastpost_id, False)
     if not lastpost_filename:
         return '', None
-    lastpost_json = load_json(lastpost_filename, 0)
+    lastpost_json = load_json(lastpost_filename)
     if not lastpost_json:
         return '', None
     if not lastpost_json.get('type'):
@@ -6815,7 +6815,7 @@ def get_original_post_from_announce_url(announce_url: str, base_dir: str,
     post_filename = locate_post(base_dir, nickname, domain, announce_url)
     if not post_filename:
         return None, None, None
-    announce_post_json = load_json(post_filename, 0, 1)
+    announce_post_json = load_json(post_filename)
     if not announce_post_json:
         return None, None, post_filename
     if not announce_post_json.get('type'):
@@ -6832,7 +6832,7 @@ def get_original_post_from_announce_url(announce_url: str, base_dir: str,
     orig_filename = locate_post(base_dir, nickname, domain, orig_post_id)
     if orig_filename:
         # we have the original post
-        orig_post_json = load_json(orig_filename, 0, 1)
+        orig_post_json = load_json(orig_filename)
         if orig_post_json:
             if has_object_dict(orig_post_json):
                 if orig_post_json['object'].get('attributedTo'):

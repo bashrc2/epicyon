@@ -745,7 +745,7 @@ def like_button(self, calling_domain: str, path: str,
         liked_post_filename = \
             locate_post(base_dir, self.post_to_nickname, domain, like_url)
     if liked_post_filename:
-        liked_post_json = load_json(liked_post_filename, 0, 1)
+        liked_post_json = load_json(liked_post_filename)
         if orig_filename and orig_post_url:
             update_likes_collection(recent_posts_cache,
                                     base_dir, liked_post_filename,
@@ -1000,7 +1000,7 @@ def like_button_undo(self, calling_domain: str, path: str,
         liked_post_filename = locate_post(base_dir, self.post_to_nickname,
                                           domain, like_url)
     if liked_post_filename:
-        liked_post_json = load_json(liked_post_filename, 0, 1)
+        liked_post_json = load_json(liked_post_filename)
         if orig_filename and orig_post_url:
             undo_likes_collection_entry(recent_posts_cache,
                                         base_dir, liked_post_filename,
@@ -1264,7 +1264,7 @@ def reaction_button(self, calling_domain: str, path: str,
             locate_post(base_dir, self.post_to_nickname, domain,
                         reaction_url)
     if reaction_post_filename:
-        reaction_post_json = load_json(reaction_post_filename, 0, 1)
+        reaction_post_json = load_json(reaction_post_filename)
         if orig_filename and orig_post_url:
             update_reaction_collection(recent_posts_cache,
                                        base_dir, reaction_post_filename,
@@ -1544,7 +1544,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
             locate_post(base_dir, self.post_to_nickname, domain,
                         reaction_url)
     if reaction_post_filename:
-        reaction_post_json = load_json(reaction_post_filename, 0, 1)
+        reaction_post_json = load_json(reaction_post_filename)
         if orig_filename and orig_post_url:
             undo_reaction_collection_entry(recent_posts_cache,
                                            base_dir,
@@ -1762,7 +1762,7 @@ def bookmark_button(self, calling_domain: str, path: str,
         locate_post(base_dir, self.post_to_nickname, domain, bookmark_url)
     if bookmark_filename:
         print('Regenerating html post for changed bookmark')
-        bookmark_post_json = load_json(bookmark_filename, 0, 1)
+        bookmark_post_json = load_json(bookmark_filename)
         if bookmark_post_json:
             cached_post_filename = \
                 get_cached_post_filename(base_dir, self.post_to_nickname,
@@ -1973,7 +1973,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
         locate_post(base_dir, self.post_to_nickname, domain, bookmark_url)
     if bookmark_filename:
         print('Regenerating html post for changed unbookmark')
-        bookmark_post_json = load_json(bookmark_filename, 0, 1)
+        bookmark_post_json = load_json(bookmark_filename)
         if bookmark_post_json:
             cached_post_filename = \
                 get_cached_post_filename(base_dir, self.post_to_nickname,
@@ -2283,7 +2283,7 @@ def mute_button(self, calling_domain: str, path: str,
         locate_post(base_dir, nickname, domain, mute_url)
     if mute_filename:
         print('mute_post: Regenerating html post for changed mute status')
-        mute_post_json = load_json(mute_filename, 0, 1)
+        mute_post_json = load_json(mute_filename)
         if mute_post_json:
             cached_post_filename = \
                 get_cached_post_filename(base_dir, nickname,
@@ -2456,7 +2456,7 @@ def mute_button_undo(self, calling_domain: str, path: str,
     if mute_filename:
         print('unmute_post: ' +
               'Regenerating html post for changed unmute status')
-        mute_post_json = load_json(mute_filename, 0, 1)
+        mute_post_json = load_json(mute_filename)
         if mute_post_json:
             cached_post_filename = \
                 get_cached_post_filename(base_dir, nickname,

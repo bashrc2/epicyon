@@ -658,7 +658,7 @@ def daemon_http_get(self) -> None:
             actor_filename = acct_dir(self.server.base_dir, nickname,
                                       self.server.domain) + '.json'
             if os.path.isfile(actor_filename):
-                actor_json = load_json(actor_filename, 1, 1)
+                actor_json = load_json(actor_filename)
         if not actor_json:
             print('DEBUG: shareditems 2 ' + actor)
             http_404(self, 114)

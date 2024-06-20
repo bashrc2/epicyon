@@ -26,7 +26,7 @@ def load_cw_lists(base_dir: str, verbose: bool) -> {}:
                 continue
             list_filename = os.path.join(base_dir + '/cwlists', fname)
             print('list_filename: ' + list_filename)
-            list_json = load_json(list_filename, 0, 1)
+            list_json = load_json(list_filename)
             if not list_json:
                 continue
             if not list_json.get('name'):

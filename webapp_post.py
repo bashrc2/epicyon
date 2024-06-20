@@ -2656,7 +2656,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     edits_filename = account_dir + box_name + '/' + edits_post_url
     edits_str = ''
     if os.path.isfile(edits_filename):
-        edits_json = load_json(edits_filename, 0, 1)
+        edits_json = load_json(edits_filename)
         if edits_json:
             edits_str = create_edits_html(edits_json, post_json_object,
                                           translate, timezone, system_language,

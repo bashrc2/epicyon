@@ -1508,7 +1508,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     for name in os.listdir(inbox_path):
         filename = os.path.join(inbox_path, name)
         assert os.path.isfile(filename)
-        received_json = load_json(filename, 0)
+        received_json = load_json(filename)
         if received_json:
             pprint(received_json['object']['content'])
         assert received_json
@@ -1577,7 +1577,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
             break
         time.sleep(1)
 
-    alice_post_json = load_json(outbox_post_filename, 0)
+    alice_post_json = load_json(outbox_post_filename)
     if alice_post_json:
         pprint(alice_post_json)
 
@@ -1602,7 +1602,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
             break
         time.sleep(1)
 
-    alice_post_json = load_json(outbox_post_filename, 0)
+    alice_post_json = load_json(outbox_post_filename)
     if alice_post_json:
         pprint(alice_post_json)
 
@@ -3391,7 +3391,7 @@ def test_client_to_server(base_dir: str):
             status_number = name.split('#statuses#')[1].replace('.json', '')
             status_number = int(status_number.replace('#activity', ''))
             outbox_post_filename = outbox_path + '/' + name
-            post_json_object = load_json(outbox_post_filename, 0)
+            post_json_object = load_json(outbox_post_filename)
             if post_json_object:
                 outbox_post_id = remove_id_ending(post_json_object['id'])
     assert outbox_post_id
@@ -4039,7 +4039,7 @@ def _test_json_string() -> None:
         "content": message_str
     }
     assert save_json(test_json, filename)
-    received_json = load_json(filename, 0)
+    received_json = load_json(filename)
     assert received_json
     assert received_json['content'] == message_str
     encoded_str = json.dumps(test_json, ensure_ascii=False)

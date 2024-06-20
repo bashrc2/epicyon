@@ -1520,7 +1520,7 @@ def _receive_new_post_process_newshare(self, fields: {},
             actor_filename = \
                 acct_dir(base_dir, nickname, domain) + '.json'
             if os.path.isfile(actor_filename):
-                actor_json = load_json(actor_filename, 1, 1)
+                actor_json = load_json(actor_filename)
         if actor_json:
             if add_shares_to_actor(base_dir, nickname, domain,
                                    actor_json,

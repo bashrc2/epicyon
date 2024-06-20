@@ -343,7 +343,7 @@ def _save_custom_emoji(session, base_dir: str, emoji_name: str, url: str,
     emoji_json_filename = custom_emoji_dir + '/emoji.json'
     emoji_json = {}
     if os.path.isfile(emoji_json_filename):
-        emoji_json = load_json(emoji_json_filename, 0, 1)
+        emoji_json = load_json(emoji_json_filename)
         if not emoji_json:
             emoji_json = {}
     if not emoji_json.get(emoji_name):
@@ -2001,7 +2001,7 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
     """
     if not os.path.isfile(import_filename):
         return
-    emoji_dict = load_json(base_dir + '/emoji/default_emoji.json', 0, 1)
+    emoji_dict = load_json(base_dir + '/emoji/default_emoji.json')
     added = 0
     with open(import_filename, "r", encoding='utf-8') as fp_emoji:
         lines = fp_emoji.readlines()

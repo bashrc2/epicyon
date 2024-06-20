@@ -1317,40 +1317,33 @@ def save_json(json_object: {}, filename: str) -> bool:
     return False
 
 
-def load_json(filename: str, delay_sec: int = 2, max_tries: int = 5) -> {}:
+def load_json(filename: str) -> {}:
     """Makes a few attempts to load a json formatted file
     """
     if '/Actor@' in filename:
         filename = filename.replace('/Actor@', '/inbox@')
+
     json_object = None
-    tries = 1
-    while tries <= max_tries:
-        data = None
+    data = None
 
-        # load from file
-        try:
-            with open(filename, 'r', encoding='utf-8') as json_file:
-                data = json_file.read()
-        except OSError as exc:
-            print('EX: load_json exception ' +
-                  str(tries) + ' ' + str(filename) + ' ' + str(exc))
-            break
+    # load from file
+    try:
+        with open(filename, 'r', encoding='utf-8') as json_file:
+            data = json_file.read()
+    except OSError as exc:
+        print('EX: load_json exception ' + str(filename) + ' ' + str(exc))
+        return json_object
 
-        # check that something was loaded
-        if not data:
-            print('EX: load_json no data ' + str(filename))
-            break
+    # check that something was loaded
+    if not data:
+        print('EX: load_json no data ' + str(filename))
+        return json_object
 
-        # convert to json
-        try:
-            json_object = json.loads(data)
-            break
-        except BaseException as exc:
-            print('EX: load_json exception ' +
-                  str(tries) + ' ' + str(filename) + ' ' + str(exc))
-            if delay_sec > 0:
-                time.sleep(delay_sec)
-            tries += 1
+    # convert to json
+    try:
+        json_object = json.loads(data)
+    except BaseException as exc:
+        print('EX: load_json exception ' + str(filename) + ' ' + str(exc))
     return json_object
 
 
@@ -1729,7 +1722,7 @@ def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
         cached_actor_filename = \
             base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cached_actor_filename):
-            actor_json = load_json(cached_actor_filename, 1)
+            actor_json = load_json(cached_actor_filename)
             if actor_json:
                 if actor_json.get('name'):
                     name_found = actor_json['name']
@@ -1805,7 +1798,7 @@ def get_gender_from_bio(base_dir: str, actor: str, person_cache: {},
         cached_actor_filename = \
             base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
         if os.path.isfile(cached_actor_filename):
-            actor_json = load_json(cached_actor_filename, 1)
+            actor_json = load_json(cached_actor_filename)
     if not actor_json:
         return default_gender
     # is gender defined as a profile tag?
@@ -2720,7 +2713,7 @@ def delete_post(base_dir: str, http_prefix: str,
                 manual: bool) -> None:
     """Recursively deletes a post and its replies and attachments
     """
-    post_json_object = load_json(post_filename, 1)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         # remove any replies
         _delete_post_remove_replies(base_dir, nickname, domain,
@@ -2991,7 +2984,7 @@ def is_public_post_from_url(base_dir: str, nickname: str, domain: str,
     post_filename = locate_post(base_dir, nickname, domain, post_url)
     if not post_filename:
         return False
-    post_json_object = load_json(post_filename, 1)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return False
     return is_public_post(post_json_object)

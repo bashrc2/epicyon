@@ -1388,7 +1388,7 @@ def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
     if not post_filename:
         return False
     # load the json for the question
-    post_json_object = load_json(post_filename, 1)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return False
     if not post_json_object.get('actor'):
@@ -1695,7 +1695,7 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         return False
 
     # load the json for the original post
-    post_json_object = load_json(post_filename, 1)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return False
     if not post_json_object.get('actor'):
@@ -1728,7 +1728,7 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     post_history_filename = post_filename.replace('.json', '') + '.edits'
     post_history_json = {}
     if os.path.isfile(post_history_filename):
-        post_history_json = load_json(post_history_filename, 1)
+        post_history_json = load_json(post_history_filename)
     # get the updated or published date
     if post_json_object['object'].get('updated'):
         published_str = post_json_object['object']['updated']
@@ -2188,7 +2188,7 @@ def _receive_like(recent_posts_cache: {},
                             post_liked_id, like_actor,
                             handle_name, domain, debug, None)
     # regenerate the html
-    liked_post_json = load_json(post_filename, 0, 1)
+    liked_post_json = load_json(post_filename)
     if liked_post_json:
         if liked_post_json.get('type'):
             if liked_post_json['type'] == 'Announce' and \
@@ -2317,7 +2317,7 @@ def _receive_undo_like(recent_posts_cache: {},
     undo_likes_collection_entry(recent_posts_cache, base_dir, post_filename,
                                 like_actor, domain, debug, None)
     # regenerate the html
-    liked_post_json = load_json(post_filename, 0, 1)
+    liked_post_json = load_json(post_filename)
     if liked_post_json:
         if liked_post_json.get('type'):
             if liked_post_json['type'] == 'Announce' and \
@@ -2473,7 +2473,7 @@ def _receive_reaction(recent_posts_cache: {},
                                post_reaction_id, reaction_actor,
                                handle_name, domain, debug, None, emoji_content)
     # regenerate the html
-    reaction_post_json = load_json(post_filename, 0, 1)
+    reaction_post_json = load_json(post_filename)
     if reaction_post_json:
         if reaction_post_json.get('type'):
             if reaction_post_json['type'] == 'Announce' and \
@@ -2659,7 +2659,7 @@ def _receive_zot_reaction(recent_posts_cache: {},
                                post_reaction_id, reaction_actor,
                                handle_name, domain, debug, None, emoji_content)
     # regenerate the html
-    reaction_post_json = load_json(post_filename, 0, 1)
+    reaction_post_json = load_json(post_filename)
     if reaction_post_json:
         if reaction_post_json.get('type'):
             if reaction_post_json['type'] == 'Announce' and \
@@ -2804,7 +2804,7 @@ def _receive_undo_reaction(recent_posts_cache: {},
                                    reaction_actor, domain,
                                    debug, None, emoji_content)
     # regenerate the html
-    reaction_post_json = load_json(post_filename, 0, 1)
+    reaction_post_json = load_json(post_filename)
     if reaction_post_json:
         if reaction_post_json.get('type'):
             if reaction_post_json['type'] == 'Announce' and \
@@ -2950,7 +2950,7 @@ def _receive_bookmark(recent_posts_cache: {},
     update_bookmarks_collection(recent_posts_cache, base_dir, post_filename,
                                 message_url2, actor_url, domain, debug)
     # regenerate the html
-    bookmarked_post_json = load_json(post_filename, 0, 1)
+    bookmarked_post_json = load_json(post_filename)
     if bookmarked_post_json:
         if debug:
             cached_post_filename = \
@@ -3078,7 +3078,7 @@ def _receive_undo_bookmark(recent_posts_cache: {},
                                     post_filename,
                                     actor_url, domain, debug)
     # regenerate the html
-    bookmarked_post_json = load_json(post_filename, 0, 1)
+    bookmarked_post_json = load_json(post_filename)
     if bookmarked_post_json:
         if debug:
             cached_post_filename = \
@@ -3811,7 +3811,7 @@ def _already_liked(base_dir: str, nickname: str, domain: str,
         locate_post(base_dir, nickname, domain, post_url)
     if not post_filename:
         return False
-    post_json_object = load_json(post_filename, 1)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return False
     if not has_object_dict(post_json_object):
@@ -3841,7 +3841,7 @@ def _already_reacted(base_dir: str, nickname: str, domain: str,
         locate_post(base_dir, nickname, domain, post_url)
     if not post_filename:
         return False
-    post_json_object = load_json(post_filename, 1)
+    post_json_object = load_json(post_filename)
     if not post_json_object:
         return False
     if not has_object_dict(post_json_object):
@@ -6352,7 +6352,7 @@ def run_inbox_queue(server,
             print('Loading queue item ' + queue_filename)
 
         # Load the queue json
-        queue_json = load_json(queue_filename, 1)
+        queue_json = load_json(queue_filename)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'load_queue_json', debug)
         inbox_start_time = time.time()

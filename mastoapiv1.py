@@ -36,7 +36,7 @@ def _meta_data_instance_v1(show_accounts: bool,
     if not os.path.isfile(admin_actor_filename):
         return {}
 
-    admin_actor = load_json(admin_actor_filename, 0)
+    admin_actor = load_json(admin_actor_filename)
     if not admin_actor:
         print('WARN: json load exception _meta_data_instance_v1')
         return {}

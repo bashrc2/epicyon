@@ -181,7 +181,7 @@ def html_theme_designer(base_dir: str,
     # set custom theme parameters
     custom_variables_file = data_dir(base_dir) + '/theme.json'
     if os.path.isfile(custom_variables_file):
-        custom_theme_params = load_json(custom_variables_file, 0)
+        custom_theme_params = load_json(custom_variables_file)
         if custom_theme_params:
             for variable_name, value in custom_theme_params.items():
                 theme_json[variable_name] = value
