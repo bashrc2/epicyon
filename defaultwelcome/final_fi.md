@@ -1,18 +1,18 @@
-### Congratulations!
-You are now ready to begin using Epicyon. This is a moderated social space, so please make sure to abide by our [terms of service](/terms), and have fun.
+### Onnittelut!
+Olet nyt valmis aloittamaan Epicyonin käytön. Tämä on valvottu sosiaalinen tila, joten muista noudattaa [käyttöehtojamme](/terms) ja pidä hauskaa.
 
-#### Hints
-Use the **magnifier** icon 🔍 to search for fediverse handles and follow people.
+#### Vihjeitä
+Käytä **suurennuslasikuvaketta** 🔍 etsiäksesi monipuolisia kahvoja ja seurataksesi ihmisiä.
 
-Selecting the **banner at the top** of the screen switches between timeline view and your profile.
+Valitsemalla näytön yläreunassa olevan **bannerin** voit vaihtaa aikajananäkymän ja profiilisi välillä.
 
-The screen will not automatically refresh when posts arrive, so use **F5** or the **Inbox** button to refresh.
+Näyttö ei päivity automaattisesti, kun viestejä saapuu, joten käytä **F5**- tai **Inbox**-painiketta päivittääksesi.
 
-#### Rite of Passage
-Corporate culture trains you to want the maximum number of followers and likes - to seek personal fame and shallow, outrage-inducing interactions to grab attention.
+#### Siirtymäriitti
+Yrityskulttuuri opettaa sinua haluamaan mahdollisimman paljon seuraajia ja tykkäyksiä – tavoittelemaan henkilökohtaista mainetta ja pinnallista, raivostuttavaa vuorovaikutusta herättämään huomiota.
 
-So if you are coming from that culture, please be aware that this is a different type of system with a very different set of expectations.
+Joten jos olet kotoisin tuosta kulttuurista, ota huomioon, että tämä on erityyppinen järjestelmä, jolla on hyvin erilaiset odotukset.
 
-Having a lot of followers is not necessary, and often it's undesirable. People may block you, and that's ok. Nobody has a right to an audience. If someone blocks you then you're not being censored. People are just exercising their freedom to associate with whoever they wish.
+Se, että sinulla on paljon seuraajia, ei ole välttämätöntä, ja usein se ei ole toivottavaa. Ihmiset voivat estää sinut, ja se on ok. Kenelläkään ei ole oikeutta yleisöön. Jos joku estää sinua, sinua ei sensuroida. Ihmiset vain käyttävät vapauttaan olla tekemisissä kenen tahansa kanssa.
 
-Standards of personal behavior are expected to be better than in the corporate systems. Your behavior also has consequences for the reputation of this instance. If you behave in an inconsiderate manner which goes against the terms of service then your account may be suspended or removed.
+Henkilökohtaisten käyttäytymisstandardien odotetaan olevan parempia kuin yritysjärjestelmissä. Käyttäytymiselläsi on myös seurauksia tämän tapauksen maineelle. Jos toimit harkitsemattomasti, mikä on käyttöehtojen vastaista, tilisi voidaan jäädyttää tai poistaa.

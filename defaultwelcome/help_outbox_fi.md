@@ -1,1 +1,1 @@
-Your sent posts will appear here, as a cronological timeline.
+Lähettämäsi viestit näkyvät täällä kronologisena aikajanana.

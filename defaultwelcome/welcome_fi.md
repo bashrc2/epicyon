@@ -1,7 +1,7 @@
-![Welcome image](/helpimages/welcome.jpg)
-### Welcome to INSTANCE
-This is an ActivityPub server designed for easy self-hosting of a few people on low power systems, such as single board computers or old laptops.
+![Tervetuloa kuva](/helpimages/welcome.jpg)
+### Tervetuloa INSTANCE hen
+Tämä on ActivityPub-palvelin, joka on suunniteltu muutamien ihmisten helppokäyttöiseen isännöintiin pienitehoisissa järjestelmissä, kuten yksilevytietokoneissa tai vanhoissa kannettavissa tietokoneissa.
 
-Run your own social network presence the way you want to, and say goodbye to Big Tech.
+Käytä omaa läsnäoloasi sosiaalisessa mediassa haluamallasi tavalla ja sano hyvästit Big Techille.
 
-Now, lets get going...
+No nyt mennään...

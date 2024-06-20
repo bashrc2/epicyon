@@ -1,5 +1,5 @@
-This timeline contains any blogs written by you or anyone that you're following.
+Tämä aikajana sisältää kaikki sinun tai muiden seuraamiesi blogit.
 
-You can create a new blog post using the **publish** icon at the top of the right column.
+Voit luoda uuden blogitekstin käyttämällä oikean sarakkeen yläreunassa olevaa **julkaise**-kuvaketta.
 
-Blog posts are different from ordinary fediverse posts. They use the ActivityPub *Article* type, which is intended for long-form writing. They can also have citations, selected from items in the newswire.
+Blogiviestit ovat erilaisia ​​kuin tavalliset fediverse-viestit. He käyttävät ActivityPub *Artikkeli* -tyyppiä, joka on tarkoitettu pitkälle kirjoittamiseen. Heillä voi myös olla sitaatteja, jotka on valittu uutisjohdon kohdista.

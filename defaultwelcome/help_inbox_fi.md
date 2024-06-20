@@ -1,19 +1,19 @@
-Incoming posts will appear here, as a chronological timeline. If you send any posts they will also appear here.
+Saapuvat viestit näkyvät täällä kronologisena aikajanana. Jos lähetät viestejä, ne näkyvät myös täällä.
 
-### The top banner
-At the top of the screen you can select the **banner** to switch to your profile, and edit it or log out.
+### Ylin banneri
+Voit vaihtaa profiiliisi valitsemalla näytön yläreunasta **bannerin** ja muokata sitä tai kirjautua ulos.
 
-### Timeline buttons and icons
-The **buttons** below the top banner allow you to select different timelines. There are also **icons** on the right to **search**, view your **calendar** or create **new posts**.
+### Aikajanan painikkeet ja kuvakkeet
+Yläbannerin alla olevilla **painikkeilla** voit valita eri aikajanat. Oikealla on myös **kuvakkeita**, joilla voit tehdä hakuja**, tarkastella **kalenteriasi** tai luoda **uusia viestejä**.
 
-The **show/hide** icon allows more timeline buttons to be shown, along with moderator controls.
+**Näytä/piilota** -kuvake mahdollistaa useiden aikajanapainikkeiden näyttämisen sekä moderaattorin säätimet.
 
-### Left column
-Here you can add **useful links**. This only appears on desktop displays or devices with larger screens. It is similar to a *blogroll*. You can only add or edit links if you have an **administrator** or **editor** role.
+### Vasen sarake
+Tänne voit lisätä **hyödyllisiä linkkejä**. Tämä näkyy vain työpöytänäytöissä tai laitteissa, joissa on suurempi näyttö. Se on samanlainen kuin *blogroll*. Voit lisätä tai muokata linkkejä vain, jos sinulla on **järjestelmänvalvojan** tai **editorin** rooli.
 
-If you are on mobile then use the **links icon** at the top to read news.
+Jos käytät mobiililaitetta, käytä **linkkikuvaketta** yläreunassa lukeaksesi uutisia.
 
-### Right column
-RSS feeds can be added in the right column, known as the *newswire*. This only appears on desktop displays or devices with larger screens. You can only add or edit feeds if you have an **administrator** or **editor** role, and incoming feed items can also be moderated.
+### Oikea sarake
+RSS-syötteitä voidaan lisätä oikeaan sarakkeeseen, joka tunnetaan nimellä *newswire*. Tämä näkyy vain työpöytänäytöissä tai laitteissa, joissa on suurempi näyttö. Voit lisätä tai muokata syötteitä vain, jos sinulla on **järjestelmänvalvojan** tai **editorin** rooli, ja saapuvia syötekohteita voidaan myös valvoa.
 
-If you are on mobile then use the **newswire icon** at the top to read news.
+Jos käytät mobiililaitetta, käytä **newswire-kuvaketta** yläreunassa lukeaksesi uutisia.

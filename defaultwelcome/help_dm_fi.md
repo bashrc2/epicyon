@@ -1,3 +1,3 @@
-Direct messages will appear here, as a chronological timeline.
+Suorat viestit näkyvät täällä kronologisena aikajanana.
 
-To avoid spam and improve security, by default you will only be able to receive direct messages *from people that you're following*. You can turn this off within your profile settings if you need to, by selecting the top **banner** and then the **edit** icon.
+Roskapostin välttämiseksi ja turvallisuuden parantamiseksi voit oletusarvoisesti vastaanottaa vain suoria viestejä *seuraamilta ihmisiltä*. Voit tarvittaessa poistaa tämän käytöstä profiiliasetuksistasi valitsemalla yläosan **bannerin** ja sitten **muokkaa**-kuvakkeen.
