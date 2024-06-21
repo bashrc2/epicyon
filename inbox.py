@@ -18,6 +18,7 @@ from languages import understood_post_language
 from like import update_likes_collection
 from reaction import update_reaction_collection
 from reaction import valid_emoji_content
+from utils import harmless_markup
 from utils import quote_toots_allowed
 from utils import get_post_attachments
 from utils import lines_in_file
@@ -1685,6 +1686,7 @@ def _receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         print('EDITPOST: ' + message_id + ' has already expired')
         return False
     convert_post_content_to_html(message_json)
+    harmless_markup(message_json)
     if not _valid_post_content(base_dir, nickname, domain,
                                message_json, max_mentions, max_emoji,
                                allow_local_network_access, debug,
@@ -4849,6 +4851,7 @@ def _former_representations_to_edits(base_dir: str,
                 prev_post_json['object']['atomUri'] = prev_post_id
 
         # validate the previous post
+        harmless_markup(prev_post_json)
         if not _valid_post_content(base_dir, nickname, domain,
                                    prev_post_json,
                                    max_mentions, max_emoji,
@@ -5251,6 +5254,10 @@ def _inbox_after_initial(server, inbox_start_time,
     json_obj = None
     domain_full = get_full_domain(domain, port)
     convert_post_content_to_html(post_json_object)
+
+    # neutralise anything harmful
+    harmless_markup(post_json_object)
+
     if _valid_post_content(base_dir, nickname, domain,
                            post_json_object, max_mentions, max_emoji,
                            allow_local_network_access, debug,

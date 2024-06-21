@@ -5042,6 +5042,14 @@ def harmless_markup(post_json_object: {}) -> None:
     """render harmless any dangerous markup
     """
     for field_name in ('content', 'summary'):
+        if post_json_object.get(field_name):
+            if dangerous_markup(post_json_object[field_name],
+                                False, ['pre']):
+                post_json_object[field_name] = \
+                    remove_html(post_json_object[field_name])
+            post_json_object[field_name] = \
+                remove_markup_tag(post_json_object[field_name], 'pre')
+
         if post_json_object['object'].get(field_name):
             if dangerous_markup(post_json_object['object'][field_name],
                                 False, ['pre']):
@@ -5050,6 +5058,7 @@ def harmless_markup(post_json_object: {}) -> None:
             post_json_object['object'][field_name] = \
                 remove_markup_tag(post_json_object['object'][field_name],
                                   'pre')
+
         map_name = field_name + 'Map'
         if post_json_object['object'].get(map_name):
             if isinstance(post_json_object['object'][map_name], dict):
