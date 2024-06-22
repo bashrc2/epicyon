@@ -33,6 +33,7 @@
  * Progressive Web App interface. Doesn't need native apps on mobile
  * Integration with RSS feeds, for reading news or blogs
  * Moderation capabilities for posts, hashtags and blocks
+ * Federated blocklist support
 
 ## Non-goals
 
@@ -51,7 +52,6 @@ The following are considered anti-features of other social network systems, sinc
  * Sponsored posts
  * Enterprise features for use cases applicable only to businesses. Epicyon could be used in a small business, but it's not primarily designed for that
  * Collaborative editing of posts, although you could do that outside of this system using Etherpad, or similar
- * Anonymous posts from random internet users published under a single generic instance account
+ * Anonymous posts from random internet users published under a single generic instance account. "Spam enabling features". De-personalisation.
  * Hierarchies of roles beyond ordinary moderation, such as X requires special agreement from Y before sending a post. Originally delegated roles were envisioned, but later abandoned due to the potential for creating elaborate hierarchies
- * Federated blocklists. Initially this seems like a good idea, but the potential down sides outweigh the benefits. eg. Two allied instances share their global blocklist. Some time later one instance is transferred to an adversary, or gets hacked or sold. Adversary can now control your global blocklist and trash your instance very quickly that way.
  * Federated moderation. Again, seems like it might be beneficial initially. Share the burden of moderation. But under realistic conditions people could be pressured or bribed into giving federated moderation access, and the consequences could be very bad. Individuals going on power trips, controlling multiple instances and heading back towards centralization. Avoid creating technical routes which easily lead to power consolidation and centralization.
