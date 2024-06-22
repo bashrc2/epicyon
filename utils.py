@@ -5041,15 +5041,10 @@ def unescaped_text(txt: str) -> str:
 def harmless_markup(post_json_object: {}) -> None:
     """render harmless any dangerous markup
     """
-    for field_name in ('content', 'summary'):
-        if post_json_object.get(field_name):
-            if dangerous_markup(post_json_object[field_name],
-                                False, ['pre']):
-                post_json_object[field_name] = \
-                    remove_html(post_json_object[field_name])
-            post_json_object[field_name] = \
-                remove_markup_tag(post_json_object[field_name], 'pre')
+    if not isinstance(post_json_object['object'], dict):
+        return
 
+    for field_name in ('content', 'summary'):
         if post_json_object['object'].get(field_name):
             if dangerous_markup(post_json_object['object'][field_name],
                                 False, ['pre']):
