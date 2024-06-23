@@ -3078,7 +3078,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                                         private_key_pem, debug)
                 post_json_object = signed_post_json_object
             except JsonLdError as ex:
-                print('WARN: send_post failed to JSON-LD sign post, ' + str(ex))
+                print('WARN: send_post failed to JSON-LD sign post, ' +
+                      str(ex))
                 pprint(signed_post_json_object)
 
     # convert json to string so that there are no
