@@ -24,7 +24,8 @@ VALID_CONTEXTS = (
     "https://w3id.org/security/multikey/v1",
     "*/vc-data-integrity/contexts/multikey/v1.jsonld",
     "https://w3id.org/security/data-integrity/v1",
-    "*/contexts/data-integrity/v1.jsonld"
+    "*/contexts/data-integrity/v1.jsonld",
+    "*/ns/privacyHeaders"
 )
 
 
@@ -64,7 +65,7 @@ def _has_valid_context_list(post_json_object: {}) -> bool:
                     wildcard_found = True
                     break
         if not wildcard_found:
-            print('Unrecognized @context: ' + url)
+            print('Unrecognized @context 1: ' + url)
             return False
     return True
 
@@ -82,7 +83,7 @@ def _has_valid_context_str(post_json_object: {}) -> bool:
                     wildcard_found = True
                     break
         if not wildcard_found:
-            print('Unrecognized @context: ' + url)
+            print('Unrecognized @context 2: ' + url)
             return False
     return True
 
