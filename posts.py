@@ -1268,8 +1268,12 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         local_actor_url(http_prefix, nickname, domain)
     if not conversation_id:
         conversation_id = new_post_id
+    # add opt-outs as in:
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/5e53/fep-5e53.md
     new_post = {
         '@context': post_context,
+        'xRobotsTag': 'noai, noimageai, GPC',
+        'secGPC': '1',
         'id': new_post_id + '/activity',
         'type': 'Create',
         'actor': actor_url,
@@ -1369,8 +1373,12 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
     if not conversation_id:
         conversation_id = new_post_id
+    # add opt-outs as in:
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/5e53/fep-5e53.md
     new_post = {
         "@context": post_context,
+        'xRobotsTag': 'noai, noimageai, GPC',
+        'secGPC': '1',
         'id': new_post_id,
         'conversation': conversation_id,
         'context': conversation_id,
