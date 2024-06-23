@@ -92,12 +92,17 @@ def verify_json_signature(doc: {}, public_key_pem: str) -> bool:
         return False
 
 
-def generate_json_signature(doc: {}, private_key_pem: str) -> None:
+def generate_json_signature(doc: {}, private_key_pem: str,
+                            debug: bool) -> None:
     """Adds a json signature to the given ActivityPub post
     """
     if not doc.get('actor'):
+        if debug:
+            print('DEBUG: generate_json_signature does not have an actor')
         return
     if not has_valid_context(doc):
+        if debug:
+            print('DEBUG: generate_json_signature does not have valid context')
         return
     options = {
         "type": "RsaSignature2017",
@@ -110,9 +115,15 @@ def generate_json_signature(doc: {}, private_key_pem: str) -> None:
 
     key = load_pem_private_key(private_key_pem.encode('utf-8'),
                                None, backend=default_backend())
+    if debug:
+        print('DEBUG: generate_json_signature get_sha_256')
     digest = get_sha_256(to_be_signed.encode("utf-8"))
+    if debug:
+        print('DEBUG: generate_json_signature key.sign')
     signature = key.sign(digest,
                          padding.PKCS1v15(),
                          hazutils.Prehashed(hashes.SHA256()))
+    if debug:
+        print('DEBUG: generate_json_signature base64.b64encode')
     sig = base64.b64encode(signature)
     options["signatureValue"] = sig.decode("utf-8")

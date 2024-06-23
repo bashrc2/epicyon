@@ -124,6 +124,7 @@ from keys import get_person_key
 from markdown import markdown_to_html
 from followerSync import update_followers_sync_cache
 from question import is_question
+from pyjsonld import JsonLdError
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -3063,13 +3064,22 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     post_path = inbox_url.split(to_domain, 1)[1]
 
     if not post_json_object.get('signature'):
+        json_copied = False
         try:
             signed_post_json_object = post_json_object.copy()
-            generate_json_signature(signed_post_json_object, private_key_pem)
-            post_json_object = signed_post_json_object
+            json_copied = True
         except BaseException as ex:
-            print('WARN: send_post failed to JSON-LD sign post, ' + str(ex))
-            pprint(signed_post_json_object)
+            print('WARN: send_post failed to copy json post, ' + str(ex))
+            pprint(post_json_object)
+
+        if json_copied:
+            try:
+                generate_json_signature(signed_post_json_object,
+                                        private_key_pem, debug)
+                post_json_object = signed_post_json_object
+            except JsonLdError as ex:
+                print('WARN: send_post failed to JSON-LD sign post, ' + str(ex))
+                pprint(signed_post_json_object)
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
@@ -3509,7 +3519,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     if not post_json_object.get('signature'):
         try:
             signed_post_json_object = post_json_object.copy()
-            generate_json_signature(signed_post_json_object, private_key_pem)
+            generate_json_signature(signed_post_json_object,
+                                    private_key_pem, debug)
             post_json_object = signed_post_json_object
         except BaseException as ex:
             print('WARN: send_signed_json failed to JSON-LD sign post, ' +

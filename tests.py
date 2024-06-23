@@ -4171,7 +4171,7 @@ def _test_jsonld():
         '-----END PUBLIC KEY-----'
 
     signed_document = jld_document.copy()
-    generate_json_signature(signed_document, private_key_pem)
+    generate_json_signature(signed_document, private_key_pem, True)
     assert signed_document
     assert signed_document.get('signature')
     assert signed_document['signature'].get('signatureValue')
@@ -4195,7 +4195,7 @@ def _test_jsonld():
         }
     }
     signed_document2 = jld_document2.copy()
-    generate_json_signature(signed_document2, private_key_pem)
+    generate_json_signature(signed_document2, private_key_pem, True)
     assert signed_document2
     assert signed_document2.get('signature')
     assert signed_document2['signature'].get('signatureValue')
