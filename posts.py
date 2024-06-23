@@ -1282,6 +1282,8 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         'cc': to_cc,
         'object': {
             'id': new_post_id,
+            'xRobotsTag': 'noai, noimageai, GPC',
+            'secGPC': '1',
             'conversation': conversation_id,
             'context': conversation_id,
             'type': post_object_type,
