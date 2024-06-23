@@ -33,6 +33,7 @@ def get_individual_post_context() -> []:
     """
     return [
         'https://www.w3.org/ns/activitystreams',
+        'https://fep.example/ns/privacyHeaders',
         {
             "ostatus": "http://ostatus.org#",
             "atomUri": "ostatus:atomUri",
