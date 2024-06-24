@@ -18,7 +18,7 @@ from blocking import update_blocked_cache
 from blocking import is_blocked_domain
 
 default_user_agent_blocks = [
-    'fedilist', 'ncsc scan'
+    'fedilist', 'ncsc scan', 'fedifetcher'
 ]
 
 
