@@ -1173,6 +1173,9 @@ At the annual congress Mastodon was significantly more referenced than in the pr
 ### 2022: The Muskening
 In November, the oligarch Elon Musk, known for electric vehicles and spacecraft, purchased the website formerly known as Twitter. One of his first decisions was to fire most of the moderators. Admittedly, the moderators of Twitter did an abysmal job in the years leading up to the acquisition, but becoming an unmoderated space did not go down well with many users or advertising customers. This resulted in perhaps the biggest exodus up to that time.
 
+### 2023: Facebook joins the fediverse
+In August Facebook launched its own fediverse instance, known as Threads. This was a cynical attempt to scoop up disgruntled Twitter users looking for an alternative social media site due to the chaos being created by its new owner, Elon Musk. There was a lot of concern about the evil empire of Zuckerberg joining the fediverse, and possibly squashing it by sheer weight of numbers. A website called [fediPact](https://fedipact.online) was created on which administrators could express their intention to block the Facebook instance. Many people had come to the fediverse precisely to get away from harassment on Facebook or Twitter, so the prospect of BigTech companies showing up in the fediverse and perhaps taking it over was scary.
+
 ### Fediverse culture shock
 This is what happens when someone has only had a presence within large corporate sites, such as the website formerly known as Twitter or Facebook, and then moves to a federated system on the open internet.
 
