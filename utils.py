@@ -2893,7 +2893,8 @@ def _get_reserved_words() -> str:
             'ontologies', 'data', 'postedit', 'moved',
             'inactive', 'activitypub', 'actors',
             'note', 'notes', 'offers', 'wanted', 'honk',
-            'button', 'post', 'item', 'comment')
+            'button', 'post', 'item', 'comment',
+            'content')
 
 
 def get_nickname_validation_pattern() -> str:
