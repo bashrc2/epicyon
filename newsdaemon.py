@@ -67,7 +67,8 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
             with open(index_filename, 'w+', encoding='utf-8') as feeds_file:
                 feeds_file.write(post_id + '\n')
         except OSError:
-            print('EX: unable to write ' + index_filename)
+            print('EX: _update_feeds_outbox_index unable to write ' +
+                  index_filename)
 
 
 def _save_arrived_time(post_filename: str, arrived: str) -> None:
@@ -78,7 +79,8 @@ def _save_arrived_time(post_filename: str, arrived: str) -> None:
                   encoding='utf-8') as arrived_file:
             arrived_file.write(arrived)
     except OSError:
-        print('EX: unable to write ' + post_filename + '.arrived')
+        print('EX: _save_arrived_time unable to write ' +
+              post_filename + '.arrived')
 
 
 def _remove_control_characters(content: str) -> str:
@@ -499,7 +501,8 @@ def _create_news_mirror(base_dir: str, domain: str,
                           encoding='utf-8') as index_file:
                     index_file.write(index_content)
             except OSError:
-                print('EX: unable to write ' + mirror_index_filename)
+                print('EX: _create_news_mirror unable to write ' +
+                      mirror_index_filename)
 
     mirror_article_dir = mirror_dir + '/' + post_id_number
     if os.path.isdir(mirror_article_dir):
@@ -529,14 +532,16 @@ def _create_news_mirror(base_dir: str, domain: str,
                       encoding='utf-8') as index_file:
                 index_file.write(post_id_number + '\n')
         except OSError:
-            print('EX: unable to append ' + mirror_index_filename)
+            print('EX: _create_news_mirror unable to append ' +
+                  mirror_index_filename)
     else:
         try:
             with open(mirror_index_filename, 'w+',
                       encoding='utf-8') as index_file:
                 index_file.write(post_id_number + '\n')
         except OSError:
-            print('EX: unable to write ' + mirror_index_filename)
+            print('EX: _create_news_mirror unable to write ' +
+                  mirror_index_filename)
 
     return True
 

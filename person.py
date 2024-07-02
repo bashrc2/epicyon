@@ -608,7 +608,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             with open(filename, 'w+', encoding='utf-8') as text_file:
                 print(private_key_pem, file=text_file)
         except OSError:
-            print('EX: unable to save ' + filename)
+            print('EX: _create_person_base unable to save ' + filename)
 
         # save the public key
         public_keys_subdir = '/keys/public'
@@ -619,7 +619,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             with open(filename, 'w+', encoding='utf-8') as text_file:
                 print(public_key_pem, file=text_file)
         except OSError:
-            print('EX: unable to save 2 ' + filename)
+            print('EX: _create_person_base unable to save 2 ' + filename)
 
         if password:
             password = remove_eol(password).strip()
@@ -765,7 +765,7 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
             with open(follow_dms_filename, 'w+', encoding='utf-8') as ffile:
                 ffile.write('\n')
         except OSError:
-            print('EX: unable to write ' + follow_dms_filename)
+            print('EX: create_person unable to write ' + follow_dms_filename)
 
     # notify when posts are liked
     if nickname != 'news':
@@ -775,7 +775,8 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
             with open(notify_likes_filename, 'w+', encoding='utf-8') as nfile:
                 nfile.write('\n')
         except OSError:
-            print('EX: unable to write ' + notify_likes_filename)
+            print('EX: create_person unable to write 2 ' +
+                  notify_likes_filename)
 
     # notify when posts have emoji reactions
     if nickname != 'news':
@@ -786,7 +787,8 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
                       encoding='utf-8') as nfile:
                 nfile.write('\n')
         except OSError:
-            print('EX: unable to write ' + notify_reactions_filename)
+            print('EX: create_person unable to write 3 ' +
+                  notify_reactions_filename)
 
     theme = get_config_param(base_dir, 'theme')
     if not theme:
@@ -1279,8 +1281,8 @@ def reenable_account(base_dir: str, nickname: str) -> None:
                     if suspended.strip('\n').strip('\r') != nickname:
                         fp_sus.write(suspended)
         except OSError as ex:
-            print('EX: unable to save ' + suspended_filename +
-                  ' ' + str(ex))
+            print('EX: reenable_account unable to save ' +
+                  suspended_filename + ' ' + str(ex))
 
 
 def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
@@ -1313,7 +1315,7 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
         try:
             os.remove(token_filename)
         except OSError:
-            print('EX: suspend_account unable to delete ' + token_filename)
+            print('EX: suspend_account unable to delete 2 ' + token_filename)
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
@@ -1326,13 +1328,13 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
             with open(suspended_filename, 'a+', encoding='utf-8') as fp_sus:
                 fp_sus.write(nickname + '\n')
         except OSError:
-            print('EX: unable to append ' + suspended_filename)
+            print('EX: suspend_account unable to append ' + suspended_filename)
     else:
         try:
             with open(suspended_filename, 'w+', encoding='utf-8') as fp_sus:
                 fp_sus.write(nickname + '\n')
         except OSError:
-            print('EX: unable to write ' + suspended_filename)
+            print('EX: suspend_account unable to write ' + suspended_filename)
 
 
 def can_remove_post(base_dir: str,
@@ -1395,7 +1397,8 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
                     if match_str not in tagline:
                         tag_file.write(tagline)
         except OSError:
-            print('EX: unable to write ' + tag_filename)
+            print('EX: _remove_tags_for_nickname unable to write ' +
+                  tag_filename)
 
 
 def remove_account(base_dir: str, nickname: str,
@@ -1565,7 +1568,8 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
                           encoding='utf-8') as snoozfile:
                     snoozfile.write(content)
             except OSError:
-                print('EX: unable to write ' + snoozed_filename)
+                print('EX: is_person_snoozed unable to write ' +
+                      snoozed_filename)
 
     if text_in_file(snooze_actor + ' ', snoozed_filename):
         return True
@@ -1589,7 +1593,7 @@ def person_snooze(base_dir: str, nickname: str, domain: str,
             snoozed_file.write(snooze_actor + ' ' +
                                str(int(time.time())) + '\n')
     except OSError:
-        print('EX: unable to append ' + snoozed_filename)
+        print('EX: person_snooze unable to append ' + snoozed_filename)
 
 
 def person_unsnooze(base_dir: str, nickname: str, domain: str,

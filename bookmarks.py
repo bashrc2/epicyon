@@ -84,7 +84,8 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
                   encoding='utf-8') as index_file:
             index_str = index_file.read().replace(bookmark_index + '\n', '')
     except OSError:
-        print('EX: unable to read ' + bookmarks_index_filename)
+        print('EX: undo_bookmarks_collection_entry unable to read ' +
+              bookmarks_index_filename)
     if index_str:
         try:
             with open(bookmarks_index_filename, 'w+',

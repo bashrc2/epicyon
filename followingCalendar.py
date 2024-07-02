@@ -140,7 +140,8 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
                           encoding='utf-8') as fp_cal:
                     fp_cal.write(following_handles + handle + '\n')
             except OSError:
-                print('EX: unable to write ' + calendar_filename)
+                print('EX: _receive_calendar_events unable to write ' +
+                      calendar_filename)
 
     # already in the calendar file?
     if handle + '\n' in following_handles or \

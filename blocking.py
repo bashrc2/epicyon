@@ -554,7 +554,8 @@ def remove_global_block(base_dir: str,
                         os.rename(unblocking_filename + '.new',
                                   unblocking_filename)
                     except OSError:
-                        print('EX: unable to rename ' + unblocking_filename)
+                        print('EX: remove_global_block unable to rename ' +
+                              unblocking_filename)
                         return False
                     return True
     else:
@@ -580,7 +581,8 @@ def remove_global_block(base_dir: str,
                         os.rename(unblocking_filename + '.new',
                                   unblocking_filename)
                     except OSError:
-                        print('EX: unable to rename 2 ' + unblocking_filename)
+                        print('EX: remove_global_block unable to rename 2 ' +
+                              unblocking_filename)
                         return False
                     return True
     return False
@@ -615,7 +617,8 @@ def remove_block(base_dir: str, nickname: str, domain: str,
                     os.rename(unblocking_filename + '.new',
                               unblocking_filename)
                 except OSError:
-                    print('EX: unable to rename 3 ' + unblocking_filename)
+                    print('EX: remove_block unable to rename 3 ' +
+                          unblocking_filename)
                     return False
                 return True
     return False
@@ -655,7 +658,8 @@ def get_domain_blocklist(base_dir: str) -> str:
                   encoding='utf-8') as fp_blocked:
             blocked_str += fp_blocked.read()
     except OSError:
-        print('EX: unable to read ' + global_blocking_filename)
+        print('EX: get_domain_blocklist unable to read ' +
+              global_blocking_filename)
     return blocked_str
 
 
@@ -686,7 +690,8 @@ def update_blocked_cache(base_dir: str,
             blocked_cache.clear()
             blocked_cache += blocked_lines
     except OSError as ex:
-        print('EX: unable to read ' + global_blocking_filename + ' ' + str(ex))
+        print('EX: update_blocked_cache unable to read ' +
+              global_blocking_filename + ' ' + str(ex))
     return curr_time
 
 
@@ -746,8 +751,8 @@ def is_blocked_domain(base_dir: str, domain: str,
                             if search_str_short in blocked_str:
                                 return True
                 except OSError as ex:
-                    print('EX: unable to read ' + global_blocking_filename +
-                          ' ' + str(ex))
+                    print('EX: is_blocked_domain unable to read ' +
+                          global_blocking_filename + ' ' + str(ex))
     else:
         allow_filename = data_dir(base_dir) + '/allowedinstances.txt'
         # instance allow list
@@ -782,8 +787,8 @@ def is_blocked_nickname(base_dir: str, nickname: str,
                     if search_str in blocked_str:
                         return True
             except OSError as ex:
-                print('EX: unable to read ' + global_blocking_filename +
-                      ' ' + str(ex))
+                print('EX: is_blocked_nickname unable to read ' +
+                      global_blocking_filename + ' ' + str(ex))
 
     return False
 
@@ -1124,12 +1129,14 @@ def outbox_block(base_dir: str, nickname: str, domain: str,
         return False
     nickname_blocked = get_nickname_from_actor(message_json['object'])
     if not nickname_blocked:
-        print('WARN: unable to find nickname in ' + message_json['object'])
+        print('WARN: outbox_block unable to find nickname in ' +
+              message_json['object'])
         return False
     domain_blocked, port_blocked = \
         get_domain_from_actor(message_json['object'])
     if not domain_blocked:
-        print('WARN: unable to find domain in ' + message_json['object'])
+        print('WARN: outbox_block unable to find domain in ' +
+              message_json['object'])
         return False
     domain_blocked_full = get_full_domain(domain_blocked, port_blocked)
 
@@ -1184,13 +1191,13 @@ def outbox_undo_block(base_dir: str, nickname: str, domain: str,
     nickname_blocked = \
         get_nickname_from_actor(message_json['object']['object'])
     if not nickname_blocked:
-        print('WARN: unable to find nickname in ' +
+        print('WARN: outbox_undo_block unable to find nickname in ' +
               message_json['object']['object'])
         return
     domain_object = message_json['object']['object']
     domain_blocked, port_blocked = get_domain_from_actor(domain_object)
     if not domain_blocked:
-        print('WARN: unable to find domain in ' +
+        print('WARN: outbox_undo_block unable to find domain in ' +
               message_json['object']['object'])
         return
     domain_blocked_full = get_full_domain(domain_blocked, port_blocked)
@@ -1506,7 +1513,8 @@ def outbox_mute(base_dir: str, http_prefix: str,
         return
     nickname_muted = get_nickname_from_actor(message_json['object'])
     if not nickname_muted:
-        print('WARN: unable to find nickname in ' + message_json['object'])
+        print('WARN: outbox_mute unable to find nickname in ' +
+              message_json['object'])
         return
 
     mute_post(base_dir, nickname, domain, port,
@@ -1570,7 +1578,7 @@ def outbox_undo_mute(base_dir: str, http_prefix: str,
         return
     nickname_muted = get_nickname_from_actor(message_json['object']['object'])
     if not nickname_muted:
-        print('WARN: unable to find nickname in ' +
+        print('WARN: outbox_undo_mute unable to find nickname in ' +
               message_json['object']['object'])
         return
 

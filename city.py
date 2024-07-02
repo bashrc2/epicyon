@@ -241,7 +241,7 @@ def spoof_geolocation(base_dir: str,
                 with open(nogo_filename, 'r', encoding='utf-8') as nogo_file:
                     nogo_list = nogo_file.readlines()
             except OSError:
-                print('EX: unable to read ' + nogo_filename)
+                print('EX: spoof_geolocation unable to read ' + nogo_filename)
             for line in nogo_list:
                 if line.startswith(city + ':'):
                     polygon = parse_nogo_string(line)
@@ -338,7 +338,7 @@ def get_spoofed_city(city: str, base_dir: str,
                 city1 = city_file.read()
                 city = remove_eol(city1)
         except OSError:
-            print('EX: unable to read ' + city_filename)
+            print('EX: get_spoofed_city unable to read ' + city_filename)
     return city
 
 

@@ -426,7 +426,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                     tags_file.write(tag_line)
                     hashtag_added = True
             except OSError:
-                print('EX: unable to write ' + tags_filename)
+                print('EX: store_hash_tags unable to write ' + tags_filename)
         else:
             content = ''
             try:
@@ -1340,7 +1340,8 @@ def _person_receive_update(base_dir: str,
                         refollow_str = fp_refollow.read()
                         refollow_file_exists = True
                 except OSError:
-                    print('EX: unable to read ' + refollow_filename)
+                    print('EX: _person_receive_update unable to read ' +
+                          refollow_filename)
             if new_actor not in refollow_str:
                 refollow_type = 'w+'
                 if refollow_file_exists:
@@ -1350,7 +1351,7 @@ def _person_receive_update(base_dir: str,
                               encoding='utf-8') as fp_refollow:
                         fp_refollow.write(new_actor + '\n')
                 except OSError:
-                    print('EX: unable to write to ' +
+                    print('EX: _person_receive_update unable to write to ' +
                           refollow_filename)
                 prev_avatar_url = \
                     get_person_avatar_url(base_dir, person_json['id'],
@@ -3704,14 +3705,16 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
                           encoding='utf-8') as replies_file:
                     replies_file.write(message_id + '\n')
             except OSError:
-                print('EX: unable to append ' + post_replies_filename)
+                print('EX: populate_replies unable to append ' +
+                      post_replies_filename)
     else:
         try:
             with open(post_replies_filename, 'w+',
                       encoding='utf-8') as replies_file:
                 replies_file.write(message_id + '\n')
         except OSError:
-            print('EX: unable to write ' + post_replies_filename)
+            print('EX: populate_replies unable to write ' +
+                  post_replies_filename)
     return True
 
 
@@ -3802,7 +3805,7 @@ def _dm_notify(base_dir: str, handle: str, url: str) -> None:
             with open(dm_file, 'w+', encoding='utf-8') as fp_dm:
                 fp_dm.write(url)
         except OSError:
-            print('EX: unable to write ' + dm_file)
+            print('EX: _dm_notify unable to write ' + dm_file)
 
 
 def _already_liked(base_dir: str, nickname: str, domain: str,
@@ -4020,7 +4023,7 @@ def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
         with open(notify_file, 'w+', encoding='utf-8') as fp_notify:
             fp_notify.write(url)
     except OSError:
-        print('EX: unable to write ' + notify_file)
+        print('EX: _notify_post_arrival unable to write ' + notify_file)
 
 
 def _reply_notify(base_dir: str, handle: str, url: str) -> None:
@@ -4035,7 +4038,7 @@ def _reply_notify(base_dir: str, handle: str, url: str) -> None:
             with open(reply_file, 'w+', encoding='utf-8') as fp_reply:
                 fp_reply.write(url)
         except OSError:
-            print('EX: unable to write ' + reply_file)
+            print('EX: _reply_notify unable to write ' + reply_file)
 
 
 def _git_patch_notify(base_dir: str, handle: str, subject: str,
@@ -4052,7 +4055,7 @@ def _git_patch_notify(base_dir: str, handle: str, subject: str,
         with open(patch_file, 'w+', encoding='utf-8') as fp_patch:
             fp_patch.write('git ' + handle + ' ' + subject)
     except OSError:
-        print('EX: unable to write ' + patch_file)
+        print('EX: _git_patch_notify unable to write ' + patch_file)
 
 
 def _group_handle(base_dir: str, handle: str) -> bool:
@@ -4305,7 +4308,7 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
                   encoding='utf-8') as last_seen_file:
             last_seen_file.write(str(days_since_epoch))
     except OSError:
-        print('EX: unable to write ' + last_seen_filename)
+        print('EX: _update_last_seen unable to write ' + last_seen_filename)
 
 
 def _bounce_dm(sender_post_id: str, session, http_prefix: str,
@@ -5434,7 +5437,8 @@ def _inbox_after_initial(server, inbox_start_time,
                               encoding='utf-8') as mitm_file:
                         mitm_file.write('\n')
                 except OSError:
-                    print('EX: unable to write ' + destination_filename_mitm)
+                    print('EX: _inbox_after_initial unable to write ' +
+                          destination_filename_mitm)
 
             _low_frequency_post_notification(base_dir, http_prefix,
                                              nickname, domain, port,
@@ -5454,7 +5458,8 @@ def _inbox_after_initial(server, inbox_start_time,
                               encoding='utf-8') as mute_file:
                         mute_file.write('\n')
                 except OSError:
-                    print('EX: unable to write ' + destination_filename_muted)
+                    print('EX: _inbox_after_initial unable to write 2 ' +
+                          destination_filename_muted)
 
             # is this an edit of a previous post?
             # in Mastodon "delete and redraft"
@@ -5899,7 +5904,8 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
                               encoding='utf-8') as unknown_file:
                         unknown_file.write(unknown_context + '\n')
                 except OSError:
-                    print('EX: unable to append ' + unknown_contexts_file)
+                    print('EX: _check_json_signature unable to append ' +
+                          unknown_contexts_file)
     else:
         print('Unrecognized jsonld signature type: ' + jwebsig_type)
 
@@ -5917,7 +5923,8 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
                           encoding='utf-8') as unknown_file:
                     unknown_file.write(jwebsig_type + '\n')
             except OSError:
-                print('EX: unable to append ' + unknown_signatures_file)
+                print('EX: _check_json_signature unable to append ' +
+                      unknown_signatures_file)
     return has_json_signature, jwebsig_type
 
 
@@ -6199,7 +6206,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                               encoding='utf-8') as followers_file:
                         followers_file.write(approve_handle + '\n')
                 except OSError:
-                    print('EX: unable to write ' + followers_filename)
+                    print('EX: _receive_follow_request unable to write ' +
+                          followers_filename)
         else:
             print('ACCEPT: Follow Accept account directory not found: ' +
                   account_to_be_followed)

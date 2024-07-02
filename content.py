@@ -1384,7 +1384,8 @@ def add_html_tags(base_dir: str, http_prefix: str,
                           encoding='utf-8') as foll_file:
                     following = foll_file.readlines()
             except OSError:
-                print('EX: unable to read ' + following_filename)
+                print('EX: add_html_tags unable to read ' +
+                      following_filename)
             for handle in following:
                 pet = get_pet_name(base_dir, nickname, domain, handle)
                 if pet:
@@ -1695,7 +1696,7 @@ def save_media_in_form_post(media_bytes, debug: bool,
         with open(filename, 'wb') as fp_media:
             fp_media.write(media_bytes[start_pos:])
     except OSError:
-        print('EX: unable to write media')
+        print('EX: save_media_in_form_post unable to write media')
 
     if not os.path.isfile(filename):
         print('WARN: Media file could not be written to file: ' + filename)

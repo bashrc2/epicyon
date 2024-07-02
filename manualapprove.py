@@ -61,7 +61,8 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
                   encoding='utf-8') as rejects_file:
             rejects_file.write(deny_handle + '\n')
     except OSError:
-        print('EX: unable to append ' + rejected_follows_filename)
+        print('EX: manual_deny_follow_request unable to append ' +
+              rejected_follows_filename)
 
     deny_nickname = deny_handle.split('@')[0]
     deny_domain = remove_eol(deny_handle.split('@')[1])
@@ -136,14 +137,16 @@ def _approve_follower_handle(account_dir: str, approve_handle: str) -> None:
                           encoding='utf-8') as approved_file:
                     approved_file.write(approve_handle + '\n')
             except OSError:
-                print('EX: unable to append ' + approved_filename)
+                print('EX: _approve_follower_handle unable to append ' +
+                      approved_filename)
     else:
         try:
             with open(approved_filename, 'w+',
                       encoding='utf-8') as approved_file:
                 approved_file.write(approve_handle + '\n')
         except OSError:
-            print('EX: unable to write ' + approved_filename)
+            print('EX: _approve_follower_handle unable to write ' +
+                  approved_filename)
 
 
 def manual_approve_follow_request(session, session_onion, session_i2p,
@@ -334,7 +337,8 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                           encoding='utf-8') as followers_file:
                     followers_file.write(approve_handle_full + '\n')
             except OSError:
-                print('EX: unable to write ' + followers_filename)
+                print('EX: manual_approve_follow_request unable to write ' +
+                      followers_filename)
 
     # only update the follow requests file if the follow is confirmed to be
     # in followers.txt

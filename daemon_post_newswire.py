@@ -148,7 +148,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
                           encoding='utf-8') as filterfile:
                     filterfile.write(fields['filteredWordsNewswire'])
             except OSError:
-                print('EX: unable to write ' + filter_newswire_filename)
+                print('EX: newswire_update unable to write ' +
+                      filter_newswire_filename)
         else:
             if os.path.isfile(filter_newswire_filename):
                 try:
@@ -165,7 +166,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
                           encoding='utf-8') as fp_dogwhistles:
                     fp_dogwhistles.write(fields['dogwhistleWords'])
             except OSError:
-                print('EX: unable to write ' + dogwhistles_filename)
+                print('EX: newswire_update unable to write 2 ' +
+                      dogwhistles_filename)
             self.server.dogwhistles = \
                 load_dogwhistles(dogwhistles_filename)
         else:
@@ -175,7 +177,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
                           encoding='utf-8') as fp_dogwhistles:
                     fp_dogwhistles.write('')
             except OSError:
-                print('EX: unable to write ' + dogwhistles_filename)
+                print('EX: newswire_update unable unable to write 3 ' +
+                      dogwhistles_filename)
             self.server.dogwhistles = {}
 
         # save news tagging rules
@@ -186,7 +189,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
                           encoding='utf-8') as rulesfile:
                     rulesfile.write(fields['hashtagRulesList'])
             except OSError:
-                print('EX: unable to write ' + hashtag_rules_filename)
+                print('EX: newswire_update unable to write 4 ' +
+                      hashtag_rules_filename)
         else:
             if os.path.isfile(hashtag_rules_filename):
                 try:
@@ -205,7 +209,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
                           encoding='utf-8') as trustfile:
                     trustfile.write(newswire_trusted)
             except OSError:
-                print('EX: unable to write ' + newswire_tusted_filename)
+                print('EX: newswire_update unable to write 5 ' +
+                      newswire_tusted_filename)
         else:
             if os.path.isfile(newswire_tusted_filename):
                 try:
@@ -311,7 +316,8 @@ def citations_update(self, calling_domain: str, cookie: str,
                           encoding='utf-8') as citfile:
                     citfile.write(citations_str)
             except OSError:
-                print('EX: unable to write ' + citations_filename)
+                print('EX: citations_update unable to write ' +
+                      citations_filename)
 
     # redirect back to the default timeline
     redirect_headers(self, actor_str + '/newblog',

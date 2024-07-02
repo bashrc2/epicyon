@@ -601,8 +601,8 @@ def _person_options_post_to_news(self, options_confirm_params: str,
                             nofile.write('\n')
                             nw_written = True
                     except OSError as ex:
-                        print('EX: unable to write ' + nw_filename +
-                              ' ' + str(ex))
+                        print('EX: _person_options_post_to_news unable ' +
+                              'to write ' + nw_filename + ' ' + str(ex))
                     if nw_written:
                         refresh_newswire(base_dir)
         users_path_str = \
@@ -661,7 +661,8 @@ def _person_options_post_to_features(self, options_confirm_params: str,
                             nofile.write('\n')
                             feat_written = True
                     except OSError as ex:
-                        print('EX: unable to write ' + feat_filename +
+                        print('EX: _person_options_post_to_features ' +
+                              'unable to write ' + feat_filename +
                               ' ' + str(ex))
                     if feat_written:
                         refresh_newswire(base_dir)
@@ -718,7 +719,8 @@ def _person_options_mod_news(self, options_confirm_params: str,
                                   encoding='utf-8') as modfile:
                             modfile.write('\n')
                     except OSError:
-                        print('EX: unable to write ' + nw_filename)
+                        print('EX: _person_options_mod_news ' +
+                              'unable to write ' + nw_filename)
         users_path_str = \
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)

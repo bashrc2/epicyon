@@ -806,7 +806,8 @@ def html_edit_blog(media_instance: bool, translate: {},
             with open(dir_str + '/newpost.txt', 'r', encoding='utf-8') as file:
                 edit_blog_text = '<p>' + file.read() + '</p>'
         except OSError:
-            print('EX: unable to read ' + dir_str + '/newpost.txt')
+            print('EX: html_edit_blog unable to read ' +
+                  dir_str + '/newpost.txt')
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):

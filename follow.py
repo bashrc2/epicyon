@@ -354,7 +354,8 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
                                             '!' + handle_to_unfollow_lower):
                         fp_unfoll.write(line)
         except OSError as ex:
-            print('EX: unable to write ' + filename + ' ' + str(ex))
+            print('EX: unfollow_account unable to write ' +
+                  filename + ' ' + str(ex))
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
@@ -367,14 +368,16 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
                           encoding='utf-8') as fp_unfoll:
                     fp_unfoll.write(handle_to_unfollow + '\n')
             except OSError:
-                print('EX: unable to append ' + unfollowed_filename)
+                print('EX: unfollow_account unable to append ' +
+                      unfollowed_filename)
     else:
         try:
             with open(unfollowed_filename, 'w+',
                       encoding='utf-8') as fp_unfoll:
                 fp_unfoll.write(handle_to_unfollow + '\n')
         except OSError:
-            print('EX: unable to write ' + unfollowed_filename)
+            print('EX: unfollow_account unable to write ' +
+                  unfollowed_filename)
 
     return True
 
@@ -982,7 +985,8 @@ def send_follow_request(session, base_dir: str,
                               encoding='utf-8') as fp_unfoll:
                         fp_unfoll.write(unfollowed_file)
                 except OSError:
-                    print('EX: unable to write ' + unfollowed_filename)
+                    print('EX: send_follow_request unable to write ' +
+                          unfollowed_filename)
 
     new_follow_json = {
         '@context': 'https://www.w3.org/ns/activitystreams',

@@ -71,7 +71,7 @@ def receive_image_attachment(self, length: int, path: str, base_dir: str,
         with open(media_filename, 'wb') as av_file:
             av_file.write(media_bytes)
     except OSError:
-        print('EX: unable to write ' + media_filename)
+        print('EX: receive_image_attachment unable to write ' + media_filename)
     if debug:
         print('DEBUG: image saved to ' + media_filename)
     self.send_response(201)

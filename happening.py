@@ -158,7 +158,8 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
                           encoding='utf-8') as tl_events_file:
                     tl_events_file.write(event_id + '\n')
             except OSError:
-                print('EX: unable to write ' + tl_events_filename)
+                print('EX: save_event_post unable to write ' +
+                      tl_events_filename)
 
     # create a directory for the calendar year
     if not os.path.isdir(calendar_path + '/' + str(event_year)):
@@ -191,7 +192,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         with open(cal_notify_filename, 'w+', encoding='utf-8') as cal_file:
             cal_file.write(notify_str)
     except OSError:
-        print('EX: unable to write ' + cal_notify_filename)
+        print('EX: save_event_post unable to write ' + cal_notify_filename)
         return False
     return True
 
