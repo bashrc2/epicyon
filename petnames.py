@@ -28,36 +28,41 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
 
     # does this entry already exist?
     if os.path.isfile(petnames_filename):
-        with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
-            petnames_str = petnames_file.read()
-            if entry in petnames_str:
-                return True
-            if ' ' + handle + '\n' in petnames_str:
-                petnames_list = petnames_str.split('\n')
-                new_petnames_str = ''
-                for pet in petnames_list:
-                    if not pet.endswith(' ' + handle):
-                        new_petnames_str += pet + '\n'
-                    else:
-                        new_petnames_str += entry
-                # save the updated petnames file
-                try:
-                    with open(petnames_filename, 'w+',
-                              encoding='utf-8') as petnames_file:
-                        petnames_file.write(new_petnames_str)
-                except OSError:
-                    print('EX: unable to save ' + petnames_filename)
-                    return False
-                return True
-            # entry does not exist in the petnames file
+        petnames_str = ''
+        try:
+            with open(petnames_filename, 'r',
+                      encoding='utf-8') as petnames_file:
+                petnames_str = petnames_file.read()
+        except OSError:
+            print('EX: set_pet_name unable to read ' + petnames_filename)
+        if entry in petnames_str:
+            return True
+        if ' ' + handle + '\n' in petnames_str:
+            petnames_list = petnames_str.split('\n')
+            new_petnames_str = ''
+            for pet in petnames_list:
+                if not pet.endswith(' ' + handle):
+                    new_petnames_str += pet + '\n'
+                else:
+                    new_petnames_str += entry
+            # save the updated petnames file
             try:
-                with open(petnames_filename, 'a+',
+                with open(petnames_filename, 'w+',
                           encoding='utf-8') as petnames_file:
-                    petnames_file.write(entry)
+                    petnames_file.write(new_petnames_str)
             except OSError:
-                print('EX: unable to append ' + petnames_filename)
+                print('EX: set_pet_name unable to save ' + petnames_filename)
                 return False
             return True
+        # entry does not exist in the petnames file
+        try:
+            with open(petnames_filename, 'a+',
+                      encoding='utf-8') as petnames_file:
+                petnames_file.write(entry)
+        except OSError:
+            print('EX: set_pet_name unable to append ' + petnames_filename)
+            return False
+        return True
 
     # first entry
     try:
