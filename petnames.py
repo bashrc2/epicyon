@@ -69,7 +69,7 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
         with open(petnames_filename, 'w+', encoding='utf-8') as petnames_file:
             petnames_file.write(entry)
     except OSError:
-        print('EX: unable to write ' + petnames_filename)
+        print('EX: set_pet_name unable to write ' + petnames_filename)
         return False
     return True
 
