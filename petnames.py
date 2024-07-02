@@ -117,14 +117,18 @@ def _get_pet_name_handle(base_dir: str, nickname: str, domain: str,
 
     if not os.path.isfile(petnames_filename):
         return ''
-    with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
-        petnames_str = petnames_file.read()
-        if petname + ' ' in petnames_str:
-            petnames_list = petnames_str.split('\n')
-            for pet in petnames_list:
-                if pet.startswith(petname + ' '):
-                    handle = pet.replace(petname + ' ', '').strip()
-                    return handle
+    petnames_str = ''
+    try:
+        with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
+            petnames_str = petnames_file.read()
+    except OSError:
+        print('EX: _get_pet_name_handle unable to read ' + petnames_filename)
+    if petname + ' ' in petnames_str:
+        petnames_list = petnames_str.split('\n')
+        for pet in petnames_list:
+            if pet.startswith(petname + ' '):
+                handle = pet.replace(petname + ' ', '').strip()
+                return handle
     return ''
 
 
