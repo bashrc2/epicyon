@@ -86,20 +86,24 @@ def get_pet_name(base_dir: str, nickname: str, domain: str,
 
     if not os.path.isfile(petnames_filename):
         return ''
-    with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
-        petnames_str = petnames_file.read()
-        if ' ' + handle + '\n' in petnames_str:
-            petnames_list = petnames_str.split('\n')
-            for pet in petnames_list:
-                if pet.endswith(' ' + handle):
-                    return pet.replace(' ' + handle, '').strip()
-        elif ' ' + handle.lower() + '\n' in petnames_str.lower():
-            petnames_list = petnames_str.split('\n')
-            handle = handle.lower()
-            for pet in petnames_list:
-                if pet.lower().endswith(' ' + handle):
-                    handle2 = pet.split(' ')[-1]
-                    return pet.replace(' ' + handle2, '').strip()
+    petnames_str = ''
+    try:
+        with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
+            petnames_str = petnames_file.read()
+    except OSError:
+        print('EX: get_pet_name unable to read ' + petnames_filename)
+    if ' ' + handle + '\n' in petnames_str:
+        petnames_list = petnames_str.split('\n')
+        for pet in petnames_list:
+            if pet.endswith(' ' + handle):
+                return pet.replace(' ' + handle, '').strip()
+    elif ' ' + handle.lower() + '\n' in petnames_str.lower():
+        petnames_list = petnames_str.split('\n')
+        handle = handle.lower()
+        for pet in petnames_list:
+            if pet.lower().endswith(' ' + handle):
+                handle2 = pet.split(' ')[-1]
+                return pet.replace(' ' + handle2, '').strip()
     return ''
 
 
