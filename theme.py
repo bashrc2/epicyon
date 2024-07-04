@@ -36,7 +36,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
         return False
     temp_theme_dir = base_dir + '/imports/files'
     if os.path.isdir(temp_theme_dir):
-        rmtree(temp_theme_dir, ignore_errors=False, onerror=None)
+        rmtree(temp_theme_dir, ignore_errors=False, onexc=None)
     os.mkdir(temp_theme_dir)
     unpack_archive(filename, temp_theme_dir, 'zip')
     essential_theme_files = ('name.txt', 'theme.json')
@@ -80,9 +80,9 @@ def import_theme(base_dir: str, filename: str) -> bool:
         os.mkdir(theme_dir)
     copytree(temp_theme_dir, theme_dir, False, None)
     if os.path.isdir(temp_theme_dir):
-        rmtree(temp_theme_dir, ignore_errors=False, onerror=None)
+        rmtree(temp_theme_dir, ignore_errors=False, onexc=None)
     if scan_themes_for_scripts(theme_dir):
-        rmtree(theme_dir, ignore_errors=False, onerror=None)
+        rmtree(theme_dir, ignore_errors=False, onexc=None)
         return False
     return os.path.isfile(theme_dir + '/theme.json')
 

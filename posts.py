@@ -976,7 +976,7 @@ def delete_all_posts(base_dir: str,
             if os.path.isfile(file_path):
                 os.unlink(file_path)
             elif os.path.isdir(file_path):
-                shutil.rmtree(file_path, ignore_errors=False, onerror=None)
+                shutil.rmtree(file_path, ignore_errors=False, onexc=None)
         except OSError as ex:
             print('ERROR: delete_all_posts ' + str(ex))
 

@@ -483,7 +483,7 @@ def _create_news_mirror(base_dir: str, domain: str,
                 mirror_article_dir = mirror_dir + '/' + post_id
                 if os.path.isdir(mirror_article_dir):
                     rmtree(mirror_article_dir,
-                           ignore_errors=False, onerror=None)
+                           ignore_errors=False, onexc=None)
                     removals.append(post_id)
                     no_of_dirs -= 1
 

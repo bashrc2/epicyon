@@ -700,7 +700,7 @@ def archive_media(base_dir: str, archive_directory: str,
                 else:
                     # archive to /dev/null
                     rmtree(os.path.join(base_dir + '/media', week_dir),
-                           ignore_errors=False, onerror=None)
+                           ignore_errors=False, onexc=None)
         break
 
 
