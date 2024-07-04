@@ -221,93 +221,93 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                   encoding='utf-8') as approvefile:
             for handle_of_follow_requester in approvefile:
                 # is this the approved follow?
-                if handle_of_follow_requester.startswith(approve_handle_full):
-                    handle_of_follow_requester = \
-                        remove_eol(handle_of_follow_requester)
-                    handle_of_follow_requester = \
-                        handle_of_follow_requester.replace('\r', '')
-                    port2 = port
-                    if ':' in handle_of_follow_requester:
-                        port2 = \
-                            get_port_from_domain(handle_of_follow_requester)
-                    requests_dir = account_dir + '/requests'
-                    follow_activity_filename = \
-                        requests_dir + '/' + \
-                        handle_of_follow_requester + '.follow'
-                    if os.path.isfile(follow_activity_filename):
-                        follow_json = load_json(follow_activity_filename)
-                        if follow_json:
-                            approve_nickname = approve_handle.split('@')[0]
-                            approve_domain = approve_handle.split('@')[1]
-                            approve_domain = \
-                                remove_eol(approve_domain)
-                            approve_domain = \
-                                approve_domain.replace('\r', '')
-                            approve_port = port2
-                            if ':' in approve_domain:
-                                approve_port = \
-                                    get_port_from_domain(approve_domain)
-                                approve_domain = \
-                                    remove_domain_port(approve_domain)
-
-                            curr_domain = domain
-                            curr_port = port
-                            curr_session = session
-                            curr_http_prefix = http_prefix
-                            curr_proxy_type = proxy_type
-                            if onion_domain and \
-                               not curr_domain.endswith('.onion') and \
-                               approve_domain.endswith('.onion'):
-                                curr_domain = onion_domain
-                                curr_port = 80
-                                approve_port = 80
-                                curr_session = session_onion
-                                curr_http_prefix = 'http'
-                                curr_proxy_type = 'tor'
-                            elif (i2p_domain and
-                                  not curr_domain.endswith('.i2p') and
-                                  approve_domain.endswith('.i2p')):
-                                curr_domain = i2p_domain
-                                curr_port = 80
-                                approve_port = 80
-                                curr_session = session_i2p
-                                curr_http_prefix = 'http'
-                                curr_proxy_type = 'i2p'
-
-                            if not curr_session:
-                                curr_session = create_session(curr_proxy_type)
-
-                            print('Manual follow accept: Sending Accept for ' +
-                                  handle + ' follow request from ' +
-                                  approve_nickname + '@' + approve_domain)
-                            actor_url = get_actor_from_post(follow_json)
-                            followed_account_accepts(curr_session, base_dir,
-                                                     curr_http_prefix,
-                                                     nickname,
-                                                     curr_domain, curr_port,
-                                                     approve_nickname,
-                                                     approve_domain,
-                                                     approve_port,
-                                                     actor_url,
-                                                     federation_list,
-                                                     follow_json,
-                                                     send_threads, post_log,
-                                                     cached_webfingers,
-                                                     person_cache,
-                                                     debug,
-                                                     project_version, False,
-                                                     signing_priv_key_pem,
-                                                     domain,
-                                                     onion_domain,
-                                                     i2p_domain,
-                                                     followers_sync_cache,
-                                                     sites_unavailable,
-                                                     system_language)
-                    update_approved_followers = True
-                else:
+                approve_handl = approve_handle_full
+                if not handle_of_follow_requester.startswith(approve_handl):
                     # this isn't the approved follow so it will remain
                     # in the requests file
                     approvefilenew.write(handle_of_follow_requester)
+                    continue
+
+                handle_of_follow_requester = \
+                    remove_eol(handle_of_follow_requester)
+                handle_of_follow_requester = \
+                    handle_of_follow_requester.replace('\r', '')
+                port2 = port
+                if ':' in handle_of_follow_requester:
+                    port2 = get_port_from_domain(handle_of_follow_requester)
+                requests_dir = account_dir + '/requests'
+                follow_activity_filename = \
+                    requests_dir + '/' + handle_of_follow_requester + '.follow'
+                if not os.path.isfile(follow_activity_filename):
+                    update_approved_followers = True
+                    continue
+                follow_json = load_json(follow_activity_filename)
+                if not follow_json:
+                    update_approved_followers = True
+                    continue
+                approve_nickname = approve_handle.split('@')[0]
+                approve_domain = approve_handle.split('@')[1]
+                approve_domain = remove_eol(approve_domain)
+                approve_domain = approve_domain.replace('\r', '')
+                approve_port = port2
+                if ':' in approve_domain:
+                    approve_port = get_port_from_domain(approve_domain)
+                    approve_domain = remove_domain_port(approve_domain)
+
+                curr_domain = domain
+                curr_port = port
+                curr_session = session
+                curr_http_prefix = http_prefix
+                curr_proxy_type = proxy_type
+                if onion_domain and \
+                   not curr_domain.endswith('.onion') and \
+                   approve_domain.endswith('.onion'):
+                    curr_domain = onion_domain
+                    curr_port = 80
+                    approve_port = 80
+                    curr_session = session_onion
+                    curr_http_prefix = 'http'
+                    curr_proxy_type = 'tor'
+                elif (i2p_domain and
+                      not curr_domain.endswith('.i2p') and
+                      approve_domain.endswith('.i2p')):
+                    curr_domain = i2p_domain
+                    curr_port = 80
+                    approve_port = 80
+                    curr_session = session_i2p
+                    curr_http_prefix = 'http'
+                    curr_proxy_type = 'i2p'
+
+                if not curr_session:
+                    curr_session = create_session(curr_proxy_type)
+
+                print('Manual follow accept: Sending Accept for ' +
+                      handle + ' follow request from ' +
+                      approve_nickname + '@' + approve_domain)
+                actor_url = get_actor_from_post(follow_json)
+                followed_account_accepts(curr_session, base_dir,
+                                         curr_http_prefix,
+                                         nickname,
+                                         curr_domain, curr_port,
+                                         approve_nickname,
+                                         approve_domain,
+                                         approve_port,
+                                         actor_url,
+                                         federation_list,
+                                         follow_json,
+                                         send_threads, post_log,
+                                         cached_webfingers,
+                                         person_cache,
+                                         debug,
+                                         project_version, False,
+                                         signing_priv_key_pem,
+                                         domain,
+                                         onion_domain,
+                                         i2p_domain,
+                                         followers_sync_cache,
+                                         sites_unavailable,
+                                         system_language)
+                update_approved_followers = True
 
     followers_filename = account_dir + '/followers.txt'
     if update_approved_followers:
