@@ -248,14 +248,14 @@ def webfinger_meta(http_prefix: str, domain_full: str) -> str:
     """Return /.well-known/host-meta
     """
     meta_str = \
-        "<?xml version=’1.0' encoding=’UTF-8'?>" + \
-        "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'" + \
-        " xmlns:hm=’http://host-meta.net/xrd/1.0'>" + \
+        "<?xml version='1.0' encoding='UTF-8'?>" + \
+        "<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'" + \
+        " xmlns:hm='http://host-meta.net/xrd/1.0'>" + \
         "" + \
         "<hm:Host>" + domain_full + "</hm:Host>" + \
         "" + \
-        "<Link rel=’lrdd’" + \
-        " template=’" + http_prefix + "://" + domain_full + \
+        "<Link rel='lrdd'" + \
+        " template='" + http_prefix + "://" + domain_full + \
         "/describe?uri={uri}'>" + \
         " <Title>Resource Descriptor</Title>" + \
         " </Link>" + \
