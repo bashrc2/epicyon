@@ -5080,6 +5080,13 @@ def harmless_markup(post_json_object: {}) -> None:
                 for lang, content in map_dict:
                     if not isinstance(content, str):
                         continue
+
+                    # tidy up language mapped content warnings
+                    if field_name == 'summary':
+                        post_json_object['object'][map_name][lang] = \
+                            valid_content_warning(content)
+                        content = post_json_object['object'][map_name][lang]
+
                     if dangerous_markup(content, False, ['pre']):
                         content = remove_html(content)
                         post_json_object['object'][map_name][lang] = \
