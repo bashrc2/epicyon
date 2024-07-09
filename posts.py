@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import valid_content_warning
 from utils import get_actor_from_post_id
 from utils import string_contains
 from utils import get_post_attachments
@@ -1135,17 +1136,6 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
         except OSError as ex:
             print('EX: Failed to write entry to scheduled posts index2 ' +
                   schedule_index_filename + ' ' + str(ex))
-
-
-def valid_content_warning(summary: str) -> str:
-    """Returns a validated content warning
-    """
-    cw_str = remove_html(summary)
-    # hashtags within content warnings apparently cause a lot of trouble
-    # so remove them
-    if '#' in cw_str:
-        cw_str = cw_str.replace('#', '').replace('  ', ' ')
-    return remove_invalid_chars(cw_str)
 
 
 def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,

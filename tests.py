@@ -42,7 +42,6 @@ from posts import get_actor_from_in_reply_to
 from posts import regenerate_index_for_box
 from posts import remove_post_interactions
 from posts import get_mentioned_people
-from posts import valid_content_warning
 from posts import delete_all_posts
 from posts import create_public_post
 from posts import send_post
@@ -56,6 +55,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import valid_content_warning
 from utils import data_dir
 from utils import data_dir_testing
 from utils import remove_link_tracking

@@ -5040,6 +5040,17 @@ def unescaped_text(txt: str) -> str:
     return txt
 
 
+def valid_content_warning(summary: str) -> str:
+    """Returns a validated content warning
+    """
+    cw_str = remove_html(summary)
+    # hashtags within content warnings apparently cause a lot of trouble
+    # so remove them
+    if '#' in cw_str:
+        cw_str = cw_str.replace('#', '').replace('  ', ' ')
+    return remove_invalid_chars(cw_str)
+
+
 def harmless_markup(post_json_object: {}) -> None:
     """render harmless any dangerous markup
     """
@@ -5048,6 +5059,12 @@ def harmless_markup(post_json_object: {}) -> None:
 
     for field_name in ('content', 'summary'):
         if post_json_object['object'].get(field_name):
+            # tidy up content warnings
+            if field_name == 'summary':
+                summary = post_json_object['object'][field_name]
+                post_json_object['object'][field_name] = \
+                    valid_content_warning(summary)
+
             if dangerous_markup(post_json_object['object'][field_name],
                                 False, ['pre']):
                 post_json_object['object'][field_name] = \

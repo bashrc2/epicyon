@@ -126,6 +126,7 @@ from utils import dangerous_markup
 from utils import is_dm
 from utils import is_reply
 from utils import has_actor
+from utils import valid_content_warning
 from httpsig import message_content_digest
 from posts import outbox_message_create_wrap
 from posts import convert_post_content_to_html
@@ -133,7 +134,6 @@ from posts import edited_post_filename
 from posts import save_post_to_box
 from posts import is_create_inside_announce
 from posts import create_direct_message_post
-from posts import valid_content_warning
 from posts import download_announce
 from posts import is_muted_conv
 from posts import is_image_media
