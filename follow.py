@@ -82,14 +82,15 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                 actor = local_actor_url(http_prefix, nickname, domain)
                 last_seen_filename = \
                     last_seen_dir + '/' + actor.replace('/', '#') + '.txt'
-                if not os.path.isfile(last_seen_filename):
-                    try:
-                        with open(last_seen_filename, 'w+',
-                                  encoding='utf-8') as fp_last:
-                            fp_last.write(str(100))
-                    except OSError:
-                        print('EX: create_initial_last_seen 2 ' +
-                              last_seen_filename)
+                if os.path.isfile(last_seen_filename):
+                    continue
+                try:
+                    with open(last_seen_filename, 'w+',
+                              encoding='utf-8') as fp_last:
+                        fp_last.write(str(100))
+                except OSError:
+                    print('EX: create_initial_last_seen 2 ' +
+                          last_seen_filename)
         break
 
 
