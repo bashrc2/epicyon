@@ -4347,6 +4347,12 @@ def _test_danger_markup():
     content = 'This is a valid message without markup'
     assert not dangerous_markup(content, allow_local_network_access, [])
 
+    content = '<p>Gerbils of the world <a href="' + \
+        'https://anarcho-gerbil.com/tags/Unite" ' + \
+        'class="mention hashtag" rel="tag">#<span>Unite</span></a>' + \
+        ' you have nothing to lose but your wheel</p>'
+    assert not dangerous_markup(content, allow_local_network_access, [])
+
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script>document.getElementById("concentrated")' + \
         '.innerHTML = "evil";</script></p>'
