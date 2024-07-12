@@ -118,6 +118,24 @@ THEME_FORMATS = '.zip, .gz'
 BLOCKFILE_FORMATS = '.csv'
 
 
+def _import_export_blocks(translate: {}) -> str:
+    """ import and export blocks on edit profile screen
+    """
+    edit_profile_form = \
+        '      <label class="labels">' + \
+        translate['Import Blocks'] + '</label>\n'
+    edit_profile_form += '      <input type="file" id="importBlocks" '
+    edit_profile_form += 'name="importBlocks" '
+    edit_profile_form += 'accept="' + BLOCKFILE_FORMATS + '">\n'
+    edit_profile_form += \
+        '      <label class="labels">' + \
+        translate['Export Blocks'] + '</label><br>\n'
+    edit_profile_form += \
+        '      <button type="submit" class="button" ' + \
+        'name="submitExportBlocks">➤</button><br>\n'
+    return edit_profile_form
+
+
 def _get_profile_short_description(profile_description: str) -> str:
     """Returns a short version of the profile description
     """
@@ -2401,18 +2419,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                        blocked_str, 500, '', False)
 
     # import and export blocks
-    edit_profile_form += \
-        '      <label class="labels">' + \
-        translate['Import Blocks'] + '</label>\n'
-    edit_profile_form += '      <input type="file" id="importBlocks" '
-    edit_profile_form += 'name="importBlocks" '
-    edit_profile_form += 'accept="' + BLOCKFILE_FORMATS + '">\n'
-    edit_profile_form += \
-        '      <label class="labels">' + \
-        translate['Export Blocks'] + '</label><br>\n'
-    edit_profile_form += \
-        '      <button type="submit" class="button" ' + \
-        'name="submitExportBlocks">➤</button><br>\n'
+    edit_profile_form += _import_export_blocks(translate)
 
     idx = 'Direct messages are always allowed from these instances.'
     edit_profile_form += \
@@ -2692,6 +2699,7 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
         '<p><a href="/users/' + nickname + \
         '/followersaccounts"><label class="labels">' + \
         followers_str + '</label></a><br></p>\n'
+    edit_profile_form += _import_export_blocks(translate)
     edit_profile_form += end_edit_section()
     return edit_profile_form
 
