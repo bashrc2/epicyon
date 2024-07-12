@@ -354,6 +354,7 @@ def post_message_to_outbox(session, translate: {},
                 return False
 
     if message_json['type'] == 'Create':
+        # check that a Create post has the expected fields
         if not (message_json.get('id') and
                 message_json.get('type') and
                 message_json.get('actor') and
@@ -406,6 +407,7 @@ def post_message_to_outbox(session, translate: {},
                 if local_network_pattern in actor_url:
                     return False
 
+        # is the post actor blocked?
         test_domain, test_port = get_domain_from_actor(actor_url)
         if test_domain:
             test_domain = get_full_domain(test_domain, test_port)
@@ -413,12 +415,15 @@ def post_message_to_outbox(session, translate: {},
                 if debug:
                     print('DEBUG: domain is blocked: ' + actor_url)
                 return False
+
         # replace youtube, so that google gets less tracking data
         replace_you_tube(message_json, yt_replace_domain, system_language)
+
         # replace twitter, so that twitter posts can be shown without
         # having a twitter account
         replace_twitter(message_json, twitter_replacement_domain,
                         system_language)
+
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         message_json['object']['attributedTo'] = actor_url
         message_attachments = get_post_attachments(message_json['object'])
