@@ -70,59 +70,65 @@ from reading import store_book_events
 from reading import has_edition_tag
 
 
+def _valid_person_update_outbox(message_json: {}, debug: bool) -> bool:
+    """is an actor update valid?
+    """
+    if not message_json.get('type'):
+        return False
+    if not isinstance(message_json['type'], str):
+        if debug:
+            print('DEBUG: c2s actor update type is not a string')
+        return False
+    if message_json['type'] != 'Update':
+        return False
+    if not has_object_string_type(message_json, debug):
+        return False
+    if not isinstance(message_json['object']['type'], str):
+        if debug:
+            print('DEBUG: c2s actor update object type is not a string')
+        return False
+    if message_json['object']['type'] != 'Person':
+        if debug:
+            print('DEBUG: not a c2s actor update')
+        return False
+    if not message_json.get('to'):
+        if debug:
+            print('DEBUG: c2s actor update has no "to" field')
+        return False
+    if not has_actor(message_json, debug):
+        return False
+    if not message_json.get('id'):
+        if debug:
+            print('DEBUG: c2s actor update has no id field')
+        return False
+    if not isinstance(message_json['id'], str):
+        if debug:
+            print('DEBUG: c2s actor update id is not a string')
+        return False
+    if not isinstance(message_json['to'], list):
+        if debug:
+            print('DEBUG: c2s actor update - to field is not a list ' +
+                  str(message_json['to']))
+        return False
+    if len(message_json['to']) != 1:
+        if debug:
+            print('DEBUG: c2s actor update - to does not contain one actor ' +
+                  str(message_json['to']))
+        return False
+    return True
+
+
 def _person_receive_update_outbox(base_dir: str, http_prefix: str,
                                   nickname: str, domain: str, port: int,
                                   message_json: {}, debug: bool) -> None:
     """ Receive an actor update from c2s
     For example, setting the PGP key from the desktop client
     """
-    # these attachments are updatable via c2s
-    updatable_attachments = ('PGP', 'OpenPGP', 'Email')
+    if not _valid_person_update_outbox(message_json, debug):
+        return
 
-    if not message_json.get('type'):
-        return
-    if not isinstance(message_json['type'], str):
-        if debug:
-            print('DEBUG: c2s actor update type is not a string')
-        return
-    if message_json['type'] != 'Update':
-        return
-    if not has_object_string_type(message_json, debug):
-        return
-    if not isinstance(message_json['object']['type'], str):
-        if debug:
-            print('DEBUG: c2s actor update object type is not a string')
-        return
-    if message_json['object']['type'] != 'Person':
-        if debug:
-            print('DEBUG: not a c2s actor update')
-        return
-    if not message_json.get('to'):
-        if debug:
-            print('DEBUG: c2s actor update has no "to" field')
-        return
-    if not has_actor(message_json, debug):
-        return
-    if not message_json.get('id'):
-        if debug:
-            print('DEBUG: c2s actor update has no id field')
-        return
-    if not isinstance(message_json['id'], str):
-        if debug:
-            print('DEBUG: c2s actor update id is not a string')
-        return
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
-    if not isinstance(message_json['to'], list):
-        if debug:
-            print('DEBUG: c2s actor update - to field is not a list ' +
-                  str(message_json['to']))
-        return
-    if len(message_json['to']) != 1:
-        if debug:
-            print('DEBUG: c2s actor update - to does not contain one actor ' +
-                  str(message_json['to']))
-        return
     if message_json['to'][0] != actor:
         if debug:
             print('DEBUG: c2s actor update - to does not contain actor ' +
@@ -145,6 +151,9 @@ def _person_receive_update_outbox(base_dir: str, http_prefix: str,
     actor_changed = False
     # update fields within actor
     if 'attachment' in updated_actor_json:
+        # these attachments are updatable via c2s
+        updatable_attachments = ('PGP', 'OpenPGP', 'Email')
+
         for new_property_value in updated_actor_json['attachment']:
             name_value = None
             if new_property_value.get('name'):
