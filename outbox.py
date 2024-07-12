@@ -70,6 +70,39 @@ from reading import store_book_events
 from reading import has_edition_tag
 
 
+def _localonly_not_local(message_json: {}, domain_full: str) -> bool:
+    """If this is a "local only" post return true if it is not local
+    """
+    # if this is a local only post, is it really local?
+    if 'localOnly' in message_json['object'] and \
+       message_json['object'].get('to') and \
+       message_json['object'].get('attributedTo'):
+        if message_json['object']['localOnly'] is True:
+            # check that the to addresses are local
+            if isinstance(message_json['object']['to'], list):
+                for to_actor in message_json['object']['to']:
+                    to_domain, to_port = get_domain_from_actor(to_actor)
+                    if not to_domain:
+                        continue
+                    to_domain_full = get_full_domain(to_domain, to_port)
+                    if domain_full != to_domain_full:
+                        print("REJECT: local only post isn't local " +
+                              str(message_json))
+                        return True
+            # check that the sender is local
+            local_actor = \
+                get_attributed_to(message_json['object']['attributedTo'])
+            local_domain, local_port = get_domain_from_actor(local_actor)
+            if local_domain:
+                local_domain_full = \
+                    get_full_domain(local_domain, local_port)
+                if domain_full != local_domain_full:
+                    print("REJECT: local only post isn't local " +
+                          str(message_json))
+                    return True
+    return False
+
+
 def _valid_person_update_outbox(message_json: {}, debug: bool) -> bool:
     """is an actor update valid?
     """
@@ -286,41 +319,17 @@ def post_message_to_outbox(session, translate: {},
                                            domain, port,
                                            message_json)
 
+    # is Bold Reading enabled for this account?
     bold_reading = False
     if server.bold_reading.get(post_to_nickname):
         bold_reading = True
 
-    # check that the outgoing post doesn't contain any markup
-    # which can be used to implement exploits
     if has_object_dict(message_json):
-        # if this is a local only post, is it really local?
-        if 'localOnly' in message_json['object'] and \
-           message_json['object'].get('to') and \
-           message_json['object'].get('attributedTo'):
-            if message_json['object']['localOnly'] is True:
-                # check that the to addresses are local
-                if isinstance(message_json['object']['to'], list):
-                    for to_actor in message_json['object']['to']:
-                        to_domain, to_port = get_domain_from_actor(to_actor)
-                        if not to_domain:
-                            continue
-                        to_domain_full = get_full_domain(to_domain, to_port)
-                        if domain_full != to_domain_full:
-                            print("REJECT: local only post isn't local " +
-                                  str(message_json))
-                            return False
-                # check that the sender is local
-                local_actor = \
-                    get_attributed_to(message_json['object']['attributedTo'])
-                local_domain, local_port = get_domain_from_actor(local_actor)
-                if local_domain:
-                    local_domain_full = \
-                        get_full_domain(local_domain, local_port)
-                    if domain_full != local_domain_full:
-                        print("REJECT: local only post isn't local " +
-                              str(message_json))
-                        return False
+        # if this is "local only" and it is not local then reject the post
+        if _localonly_not_local(message_json, domain_full):
+            return False
 
+        # if quote toots are not allowed then reject the post
         if is_quote_toot(message_json, ''):
             allow_quotes = \
                 quote_toots_allowed(base_dir, post_to_nickname, domain,
@@ -329,12 +338,16 @@ def post_message_to_outbox(session, translate: {},
                 print('REJECT: POST quote toot ' + str(message_json))
                 return False
 
+        # get the content of the post
         content_str = get_base_content_from_post(message_json, system_language)
         if content_str:
+            # convert #nowplaying to #NowPlaying
             _capitalize_hashtag(content_str, message_json,
                                 system_language, translate,
                                 'nowplaying', 'NowPlaying')
 
+            # check that the outgoing post doesn't contain any markup
+            # which can be used to implement exploits
             if dangerous_markup(content_str, allow_local_network_access, []):
                 print('POST to outbox contains dangerous markup: ' +
                       str(message_json))
