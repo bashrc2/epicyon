@@ -2684,7 +2684,7 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
     edit_profile_form += \
         ' <a href="/users/' + nickname + '/followingaccounts.csv" ' + \
         'download="' + nickname + '@' + domain + '_following.csv">' + \
-        '<label class="labels">⇩ CSV</label></a></p>\n'
+        '<label class="labels">⇩ CSV</label></a></p><br>\n'
     followers_str = translate['Followers']
     if premium:
         followers_str = translate['Fans']
