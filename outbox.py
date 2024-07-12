@@ -542,6 +542,7 @@ def post_message_to_outbox(session, translate: {},
         print('WARN: post not saved to outbox ' + outbox_name)
         return False
 
+    # update the speaker endpoint for speech synthesis
     actor_url = get_actor_from_post(message_json)
     update_speaker(base_dir, http_prefix,
                    post_to_nickname, domain, domain_full,
