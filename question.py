@@ -145,33 +145,39 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
                 print('EX: unable to append to voters file ' + voters_filename)
         else:
             # change an entry in the voters file
-            with open(voters_filename, 'r',
-                      encoding='utf-8') as voters_file:
-                lines = voters_file.readlines()
-                newlines = []
-                save_voters_file = False
-                for vote_line in lines:
-                    if vote_line.startswith(actor_url +
-                                            voters_file_separator):
-                        new_vote_line = actor_url + \
-                            voters_file_separator + reply_vote + '\n'
-                        if vote_line == new_vote_line:
-                            break
-                        save_voters_file = True
-                        newlines.append(new_vote_line)
-                    else:
-                        newlines.append(vote_line)
-                if save_voters_file:
-                    try:
-                        with open(voters_filename, 'w+',
-                                  encoding='utf-8') as voters_file:
-                            for vote_line in newlines:
-                                voters_file.write(vote_line)
-                    except OSError:
-                        print('EX: unable to write voters file2 ' +
-                              voters_filename)
+            lines = []
+            try:
+                with open(voters_filename, 'r',
+                          encoding='utf-8') as voters_file:
+                    lines = voters_file.readlines()
+            except OSError:
+                print('EX: question_update_votes unable to read ' +
+                      voters_filename)
+
+            newlines = []
+            save_voters_file = False
+            for vote_line in lines:
+                if vote_line.startswith(actor_url +
+                                        voters_file_separator):
+                    new_vote_line = actor_url + \
+                        voters_file_separator + reply_vote + '\n'
+                    if vote_line == new_vote_line:
+                        break
+                    save_voters_file = True
+                    newlines.append(new_vote_line)
                 else:
-                    return None, None
+                    newlines.append(vote_line)
+            if save_voters_file:
+                try:
+                    with open(voters_filename, 'w+',
+                              encoding='utf-8') as voters_file:
+                        for vote_line in newlines:
+                            voters_file.write(vote_line)
+                except OSError:
+                    print('EX: unable to write voters file2 ' +
+                          voters_filename)
+            else:
+                return None, None
 
     # update the vote counts
     question_totals_changed = False
@@ -179,12 +185,17 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
         if not possible_answer.get('name'):
             continue
         total_items = 0
-        with open(voters_filename, 'r', encoding='utf-8') as voters_file:
-            lines = voters_file.readlines()
-            for vote_line in lines:
-                if vote_line.endswith(voters_file_separator +
-                                      possible_answer['name'] + '\n'):
-                    total_items += 1
+        lines = []
+        try:
+            with open(voters_filename, 'r', encoding='utf-8') as fp_voters:
+                lines = fp_voters.readlines()
+        except OSError:
+            print('EX: question_update_votes unable to read ' +
+                  voters_filename)
+        for vote_line in lines:
+            if vote_line.endswith(voters_file_separator +
+                                  possible_answer['name'] + '\n'):
+                total_items += 1
         if possible_answer['replies']['totalItems'] != total_items:
             possible_answer['replies']['totalItems'] = total_items
             question_totals_changed = True

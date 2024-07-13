@@ -1770,11 +1770,15 @@ def _generate_next_shares_token_update(base_dir: str,
     token_update_filename = token_update_dir + '/.tokenUpdate'
     next_update_sec = None
     if os.path.isfile(token_update_filename):
-        with open(token_update_filename, 'r', encoding='utf-8') as fp_tok:
-            next_update_str = fp_tok.read()
-            if next_update_str:
-                if next_update_str.isdigit():
-                    next_update_sec = int(next_update_str)
+        try:
+            with open(token_update_filename, 'r', encoding='utf-8') as fp_tok:
+                next_update_str = fp_tok.read()
+                if next_update_str:
+                    if next_update_str.isdigit():
+                        next_update_sec = int(next_update_str)
+        except OSError:
+            print('EX: _generate_next_shares_token_update unable to read ' +
+                  token_update_filename)
     curr_time = int(time.time())
     updated = False
     if next_update_sec:
@@ -1818,11 +1822,15 @@ def _regenerate_shares_token(base_dir: str, domain_full: str,
     if not os.path.isfile(token_update_filename):
         return
     next_update_sec = None
-    with open(token_update_filename, 'r', encoding='utf-8') as fp_tok:
-        next_update_str = fp_tok.read()
-        if next_update_str:
-            if next_update_str.isdigit():
-                next_update_sec = int(next_update_str)
+    try:
+        with open(token_update_filename, 'r', encoding='utf-8') as fp_tok:
+            next_update_str = fp_tok.read()
+            if next_update_str:
+                if next_update_str.isdigit():
+                    next_update_sec = int(next_update_str)
+    except OSError:
+        print('EX: _regenerate_shares_token unable to read ' +
+              token_update_filename)
     if not next_update_sec:
         return
     curr_time = int(time.time())

@@ -77,15 +77,23 @@ def _remove_event_from_timeline(event_id: str,
     """
     if not text_in_file(event_id + '\n', tl_events_filename):
         return
+    events_timeline = ''
     with open(tl_events_filename, 'r',
               encoding='utf-8') as fp_tl:
         events_timeline = fp_tl.read().replace(event_id + '\n', '')
+
+    if events_timeline:
         try:
             with open(tl_events_filename, 'w+',
                       encoding='utf-8') as fp2:
                 fp2.write(events_timeline)
         except OSError:
             print('EX: ERROR: unable to save events timeline')
+    elif os.path.isfile(tl_events_filename):
+        try:
+            os.remove(tl_events_filename)
+        except OSError:
+            print('EX: ERROR: unable to remove events timeline')
 
 
 def save_event_post(base_dir: str, handle: str, post_id: str,
@@ -289,74 +297,78 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
 
     calendar_post_ids = []
     recreate_events_file = False
-    with open(calendar_filename, 'r', encoding='utf-8') as events_file:
-        for post_id in events_file:
-            post_id = remove_eol(post_id)
-            post_filename = locate_post(base_dir, nickname, domain, post_id)
-            if not post_filename:
-                recreate_events_file = True
-                continue
-
-            post_json_object = load_json(post_filename)
-            if not _is_happening_post(post_json_object):
-                continue
-
-            content_language = system_language
-            if post_json_object.get('object'):
-                content = None
-                if post_json_object['object'].get('contentMap'):
-                    sys_lang = system_language
-                    if post_json_object['object']['contentMap'].get(sys_lang):
-                        content = \
-                            post_json_object['object']['contentMap'][sys_lang]
-                        content_language = sys_lang
-                if not content:
-                    if post_json_object['object'].get('content'):
-                        content = post_json_object['object']['content']
-                if content:
-                    if not _event_text_match(content, text_match):
-                        continue
-
-            public_event = is_public_post(post_json_object)
-
-            post_event = []
-            day_of_month = None
-            for tag in post_json_object['object']['tag']:
-                if not _is_happening_event(tag):
+    try:
+        with open(calendar_filename, 'r', encoding='utf-8') as events_file:
+            for post_id in events_file:
+                post_id = remove_eol(post_id)
+                post_filename = \
+                    locate_post(base_dir, nickname, domain, post_id)
+                if not post_filename:
+                    recreate_events_file = True
                     continue
-                # this tag is an event or a place
-                if tag['type'] == 'Event':
-                    # tag is an event
-                    if not tag.get('startTime'):
-                        continue
-                    event_time = \
-                        date_from_string_format(tag['startTime'],
-                                                ["%Y-%m-%dT%H:%M:%S%z"])
-                    if int(event_time.strftime("%Y")) == year and \
-                       int(event_time.strftime("%m")) == month_number and \
-                       int(event_time.strftime("%d")) == day_number:
-                        day_of_month = str(int(event_time.strftime("%d")))
-                        if '#statuses#' in post_id:
-                            # link to the id so that the event can be
-                            # easily deleted
-                            tag['post_id'] = post_id.split('#statuses#')[1]
-                            tag['id'] = post_id.replace('#', '/')
-                            tag['sender'] = post_id.split('#statuses#')[0]
-                            tag['sender'] = tag['sender'].replace('#', '/')
-                            tag['public'] = public_event
-                            tag['language'] = content_language
-                        post_event.append(tag)
-                else:
-                    # tag is a place
-                    post_event.append(tag)
 
-            if post_event and day_of_month:
-                calendar_post_ids.append(post_id)
-                if not events.get(day_of_month):
-                    events[day_of_month] = []
-                events[day_of_month].append(post_event)
-                events[day_of_month] = \
-                    _sort_todays_events(events[day_of_month])
+                post_json_object = load_json(post_filename)
+                if not _is_happening_post(post_json_object):
+                    continue
+
+                content_language = system_language
+                if post_json_object.get('object'):
+                    content = None
+                    if post_json_object['object'].get('contentMap'):
+                        sys_lang = system_language
+                        content_map = post_json_object['object']['contentMap']
+                        if content_map.get(sys_lang):
+                            content = content_map[sys_lang]
+                            content_language = sys_lang
+                    if not content:
+                        if post_json_object['object'].get('content'):
+                            content = post_json_object['object']['content']
+                    if content:
+                        if not _event_text_match(content, text_match):
+                            continue
+
+                public_event = is_public_post(post_json_object)
+
+                post_event = []
+                day_of_month = None
+                for tag in post_json_object['object']['tag']:
+                    if not _is_happening_event(tag):
+                        continue
+                    # this tag is an event or a place
+                    if tag['type'] == 'Event':
+                        # tag is an event
+                        if not tag.get('startTime'):
+                            continue
+                        event_time = \
+                            date_from_string_format(tag['startTime'],
+                                                    ["%Y-%m-%dT%H:%M:%S%z"])
+                        if int(event_time.strftime("%Y")) == year and \
+                           int(event_time.strftime("%m")) == month_number and \
+                           int(event_time.strftime("%d")) == day_number:
+                            day_of_month = str(int(event_time.strftime("%d")))
+                            if '#statuses#' in post_id:
+                                # link to the id so that the event can be
+                                # easily deleted
+                                tag['post_id'] = post_id.split('#statuses#')[1]
+                                tag['id'] = post_id.replace('#', '/')
+                                tag['sender'] = post_id.split('#statuses#')[0]
+                                tag['sender'] = tag['sender'].replace('#', '/')
+                                tag['public'] = public_event
+                                tag['language'] = content_language
+                            post_event.append(tag)
+                    else:
+                        # tag is a place
+                        post_event.append(tag)
+
+                if post_event and day_of_month:
+                    calendar_post_ids.append(post_id)
+                    if not events.get(day_of_month):
+                        events[day_of_month] = []
+                    events[day_of_month].append(post_event)
+                    events[day_of_month] = \
+                        _sort_todays_events(events[day_of_month])
+    except OSError:
+        print('EX: get_todays_events failed to read ' + calendar_filename)
 
     # if some posts have been deleted then regenerate the calendar file
     if recreate_events_file:
@@ -592,37 +604,41 @@ def day_events_check(base_dir: str, nickname: str, domain: str,
         return False
 
     events_exist = False
-    with open(calendar_filename, 'r', encoding='utf-8') as events_file:
-        for post_id in events_file:
-            post_id = remove_eol(post_id)
-            post_filename = locate_post(base_dir, nickname, domain, post_id)
-            if not post_filename:
-                continue
+    try:
+        with open(calendar_filename, 'r', encoding='utf-8') as events_file:
+            for post_id in events_file:
+                post_id = remove_eol(post_id)
+                post_filename = \
+                    locate_post(base_dir, nickname, domain, post_id)
+                if not post_filename:
+                    continue
 
-            post_json_object = load_json(post_filename)
-            if not _is_happening_post(post_json_object):
-                continue
+                post_json_object = load_json(post_filename)
+                if not _is_happening_post(post_json_object):
+                    continue
 
-            for tag in post_json_object['object']['tag']:
-                if not _is_happening_event(tag):
-                    continue
-                # this tag is an event or a place
-                if tag['type'] != 'Event':
-                    continue
-                # tag is an event
-                if not tag.get('startTime'):
-                    continue
-                event_time = \
-                    date_from_string_format(tag['startTime'],
-                                            ["%Y-%m-%dT%H:%M:%S%z"])
-                if int(event_time.strftime("%d")) != day_number:
-                    continue
-                if int(event_time.strftime("%m")) != month_number:
-                    continue
-                if int(event_time.strftime("%Y")) != year:
-                    continue
-                events_exist = True
-                break
+                for tag in post_json_object['object']['tag']:
+                    if not _is_happening_event(tag):
+                        continue
+                    # this tag is an event or a place
+                    if tag['type'] != 'Event':
+                        continue
+                    # tag is an event
+                    if not tag.get('startTime'):
+                        continue
+                    event_time = \
+                        date_from_string_format(tag['startTime'],
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
+                    if int(event_time.strftime("%d")) != day_number:
+                        continue
+                    if int(event_time.strftime("%m")) != month_number:
+                        continue
+                    if int(event_time.strftime("%Y")) != year:
+                        continue
+                    events_exist = True
+                    break
+    except OSError:
+        print('EX: day_events_check failed to read ' + calendar_filename)
 
     return events_exist
 
@@ -648,42 +664,46 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
 
     calendar_post_ids = []
     recreate_events_file = False
-    with open(calendar_filename, 'r', encoding='utf-8') as events_file:
-        for post_id in events_file:
-            post_id = remove_eol(post_id)
-            post_filename = locate_post(base_dir, nickname, domain, post_id)
-            if not post_filename:
-                recreate_events_file = True
-                continue
-
-            post_json_object = load_json(post_filename)
-            if not _is_happening_post(post_json_object):
-                continue
-
-            post_event = []
-            week_day_index = None
-            for tag in post_json_object['object']['tag']:
-                if not _is_happening_event(tag):
+    try:
+        with open(calendar_filename, 'r', encoding='utf-8') as events_file:
+            for post_id in events_file:
+                post_id = remove_eol(post_id)
+                post_filename = \
+                    locate_post(base_dir, nickname, domain, post_id)
+                if not post_filename:
+                    recreate_events_file = True
                     continue
-                # this tag is an event or a place
-                if tag['type'] == 'Event':
-                    # tag is an event
-                    if not tag.get('startTime'):
+
+                post_json_object = load_json(post_filename)
+                if not _is_happening_post(post_json_object):
+                    continue
+
+                post_event = []
+                week_day_index = None
+                for tag in post_json_object['object']['tag']:
+                    if not _is_happening_event(tag):
                         continue
-                    event_time = \
-                        date_from_string_format(tag['startTime'],
-                                                ["%Y-%m-%dT%H:%M:%S%z"])
-                    if now <= event_time <= end_of_week:
-                        week_day_index = (event_time - now).days()
+                    # this tag is an event or a place
+                    if tag['type'] == 'Event':
+                        # tag is an event
+                        if not tag.get('startTime'):
+                            continue
+                        event_time = \
+                            date_from_string_format(tag['startTime'],
+                                                    ["%Y-%m-%dT%H:%M:%S%z"])
+                        if now <= event_time <= end_of_week:
+                            week_day_index = (event_time - now).days()
+                            post_event.append(tag)
+                    else:
+                        # tag is a place
                         post_event.append(tag)
-                else:
-                    # tag is a place
-                    post_event.append(tag)
-            if post_event and week_day_index:
-                calendar_post_ids.append(post_id)
-                if not events.get(week_day_index):
-                    events[week_day_index] = []
-                events[week_day_index].append(post_event)
+                if post_event and week_day_index:
+                    calendar_post_ids.append(post_id)
+                    if not events.get(week_day_index):
+                        events[week_day_index] = []
+                    events[week_day_index].append(post_event)
+    except OSError:
+        print('EX: get_this_weeks_events failed to read ' + calendar_filename)
 
     # if some posts have been deleted then regenerate the calendar file
     if recreate_events_file:
@@ -717,60 +737,64 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
 
     calendar_post_ids = []
     recreate_events_file = False
-    with open(calendar_filename, 'r', encoding='utf-8') as events_file:
-        for post_id in events_file:
-            post_id = remove_eol(post_id)
-            post_filename = locate_post(base_dir, nickname, domain, post_id)
-            if not post_filename:
-                recreate_events_file = True
-                continue
-
-            post_json_object = load_json(post_filename)
-            if not post_json_object:
-                continue
-            if not _is_happening_post(post_json_object):
-                continue
-            if only_show_reminders:
-                if not is_reminder(post_json_object):
+    try:
+        with open(calendar_filename, 'r', encoding='utf-8') as events_file:
+            for post_id in events_file:
+                post_id = remove_eol(post_id)
+                post_filename = \
+                    locate_post(base_dir, nickname, domain, post_id)
+                if not post_filename:
+                    recreate_events_file = True
                     continue
 
-            if post_json_object.get('object'):
-                if post_json_object['object'].get('content'):
-                    content = post_json_object['object']['content']
-                    if not _event_text_match(content, text_match):
+                post_json_object = load_json(post_filename)
+                if not post_json_object:
+                    continue
+                if not _is_happening_post(post_json_object):
+                    continue
+                if only_show_reminders:
+                    if not is_reminder(post_json_object):
                         continue
 
-            post_event = []
-            day_of_month = None
-            for tag in post_json_object['object']['tag']:
-                if not _is_happening_event(tag):
-                    continue
-                # this tag is an event or a place
-                if tag['type'] == 'Event':
-                    # tag is an event
-                    if not tag.get('startTime'):
+                if post_json_object.get('object'):
+                    if post_json_object['object'].get('content'):
+                        content = post_json_object['object']['content']
+                        if not _event_text_match(content, text_match):
+                            continue
+
+                post_event = []
+                day_of_month = None
+                for tag in post_json_object['object']['tag']:
+                    if not _is_happening_event(tag):
                         continue
-                    event_time = \
-                        date_from_string_format(tag['startTime'],
-                                                ["%Y-%m-%dT%H:%M:%S%z"])
-                    if int(event_time.strftime("%Y")) == year and \
-                       int(event_time.strftime("%m")) == month_number:
-                        day_of_month = str(int(event_time.strftime("%d")))
-                        if '#statuses#' in post_id:
-                            tag['post_id'] = post_id.split('#statuses#')[1]
-                            tag['id'] = post_id.replace('#', '/')
-                            tag['sender'] = post_id.split('#statuses#')[0]
-                            tag['sender'] = tag['sender'].replace('#', '/')
+                    # this tag is an event or a place
+                    if tag['type'] == 'Event':
+                        # tag is an event
+                        if not tag.get('startTime'):
+                            continue
+                        event_time = \
+                            date_from_string_format(tag['startTime'],
+                                                    ["%Y-%m-%dT%H:%M:%S%z"])
+                        if int(event_time.strftime("%Y")) == year and \
+                           int(event_time.strftime("%m")) == month_number:
+                            day_of_month = str(int(event_time.strftime("%d")))
+                            if '#statuses#' in post_id:
+                                tag['post_id'] = post_id.split('#statuses#')[1]
+                                tag['id'] = post_id.replace('#', '/')
+                                tag['sender'] = post_id.split('#statuses#')[0]
+                                tag['sender'] = tag['sender'].replace('#', '/')
+                            post_event.append(tag)
+                    else:
+                        # tag is a place
                         post_event.append(tag)
-                else:
-                    # tag is a place
-                    post_event.append(tag)
 
-            if post_event and day_of_month:
-                calendar_post_ids.append(post_id)
-                if not events.get(day_of_month):
-                    events[day_of_month] = []
-                events[day_of_month].append(post_event)
+                if post_event and day_of_month:
+                    calendar_post_ids.append(post_id)
+                    if not events.get(day_of_month):
+                        events[day_of_month] = []
+                    events[day_of_month].append(post_event)
+    except OSError:
+        print('EX: get_calendar_events failed to read ' + calendar_filename)
 
     # if some posts have been deleted then regenerate the calendar file
     if recreate_events_file:
@@ -807,7 +831,7 @@ def remove_calendar_event(base_dir: str, nickname: str, domain: str,
         with open(calendar_filename, 'r', encoding='utf-8') as fp_cal:
             lines_str = fp_cal.read()
     except OSError:
-        print('EX: unable to read calendar file ' +
+        print('EX: remove_calendar_event unable to read calendar file ' +
               calendar_filename)
     if not lines_str:
         return

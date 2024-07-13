@@ -1715,12 +1715,16 @@ def _command_options() -> None:
         approve_follows_filename = accounts_dir + '/followrequests.txt'
         approve_ctr = 0
         if os.path.isfile(approve_follows_filename):
-            with open(approve_follows_filename, 'r',
-                      encoding='utf-8') as approvefile:
-                for approve in approvefile:
-                    approve1 = remove_eol(approve)
-                    print(approve1)
-                    approve_ctr += 1
+            try:
+                with open(approve_follows_filename, 'r',
+                          encoding='utf-8') as approvefile:
+                    for approve in approvefile:
+                        approve1 = remove_eol(approve)
+                        print(approve1)
+                        approve_ctr += 1
+            except OSError:
+                print('EX: unable to read follow approvals file ' +
+                      approve_follows_filename)
         if approve_ctr == 0:
             print('There are no follow requests pending approval.')
         sys.exit()

@@ -150,24 +150,28 @@ def _speaker_pronounce(base_dir: str, say_text: str, translate: {}) -> str:
             ")": ","
         }
     if os.path.isfile(pronounce_filename):
-        with open(pronounce_filename, 'r', encoding='utf-8') as fp_pro:
-            pronounce_list = fp_pro.readlines()
-            for conversion in pronounce_list:
-                separator = None
-                if '->' in conversion:
-                    separator = '->'
-                elif ';' in conversion:
-                    separator = ';'
-                elif ':' in conversion:
-                    separator = ':'
-                elif ',' in conversion:
-                    separator = ','
-                if not separator:
-                    continue
+        try:
+            with open(pronounce_filename, 'r', encoding='utf-8') as fp_pro:
+                pronounce_list = fp_pro.readlines()
+                for conversion in pronounce_list:
+                    separator = None
+                    if '->' in conversion:
+                        separator = '->'
+                    elif ';' in conversion:
+                        separator = ';'
+                    elif ':' in conversion:
+                        separator = ':'
+                    elif ',' in conversion:
+                        separator = ','
+                    if not separator:
+                        continue
 
-                text = conversion.split(separator)[0].strip()
-                converted = conversion.split(separator)[1].strip()
-                convert_dict[text] = converted
+                    text = conversion.split(separator)[0].strip()
+                    converted = conversion.split(separator)[1].strip()
+                    convert_dict[text] = converted
+        except OSError:
+            print('EX: _speaker_pronounce unable to read ' +
+                  pronounce_filename)
     for text, converted in convert_dict.items():
         if text in say_text:
             say_text = say_text.replace(text, converted)
@@ -528,13 +532,18 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     accounts_dir = acct_dir(base_dir, nickname, domain_full)
     approve_follows_filename = accounts_dir + '/followrequests.txt'
     if os.path.isfile(approve_follows_filename):
-        with open(approve_follows_filename, 'r', encoding='utf-8') as fp_foll:
-            follows = fp_foll.readlines()
-            if len(follows) > 0:
-                follow_requests_exist = True
-                for i, _ in enumerate(follows):
-                    follows[i] = follows[i].strip()
-                follow_requests_list = follows
+        try:
+            with open(approve_follows_filename, 'r',
+                      encoding='utf-8') as fp_foll:
+                follows = fp_foll.readlines()
+                if len(follows) > 0:
+                    follow_requests_exist = True
+                    for i, _ in enumerate(follows):
+                        follows[i] = follows[i].strip()
+                    follow_requests_list = follows
+        except OSError:
+            print('EX: _post_to_speaker_json unable to read ' +
+                  approve_follows_filename)
     post_dm = False
     dm_filename = accounts_dir + '/.newDM'
     if os.path.isfile(dm_filename):
@@ -546,8 +555,12 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     liked_by = ''
     like_filename = accounts_dir + '/.newLike'
     if os.path.isfile(like_filename):
-        with open(like_filename, 'r', encoding='utf-8') as fp_like:
-            liked_by = fp_like.read()
+        try:
+            with open(like_filename, 'r', encoding='utf-8') as fp_like:
+                liked_by = fp_like.read()
+        except OSError:
+            print('EX: _post_to_speaker_json unable to read 2 ' +
+                  like_filename)
     calendar_filename = accounts_dir + '/.newCalendar'
     post_cal = os.path.isfile(calendar_filename)
     share_filename = accounts_dir + '/.newShare'

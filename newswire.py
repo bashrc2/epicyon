@@ -385,9 +385,14 @@ def load_hashtag_categories(base_dir: str, language: str) -> None:
         if not os.path.isfile(hashtag_categories_filename):
             return
 
-    with open(hashtag_categories_filename, 'r', encoding='utf-8') as fp_cat:
-        xml_str = fp_cat.read()
-        _xml2str_to_hashtag_categories(base_dir, xml_str, 1024, True)
+    try:
+        with open(hashtag_categories_filename, 'r',
+                  encoding='utf-8') as fp_cat:
+            xml_str = fp_cat.read()
+            _xml2str_to_hashtag_categories(base_dir, xml_str, 1024, True)
+    except OSError:
+        print('EX: load_hashtag_categories unable to read ' +
+              hashtag_categories_filename)
 
 
 def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
@@ -1618,68 +1623,73 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(moderated_filename):
         moderated = True
 
-    with open(index_filename, 'r', encoding='utf-8') as index_file:
-        post_filename = 'start'
-        ctr = 0
-        while post_filename:
-            post_filename = index_file.readline()
-            if post_filename:
-                # if this is a full path then remove the directories
-                if '/' in post_filename:
-                    post_filename = post_filename.split('/')[-1]
+    try:
+        with open(index_filename, 'r', encoding='utf-8') as index_file:
+            post_filename = 'start'
+            ctr = 0
+            while post_filename:
+                post_filename = index_file.readline()
+                if post_filename:
+                    # if this is a full path then remove the directories
+                    if '/' in post_filename:
+                        post_filename = post_filename.split('/')[-1]
 
-                # filename of the post without any extension or path
-                # This should also correspond to any index entry in
-                # the posts cache
-                post_url = remove_eol(post_filename)
-                post_url = post_url.replace('.json', '').strip()
+                    # filename of the post without any extension or path
+                    # This should also correspond to any index entry in
+                    # the posts cache
+                    post_url = remove_eol(post_filename)
+                    post_url = post_url.replace('.json', '').strip()
 
-                # read the post from file
-                full_post_filename = \
-                    locate_post(base_dir, nickname,
-                                domain, post_url, False)
-                if not full_post_filename:
-                    print('Unable to locate post for newswire ' + post_url)
-                    ctr += 1
-                    if ctr >= max_blogs_per_account:
-                        break
-                    continue
+                    # read the post from file
+                    full_post_filename = \
+                        locate_post(base_dir, nickname,
+                                    domain, post_url, False)
+                    if not full_post_filename:
+                        print('Unable to locate post for newswire ' + post_url)
+                        ctr += 1
+                        if ctr >= max_blogs_per_account:
+                            break
+                        continue
 
-                post_json_object = None
-                if full_post_filename:
-                    post_json_object = load_json(full_post_filename)
-                if _is_newswire_blog_post(post_json_object):
-                    published = post_json_object['object']['published']
-                    published = published.replace('T', ' ')
-                    published = published.replace('Z', '+00:00')
-                    votes = []
-                    if os.path.isfile(full_post_filename + '.votes'):
-                        votes = load_json(full_post_filename + '.votes')
-                    content = \
-                        get_base_content_from_post(post_json_object,
-                                                   system_language)
-                    description = first_paragraph_from_string(content)
-                    description = remove_html(description)
-                    tags_from_post = _get_hashtags_from_post(post_json_object)
-                    summary = post_json_object['object']['summary']
-                    url_str = \
-                        get_url_from_post(post_json_object['object']['url'])
-                    url2 = remove_html(url_str)
-                    fediverse_handle = ''
-                    extra_links = []
-                    _add_newswire_dict_entry(base_dir,
-                                             newswire, published,
-                                             summary, url2,
-                                             votes, full_post_filename,
-                                             description, moderated, False,
-                                             tags_from_post,
-                                             max_tags, session, debug,
-                                             None, system_language,
-                                             fediverse_handle, extra_links)
+                    post_json_object = None
+                    if full_post_filename:
+                        post_json_object = load_json(full_post_filename)
+                    if _is_newswire_blog_post(post_json_object):
+                        published = post_json_object['object']['published']
+                        published = published.replace('T', ' ')
+                        published = published.replace('Z', '+00:00')
+                        votes = []
+                        if os.path.isfile(full_post_filename + '.votes'):
+                            votes = load_json(full_post_filename + '.votes')
+                        content = \
+                            get_base_content_from_post(post_json_object,
+                                                       system_language)
+                        description = first_paragraph_from_string(content)
+                        description = remove_html(description)
+                        tags_from_post = \
+                            _get_hashtags_from_post(post_json_object)
+                        summary = post_json_object['object']['summary']
+                        url2 = post_json_object['object']['url']
+                        url_str = get_url_from_post(url2)
+                        url3 = remove_html(url_str)
+                        fediverse_handle = ''
+                        extra_links = []
+                        _add_newswire_dict_entry(base_dir,
+                                                 newswire, published,
+                                                 summary, url3,
+                                                 votes, full_post_filename,
+                                                 description, moderated, False,
+                                                 tags_from_post,
+                                                 max_tags, session, debug,
+                                                 None, system_language,
+                                                 fediverse_handle, extra_links)
 
-            ctr += 1
-            if ctr >= max_blogs_per_account:
-                break
+                ctr += 1
+                if ctr >= max_blogs_per_account:
+                    break
+    except OSError as exc:
+        print('EX: _add_account_blogs_to_newswire unable to read ' +
+              index_filename + ' ' + str(exc))
 
 
 def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
@@ -1755,8 +1765,12 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
 
     # add rss feeds
     rss_feed = []
-    with open(subscriptions_filename, 'r', encoding='utf-8') as fp_sub:
-        rss_feed = fp_sub.readlines()
+    try:
+        with open(subscriptions_filename, 'r', encoding='utf-8') as fp_sub:
+            rss_feed = fp_sub.readlines()
+    except OSError:
+        print('EX: get_dict_from_newswire unable to read ' +
+              subscriptions_filename)
     result = {}
     for url in rss_feed:
         url = url.strip()

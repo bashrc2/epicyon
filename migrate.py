@@ -36,16 +36,20 @@ def _move_following_handles_for_account(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(following_filename):
         return ctr
-    with open(following_filename, 'r', encoding='utf-8') as fp_foll:
-        following_handles = fp_foll.readlines()
-        for follow_handle in following_handles:
-            follow_handle = follow_handle.strip("\n").strip("\r")
-            ctr += \
-                _update_moved_handle(base_dir, nickname, domain,
-                                     follow_handle, session,
-                                     http_prefix, cached_webfingers,
-                                     debug, signing_priv_key_pem,
-                                     block_federated)
+    try:
+        with open(following_filename, 'r', encoding='utf-8') as fp_foll:
+            following_handles = fp_foll.readlines()
+            for follow_handle in following_handles:
+                follow_handle = follow_handle.strip("\n").strip("\r")
+                ctr += \
+                    _update_moved_handle(base_dir, nickname, domain,
+                                         follow_handle, session,
+                                         http_prefix, cached_webfingers,
+                                         debug, signing_priv_key_pem,
+                                         block_federated)
+    except OSError:
+        print('EX: _move_following_handles_for_account unable to read ' +
+              following_filename)
     return ctr
 
 
@@ -135,8 +139,12 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(following_filename):
         following_handles = []
-        with open(following_filename, 'r', encoding='utf-8') as foll1:
-            following_handles = foll1.readlines()
+        try:
+            with open(following_filename, 'r', encoding='utf-8') as foll1:
+                following_handles = foll1.readlines()
+        except OSError:
+            print('EX: _update_moved_handle unable to read ' +
+                  following_filename)
 
         moved_to_handle = moved_to_nickname + '@' + moved_to_domain_full
         handle_lower = handle.lower()

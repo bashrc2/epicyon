@@ -433,7 +433,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                 with open(tags_filename, 'r', encoding='utf-8') as tags_file:
                     content = tags_file.read()
             except OSError:
-                pass
+                print('EX: store_hash_tags failed to read ' + tags_filename)
             if post_url not in content:
                 content = tag_line + content
                 try:
@@ -1226,11 +1226,14 @@ def _notify_moved(base_dir: str, domain_full: str,
                 prev_actor_handle + ' ' + new_actor_handle + ' ' + url
 
             if os.path.isfile(moved_file):
-                with open(moved_file, 'r',
-                          encoding='utf-8') as fp_move:
-                    prev_moved_str = fp_move.read()
-                    if prev_moved_str == moved_str:
-                        continue
+                try:
+                    with open(moved_file, 'r',
+                              encoding='utf-8') as fp_move:
+                        prev_moved_str = fp_move.read()
+                        if prev_moved_str == moved_str:
+                            continue
+                except OSError:
+                    print('EX: _notify_moved unable to read ' + moved_file)
             try:
                 with open(moved_file, 'w+', encoding='utf-8') as fp_move:
                     fp_move.write(moved_str)
@@ -3920,10 +3923,13 @@ def _like_notify(base_dir: str, domain: str,
     # was there a previous like notification?
     if os.path.isfile(prev_like_file):
         # is it the same as the current notification ?
-        with open(prev_like_file, 'r', encoding='utf-8') as fp_like:
-            prev_like_str = fp_like.read()
-            if prev_like_str == like_str:
-                return
+        try:
+            with open(prev_like_file, 'r', encoding='utf-8') as fp_like:
+                prev_like_str = fp_like.read()
+                if prev_like_str == like_str:
+                    return
+        except OSError:
+            print('EX: _like_notify unable to read ' + prev_like_file)
     try:
         with open(prev_like_file, 'w+', encoding='utf-8') as fp_like:
             fp_like.write(like_str)
@@ -3985,10 +3991,13 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
     # was there a previous reaction notification?
     if os.path.isfile(prev_reaction_file):
         # is it the same as the current notification ?
-        with open(prev_reaction_file, 'r', encoding='utf-8') as fp_react:
-            prev_reaction_str = fp_react.read()
-            if prev_reaction_str == reaction_str:
-                return
+        try:
+            with open(prev_reaction_file, 'r', encoding='utf-8') as fp_react:
+                prev_reaction_str = fp_react.read()
+                if prev_reaction_str == reaction_str:
+                    return
+        except OSError:
+            print('EX: _reaction_notify unable to read ' + prev_reaction_file)
     try:
         with open(prev_reaction_file, 'w+', encoding='utf-8') as fp_react:
             fp_react.write(reaction_str)
@@ -4015,10 +4024,13 @@ def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
     notify_file = account_dir + '/.newNotifiedPost'
     if os.path.isfile(notify_file):
         # check that the same notification is not repeatedly sent
-        with open(notify_file, 'r', encoding='utf-8') as fp_notify:
-            existing_notification_message = fp_notify.read()
-            if url in existing_notification_message:
-                return
+        try:
+            with open(notify_file, 'r', encoding='utf-8') as fp_notify:
+                existing_notification_message = fp_notify.read()
+                if url in existing_notification_message:
+                    return
+        except OSError:
+            print('EX: _notify_post_arrival unable to read ' + notify_file)
     try:
         with open(notify_file, 'w+', encoding='utf-8') as fp_notify:
             fp_notify.write(url)
@@ -4297,12 +4309,16 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
     days_since_epoch = (curr_time - date_epoch()).days
     # has the value changed?
     if os.path.isfile(last_seen_filename):
-        with open(last_seen_filename, 'r',
-                  encoding='utf-8') as last_seen_file:
-            days_since_epoch_file = last_seen_file.read()
-            if int(days_since_epoch_file) == days_since_epoch:
-                # value hasn't changed, so we can save writing anything to file
-                return
+        try:
+            with open(last_seen_filename, 'r',
+                      encoding='utf-8') as last_seen_file:
+                days_since_epoch_file = last_seen_file.read()
+                if int(days_since_epoch_file) == days_since_epoch:
+                    # value hasn't changed, so we can save writing
+                    # anything to file
+                    return
+        except OSError:
+            print('EX: _update_last_seen unable to read ' + last_seen_filename)
     try:
         with open(last_seen_filename, 'w+',
                   encoding='utf-8') as last_seen_file:

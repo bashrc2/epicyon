@@ -1273,8 +1273,11 @@ def reenable_account(base_dir: str, nickname: str) -> None:
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
         lines = []
-        with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
-            lines = fp_sus.readlines()
+        try:
+            with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
+                lines = fp_sus.readlines()
+        except OSError:
+            print('EX: reenable_account unable to read ' + suspended_filename)
         try:
             with open(suspended_filename, 'w+', encoding='utf-8') as fp_sus:
                 for suspended in lines:
@@ -1298,8 +1301,11 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
     # Don't suspend moderators
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
-            lines = fp_mod.readlines()
+        try:
+            with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
+                lines = fp_mod.readlines()
+        except OSError:
+            print('EX: suspend_account unable too read ' + moderators_file)
         for moderator in lines:
             if moderator.strip('\n').strip('\r') == nickname:
                 return
@@ -1319,8 +1325,11 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
-            lines = fp_sus.readlines()
+        try:
+            with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
+                lines = fp_sus.readlines()
+        except OSError:
+            print('EX: suspend_account unable to read 2 ' + suspended_filename)
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return
@@ -1356,8 +1365,12 @@ def can_remove_post(base_dir: str,
     # is the post by a moderator?
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
-            lines = fp_mod.readlines()
+        lines = []
+        try:
+            with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
+                lines = fp_mod.readlines()
+        except OSError:
+            print('EX: can_remove_post unable to read ' + moderators_file)
         for moderator in lines:
             if domain_full + '/users/' + \
                moderator.strip('\n') + '/' in post_id:
@@ -1389,8 +1402,12 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
         if not text_in_file(match_str, tag_filename):
             continue
         lines = []
-        with open(tag_filename, 'r', encoding='utf-8') as fp_tag:
-            lines = fp_tag.readlines()
+        try:
+            with open(tag_filename, 'r', encoding='utf-8') as fp_tag:
+                lines = fp_tag.readlines()
+        except OSError:
+            print('EX: _remove_tags_for_nickname unable to read ' +
+                  tag_filename)
         try:
             with open(tag_filename, 'w+', encoding='utf-8') as tag_file:
                 for tagline in lines:
@@ -1415,8 +1432,12 @@ def remove_account(base_dir: str, nickname: str,
     # Don't remove moderators
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
-            lines = fp_mod.readlines()
+        lines = []
+        try:
+            with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
+                lines = fp_mod.readlines()
+        except OSError:
+            print('EX: remove_account unable to read ' + moderators_file)
         for moderator in lines:
             if moderator.strip('\n') == nickname:
                 return False
@@ -1542,26 +1563,32 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
         return False
     # remove the snooze entry if it has timed out
     replace_str = None
-    with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:
-        for line in snoozed_file:
-            # is this the entry for the actor?
-            if line.startswith(snooze_actor + ' '):
-                snoozed_time_str1 = line.split(' ')[1]
-                snoozed_time_str = remove_eol(snoozed_time_str1)
-                # is there a time appended?
-                if snoozed_time_str.isdigit():
-                    snoozed_time = int(snoozed_time_str)
-                    curr_time = int(time.time())
-                    # has the snooze timed out?
-                    if int(curr_time - snoozed_time) > 60 * 60 * 24:
+    try:
+        with open(snoozed_filename, 'r', encoding='utf-8') as fp_snoozed:
+            for line in fp_snoozed:
+                # is this the entry for the actor?
+                if line.startswith(snooze_actor + ' '):
+                    snoozed_time_str1 = line.split(' ')[1]
+                    snoozed_time_str = remove_eol(snoozed_time_str1)
+                    # is there a time appended?
+                    if snoozed_time_str.isdigit():
+                        snoozed_time = int(snoozed_time_str)
+                        curr_time = int(time.time())
+                        # has the snooze timed out?
+                        if int(curr_time - snoozed_time) > 60 * 60 * 24:
+                            replace_str = line
+                    else:
                         replace_str = line
-                else:
-                    replace_str = line
-                break
+                    break
+    except OSError:
+        print('EX: is_person_snoozed unable to read ' + snoozed_filename)
     if replace_str:
         content = None
-        with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:
-            content = snoozed_file.read().replace(replace_str, '')
+        try:
+            with open(snoozed_filename, 'r', encoding='utf-8') as fp_snoozed:
+                content = fp_snoozed.read().replace(replace_str, '')
+        except OSError:
+            print('EX: is_person_snoozed unable to read 2 ' + snoozed_filename)
         if content:
             try:
                 with open(snoozed_filename, 'w+',
@@ -1610,15 +1637,21 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
     if not text_in_file(snooze_actor + ' ', snoozed_filename):
         return
     replace_str = None
-    with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:
-        for line in snoozed_file:
-            if line.startswith(snooze_actor + ' '):
-                replace_str = line
-                break
+    try:
+        with open(snoozed_filename, 'r', encoding='utf-8') as fp_snoozed:
+            for line in fp_snoozed:
+                if line.startswith(snooze_actor + ' '):
+                    replace_str = line
+                    break
+    except OSError:
+        print('EX: person_unsnooze unable to read ' + snoozed_filename)
     if replace_str:
         content = None
-        with open(snoozed_filename, 'r', encoding='utf-8') as snoozed_file:
-            content = snoozed_file.read().replace(replace_str, '')
+        try:
+            with open(snoozed_filename, 'r', encoding='utf-8') as fp_snoozed:
+                content = fp_snoozed.read().replace(replace_str, '')
+        except OSError:
+            print('EX: person_unsnooze unable to read 2 ' + snoozed_filename)
         if content is not None:
             try:
                 with open(snoozed_filename, 'w+',
@@ -1658,9 +1691,13 @@ def get_person_notes(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + \
         '/notes/' + handle + '.txt'
     if os.path.isfile(person_notes_filename):
-        with open(person_notes_filename, 'r',
-                  encoding='utf-8') as fp_notes:
-            person_notes = fp_notes.read()
+        try:
+            with open(person_notes_filename, 'r',
+                      encoding='utf-8') as fp_notes:
+                person_notes = fp_notes.read()
+        except OSError:
+            print('EX: get_person_notes unable to read ' +
+                  person_notes_filename)
     return person_notes
 
 
@@ -1907,8 +1944,11 @@ def get_person_avatar_url(base_dir: str, person_url: str,
         if ext != 'svg':
             return im_path
         content = ''
-        with open(im_filename, 'r', encoding='utf-8') as fp_im:
-            content = fp_im.read()
+        try:
+            with open(im_filename, 'r', encoding='utf-8') as fp_im:
+                content = fp_im.read()
+        except OSError:
+            print('EX: get_person_avatar_url unable to read ' + im_filename)
         if not dangerous_svg(content, False):
             return im_path
 

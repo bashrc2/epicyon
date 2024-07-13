@@ -180,5 +180,6 @@ def load_unavailable_sites(base_dir: str) -> []:
                   encoding='utf-8') as fp_sites:
             sites_unavailable = fp_sites.read().split('\n')
     except OSError:
-        print('EX: unable to save unavailable sites')
+        print('EX: unable to read unavailable sites ' +
+              unavailable_sites_filename)
     return sites_unavailable

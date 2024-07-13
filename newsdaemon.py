@@ -394,8 +394,12 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
     if not os.path.isfile(rules_filename):
         return True
     rules = []
-    with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
-        rules = fp_rules.readlines()
+    try:
+        with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
+            rules = fp_rules.readlines()
+    except OSError:
+        print('EX: _newswire_hashtag_processing unable to read ' +
+              rules_filename)
 
     domain_full = get_full_domain(domain, port)
 
@@ -467,35 +471,44 @@ def _create_news_mirror(base_dir: str, domain: str,
             # no index for mirrors found
             return True
         removals = []
-        with open(mirror_index_filename, 'r', encoding='utf-8') as index_file:
-            # remove the oldest directories
-            ctr = 0
-            while no_of_dirs > max_mirrored_articles:
-                ctr += 1
-                if ctr > 5000:
-                    # escape valve
-                    break
+        try:
+            with open(mirror_index_filename, 'r',
+                      encoding='utf-8') as fp_index:
+                # remove the oldest directories
+                ctr = 0
+                while no_of_dirs > max_mirrored_articles:
+                    ctr += 1
+                    if ctr > 5000:
+                        # escape valve
+                        break
 
-                post_id = index_file.readline()
-                if not post_id:
-                    continue
-                post_id = post_id.strip()
-                mirror_article_dir = mirror_dir + '/' + post_id
-                if os.path.isdir(mirror_article_dir):
-                    rmtree(mirror_article_dir,
-                           ignore_errors=False, onexc=None)
-                    removals.append(post_id)
-                    no_of_dirs -= 1
+                    post_id = fp_index.readline()
+                    if not post_id:
+                        continue
+                    post_id = post_id.strip()
+                    mirror_article_dir = mirror_dir + '/' + post_id
+                    if os.path.isdir(mirror_article_dir):
+                        rmtree(mirror_article_dir,
+                               ignore_errors=False, onexc=None)
+                        removals.append(post_id)
+                        no_of_dirs -= 1
+        except OSError as exc:
+            print('EX: _create_news_mirror unable to read ' +
+                  mirror_index_filename + ' ' + str(exc))
 
         # remove the corresponding index entries
         if removals:
             index_content = ''
-            with open(mirror_index_filename, 'r',
-                      encoding='utf-8') as index_file:
-                index_content = index_file.read()
-                for remove_post_id in removals:
-                    index_content = \
-                        index_content.replace(remove_post_id + '\n', '')
+            try:
+                with open(mirror_index_filename, 'r',
+                          encoding='utf-8') as index_file:
+                    index_content = index_file.read()
+                    for remove_post_id in removals:
+                        index_content = \
+                            index_content.replace(remove_post_id + '\n', '')
+            except OSError:
+                print('EX: _create_news_mirror unable to read ' +
+                      mirror_index_filename)
             try:
                 with open(mirror_index_filename, 'w+',
                           encoding='utf-8') as index_file:

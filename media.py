@@ -328,8 +328,11 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
     decoy_seed_filename = acct_dir(base_dir, nickname, domain) + '/decoyseed'
     decoy_seed = 63725
     if os.path.isfile(decoy_seed_filename):
-        with open(decoy_seed_filename, 'r', encoding='utf-8') as fp_seed:
-            decoy_seed = int(fp_seed.read())
+        try:
+            with open(decoy_seed_filename, 'r', encoding='utf-8') as fp_seed:
+                decoy_seed = int(fp_seed.read())
+        except OSError:
+            print('EX: _spoof_meta_data unable to read ' + decoy_seed_filename)
     else:
         decoy_seed = randint(10000, 10000000000000000)
         try:
@@ -337,7 +340,8 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
                       encoding='utf-8') as fp_seed:
                 fp_seed.write(str(decoy_seed))
         except OSError:
-            print('EX: unable to write ' + decoy_seed_filename)
+            print('EX: _spoof_meta_data unable to write ' +
+                  decoy_seed_filename)
 
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + output_filename + ' using exiftool')

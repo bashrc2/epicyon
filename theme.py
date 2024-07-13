@@ -46,25 +46,29 @@ def import_theme(base_dir: str, filename: str) -> bool:
                   ' missing from imported theme')
             return False
     new_theme_name = None
-    with open(temp_theme_dir + '/name.txt', 'r',
-              encoding='utf-8') as fp_theme:
-        new_theme_name1 = fp_theme.read()
-        new_theme_name = remove_eol(new_theme_name1)
-        if len(new_theme_name) > 20:
-            print('WARN: Imported theme name is too long')
-            return False
-        if len(new_theme_name) < 2:
-            print('WARN: Imported theme name is too short')
-            return False
-        new_theme_name = new_theme_name.lower()
-        forbidden_chars = (
-            ' ', ';', '/', '\\', '?', '!', '#', '@',
-            ':', '%', '&', '"', '+', '<', '>', '$'
-        )
-        for char in forbidden_chars:
-            if char in new_theme_name:
-                print('WARN: theme name contains forbidden character')
+    try:
+        with open(temp_theme_dir + '/name.txt', 'r',
+                  encoding='utf-8') as fp_theme:
+            new_theme_name1 = fp_theme.read()
+            new_theme_name = remove_eol(new_theme_name1)
+            if len(new_theme_name) > 20:
+                print('WARN: Imported theme name is too long')
                 return False
+            if len(new_theme_name) < 2:
+                print('WARN: Imported theme name is too short')
+                return False
+            new_theme_name = new_theme_name.lower()
+            forbidden_chars = (
+                ' ', ';', '/', '\\', '?', '!', '#', '@',
+                ':', '%', '&', '"', '+', '<', '>', '$'
+            )
+            for char in forbidden_chars:
+                if char in new_theme_name:
+                    print('WARN: theme name contains forbidden character')
+                    return False
+    except OSError:
+        print('EX: import_theme unable to read ' +
+              temp_theme_dir + '/name.txt')
     if not new_theme_name:
         return False
 

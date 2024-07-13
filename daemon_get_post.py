@@ -286,7 +286,7 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
             with open(ssml_filename, 'r', encoding='utf-8') as fp_ssml:
                 ssml_str = fp_ssml.read()
         except OSError:
-            pass
+            print('EX: unable to read ssml file ' + ssml_filename)
         if ssml_str:
             msg = ssml_str.encode('utf-8')
             msglen = len(msg)
@@ -615,7 +615,7 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
             with open(ssml_filename, 'r', encoding='utf-8') as fp_ssml:
                 ssml_str = fp_ssml.read()
         except OSError:
-            pass
+            print('EX: unable to read ssml file 2 ' + ssml_filename)
         if ssml_str:
             msg = ssml_str.encode('utf-8')
             msglen = len(msg)

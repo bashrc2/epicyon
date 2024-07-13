@@ -283,19 +283,23 @@ def is_devops(base_dir: str, nickname: str) -> bool:
             return True
         return False
 
-    with open(devops_file, 'r', encoding='utf-8') as fp_mod:
-        lines = fp_mod.readlines()
-        if len(lines) == 0:
-            # if there is nothing in the file
-            admin_name = get_config_param(base_dir, 'admin')
-            if not admin_name:
-                return False
-            if admin_name == nickname:
-                return True
-        for devops in lines:
-            devops = devops.strip('\n').strip('\r')
-            if devops == nickname:
-                return True
+    lines = []
+    try:
+        with open(devops_file, 'r', encoding='utf-8') as fp_mod:
+            lines = fp_mod.readlines()
+    except OSError:
+        print('EX: is_devops unable to read ' + devops_file)
+    if len(lines) == 0:
+        # if there is nothing in the file
+        admin_name = get_config_param(base_dir, 'admin')
+        if not admin_name:
+            return False
+        if admin_name == nickname:
+            return True
+    for devops in lines:
+        devops = devops.strip('\n').strip('\r')
+        if devops == nickname:
+            return True
     return False
 
 

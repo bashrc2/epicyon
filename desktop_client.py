@@ -330,10 +330,13 @@ def _desktop_show_banner() -> None:
         banner_filename = 'theme/' + banner_theme + '/banner.txt'
         if not os.path.isfile(banner_filename):
             return
-    with open(banner_filename, 'r', encoding='utf-8') as banner_file:
-        banner = banner_file.read()
-        if banner:
-            print(banner + '\n')
+    try:
+        with open(banner_filename, 'r', encoding='utf-8') as fp_banner:
+            banner = fp_banner.read()
+            if banner:
+                print(banner + '\n')
+    except OSError:
+        print('EX: unable to read banner file ' + banner_filename)
 
 
 def _desktop_wait_for_cmd(timeout: int, debug: bool) -> str:

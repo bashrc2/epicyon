@@ -19,8 +19,11 @@ def _get_local_private_key(base_dir: str, nickname: str, domain: str) -> str:
     key_filename = base_dir + '/keys/private/' + handle.lower() + '.key'
     if not os.path.isfile(key_filename):
         return None
-    with open(key_filename, 'r', encoding='utf-8') as pem_file:
-        return pem_file.read()
+    try:
+        with open(key_filename, 'r', encoding='utf-8') as fp_pem:
+            return fp_pem.read()
+    except OSError:
+        print('EX: _get_local_private_key unable to read ' + key_filename)
     return None
 
 
@@ -33,8 +36,11 @@ def _get_local_public_key(base_dir: str, nickname: str, domain: str) -> str:
     key_filename = base_dir + '/keys/public/' + handle.lower() + '.key'
     if not os.path.isfile(key_filename):
         return None
-    with open(key_filename, 'r', encoding='utf-8') as pem_file:
-        return pem_file.read()
+    try:
+        with open(key_filename, 'r', encoding='utf-8') as fp_pem:
+            return fp_pem.read()
+    except OSError:
+        print('EX: _get_local_public_key unable to read ' + key_filename)
     return None
 
 

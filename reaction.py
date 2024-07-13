@@ -472,7 +472,8 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
                       encoding='utf-8') as fp_react:
                 common_reactions = fp_react.readlines()
         except OSError:
-            print('EX: unable to load common reactions file')
+            print('EX: unable to load common reactions file' +
+                  common_reactions_filename)
     if common_reactions:
         new_common_reactions = []
         reaction_found = False

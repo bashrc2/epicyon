@@ -168,18 +168,23 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
             return True
         return False
 
-    with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
-        lines = fp_mod.readlines()
-        if len(lines) == 0:
-            admin_name = get_config_param(base_dir, 'admin')
-            if not admin_name:
-                return False
-            if admin_name == nickname:
-                return True
-        for moderator in lines:
-            moderator = moderator.strip('\n').strip('\r')
-            if moderator == nickname:
-                return True
+    lines = []
+    try:
+        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
+            lines = fp_mod.readlines()
+    except OSError:
+        print('EX: is_moderator unable to read ' + moderators_file)
+
+    if len(lines) == 0:
+        admin_name = get_config_param(base_dir, 'admin')
+        if not admin_name:
+            return False
+        if admin_name == nickname:
+            return True
+    for moderator in lines:
+        moderator = moderator.strip('\n').strip('\r')
+        if moderator == nickname:
+            return True
     return False
 
 
@@ -193,13 +198,16 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
         return 0
 
     ctr = 0
-    with open(filename, 'r', encoding='utf-8') as followers_file:
-        for follower_handle in followers_file:
-            if '@' in follower_handle:
-                follower_domain = follower_handle.split('@')[1]
-                follower_domain = remove_eol(follower_domain)
-                if domain == follower_domain:
-                    ctr += 1
+    try:
+        with open(filename, 'r', encoding='utf-8') as followers_file:
+            for follower_handle in followers_file:
+                if '@' in follower_handle:
+                    follower_domain = follower_handle.split('@')[1]
+                    follower_domain = remove_eol(follower_domain)
+                    if domain == follower_domain:
+                        ctr += 1
+    except OSError:
+        print('EX: no_of_followers_on_domain unable to read ' + filename)
     return ctr
 
 
@@ -1991,8 +1999,12 @@ def get_pinned_post_as_json(base_dir: str, http_prefix: str,
     actor = local_actor_url(http_prefix, nickname, domain_full)
     if os.path.isfile(pinned_filename):
         pinned_content = None
-        with open(pinned_filename, 'r', encoding='utf-8') as pin_file:
-            pinned_content = pin_file.read()
+        try:
+            with open(pinned_filename, 'r', encoding='utf-8') as fp_pin:
+                pinned_content = fp_pin.read()
+        except OSError:
+            print('EX: get_pinned_post_as_json unable to read ' +
+                  pinned_filename)
         if pinned_content:
             pinned_post_json = {
                 'atomUri': actor + '/pinned',
@@ -2214,23 +2226,28 @@ def _append_citations_to_blog_post(base_dir: str,
     if not os.path.isfile(citations_filename):
         return
     citations_separator = '#####'
-    with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
-        citations = fp_cit.readlines()
-        for line in citations:
-            if citations_separator not in line:
-                continue
-            sections = line.strip().split(citations_separator)
-            if len(sections) != 3:
-                continue
-            # date_str = sections[0]
-            title = sections[1]
-            link = sections[2]
-            tag_json = {
-                "type": "Article",
-                "name": title,
-                "url": link
-            }
-            blog_json['object']['tag'].append(tag_json)
+    citations = []
+    try:
+        with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
+            citations = fp_cit.readlines()
+    except OSError:
+        print('EX: _append_citations_to_blog_post unable to read ' +
+              citations_filename)
+    for line in citations:
+        if citations_separator not in line:
+            continue
+        sections = line.strip().split(citations_separator)
+        if len(sections) != 3:
+            continue
+        # date_str = sections[0]
+        title = sections[1]
+        link = sections[2]
+        tag_json = {
+            "type": "Article",
+            "name": title,
+            "url": link
+        }
+        blog_json['object']['tag'].append(tag_json)
 
 
 def create_blog_post(base_dir: str,
@@ -2634,36 +2651,39 @@ def create_report_post(base_dir: str,
     moderators_list = []
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
-            for line in fp_mod:
-                line = line.strip('\n').strip('\r')
-                if line.startswith('#'):
-                    continue
-                if line.startswith('/users/'):
-                    line = line.replace('users', '')
-                if line.startswith('@'):
-                    line = line[1:]
-                if '@' in line:
-                    nick = line.split('@')[0]
-                    moderator_actor = \
-                        local_actor_url(http_prefix, nick, domain_full)
-                    if moderator_actor not in moderators_list:
-                        moderators_list.append(moderator_actor)
-                    continue
-                if line.startswith('http') or \
-                   line.startswith('ipfs') or \
-                   line.startswith('ipns') or \
-                   line.startswith('hyper'):
-                    # must be a local address - no remote moderators
-                    if '://' + domain_full + '/' in line:
-                        if line not in moderators_list:
-                            moderators_list.append(line)
-                else:
-                    if '/' not in line:
+        try:
+            with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
+                for line in fp_mod:
+                    line = line.strip('\n').strip('\r')
+                    if line.startswith('#'):
+                        continue
+                    if line.startswith('/users/'):
+                        line = line.replace('users', '')
+                    if line.startswith('@'):
+                        line = line[1:]
+                    if '@' in line:
+                        nick = line.split('@')[0]
                         moderator_actor = \
-                            local_actor_url(http_prefix, line, domain_full)
+                            local_actor_url(http_prefix, nick, domain_full)
                         if moderator_actor not in moderators_list:
                             moderators_list.append(moderator_actor)
+                        continue
+                    if line.startswith('http') or \
+                       line.startswith('ipfs') or \
+                       line.startswith('ipns') or \
+                       line.startswith('hyper'):
+                        # must be a local address - no remote moderators
+                        if '://' + domain_full + '/' in line:
+                            if line not in moderators_list:
+                                moderators_list.append(line)
+                    else:
+                        if '/' not in line:
+                            moderator_actor = \
+                                local_actor_url(http_prefix, line, domain_full)
+                            if moderator_actor not in moderators_list:
+                                moderators_list.append(moderator_actor)
+        except OSError:
+            print('EX: create_report_post unable to read ' + moderators_file)
     if len(moderators_list) == 0:
         # if there are no moderators then the admin becomes the moderator
         admin_nickname = get_config_param(base_dir, 'admin')
@@ -3305,17 +3325,21 @@ def group_followers_by_domain(base_dir: str, nickname: str, domain: str) -> {}:
     if not os.path.isfile(followers_filename):
         return None
     grouped = {}
-    with open(followers_filename, 'r', encoding='utf-8') as foll_file:
-        for follower_handle in foll_file:
-            if '@' not in follower_handle:
-                continue
-            fhandle1 = follower_handle.strip()
-            fhandle = remove_eol(fhandle1)
-            follower_domain = fhandle.split('@')[1]
-            if not grouped.get(follower_domain):
-                grouped[follower_domain] = [fhandle]
-            else:
-                grouped[follower_domain].append(fhandle)
+    try:
+        with open(followers_filename, 'r', encoding='utf-8') as fp_foll:
+            for follower_handle in fp_foll:
+                if '@' not in follower_handle:
+                    continue
+                fhandle1 = follower_handle.strip()
+                fhandle = remove_eol(fhandle1)
+                follower_domain = fhandle.split('@')[1]
+                if not grouped.get(follower_domain):
+                    grouped[follower_domain] = [fhandle]
+                else:
+                    grouped[follower_domain].append(fhandle)
+    except OSError:
+        print('EX: group_followers_by_domain unable to read ' +
+              followers_filename)
     return grouped
 
 
@@ -4339,6 +4363,8 @@ def create_outbox(base_dir: str, nickname: str, domain: str,
 def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
                       http_prefix: str, items_per_page: int, header_only: bool,
                       page_number: int) -> {}:
+    """
+    """
     box_dir = create_person_dir(nickname, domain, base_dir, 'inbox')
     boxname = 'moderation'
 
@@ -4369,9 +4395,14 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
     if is_moderator(base_dir, nickname):
         moderation_index_file = data_dir(base_dir) + '/moderation.txt'
         if os.path.isfile(moderation_index_file):
-            with open(moderation_index_file, 'r',
-                      encoding='utf-8') as index_file:
-                lines = index_file.readlines()
+            lines = []
+            try:
+                with open(moderation_index_file, 'r',
+                          encoding='utf-8') as index_file:
+                    lines = index_file.readlines()
+            except OSError:
+                print('EX: create_moderation unable to read ' +
+                      moderation_index_file)
             box_header['totalItems'] = len(lines)
             if header_only:
                 return box_header
@@ -4499,23 +4530,29 @@ def _add_post_to_timeline(file_path: str, boxname: str,
                           posts_in_box: [], box_actor: str) -> bool:
     """ Reads a post from file and decides whether it is valid
     """
-    with open(file_path, 'r', encoding='utf-8') as post_file:
-        post_str = post_file.read()
+    post_str = ''
+    try:
+        with open(file_path, 'r', encoding='utf-8') as fp_post:
+            post_str = fp_post.read()
+    except OSError:
+        print('EX: _add_post_to_timeline unable to read ' + file_path)
 
-        if file_path.endswith('.json'):
-            replies_filename = file_path.replace('.json', '.replies')
-            if os.path.isfile(replies_filename):
-                # append a replies identifier, which will later be removed
-                post_str += '<hasReplies>'
+    if not post_str:
+        return False
 
-            mitm_filename = file_path.replace('.json', '.mitm')
-            if os.path.isfile(mitm_filename):
-                # append a mitm identifier, which will later be removed
-                post_str += '<postmitm>'
+    if file_path.endswith('.json'):
+        replies_filename = file_path.replace('.json', '.replies')
+        if os.path.isfile(replies_filename):
+            # append a replies identifier, which will later be removed
+            post_str += '<hasReplies>'
 
-        return _add_post_string_to_timeline(post_str, boxname, posts_in_box,
-                                            box_actor)
-    return False
+        mitm_filename = file_path.replace('.json', '.mitm')
+        if os.path.isfile(mitm_filename):
+            # append a mitm identifier, which will later be removed
+            post_str += '<postmitm>'
+
+    return _add_post_string_to_timeline(post_str, boxname,
+                                        posts_in_box, box_actor)
 
 
 def remove_post_interactions(post_json_object: {}, force: bool) -> bool:
@@ -4641,111 +4678,115 @@ def _create_box_items(base_dir: str,
         first_post_id = first_post_id.replace('--', '#')
         first_post_id = first_post_id.replace('/', '#')
 
-    with open(index_filename, 'r', encoding='utf-8') as index_file:
-        posts_added_to_timeline = 0
-        while posts_added_to_timeline < items_per_page:
-            post_filename = index_file.readline()
+    try:
+        with open(index_filename, 'r', encoding='utf-8') as index_file:
+            posts_added_to_timeline = 0
+            while posts_added_to_timeline < items_per_page:
+                post_filename = index_file.readline()
 
-            if not post_filename:
-                break
+                if not post_filename:
+                    break
 
-            # if a first post is specified then wait until it is found
-            # before starting to generate the timeline
-            if first_post_id and total_posts_count == 0:
-                if first_post_id not in post_filename:
-                    continue
-                total_posts_count = \
-                    int((page_number - 1) * items_per_page)
+                # if a first post is specified then wait until it is found
+                # before starting to generate the timeline
+                if first_post_id and total_posts_count == 0:
+                    if first_post_id not in post_filename:
+                        continue
+                    total_posts_count = \
+                        int((page_number - 1) * items_per_page)
 
-            # Has this post passed through the newswire voting stage?
-            if not _passed_newswire_voting(newswire_votes_threshold,
-                                           base_dir, domain,
-                                           post_filename,
-                                           positive_voting,
-                                           voting_time_mins):
-                continue
-
-            # Skip through any posts previous to the current page
-            if not first_post_id:
-                if total_posts_count < \
-                   int((page_number - 1) * items_per_page):
-                    total_posts_count += 1
+                # Has this post passed through the newswire voting stage?
+                if not _passed_newswire_voting(newswire_votes_threshold,
+                                               base_dir, domain,
+                                               post_filename,
+                                               positive_voting,
+                                               voting_time_mins):
                     continue
 
-            # if this is a full path then remove the directories
-            if '/' in post_filename:
-                post_filename = post_filename.split('/')[-1]
+                # Skip through any posts previous to the current page
+                if not first_post_id:
+                    if total_posts_count < \
+                       int((page_number - 1) * items_per_page):
+                        total_posts_count += 1
+                        continue
 
-            # filename of the post without any extension or path
-            # This should also correspond to any index entry in
-            # the posts cache
-            post_url = remove_eol(post_filename)
-            post_url = post_url.replace('.json', '').strip()
+                # if this is a full path then remove the directories
+                if '/' in post_filename:
+                    post_filename = post_filename.split('/')[-1]
 
-            # is this a duplicate?
-            if post_url in post_urls_in_box:
-                continue
+                # filename of the post without any extension or path
+                # This should also correspond to any index entry in
+                # the posts cache
+                post_url = remove_eol(post_filename)
+                post_url = post_url.replace('.json', '').strip()
 
-            # is the post cached in memory?
-            if recent_posts_cache.get('index'):
-                if post_url in recent_posts_cache['index']:
-                    if recent_posts_cache['json'].get(post_url):
-                        url = recent_posts_cache['json'][post_url]
-                        if _add_post_string_to_timeline(url,
-                                                        boxname,
-                                                        posts_in_box,
-                                                        box_actor):
-                            total_posts_count += 1
-                            posts_added_to_timeline += 1
-                            post_urls_in_box.append(post_url)
-                            continue
-                        print('Post not added to timeline')
-
-            # read the post from file
-            full_post_filename = \
-                locate_post(base_dir, nickname,
-                            original_domain, post_url, False)
-            if full_post_filename:
-                # has the post been rejected?
-                if os.path.isfile(full_post_filename + '.reject'):
+                # is this a duplicate?
+                if post_url in post_urls_in_box:
                     continue
 
-                if _add_post_to_timeline(full_post_filename, boxname,
-                                         posts_in_box, box_actor):
-                    posts_added_to_timeline += 1
-                    total_posts_count += 1
-                    post_urls_in_box.append(post_url)
+                # is the post cached in memory?
+                if recent_posts_cache.get('index'):
+                    if post_url in recent_posts_cache['index']:
+                        if recent_posts_cache['json'].get(post_url):
+                            url = recent_posts_cache['json'][post_url]
+                            if _add_post_string_to_timeline(url,
+                                                            boxname,
+                                                            posts_in_box,
+                                                            box_actor):
+                                total_posts_count += 1
+                                posts_added_to_timeline += 1
+                                post_urls_in_box.append(post_url)
+                                continue
+                            print('Post not added to timeline')
+
+                # read the post from file
+                full_post_filename = \
+                    locate_post(base_dir, nickname,
+                                original_domain, post_url, False)
+                if full_post_filename:
+                    # has the post been rejected?
+                    if os.path.isfile(full_post_filename + '.reject'):
+                        continue
+
+                    if _add_post_to_timeline(full_post_filename, boxname,
+                                             posts_in_box, box_actor):
+                        posts_added_to_timeline += 1
+                        total_posts_count += 1
+                        post_urls_in_box.append(post_url)
+                    else:
+                        print('WARN: Unable to add post ' + post_url +
+                              ' nickname ' + nickname +
+                              ' timeline ' + boxname)
                 else:
-                    print('WARN: Unable to add post ' + post_url +
-                          ' nickname ' + nickname +
-                          ' timeline ' + boxname)
-            else:
-                if timeline_nickname != nickname:
-                    # if this is the features timeline
-                    full_post_filename = \
-                        locate_post(base_dir, timeline_nickname,
-                                    original_domain, post_url, False)
-                    if full_post_filename:
-                        if _add_post_to_timeline(full_post_filename,
-                                                 boxname,
-                                                 posts_in_box, box_actor):
-                            posts_added_to_timeline += 1
-                            total_posts_count += 1
-                            post_urls_in_box.append(post_url)
+                    if timeline_nickname != nickname:
+                        # if this is the features timeline
+                        full_post_filename = \
+                            locate_post(base_dir, timeline_nickname,
+                                        original_domain, post_url, False)
+                        if full_post_filename:
+                            if _add_post_to_timeline(full_post_filename,
+                                                     boxname,
+                                                     posts_in_box, box_actor):
+                                posts_added_to_timeline += 1
+                                total_posts_count += 1
+                                post_urls_in_box.append(post_url)
+                            else:
+                                print('WARN: Unable to add features post ' +
+                                      post_url + ' nickname ' + nickname +
+                                      ' timeline ' + boxname)
                         else:
-                            print('WARN: Unable to add features post ' +
-                                  post_url + ' nickname ' + nickname +
-                                  ' timeline ' + boxname)
+                            print('WARN: features timeline. ' +
+                                  'Unable to locate post ' + post_url)
                     else:
-                        print('WARN: features timeline. ' +
-                              'Unable to locate post ' + post_url)
-                else:
-                    if timeline_nickname == 'news':
-                        print('WARN: Unable to locate news post ' +
-                              post_url + ' nickname ' + nickname)
-                    else:
-                        print('WARN: Unable to locate post ' + post_url +
-                              ' nickname ' + nickname)
+                        if timeline_nickname == 'news':
+                            print('WARN: Unable to locate news post ' +
+                                  post_url + ' nickname ' + nickname)
+                        else:
+                            print('WARN: Unable to locate post ' + post_url +
+                                  ' nickname ' + nickname)
+    except OSError as exc:
+        print('EX: _create_box_items unable to read ' + index_filename +
+              ' ' + str(exc))
     return total_posts_count, posts_added_to_timeline
 
 
@@ -5732,8 +5773,12 @@ def get_public_post_domains_blocked(session, base_dir: str,
 
     # read the blocked domains as a single string
     blocked_str = ''
-    with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
-        blocked_str = fp_block.read()
+    try:
+        with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
+            blocked_str = fp_block.read()
+    except OSError:
+        print('EX: get_public_post_domains_blocked unable to read ' +
+              blocking_filename)
 
     blocked_domains = []
     for domain_name in post_domains:
@@ -5784,9 +5829,13 @@ def check_domains(session, base_dir: str,
     update_follower_warnings = False
     follower_warning_str = ''
     if os.path.isfile(follower_warning_filename):
-        with open(follower_warning_filename, 'r',
-                  encoding='utf-8') as fp_warn:
-            follower_warning_str = fp_warn.read()
+        try:
+            with open(follower_warning_filename, 'r',
+                      encoding='utf-8') as fp_warn:
+                follower_warning_str = fp_warn.read()
+        except OSError:
+            print('EX: check_domains unable to read ' +
+                  follower_warning_filename)
 
     if single_check:
         # checks a single random non-mutual
@@ -5852,61 +5901,66 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
     pub_str = 'https://www.w3.org/ns/activitystreams#Public'
     # populate the items list with replies
     replies_boxes = ('outbox', 'inbox')
-    with open(post_replies_filename, 'r', encoding='utf-8') as replies_file:
-        for message_id in replies_file:
-            reply_found = False
-            # examine inbox and outbox
-            for boxname in replies_boxes:
-                message_id2 = remove_eol(message_id)
-                search_filename = \
-                    acct_dir(base_dir, nickname, domain) + '/' + \
-                    boxname + '/' + \
-                    message_id2.replace('/', '#') + '.json'
-                if os.path.isfile(search_filename):
-                    if authorized or \
-                       text_in_file(pub_str, search_filename):
-                        post_json_object = load_json(search_filename)
-                        if post_json_object:
-                            if post_json_object['object'].get('cc'):
+    try:
+        with open(post_replies_filename, 'r',
+                  encoding='utf-8') as replies_file:
+            for message_id in replies_file:
+                reply_found = False
+                # examine inbox and outbox
+                for boxname in replies_boxes:
+                    message_id2 = remove_eol(message_id)
+                    search_filename = \
+                        acct_dir(base_dir, nickname, domain) + '/' + \
+                        boxname + '/' + \
+                        message_id2.replace('/', '#') + '.json'
+                    if os.path.isfile(search_filename):
+                        if authorized or \
+                           text_in_file(pub_str, search_filename):
+                            post_json_object = load_json(search_filename)
+                            if post_json_object:
                                 pjo = post_json_object
-                                if (authorized or
-                                    (pub_str in pjo['object']['to'] or
-                                     pub_str in pjo['object']['cc'])):
-                                    replies_json['orderedItems'].append(pjo)
-                                    reply_found = True
-                            else:
-                                if authorized or \
-                                   pub_str in post_json_object['object']['to']:
-                                    pjo = post_json_object
-                                    replies_json['orderedItems'].append(pjo)
-                                    reply_found = True
-                    break
-            # if not in either inbox or outbox then examine the shared inbox
-            if not reply_found:
-                message_id2 = remove_eol(message_id)
-                search_filename = \
-                    data_dir(base_dir) + '/inbox@' + \
-                    domain + '/inbox/' + \
-                    message_id2.replace('/', '#') + '.json'
-                if os.path.isfile(search_filename):
-                    if authorized or \
-                       text_in_file(pub_str, search_filename):
-                        # get the json of the reply and append it to
-                        # the collection
-                        post_json_object = load_json(search_filename)
-                        if post_json_object:
-                            if post_json_object['object'].get('cc'):
+                                ordered_items = replies_json['orderedItems']
+                                if pjo['object'].get('cc'):
+                                    if (authorized or
+                                        (pub_str in pjo['object']['to'] or
+                                         pub_str in pjo['object']['cc'])):
+                                        ordered_items.append(pjo)
+                                        reply_found = True
+                                else:
+                                    if authorized or \
+                                       pub_str in pjo['object']['to']:
+                                        ordered_items.append(pjo)
+                                        reply_found = True
+                        break
+                # if not in either inbox or outbox then examine the
+                # shared inbox
+                if not reply_found:
+                    message_id2 = remove_eol(message_id)
+                    search_filename = \
+                        data_dir(base_dir) + '/inbox@' + \
+                        domain + '/inbox/' + \
+                        message_id2.replace('/', '#') + '.json'
+                    if os.path.isfile(search_filename):
+                        if authorized or \
+                           text_in_file(pub_str, search_filename):
+                            # get the json of the reply and append it to
+                            # the collection
+                            post_json_object = load_json(search_filename)
+                            if post_json_object:
                                 pjo = post_json_object
-                                if (authorized or
-                                    (pub_str in pjo['object']['to'] or
-                                     pub_str in pjo['object']['cc'])):
-                                    pjo = post_json_object
-                                    replies_json['orderedItems'].append(pjo)
-                            else:
-                                if authorized or \
-                                   pub_str in post_json_object['object']['to']:
-                                    pjo = post_json_object
-                                    replies_json['orderedItems'].append(pjo)
+                                ordered_items = replies_json['orderedItems']
+                                if pjo['object'].get('cc'):
+                                    if (authorized or
+                                        (pub_str in pjo['object']['to'] or
+                                         pub_str in pjo['object']['cc'])):
+                                        ordered_items.append(pjo)
+                                else:
+                                    if authorized or \
+                                       pub_str in pjo['object']['to']:
+                                        ordered_items.append(pjo)
+    except OSError:
+        print('EX: populate_replies_json unable to read ' +
+              post_replies_filename)
 
 
 def _reject_announce(announce_filename: str,

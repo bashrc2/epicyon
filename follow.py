@@ -1598,26 +1598,30 @@ def pending_followers_timeline_json(actor: str, base_dir: str,
     follow_requests_filename = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(follow_requests_filename):
-        with open(follow_requests_filename, 'r',
-                  encoding='utf-8') as req_file:
-            for follower_handle in req_file:
-                if len(follower_handle) == 0:
-                    continue
-                follower_handle = remove_eol(follower_handle)
-                foll_domain, _ = get_domain_from_actor(follower_handle)
-                if not foll_domain:
-                    continue
-                foll_nickname = get_nickname_from_actor(follower_handle)
-                if not foll_nickname:
-                    continue
-                follow_activity_filename = \
-                    acct_dir(base_dir, nickname, domain) + \
-                    '/requests/' + \
-                    foll_nickname + '@' + foll_domain + '.follow'
-                if not os.path.isfile(follow_activity_filename):
-                    continue
-                follow_json = load_json(follow_activity_filename)
-                if not follow_json:
-                    continue
-                result_json['orderedItems'].append(follow_json)
+        try:
+            with open(follow_requests_filename, 'r',
+                      encoding='utf-8') as fp_req:
+                for follower_handle in fp_req:
+                    if len(follower_handle) == 0:
+                        continue
+                    follower_handle = remove_eol(follower_handle)
+                    foll_domain, _ = get_domain_from_actor(follower_handle)
+                    if not foll_domain:
+                        continue
+                    foll_nickname = get_nickname_from_actor(follower_handle)
+                    if not foll_nickname:
+                        continue
+                    follow_activity_filename = \
+                        acct_dir(base_dir, nickname, domain) + \
+                        '/requests/' + \
+                        foll_nickname + '@' + foll_domain + '.follow'
+                    if not os.path.isfile(follow_activity_filename):
+                        continue
+                    follow_json = load_json(follow_activity_filename)
+                    if not follow_json:
+                        continue
+                    result_json['orderedItems'].append(follow_json)
+        except OSError as exc:
+            print('EX: unable to read follow requests ' +
+                  follow_requests_filename + ' ' + str(exc))
     return result_json
