@@ -376,16 +376,20 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     citations_selected = []
     if os.path.isfile(citations_filename):
         citations_separator = '#####'
-        with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
-            citations = fp_cit.readlines()
-            for line in citations:
-                if citations_separator not in line:
-                    continue
-                sections = line.strip().split(citations_separator)
-                if len(sections) != 3:
-                    continue
-                date_str = sections[0]
-                citations_selected.append(date_str)
+        try:
+            with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
+                citations = fp_cit.readlines()
+                for line in citations:
+                    if citations_separator not in line:
+                        continue
+                    sections = line.strip().split(citations_separator)
+                    if len(sections) != 3:
+                        continue
+                    date_str = sections[0]
+                    citations_selected.append(date_str)
+        except OSError as exc:
+            print('EX: html_citations unable to read ' +
+                  citations_filename + ' ' + str(exc))
 
     # the css filename
     css_filename = base_dir + '/epicyon-profile.css'
@@ -617,8 +621,12 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
     newswire_filename = data_dir(base_dir) + '/newswire.txt'
     newswire_str = ''
     if os.path.isfile(newswire_filename):
-        with open(newswire_filename, 'r', encoding='utf-8') as fp_news:
-            newswire_str = fp_news.read()
+        try:
+            with open(newswire_filename, 'r', encoding='utf-8') as fp_news:
+                newswire_str = fp_news.read()
+        except OSError:
+            print('EX: html_edit_newswire unable to read ' +
+                  newswire_filename)
 
     edit_newswire_form += \
         '<div class="container">'
@@ -639,8 +647,12 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
     filter_filename = \
         data_dir(base_dir) + '/news@' + domain + '/filters.txt'
     if os.path.isfile(filter_filename):
-        with open(filter_filename, 'r', encoding='utf-8') as filterfile:
-            filter_str = filterfile.read()
+        try:
+            with open(filter_filename, 'r', encoding='utf-8') as fp_filter:
+                filter_str = fp_filter.read()
+        except OSError:
+            print('EX: html_edit_newswire unable to read 2 ' +
+                  filter_filename)
 
     edit_newswire_form += \
         '      <br><b><label class="labels">' + \
@@ -670,8 +682,13 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
     hashtag_rules_str = ''
     hashtag_rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
     if os.path.isfile(hashtag_rules_filename):
-        with open(hashtag_rules_filename, 'r', encoding='utf-8') as rulesfile:
-            hashtag_rules_str = rulesfile.read()
+        try:
+            with open(hashtag_rules_filename, 'r',
+                      encoding='utf-8') as fp_rules:
+                hashtag_rules_str = fp_rules.read()
+        except OSError:
+            print('EX: html_edit_newswire unable to read 3 ' +
+                  hashtag_rules_filename)
 
     edit_newswire_form += \
         '      <br><b><label class="labels">' + \

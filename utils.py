@@ -3266,20 +3266,24 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     for root, _, fnames in os.walk(path):
         for fname in fnames:
             file_path = os.path.join(root, fname)
-            with open(file_path, 'r', encoding='utf-8') as post_file:
-                data = post_file.read().lower()
+            try:
+                with open(file_path, 'r', encoding='utf-8') as post_file:
+                    data = post_file.read().lower()
 
-                not_found = False
-                for keyword in search_words:
-                    if keyword not in data:
-                        not_found = True
-                        break
-                if not_found:
-                    continue
+                    not_found = False
+                    for keyword in search_words:
+                        if keyword not in data:
+                            not_found = True
+                            break
+                    if not_found:
+                        continue
 
-                res.append(file_path)
-                if len(res) >= max_results:
-                    return res
+                    res.append(file_path)
+                    if len(res) >= max_results:
+                        return res
+            except OSError as exc:
+                print('EX: search_box_posts unable to read ' +
+                      file_path + ' ' + str(exc))
         break
     return res
 
@@ -4473,8 +4477,12 @@ def load_account_timezones(base_dir: str) -> {}:
             if not os.path.isfile(tz_filename):
                 continue
             timezone = None
-            with open(tz_filename, 'r', encoding='utf-8') as fp_timezone:
-                timezone = fp_timezone.read().strip()
+            try:
+                with open(tz_filename, 'r', encoding='utf-8') as fp_timezone:
+                    timezone = fp_timezone.read().strip()
+            except OSError:
+                print('EX: load_account_timezones unable to read ' +
+                      tz_filename)
             if timezone:
                 nickname = acct.split('@')[0]
                 account_timezone[nickname] = timezone
@@ -4528,8 +4536,11 @@ def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
     if not os.path.isfile(tz_filename):
         return None
     timezone = None
-    with open(tz_filename, 'r', encoding='utf-8') as fp_timezone:
-        timezone = fp_timezone.read().strip()
+    try:
+        with open(tz_filename, 'r', encoding='utf-8') as fp_timezone:
+            timezone = fp_timezone.read().strip()
+    except OSError:
+        print('EX: get_account_timezone unable to read ' + tz_filename)
     return timezone
 
 

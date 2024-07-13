@@ -514,17 +514,21 @@ def html_new_post(edit_post_params: {},
             # custom report header with any additional instructions
             dir_str = data_dir(base_dir)
             if os.path.isfile(dir_str + '/report.txt'):
-                with open(dir_str + '/report.txt', 'r',
-                          encoding='utf-8') as file:
-                    custom_report_text = file.read()
-                    if '</p>' not in custom_report_text:
-                        custom_report_text = \
-                            '<p class="login-subtext">' + \
-                            custom_report_text + '</p>\n'
-                        rep_str = '<p class="login-subtext">'
-                        custom_report_text = \
-                            custom_report_text.replace('<p>', rep_str)
-                        new_post_text += custom_report_text
+                try:
+                    with open(dir_str + '/report.txt', 'r',
+                              encoding='utf-8') as file:
+                        custom_report_text = file.read()
+                        if '</p>' not in custom_report_text:
+                            custom_report_text = \
+                                '<p class="login-subtext">' + \
+                                custom_report_text + '</p>\n'
+                            rep_str = '<p class="login-subtext">'
+                            custom_report_text = \
+                                custom_report_text.replace('<p>', rep_str)
+                            new_post_text += custom_report_text
+                except OSError as exc:
+                    print('EX: html_new_post unable to read ' +
+                          dir_str + '/report.txt ' + str(exc))
 
             idx = 'This message only goes to moderators, even if it ' + \
                 'mentions other fediverse addresses.'
@@ -553,8 +557,12 @@ def html_new_post(edit_post_params: {},
 
     dir_str = data_dir(base_dir)
     if os.path.isfile(dir_str + '/newpost.txt'):
-        with open(dir_str + '/newpost.txt', 'r', encoding='utf-8') as file:
-            new_post_text = '<p>' + file.read() + '</p>\n'
+        try:
+            with open(dir_str + '/newpost.txt', 'r', encoding='utf-8') as file:
+                new_post_text = '<p>' + file.read() + '</p>\n'
+        except OSError:
+            print('EX: html_new_post unable to read ' +
+                  dir_str + '/newpost.txt')
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -870,19 +878,24 @@ def html_new_post(edit_post_params: {},
                 translate['Citations'] + ':</label></p>\n'
             citations_str += '  <ul>\n'
             citations_separator = '#####'
-            with open(citations_filename, 'r', encoding='utf-8') as cit_file:
-                citations = cit_file.readlines()
-                for line in citations:
-                    if citations_separator not in line:
-                        continue
-                    sections = line.strip().split(citations_separator)
-                    if len(sections) != 3:
-                        continue
-                    title = sections[1]
-                    link = sections[2]
-                    citations_str += \
-                        '    <li><a href="' + link + '"><cite>' + \
-                        title + '</cite></a></li>'
+            try:
+                with open(citations_filename, 'r',
+                          encoding='utf-8') as cit_file:
+                    citations = cit_file.readlines()
+                    for line in citations:
+                        if citations_separator not in line:
+                            continue
+                        sections = line.strip().split(citations_separator)
+                        if len(sections) != 3:
+                            continue
+                        title = sections[1]
+                        link = sections[2]
+                        citations_str += \
+                            '    <li><a href="' + link + '"><cite>' + \
+                            title + '</cite></a></li>'
+            except OSError as exc:
+                print('EX: html_new_post unable to read ' +
+                      citations_filename + ' ' + str(exc))
             citations_str += '  </ul>\n'
             citations_str += '</div>\n'
 

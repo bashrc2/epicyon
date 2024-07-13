@@ -426,19 +426,23 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     suspended_filename = dir_str + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
-            suspended_str = fp_sus.read()
-            info_form += '<div class="container">\n'
-            info_form += '  <br><b>' + \
-                translate['Suspended accounts'] + '</b>'
-            info_form += '  <br>' + \
-                translate['These are currently suspended']
-            info_form += \
-                '  <textarea id="message" ' + \
-                'name="suspended" style="height:200px" spellcheck="false">' + \
-                suspended_str + '</textarea>\n'
-            info_form += '</div>\n'
-            info_shown = True
+        try:
+            with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
+                suspended_str = fp_sus.read()
+                info_form += '<div class="container">\n'
+                info_form += '  <br><b>' + \
+                    translate['Suspended accounts'] + '</b>'
+                info_form += '  <br>' + \
+                    translate['These are currently suspended']
+                info_form += \
+                    '  <textarea id="message" ' + \
+                    'name="suspended" style="height:200px" ' + \
+                    'spellcheck="false">' + suspended_str + '</textarea>\n'
+                info_form += '</div>\n'
+                info_shown = True
+        except OSError as exc:
+            print('EX: html_moderation_info unable to read ' +
+                  suspended_filename + ' ' + str(exc))
 
     blocking_filename = dir_str + '/blocking.txt'
     if os.path.isfile(blocking_filename):
@@ -446,52 +450,61 @@ def html_moderation_info(translate: {}, base_dir: str,
         blocking_reasons_exist = False
         if os.path.isfile(blocking_reasons_filename):
             blocking_reasons_exist = True
-        with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
-            blocked_lines = fp_block.readlines()
-            blocked_str = ''
-            if blocked_lines:
-                blocked_lines.sort()
-                for line in blocked_lines:
-                    if not line:
-                        continue
-                    line = remove_eol(line).strip()
-                    if blocking_reasons_exist:
-                        reason = \
-                            get_global_block_reason(line,
-                                                    blocking_reasons_filename)
-                        if reason:
-                            blocked_str += \
-                                line + ' - ' + reason + '\n'
+        try:
+            with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
+                blocked_lines = fp_block.readlines()
+                blocked_str = ''
+                if blocked_lines:
+                    blocked_lines.sort()
+                    for line in blocked_lines:
+                        if not line:
                             continue
-                    blocked_str += line + '\n'
-            info_form += '<div class="container">\n'
-            info_form += \
-                '  <br><b>' + \
-                translate['Blocked accounts and hashtags'] + '</b>'
-            info_form += \
-                '  <br>' + \
-                translate[msg_str1]
-            info_form += \
-                '  <textarea id="message" ' + \
-                'name="blocked" style="height:2000px" spellcheck="false">' + \
-                blocked_str + '</textarea>\n'
-            info_form += '</div>\n'
-            info_shown = True
+                        line = remove_eol(line).strip()
+                        if blocking_reasons_exist:
+                            blocking_reasons_file = blocking_reasons_filename
+                            reason = \
+                                get_global_block_reason(line,
+                                                        blocking_reasons_file)
+                            if reason:
+                                blocked_str += \
+                                    line + ' - ' + reason + '\n'
+                                continue
+                        blocked_str += line + '\n'
+                info_form += '<div class="container">\n'
+                info_form += \
+                    '  <br><b>' + \
+                    translate['Blocked accounts and hashtags'] + '</b>'
+                info_form += \
+                    '  <br>' + \
+                    translate[msg_str1]
+                info_form += \
+                    '  <textarea id="message" ' + \
+                    'name="blocked" style="height:2000px" ' + \
+                    'spellcheck="false">' + blocked_str + '</textarea>\n'
+                info_form += '</div>\n'
+                info_shown = True
+        except OSError as exc:
+            print('EX: html_moderation_info unable to read 2 ' +
+                  blocking_filename + ' ' + str(exc))
 
     filters_filename = dir_str + '/filters.txt'
     if os.path.isfile(filters_filename):
-        with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
-            filtered_str = fp_filt.read()
-            info_form += '<div class="container">\n'
-            info_form += \
-                '  <br><b>' + \
-                translate['Filtered words'] + '</b>'
-            info_form += \
-                '  <textarea id="message" ' + \
-                'name="filtered" style="height:700px" spellcheck="true">' + \
-                filtered_str + '</textarea>\n'
-            info_form += '</div>\n'
-            info_shown = True
+        try:
+            with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
+                filtered_str = fp_filt.read()
+                info_form += '<div class="container">\n'
+                info_form += \
+                    '  <br><b>' + \
+                    translate['Filtered words'] + '</b>'
+                info_form += \
+                    '  <textarea id="message" ' + \
+                    'name="filtered" style="height:700px" ' + \
+                    'spellcheck="true">' + filtered_str + '</textarea>\n'
+                info_form += '</div>\n'
+                info_shown = True
+        except OSError as exc:
+            print('EX: html_moderation_info unable to read ' +
+                  filters_filename + ' ' + str(exc))
 
     if not info_shown:
         info_form += \

@@ -222,8 +222,12 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     links_file_contains_entries = False
     links_list = None
     if os.path.isfile(links_filename):
-        with open(links_filename, 'r', encoding='utf-8') as fp_links:
-            links_list = fp_links.readlines()
+        try:
+            with open(links_filename, 'r', encoding='utf-8') as fp_links:
+                links_list = fp_links.readlines()
+        except OSError:
+            print('EX: get_left_column_content unable to read ' +
+                  links_filename)
 
     if not front_page:
         # show a number of shares
@@ -497,8 +501,12 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
     links_filename = data_dir(base_dir) + '/links.txt'
     links_str = ''
     if os.path.isfile(links_filename):
-        with open(links_filename, 'r', encoding='utf-8') as fp_links:
-            links_str = fp_links.read()
+        try:
+            with open(links_filename, 'r', encoding='utf-8') as fp_links:
+                links_str = fp_links.read()
+        except OSError:
+            print('EX: html_edit_links unable to read ' +
+                  links_filename)
 
     edit_links_form += \
         '<div class="container">'
@@ -522,8 +530,13 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
             about_filename = data_dir(base_dir) + '/about.md'
             about_str = ''
             if os.path.isfile(about_filename):
-                with open(about_filename, 'r', encoding='utf-8') as fp_about:
-                    about_str = fp_about.read()
+                try:
+                    with open(about_filename, 'r',
+                              encoding='utf-8') as fp_about:
+                        about_str = fp_about.read()
+                except OSError:
+                    print('EX: html_edit_links unable to read 2 ' +
+                          about_filename)
 
             edit_links_form += \
                 '<div class="container">'
@@ -541,8 +554,12 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
             tos_filename = data_dir(base_dir) + '/tos.md'
             tos_str = ''
             if os.path.isfile(tos_filename):
-                with open(tos_filename, 'r', encoding='utf-8') as fp_tos:
-                    tos_str = fp_tos.read()
+                try:
+                    with open(tos_filename, 'r', encoding='utf-8') as fp_tos:
+                        tos_str = fp_tos.read()
+                except OSError:
+                    print('EX: html_edit_links unable to read 3 ' +
+                          tos_filename)
 
             edit_links_form += \
                 '<div class="container">'
@@ -560,9 +577,13 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
             specification_filename = data_dir(base_dir) + '/activitypub.md'
             specification_str = ''
             if os.path.isfile(specification_filename):
-                with open(specification_filename, 'r',
-                          encoding='utf-8') as fp_specification:
-                    specification_str = fp_specification.read()
+                try:
+                    with open(specification_filename, 'r',
+                              encoding='utf-8') as fp_specification:
+                        specification_str = fp_specification.read()
+                except OSError:
+                    print('EX: html_edit_links unable to read 4 ' +
+                          specification_filename)
 
             edit_links_form += \
                 '<div class="container">'

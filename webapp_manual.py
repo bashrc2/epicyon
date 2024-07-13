@@ -35,10 +35,13 @@ def html_manual(base_dir: str, http_prefix: str,
 
     manual_text = 'User Manual.'
     if os.path.isfile(manual_filename):
-        with open(manual_filename, 'r',
-                  encoding='utf-8') as fp_manual:
-            md_text = markdown_example_numbers(fp_manual.read())
-            manual_text = markdown_to_html(md_text)
+        try:
+            with open(manual_filename, 'r',
+                      encoding='utf-8') as fp_manual:
+                md_text = markdown_example_numbers(fp_manual.read())
+                manual_text = markdown_to_html(md_text)
+        except OSError:
+            print('EX: html_manual unable to read ' + manual_filename)
 
     manual_form = ''
     css_filename = base_dir + '/epicyon-profile.css'

@@ -34,8 +34,12 @@ def html_about(base_dir: str, http_prefix: str,
 
     about_text = 'Information about this instance goes here.'
     if os.path.isfile(dir_str + '/about.md'):
-        with open(dir_str + '/about.md', 'r', encoding='utf-8') as fp_about:
-            about_text = markdown_to_html(fp_about.read())
+        try:
+            with open(dir_str + '/about.md', 'r',
+                      encoding='utf-8') as fp_about:
+                about_text = markdown_to_html(fp_about.read())
+        except OSError:
+            print('EX: html_about unable to read ' + dir_str + '/about.md')
 
     about_form = ''
     css_filename = base_dir + '/epicyon-profile.css'

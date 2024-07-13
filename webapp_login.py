@@ -133,8 +133,11 @@ def html_login(translate: {},
     dir_str = data_dir(base_dir)
     if os.path.isfile(dir_str + '/login.txt'):
         # custom login message
-        with open(dir_str + '/login.txt', 'r', encoding='utf-8') as file:
-            login_text = '<p class="login-text">' + file.read() + '</p>'
+        try:
+            with open(dir_str + '/login.txt', 'r', encoding='utf-8') as file:
+                login_text = '<p class="login-text">' + file.read() + '</p>'
+        except OSError:
+            print('EX: html_login unable to read ' + dir_str + '/login.txt')
 
     css_filename = base_dir + '/epicyon-login.css'
     if os.path.isfile(base_dir + '/login.css'):
