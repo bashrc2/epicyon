@@ -52,10 +52,13 @@ def html_welcome_final(base_dir: str, nickname: str,
         instance_title = 'Epicyon'
 
     if os.path.isfile(final_filename):
-        with open(final_filename, 'r', encoding='utf-8') as final_file:
-            final_text = final_file.read()
-            final_text = final_text.replace('INSTANCE', instance_title)
-            final_text = markdown_to_html(remove_html(final_text))
+        try:
+            with open(final_filename, 'r', encoding='utf-8') as fp_final:
+                final_text = fp_final.read()
+                final_text = final_text.replace('INSTANCE', instance_title)
+                final_text = markdown_to_html(remove_html(final_text))
+        except OSError:
+            print('EX: html_welcome_final unable to read ' + final_filename)
 
     final_form = ''
     css_filename = base_dir + '/epicyon-welcome.css'

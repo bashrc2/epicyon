@@ -93,8 +93,13 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
             get_config_param(base_dir, 'instanceTitle')
         if not instance_title:
             instance_title = 'Epicyon'
-        with open(help_filename, 'r', encoding='utf-8') as help_file:
-            help_text = help_file.read()
+        help_text = ''
+        try:
+            with open(help_filename, 'r', encoding='utf-8') as help_file:
+                help_text = help_file.read()
+        except OSError:
+            print('EX: _get_help_for_timeline unable to read ' + help_filename)
+        if help_text:
             if dangerous_markup(help_text, False, []):
                 return ''
             help_text = help_text.replace('INSTANCE', instance_title)
@@ -532,11 +537,14 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(calendar_file):
         new_calendar_event = True
         calendar_image = 'calendar_notify.png'
-        with open(calendar_file, 'r', encoding='utf-8') as calfile:
-            calendar_path = calfile.read().replace('##sent##', '')
-            calendar_path = remove_eol(calendar_path)
-            if '/calendar' not in calendar_path:
-                calendar_path = '/calendar'
+        try:
+            with open(calendar_file, 'r', encoding='utf-8') as calfile:
+                calendar_path = calfile.read().replace('##sent##', '')
+                calendar_path = remove_eol(calendar_path)
+                if '/calendar' not in calendar_path:
+                    calendar_path = '/calendar'
+        except OSError:
+            print('EX: html_timeline unable to read ' + calendar_file)
 
     # should the DM button be highlighted?
     new_dm = False
@@ -693,21 +701,27 @@ def html_timeline(default_timeline: str,
     follow_requests_filename = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(follow_requests_filename):
-        with open(follow_requests_filename, 'r',
-                  encoding='utf-8') as foll_file:
-            for line in foll_file:
-                if len(line) > 0:
-                    # show follow approvals icon
-                    follow_approvals = \
-                        '<a href="' + users_path + \
-                        '/followers#buttonheader" ' + \
-                        'accesskey="' + access_keys['followButton'] + '">' + \
-                        '<img loading="lazy" decoding="async" ' + \
-                        'class="timelineicon" alt="' + \
-                        translate['Approve follow requests'] + \
-                        '" title="' + translate['Approve follow requests'] + \
-                        '" src="/icons/person.png"/></a>\n'
-                    break
+        try:
+            with open(follow_requests_filename, 'r',
+                      encoding='utf-8') as foll_file:
+                for line in foll_file:
+                    if len(line) > 0:
+                        # show follow approvals icon
+                        follow_approvals = \
+                            '<a href="' + users_path + \
+                            '/followers#buttonheader" ' + \
+                            'accesskey="' + \
+                            access_keys['followButton'] + '">' + \
+                            '<img loading="lazy" decoding="async" ' + \
+                            'class="timelineicon" alt="' + \
+                            translate['Approve follow requests'] + \
+                            '" title="' + \
+                            translate['Approve follow requests'] + \
+                            '" src="/icons/person.png"/></a>\n'
+                        break
+        except OSError:
+            print('EX: html_timeline unable to read ' +
+                  follow_requests_filename)
 
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '3')
 

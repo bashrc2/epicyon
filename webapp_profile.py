@@ -1212,15 +1212,19 @@ def html_profile(signing_priv_key_pem: str,
         follow_requests_filename = \
             acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
         if os.path.isfile(follow_requests_filename):
-            with open(follow_requests_filename, 'r',
-                      encoding='utf-8') as foll_file:
-                for line in foll_file:
-                    if len(line) > 0:
-                        follow_approvals = True
-                        followers_button = 'buttonhighlighted'
-                        if selected == 'followers':
-                            followers_button = 'buttonselectedhighlighted'
-                        break
+            try:
+                with open(follow_requests_filename, 'r',
+                          encoding='utf-8') as foll_file:
+                    for line in foll_file:
+                        if len(line) > 0:
+                            follow_approvals = True
+                            followers_button = 'buttonhighlighted'
+                            if selected == 'followers':
+                                followers_button = 'buttonselectedhighlighted'
+                            break
+            except OSError:
+                print('EX: html_profile unable to read ' +
+                      follow_requests_filename)
         if selected == 'followers':
             if follow_approvals:
                 curr_follower_domains = \
@@ -1323,8 +1327,11 @@ def html_profile(signing_priv_key_pem: str,
     pinned_filename = account_dir + '/pinToProfile.txt'
     pinned_content = None
     if os.path.isfile(pinned_filename):
-        with open(pinned_filename, 'r', encoding='utf-8') as pin_file:
-            pinned_content = pin_file.read()
+        try:
+            with open(pinned_filename, 'r', encoding='utf-8') as pin_file:
+                pinned_content = pin_file.read()
+        except OSError:
+            print('EX: html_profile unable to read ' + pinned_filename)
 
     # shared items attached to the actor
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
@@ -2076,8 +2083,12 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     moderators = ''
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        with open(moderators_file, 'r', encoding='utf-8') as mod_file:
-            moderators = mod_file.read()
+        try:
+            with open(moderators_file, 'r', encoding='utf-8') as mod_file:
+                moderators = mod_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_instance unable to read ' +
+                  moderators_file)
     subtitle = translate['A list of moderator nicknames. One per line.']
     role_assign_str += \
         edit_text_area('<b>' + translate['Moderators'] + '</b>', subtitle,
@@ -2086,8 +2097,12 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     editors = ''
     editors_file = data_dir(base_dir) + '/editors.txt'
     if os.path.isfile(editors_file):
-        with open(editors_file, 'r', encoding='utf-8') as edit_file:
-            editors = edit_file.read()
+        try:
+            with open(editors_file, 'r', encoding='utf-8') as edit_file:
+                editors = edit_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_instance unable to read ' +
+                  editors_file)
     subtitle = translate['A list of editor nicknames. One per line.']
     role_assign_str += \
         edit_text_area('<b>' + translate['Site Editors'] + '</b>',
@@ -2097,8 +2112,12 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     counselors = ''
     counselors_file = data_dir(base_dir) + '/counselors.txt'
     if os.path.isfile(counselors_file):
-        with open(counselors_file, 'r', encoding='utf-8') as co_file:
-            counselors = co_file.read()
+        try:
+            with open(counselors_file, 'r', encoding='utf-8') as co_file:
+                counselors = co_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_instance unable to read ' +
+                  counselors_file)
     role_assign_str += \
         edit_text_area('<b>' + translate['Counselors'] + '</b>', None,
                        'counselors', counselors, 200, '', False)
@@ -2107,8 +2126,12 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     artists = ''
     artists_file = data_dir(base_dir) + '/artists.txt'
     if os.path.isfile(artists_file):
-        with open(artists_file, 'r', encoding='utf-8') as art_file:
-            artists = art_file.read()
+        try:
+            with open(artists_file, 'r', encoding='utf-8') as art_file:
+                artists = art_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_instance unable to read ' +
+                  artists_file)
     role_assign_str += \
         edit_text_area('<b>' + translate['Artists'] + '</b>', None,
                        'artists', artists, 200, '', False)
@@ -2117,8 +2140,12 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     devops = ''
     devops_file = data_dir(base_dir) + '/devops.txt'
     if os.path.isfile(devops_file):
-        with open(devops_file, 'r', encoding='utf-8') as edit_file:
-            devops = edit_file.read()
+        try:
+            with open(devops_file, 'r', encoding='utf-8') as edit_file:
+                devops = edit_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_instance unable to read ' +
+                  devops_file)
     subtitle = translate['A list of devops nicknames. One per line.']
     role_assign_str += \
         edit_text_area('<b>' + translate['Site DevOps'] + '</b>',
@@ -2238,8 +2265,13 @@ def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
     git_projects_filename = \
         acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
     if os.path.isfile(git_projects_filename):
-        with open(git_projects_filename, 'r', encoding='utf-8') as git_file:
-            git_projects_str = git_file.read()
+        try:
+            with open(git_projects_filename, 'r',
+                      encoding='utf-8') as git_file:
+                git_projects_str = git_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_git_projects unable to read ' +
+                  git_projects_filename)
 
     edit_profile_form = begin_edit_section(translate['Git Projects'])
     idx = 'List of project names that you wish to receive git patches for'
@@ -2284,36 +2316,57 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     filter_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filter_filename):
-        with open(filter_filename, 'r', encoding='utf-8') as filterfile:
-            filter_str = filterfile.read()
+        try:
+            with open(filter_filename, 'r', encoding='utf-8') as filterfile:
+                filter_str = filterfile.read()
+        except OSError:
+            print('EX: _html_edit_profile_filtering unable to read ' +
+                  filter_filename)
 
     filter_bio_str = ''
     filter_bio_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
     if os.path.isfile(filter_bio_filename):
-        with open(filter_bio_filename, 'r', encoding='utf-8') as filterfile:
-            filter_bio_str = filterfile.read()
+        try:
+            with open(filter_bio_filename, 'r',
+                      encoding='utf-8') as fp_filter:
+                filter_bio_str = fp_filter.read()
+        except OSError:
+            print('EX: _html_edit_profile_filtering unable to read ' +
+                  filter_bio_filename)
 
     switch_str = ''
     switch_filename = \
         acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
     if os.path.isfile(switch_filename):
-        with open(switch_filename, 'r', encoding='utf-8') as switchfile:
-            switch_str = switchfile.read()
+        try:
+            with open(switch_filename, 'r', encoding='utf-8') as switchfile:
+                switch_str = switchfile.read()
+        except OSError:
+            print('EX: _html_edit_profile_filtering unable to save ' +
+                  switch_filename)
 
     auto_tags = ''
     auto_tags_filename = \
         acct_dir(base_dir, nickname, domain) + '/autotags.txt'
     if os.path.isfile(auto_tags_filename):
-        with open(auto_tags_filename, 'r', encoding='utf-8') as auto_file:
-            auto_tags = auto_file.read()
+        try:
+            with open(auto_tags_filename, 'r', encoding='utf-8') as auto_file:
+                auto_tags = auto_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_filtering unable to read ' +
+                  auto_tags_filename)
 
     auto_cw = ''
     auto_cw_filename = \
         acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if os.path.isfile(auto_cw_filename):
-        with open(auto_cw_filename, 'r', encoding='utf-8') as cw_file:
-            auto_cw = cw_file.read()
+        try:
+            with open(auto_cw_filename, 'r', encoding='utf-8') as cw_file:
+                auto_cw = cw_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_filtering unable to read ' +
+                  auto_cw_filename)
 
     blocked_str = get_account_blocks(base_dir, nickname, domain)
 
@@ -2321,17 +2374,25 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     dm_allowed_instances_filename = \
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if os.path.isfile(dm_allowed_instances_filename):
-        with open(dm_allowed_instances_filename, 'r',
-                  encoding='utf-8') as dm_file:
-            dm_allowed_instances_str = dm_file.read()
+        try:
+            with open(dm_allowed_instances_filename, 'r',
+                      encoding='utf-8') as dm_file:
+                dm_allowed_instances_str = dm_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_filtering unable to read ' +
+                  dm_allowed_instances_filename)
 
     allowed_instances_str = ''
     allowed_instances_filename = \
         acct_dir(base_dir, nickname, domain) + '/allowedinstances.txt'
     if os.path.isfile(allowed_instances_filename):
-        with open(allowed_instances_filename, 'r',
-                  encoding='utf-8') as allow_file:
-            allowed_instances_str = allow_file.read()
+        try:
+            with open(allowed_instances_filename, 'r',
+                      encoding='utf-8') as allow_file:
+                allowed_instances_str = allow_file.read()
+        except OSError:
+            print('EX: _html_edit_profile_filtering unable to read ' +
+                  allowed_instances_filename)
 
     edit_profile_form = begin_edit_section(translate['Filtering and Blocking'])
 
@@ -2351,16 +2412,24 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     city = ''
     city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(city_filename):
-        with open(city_filename, 'r', encoding='utf-8') as city_file:
-            city1 = city_file.read()
-            city = remove_eol(city1)
+        try:
+            with open(city_filename, 'r', encoding='utf-8') as city_file:
+                city1 = city_file.read()
+                city = remove_eol(city1)
+        except OSError:
+            print('EX: _html_edit_profile_filtering unable to read ' +
+                  city_filename)
     locations_filename = base_dir + '/custom_locations.txt'
     if not os.path.isfile(locations_filename):
         locations_filename = base_dir + '/locations.txt'
     cities = []
-    with open(locations_filename, 'r', encoding='utf-8') as loc_file:
-        cities = loc_file.readlines()
-        cities.sort()
+    try:
+        with open(locations_filename, 'r', encoding='utf-8') as loc_file:
+            cities = loc_file.readlines()
+            cities.sort()
+    except OSError:
+        print('EX: _html_edit_profile_filtering unable to read ' +
+              locations_filename)
     edit_profile_form += '  <select id="cityDropdown" ' + \
         'name="cityDropdown" class="theme">\n'
     city = city.lower()

@@ -83,10 +83,13 @@ def html_welcome_screen(base_dir: str, nickname: str,
         instance_title = 'Epicyon'
 
     if os.path.isfile(welcome_filename):
-        with open(welcome_filename, 'r', encoding='utf-8') as fp_wel:
-            welcome_text = fp_wel.read()
-            welcome_text = welcome_text.replace('INSTANCE', instance_title)
-            welcome_text = markdown_to_html(remove_html(welcome_text))
+        try:
+            with open(welcome_filename, 'r', encoding='utf-8') as fp_wel:
+                welcome_text = fp_wel.read()
+                welcome_text = welcome_text.replace('INSTANCE', instance_title)
+                welcome_text = markdown_to_html(remove_html(welcome_text))
+        except OSError:
+            print('EX: html_welcome_screen unable to read ' + welcome_filename)
 
     welcome_form = ''
     css_filename = base_dir + '/epicyon-welcome.css'

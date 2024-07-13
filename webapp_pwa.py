@@ -38,8 +38,11 @@ def get_pwa_theme_colors(css_filename: str) -> (str, str):
         return pwa_theme_color, pwa_theme_background_color
 
     css_str = ''
-    with open(css_filename, 'r', encoding='utf-8') as fp_css:
-        css_str = fp_css.read()
+    try:
+        with open(css_filename, 'r', encoding='utf-8') as fp_css:
+            css_str = fp_css.read()
+    except OSError:
+        print('EX: get_pwa_theme_colors unable to read ' + css_filename)
 
     pwa_theme_color = \
         _get_variable_from_css(css_str, 'pwa-theme-color')

@@ -94,8 +94,13 @@ def get_broken_link_substitute() -> str:
 def html_following_list(base_dir: str, following_filename: str) -> str:
     """Returns a list of handles being followed
     """
-    with open(following_filename, 'r', encoding='utf-8') as following_file:
-        msg = following_file.read()
+    msg = ''
+    try:
+        with open(following_filename, 'r', encoding='utf-8') as following_file:
+            msg = following_file.read()
+    except OSError:
+        print('EX: html_following_list unable to read ' + following_filename)
+    if msg:
         following_list = msg.split('\n')
         following_list.sort()
         if following_list:
@@ -122,8 +127,13 @@ def csv_following_list(following_filename: str,
                        base_dir: str, nickname: str, domain: str) -> str:
     """Returns a csv of handles being followed
     """
-    with open(following_filename, 'r', encoding='utf-8') as following_file:
-        msg = following_file.read()
+    msg = ''
+    try:
+        with open(following_filename, 'r', encoding='utf-8') as following_file:
+            msg = following_file.read()
+    except OSError:
+        print('EX: csv_following_list unable to read ' + following_filename)
+    if msg:
         following_list = msg.split('\n')
         following_list.sort()
         if following_list:
@@ -2208,27 +2218,35 @@ def html_following_data_list(base_dir: str, nickname: str,
     list_str = '<datalist id="' + following_type + 'Handles">\n'
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + following_type + '.txt'
-    msg = None
+    msg = ''
     if os.path.isfile(following_filename):
-        with open(following_filename, 'r',
-                  encoding='utf-8') as following_file:
-            msg = following_file.read()
-            # add your own handle, so that you can send DMs
-            # to yourself as reminders
-            msg += nickname + '@' + domain_full + '\n'
+        try:
+            with open(following_filename, 'r',
+                      encoding='utf-8') as following_file:
+                msg = following_file.read()
+                # add your own handle, so that you can send DMs
+                # to yourself as reminders
+                msg += nickname + '@' + domain_full + '\n'
+        except OSError:
+            print('EX: html_following_data_list unable to read ' +
+                  following_filename)
     if msg:
         # include petnames
         petnames_filename = \
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
         if use_petnames and os.path.isfile(petnames_filename):
             following_list = []
-            with open(petnames_filename, 'r',
-                      encoding='utf-8') as petnames_file:
-                pet_str = petnames_file.read()
-                # extract each petname and append it
-                petnames_list = pet_str.split('\n')
-                for pet in petnames_list:
-                    following_list.append(pet.split(' ')[0])
+            try:
+                with open(petnames_filename, 'r',
+                          encoding='utf-8') as fp_petnames:
+                    pet_str = fp_petnames.read()
+                    # extract each petname and append it
+                    petnames_list = pet_str.split('\n')
+                    for pet in petnames_list:
+                        following_list.append(pet.split(' ')[0])
+            except OSError:
+                print('EX: html_following_data_list unable to read ' +
+                      petnames_filename)
             # add the following.txt entries
             following_list += msg.split('\n')
         else:
@@ -2256,27 +2274,35 @@ def html_following_dropdown(base_dir: str, nickname: str,
     list_str = '<select name="searchtext">\n'
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + following_type + '.txt'
-    msg = None
+    msg = ''
     if os.path.isfile(following_filename):
-        with open(following_filename, 'r',
-                  encoding='utf-8') as following_file:
-            msg = following_file.read()
-            # add your own handle, so that you can send DMs
-            # to yourself as reminders
-            msg += nickname + '@' + domain_full + '\n'
+        try:
+            with open(following_filename, 'r',
+                      encoding='utf-8') as fp_following:
+                msg = fp_following.read()
+                # add your own handle, so that you can send DMs
+                # to yourself as reminders
+                msg += nickname + '@' + domain_full + '\n'
+        except OSError:
+            print('EX: html_following_dropdown unable to read ' +
+                  following_filename)
     if msg:
         # include petnames
         petnames_filename = \
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
         if use_petnames and os.path.isfile(petnames_filename):
             following_list = []
-            with open(petnames_filename, 'r',
-                      encoding='utf-8') as petnames_file:
-                pet_str = petnames_file.read()
-                # extract each petname and append it
-                petnames_list = pet_str.split('\n')
-                for pet in petnames_list:
-                    following_list.append(pet.split(' ')[0])
+            try:
+                with open(petnames_filename, 'r',
+                          encoding='utf-8') as fp_petnames:
+                    pet_str = fp_petnames.read()
+                    # extract each petname and append it
+                    petnames_list = pet_str.split('\n')
+                    for pet in petnames_list:
+                        following_list.append(pet.split(' ')[0])
+            except OSError:
+                print('EX: html_following_dropdown unable to read ' +
+                      petnames_filename)
             # add the following.txt entries
             following_list += msg.split('\n')
         else:

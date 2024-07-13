@@ -884,8 +884,12 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             nickname = None
 
     # read the index
-    with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
-        lines = fp_hash.readlines()
+    lines = []
+    try:
+        with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
+            lines = fp_hash.readlines()
+    except OSError:
+        print('EX: html_hashtag_search unable to read ' + hashtag_index_file)
 
     # read the css
     css_filename = base_dir + '/epicyon-profile.css'
@@ -1308,8 +1312,11 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
 
     # read the index
     lines = []
-    with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
-        lines = fp_hash.readlines()
+    try:
+        with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
+            lines = fp_hash.readlines()
+    except OSError:
+        print('EX: hashtag_search_rss unable to read ' + hashtag_index_file)
     if not lines:
         return None
 
@@ -1419,8 +1426,12 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
 
     # read the index
     lines = []
-    with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
-        lines = fp_hash.readlines()
+    try:
+        with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
+            lines = fp_hash.readlines()
+    except OSError:
+        print('EX: hashtag_search_json unable to read ' +
+              hashtag_index_file)
     if not lines:
         return None
 
