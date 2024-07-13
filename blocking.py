@@ -95,7 +95,7 @@ def get_account_blocks(base_dir: str,
         with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
             blocking_file_text = fp_block.read()
     except OSError:
-        print('EX: Failed to read ' + blocking_filename)
+        print('EX: Failed to read account blocks ' + blocking_filename)
         return ''
 
     blocklist = blocking_file_text.split('\n')
@@ -504,7 +504,7 @@ def _remove_global_block_reason(base_dir: str,
                   encoding='utf-8') as reas_file:
             reasons_str = reas_file.read()
     except OSError:
-        print('EX: unable to read blocking reasons 2')
+        print('EX: unable to read blocking reasons 3')
     reasons_lines = reasons_str.split('\n')
     new_reasons_str = ''
     for line in reasons_lines:
