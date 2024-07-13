@@ -62,7 +62,7 @@ def get_global_block_reason(search_text: str,
                   encoding='utf-8') as fp_reas:
             reasons_str = fp_reas.read()
     except OSError:
-        print('WARN: Failed to raed blocking reasons ' +
+        print('WARN: Failed to read blocking reasons ' +
               blocking_reasons_filename)
     if not reasons_str:
         return ''
