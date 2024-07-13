@@ -803,8 +803,9 @@ def html_edit_blog(media_instance: bool, translate: {},
     dir_str = data_dir(base_dir)
     if os.path.isfile(dir_str + '/newpost.txt'):
         try:
-            with open(dir_str + '/newpost.txt', 'r', encoding='utf-8') as file:
-                edit_blog_text = '<p>' + file.read() + '</p>'
+            with open(dir_str + '/newpost.txt', 'r',
+                      encoding='utf-8') as fp_blog:
+                edit_blog_text = '<p>' + fp_blog.read() + '</p>'
         except OSError:
             print('EX: html_edit_blog unable to read ' +
                   dir_str + '/newpost.txt')

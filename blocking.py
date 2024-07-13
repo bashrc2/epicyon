@@ -1647,8 +1647,8 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
                                 if handle_domain not in allowed_domains:
                                     allowed_domains.append(handle_domain)
                     except OSError as ex:
-                        print('EX: failed to read ' + following_filename +
-                              ' ' + str(ex))
+                        print('EX: set_broch_mode failed to read ' +
+                              following_filename + ' ' + str(ex))
             break
 
         # write the allow file
