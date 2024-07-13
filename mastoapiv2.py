@@ -51,20 +51,24 @@ def _meta_data_instance_v2(show_accounts: bool,
     rules_list = []
     rules_filename = data_dir(base_dir) + '/tos.md'
     if os.path.isfile(rules_filename):
-        with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
-            rules_lines = fp_rules.readlines()
-            rule_ctr = 1
-            for line in rules_lines:
-                line = line.strip()
-                if not line:
-                    continue
-                if line.startswith('#'):
-                    continue
-                rules_list.append({
-                    'id': str(rule_ctr),
-                    'text': line
-                })
-                rule_ctr += 1
+        rules_lines = []
+        try:
+            with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
+                rules_lines = fp_rules.readlines()
+        except OSError:
+            print('EX: _meta_data_instance_v2 unable to read rules')
+        rule_ctr = 1
+        for line in rules_lines:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith('#'):
+                continue
+            rules_list.append({
+                'id': str(rule_ctr),
+                'text': line
+            })
+            rule_ctr += 1
 
     is_bot = False
     is_group = False
@@ -119,7 +123,8 @@ def _meta_data_instance_v2(show_accounts: bool,
                       encoding='utf-8') as fp_pub:
                 published = fp_pub.read()
         except OSError:
-            print('EX: unable to read last published time 2 ' +
+            print('EX: _meta_data_instance_v2 ' +
+                  'unable to read last published time 2 ' +
                   published_filename)
 
     # get all supported mime types
