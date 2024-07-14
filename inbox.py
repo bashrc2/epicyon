@@ -1588,7 +1588,7 @@ def _valid_post_content(base_dir: str, nickname: str, domain: str,
                 if message_json['object'].get('id'):
                     print('REJECT: ' + message_json['object']['id'])
                 print('REJECT: Too many tags in post - ' +
-                      message_json['object']['tag'])
+                      str(message_json['object']['tag']))
                 return False
     # check that the post is in a language suitable for this account
     if not understood_post_language(base_dir, nickname,
