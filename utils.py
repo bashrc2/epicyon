@@ -1328,8 +1328,8 @@ def load_json(filename: str) -> {}:
 
     # load from file
     try:
-        with open(filename, 'r', encoding='utf-8') as json_file:
-            data = json_file.read()
+        with open(filename, 'r', encoding='utf-8') as fp_json:
+            data = fp_json.read()
     except OSError as exc:
         print('EX: load_json exception ' + str(filename) + ' ' + str(exc))
         return json_object
@@ -1358,8 +1358,8 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
     tries = 0
     while tries < 5:
         try:
-            with open(filename, 'r', encoding='utf-8') as json_file:
-                data = json_file.read()
+            with open(filename, 'r', encoding='utf-8') as fp_json:
+                data = fp_json.read()
                 if data:
                     data = data.replace(domain, onion_domain)
                     data = data.replace('https:', 'http:')
@@ -1961,14 +1961,17 @@ def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
                   petnames_filename)
         return
 
-    with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
-        petnames_str = petnames_file.read()
-        if petnames_str:
-            petnames_list = petnames_str.split('\n')
-            for pet in petnames_list:
-                if pet.startswith(follow_nickname + ' '):
-                    # petname already exists
-                    return
+    try:
+        with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
+            petnames_str = petnames_file.read()
+            if petnames_str:
+                petnames_list = petnames_str.split('\n')
+                for pet in petnames_list:
+                    if pet.startswith(follow_nickname + ' '):
+                        # petname already exists
+                        return
+    except OSError:
+        print('EX: _set_default_pet_name unable to read ' + petnames_filename)
     # petname doesn't already exist
     with open(petnames_filename, 'a+', encoding='utf-8') as petnames_file:
         petnames_file.write(petname_lookup_entry)
@@ -2141,13 +2144,16 @@ def locate_news_arrival(base_dir: str, domain: str,
     account_dir = data_dir(base_dir) + '/news@' + domain + '/'
     post_filename = account_dir + 'outbox/' + post_url
     if os.path.isfile(post_filename):
-        with open(post_filename, 'r', encoding='utf-8') as arrival_file:
-            arrival = arrival_file.read()
-            if arrival:
-                arrival_date = \
-                    date_from_string_format(arrival,
-                                            ["%Y-%m-%dT%H:%M:%S%z"])
-                return arrival_date
+        try:
+            with open(post_filename, 'r', encoding='utf-8') as arrival_file:
+                arrival = arrival_file.read()
+                if arrival:
+                    arrival_date = \
+                        date_from_string_format(arrival,
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
+                    return arrival_date
+        except OSError:
+            print('EX: locate_news_arrival unable to read ' + post_filename)
 
     return None
 
@@ -2249,11 +2255,15 @@ def get_reply_interval_hours(base_dir: str, nickname: str, domain: str,
     reply_interval_filename = \
         acct_dir(base_dir, nickname, domain) + '/.reply_interval_hours'
     if os.path.isfile(reply_interval_filename):
-        with open(reply_interval_filename, 'r',
-                  encoding='utf-8') as interval_file:
-            hours_str = interval_file.read()
-            if hours_str.isdigit():
-                return int(hours_str)
+        try:
+            with open(reply_interval_filename, 'r',
+                      encoding='utf-8') as fp_interval:
+                hours_str = fp_interval.read()
+                if hours_str.isdigit():
+                    return int(hours_str)
+        except OSError:
+            print('EX: get_reply_interval_hours unable to read ' +
+                  reply_interval_filename)
     return default_reply_interval_hrs
 
 
@@ -2417,15 +2427,19 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
         return
     if debug:
         print('DEBUG: removing replies to ' + post_filename)
-    with open(replies_filename, 'r', encoding='utf-8') as replies_file:
-        for reply_id in replies_file:
-            reply_file = locate_post(base_dir, nickname, domain, reply_id)
-            if not reply_file:
-                continue
-            if os.path.isfile(reply_file):
-                delete_post(base_dir, http_prefix,
-                            nickname, domain, reply_file, debug,
-                            recent_posts_cache, manual)
+    try:
+        with open(replies_filename, 'r', encoding='utf-8') as replies_file:
+            for reply_id in replies_file:
+                reply_file = locate_post(base_dir, nickname, domain, reply_id)
+                if not reply_file:
+                    continue
+                if os.path.isfile(reply_file):
+                    delete_post(base_dir, http_prefix,
+                                nickname, domain, reply_file, debug,
+                                recent_posts_cache, manual)
+    except OSError:
+        print('EX: _delete_post_remove_replies unable to read ' +
+              replies_filename)
     # remove the replies file
     try:
         os.remove(replies_filename)
@@ -2520,8 +2534,12 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
     """Remove post_id from the tag index file
     """
     lines = None
-    with open(tag_index_filename, 'r', encoding='utf-8') as index_file:
-        lines = index_file.readlines()
+    try:
+        with open(tag_index_filename, 'r', encoding='utf-8') as fp_index:
+            lines = fp_index.readlines()
+    except OSError:
+        print('EX: _remove_post_id_from_tag_index unable to read ' +
+              tag_index_filename)
     if not lines:
         return
     newlines = ''
@@ -2606,16 +2624,20 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(conversation_filename):
         return False
     conversation_str = ''
-    with open(conversation_filename, 'r', encoding='utf-8') as conv_file:
-        conversation_str = conv_file.read()
+    try:
+        with open(conversation_filename, 'r', encoding='utf-8') as fp_conv:
+            conversation_str = fp_conv.read()
+    except OSError:
+        print('EX: _delete_conversation_post unable to read ' +
+              conversation_filename)
     if post_id + '\n' not in conversation_str:
         return False
     conversation_str = conversation_str.replace(post_id + '\n', '')
     if conversation_str:
         try:
             with open(conversation_filename, 'w+',
-                      encoding='utf-8') as conv_file:
-                conv_file.write(conversation_str)
+                      encoding='utf-8') as fp_conv:
+                fp_conv.write(conversation_str)
         except OSError:
             print('EX: _delete_conversation_post unable to write ' +
                   conversation_filename)
@@ -2968,13 +2990,17 @@ def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
                 dir_str + '/' + account + '/.lastUsed'
             if not os.path.isfile(last_used_filename):
                 continue
-            with open(last_used_filename, 'r',
-                      encoding='utf-8') as last_used_file:
-                last_used = last_used_file.read()
-                if last_used.isdigit():
-                    time_diff = curr_time - int(last_used)
-                    if time_diff < month_seconds:
-                        account_ctr += 1
+            try:
+                with open(last_used_filename, 'r',
+                          encoding='utf-8') as fp_last_used:
+                    last_used = fp_last_used.read()
+                    if last_used.isdigit():
+                        time_diff = curr_time - int(last_used)
+                        if time_diff < month_seconds:
+                            account_ctr += 1
+            except OSError:
+                print('EX: no_of_active_accounts_monthly unable to read ' +
+                      last_used_filename)
         break
     return account_ctr
 
@@ -3158,9 +3184,12 @@ def get_css(base_dir: str, css_filename: str) -> str:
     if not os.path.isfile(css_filename):
         return None
 
-    with open(css_filename, 'r', encoding='utf-8') as fp_css:
-        css = fp_css.read()
-        return css
+    try:
+        with open(css_filename, 'r', encoding='utf-8') as fp_css:
+            css = fp_css.read()
+            return css
+    except OSError:
+        print('EX: get_css unable to read ' + css_filename)
 
     return None
 
@@ -3211,31 +3240,35 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
         search_words = [search_str]
 
     res = []
-    with open(index_filename, 'r', encoding='utf-8') as index_file:
-        post_filename = 'start'
-        while post_filename:
-            post_filename = index_file.readline()
-            if not post_filename:
-                break
-            if '.json' not in post_filename:
-                break
-            post_filename = path + '/' + post_filename.strip()
-            if not os.path.isfile(post_filename):
-                continue
-            with open(post_filename, 'r', encoding='utf-8') as post_file:
-                data = post_file.read().lower()
-
-                not_found = False
-                for keyword in search_words:
-                    if keyword not in data:
-                        not_found = True
-                        break
-                if not_found:
+    try:
+        with open(index_filename, 'r', encoding='utf-8') as fp_index:
+            post_filename = 'start'
+            while post_filename:
+                post_filename = fp_index.readline()
+                if not post_filename:
+                    break
+                if '.json' not in post_filename:
+                    break
+                post_filename = path + '/' + post_filename.strip()
+                if not os.path.isfile(post_filename):
                     continue
+                with open(post_filename, 'r', encoding='utf-8') as fp_post:
+                    data = fp_post.read().lower()
 
-                res.append(post_filename)
-                if len(res) >= max_results:
-                    return res
+                    not_found = False
+                    for keyword in search_words:
+                        if keyword not in data:
+                            not_found = True
+                            break
+                    if not_found:
+                        continue
+
+                    res.append(post_filename)
+                    if len(res) >= max_results:
+                        return res
+    except OSError as exc:
+        print('EX: _search_virtual_box_posts unable to read ' +
+              index_filename + ' ' + str(exc))
     return res
 
 
@@ -3267,8 +3300,8 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
         for fname in fnames:
             file_path = os.path.join(root, fname)
             try:
-                with open(file_path, 'r', encoding='utf-8') as post_file:
-                    data = post_file.read().lower()
+                with open(file_path, 'r', encoding='utf-8') as fp_post:
+                    data = fp_post.read().lower()
 
                     not_found = False
                     for keyword in search_words:
