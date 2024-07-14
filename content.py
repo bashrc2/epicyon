@@ -2355,7 +2355,8 @@ def add_auto_cw(base_dir: str, nickname: str, domain: str,
         if not cw_str:
             continue
         if new_subject:
-            if cw_str not in new_subject:
+            if cw_str not in new_subject and \
+               cw_str.title() not in new_subject:
                 new_subject += ', ' + cw_str
         else:
             new_subject = cw_str
