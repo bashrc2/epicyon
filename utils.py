@@ -669,8 +669,8 @@ def refresh_newswire(base_dir: str):
         return
     try:
         with open(refresh_newswire_filename, 'w+',
-                  encoding='utf-8') as refresh_file:
-            refresh_file.write('\n')
+                  encoding='utf-8') as fp_refresh:
+            fp_refresh.write('\n')
     except OSError:
         print('EX: refresh_newswire unable to write ' +
               refresh_newswire_filename)
@@ -803,8 +803,8 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
     days_since_epoch_str = None
     try:
         with open(last_seen_filename, 'r',
-                  encoding='utf-8') as last_seen_file:
-            days_since_epoch_str = last_seen_file.read()
+                  encoding='utf-8') as fp_last_seen:
+            days_since_epoch_str = fp_last_seen.read()
     except OSError:
         print('EX: failed to read last seen ' + last_seen_filename)
         return False
@@ -1161,8 +1161,8 @@ def is_suspended(base_dir: str, nickname: str) -> bool:
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        with open(suspended_filename, 'r', encoding='utf-8') as susp_file:
-            lines = susp_file.readlines()
+        with open(suspended_filename, 'r', encoding='utf-8') as fp_susp:
+            lines = fp_susp.readlines()
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return True
@@ -1179,8 +1179,8 @@ def get_followers_list(base_dir: str,
     if not os.path.isfile(filename):
         return []
 
-    with open(filename, 'r', encoding='utf-8') as foll_file:
-        lines = foll_file.readlines()
+    with open(filename, 'r', encoding='utf-8') as fp_foll:
+        lines = fp_foll.readlines()
         for i, _ in enumerate(lines):
             lines[i] = lines[i].strip()
         return lines
@@ -1303,8 +1303,8 @@ def save_json(json_object: {}, filename: str) -> bool:
     tries = 1
     while tries <= 5:
         try:
-            with open(filename, 'w+', encoding='utf-8') as json_file:
-                json_file.write(json.dumps(json_object))
+            with open(filename, 'w+', encoding='utf-8') as fp_json:
+                fp_json.write(json.dumps(json_object))
                 return True
         except OSError as exc:
             print('EX: save_json ' + str(tries) + ' ' + str(filename) +
@@ -1954,16 +1954,16 @@ def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
         # if there is no existing petnames lookup file
         try:
             with open(petnames_filename, 'w+',
-                      encoding='utf-8') as petnames_file:
-                petnames_file.write(petname_lookup_entry)
+                      encoding='utf-8') as fp_petnames:
+                fp_petnames.write(petname_lookup_entry)
         except OSError:
             print('EX: _set_default_pet_name unable to write ' +
                   petnames_filename)
         return
 
     try:
-        with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
-            petnames_str = petnames_file.read()
+        with open(petnames_filename, 'r', encoding='utf-8') as fp_petnames:
+            petnames_str = fp_petnames.read()
             if petnames_str:
                 petnames_list = petnames_str.split('\n')
                 for pet in petnames_list:
@@ -1971,10 +1971,15 @@ def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
                         # petname already exists
                         return
     except OSError:
-        print('EX: _set_default_pet_name unable to read ' + petnames_filename)
+        print('EX: _set_default_pet_name unable to read 1 ' +
+              petnames_filename)
     # petname doesn't already exist
-    with open(petnames_filename, 'a+', encoding='utf-8') as petnames_file:
-        petnames_file.write(petname_lookup_entry)
+    try:
+        with open(petnames_filename, 'a+', encoding='utf-8') as fp_petnames:
+            fp_petnames.write(petname_lookup_entry)
+    except OSError:
+        print('EX: _set_default_pet_name unable to read 2 ' +
+              petnames_filename)
 
 
 def follow_person(base_dir: str, nickname: str, domain: str,
@@ -2023,8 +2028,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
             new_lines = ''
             try:
                 with open(unfollowed_filename, 'r',
-                          encoding='utf-8') as unfoll_file:
-                    lines = unfoll_file.readlines()
+                          encoding='utf-8') as fp_unfoll:
+                    lines = fp_unfoll.readlines()
                     for line in lines:
                         if handle_to_follow not in line:
                             new_lines += line
@@ -2033,8 +2038,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                       unfollowed_filename)
             try:
                 with open(unfollowed_filename, 'w+',
-                          encoding='utf-8') as unfoll_file:
-                    unfoll_file.write(new_lines)
+                          encoding='utf-8') as fp_unfoll:
+                    fp_unfoll.write(new_lines)
             except OSError:
                 print('EX: follow_person unable to write ' +
                       unfollowed_filename)
@@ -2053,11 +2058,11 @@ def follow_person(base_dir: str, nickname: str, domain: str,
             return True
         # prepend to follow file
         try:
-            with open(filename, 'r+', encoding='utf-8') as foll_file:
-                content = foll_file.read()
+            with open(filename, 'r+', encoding='utf-8') as fp_foll:
+                content = fp_foll.read()
                 if handle_to_follow + '\n' not in content:
-                    foll_file.seek(0, 0)
-                    foll_file.write(handle_to_follow + '\n' + content)
+                    fp_foll.seek(0, 0)
+                    fp_foll.write(handle_to_follow + '\n' + content)
                     print('DEBUG: follow added')
         except OSError as ex:
             print('WARN: Failed to write entry to follow file ' +
@@ -2070,8 +2075,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                   handle_to_follow +
                   ', filename is ' + filename)
         try:
-            with open(filename, 'w+', encoding='utf-8') as foll_file:
-                foll_file.write(handle_to_follow + '\n')
+            with open(filename, 'w+', encoding='utf-8') as fp_foll:
+                fp_foll.write(handle_to_follow + '\n')
         except OSError:
             print('EX: follow_person unable to write ' + filename)
 
@@ -2145,8 +2150,8 @@ def locate_news_arrival(base_dir: str, domain: str,
     post_filename = account_dir + 'outbox/' + post_url
     if os.path.isfile(post_filename):
         try:
-            with open(post_filename, 'r', encoding='utf-8') as arrival_file:
-                arrival = arrival_file.read()
+            with open(post_filename, 'r', encoding='utf-8') as fp_arrival:
+                arrival = fp_arrival.read()
                 if arrival:
                     arrival_date = \
                         date_from_string_format(arrival,
@@ -2277,8 +2282,8 @@ def set_reply_interval_hours(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/.reply_interval_hours'
     try:
         with open(reply_interval_filename, 'w+',
-                  encoding='utf-8') as interval_file:
-            interval_file.write(str(reply_interval_hours))
+                  encoding='utf-8') as fp_interval:
+            fp_interval.write(str(reply_interval_hours))
             return True
     except OSError:
         print('EX: set_reply_interval_hours unable to save reply interval ' +
@@ -2428,8 +2433,8 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
     if debug:
         print('DEBUG: removing replies to ' + post_filename)
     try:
-        with open(replies_filename, 'r', encoding='utf-8') as replies_file:
-            for reply_id in replies_file:
+        with open(replies_filename, 'r', encoding='utf-8') as fp_replies:
+            for reply_id in fp_replies:
                 reply_file = locate_post(base_dir, nickname, domain, reply_id)
                 if not reply_file:
                     continue
@@ -2559,8 +2564,8 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
         # write the new hashtag index without the given post in it
         try:
             with open(tag_index_filename, 'w+',
-                      encoding='utf-8') as index_file:
-                index_file.write(newlines)
+                      encoding='utf-8') as fp_index:
+                fp_index.write(newlines)
         except OSError:
             print('EX: _remove_post_id_from_tag_index unable to write ' +
                   tag_index_filename)
@@ -3763,8 +3768,8 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
 
     try:
         with open(post_filename + '.reject', 'w+',
-                  encoding='utf-8') as reject_file:
-            reject_file.write('\n')
+                  encoding='utf-8') as fp_reject:
+            fp_reject.write('\n')
     except OSError:
         print('EX: reject_post_id unable to write ' +
               post_filename + '.reject')
