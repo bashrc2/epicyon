@@ -27,8 +27,8 @@ def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
             return False
     try:
         with open(filters_filename, 'a+',
-                  encoding='utf-8') as filters_file:
-            filters_file.write(words + '\n')
+                  encoding='utf-8') as fp_filters:
+            fp_filters.write(words + '\n')
     except OSError:
         print('EX: unable to append filters ' + filters_filename)
         return False
@@ -48,8 +48,8 @@ def add_global_filter(base_dir: str, words: str) -> bool:
         if text_in_file(words, filters_filename):
             return False
     try:
-        with open(filters_filename, 'a+', encoding='utf-8') as filters_file:
-            filters_file.write(words + '\n')
+        with open(filters_filename, 'a+', encoding='utf-8') as fp_filters:
+            fp_filters.write(words + '\n')
     except OSError:
         print('EX: unable to append filters ' + filters_filename)
         return False

@@ -83,8 +83,8 @@ def get_favicon(self, calling_domain: str,
     if os.path.isfile(favicon_filename):
         fav_binary = None
         try:
-            with open(favicon_filename, 'rb') as fav_file:
-                fav_binary = fav_file.read()
+            with open(favicon_filename, 'rb') as fp_fav:
+                fav_binary = fp_fav.read()
         except OSError:
             print('EX: unable to read favicon ' + favicon_filename)
         if fav_binary:
@@ -133,8 +133,8 @@ def show_cached_favicon(self, referer_domain: str, path: str,
         return
     media_binary = None
     try:
-        with open(fav_filename, 'rb') as av_file:
-            media_binary = av_file.read()
+        with open(fav_filename, 'rb') as fp_av:
+            media_binary = fp_av.read()
     except OSError:
         print('EX: unable to read cached favicon ' + fav_filename)
     if media_binary:

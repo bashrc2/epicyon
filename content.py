@@ -241,8 +241,8 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
 
     content = None
     try:
-        with open(filename, 'r', encoding='utf-8') as css_file:
-            content = css_file.read().lower()
+        with open(filename, 'r', encoding='utf-8') as fp_css:
+            content = fp_css.read().lower()
     except OSError:
         print('EX: unable to read css file ' + filename)
 
@@ -293,8 +293,8 @@ def switch_words(base_dir: str, nickname: str, domain: str, content: str,
             return content
         try:
             with open(switch_words_filename, 'r',
-                      encoding='utf-8') as words_file:
-                rules = words_file.readlines()
+                      encoding='utf-8') as fp_words:
+                rules = fp_words.readlines()
         except OSError:
             print('EX: unable to read switches ' + switch_words_filename)
 
@@ -1163,8 +1163,8 @@ def _load_auto_tags(base_dir: str, nickname: str, domain: str) -> []:
     if not os.path.isfile(filename):
         return []
     try:
-        with open(filename, 'r', encoding='utf-8') as tags_file:
-            return tags_file.readlines()
+        with open(filename, 'r', encoding='utf-8') as fp_tags:
+            return fp_tags.readlines()
     except OSError:
         print('EX: unable to read auto tags ' + filename)
     return []
@@ -1381,8 +1381,8 @@ def add_html_tags(base_dir: str, http_prefix: str,
             following = []
             try:
                 with open(following_filename, 'r',
-                          encoding='utf-8') as foll_file:
-                    following = foll_file.readlines()
+                          encoding='utf-8') as fp_foll:
+                    following = fp_foll.readlines()
             except OSError:
                 print('EX: add_html_tags unable to read ' +
                       following_filename)

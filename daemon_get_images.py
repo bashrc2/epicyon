@@ -107,8 +107,8 @@ def show_avatar_or_banner(self, referer_domain: str, path: str,
     media_image_type = get_image_mime_type(avatar_file)
     media_binary = None
     try:
-        with open(avatar_filename, 'rb') as av_file:
-            media_binary = av_file.read()
+        with open(avatar_filename, 'rb') as fp_av:
+            media_binary = fp_av.read()
     except OSError:
         print('EX: unable to read avatar ' + avatar_filename)
     if media_binary:
@@ -136,8 +136,8 @@ def show_cached_avatar(self, referer_domain: str, path: str,
             return
         media_binary = None
         try:
-            with open(media_filename, 'rb') as av_file:
-                media_binary = av_file.read()
+            with open(media_filename, 'rb') as fp_av:
+                media_binary = fp_av.read()
         except OSError:
             print('EX: unable to read cached avatar ' + media_filename)
         if media_binary:
@@ -186,8 +186,8 @@ def show_help_screen_image(self, path: str,
     if os.path.isfile(media_filename):
         media_binary = None
         try:
-            with open(media_filename, 'rb') as av_file:
-                media_binary = av_file.read()
+            with open(media_filename, 'rb') as fp_av:
+                media_binary = fp_av.read()
         except OSError:
             print('EX: unable to read help image ' + media_filename)
         if media_binary:
@@ -237,8 +237,8 @@ def show_manual_image(self, path: str,
     if os.path.isfile(media_filename):
         media_binary = None
         try:
-            with open(media_filename, 'rb') as av_file:
-                media_binary = av_file.read()
+            with open(media_filename, 'rb') as fp_av:
+                media_binary = fp_av.read()
         except OSError:
             print('EX: unable to read manual image ' +
                   media_filename)
@@ -290,8 +290,8 @@ def show_specification_image(self, path: str,
     if os.path.isfile(media_filename):
         media_binary = None
         try:
-            with open(media_filename, 'rb') as av_file:
-                media_binary = av_file.read()
+            with open(media_filename, 'rb') as fp_av:
+                media_binary = fp_av.read()
         except OSError:
             print('EX: unable to read specification image ' +
                   media_filename)
@@ -335,8 +335,8 @@ def show_share_image(self, path: str,
     media_file_type = get_image_mime_type(media_filename)
     media_binary = None
     try:
-        with open(media_filename, 'rb') as av_file:
-            media_binary = av_file.read()
+        with open(media_filename, 'rb') as fp_av:
+            media_binary = fp_av.read()
     except OSError:
         print('EX: unable to read binary ' + media_filename)
     if media_binary:
@@ -393,8 +393,8 @@ def show_icon(self, path: str,
     if os.path.isfile(media_filename):
         media_binary = None
         try:
-            with open(media_filename, 'rb') as av_file:
-                media_binary = av_file.read()
+            with open(media_filename, 'rb') as fp_av:
+                media_binary = fp_av.read()
         except OSError:
             print('EX: unable to read icon image ' + media_filename)
         if media_binary:
@@ -465,8 +465,8 @@ def show_media(self, path: str, base_dir: str,
 
             media_binary = None
             try:
-                with open(media_filename, 'rb') as av_file:
-                    media_binary = av_file.read()
+                with open(media_filename, 'rb') as fp_av:
+                    media_binary = fp_av.read()
             except OSError:
                 print('EX: unable to read media binary ' + media_filename)
             if media_binary:
@@ -513,8 +513,8 @@ def show_qrcode(self, calling_domain: str, path: str,
         media_binary = None
         while tries < 5:
             try:
-                with open(qr_filename, 'rb') as av_file:
-                    media_binary = av_file.read()
+                with open(qr_filename, 'rb') as fp_av:
+                    media_binary = fp_av.read()
                     break
             except OSError as ex:
                 print('EX: _show_qrcode ' + str(tries) + ' ' + str(ex))
@@ -562,8 +562,8 @@ def search_screen_banner(self, path: str,
         media_binary = None
         while tries < 5:
             try:
-                with open(banner_filename, 'rb') as av_file:
-                    media_binary = av_file.read()
+                with open(banner_filename, 'rb') as fp_av:
+                    media_binary = fp_av.read()
                     break
             except OSError as ex:
                 print('EX: _search_screen_banner ' +
@@ -607,8 +607,8 @@ def column_image(self, side: str, path: str, base_dir: str, domain: str,
         media_binary = None
         while tries < 5:
             try:
-                with open(banner_filename, 'rb') as av_file:
-                    media_binary = av_file.read()
+                with open(banner_filename, 'rb') as fp_av:
+                    media_binary = fp_av.read()
                     break
             except OSError as ex:
                 print('EX: _column_image ' + str(tries) + ' ' + str(ex))
@@ -650,8 +650,8 @@ def show_default_profile_background(self, base_dir: str, theme_name: str,
             bg_binary = None
             while tries < 5:
                 try:
-                    with open(bg_filename, 'rb') as av_file:
-                        bg_binary = av_file.read()
+                    with open(bg_filename, 'rb') as fp_av:
+                        bg_binary = fp_av.read()
                         break
                 except OSError as ex:
                     print('EX: _show_default_profile_background ' +
@@ -702,8 +702,8 @@ def show_background_image(self, path: str,
                     bg_binary = None
                     while tries < 5:
                         try:
-                            with open(bg_filename, 'rb') as av_file:
-                                bg_binary = av_file.read()
+                            with open(bg_filename, 'rb') as fp_av:
+                                bg_binary = fp_av.read()
                                 break
                         except OSError as ex:
                             print('EX: _show_background_image ' +
@@ -748,8 +748,8 @@ def show_emoji(self, path: str,
             media_image_type = get_image_mime_type(emoji_filename)
             media_binary = None
             try:
-                with open(emoji_filename, 'rb') as av_file:
-                    media_binary = av_file.read()
+                with open(emoji_filename, 'rb') as fp_av:
+                    media_binary = fp_av.read()
             except OSError:
                 print('EX: unable to read emoji image ' + emoji_filename)
             if media_binary:

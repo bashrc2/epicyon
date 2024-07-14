@@ -96,8 +96,8 @@ def html_following_list(base_dir: str, following_filename: str) -> str:
     """
     msg = ''
     try:
-        with open(following_filename, 'r', encoding='utf-8') as following_file:
-            msg = following_file.read()
+        with open(following_filename, 'r', encoding='utf-8') as fp_following:
+            msg = fp_following.read()
     except OSError:
         print('EX: html_following_list unable to read ' + following_filename)
     if msg:
@@ -129,8 +129,8 @@ def csv_following_list(following_filename: str,
     """
     msg = ''
     try:
-        with open(following_filename, 'r', encoding='utf-8') as following_file:
-            msg = following_file.read()
+        with open(following_filename, 'r', encoding='utf-8') as fp_following:
+            msg = fp_following.read()
     except OSError:
         print('EX: csv_following_list unable to read ' + following_filename)
     if msg:
@@ -2222,8 +2222,8 @@ def html_following_data_list(base_dir: str, nickname: str,
     if os.path.isfile(following_filename):
         try:
             with open(following_filename, 'r',
-                      encoding='utf-8') as following_file:
-                msg = following_file.read()
+                      encoding='utf-8') as fp_following:
+                msg = fp_following.read()
                 # add your own handle, so that you can send DMs
                 # to yourself as reminders
                 msg += nickname + '@' + domain_full + '\n'

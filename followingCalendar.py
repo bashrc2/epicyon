@@ -74,8 +74,8 @@ def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
         following_handles = None
         try:
             with open(following_filename, 'r',
-                      encoding='utf-8') as following_file:
-                following_handles = following_file.read()
+                      encoding='utf-8') as fp_following:
+                following_handles = fp_following.read()
         except OSError:
             print('EX: receiving_calendar_events ' + following_filename)
         if following_handles:
@@ -120,8 +120,8 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
         print('Calendar file exists')
         try:
             with open(calendar_filename, 'r',
-                      encoding='utf-8') as calendar_file:
-                following_handles = calendar_file.read()
+                      encoding='utf-8') as fp_calendar:
+                following_handles = fp_calendar.read()
         except OSError:
             print('EX: _receive_calendar_events ' + calendar_filename)
     else:
@@ -130,8 +130,8 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
         following_handles = ''
         try:
             with open(following_filename, 'r',
-                      encoding='utf-8') as following_file:
-                following_handles = following_file.read()
+                      encoding='utf-8') as fp_following:
+                following_handles = fp_following.read()
         except OSError:
             print('EX: _receive_calendar_events 2 ' + calendar_filename)
         if add:

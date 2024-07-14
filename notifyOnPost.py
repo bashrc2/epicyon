@@ -45,8 +45,8 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
         print('notify file exists')
         try:
             with open(notify_on_post_filename, 'r',
-                      encoding='utf-8') as calendar_file:
-                following_handles = calendar_file.read()
+                      encoding='utf-8') as fp_calendar:
+                following_handles = fp_calendar.read()
         except OSError:
             print('EX: _notify_on_post_arrival unable to read 1 ' +
                   notify_on_post_filename)
@@ -56,8 +56,8 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
         following_handles = ''
         try:
             with open(following_filename, 'r',
-                      encoding='utf-8') as following_file:
-                following_handles = following_file.read()
+                      encoding='utf-8') as fp_following:
+                following_handles = fp_following.read()
         except OSError:
             print('EX: _notify_on_post_arrival unable to read 2 ' +
                   following_filename)

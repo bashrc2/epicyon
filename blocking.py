@@ -259,8 +259,8 @@ def _add_global_block_reason(base_dir: str,
                             blocking_reasons_filename):
             try:
                 with open(blocking_reasons_filename, 'a+',
-                          encoding='utf-8') as reas_file:
-                    reas_file.write(reason_line)
+                          encoding='utf-8') as fp_reas:
+                    fp_reas.write(reason_line)
             except OSError:
                 print('EX: unable to add blocking reason ' +
                       block_id)
@@ -268,8 +268,8 @@ def _add_global_block_reason(base_dir: str,
             reasons_str = ''
             try:
                 with open(blocking_reasons_filename, 'r',
-                          encoding='utf-8') as reas_file:
-                    reasons_str = reas_file.read()
+                          encoding='utf-8') as fp_reas:
+                    reasons_str = fp_reas.read()
             except OSError:
                 print('EX: unable to read blocking reasons')
             reasons_lines = reasons_str.split('\n')
@@ -281,16 +281,16 @@ def _add_global_block_reason(base_dir: str,
                 new_reasons_str += reason_line
             try:
                 with open(blocking_reasons_filename, 'w+',
-                          encoding='utf-8') as reas_file:
-                    reas_file.write(new_reasons_str)
+                          encoding='utf-8') as fp_reas:
+                    fp_reas.write(new_reasons_str)
             except OSError:
                 print('EX: unable to save blocking reasons' +
                       blocking_reasons_filename)
     else:
         try:
             with open(blocking_reasons_filename, 'w+',
-                      encoding='utf-8') as reas_file:
-                reas_file.write(reason_line)
+                      encoding='utf-8') as fp_reas:
+                fp_reas.write(reason_line)
         except OSError:
             print('EX: unable to save blocking reason ' +
                   block_id + ' ' + blocking_reasons_filename)
@@ -315,8 +315,8 @@ def add_global_block(base_dir: str,
                 return False
         # block an account handle or domain
         try:
-            with open(blocking_filename, 'a+', encoding='utf-8') as block_file:
-                block_file.write(block_handle + '\n')
+            with open(blocking_filename, 'a+', encoding='utf-8') as fp_block:
+                fp_block.write(block_handle + '\n')
         except OSError:
             print('EX: unable to save blocked handle ' + block_handle)
             return False
@@ -328,8 +328,8 @@ def add_global_block(base_dir: str,
                 return False
         # block a hashtag
         try:
-            with open(blocking_filename, 'a+', encoding='utf-8') as block_file:
-                block_file.write(block_hashtag + '\n')
+            with open(blocking_filename, 'a+', encoding='utf-8') as fp_block:
+                fp_block.write(block_hashtag + '\n')
         except OSError:
             print('EX: unable to save blocked hashtag ' + block_hashtag)
             return False
@@ -363,8 +363,8 @@ def _add_block_reason(base_dir: str,
                             blocking_reasons_filename):
             try:
                 with open(blocking_reasons_filename, 'a+',
-                          encoding='utf-8') as reas_file:
-                    reas_file.write(reason_line)
+                          encoding='utf-8') as fp_reas:
+                    fp_reas.write(reason_line)
             except OSError:
                 print('EX: unable to add blocking reason 2 ' +
                       block_id)
@@ -372,8 +372,8 @@ def _add_block_reason(base_dir: str,
             reasons_str = ''
             try:
                 with open(blocking_reasons_filename, 'r',
-                          encoding='utf-8') as reas_file:
-                    reasons_str = reas_file.read()
+                          encoding='utf-8') as fp_reas:
+                    reasons_str = fp_reas.read()
             except OSError:
                 print('EX: unable to read blocking reasons 2')
             reasons_lines = reasons_str.split('\n')
@@ -385,16 +385,16 @@ def _add_block_reason(base_dir: str,
                 new_reasons_str += reason_line
             try:
                 with open(blocking_reasons_filename, 'w+',
-                          encoding='utf-8') as reas_file:
-                    reas_file.write(new_reasons_str)
+                          encoding='utf-8') as fp_reas:
+                    fp_reas.write(new_reasons_str)
             except OSError:
                 print('EX: unable to save blocking reasons 2' +
                       blocking_reasons_filename)
     else:
         try:
             with open(blocking_reasons_filename, 'w+',
-                      encoding='utf-8') as reas_file:
-                reas_file.write(reason_line)
+                      encoding='utf-8') as fp_reas:
+                fp_reas.write(reason_line)
         except OSError:
             print('EX: unable to save blocking reason 2 ' +
                   block_id + ' ' + blocking_reasons_filename)
@@ -425,8 +425,8 @@ def add_block(base_dir: str, nickname: str, domain: str,
             following_str = ''
             try:
                 with open(following_filename, 'r',
-                          encoding='utf-8') as foll_file:
-                    following_str = foll_file.read()
+                          encoding='utf-8') as fp_foll:
+                    following_str = fp_foll.read()
             except OSError:
                 print('EX: Unable to read following ' + following_filename)
                 return False
@@ -436,8 +436,8 @@ def add_block(base_dir: str, nickname: str, domain: str,
 
             try:
                 with open(following_filename, 'w+',
-                          encoding='utf-8') as foll_file:
-                    foll_file.write(following_str)
+                          encoding='utf-8') as fp_foll:
+                    fp_foll.write(following_str)
             except OSError:
                 print('EX: Unable to write following ' + following_str)
                 return False
@@ -450,8 +450,8 @@ def add_block(base_dir: str, nickname: str, domain: str,
             followers_str = ''
             try:
                 with open(followers_filename, 'r',
-                          encoding='utf-8') as foll_file:
-                    followers_str = foll_file.read()
+                          encoding='utf-8') as fp_foll:
+                    followers_str = fp_foll.read()
             except OSError:
                 print('EX: Unable to read followers ' + followers_filename)
                 return False
@@ -461,15 +461,15 @@ def add_block(base_dir: str, nickname: str, domain: str,
 
             try:
                 with open(followers_filename, 'w+',
-                          encoding='utf-8') as foll_file:
-                    foll_file.write(followers_str)
+                          encoding='utf-8') as fp_foll:
+                    fp_foll.write(followers_str)
             except OSError:
                 print('EX: Unable to write followers ' + followers_str)
                 return False
 
     try:
-        with open(blocking_filename, 'a+', encoding='utf-8') as block_file:
-            block_file.write(block_handle + '\n')
+        with open(blocking_filename, 'a+', encoding='utf-8') as fp_block:
+            fp_block.write(block_handle + '\n')
     except OSError:
         print('EX: unable to append block handle ' + block_handle)
         return False
@@ -501,8 +501,8 @@ def _remove_global_block_reason(base_dir: str,
     reasons_str = ''
     try:
         with open(unblocking_filename, 'r',
-                  encoding='utf-8') as reas_file:
-            reasons_str = reas_file.read()
+                  encoding='utf-8') as fp_reas:
+            reasons_str = fp_reas.read()
     except OSError:
         print('EX: unable to read blocking reasons 3')
     reasons_lines = reasons_str.split('\n')
@@ -513,8 +513,8 @@ def _remove_global_block_reason(base_dir: str,
         new_reasons_str += line + '\n'
     try:
         with open(unblocking_filename, 'w+',
-                  encoding='utf-8') as reas_file:
-            reas_file.write(new_reasons_str)
+                  encoding='utf-8') as fp_reas:
+            fp_reas.write(new_reasons_str)
     except OSError:
         print('EX: unable to save blocking reasons 2' +
               unblocking_filename)
@@ -1293,8 +1293,8 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
 
     try:
         with open(post_filename + '.muted', 'w+',
-                  encoding='utf-8') as mute_file:
-            mute_file.write('\n')
+                  encoding='utf-8') as fp_mute:
+            fp_mute.write('\n')
     except OSError:
         print('EX: Failed to save mute file ' + post_filename + '.muted')
         return
@@ -1637,8 +1637,8 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
                         continue
                     try:
                         with open(following_filename, 'r',
-                                  encoding='utf-8') as foll_file:
-                            follow_list = foll_file.readlines()
+                                  encoding='utf-8') as fp_foll:
+                            follow_list = fp_foll.readlines()
                             for handle in follow_list:
                                 if '@' not in handle:
                                     continue
@@ -1654,10 +1654,10 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
         # write the allow file
         try:
             with open(allow_filename, 'w+',
-                      encoding='utf-8') as allow_file:
-                allow_file.write(domain_full + '\n')
+                      encoding='utf-8') as fp_allow:
+                fp_allow.write(domain_full + '\n')
                 for allowed in allowed_domains:
-                    allow_file.write(allowed + '\n')
+                    fp_allow.write(allowed + '\n')
                 print('Broch mode enabled')
         except OSError as ex:
             print('EX: Broch mode not enabled due to file write ' + str(ex))

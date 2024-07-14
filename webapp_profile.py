@@ -1214,24 +1214,24 @@ def html_profile(signing_priv_key_pem: str,
         if os.path.isfile(follow_requests_filename):
             try:
                 with open(follow_requests_filename, 'r',
-                          encoding='utf-8') as foll_file:
-                    for line in foll_file:
+                          encoding='utf-8') as fp_foll:
+                    for line in fp_foll:
                         if len(line) > 0:
                             follow_approvals = True
                             followers_button = 'buttonhighlighted'
                             if selected == 'followers':
                                 followers_button = 'buttonselectedhighlighted'
                             break
-            except OSError:
+            except OSError as exc:
                 print('EX: html_profile unable to read ' +
-                      follow_requests_filename)
+                      follow_requests_filename + ' ' + str(exc))
         if selected == 'followers':
             if follow_approvals:
                 curr_follower_domains = \
                     get_follower_domains(base_dir, nickname, domain)
                 with open(follow_requests_filename, 'r',
-                          encoding='utf-8') as req_file:
-                    for follower_handle in req_file:
+                          encoding='utf-8') as fp_req:
+                    for follower_handle in fp_req:
                         if len(follower_handle) > 0:
                             follower_handle = \
                                 remove_eol(follower_handle)
@@ -1328,8 +1328,8 @@ def html_profile(signing_priv_key_pem: str,
     pinned_content = None
     if os.path.isfile(pinned_filename):
         try:
-            with open(pinned_filename, 'r', encoding='utf-8') as pin_file:
-                pinned_content = pin_file.read()
+            with open(pinned_filename, 'r', encoding='utf-8') as fp_pin:
+                pinned_content = fp_pin.read()
         except OSError:
             print('EX: html_profile unable to read ' + pinned_filename)
 
@@ -2084,8 +2084,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
         try:
-            with open(moderators_file, 'r', encoding='utf-8') as mod_file:
-                moderators = mod_file.read()
+            with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
+                moderators = fp_mod.read()
         except OSError:
             print('EX: _html_edit_profile_instance unable to read ' +
                   moderators_file)
@@ -2098,8 +2098,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     editors_file = data_dir(base_dir) + '/editors.txt'
     if os.path.isfile(editors_file):
         try:
-            with open(editors_file, 'r', encoding='utf-8') as edit_file:
-                editors = edit_file.read()
+            with open(editors_file, 'r', encoding='utf-8') as fp_edit:
+                editors = fp_edit.read()
         except OSError:
             print('EX: _html_edit_profile_instance unable to read ' +
                   editors_file)
@@ -2113,8 +2113,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     counselors_file = data_dir(base_dir) + '/counselors.txt'
     if os.path.isfile(counselors_file):
         try:
-            with open(counselors_file, 'r', encoding='utf-8') as co_file:
-                counselors = co_file.read()
+            with open(counselors_file, 'r', encoding='utf-8') as fp_co:
+                counselors = fp_co.read()
         except OSError:
             print('EX: _html_edit_profile_instance unable to read ' +
                   counselors_file)
@@ -2127,8 +2127,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     artists_file = data_dir(base_dir) + '/artists.txt'
     if os.path.isfile(artists_file):
         try:
-            with open(artists_file, 'r', encoding='utf-8') as art_file:
-                artists = art_file.read()
+            with open(artists_file, 'r', encoding='utf-8') as fp_art:
+                artists = fp_art.read()
         except OSError:
             print('EX: _html_edit_profile_instance unable to read ' +
                   artists_file)
@@ -2141,8 +2141,8 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     devops_file = data_dir(base_dir) + '/devops.txt'
     if os.path.isfile(devops_file):
         try:
-            with open(devops_file, 'r', encoding='utf-8') as edit_file:
-                devops = edit_file.read()
+            with open(devops_file, 'r', encoding='utf-8') as fp_edit:
+                devops = fp_edit.read()
         except OSError:
             print('EX: _html_edit_profile_instance unable to read ' +
                   devops_file)
@@ -2267,8 +2267,8 @@ def _html_edit_profile_git_projects(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(git_projects_filename):
         try:
             with open(git_projects_filename, 'r',
-                      encoding='utf-8') as git_file:
-                git_projects_str = git_file.read()
+                      encoding='utf-8') as fp_git:
+                git_projects_str = fp_git.read()
         except OSError:
             print('EX: _html_edit_profile_git_projects unable to read ' +
                   git_projects_filename)
@@ -2351,8 +2351,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/autotags.txt'
     if os.path.isfile(auto_tags_filename):
         try:
-            with open(auto_tags_filename, 'r', encoding='utf-8') as auto_file:
-                auto_tags = auto_file.read()
+            with open(auto_tags_filename, 'r', encoding='utf-8') as fp_auto:
+                auto_tags = fp_auto.read()
         except OSError:
             print('EX: _html_edit_profile_filtering unable to read ' +
                   auto_tags_filename)
@@ -2362,8 +2362,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if os.path.isfile(auto_cw_filename):
         try:
-            with open(auto_cw_filename, 'r', encoding='utf-8') as cw_file:
-                auto_cw = cw_file.read()
+            with open(auto_cw_filename, 'r', encoding='utf-8') as fp_cw:
+                auto_cw = fp_cw.read()
         except OSError:
             print('EX: _html_edit_profile_filtering unable to read ' +
                   auto_cw_filename)
@@ -2376,8 +2376,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(dm_allowed_instances_filename):
         try:
             with open(dm_allowed_instances_filename, 'r',
-                      encoding='utf-8') as dm_file:
-                dm_allowed_instances_str = dm_file.read()
+                      encoding='utf-8') as fp_dm:
+                dm_allowed_instances_str = fp_dm.read()
         except OSError:
             print('EX: _html_edit_profile_filtering unable to read ' +
                   dm_allowed_instances_filename)
@@ -2388,8 +2388,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(allowed_instances_filename):
         try:
             with open(allowed_instances_filename, 'r',
-                      encoding='utf-8') as allow_file:
-                allowed_instances_str = allow_file.read()
+                      encoding='utf-8') as fp_allow:
+                allowed_instances_str = fp_allow.read()
         except OSError:
             print('EX: _html_edit_profile_filtering unable to read ' +
                   allowed_instances_filename)
@@ -2413,8 +2413,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(city_filename):
         try:
-            with open(city_filename, 'r', encoding='utf-8') as city_file:
-                city1 = city_file.read()
+            with open(city_filename, 'r', encoding='utf-8') as fp_city:
+                city1 = fp_city.read()
                 city = remove_eol(city1)
         except OSError:
             print('EX: _html_edit_profile_filtering unable to read ' +
@@ -2424,8 +2424,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         locations_filename = base_dir + '/locations.txt'
     cities = []
     try:
-        with open(locations_filename, 'r', encoding='utf-8') as loc_file:
-            cities = loc_file.readlines()
+        with open(locations_filename, 'r', encoding='utf-8') as fp_loc:
+            cities = fp_loc.readlines()
             cities.sort()
     except OSError:
         print('EX: _html_edit_profile_filtering unable to read ' +

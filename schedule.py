@@ -44,8 +44,8 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
     index_lines = []
     delete_schedule_post = False
     nickname = handle.split('@')[0]
-    with open(schedule_index_filename, 'r', encoding='utf-8') as sched_file:
-        for line in sched_file:
+    with open(schedule_index_filename, 'r', encoding='utf-8') as fp_sched:
+        for line in fp_sched:
             if ' ' not in line:
                 continue
             date_str = line.split(' ')[0]
@@ -183,9 +183,9 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
         acct_handle_dir(base_dir, handle) + '/schedule.index'
     try:
         with open(schedule_index_file, 'w+',
-                  encoding='utf-8') as schedule_file:
+                  encoding='utf-8') as fp_schedule:
             for line in index_lines:
-                schedule_file.write(line)
+                fp_schedule.write(line)
     except OSError:
         print('EX: _update_post_schedule unable to write ' +
               schedule_index_file)

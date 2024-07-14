@@ -5726,8 +5726,8 @@ def _test_functions():
             ctr += 1
         print(function_names_str + '\n')
         with open('scripts/bad_function_names.sh', 'w+',
-                  encoding='utf-8') as fn_file:
-            fn_file.write(function_names_sh)
+                  encoding='utf-8') as fp_file:
+            fp_file.write(function_names_sh)
         assert False
 
     # which modules is each function used within?

@@ -31,8 +31,8 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
         petnames_str = ''
         try:
             with open(petnames_filename, 'r',
-                      encoding='utf-8') as petnames_file:
-                petnames_str = petnames_file.read()
+                      encoding='utf-8') as fp_petnames:
+                petnames_str = fp_petnames.read()
         except OSError:
             print('EX: set_pet_name unable to read ' + petnames_filename)
         if entry in petnames_str:
@@ -48,8 +48,8 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
             # save the updated petnames file
             try:
                 with open(petnames_filename, 'w+',
-                          encoding='utf-8') as petnames_file:
-                    petnames_file.write(new_petnames_str)
+                          encoding='utf-8') as fp_petnames:
+                    fp_petnames.write(new_petnames_str)
             except OSError:
                 print('EX: set_pet_name unable to save ' + petnames_filename)
                 return False
@@ -57,8 +57,8 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
         # entry does not exist in the petnames file
         try:
             with open(petnames_filename, 'a+',
-                      encoding='utf-8') as petnames_file:
-                petnames_file.write(entry)
+                      encoding='utf-8') as fp_petnames:
+                fp_petnames.write(entry)
         except OSError:
             print('EX: set_pet_name unable to append ' + petnames_filename)
             return False
@@ -66,8 +66,8 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
 
     # first entry
     try:
-        with open(petnames_filename, 'w+', encoding='utf-8') as petnames_file:
-            petnames_file.write(entry)
+        with open(petnames_filename, 'w+', encoding='utf-8') as fp_petnames:
+            fp_petnames.write(entry)
     except OSError:
         print('EX: set_pet_name unable to write ' + petnames_filename)
         return False
@@ -88,8 +88,8 @@ def get_pet_name(base_dir: str, nickname: str, domain: str,
         return ''
     petnames_str = ''
     try:
-        with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
-            petnames_str = petnames_file.read()
+        with open(petnames_filename, 'r', encoding='utf-8') as fp_petnames:
+            petnames_str = fp_petnames.read()
     except OSError:
         print('EX: get_pet_name unable to read ' + petnames_filename)
     if ' ' + handle + '\n' in petnames_str:
@@ -119,8 +119,8 @@ def _get_pet_name_handle(base_dir: str, nickname: str, domain: str,
         return ''
     petnames_str = ''
     try:
-        with open(petnames_filename, 'r', encoding='utf-8') as petnames_file:
-            petnames_str = petnames_file.read()
+        with open(petnames_filename, 'r', encoding='utf-8') as fp_petnames:
+            petnames_str = fp_petnames.read()
     except OSError:
         print('EX: _get_pet_name_handle unable to read ' + petnames_filename)
     if petname + ' ' in petnames_str:

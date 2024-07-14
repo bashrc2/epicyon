@@ -880,8 +880,8 @@ def html_new_post(edit_post_params: {},
             citations_separator = '#####'
             try:
                 with open(citations_filename, 'r',
-                          encoding='utf-8') as cit_file:
-                    citations = cit_file.readlines()
+                          encoding='utf-8') as fp_cit:
+                    citations = fp_cit.readlines()
                     for line in citations:
                         if citations_separator not in line:
                             continue

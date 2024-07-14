@@ -199,15 +199,16 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
 
     ctr = 0
     try:
-        with open(filename, 'r', encoding='utf-8') as followers_file:
-            for follower_handle in followers_file:
+        with open(filename, 'r', encoding='utf-8') as fp_followers:
+            for follower_handle in fp_followers:
                 if '@' in follower_handle:
                     follower_domain = follower_handle.split('@')[1]
                     follower_domain = remove_eol(follower_domain)
                     if domain == follower_domain:
                         ctr += 1
-    except OSError:
-        print('EX: no_of_followers_on_domain unable to read ' + filename)
+    except OSError as exc:
+        print('EX: no_of_followers_on_domain unable to read ' + filename +
+              ' ' + str(exc))
     return ctr
 
 
@@ -1090,8 +1091,8 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
             new_post_id + '\n'
         # create a new tags index file
         try:
-            with open(tags_filename, 'w+', encoding='utf-8') as tags_file:
-                tags_file.write(tag_line)
+            with open(tags_filename, 'w+', encoding='utf-8') as fp_tags:
+                fp_tags.write(tag_line)
         except OSError:
             print('EX: _update_hashtags_index unable to write tags file ' +
                   tags_filename)
@@ -1104,11 +1105,11 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
                 str(days_since_epoch) + '  ' + nickname + '  ' + \
                 new_post_id + '\n'
             try:
-                with open(tags_filename, 'r+', encoding='utf-8') as tags_file:
-                    content = tags_file.read()
+                with open(tags_filename, 'r+', encoding='utf-8') as fp_tags:
+                    content = fp_tags.read()
                     if tag_line not in content:
-                        tags_file.seek(0, 0)
-                        tags_file.write(tag_line + content)
+                        fp_tags.seek(0, 0)
+                        fp_tags.write(tag_line + content)
             except OSError as ex:
                 print('EX: Failed to write entry to tags file ' +
                       tags_filename + ' ' + str(ex))
@@ -1127,11 +1128,11 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
         if not text_in_file(index_str, schedule_index_filename):
             try:
                 with open(schedule_index_filename, 'r+',
-                          encoding='utf-8') as schedule_file:
-                    content = schedule_file.read()
+                          encoding='utf-8') as fp_schedule:
+                    content = fp_schedule.read()
                     if index_str + '\n' not in content:
-                        schedule_file.seek(0, 0)
-                        schedule_file.write(index_str + '\n' + content)
+                        fp_schedule.seek(0, 0)
+                        fp_schedule.write(index_str + '\n' + content)
                         print('DEBUG: scheduled post added to index')
             except OSError as ex:
                 print('EX: Failed to write entry to scheduled posts index ' +
@@ -1139,8 +1140,8 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
     else:
         try:
             with open(schedule_index_filename, 'w+',
-                      encoding='utf-8') as schedule_file:
-                schedule_file.write(index_str + '\n')
+                      encoding='utf-8') as fp_schedule:
+                fp_schedule.write(index_str + '\n')
         except OSError as ex:
             print('EX: Failed to write entry to scheduled posts index2 ' +
                   schedule_index_filename + ' ' + str(ex))
@@ -1608,8 +1609,8 @@ def _create_post_mod_report(base_dir: str,
     # save to index file
     moderation_index_file = data_dir(base_dir) + '/moderation.txt'
     try:
-        with open(moderation_index_file, 'a+', encoding='utf-8') as mod_file:
-            mod_file.write(new_post_id + '\n')
+        with open(moderation_index_file, 'a+', encoding='utf-8') as fp_mod:
+            fp_mod.write(new_post_id + '\n')
     except OSError:
         print('EX: unable to write moderation index file ' +
               moderation_index_file)
@@ -1969,8 +1970,8 @@ def pin_post2(base_dir: str, nickname: str, domain: str,
     account_dir = acct_dir(base_dir, nickname, domain)
     pinned_filename = account_dir + '/pinToProfile.txt'
     try:
-        with open(pinned_filename, 'w+', encoding='utf-8') as pin_file:
-            pin_file.write(pinned_content)
+        with open(pinned_filename, 'w+', encoding='utf-8') as fp_pin:
+            fp_pin.write(pinned_content)
     except OSError:
         print('EX: unable to write ' + pinned_filename)
 
@@ -2903,16 +2904,16 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
             if os.path.isfile(post_log_filename):
                 try:
                     with open(post_log_filename, 'a+',
-                              encoding='utf-8') as log_file:
-                        log_file.write(log_str + '\n')
+                              encoding='utf-8') as fp_log:
+                        fp_log.write(log_str + '\n')
                 except OSError:
                     print('EX: thread_send_post unable to append ' +
                           post_log_filename)
             else:
                 try:
                     with open(post_log_filename, 'w+',
-                              encoding='utf-8') as log_file:
-                        log_file.write(log_str + '\n')
+                              encoding='utf-8') as fp_log:
+                        fp_log.write(log_str + '\n')
                 except OSError:
                     print('EX: thread_send_post unable to write ' +
                           post_log_filename)
@@ -4398,8 +4399,8 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
             lines = []
             try:
                 with open(moderation_index_file, 'r',
-                          encoding='utf-8') as index_file:
-                    lines = index_file.readlines()
+                          encoding='utf-8') as fp_index:
+                    lines = fp_index.readlines()
             except OSError:
                 print('EX: create_moderation unable to read ' +
                       moderation_index_file)
@@ -4679,10 +4680,10 @@ def _create_box_items(base_dir: str,
         first_post_id = first_post_id.replace('/', '#')
 
     try:
-        with open(index_filename, 'r', encoding='utf-8') as index_file:
+        with open(index_filename, 'r', encoding='utf-8') as fp_index:
             posts_added_to_timeline = 0
             while posts_added_to_timeline < items_per_page:
-                post_filename = index_file.readline()
+                post_filename = fp_index.readline()
 
                 if not post_filename:
                     break
@@ -5417,8 +5418,8 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         # get the existing index entries as a string
         new_index = ''
         try:
-            with open(index_filename, 'r', encoding='utf-8') as index_file:
-                for post_id in index_file:
+            with open(index_filename, 'r', encoding='utf-8') as fp_index:
+                for post_id in fp_index:
                     new_index += post_id
                     index_ctr += 1
                     if index_ctr >= max_posts_in_box:
@@ -5430,8 +5431,8 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         if len(new_index) > 0:
             try:
                 with open(index_filename, 'w+',
-                          encoding='utf-8') as index_file:
-                    index_file.write(new_index)
+                          encoding='utf-8') as fp_index:
+                    fp_index.write(new_index)
             except OSError:
                 print('EX: archive_posts_for_person unable to write ' +
                       index_filename)
@@ -5903,8 +5904,8 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
     replies_boxes = ('outbox', 'inbox')
     try:
         with open(post_replies_filename, 'r',
-                  encoding='utf-8') as replies_file:
-            for message_id in replies_file:
+                  encoding='utf-8') as fp_replies:
+            for message_id in fp_replies:
                 reply_found = False
                 # examine inbox and outbox
                 for boxname in replies_boxes:
@@ -5975,8 +5976,8 @@ def _reject_announce(announce_filename: str,
     if not os.path.isfile(announce_filename + '.reject'):
         try:
             with open(announce_filename + '.reject', 'w+',
-                      encoding='utf-8') as reject_announce_file:
-                reject_announce_file.write('\n')
+                      encoding='utf-8') as fp_reject_announce:
+                fp_reject_announce.write('\n')
         except OSError:
             print('EX: _reject_announce unable to write ' +
                   announce_filename + '.reject')

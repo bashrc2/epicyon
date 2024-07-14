@@ -541,8 +541,8 @@ def _update_etag(media_filename: str) -> None:
     # read the binary data
     data = None
     try:
-        with open(media_filename, 'rb') as media_file:
-            data = media_file.read()
+        with open(media_filename, 'rb') as fp_media:
+            data = fp_media.read()
     except OSError:
         print('EX: _update_etag unable to read ' + str(media_filename))
 

@@ -53,19 +53,19 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
         if not text_in_file(post_id, index_filename):
             try:
                 with open(index_filename, 'r+',
-                          encoding='utf-8') as feeds_file:
-                    content = feeds_file.read()
+                          encoding='utf-8') as fp_feeds:
+                    content = fp_feeds.read()
                     if post_id + '\n' not in content:
-                        feeds_file.seek(0, 0)
-                        feeds_file.write(post_id + '\n' + content)
+                        fp_feeds.seek(0, 0)
+                        fp_feeds.write(post_id + '\n' + content)
                         print('DEBUG: feeds post added to index')
             except OSError as ex:
                 print('EX: Failed to write entry to feeds posts index ' +
                       index_filename + ' ' + str(ex))
     else:
         try:
-            with open(index_filename, 'w+', encoding='utf-8') as feeds_file:
-                feeds_file.write(post_id + '\n')
+            with open(index_filename, 'w+', encoding='utf-8') as fp_feeds:
+                fp_feeds.write(post_id + '\n')
         except OSError:
             print('EX: _update_feeds_outbox_index unable to write ' +
                   index_filename)
@@ -76,8 +76,8 @@ def _save_arrived_time(post_filename: str, arrived: str) -> None:
     """
     try:
         with open(post_filename + '.arrived', 'w+',
-                  encoding='utf-8') as arrived_file:
-            arrived_file.write(arrived)
+                  encoding='utf-8') as fp_arrived:
+            fp_arrived.write(arrived)
     except OSError:
         print('EX: _save_arrived_time unable to write ' +
               post_filename + '.arrived')
@@ -501,8 +501,8 @@ def _create_news_mirror(base_dir: str, domain: str,
             index_content = ''
             try:
                 with open(mirror_index_filename, 'r',
-                          encoding='utf-8') as index_file:
-                    index_content = index_file.read()
+                          encoding='utf-8') as fp_index:
+                    index_content = fp_index.read()
                     for remove_post_id in removals:
                         index_content = \
                             index_content.replace(remove_post_id + '\n', '')
@@ -511,8 +511,8 @@ def _create_news_mirror(base_dir: str, domain: str,
                       mirror_index_filename)
             try:
                 with open(mirror_index_filename, 'w+',
-                          encoding='utf-8') as index_file:
-                    index_file.write(index_content)
+                          encoding='utf-8') as fp_index:
+                    fp_index.write(index_content)
             except OSError:
                 print('EX: _create_news_mirror unable to write ' +
                       mirror_index_filename)
@@ -542,16 +542,16 @@ def _create_news_mirror(base_dir: str, domain: str,
     if os.path.isfile(mirror_index_filename):
         try:
             with open(mirror_index_filename, 'a+',
-                      encoding='utf-8') as index_file:
-                index_file.write(post_id_number + '\n')
+                      encoding='utf-8') as fp_index:
+                fp_index.write(post_id_number + '\n')
         except OSError:
             print('EX: _create_news_mirror unable to append ' +
                   mirror_index_filename)
     else:
         try:
             with open(mirror_index_filename, 'w+',
-                      encoding='utf-8') as index_file:
-                index_file.write(post_id_number + '\n')
+                      encoding='utf-8') as fp_index:
+                fp_index.write(post_id_number + '\n')
         except OSError:
             print('EX: _create_news_mirror unable to write ' +
                   mirror_index_filename)

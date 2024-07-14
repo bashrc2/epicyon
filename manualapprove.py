@@ -58,8 +58,8 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
     # Store rejected follows
     try:
         with open(rejected_follows_filename, 'a+',
-                  encoding='utf-8') as rejects_file:
-            rejects_file.write(deny_handle + '\n')
+                  encoding='utf-8') as fp_rejects:
+            fp_rejects.write(deny_handle + '\n')
     except OSError:
         print('EX: manual_deny_follow_request unable to append ' +
               rejected_follows_filename)
@@ -134,16 +134,16 @@ def _approve_follower_handle(account_dir: str, approve_handle: str) -> None:
         if not text_in_file(approve_handle, approved_filename):
             try:
                 with open(approved_filename, 'a+',
-                          encoding='utf-8') as approved_file:
-                    approved_file.write(approve_handle + '\n')
+                          encoding='utf-8') as fp_approved:
+                    fp_approved.write(approve_handle + '\n')
             except OSError:
                 print('EX: _approve_follower_handle unable to append ' +
                       approved_filename)
     else:
         try:
             with open(approved_filename, 'w+',
-                      encoding='utf-8') as approved_file:
-                approved_file.write(approve_handle + '\n')
+                      encoding='utf-8') as fp_approved:
+                fp_approved.write(approve_handle + '\n')
         except OSError:
             print('EX: _approve_follower_handle unable to write ' +
                   approved_filename)
@@ -327,12 +327,12 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
             if not text_in_file(approve_handle_full, followers_filename):
                 try:
                     with open(followers_filename, 'r+',
-                              encoding='utf-8') as followers_file:
-                        content = followers_file.read()
+                              encoding='utf-8') as fp_followers:
+                        content = fp_followers.read()
                         if approve_handle_full + '\n' not in content:
-                            followers_file.seek(0, 0)
-                            followers_file.write(approve_handle_full + '\n' +
-                                                 content)
+                            fp_followers.seek(0, 0)
+                            fp_followers.write(approve_handle_full + '\n' +
+                                               content)
                 except OSError as ex:
                     print('WARN: Manual follow accept. ' +
                           'Failed to write entry to followers file ' + str(ex))
@@ -344,8 +344,8 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                   handle + ' is ' + approve_handle_full)
             try:
                 with open(followers_filename, 'w+',
-                          encoding='utf-8') as followers_file:
-                    followers_file.write(approve_handle_full + '\n')
+                          encoding='utf-8') as fp_followers:
+                    fp_followers.write(approve_handle_full + '\n')
             except OSError:
                 print('EX: manual_approve_follow_request unable to write ' +
                       followers_filename)

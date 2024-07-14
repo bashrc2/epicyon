@@ -501,8 +501,8 @@ def _profile_post_auto_cw(base_dir: str, nickname: str, domain: str,
     if fields.get('autoCW'):
         try:
             with open(auto_cw_filename, 'w+',
-                      encoding='utf-8') as auto_cw_file:
-                auto_cw_file.write(fields['autoCW'])
+                      encoding='utf-8') as fp_auto_cw:
+                fp_auto_cw.write(fields['autoCW'])
         except OSError:
             print('EX: unable to write auto CW ' +
                   auto_cw_filename)

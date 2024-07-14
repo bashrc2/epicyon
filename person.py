@@ -605,8 +605,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             os.mkdir(base_dir + private_keys_subdir)
         filename = base_dir + private_keys_subdir + '/' + handle + '.key'
         try:
-            with open(filename, 'w+', encoding='utf-8') as text_file:
-                print(private_key_pem, file=text_file)
+            with open(filename, 'w+', encoding='utf-8') as fp_text:
+                print(private_key_pem, file=fp_text)
         except OSError:
             print('EX: _create_person_base unable to save ' + filename)
 
@@ -616,8 +616,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
             os.mkdir(base_dir + public_keys_subdir)
         filename = base_dir + public_keys_subdir + '/' + handle + '.pem'
         try:
-            with open(filename, 'w+', encoding='utf-8') as text_file:
-                print(public_key_pem, file=text_file)
+            with open(filename, 'w+', encoding='utf-8') as fp_text:
+                print(public_key_pem, file=fp_text)
         except OSError:
             print('EX: _create_person_base unable to save 2 ' + filename)
 
@@ -1409,10 +1409,10 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
             print('EX: _remove_tags_for_nickname unable to read ' +
                   tag_filename)
         try:
-            with open(tag_filename, 'w+', encoding='utf-8') as tag_file:
+            with open(tag_filename, 'w+', encoding='utf-8') as fp_tag:
                 for tagline in lines:
                     if match_str not in tagline:
-                        tag_file.write(tagline)
+                        fp_tag.write(tagline)
         except OSError:
             print('EX: _remove_tags_for_nickname unable to write ' +
                   tag_filename)
@@ -1616,9 +1616,9 @@ def person_snooze(base_dir: str, nickname: str, domain: str,
         if text_in_file(snooze_actor + ' ', snoozed_filename):
             return
     try:
-        with open(snoozed_filename, 'a+', encoding='utf-8') as snoozed_file:
-            snoozed_file.write(snooze_actor + ' ' +
-                               str(int(time.time())) + '\n')
+        with open(snoozed_filename, 'a+', encoding='utf-8') as fp_snoozed:
+            fp_snoozed.write(snooze_actor + ' ' +
+                             str(int(time.time())) + '\n')
     except OSError:
         print('EX: person_snooze unable to append ' + snoozed_filename)
 
@@ -1674,8 +1674,8 @@ def set_person_notes(base_dir: str, nickname: str, domain: str,
         os.mkdir(notes_dir)
     notes_filename = notes_dir + '/' + handle + '.txt'
     try:
-        with open(notes_filename, 'w+', encoding='utf-8') as notes_file:
-            notes_file.write(notes)
+        with open(notes_filename, 'w+', encoding='utf-8') as fp_notes:
+            fp_notes.write(notes)
     except OSError:
         print('EX: unable to write ' + notes_filename)
         return False

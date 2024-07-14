@@ -58,8 +58,8 @@ def update_conversation(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(conversation_filename):
         try:
             with open(conversation_filename, 'w+',
-                      encoding='utf-8') as conv_file:
-                conv_file.write(post_id + '\n')
+                      encoding='utf-8') as fp_conv:
+                fp_conv.write(post_id + '\n')
                 return True
         except OSError:
             print('EX: update_conversation ' +
@@ -67,8 +67,8 @@ def update_conversation(base_dir: str, nickname: str, domain: str,
     elif not text_in_file(post_id + '\n', conversation_filename):
         try:
             with open(conversation_filename, 'a+',
-                      encoding='utf-8') as conv_file:
-                conv_file.write(post_id + '\n')
+                      encoding='utf-8') as fp_conv:
+                fp_conv.write(post_id + '\n')
                 return True
         except OSError:
             print('EX: update_conversation 2 ' +
@@ -89,8 +89,8 @@ def mute_conversation(base_dir: str, nickname: str, domain: str,
         return
     try:
         with open(conversation_filename + '.muted', 'w+',
-                  encoding='utf-8') as conv_file:
-            conv_file.write('\n')
+                  encoding='utf-8') as fp_conv:
+            fp_conv.write('\n')
     except OSError:
         print('EX: unable to write mute ' + conversation_filename)
 

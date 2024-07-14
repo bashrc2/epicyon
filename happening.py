@@ -151,11 +151,11 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
             _remove_event_from_timeline(event_id, tl_events_filename)
             try:
                 with open(tl_events_filename, 'r+',
-                          encoding='utf-8') as tl_events_file:
-                    content = tl_events_file.read()
+                          encoding='utf-8') as fp_tl_events:
+                    content = fp_tl_events.read()
                     if event_id + '\n' not in content:
-                        tl_events_file.seek(0, 0)
-                        tl_events_file.write(event_id + '\n' + content)
+                        fp_tl_events.seek(0, 0)
+                        fp_tl_events.write(event_id + '\n' + content)
             except OSError as ex:
                 print('EX: Failed to write entry to events file ' +
                       tl_events_filename + ' ' + str(ex))
@@ -163,8 +163,8 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         else:
             try:
                 with open(tl_events_filename, 'w+',
-                          encoding='utf-8') as tl_events_file:
-                    tl_events_file.write(event_id + '\n')
+                          encoding='utf-8') as fp_tl_events:
+                    fp_tl_events.write(event_id + '\n')
             except OSError:
                 print('EX: save_event_post unable to write ' +
                       tl_events_filename)
@@ -185,8 +185,8 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
 
     # append the post Id to the file for the calendar month
     try:
-        with open(calendar_filename, 'a+', encoding='utf-8') as calendar_file:
-            calendar_file.write(post_id + '\n')
+        with open(calendar_filename, 'a+', encoding='utf-8') as fp_calendar:
+            fp_calendar.write(post_id + '\n')
     except OSError:
         print('EX: unable to append to calendar ' + calendar_filename)
 
@@ -197,8 +197,8 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         '/calendar?year=' + str(event_year) + '?month=' + \
         str(event_month_number) + '?day=' + str(event_day_of_month)
     try:
-        with open(cal_notify_filename, 'w+', encoding='utf-8') as cal_file:
-            cal_file.write(notify_str)
+        with open(cal_notify_filename, 'w+', encoding='utf-8') as fp_cal:
+            fp_cal.write(notify_str)
     except OSError:
         print('EX: save_event_post unable to write ' + cal_notify_filename)
         return False
@@ -298,8 +298,8 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
     calendar_post_ids = []
     recreate_events_file = False
     try:
-        with open(calendar_filename, 'r', encoding='utf-8') as events_file:
-            for post_id in events_file:
+        with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
+            for post_id in fp_events:
                 post_id = remove_eol(post_id)
                 post_filename = \
                     locate_post(base_dir, nickname, domain, post_id)
@@ -374,9 +374,9 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
     if recreate_events_file:
         try:
             with open(calendar_filename, 'w+',
-                      encoding='utf-8') as calendar_file:
+                      encoding='utf-8') as fp_calendar:
                 for post_id in calendar_post_ids:
-                    calendar_file.write(post_id + '\n')
+                    fp_calendar.write(post_id + '\n')
         except OSError:
             print('EX: unable to recreate events file 1 ' +
                   calendar_filename)
@@ -605,8 +605,8 @@ def day_events_check(base_dir: str, nickname: str, domain: str,
 
     events_exist = False
     try:
-        with open(calendar_filename, 'r', encoding='utf-8') as events_file:
-            for post_id in events_file:
+        with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
+            for post_id in fp_events:
                 post_id = remove_eol(post_id)
                 post_filename = \
                     locate_post(base_dir, nickname, domain, post_id)
@@ -665,8 +665,8 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
     calendar_post_ids = []
     recreate_events_file = False
     try:
-        with open(calendar_filename, 'r', encoding='utf-8') as events_file:
-            for post_id in events_file:
+        with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
+            for post_id in fp_events:
                 post_id = remove_eol(post_id)
                 post_filename = \
                     locate_post(base_dir, nickname, domain, post_id)
@@ -709,9 +709,9 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
     if recreate_events_file:
         try:
             with open(calendar_filename, 'w+',
-                      encoding='utf-8') as calendar_file:
+                      encoding='utf-8') as fp_calendar:
                 for post_id in calendar_post_ids:
-                    calendar_file.write(post_id + '\n')
+                    fp_calendar.write(post_id + '\n')
         except OSError:
             print('EX: unable to recreate events file 2 ' +
                   calendar_filename)
@@ -738,8 +738,8 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
     calendar_post_ids = []
     recreate_events_file = False
     try:
-        with open(calendar_filename, 'r', encoding='utf-8') as events_file:
-            for post_id in events_file:
+        with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
+            for post_id in fp_events:
                 post_id = remove_eol(post_id)
                 post_filename = \
                     locate_post(base_dir, nickname, domain, post_id)
@@ -800,9 +800,9 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
     if recreate_events_file:
         try:
             with open(calendar_filename, 'w+',
-                      encoding='utf-8') as calendar_file:
+                      encoding='utf-8') as fp_calendar:
                 for post_id in calendar_post_ids:
-                    calendar_file.write(post_id + '\n')
+                    fp_calendar.write(post_id + '\n')
         except OSError:
             print('EX: unable to recreate events file 3 ' +
                   calendar_filename)

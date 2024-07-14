@@ -377,8 +377,8 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         media_binary = None
                         try:
-                            with open(media_filename, 'rb') as av_file:
-                                media_binary = av_file.read()
+                            with open(media_filename, 'rb') as fp_av:
+                                media_binary = fp_av.read()
                         except OSError:
                             print('EX: unable to read media binary ' +
                                   media_filename)

@@ -248,8 +248,8 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
                 svg_written = False
                 cleaned_up = cleaned_up.encode('utf-8')
                 try:
-                    with open(image_filename, 'wb') as im_file:
-                        im_file.write(cleaned_up)
+                    with open(image_filename, 'wb') as fp_im:
+                        fp_im.write(cleaned_up)
                         svg_written = True
                 except OSError:
                     print('EX: unable to write cleaned up svg ' + url)
@@ -422,16 +422,16 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         hashtag_added = False
         if not os.path.isfile(tags_filename):
             try:
-                with open(tags_filename, 'w+', encoding='utf-8') as tags_file:
-                    tags_file.write(tag_line)
+                with open(tags_filename, 'w+', encoding='utf-8') as fp_tags:
+                    fp_tags.write(tag_line)
                     hashtag_added = True
             except OSError:
                 print('EX: store_hash_tags unable to write ' + tags_filename)
         else:
             content = ''
             try:
-                with open(tags_filename, 'r', encoding='utf-8') as tags_file:
-                    content = tags_file.read()
+                with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
+                    content = fp_tags.read()
             except OSError:
                 print('EX: store_hash_tags failed to read ' + tags_filename)
             if post_url not in content:
@@ -3362,8 +3362,8 @@ def _receive_announce(recent_posts_cache: {},
             post_filename.replace('.json', '') + '.mitm'
         try:
             with open(post_filename_mitm, 'w+',
-                      encoding='utf-8') as mitm_file:
-                mitm_file.write('\n')
+                      encoding='utf-8') as fp_mitm:
+                fp_mitm.write('\n')
         except OSError:
             print('EX: unable to write mitm ' + post_filename_mitm)
     minimize_all_images = False
@@ -3705,16 +3705,16 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
         if not text_in_file(message_id, post_replies_filename):
             try:
                 with open(post_replies_filename, 'a+',
-                          encoding='utf-8') as replies_file:
-                    replies_file.write(message_id + '\n')
+                          encoding='utf-8') as fp_replies:
+                    fp_replies.write(message_id + '\n')
             except OSError:
                 print('EX: populate_replies unable to append ' +
                       post_replies_filename)
     else:
         try:
             with open(post_replies_filename, 'w+',
-                      encoding='utf-8') as replies_file:
-                replies_file.write(message_id + '\n')
+                      encoding='utf-8') as fp_replies:
+                fp_replies.write(message_id + '\n')
         except OSError:
             print('EX: populate_replies unable to write ' +
                   post_replies_filename)
@@ -4266,19 +4266,19 @@ def inbox_update_index(boxname: str, base_dir: str, handle: str,
     written = False
     if os.path.isfile(index_filename):
         try:
-            with open(index_filename, 'r+', encoding='utf-8') as index_file:
-                content = index_file.read()
+            with open(index_filename, 'r+', encoding='utf-8') as fp_index:
+                content = fp_index.read()
                 if destination_filename + '\n' not in content:
-                    index_file.seek(0, 0)
-                    index_file.write(destination_filename + '\n' + content)
+                    fp_index.seek(0, 0)
+                    fp_index.write(destination_filename + '\n' + content)
                 written = True
                 return True
         except OSError as ex:
             print('EX: Failed to write entry to index ' + str(ex))
     else:
         try:
-            with open(index_filename, 'w+', encoding='utf-8') as index_file:
-                index_file.write(destination_filename + '\n')
+            with open(index_filename, 'w+', encoding='utf-8') as fp_index:
+                fp_index.write(destination_filename + '\n')
                 written = True
         except OSError as ex:
             print('EX: Failed to write initial entry to index ' + str(ex))
@@ -4311,8 +4311,8 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
     if os.path.isfile(last_seen_filename):
         try:
             with open(last_seen_filename, 'r',
-                      encoding='utf-8') as last_seen_file:
-                days_since_epoch_file = last_seen_file.read()
+                      encoding='utf-8') as fp_last_seen:
+                days_since_epoch_file = fp_last_seen.read()
                 if int(days_since_epoch_file) == days_since_epoch:
                     # value hasn't changed, so we can save writing
                     # anything to file
@@ -4321,8 +4321,8 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
             print('EX: _update_last_seen unable to read ' + last_seen_filename)
     try:
         with open(last_seen_filename, 'w+',
-                  encoding='utf-8') as last_seen_file:
-            last_seen_file.write(str(days_since_epoch))
+                  encoding='utf-8') as fp_last_seen:
+            fp_last_seen.write(str(days_since_epoch))
     except OSError:
         print('EX: _update_last_seen unable to write ' + last_seen_filename)
 
@@ -5450,8 +5450,8 @@ def _inbox_after_initial(server, inbox_start_time,
                     destination_filename.replace('.json', '') + '.mitm'
                 try:
                     with open(destination_filename_mitm, 'w+',
-                              encoding='utf-8') as mitm_file:
-                        mitm_file.write('\n')
+                              encoding='utf-8') as fp_mitm:
+                        fp_mitm.write('\n')
                 except OSError:
                     print('EX: _inbox_after_initial unable to write ' +
                           destination_filename_mitm)
@@ -5471,8 +5471,8 @@ def _inbox_after_initial(server, inbox_start_time,
                 destination_filename_muted = destination_filename + '.muted'
                 try:
                     with open(destination_filename_muted, 'w+',
-                              encoding='utf-8') as mute_file:
-                        mute_file.write('\n')
+                              encoding='utf-8') as fp_mute:
+                        fp_mute.write('\n')
                 except OSError:
                     print('EX: _inbox_after_initial unable to write 2 ' +
                           destination_filename_muted)
@@ -5917,8 +5917,8 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
             if not already_unknown:
                 try:
                     with open(unknown_contexts_file, 'a+',
-                              encoding='utf-8') as unknown_file:
-                        unknown_file.write(unknown_context + '\n')
+                              encoding='utf-8') as fp_unknown:
+                        fp_unknown.write(unknown_context + '\n')
                 except OSError:
                     print('EX: _check_json_signature unable to append ' +
                           unknown_contexts_file)
@@ -5936,8 +5936,8 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
         if not already_unknown:
             try:
                 with open(unknown_signatures_file, 'a+',
-                          encoding='utf-8') as unknown_file:
-                    unknown_file.write(jwebsig_type + '\n')
+                          encoding='utf-8') as fp_unknown:
+                    fp_unknown.write(jwebsig_type + '\n')
             except OSError:
                 print('EX: _check_json_signature unable to append ' +
                       unknown_signatures_file)
@@ -6202,16 +6202,16 @@ def _receive_follow_request(session, session_onion, session_i2p,
                         return True
                     try:
                         with open(followers_filename, 'r+',
-                                  encoding='utf-8') as followers_file:
-                            content = followers_file.read()
+                                  encoding='utf-8') as fp_followers:
+                            content = fp_followers.read()
                             if approve_handle + '\n' not in content:
-                                followers_file.seek(0, 0)
+                                fp_followers.seek(0, 0)
                                 if not group_account:
-                                    followers_file.write(approve_handle +
-                                                         '\n' + content)
+                                    fp_followers.write(approve_handle +
+                                                       '\n' + content)
                                 else:
-                                    followers_file.write('!' + approve_handle +
-                                                         '\n' + content)
+                                    fp_followers.write('!' + approve_handle +
+                                                       '\n' + content)
                     except OSError as ex:
                         print('WARN: ' +
                               'Failed to write entry to followers file ' +
@@ -6219,8 +6219,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
             else:
                 try:
                     with open(followers_filename, 'w+',
-                              encoding='utf-8') as followers_file:
-                        followers_file.write(approve_handle + '\n')
+                              encoding='utf-8') as fp_followers:
+                        fp_followers.write(approve_handle + '\n')
                 except OSError:
                     print('EX: _receive_follow_request unable to write ' +
                           followers_filename)

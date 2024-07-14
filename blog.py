@@ -80,8 +80,8 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
     replies = 0
     lines = []
     try:
-        with open(post_filename, 'r', encoding='utf-8') as post_file:
-            lines = post_file.readlines()
+        with open(post_filename, 'r', encoding='utf-8') as fp_post:
+            lines = fp_post.readlines()
     except OSError:
         print('EX: failed to read blog ' + post_filename)
 
@@ -103,11 +103,11 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
         print('Rewriting ' + post_filename + ' to remove ' +
               str(len(removals)) + ' entries')
         try:
-            with open(post_filename, 'w+', encoding='utf-8') as post_file:
+            with open(post_filename, 'w+', encoding='utf-8') as fp_post:
                 for reply_post_id in lines:
                     reply_post_id = remove_eol(reply_post_id)
                     if reply_post_id not in removals:
-                        post_file.write(reply_post_id + '\n')
+                        fp_post.write(reply_post_id + '\n')
         except OSError as ex:
             print('EX: unable to remove replies from post ' +
                   post_filename + ' ' + str(ex))
@@ -147,16 +147,16 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                 if os.path.isfile(post_filename):
                     try:
                         with open(post_filename, 'r',
-                                  encoding='utf-8') as post_file:
-                            return post_file.read() + '\n'
+                                  encoding='utf-8') as fp_post:
+                            return fp_post.read() + '\n'
                     except OSError:
                         print('EX: unable to read blog 3 ' + post_filename)
         return ''
 
     lines = []
     try:
-        with open(post_filename, 'r', encoding='utf-8') as post_file:
-            lines = post_file.readlines()
+        with open(post_filename, 'r', encoding='utf-8') as fp_post:
+            lines = fp_post.readlines()
     except OSError:
         print('EX: unable to read blog 4 ' + post_filename)
 
@@ -172,8 +172,8 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
             if not os.path.isfile(post_filename):
                 continue
             try:
-                with open(post_filename, 'r', encoding='utf-8') as post_file:
-                    replies_str += post_file.read() + '\n'
+                with open(post_filename, 'r', encoding='utf-8') as fp_post:
+                    replies_str += fp_post.read() + '\n'
             except OSError:
                 print('EX: unable to read blog replies ' + post_filename)
             rply = _get_blog_replies(base_dir, http_prefix, translate,

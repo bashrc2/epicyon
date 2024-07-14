@@ -68,8 +68,8 @@ def receive_image_attachment(self, length: int, path: str, base_dir: str,
         print('WARN: _receive_image image binary is not recognized ' +
               media_filename)
     try:
-        with open(media_filename, 'wb') as av_file:
-            av_file.write(media_bytes)
+        with open(media_filename, 'wb') as fp_av:
+            fp_av.write(media_bytes)
     except OSError:
         print('EX: receive_image_attachment unable to write ' + media_filename)
     if debug:

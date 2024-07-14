@@ -2343,8 +2343,8 @@ def daemon_http_get(self) -> None:
             media_binary = None
             while tries < 5:
                 try:
-                    with open(media_filename, 'rb') as av_file:
-                        media_binary = av_file.read()
+                    with open(media_filename, 'rb') as fp_av:
+                        media_binary = fp_av.read()
                         break
                 except OSError as ex:
                     print('EX: manifest logo ' +
@@ -2384,8 +2384,8 @@ def daemon_http_get(self) -> None:
             media_binary = None
             while tries < 5:
                 try:
-                    with open(screen_filename, 'rb') as av_file:
-                        media_binary = av_file.read()
+                    with open(screen_filename, 'rb') as fp_av:
+                        media_binary = fp_av.read()
                         break
                 except OSError as ex:
                     print('EX: manifest screenshot ' +
@@ -2425,8 +2425,8 @@ def daemon_http_get(self) -> None:
             media_binary = None
             while tries < 5:
                 try:
-                    with open(icon_filename, 'rb') as av_file:
-                        media_binary = av_file.read()
+                    with open(icon_filename, 'rb') as fp_av:
+                        media_binary = fp_av.read()
                         break
                 except OSError as ex:
                     print('EX: login screen image ' +

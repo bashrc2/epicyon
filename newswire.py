@@ -1624,11 +1624,11 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
         moderated = True
 
     try:
-        with open(index_filename, 'r', encoding='utf-8') as index_file:
+        with open(index_filename, 'r', encoding='utf-8') as fp_index:
             post_filename = 'start'
             ctr = 0
             while post_filename:
-                post_filename = index_file.readline()
+                post_filename = fp_index.readline()
                 if post_filename:
                     # if this is a full path then remove the directories
                     if '/' in post_filename:

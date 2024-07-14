@@ -278,8 +278,8 @@ def _send_reply_to_question(self, base_dir: str,
                     # record the vote
                     try:
                         with open(votes_filename, 'a+',
-                                  encoding='utf-8') as votes_file:
-                            votes_file.write(message_id + '\n')
+                                  encoding='utf-8') as fp_votes:
+                            fp_votes.write(message_id + '\n')
                     except OSError:
                         print('EX: unable to write vote ' +
                               votes_filename)

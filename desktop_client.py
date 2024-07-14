@@ -188,18 +188,18 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
             # prepend to read posts file
             post_id += '\n'
             with open(read_posts_filename, 'r+',
-                      encoding='utf-8') as read_file:
-                content = read_file.read()
+                      encoding='utf-8') as fp_read:
+                content = fp_read.read()
                 if post_id not in content:
-                    read_file.seek(0, 0)
-                    read_file.write(post_id + content)
+                    fp_read.seek(0, 0)
+                    fp_read.write(post_id + content)
         except OSError as ex:
             print('EX: Failed to mark post as read 1 ' + str(ex))
     else:
         try:
             with open(read_posts_filename, 'w+',
-                      encoding='utf-8') as read_file:
-                read_file.write(post_id + '\n')
+                      encoding='utf-8') as fp_read:
+                fp_read.write(post_id + '\n')
         except OSError as ex:
             print('EX: Failed to mark post as read 2 ' + str(ex))
 

@@ -396,11 +396,11 @@ def _update_recent_books_list(base_dir: str, book_id: str,
     if os.path.isfile(recent_books_filename):
         try:
             with open(recent_books_filename, 'r+',
-                      encoding='utf-8') as recent_file:
-                content = recent_file.read()
+                      encoding='utf-8') as fp_recent:
+                content = fp_recent.read()
                 if book_id + '\n' not in content:
-                    recent_file.seek(0, 0)
-                    recent_file.write(book_id + '\n' + content)
+                    fp_recent.seek(0, 0)
+                    fp_recent.write(book_id + '\n' + content)
                     if debug:
                         print('DEBUG: recent book added')
         except OSError as ex:
@@ -409,8 +409,8 @@ def _update_recent_books_list(base_dir: str, book_id: str,
     else:
         try:
             with open(recent_books_filename, 'w+',
-                      encoding='utf-8') as recent_file:
-                recent_file.write(book_id + '\n')
+                      encoding='utf-8') as fp_recent:
+                fp_recent.write(book_id + '\n')
         except OSError:
             print('EX: unable to write recent books ' +
                   recent_books_filename)
@@ -428,8 +428,8 @@ def _deduplicate_recent_books_list(base_dir: str,
     recent_lines = []
     try:
         with open(recent_books_filename, 'r',
-                  encoding='utf-8') as recent_file:
-            recent_lines = recent_file.read().split('\n')
+                  encoding='utf-8') as fp_recent:
+            recent_lines = fp_recent.read().split('\n')
     except OSError as ex:
         print('WARN: Failed to read recent books trim ' +
               recent_books_filename + ' ' + str(ex))
@@ -446,8 +446,8 @@ def _deduplicate_recent_books_list(base_dir: str,
             result += line + '\n'
         try:
             with open(recent_books_filename, 'w+',
-                      encoding='utf-8') as recent_file:
-                recent_file.write(result)
+                      encoding='utf-8') as fp_recent:
+                fp_recent.write(result)
         except OSError:
             print('EX: unable to deduplicate recent books ' +
                   recent_books_filename)
@@ -459,8 +459,8 @@ def _deduplicate_recent_books_list(base_dir: str,
             result += recent_lines[ctr] + '\n'
         try:
             with open(recent_books_filename, 'w+',
-                      encoding='utf-8') as recent_file:
-                recent_file.write(result)
+                      encoding='utf-8') as fp_recent:
+                fp_recent.write(result)
         except OSError:
             print('EX: unable to trim recent books ' +
                   recent_books_filename)

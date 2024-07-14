@@ -95,8 +95,8 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
             instance_title = 'Epicyon'
         help_text = ''
         try:
-            with open(help_filename, 'r', encoding='utf-8') as help_file:
-                help_text = help_file.read()
+            with open(help_filename, 'r', encoding='utf-8') as fp_help:
+                help_text = fp_help.read()
         except OSError:
             print('EX: _get_help_for_timeline unable to read ' + help_filename)
         if help_text:
@@ -703,8 +703,8 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(follow_requests_filename):
         try:
             with open(follow_requests_filename, 'r',
-                      encoding='utf-8') as foll_file:
-                for line in foll_file:
+                      encoding='utf-8') as fp_foll:
+                for line in fp_foll:
                     if len(line) > 0:
                         # show follow approvals icon
                         follow_approvals = \

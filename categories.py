@@ -32,8 +32,8 @@ def get_hashtag_category(base_dir: str, hashtag: str) -> str:
 
     category_str = None
     try:
-        with open(category_filename, 'r', encoding='utf-8') as category_file:
-            category_str = category_file.read()
+        with open(category_filename, 'r', encoding='utf-8') as fp_category:
+            category_str = fp_category.read()
     except OSError:
         print('EX: unable to read category ' + category_filename)
     except UnicodeEncodeError as ex:

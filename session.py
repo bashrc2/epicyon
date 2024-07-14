@@ -706,8 +706,8 @@ def post_image(session, attach_image_filename: str, federation_list: [],
         content_type = 'image/svg+xml'
     headers['Content-type'] = content_type
 
-    with open(attach_image_filename, 'rb') as av_file:
-        media_binary = av_file.read()
+    with open(attach_image_filename, 'rb') as fp_av:
+        media_binary = fp_av.read()
 
         _set_user_agent(session, http_prefix, domain_full)
 
@@ -792,8 +792,8 @@ def download_image(session, url: str, image_filename: str, debug: bool,
             else:
                 media_binary = result.content
                 if binary_is_image(image_filename, media_binary):
-                    with open(image_filename, 'wb') as im_file:
-                        im_file.write(media_binary)
+                    with open(image_filename, 'wb') as fp_im:
+                        fp_im.write(media_binary)
                         if debug:
                             print('Image downloaded from ' + url)
                         return True

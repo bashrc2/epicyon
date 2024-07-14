@@ -213,13 +213,13 @@ def receive_git_patch(base_dir: str, nickname: str, domain: str,
         _git_add_from_handle(patch_str,
                              '@' + from_nickname + '@' + from_domain)
     try:
-        with open(patch_filename, 'w+', encoding='utf-8') as patch_file:
-            patch_file.write(patch_str)
+        with open(patch_filename, 'w+', encoding='utf-8') as fp_patch:
+            fp_patch.write(patch_str)
             patch_notify_filename = \
                 acct_dir(base_dir, nickname, domain) + '/.newPatchContent'
             with open(patch_notify_filename, 'w+',
-                      encoding='utf-8') as patch_file:
-                patch_file.write(patch_str)
+                      encoding='utf-8') as fp_patch_notify:
+                fp_patch_notify.write(patch_str)
                 return True
     except OSError as ex:
         print('EX: receive_git_patch ' + patch_filename + ' ' + str(ex))

@@ -72,8 +72,8 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
         print('Minimize file exists')
         try:
             with open(minimize_filename, 'r',
-                      encoding='utf-8') as minimize_file:
-                minimize_handles = minimize_file.read()
+                      encoding='utf-8') as fp_minimize:
+                minimize_handles = fp_minimize.read()
         except OSError:
             print('EX: minimize_attached_images ' + minimize_filename)
     else:
