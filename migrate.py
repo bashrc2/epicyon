@@ -158,35 +158,35 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
                 if follow_handle.strip("\n").strip("\r").lower() != \
                    handle_lower:
                     foll2.write(follow_handle)
-                else:
-                    handle_nickname = handle.split('@')[0]
-                    handle_domain = handle.split('@')[1]
-                    unfollow_account(base_dir, nickname, domain,
-                                     handle_nickname,
-                                     handle_domain,
-                                     debug, group_account, 'following.txt')
-                    ctr += 1
-                    print('Unfollowed ' + handle + ' who has moved to ' +
-                          moved_to_handle)
+                    continue
+                handle_nickname = handle.split('@')[0]
+                handle_domain = handle.split('@')[1]
+                unfollow_account(base_dir, nickname, domain,
+                                 handle_nickname,
+                                 handle_domain,
+                                 debug, group_account, 'following.txt')
+                ctr += 1
+                print('Unfollowed ' + handle + ' who has moved to ' +
+                      moved_to_handle)
 
-                    # save the new handles to the refollow list
-                    if os.path.isfile(refollow_filename):
-                        try:
-                            with open(refollow_filename, 'a+',
-                                      encoding='utf-8') as refoll:
-                                refoll.write(moved_to_handle + '\n')
-                        except OSError:
-                            print('EX: ' +
-                                  '_update_moved_handle unable to append ' +
-                                  refollow_filename)
-                    else:
-                        try:
-                            with open(refollow_filename, 'w+',
-                                      encoding='utf-8') as refoll:
-                                refoll.write(moved_to_handle + '\n')
-                        except OSError:
-                            print('EX: _update_moved_handle unable to write ' +
-                                  refollow_filename)
+                # save the new handles to the refollow list
+                if os.path.isfile(refollow_filename):
+                    try:
+                        with open(refollow_filename, 'a+',
+                                  encoding='utf-8') as refoll:
+                            refoll.write(moved_to_handle + '\n')
+                    except OSError:
+                        print('EX: ' +
+                              '_update_moved_handle unable to append ' +
+                              refollow_filename)
+                else:
+                    try:
+                        with open(refollow_filename, 'w+',
+                                  encoding='utf-8') as refoll:
+                            refoll.write(moved_to_handle + '\n')
+                    except OSError:
+                        print('EX: _update_moved_handle unable to write ' +
+                              refollow_filename)
 
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
