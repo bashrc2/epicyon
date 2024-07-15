@@ -71,25 +71,27 @@ def get_location_from_post(post_json_object: {}) -> str:
 
     # location representation used by pixelfed
     locn_exists = False
+    locn2 = None
     if post_obj.get('location'):
-        if isinstance(post_obj['location'], dict):
-            if post_obj['location'].get('longitude') and \
-               post_obj['location'].get('latitude'):
-                if isinstance(post_obj['location']['longitude'], str) and \
-                   isinstance(post_obj['location']['latitude'], str):
-                    if is_float(post_obj['location']['longitude']) and \
-                       is_float(post_obj['location']['latitude']):
+        locn2 = post_obj['location']
+        if isinstance(locn2, dict):
+            if locn2.get('longitude') and \
+               locn2.get('latitude'):
+                if isinstance(locn2['longitude'], str) and \
+                   isinstance(locn2['latitude'], str):
+                    if is_float(locn2['longitude']) and \
+                       is_float(locn2['latitude']):
                         locn_exists = True
             if not locn_exists:
-                if post_obj['location'].get('name'):
-                    if isinstance(post_obj['location']['name'], str):
-                        locn = post_obj['location']['name']
+                if locn2.get('name'):
+                    if isinstance(locn2['name'], str):
+                        locn = locn2['name']
     if locn_exists:
         osm_domain = 'osm.org'
         zoom = 17
         locn = _geocoords_to_osm_link(osm_domain, zoom,
-                                      post_obj['location']['latitude'],
-                                      post_obj['location']['longitude'])
+                                      locn2['latitude'],
+                                      locn2['longitude'])
 
     return locn
 

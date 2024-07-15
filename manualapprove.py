@@ -198,12 +198,13 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
         req_prefix = http_prefix + '://' + req_domain
         paths = get_user_paths()
         for user_path in paths:
-            if req_prefix + user_path + req_nick in approve_follows_str:
-                exists = True
-                approve_handle_full = req_prefix + user_path + req_nick
-                if group_account:
-                    approve_handle_full = '!' + approve_handle_full
-                break
+            if req_prefix + user_path + req_nick not in approve_follows_str:
+                continue
+            exists = True
+            approve_handle_full = req_prefix + user_path + req_nick
+            if group_account:
+                approve_handle_full = '!' + approve_handle_full
+            break
 
         if not exists:
             if req_prefix + '/' + req_nick in approve_follows_str:
