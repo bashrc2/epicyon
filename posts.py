@@ -1169,16 +1169,18 @@ def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
             locate_post(base_dir, nickname, domain, in_reply_to)
         if reply_post_filename:
             reply_to_json = load_json(reply_post_filename)
-    if reply_to_json:
-        if reply_to_json.get('object'):
-            if reply_to_json['object'].get('sensitive'):
-                if reply_to_json['object']['sensitive']:
-                    sensitive = True
-                    if reply_to_json['object'].get('summary'):
-                        summary = \
-                            get_summary_from_post(reply_to_json,
-                                                  system_language,
-                                                  languages_understood)
+    if not reply_to_json:
+        return sensitive, summary
+    if not reply_to_json.get('object'):
+        return sensitive, summary
+    if not reply_to_json['object'].get('sensitive'):
+        return sensitive, summary
+    if not reply_to_json['object']['sensitive']:
+        return sensitive, summary
+    sensitive = True
+    if reply_to_json['object'].get('summary'):
+        summary = get_summary_from_post(reply_to_json, system_language,
+                                        languages_understood)
 
     return sensitive, summary
 
