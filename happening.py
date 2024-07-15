@@ -35,6 +35,15 @@ from session import get_method
 from auth import create_basic_auth_header
 
 
+def _strings_are_digits(strings_list: []) -> bool:
+    """Are the given list of strings digits?
+    """
+    for text in strings_list:
+        if not text.isdigit():
+            return False
+    return True
+
+
 def _dav_date_from_string(timestamp: str) -> str:
     """Returns a datetime from a caldav date
     """
@@ -45,12 +54,9 @@ def _dav_date_from_string(timestamp: str) -> str:
     timestamp_min = timestamp[11:][:2]
     timestamp_sec = timestamp[13:][:2]
 
-    if not timestamp_year.isdigit() or \
-       not timestamp_month.isdigit() or \
-       not timestamp_day.isdigit() or \
-       not timestamp_hour.isdigit() or \
-       not timestamp_min.isdigit() or \
-       not timestamp_sec.isdigit():
+    if not _strings_are_digits([timestamp_year, timestamp_month,
+                                timestamp_day, timestamp_hour,
+                                timestamp_min, timestamp_sec]):
         return None
     if int(timestamp_year) < 2020 or int(timestamp_year) > 2100:
         return None
