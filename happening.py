@@ -374,8 +374,9 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                     events[day_of_month].append(post_event)
                     events[day_of_month] = \
                         _sort_todays_events(events[day_of_month])
-    except OSError:
-        print('EX: get_todays_events failed to read ' + calendar_filename)
+    except OSError as exc:
+        print('EX: get_todays_events failed to read ' +
+              calendar_filename + ' ' + str(exc))
 
     # if some posts have been deleted then regenerate the calendar file
     if recreate_events_file:
