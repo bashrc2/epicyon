@@ -376,13 +376,14 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                         tag['language'] = content_language
                     post_event.append(tag)
 
-                if post_event and day_of_month:
-                    calendar_post_ids.append(post_id)
-                    if not events.get(day_of_month):
-                        events[day_of_month] = []
-                    events[day_of_month].append(post_event)
-                    events[day_of_month] = \
-                        _sort_todays_events(events[day_of_month])
+                if not (post_event and day_of_month):
+                    continue
+                calendar_post_ids.append(post_id)
+                if not events.get(day_of_month):
+                    events[day_of_month] = []
+                events[day_of_month].append(post_event)
+                events[day_of_month] = \
+                    _sort_todays_events(events[day_of_month])
     except OSError as exc:
         print('EX: get_todays_events failed to read ' +
               calendar_filename + ' ' + str(exc))
