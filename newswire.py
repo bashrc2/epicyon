@@ -1640,60 +1640,65 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
             ctr = 0
             while post_filename:
                 post_filename = fp_index.readline()
-                if post_filename:
-                    # if this is a full path then remove the directories
-                    if '/' in post_filename:
-                        post_filename = post_filename.split('/')[-1]
+                if not post_filename:
+                    ctr += 1
+                    if ctr >= max_blogs_per_account:
+                        break
+                    continue
 
-                    # filename of the post without any extension or path
-                    # This should also correspond to any index entry in
-                    # the posts cache
-                    post_url = remove_eol(post_filename)
-                    post_url = post_url.replace('.json', '').strip()
+                # if this is a full path then remove the directories
+                if '/' in post_filename:
+                    post_filename = post_filename.split('/')[-1]
 
-                    # read the post from file
-                    full_post_filename = \
-                        locate_post(base_dir, nickname,
-                                    domain, post_url, False)
-                    if not full_post_filename:
-                        print('Unable to locate post for newswire ' + post_url)
-                        ctr += 1
-                        if ctr >= max_blogs_per_account:
-                            break
-                        continue
+                # filename of the post without any extension or path
+                # This should also correspond to any index entry in
+                # the posts cache
+                post_url = remove_eol(post_filename)
+                post_url = post_url.replace('.json', '').strip()
 
-                    post_json_object = None
-                    if full_post_filename:
-                        post_json_object = load_json(full_post_filename)
-                    if _is_newswire_blog_post(post_json_object):
-                        published = post_json_object['object']['published']
-                        published = published.replace('T', ' ')
-                        published = published.replace('Z', '+00:00')
-                        votes = []
-                        if os.path.isfile(full_post_filename + '.votes'):
-                            votes = load_json(full_post_filename + '.votes')
-                        content = \
-                            get_base_content_from_post(post_json_object,
-                                                       system_language)
-                        description = first_paragraph_from_string(content)
-                        description = remove_html(description)
-                        tags_from_post = \
-                            _get_hashtags_from_post(post_json_object)
-                        summary = post_json_object['object']['summary']
-                        url2 = post_json_object['object']['url']
-                        url_str = get_url_from_post(url2)
-                        url3 = remove_html(url_str)
-                        fediverse_handle = ''
-                        extra_links = []
-                        _add_newswire_dict_entry(base_dir,
-                                                 newswire, published,
-                                                 summary, url3,
-                                                 votes, full_post_filename,
-                                                 description, moderated, False,
-                                                 tags_from_post,
-                                                 max_tags, session, debug,
-                                                 None, system_language,
-                                                 fediverse_handle, extra_links)
+                # read the post from file
+                full_post_filename = \
+                    locate_post(base_dir, nickname,
+                                domain, post_url, False)
+                if not full_post_filename:
+                    print('Unable to locate post for newswire ' + post_url)
+                    ctr += 1
+                    if ctr >= max_blogs_per_account:
+                        break
+                    continue
+
+                post_json_object = None
+                if full_post_filename:
+                    post_json_object = load_json(full_post_filename)
+                if _is_newswire_blog_post(post_json_object):
+                    published = post_json_object['object']['published']
+                    published = published.replace('T', ' ')
+                    published = published.replace('Z', '+00:00')
+                    votes = []
+                    if os.path.isfile(full_post_filename + '.votes'):
+                        votes = load_json(full_post_filename + '.votes')
+                    content = \
+                        get_base_content_from_post(post_json_object,
+                                                   system_language)
+                    description = first_paragraph_from_string(content)
+                    description = remove_html(description)
+                    tags_from_post = \
+                        _get_hashtags_from_post(post_json_object)
+                    summary = post_json_object['object']['summary']
+                    url2 = post_json_object['object']['url']
+                    url_str = get_url_from_post(url2)
+                    url3 = remove_html(url_str)
+                    fediverse_handle = ''
+                    extra_links = []
+                    _add_newswire_dict_entry(base_dir,
+                                             newswire, published,
+                                             summary, url3,
+                                             votes, full_post_filename,
+                                             description, moderated, False,
+                                             tags_from_post,
+                                             max_tags, session, debug,
+                                             None, system_language,
+                                             fediverse_handle, extra_links)
 
                 ctr += 1
                 if ctr >= max_blogs_per_account:
