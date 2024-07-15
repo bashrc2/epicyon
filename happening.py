@@ -789,32 +789,42 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
                 for tag in post_json_object['object']['tag']:
                     if not _is_happening_event(tag):
                         continue
+
                     # this tag is an event or a place
-                    if tag['type'] == 'Event':
-                        # tag is an event
-                        if not tag.get('startTime'):
-                            continue
-                        event_time = \
-                            date_from_string_format(tag['startTime'],
-                                                    ["%Y-%m-%dT%H:%M:%S%z"])
-                        if int(event_time.strftime("%Y")) == year and \
-                           int(event_time.strftime("%m")) == month_number:
-                            day_of_month = str(int(event_time.strftime("%d")))
-                            if '#statuses#' in post_id:
-                                tag['post_id'] = post_id.split('#statuses#')[1]
-                                tag['id'] = post_id.replace('#', '/')
-                                tag['sender'] = post_id.split('#statuses#')[0]
-                                tag['sender'] = tag['sender'].replace('#', '/')
-                            post_event.append(tag)
-                    else:
+                    if tag['type'] != 'Event':
                         # tag is a place
                         post_event.append(tag)
+                        continue
 
-                if post_event and day_of_month:
-                    calendar_post_ids.append(post_id)
-                    if not events.get(day_of_month):
-                        events[day_of_month] = []
-                    events[day_of_month].append(post_event)
+                    # tag is an event
+                    if not tag.get('startTime'):
+                        continue
+
+                    # is the tag for this month?
+                    event_time = \
+                        date_from_string_format(tag['startTime'],
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
+                    event_year = int(event_time.strftime("%Y"))
+                    event_month = int(event_time.strftime("%m"))
+                    if not (event_year == year and
+                            event_month == month_number):
+                        continue
+
+                    event_day = int(event_time.strftime("%d"))
+                    day_of_month = str(event_day)
+                    if '#statuses#' in post_id:
+                        tag['post_id'] = post_id.split('#statuses#')[1]
+                        tag['id'] = post_id.replace('#', '/')
+                        tag['sender'] = post_id.split('#statuses#')[0]
+                        tag['sender'] = tag['sender'].replace('#', '/')
+                    post_event.append(tag)
+
+                if not (post_event and day_of_month):
+                    continue
+                calendar_post_ids.append(post_id)
+                if not events.get(day_of_month):
+                    events[day_of_month] = []
+                events[day_of_month].append(post_event)
     except OSError:
         print('EX: get_calendar_events failed to read ' + calendar_filename)
 
