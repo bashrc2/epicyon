@@ -349,10 +349,13 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                         event_time = \
                             date_from_string_format(tag['startTime'],
                                                     ["%Y-%m-%dT%H:%M:%S%z"])
-                        if int(event_time.strftime("%Y")) == year and \
-                           int(event_time.strftime("%m")) == month_number and \
-                           int(event_time.strftime("%d")) == day_number:
-                            day_of_month = str(int(event_time.strftime("%d")))
+                        event_year = int(event_time.strftime("%Y"))
+                        event_month = int(event_time.strftime("%m"))
+                        event_day = int(event_time.strftime("%d"))
+                        if event_year == year and \
+                           event_month == month_number and \
+                           event_day == day_number:
+                            day_of_month = str(event_day)
                             if '#statuses#' in post_id:
                                 # link to the id so that the event can be
                                 # easily deleted
