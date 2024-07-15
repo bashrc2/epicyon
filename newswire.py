@@ -431,10 +431,11 @@ def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
         if 'CDATA' in hashtag_list_str:
             continue
         hashtag_list = hashtag_list_str.split(' ')
-        if not is_blocked_hashtag(base_dir, category_str):
-            for hashtag in hashtag_list:
-                set_hashtag_category(base_dir, hashtag, category_str,
-                                     False, force)
+        if is_blocked_hashtag(base_dir, category_str):
+            continue
+        for hashtag in hashtag_list:
+            set_hashtag_category(base_dir, hashtag, category_str,
+                                 False, force)
 
 
 def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
