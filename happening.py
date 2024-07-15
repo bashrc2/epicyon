@@ -258,12 +258,13 @@ def _sort_todays_events(post_events_list: []) -> []:
     for post_event in post_events_list:
         for tag in post_event:
             # only check events (not places)
-            if tag['type'] == 'Event':
-                event_time = \
-                    date_from_string_format(tag['startTime'],
-                                            ["%Y-%m-%dT%H:%M:%S%z"])
-                post_events_dict[event_time] = post_event
-                break
+            if tag['type'] != 'Event':
+                continue
+            event_time = \
+                date_from_string_format(tag['startTime'],
+                                        ["%Y-%m-%dT%H:%M:%S%z"])
+            post_events_dict[event_time] = post_event
+            break
 
     # sort the dict
     new_post_events_list = []
