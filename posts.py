@@ -872,19 +872,22 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
                     if post_domain not in post_domains:
                         post_domains.append(post_domain)
 
-        if item['object'].get('tag'):
-            for tag_item in item['object']['tag']:
-                if not tag_item.get('type'):
-                    continue
-                tag_type = tag_item['type'].lower()
-                if tag_type == 'mention':
-                    if tag_item.get('href'):
-                        tag_url = remove_html(tag_item['href'])
-                        post_domain, _ = \
-                            get_domain_from_actor(tag_url)
-                        if post_domain:
-                            if post_domain not in post_domains:
-                                post_domains.append(post_domain)
+        if not item['object'].get('tag'):
+            continue
+        for tag_item in item['object']['tag']:
+            if not tag_item.get('type'):
+                continue
+            tag_type = tag_item['type'].lower()
+            if tag_type != 'mention':
+                continue
+            if not tag_item.get('href'):
+                continue
+            tag_url = remove_html(tag_item['href'])
+            post_domain, _ = get_domain_from_actor(tag_url)
+            if not post_domain:
+                continue
+            if post_domain not in post_domains:
+                post_domains.append(post_domain)
     return post_domains
 
 
