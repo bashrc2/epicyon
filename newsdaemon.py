@@ -883,13 +883,14 @@ def run_newswire_daemon(base_dir: str, httpd,
             time.sleep(10)
             # if a new blog post has been created then stop
             # waiting and recalculate the newswire
-            if os.path.isfile(refresh_filename):
-                try:
-                    os.remove(refresh_filename)
-                except OSError:
-                    print('EX: run_newswire_daemon unable to delete ' +
-                          str(refresh_filename))
-                break
+            if not os.path.isfile(refresh_filename):
+                continue
+            try:
+                os.remove(refresh_filename)
+            except OSError:
+                print('EX: run_newswire_daemon unable to delete ' +
+                      str(refresh_filename))
+            break
 
 
 def run_newswire_watchdog(project_version: str, httpd) -> None:

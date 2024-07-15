@@ -201,11 +201,12 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
     try:
         with open(filename, 'r', encoding='utf-8') as fp_followers:
             for follower_handle in fp_followers:
-                if '@' in follower_handle:
-                    follower_domain = follower_handle.split('@')[1]
-                    follower_domain = remove_eol(follower_domain)
-                    if domain == follower_domain:
-                        ctr += 1
+                if '@' not in follower_handle:
+                    continue
+                follower_domain = follower_handle.split('@')[1]
+                follower_domain = remove_eol(follower_domain)
+                if domain == follower_domain:
+                    ctr += 1
     except OSError as exc:
         print('EX: no_of_followers_on_domain unable to read ' + filename +
               ' ' + str(exc))
