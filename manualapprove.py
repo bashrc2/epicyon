@@ -139,14 +139,15 @@ def _approve_follower_handle(account_dir: str, approve_handle: str) -> None:
             except OSError:
                 print('EX: _approve_follower_handle unable to append ' +
                       approved_filename)
-    else:
-        try:
-            with open(approved_filename, 'w+',
-                      encoding='utf-8') as fp_approved:
-                fp_approved.write(approve_handle + '\n')
-        except OSError:
-            print('EX: _approve_follower_handle unable to write ' +
-                  approved_filename)
+        return
+
+    try:
+        with open(approved_filename, 'w+',
+                  encoding='utf-8') as fp_approved:
+            fp_approved.write(approve_handle + '\n')
+    except OSError:
+        print('EX: _approve_follower_handle unable to write ' +
+              approved_filename)
 
 
 def manual_approve_follow_request(session, session_onion, session_i2p,
