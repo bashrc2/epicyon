@@ -1141,14 +1141,15 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
             except OSError as ex:
                 print('EX: Failed to write entry to scheduled posts index ' +
                       schedule_index_filename + ' ' + str(ex))
-    else:
-        try:
-            with open(schedule_index_filename, 'w+',
-                      encoding='utf-8') as fp_schedule:
-                fp_schedule.write(index_str + '\n')
-        except OSError as ex:
-            print('EX: Failed to write entry to scheduled posts index2 ' +
-                  schedule_index_filename + ' ' + str(ex))
+        return
+
+    try:
+        with open(schedule_index_filename, 'w+',
+                  encoding='utf-8') as fp_schedule:
+            fp_schedule.write(index_str + '\n')
+    except OSError as ex:
+        print('EX: Failed to write entry to scheduled posts index2 ' +
+              schedule_index_filename + ' ' + str(ex))
 
 
 def _create_post_cw_from_reply(base_dir: str, nickname: str, domain: str,
