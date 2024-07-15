@@ -185,31 +185,35 @@ def _markdown_replace_links(markdown: str) -> str:
             if ctr == 0:
                 ctr += 1
                 continue
-            if '[' in sections_links[ctr - 1] and \
-               ')' in link_section:
-                link_text = sections_links[ctr - 1].split('[')[-1]
-                link_url = link_section.split(')')[0]
-                replace_str = '[' + link_text + '](' + link_url + ')'
-                link_text = link_text.replace('`', '')
-                if '!' + replace_str in section_text:
+
+            if not ('[' in sections_links[ctr - 1] and
+                    ')' in link_section):
+                ctr += 1
+                continue
+
+            link_text = sections_links[ctr - 1].split('[')[-1]
+            link_url = link_section.split(')')[0]
+            replace_str = '[' + link_text + '](' + link_url + ')'
+            link_text = link_text.replace('`', '')
+            if '!' + replace_str in section_text:
+                html_link = \
+                    '<img class="markdownImage" src="' + \
+                    link_url + '" alt="' + link_text + '" />'
+                section_text = \
+                    section_text.replace('!' + replace_str, html_link)
+            if replace_str in section_text:
+                if not link_url.startswith('#'):
+                    # external link
                     html_link = \
-                        '<img class="markdownImage" src="' + \
-                        link_url + '" alt="' + link_text + '" />'
-                    section_text = \
-                        section_text.replace('!' + replace_str, html_link)
-                if replace_str in section_text:
-                    if not link_url.startswith('#'):
-                        # external link
-                        html_link = \
-                            '<a href="' + link_url + '" target="_blank" ' + \
-                            'rel="nofollow noopener noreferrer">' + \
-                            link_text + '</a>'
-                    else:
-                        # bookmark
-                        html_link = \
-                            '<a href="' + link_url + '">' + link_text + '</a>'
-                    section_text = \
-                        section_text.replace(replace_str, html_link)
+                        '<a href="' + link_url + '" target="_blank" ' + \
+                        'rel="nofollow noopener noreferrer">' + \
+                        link_text + '</a>'
+                else:
+                    # bookmark
+                    html_link = \
+                        '<a href="' + link_url + '">' + link_text + '</a>'
+                section_text = \
+                    section_text.replace(replace_str, html_link)
             ctr += 1
         result += section_text
     return result
