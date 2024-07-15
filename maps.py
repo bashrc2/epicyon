@@ -793,15 +793,16 @@ def map_format_from_tagmaps_path(base_dir: str, path: str,
         period_str2 = period_str.replace('Last ', '').lower()
         endpoint_str = \
             '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
-        if path == endpoint_str:
-            nickname = None
-            if '/users/' in path:
-                nickname = path.split('/users/')[1]
-                if '/' in nickname:
-                    nickname = nickname.split('/')[0]
-            return _hashtag_map_within_hours(base_dir, tag_name,
-                                             hours, map_format,
-                                             nickname, domain)
+        if path != endpoint_str:
+            continue
+        nickname = None
+        if '/users/' in path:
+            nickname = path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+        return _hashtag_map_within_hours(base_dir, tag_name,
+                                         hours, map_format,
+                                         nickname, domain)
     return None
 
 
