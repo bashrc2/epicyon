@@ -990,27 +990,29 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
 
         unique_string_identifier = title + ' ' + link
         pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
-        if pub_date_str:
-            if _valid_feed_date(pub_date_str):
-                post_filename = ''
-                votes_status = []
-                podcast_properties = \
-                    xml_podcast_to_dict(base_dir, rss_item, xml_str)
-                if podcast_properties:
-                    podcast_properties['linkMimeType'] = link_mime_type
-                fediverse_handle = ''
-                extra_links = []
-                _add_newswire_dict_entry(base_dir,
-                                         result, pub_date_str,
-                                         title, link,
-                                         votes_status, post_filename,
-                                         description, moderated,
-                                         mirrored, [], 32, session, debug,
-                                         podcast_properties, system_language,
-                                         fediverse_handle, extra_links)
-                post_ctr += 1
-                if post_ctr >= max_posts_per_source:
-                    break
+        if not pub_date_str:
+            continue
+        if not _valid_feed_date(pub_date_str):
+            continue
+        post_filename = ''
+        votes_status = []
+        podcast_properties = \
+            xml_podcast_to_dict(base_dir, rss_item, xml_str)
+        if podcast_properties:
+            podcast_properties['linkMimeType'] = link_mime_type
+        fediverse_handle = ''
+        extra_links = []
+        _add_newswire_dict_entry(base_dir,
+                                 result, pub_date_str,
+                                 title, link,
+                                 votes_status, post_filename,
+                                 description, moderated,
+                                 mirrored, [], 32, session, debug,
+                                 podcast_properties, system_language,
+                                 fediverse_handle, extra_links)
+        post_ctr += 1
+        if post_ctr >= max_posts_per_source:
+            break
     if post_ctr > 0:
         print('Added ' + str(post_ctr) + ' rss 1.0 feed items to newswire')
     return result
@@ -1146,25 +1148,27 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
 
         unique_string_identifier = title + ' ' + link
         pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
-        if pub_date_str:
-            if _valid_feed_date(pub_date_str):
-                post_filename = ''
-                votes_status = []
-                podcast_properties = \
-                    xml_podcast_to_dict(base_dir, atom_item, xml_str)
-                if podcast_properties:
-                    podcast_properties['linkMimeType'] = link_mime_type
-                _add_newswire_dict_entry(base_dir,
-                                         result, pub_date_str,
-                                         title, link,
-                                         votes_status, post_filename,
-                                         description, moderated,
-                                         mirrored, [], 32, session, debug,
-                                         podcast_properties, system_language,
-                                         fediverse_handle, extra_links)
-                post_ctr += 1
-                if post_ctr >= max_posts_per_source:
-                    break
+        if not pub_date_str:
+            continue
+        if not _valid_feed_date(pub_date_str):
+            continue
+        post_filename = ''
+        votes_status = []
+        podcast_properties = \
+            xml_podcast_to_dict(base_dir, atom_item, xml_str)
+        if podcast_properties:
+            podcast_properties['linkMimeType'] = link_mime_type
+        _add_newswire_dict_entry(base_dir,
+                                 result, pub_date_str,
+                                 title, link,
+                                 votes_status, post_filename,
+                                 description, moderated,
+                                 mirrored, [], 32, session, debug,
+                                 podcast_properties, system_language,
+                                 fediverse_handle, extra_links)
+        post_ctr += 1
+        if post_ctr >= max_posts_per_source:
+            break
     if post_ctr > 0:
         print('Added ' + str(post_ctr) + ' atom feed items to newswire')
     return result
@@ -1266,23 +1270,25 @@ def _json_feed_v1to_dict(base_dir: str, xml_str: str,
 
         unique_string_identifier = title + ' ' + link
         pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
-        if pub_date_str:
-            if _valid_feed_date(pub_date_str):
-                post_filename = ''
-                votes_status = []
-                fediverse_handle = ''
-                extra_links = []
-                _add_newswire_dict_entry(base_dir,
-                                         result, pub_date_str,
-                                         title, link,
-                                         votes_status, post_filename,
-                                         description, moderated,
-                                         mirrored, [], 32, session, debug,
-                                         None, system_language,
-                                         fediverse_handle, extra_links)
-                post_ctr += 1
-                if post_ctr >= max_posts_per_source:
-                    break
+        if not pub_date_str:
+            continue
+        if not _valid_feed_date(pub_date_str):
+            continue
+        post_filename = ''
+        votes_status = []
+        fediverse_handle = ''
+        extra_links = []
+        _add_newswire_dict_entry(base_dir,
+                                 result, pub_date_str,
+                                 title, link,
+                                 votes_status, post_filename,
+                                 description, moderated,
+                                 mirrored, [], 32, session, debug,
+                                 None, system_language,
+                                 fediverse_handle, extra_links)
+        post_ctr += 1
+        if post_ctr >= max_posts_per_source:
+            break
     if post_ctr > 0:
         print('Added ' + str(post_ctr) +
               ' json feed items to newswire')
@@ -1368,27 +1374,29 @@ def _atom_feed_yt_to_dict(base_dir: str, xml_str: str,
 
         unique_string_identifier = title + ' ' + link
         pub_date_str = parse_feed_date(pub_date, unique_string_identifier)
-        if pub_date_str:
-            if _valid_feed_date(pub_date_str):
-                post_filename = ''
-                votes_status = []
-                podcast_properties = \
-                    xml_podcast_to_dict(base_dir, atom_item, xml_str)
-                if podcast_properties:
-                    podcast_properties['linkMimeType'] = 'video/youtube'
-                fediverse_handle = ''
-                extra_links = []
-                _add_newswire_dict_entry(base_dir,
-                                         result, pub_date_str,
-                                         title, link,
-                                         votes_status, post_filename,
-                                         description, moderated, mirrored,
-                                         [], 32, session, debug,
-                                         podcast_properties, system_language,
-                                         fediverse_handle, extra_links)
-                post_ctr += 1
-                if post_ctr >= max_posts_per_source:
-                    break
+        if not pub_date_str:
+            continue
+        if not _valid_feed_date(pub_date_str):
+            continue
+        post_filename = ''
+        votes_status = []
+        podcast_properties = \
+            xml_podcast_to_dict(base_dir, atom_item, xml_str)
+        if podcast_properties:
+            podcast_properties['linkMimeType'] = 'video/youtube'
+        fediverse_handle = ''
+        extra_links = []
+        _add_newswire_dict_entry(base_dir,
+                                 result, pub_date_str,
+                                 title, link,
+                                 votes_status, post_filename,
+                                 description, moderated, mirrored,
+                                 [], 32, session, debug,
+                                 podcast_properties, system_language,
+                                 fediverse_handle, extra_links)
+        post_ctr += 1
+        if post_ctr >= max_posts_per_source:
+            break
     if post_ctr > 0:
         print('Added ' + str(post_ctr) + ' YouTube feed items to newswire')
     return result
