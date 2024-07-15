@@ -341,34 +341,40 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                 for tag in post_json_object['object']['tag']:
                     if not _is_happening_event(tag):
                         continue
+
                     # this tag is an event or a place
-                    if tag['type'] == 'Event':
-                        # tag is an event
-                        if not tag.get('startTime'):
-                            continue
-                        event_time = \
-                            date_from_string_format(tag['startTime'],
-                                                    ["%Y-%m-%dT%H:%M:%S%z"])
-                        event_year = int(event_time.strftime("%Y"))
-                        event_month = int(event_time.strftime("%m"))
-                        event_day = int(event_time.strftime("%d"))
-                        if event_year == year and \
-                           event_month == month_number and \
-                           event_day == day_number:
-                            day_of_month = str(event_day)
-                            if '#statuses#' in post_id:
-                                # link to the id so that the event can be
-                                # easily deleted
-                                tag['post_id'] = post_id.split('#statuses#')[1]
-                                tag['id'] = post_id.replace('#', '/')
-                                tag['sender'] = post_id.split('#statuses#')[0]
-                                tag['sender'] = tag['sender'].replace('#', '/')
-                                tag['public'] = public_event
-                                tag['language'] = content_language
-                            post_event.append(tag)
-                    else:
+                    if tag['type'] != 'Event':
                         # tag is a place
                         post_event.append(tag)
+                        continue
+
+                    # tag is an event
+                    if not tag.get('startTime'):
+                        continue
+
+                    # is the tag for this day?
+                    event_time = \
+                        date_from_string_format(tag['startTime'],
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
+                    event_year = int(event_time.strftime("%Y"))
+                    event_month = int(event_time.strftime("%m"))
+                    event_day = int(event_time.strftime("%d"))
+                    if not (event_year == year and
+                            event_month == month_number and
+                            event_day == day_number):
+                        continue
+
+                    day_of_month = str(event_day)
+                    if '#statuses#' in post_id:
+                        # link to the id so that the event can be
+                        # easily deleted
+                        tag['post_id'] = post_id.split('#statuses#')[1]
+                        tag['id'] = post_id.replace('#', '/')
+                        tag['sender'] = post_id.split('#statuses#')[0]
+                        tag['sender'] = tag['sender'].replace('#', '/')
+                        tag['public'] = public_event
+                        tag['language'] = content_language
+                    post_event.append(tag)
 
                 if post_event and day_of_month:
                     calendar_post_ids.append(post_id)
