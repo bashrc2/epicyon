@@ -718,11 +718,12 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
                         week_day_index = (event_time - now).days()
                         post_event.append(tag)
 
-                if post_event and week_day_index:
-                    calendar_post_ids.append(post_id)
-                    if not events.get(week_day_index):
-                        events[week_day_index] = []
-                    events[week_day_index].append(post_event)
+                if not (post_event and week_day_index):
+                    continue
+                calendar_post_ids.append(post_id)
+                if not events.get(week_day_index):
+                    events[week_day_index] = []
+                events[week_day_index].append(post_event)
     except OSError:
         print('EX: get_this_weeks_events failed to read ' + calendar_filename)
 
