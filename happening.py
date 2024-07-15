@@ -701,20 +701,23 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
                 for tag in post_json_object['object']['tag']:
                     if not _is_happening_event(tag):
                         continue
+
                     # this tag is an event or a place
-                    if tag['type'] == 'Event':
-                        # tag is an event
-                        if not tag.get('startTime'):
-                            continue
-                        event_time = \
-                            date_from_string_format(tag['startTime'],
-                                                    ["%Y-%m-%dT%H:%M:%S%z"])
-                        if now <= event_time <= end_of_week:
-                            week_day_index = (event_time - now).days()
-                            post_event.append(tag)
-                    else:
+                    if tag['type'] != 'Event':
                         # tag is a place
                         post_event.append(tag)
+                        continue
+
+                    # tag is an event
+                    if not tag.get('startTime'):
+                        continue
+                    event_time = \
+                        date_from_string_format(tag['startTime'],
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
+                    if now <= event_time <= end_of_week:
+                        week_day_index = (event_time - now).days()
+                        post_event.append(tag)
+
                 if post_event and week_day_index:
                     calendar_post_ids.append(post_id)
                     if not events.get(week_day_index):
