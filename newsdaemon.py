@@ -62,13 +62,14 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
             except OSError as ex:
                 print('EX: Failed to write entry to feeds posts index ' +
                       index_filename + ' ' + str(ex))
-    else:
-        try:
-            with open(index_filename, 'w+', encoding='utf-8') as fp_feeds:
-                fp_feeds.write(post_id + '\n')
-        except OSError:
-            print('EX: _update_feeds_outbox_index unable to write ' +
-                  index_filename)
+        return
+
+    try:
+        with open(index_filename, 'w+', encoding='utf-8') as fp_feeds:
+            fp_feeds.write(post_id + '\n')
+    except OSError:
+        print('EX: _update_feeds_outbox_index unable to write ' +
+              index_filename)
 
 
 def _save_arrived_time(post_filename: str, arrived: str) -> None:
