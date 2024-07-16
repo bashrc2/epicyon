@@ -151,8 +151,8 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
         return False
     provided_password = plain.split(':')[1]
     try:
-        with open(password_file, 'r', encoding='utf-8') as passfile:
-            for line in passfile:
+        with open(password_file, 'r', encoding='utf-8') as fp_pass:
+            for line in fp_pass:
                 if not line.startswith(nickname + ':'):
                     continue
                 stored_password_base = line.split(':')[1]
@@ -188,10 +188,10 @@ def store_basic_credentials(base_dir: str,
     if os.path.isfile(password_file):
         if text_in_file(nickname + ':', password_file):
             try:
-                with open(password_file, 'r', encoding='utf-8') as fin:
+                with open(password_file, 'r', encoding='utf-8') as fp_in:
                     with open(password_file + '.new', 'w+',
                               encoding='utf-8') as fout:
-                        for line in fin:
+                        for line in fp_in:
                             if not line.startswith(nickname + ':'):
                                 fout.write(line)
                             else:
@@ -209,15 +209,15 @@ def store_basic_credentials(base_dir: str,
         else:
             # append to password file
             try:
-                with open(password_file, 'a+', encoding='utf-8') as passfile:
-                    passfile.write(store_str + '\n')
+                with open(password_file, 'a+', encoding='utf-8') as fp_pass:
+                    fp_pass.write(store_str + '\n')
             except OSError:
                 print('EX: unable to append password')
                 return False
     else:
         try:
-            with open(password_file, 'w+', encoding='utf-8') as passfile:
-                passfile.write(store_str + '\n')
+            with open(password_file, 'w+', encoding='utf-8') as fp_pass:
+                fp_pass.write(store_str + '\n')
         except OSError:
             print('EX: unable to create password file')
             return False
@@ -231,12 +231,12 @@ def remove_password(base_dir: str, nickname: str) -> None:
     password_file = data_dir(base_dir) + '/passwords'
     if os.path.isfile(password_file):
         try:
-            with open(password_file, 'r', encoding='utf-8') as fin:
+            with open(password_file, 'r', encoding='utf-8') as fp_in:
                 with open(password_file + '.new', 'w+',
-                          encoding='utf-8') as fout:
-                    for line in fin:
+                          encoding='utf-8') as fp_out:
+                    for line in fp_in:
                         if not line.startswith(nickname + ':'):
-                            fout.write(line)
+                            fp_out.write(line)
         except OSError as ex:
             print('EX: unable to remove password from file ' + str(ex))
             return
