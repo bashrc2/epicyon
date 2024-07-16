@@ -515,7 +515,6 @@ def announce_seen(base_dir: str, nickname: str, domain: str,
 
     if text_in_file(announce_id, seen_filename):
         return False
-    print('DEBUG: post already seen ' + post_url)
     return True
 
 
