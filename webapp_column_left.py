@@ -264,11 +264,7 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
                 words = line_str.split(' ')
                 # get the link
                 for word in words:
-                    if word == '#':
-                        continue
-                    if word == '*':
-                        continue
-                    if word == '=>':
+                    if word in ('#', '*', '=>'):
                         continue
                     if '://' in word:
                         link_str = word

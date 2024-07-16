@@ -575,6 +575,7 @@ def html_calendar(person_cache: {}, translate: {},
                 if curr_date.month == month_number:
                     if day_of_month == curr_date.day:
                         is_today = True
+
             if events.get(str(day_of_month)):
                 url = cal_actor + '/calendar?year=' + \
                     str(year) + '?month=' + \
@@ -597,13 +598,11 @@ def html_calendar(person_cache: {}, translate: {},
                 if not is_today:
                     calendar_str += \
                         '    <td class="calendar__day__cell" ' + \
-                        'data-event="">' + \
-                        day_link + '</td>\n'
+                        'data-event="">' + day_link + '</td>\n'
                 else:
                     calendar_str += \
                         '    <td class="calendar__day__cell" ' + \
-                        'data-today-event="">' + \
-                        day_link + '</td>\n'
+                        'data-today-event="">' + day_link + '</td>\n'
             else:
                 # No events today
                 if not is_today:
