@@ -563,56 +563,57 @@ def html_calendar(person_cache: {}, translate: {},
             continue
         calendar_str += '  <tr>\n'
         for day_number in range(1, 8):
-            if (week_of_month > 1 and day_of_month < days_in_month) or \
-               (week_of_month == 1 and day_number >= dow):
-                day_of_month += 1
-
-                is_today = False
-                if year == curr_date.year:
-                    if curr_date.month == month_number:
-                        if day_of_month == curr_date.day:
-                            is_today = True
-                if events.get(str(day_of_month)):
-                    url = cal_actor + '/calendar?year=' + \
-                        str(year) + '?month=' + \
-                        str(month_number) + '?day=' + str(day_of_month)
-                    day_description = month_name + ' ' + str(day_of_month)
-                    datetime_str = \
-                        str(year) + '-' + str(month_number) + '-' + \
-                        str(day_of_month)
-                    day_link = '<a href="' + url + '" ' + \
-                        'title="' + day_description + '" tabindex="2">' + \
-                        '<time datetime="' + datetime_str + '">' + \
-                        str(day_of_month) + '</time></a>'
-                    # accessibility menu links
-                    menu_option_str = \
-                        html_hide_from_screen_reader('📅') + ' ' + \
-                        '<time datetime="' + datetime_str + '">' + \
-                        day_description + '</time>'
-                    nav_links[menu_option_str] = url
-                    # there are events for this day
-                    if not is_today:
-                        calendar_str += \
-                            '    <td class="calendar__day__cell" ' + \
-                            'data-event="">' + \
-                            day_link + '</td>\n'
-                    else:
-                        calendar_str += \
-                            '    <td class="calendar__day__cell" ' + \
-                            'data-today-event="">' + \
-                            day_link + '</td>\n'
-                else:
-                    # No events today
-                    if not is_today:
-                        calendar_str += \
-                            '    <td class="calendar__day__cell">' + \
-                            str(day_of_month) + '</td>\n'
-                    else:
-                        calendar_str += \
-                            '    <td class="calendar__day__cell" ' + \
-                            'data-today="">' + str(day_of_month) + '</td>\n'
-            else:
+            if not ((week_of_month > 1 and day_of_month < days_in_month) or
+                    (week_of_month == 1 and day_number >= dow)):
                 calendar_str += '    <td class="calendar__day__cell"></td>\n'
+                continue
+
+            day_of_month += 1
+
+            is_today = False
+            if year == curr_date.year:
+                if curr_date.month == month_number:
+                    if day_of_month == curr_date.day:
+                        is_today = True
+            if events.get(str(day_of_month)):
+                url = cal_actor + '/calendar?year=' + \
+                    str(year) + '?month=' + \
+                    str(month_number) + '?day=' + str(day_of_month)
+                day_description = month_name + ' ' + str(day_of_month)
+                datetime_str = \
+                    str(year) + '-' + str(month_number) + '-' + \
+                    str(day_of_month)
+                day_link = '<a href="' + url + '" ' + \
+                    'title="' + day_description + '" tabindex="2">' + \
+                    '<time datetime="' + datetime_str + '">' + \
+                    str(day_of_month) + '</time></a>'
+                # accessibility menu links
+                menu_option_str = \
+                    html_hide_from_screen_reader('📅') + ' ' + \
+                    '<time datetime="' + datetime_str + '">' + \
+                    day_description + '</time>'
+                nav_links[menu_option_str] = url
+                # there are events for this day
+                if not is_today:
+                    calendar_str += \
+                        '    <td class="calendar__day__cell" ' + \
+                        'data-event="">' + \
+                        day_link + '</td>\n'
+                else:
+                    calendar_str += \
+                        '    <td class="calendar__day__cell" ' + \
+                        'data-today-event="">' + \
+                        day_link + '</td>\n'
+            else:
+                # No events today
+                if not is_today:
+                    calendar_str += \
+                        '    <td class="calendar__day__cell">' + \
+                        str(day_of_month) + '</td>\n'
+                else:
+                    calendar_str += \
+                        '    <td class="calendar__day__cell" ' + \
+                        'data-today="">' + str(day_of_month) + '</td>\n'
         calendar_str += '  </tr>\n'
 
     calendar_str += '</tbody>\n'
