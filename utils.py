@@ -321,16 +321,19 @@ def text_in_file(text: str, filename: str,
     """
     if not case_sensitive:
         text = text.lower()
+
+    content = None
     try:
-        with open(filename, 'r', encoding='utf-8') as file:
-            content = file.read()
-            if content:
-                if not case_sensitive:
-                    content = content.lower()
-                if text in content:
-                    return True
+        with open(filename, 'r', encoding='utf-8') as fp_file:
+            content = fp_file.read()
     except OSError:
         print('EX: unable to find text in missing file ' + filename)
+
+    if content:
+        if not case_sensitive:
+            content = content.lower()
+        if text in content:
+            return True
     return False
 
 
@@ -594,8 +597,8 @@ def set_accounts_data_dir(base_dir: str, accounts_data_path: str) -> None:
         path = None
         try:
             with open(accounts_data_path_filename, 'r',
-                      encoding='utf-8') as file:
-                path = file.read()
+                      encoding='utf-8') as fp_accounts:
+                path = fp_accounts.read()
         except OSError:
             print('EX: unable to read ' + accounts_data_path_filename)
         if path.strip() == accounts_data_path:
@@ -604,8 +607,8 @@ def set_accounts_data_dir(base_dir: str, accounts_data_path: str) -> None:
 
     try:
         with open(accounts_data_path_filename, 'w+',
-                  encoding='utf-8') as file:
-            file.write(accounts_data_path)
+                  encoding='utf-8') as fp_accounts:
+            fp_accounts.write(accounts_data_path)
     except OSError:
         print('EX: unable to write ' + accounts_data_path_filename)
 
@@ -629,8 +632,8 @@ def data_dir(base_dir: str) -> str:
             path = None
             try:
                 with open(accounts_data_path_filename, 'r',
-                          encoding='utf-8') as file:
-                    path = file.read()
+                          encoding='utf-8') as fp_accounts:
+                    path = fp_accounts.read()
             except OSError:
                 print('EX: unable to read ' + accounts_data_path_filename)
             if path:
@@ -833,8 +836,8 @@ def is_editor(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    with open(editors_file, 'r', encoding='utf-8') as editors:
-        lines = editors.readlines()
+    with open(editors_file, 'r', encoding='utf-8') as fp_editors:
+        lines = fp_editors.readlines()
         if len(lines) == 0:
             admin_name = get_config_param(base_dir, 'admin')
             if admin_name:
@@ -859,8 +862,8 @@ def is_artist(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    with open(artists_file, 'r', encoding='utf-8') as artists:
-        lines = artists.readlines()
+    with open(artists_file, 'r', encoding='utf-8') as fp_artists:
+        lines = fp_artists.readlines()
         if len(lines) == 0:
             admin_name = get_config_param(base_dir, 'admin')
             if admin_name:
@@ -1210,8 +1213,8 @@ def get_followers_of_person(base_dir: str,
                 continue
             if not os.path.isfile(filename):
                 continue
-            with open(filename, 'r', encoding='utf-8') as followingfile:
-                for following_handle in followingfile:
+            with open(filename, 'r', encoding='utf-8') as fp_following:
+                for following_handle in fp_following:
                     following_handle2 = remove_eol(following_handle)
                     if following_handle2 == handle:
                         if account not in followers:
@@ -2383,13 +2386,13 @@ def remove_moderation_post_from_index(base_dir: str, post_url: str,
     if text_in_file(post_id, moderation_index_file):
         try:
             with open(moderation_index_file, 'r',
-                      encoding='utf-8') as file1:
-                lines = file1.readlines()
+                      encoding='utf-8') as fp_mod1:
+                lines = fp_mod1.readlines()
                 with open(moderation_index_file, 'w+',
-                          encoding='utf-8') as file2:
+                          encoding='utf-8') as fp_mod2:
                     for line in lines:
                         if line.strip("\n").strip("\r") != post_id:
-                            file2.write(line)
+                            fp_mod2.write(line)
                             continue
                         if debug:
                             print('DEBUG: removed ' + post_id +

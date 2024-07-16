@@ -538,8 +538,8 @@ def html_timeline(default_timeline: str,
         new_calendar_event = True
         calendar_image = 'calendar_notify.png'
         try:
-            with open(calendar_file, 'r', encoding='utf-8') as calfile:
-                calendar_path = calfile.read().replace('##sent##', '')
+            with open(calendar_file, 'r', encoding='utf-8') as fp_cal:
+                calendar_path = fp_cal.read().replace('##sent##', '')
                 calendar_path = remove_eol(calendar_path)
                 if '/calendar' not in calendar_path:
                     calendar_path = '/calendar'

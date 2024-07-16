@@ -327,12 +327,12 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
         roles_list = fields[list_name].split(',')
         try:
             with open(roles_filename, 'w+',
-                      encoding='utf-8') as rolesfile:
+                      encoding='utf-8') as fp_roles:
                 for roles_nick in roles_list:
                     roles_nick = roles_nick.strip()
                     roles_dir = acct_dir(base_dir, roles_nick, domain)
                     if os.path.isdir(roles_dir):
-                        rolesfile.write(roles_nick + '\n')
+                        fp_roles.write(roles_nick + '\n')
         except OSError as ex:
             print('EX: unable to write ' + list_name + ' ' +
                   roles_filename + ' ' + str(ex))
@@ -347,12 +347,12 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
         roles_list = fields[list_name].split('\n')
         try:
             with open(roles_filename, 'w+',
-                      encoding='utf-8') as rolesfile:
+                      encoding='utf-8') as fp_roles:
                 for roles_nick in roles_list:
                     roles_nick = roles_nick.strip()
                     roles_dir = acct_dir(base_dir, roles_nick, domain)
                     if os.path.isdir(roles_dir):
-                        rolesfile.write(roles_nick + '\n')
+                        fp_roles.write(roles_nick + '\n')
         except OSError as ex:
             print('EX: unable to write  ' + list_name + ' ' +
                   roles_filename + ' ' + str(ex))

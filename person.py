@@ -762,8 +762,8 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
         follow_dms_filename = \
             acct_dir(base_dir, nickname, domain) + '/.followDMs'
         try:
-            with open(follow_dms_filename, 'w+', encoding='utf-8') as ffile:
-                ffile.write('\n')
+            with open(follow_dms_filename, 'w+', encoding='utf-8') as fp_foll:
+                fp_foll.write('\n')
         except OSError:
             print('EX: create_person unable to write ' + follow_dms_filename)
 
@@ -772,8 +772,8 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
         notify_likes_filename = \
             acct_dir(base_dir, nickname, domain) + '/.notifyLikes'
         try:
-            with open(notify_likes_filename, 'w+', encoding='utf-8') as nfile:
-                nfile.write('\n')
+            with open(notify_likes_filename, 'w+', encoding='utf-8') as fp_lik:
+                fp_lik.write('\n')
         except OSError:
             print('EX: create_person unable to write 2 ' +
                   notify_likes_filename)
@@ -784,8 +784,8 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
             acct_dir(base_dir, nickname, domain) + '/.notifyReactions'
         try:
             with open(notify_reactions_filename, 'w+',
-                      encoding='utf-8') as nfile:
-                nfile.write('\n')
+                      encoding='utf-8') as fp_notify:
+                fp_notify.write('\n')
         except OSError:
             print('EX: create_person unable to write 3 ' +
                   notify_reactions_filename)
@@ -1592,8 +1592,8 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
         if content:
             try:
                 with open(snoozed_filename, 'w+',
-                          encoding='utf-8') as snoozfile:
-                    snoozfile.write(content)
+                          encoding='utf-8') as fp_snooze:
+                    fp_snooze.write(content)
             except OSError:
                 print('EX: is_person_snoozed unable to write ' +
                       snoozed_filename)
@@ -1655,8 +1655,8 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
         if content is not None:
             try:
                 with open(snoozed_filename, 'w+',
-                          encoding='utf-8') as snoozfile:
-                    snoozfile.write(content)
+                          encoding='utf-8') as fp_snooze:
+                    fp_snooze.write(content)
             except OSError:
                 print('EX: unable to write ' + snoozed_filename)
 

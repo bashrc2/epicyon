@@ -68,11 +68,11 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
     new_filters_filename = filters_filename + '.new'
     try:
         with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
-            with open(new_filters_filename, 'w+', encoding='utf-8') as fpnew:
+            with open(new_filters_filename, 'w+', encoding='utf-8') as fp_new:
                 for line in fp_filt:
                     line = remove_eol(line)
                     if line != words:
-                        fpnew.write(line + '\n')
+                        fp_new.write(line + '\n')
     except OSError as ex:
         print('EX: unable to remove filter ' +
               filters_filename + ' ' + str(ex))
@@ -94,11 +94,11 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
     new_filters_filename = filters_filename + '.new'
     try:
         with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
-            with open(new_filters_filename, 'w+', encoding='utf-8') as fpnew:
+            with open(new_filters_filename, 'w+', encoding='utf-8') as fp_new:
                 for line in fp_filt:
                     line = remove_eol(line)
                     if line != words:
-                        fpnew.write(line + '\n')
+                        fp_new.write(line + '\n')
     except OSError as ex:
         print('EX: unable to remove global filter ' +
               filters_filename + ' ' + str(ex))

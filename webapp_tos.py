@@ -35,8 +35,8 @@ def html_terms_of_service(base_dir: str,
     tos_text = 'Terms of Service go here.'
     if os.path.isfile(dir_str + '/tos.md'):
         try:
-            with open(dir_str + '/tos.md', 'r', encoding='utf-8') as file:
-                tos_text = markdown_to_html(file.read())
+            with open(dir_str + '/tos.md', 'r', encoding='utf-8') as fp_tos:
+                tos_text = markdown_to_html(fp_tos.read())
         except OSError:
             print('EX: html_terms_of_service unable to read ' +
                   dir_str + '/tos.md')

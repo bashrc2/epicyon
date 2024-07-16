@@ -134,8 +134,10 @@ def html_login(translate: {},
     if os.path.isfile(dir_str + '/login.txt'):
         # custom login message
         try:
-            with open(dir_str + '/login.txt', 'r', encoding='utf-8') as file:
-                login_text = '<p class="login-text">' + file.read() + '</p>'
+            with open(dir_str + '/login.txt', 'r',
+                      encoding='utf-8') as fp_login:
+                login_text = \
+                    '<p class="login-text">' + fp_login.read() + '</p>'
         except OSError:
             print('EX: html_login unable to read ' + dir_str + '/login.txt')
 

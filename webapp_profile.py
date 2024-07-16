@@ -2317,8 +2317,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if os.path.isfile(filter_filename):
         try:
-            with open(filter_filename, 'r', encoding='utf-8') as filterfile:
-                filter_str = filterfile.read()
+            with open(filter_filename, 'r', encoding='utf-8') as fp_filter:
+                filter_str = fp_filter.read()
         except OSError:
             print('EX: _html_edit_profile_filtering unable to read ' +
                   filter_filename)
@@ -2340,8 +2340,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
     if os.path.isfile(switch_filename):
         try:
-            with open(switch_filename, 'r', encoding='utf-8') as switchfile:
-                switch_str = switchfile.read()
+            with open(switch_filename, 'r', encoding='utf-8') as fp_switch:
+                switch_str = fp_switch.read()
         except OSError:
             print('EX: _html_edit_profile_filtering unable to save ' +
                   switch_filename)

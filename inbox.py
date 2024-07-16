@@ -438,8 +438,8 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                 content = tag_line + content
                 try:
                     with open(tags_filename, 'w+',
-                              encoding='utf-8') as tags_file2:
-                        tags_file2.write(content)
+                              encoding='utf-8') as fp_tags2:
+                        fp_tags2.write(content)
                         hashtag_added = True
                 except OSError as ex:
                     print('EX: Failed to write entry to tags file ' +
@@ -3490,8 +3490,8 @@ def _receive_announce(recent_posts_cache: {},
                                        'inbox')
                         try:
                             with open(post_filename + '.tts', 'w+',
-                                      encoding='utf-8') as ttsfile:
-                                ttsfile.write('\n')
+                                      encoding='utf-8') as fp_tts:
+                                fp_tts.write('\n')
                         except OSError:
                             print('EX: unable to write recent post ' +
                                   post_filename)

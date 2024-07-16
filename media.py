@@ -552,8 +552,9 @@ def _update_etag(media_filename: str) -> None:
     etag = sha1(data).hexdigest()  # nosec
     # save the hash
     try:
-        with open(media_filename + '.etag', 'w+', encoding='utf-8') as efile:
-            efile.write(etag)
+        with open(media_filename + '.etag', 'w+',
+                  encoding='utf-8') as fp_media:
+            fp_media.write(etag)
     except OSError:
         print('EX: _update_etag unable to write ' +
               str(media_filename) + '.etag')

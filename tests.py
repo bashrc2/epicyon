@@ -4532,8 +4532,8 @@ def _test_translation_labels() -> None:
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as file_source:
-                source_str = file_source.read()
+            with open(source_file, 'r', encoding='utf-8') as fp_source:
+                source_str = fp_source.read()
             if not source_str:
                 continue
             if 'translate[' not in source_str:
@@ -5173,8 +5173,8 @@ def _test_post_variable_names():
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as file_source:
-                source_str = file_source.read()
+            with open(source_file, 'r', encoding='utf-8') as fp_source:
+                source_str = fp_source.read()
             if not source_str:
                 continue
             if ' name="' not in source_str:
@@ -5208,8 +5208,8 @@ def _test_config_param_names():
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as file_source:
-                source_str = file_source.read()
+            with open(source_file, 'r', encoding='utf-8') as fp_source:
+                source_str = fp_source.read()
             if not source_str:
                 continue
             for fname in fnames:
@@ -5256,8 +5256,8 @@ def _test_source_contains_no_tabs():
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as file_source:
-                source_str = file_source.read()
+            with open(source_file, 'r', encoding='utf-8') as fp_source:
+                source_str = fp_source.read()
             if not source_str:
                 continue
             if '\t' in source_str:
@@ -5279,8 +5279,8 @@ def _test_checkbox_names():
             if source_file.startswith('flycheck_'):
                 continue
             source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as file_source:
-                source_str = file_source.read()
+            with open(source_file, 'r', encoding='utf-8') as fp_source:
+                source_str = fp_source.read()
             if not source_str:
                 continue
             for fname in fnames:
@@ -5319,8 +5319,8 @@ def _test_post_field_names(source_file: str, fieldnames: []):
         fnames.append(field + '.get')
 
     source_str = ''
-    with open(source_file, 'r', encoding='utf-8') as file_source:
-        source_str = file_source.read()
+    with open(source_file, 'r', encoding='utf-8') as fp_source:
+        source_str = fp_source.read()
     if not source_str:
         return
     for fname in fnames:
@@ -6810,8 +6810,11 @@ def _test_spoofed_geolocation() -> None:
 
     kml_str += '</Document>\n'
     kml_str += '</kml>'
-    with open('unittest_decoy.kml', 'w+', encoding='utf-8') as kmlfile:
-        kmlfile.write(kml_str)
+    try:
+        with open('unittest_decoy.kml', 'w+', encoding='utf-8') as fp_kml:
+            fp_kml.write(kml_str)
+    except OSError:
+        print('EX: unable to write unittest_decoy.kml')
 
 
 def _test_skills() -> None:

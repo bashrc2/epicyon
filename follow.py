@@ -144,18 +144,18 @@ def _remove_from_follow_base(base_dir: str,
             return
     try:
         with open(approve_follows_filename + '.new', 'w+',
-                  encoding='utf-8') as approvefilenew:
+                  encoding='utf-8') as fp_approve_new:
             with open(approve_follows_filename, 'r',
                       encoding='utf-8') as fp_approve:
                 if not accept_deny_actor:
                     for approve_handle in fp_approve:
                         accept_deny_handle = accept_or_deny_handle
                         if not approve_handle.startswith(accept_deny_handle):
-                            approvefilenew.write(approve_handle)
+                            fp_approve_new.write(approve_handle)
                 else:
                     for approve_handle in fp_approve:
                         if accept_deny_actor not in approve_handle:
-                            approvefilenew.write(approve_handle)
+                            fp_approve_new.write(approve_handle)
     except OSError as ex:
         print('EX: _remove_from_follow_base ' +
               approve_follows_filename + ' ' + str(ex))

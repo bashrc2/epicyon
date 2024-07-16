@@ -140,8 +140,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(following_filename):
         following_handles = []
         try:
-            with open(following_filename, 'r', encoding='utf-8') as foll1:
-                following_handles = foll1.readlines()
+            with open(following_filename, 'r', encoding='utf-8') as fp_foll1:
+                following_handles = fp_foll1.readlines()
         except OSError:
             print('EX: _update_moved_handle unable to read ' +
                   following_filename)
@@ -153,11 +153,11 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
             acct_dir(base_dir, nickname, domain) + '/refollow.txt'
 
         # unfollow the old handle
-        with open(following_filename, 'w+', encoding='utf-8') as foll2:
+        with open(following_filename, 'w+', encoding='utf-8') as fp_foll2:
             for follow_handle in following_handles:
                 if follow_handle.strip("\n").strip("\r").lower() != \
                    handle_lower:
-                    foll2.write(follow_handle)
+                    fp_foll2.write(follow_handle)
                     continue
                 handle_nickname = handle.split('@')[0]
                 handle_domain = handle.split('@')[1]
@@ -173,8 +173,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
                 if os.path.isfile(refollow_filename):
                     try:
                         with open(refollow_filename, 'a+',
-                                  encoding='utf-8') as refoll:
-                            refoll.write(moved_to_handle + '\n')
+                                  encoding='utf-8') as fp_refoll:
+                            fp_refoll.write(moved_to_handle + '\n')
                     except OSError:
                         print('EX: ' +
                               '_update_moved_handle unable to append ' +
@@ -182,8 +182,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
                 else:
                     try:
                         with open(refollow_filename, 'w+',
-                                  encoding='utf-8') as refoll:
-                            refoll.write(moved_to_handle + '\n')
+                                  encoding='utf-8') as fp_refoll:
+                            fp_refoll.write(moved_to_handle + '\n')
                     except OSError:
                         print('EX: _update_moved_handle unable to write ' +
                               refollow_filename)
@@ -193,8 +193,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(followers_filename):
         follower_handles = []
         try:
-            with open(followers_filename, 'r', encoding='utf-8') as foll3:
-                follower_handles = foll3.readlines()
+            with open(followers_filename, 'r', encoding='utf-8') as fp_foll3:
+                follower_handles = fp_foll3.readlines()
         except OSError:
             print('EX: _update_moved_handle unable to read ' +
                   followers_filename)
@@ -203,11 +203,11 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
 
         # remove followers who have moved
         try:
-            with open(followers_filename, 'w+', encoding='utf-8') as foll4:
+            with open(followers_filename, 'w+', encoding='utf-8') as fp_foll4:
                 for follower_handle in follower_handles:
                     if follower_handle.strip("\n").strip("\r").lower() != \
                        handle_lower:
-                        foll4.write(follower_handle)
+                        fp_foll4.write(follower_handle)
                     else:
                         ctr += 1
                         print('Removed follower who has moved ' + handle)

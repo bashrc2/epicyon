@@ -516,8 +516,8 @@ def html_new_post(edit_post_params: {},
             if os.path.isfile(dir_str + '/report.txt'):
                 try:
                     with open(dir_str + '/report.txt', 'r',
-                              encoding='utf-8') as file:
-                        custom_report_text = file.read()
+                              encoding='utf-8') as fp_report:
+                        custom_report_text = fp_report.read()
                         if '</p>' not in custom_report_text:
                             custom_report_text = \
                                 '<p class="login-subtext">' + \
@@ -558,8 +558,9 @@ def html_new_post(edit_post_params: {},
     dir_str = data_dir(base_dir)
     if os.path.isfile(dir_str + '/newpost.txt'):
         try:
-            with open(dir_str + '/newpost.txt', 'r', encoding='utf-8') as file:
-                new_post_text = '<p>' + file.read() + '</p>\n'
+            with open(dir_str + '/newpost.txt', 'r',
+                      encoding='utf-8') as fp_new:
+                new_post_text = '<p>' + fp_new.read() + '</p>\n'
         except OSError:
             print('EX: html_new_post unable to read ' +
                   dir_str + '/newpost.txt')

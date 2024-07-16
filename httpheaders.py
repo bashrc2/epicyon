@@ -185,8 +185,8 @@ def set_headers_etag(self, media_filename: str, file_format: str,
     if os.path.isfile(media_filename + '.etag'):
         try:
             with open(media_filename + '.etag', 'r',
-                      encoding='utf-8') as efile:
-                etag = efile.read()
+                      encoding='utf-8') as fp_media:
+                etag = fp_media.read()
         except OSError:
             print('EX: _set_headers_etag ' +
                   'unable to read ' + media_filename + '.etag')
@@ -194,8 +194,8 @@ def set_headers_etag(self, media_filename: str, file_format: str,
         etag = md5(data).hexdigest()  # nosec
         try:
             with open(media_filename + '.etag', 'w+',
-                      encoding='utf-8') as efile:
-                efile.write(etag)
+                      encoding='utf-8') as fp_media:
+                fp_media.write(etag)
         except OSError:
             print('EX: _set_headers_etag ' +
                   'unable to write ' + media_filename + '.etag')

@@ -2373,8 +2373,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                        box_name)
                         try:
                             with open(announce_filename + '.tts', 'w+',
-                                      encoding='utf-8') as ttsfile:
-                                ttsfile.write('\n')
+                                      encoding='utf-8') as fp_tts:
+                                fp_tts.write('\n')
                         except OSError:
                             print('EX: unable to write tts ' +
                                   announce_filename + '.tts')

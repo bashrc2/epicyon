@@ -221,18 +221,18 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
 
     try:
         with open(approve_follows_filename + '.new', 'w+',
-                  encoding='utf-8') as approvefilenew:
+                  encoding='utf-8') as fp_approve_new:
             update_approved_followers = False
             follow_activity_filename = None
             with open(approve_follows_filename, 'r',
-                      encoding='utf-8') as approvefile:
-                for handle_of_follow_requester in approvefile:
+                      encoding='utf-8') as fp_approve:
+                for handle_of_follow_requester in fp_approve:
                     # is this the approved follow?
                     appr_handl = approve_handle_full
                     if not handle_of_follow_requester.startswith(appr_handl):
                         # this isn't the approved follow so it will remain
                         # in the requests file
-                        approvefilenew.write(handle_of_follow_requester)
+                        fp_approve_new.write(handle_of_follow_requester)
                         continue
 
                     handle_of_follow_requester = \

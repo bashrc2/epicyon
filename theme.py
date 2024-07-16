@@ -363,8 +363,8 @@ def _set_theme_from_dict(base_dir: str, name: str,
         if not os.path.isfile(template_filename):
             continue
 
-        with open(template_filename, 'r', encoding='utf-8') as cssfile:
-            css = cssfile.read()
+        with open(template_filename, 'r', encoding='utf-8') as fp_css:
+            css = fp_css.read()
             for param_name, param_value in theme_params.items():
                 if param_name == 'newswire-publish-icon':
                     if param_value.lower() == 'true':
@@ -405,8 +405,8 @@ def _set_theme_from_dict(base_dir: str, name: str,
 
             filename = base_dir + '/' + filename
             try:
-                with open(filename, 'w+', encoding='utf-8') as cssfile:
-                    cssfile.write(css)
+                with open(filename, 'w+', encoding='utf-8') as fp_css:
+                    fp_css.write(css)
             except OSError:
                 print('EX: _set_theme_from_dict unable to write ' + filename)
 
@@ -428,11 +428,11 @@ def _set_background_format(base_dir: str,
     if not os.path.isfile(css_filename):
         return
     try:
-        with open(css_filename, 'r', encoding='utf-8') as cssfile:
-            css = cssfile.read()
+        with open(css_filename, 'r', encoding='utf-8') as fp_css:
+            css = fp_css.read()
             css = css.replace('background.jpg', 'background.' + extension)
-            with open(css_filename, 'w+', encoding='utf-8') as cssfile2:
-                cssfile2.write(css)
+            with open(css_filename, 'w+', encoding='utf-8') as fp_css2:
+                fp_css2.write(css)
     except OSError as ex:
         print('EX: _set_background_format ' + css_filename + ' ' + str(ex))
 
@@ -446,24 +446,24 @@ def enable_grayscale(base_dir: str) -> None:
         if not os.path.isfile(template_filename):
             continue
         try:
-            with open(template_filename, 'r', encoding='utf-8') as cssfile:
-                css = cssfile.read()
+            with open(template_filename, 'r', encoding='utf-8') as fp_css:
+                css = fp_css.read()
                 if 'grayscale' not in css:
                     css = \
                         css.replace('body, html {',
                                     'body, html {\n' +
                                     '    filter: grayscale(100%);')
                     filename = base_dir + '/' + filename
-                    with open(filename, 'w+', encoding='utf-8') as cssfile:
-                        cssfile.write(css)
+                    with open(filename, 'w+', encoding='utf-8') as fp_css:
+                        fp_css.write(css)
         except OSError as ex:
             print('EX: enable_grayscale unable to read ' +
                   template_filename + ' ' + str(ex))
     grayscale_filename = data_dir(base_dir) + '/.grayscale'
     if not os.path.isfile(grayscale_filename):
         try:
-            with open(grayscale_filename, 'w+', encoding='utf-8') as grayfile:
-                grayfile.write(' ')
+            with open(grayscale_filename, 'w+', encoding='utf-8') as fp_gray:
+                fp_gray.write(' ')
         except OSError as ex:
             print('EX: enable_grayscale unable to write ' +
                   grayscale_filename + ' ' + str(ex))
@@ -478,14 +478,14 @@ def disable_grayscale(base_dir: str) -> None:
         if not os.path.isfile(template_filename):
             continue
         try:
-            with open(template_filename, 'r', encoding='utf-8') as cssfile:
-                css = cssfile.read()
+            with open(template_filename, 'r', encoding='utf-8') as fp_css:
+                css = fp_css.read()
                 if 'grayscale' in css:
                     css = \
                         css.replace('\n    filter: grayscale(100%);', '')
                     filename = base_dir + '/' + filename
-                    with open(filename, 'w+', encoding='utf-8') as cssfile:
-                        cssfile.write(css)
+                    with open(filename, 'w+', encoding='utf-8') as fp_css:
+                        fp_css.write(css)
         except OSError as ex:
             print('EX: disable_grayscale unable to read ' +
                   template_filename + ' ' + str(ex))
@@ -506,8 +506,8 @@ def _set_dyslexic_font(base_dir: str) -> bool:
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        with open(template_filename, 'r', encoding='utf-8') as cssfile:
-            css = cssfile.read()
+        with open(template_filename, 'r', encoding='utf-8') as fp_css:
+            css = fp_css.read()
             css = \
                 set_css_param(css, "*src",
                               "url('./fonts/OpenDyslexic-Regular.woff2" +
@@ -515,8 +515,8 @@ def _set_dyslexic_font(base_dir: str) -> bool:
             css = set_css_param(css, "*font-family", "'OpenDyslexic'")
             filename = base_dir + '/' + filename
             try:
-                with open(filename, 'w+', encoding='utf-8') as cssfile:
-                    cssfile.write(css)
+                with open(filename, 'w+', encoding='utf-8') as fp_css:
+                    fp_css.write(css)
             except OSError:
                 print('EX: _set_dyslexic_font unable to write ' + filename)
     return False
@@ -546,8 +546,8 @@ def _set_custom_font(base_dir: str):
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        with open(template_filename, 'r', encoding='utf-8') as cssfile:
-            css = cssfile.read()
+        with open(template_filename, 'r', encoding='utf-8') as fp_css:
+            css = fp_css.read()
             css = \
                 set_css_param(css, "*src",
                               "url('./fonts/custom." +
@@ -558,8 +558,8 @@ def _set_custom_font(base_dir: str):
             css = set_css_param(css, "header-font", "'CustomFont'")
             filename = base_dir + '/' + filename
             try:
-                with open(filename, 'w+', encoding='utf-8') as cssfile:
-                    cssfile.write(css)
+                with open(filename, 'w+', encoding='utf-8') as fp_css:
+                    fp_css.write(css)
             except OSError:
                 print('EX: _set_custom_font unable to write ' + filename)
 
