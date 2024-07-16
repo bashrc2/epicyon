@@ -5800,8 +5800,8 @@ def daemon_http_get(self) -> None:
     if os.path.isfile(filename):
         content = None
         try:
-            with open(filename, 'r', encoding='utf-8') as rfile:
-                content = rfile.read()
+            with open(filename, 'r', encoding='utf-8') as fp_rfile:
+                content = fp_rfile.read()
         except OSError:
             print('EX: unable to read file ' + filename)
         if content:

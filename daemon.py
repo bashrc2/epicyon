@@ -369,8 +369,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(media_tag_filename):
                         try:
                             with open(media_tag_filename, 'r',
-                                      encoding='utf-8') as efile:
-                                etag = efile.read()
+                                      encoding='utf-8') as fp_efile:
+                                etag = fp_efile.read()
                         except OSError:
                             print('EX: do_HEAD unable to read ' +
                                   media_tag_filename)
@@ -386,8 +386,8 @@ class PubServer(BaseHTTPRequestHandler):
                             etag = md5(media_binary).hexdigest()  # nosec
                             try:
                                 with open(media_tag_filename, 'w+',
-                                          encoding='utf-8') as efile:
-                                    efile.write(etag)
+                                          encoding='utf-8') as fp_efile:
+                                    fp_efile.write(etag)
                             except OSError:
                                 print('EX: do_HEAD unable to write ' +
                                       media_tag_filename)

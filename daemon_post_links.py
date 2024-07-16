@@ -32,8 +32,8 @@ def _links_update_edited(fields: {}, links_filename: str) -> None:
             links_str += fields['newColLink'] + '\n'
         try:
             with open(links_filename, 'w+',
-                      encoding='utf-8') as linksfile:
-                linksfile.write(links_str)
+                      encoding='utf-8') as fp_links:
+                fp_links.write(links_str)
         except OSError:
             print('EX: _links_update unable to write ' +
                   links_filename)
@@ -43,8 +43,8 @@ def _links_update_edited(fields: {}, links_filename: str) -> None:
             links_str = fields['newColLink'] + '\n'
             try:
                 with open(links_filename, 'w+',
-                          encoding='utf-8') as linksfile:
-                    linksfile.write(links_str)
+                          encoding='utf-8') as fp_links:
+                    fp_links.write(links_str)
             except OSError:
                 print('EX: _links_update unable to write ' +
                       links_filename)
@@ -67,8 +67,8 @@ def _links_update_about(fields: {}, allow_local_network_access: bool,
                                 allow_local_network_access, []):
             try:
                 with open(about_filename, 'w+',
-                          encoding='utf-8') as aboutfile:
-                    aboutfile.write(about_str)
+                          encoding='utf-8') as fp_about:
+                    fp_about.write(about_str)
             except OSError:
                 print('EX: unable to write about ' +
                       about_filename)
@@ -90,8 +90,8 @@ def _links_update_tos(fields: {}, allow_local_network_access: bool,
         if not dangerous_markup(tos_str,
                                 allow_local_network_access, []):
             try:
-                with open(tos_filename, 'w+', encoding='utf-8') as tosfile:
-                    tosfile.write(tos_str)
+                with open(tos_filename, 'w+', encoding='utf-8') as fp_tos:
+                    fp_tos.write(tos_str)
             except OSError:
                 print('EX: unable to write TOS ' + tos_filename)
     else:
@@ -111,8 +111,8 @@ def _links_update_sepcification(fields: {},
         specification_str = fields['editedSpecification']
         try:
             with open(specification_filename, 'w+',
-                      encoding='utf-8') as specificationfile:
-                specificationfile.write(specification_str)
+                      encoding='utf-8') as fp_specification:
+                fp_specification.write(specification_str)
         except OSError:
             print('EX: unable to write specification ' +
                   specification_filename)

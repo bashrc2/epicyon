@@ -116,8 +116,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
                 newswire_str += fields['newNewswireFeed'] + '\n'
             try:
                 with open(newswire_filename, 'w+',
-                          encoding='utf-8') as newsfile:
-                    newsfile.write(newswire_str)
+                          encoding='utf-8') as fp_news:
+                    fp_news.write(newswire_str)
             except OSError:
                 print('EX: unable to write ' + newswire_filename)
         else:
@@ -126,8 +126,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
                 newswire_str = fields['newNewswireFeed'] + '\n'
                 try:
                     with open(newswire_filename, 'w+',
-                              encoding='utf-8') as newsfile:
-                        newsfile.write(newswire_str)
+                              encoding='utf-8') as fp_news:
+                        fp_news.write(newswire_str)
                 except OSError:
                     print('EX: unable to write ' + newswire_filename)
             else:
@@ -145,8 +145,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
         if fields.get('filteredWordsNewswire'):
             try:
                 with open(filter_newswire_filename, 'w+',
-                          encoding='utf-8') as filterfile:
-                    filterfile.write(fields['filteredWordsNewswire'])
+                          encoding='utf-8') as fp_filter:
+                    fp_filter.write(fields['filteredWordsNewswire'])
             except OSError:
                 print('EX: newswire_update unable to write ' +
                       filter_newswire_filename)
@@ -186,8 +186,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
         if fields.get('hashtagRulesList'):
             try:
                 with open(hashtag_rules_filename, 'w+',
-                          encoding='utf-8') as rulesfile:
-                    rulesfile.write(fields['hashtagRulesList'])
+                          encoding='utf-8') as fp_rules:
+                    fp_rules.write(fields['hashtagRulesList'])
             except OSError:
                 print('EX: newswire_update unable to write 4 ' +
                       hashtag_rules_filename)
@@ -206,8 +206,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
                 newswire_trusted += '\n'
             try:
                 with open(newswire_tusted_filename, 'w+',
-                          encoding='utf-8') as trustfile:
-                    trustfile.write(newswire_trusted)
+                          encoding='utf-8') as fp_trust:
+                    fp_trust.write(newswire_trusted)
             except OSError:
                 print('EX: newswire_update unable to write 5 ' +
                       newswire_tusted_filename)
@@ -313,8 +313,8 @@ def citations_update(self, calling_domain: str, cookie: str,
             # reloading the newblog screen
             try:
                 with open(citations_filename, 'w+',
-                          encoding='utf-8') as citfile:
-                    citfile.write(citations_str)
+                          encoding='utf-8') as fp_cit:
+                    fp_cit.write(citations_str)
             except OSError:
                 print('EX: citations_update unable to write ' +
                       citations_filename)

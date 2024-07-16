@@ -829,8 +829,8 @@ def etag_exists(self, media_filename: str) -> bool:
             curr_etag = ''
             try:
                 with open(media_filename + '.etag', 'r',
-                          encoding='utf-8') as efile:
-                    curr_etag = efile.read()
+                          encoding='utf-8') as fp_media:
+                    curr_etag = fp_media.read()
             except OSError:
                 print('EX: _etag_exists unable to read ' +
                       str(media_filename))

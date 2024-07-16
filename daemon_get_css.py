@@ -103,8 +103,8 @@ def get_fonts(self, calling_domain: str, path: str,
         if os.path.isfile(font_filename):
             font_binary = None
             try:
-                with open(font_filename, 'rb') as fontfile:
-                    font_binary = fontfile.read()
+                with open(font_filename, 'rb') as fp_font:
+                    font_binary = fp_font.read()
             except OSError:
                 print('EX: unable to load font ' + font_filename)
             if font_binary:

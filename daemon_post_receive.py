@@ -1778,8 +1778,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             acct_dir(base_dir, nickname, domain) + '/.lastUsed'
         try:
             with open(last_used_filename, 'w+',
-                      encoding='utf-8') as lastfile:
-                lastfile.write(str(int(time.time())))
+                      encoding='utf-8') as fp_last:
+                fp_last.write(str(int(time.time())))
         except OSError:
             print('EX: _receive_new_post_process unable to write ' +
                   last_used_filename)

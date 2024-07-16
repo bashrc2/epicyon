@@ -1717,8 +1717,8 @@ def _command_options() -> None:
         if os.path.isfile(approve_follows_filename):
             try:
                 with open(approve_follows_filename, 'r',
-                          encoding='utf-8') as approvefile:
-                    for approve in approvefile:
+                          encoding='utf-8') as fp_approve:
+                    for approve in fp_approve:
                         approve1 = remove_eol(approve)
                         print(approve1)
                         approve_ctr += 1

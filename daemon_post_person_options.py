@@ -597,8 +597,8 @@ def _person_options_post_to_news(self, options_confirm_params: str,
                     nw_written = False
                     try:
                         with open(nw_filename, 'w+',
-                                  encoding='utf-8') as nofile:
-                            nofile.write('\n')
+                                  encoding='utf-8') as fp_no:
+                            fp_no.write('\n')
                             nw_written = True
                     except OSError as ex:
                         print('EX: _person_options_post_to_news unable ' +
@@ -657,8 +657,8 @@ def _person_options_post_to_features(self, options_confirm_params: str,
                     feat_written = False
                     try:
                         with open(feat_filename, 'w+',
-                                  encoding='utf-8') as nofile:
-                            nofile.write('\n')
+                                  encoding='utf-8') as fp_no:
+                            fp_no.write('\n')
                             feat_written = True
                     except OSError as ex:
                         print('EX: _person_options_post_to_features ' +
@@ -716,8 +716,8 @@ def _person_options_mod_news(self, options_confirm_params: str,
                     nw_filename = newswire_mod_filename
                     try:
                         with open(nw_filename, 'w+',
-                                  encoding='utf-8') as modfile:
-                            modfile.write('\n')
+                                  encoding='utf-8') as fp_mod:
+                            fp_mod.write('\n')
                     except OSError:
                         print('EX: _person_options_mod_news ' +
                               'unable to write ' + nw_filename)
