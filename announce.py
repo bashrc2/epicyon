@@ -498,6 +498,13 @@ def announce_seen(base_dir: str, nickname: str, domain: str,
         return False
     if not isinstance(message_json['object'], str):
         return False
+
+    # is this your own announce?
+    announce_id = remove_id_ending(message_json['id'])
+    if '://' + domain in announce_id and \
+       '/users/' + nickname + '/' in announce_id:
+        return False
+
     post_url = remove_id_ending(message_json['object'])
     post_filename = locate_post(base_dir, nickname, domain, post_url)
     if not post_filename:
@@ -505,7 +512,7 @@ def announce_seen(base_dir: str, nickname: str, domain: str,
     seen_filename = post_filename + '.seen'
     if not os.path.isfile(seen_filename):
         return False
-    announce_id = remove_id_ending(message_json['id'])
+
     if text_in_file(announce_id, seen_filename):
         return False
     print('DEBUG: post already seen ' + post_url)
