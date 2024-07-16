@@ -9,6 +9,8 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
+import os
+from utils import text_in_file
 from utils import get_user_paths
 from utils import has_object_string_object
 from utils import has_group_type
@@ -482,3 +484,55 @@ def outbox_undo_announce(recent_posts_cache: {},
                                    actor_url, domain, debug)
     if debug:
         print('DEBUG: post undo announce via c2s - ' + post_filename)
+
+
+def announce_seen(base_dir: str, nickname: str, domain: str,
+                  message_json: {}) -> bool:
+    """have the given announce been seen?
+    """
+    if not message_json.get('id'):
+        return False
+    if not isinstance(message_json['id'], str):
+        return False
+    if not message_json.get('object'):
+        return False
+    if not isinstance(message_json['object'], str):
+        return False
+    post_url = remove_id_ending(message_json['object'])
+    post_filename = locate_post(base_dir, nickname, domain, post_url)
+    if not post_filename:
+        return False
+    seen_filename = post_filename + '.seen'
+    if not os.path.isfile(seen_filename):
+        return False
+    announce_id = remove_id_ending(message_json['id'])
+    if text_in_file(announce_id, seen_filename):
+        return False
+    return True
+
+
+def mark_announce_as_seen(base_dir: str, nickname: str, domain: str,
+                          message_json: {}) -> None:
+    """Marks the given announce post as seen
+    """
+    if not message_json.get('id'):
+        return
+    if not isinstance(message_json['id'], str):
+        return
+    if not message_json.get('object'):
+        return
+    if not isinstance(message_json['object'], str):
+        return
+    post_url = remove_id_ending(message_json['object'])
+    post_filename = locate_post(base_dir, nickname, domain, post_url)
+    if not post_filename:
+        return
+    seen_filename = post_filename + '.seen'
+    if os.path.isfile(seen_filename):
+        return
+    announce_id = remove_id_ending(message_json['id'])
+    try:
+        with open(seen_filename, 'w+', encoding='utf-8') as fp_seen:
+            fp_seen.write(announce_id)
+    except OSError:
+        print('EX: mark_announce_as_seen unable to write ' + seen_filename)

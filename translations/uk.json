@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "Надіслати це пряме повідомлення, так чи ні?",
     "Abandoning new direct message": "Відмова від нового прямого повідомлення",
     "Press Enter to continue": "Натисніть Enter, щоб продовжити",
-    "PGP Public Key": "Відкритий ключ PGP"
+    "PGP Public Key": "Відкритий ключ PGP",
+    "Don't show already seen posts": "Не показувати вже переглянуті публікації"
 }

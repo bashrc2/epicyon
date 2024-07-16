@@ -40,6 +40,8 @@ from webapp_column_left import get_left_column_content
 from webapp_column_right import get_right_column_content
 from webapp_headerbuttons import header_buttons_timeline
 from posts import is_moderator
+from announce import mark_announce_as_seen
+from announce import announce_seen
 from announce import is_announce
 from announce import is_self_announce
 from question import is_html_question
@@ -1018,6 +1020,11 @@ def html_timeline(default_timeline: str,
         if nickname in min_images_for_accounts:
             minimize_all_images = True
 
+        no_seen_posts_filename = account_dir + '/.noSeenPosts'
+        no_seen_posts = False
+        if os.path.isfile(no_seen_posts_filename):
+            no_seen_posts = True
+
         # show each post in the timeline
         tl_items_str = ''
         for item in timeline_json['orderedItems']:
@@ -1031,6 +1038,10 @@ def html_timeline(default_timeline: str,
                         continue
                     if is_self_announce(item):
                         continue
+                    if no_seen_posts:
+                        if announce_seen(base_dir, nickname, domain, item):
+                            continue
+                        mark_announce_as_seen(base_dir, nickname, domain, item)
                 # is this a poll/vote/question?
                 if not show_vote_posts:
                     if is_question(item):

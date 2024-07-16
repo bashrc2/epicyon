@@ -2813,7 +2813,8 @@ def _html_edit_profile_options(is_admin: bool,
                                show_replies_mutuals: bool,
                                hide_follows: bool,
                                premium: bool,
-                               no_reply_boosts: bool) -> str:
+                               no_reply_boosts: bool,
+                               no_seen_posts: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2902,6 +2903,10 @@ def _html_edit_profile_options(is_admin: bool,
     no_reply_boosts_str = translate["Don't show boosted replies"]
     edit_profile_form += \
         edit_check_box(no_reply_boosts_str, 'noReplyBoosts', no_reply_boosts)
+
+    no_seen_posts_str = translate["Don't show already seen posts"]
+    edit_profile_form += \
+        edit_check_box(no_seen_posts_str, 'noSeenPosts', no_seen_posts)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -3324,6 +3329,12 @@ def html_edit_profile(server, translate: {},
     if os.path.isfile(no_reply_boosts_filename):
         no_reply_boosts = True
 
+    # are seen posts permitted in timelines?
+    no_seen_posts_filename = account_dir + '/.noSeenPosts'
+    no_seen_posts = False
+    if os.path.isfile(no_seen_posts_filename):
+        no_seen_posts = True
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -3337,7 +3348,8 @@ def html_edit_profile(server, translate: {},
                                    reverse_sequence, show_quote_toots,
                                    show_vote_posts, show_replies_followers,
                                    show_replies_mutuals, hide_follows,
-                                   premium, no_reply_boosts)
+                                   premium, no_reply_boosts,
+                                   no_seen_posts)
 
     # Contact information
     edit_profile_form += \

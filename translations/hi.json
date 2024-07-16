@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "यह सीधा संदेश भेजें, हाँ या नहीं?",
     "Abandoning new direct message": "नए प्रत्यक्ष संदेश का परित्याग",
     "Press Enter to continue": "जारी रखने के लिए Enter दबाएँ",
-    "PGP Public Key": "पीजीपी सार्वजनिक कुंजी"
+    "PGP Public Key": "पीजीपी सार्वजनिक कुंजी",
+    "Don't show already seen posts": "पहले से देखी गई पोस्ट न दिखाएं"
 }

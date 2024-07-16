@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "Seol an teachtaireacht dhíreach seo, tá nó níl?",
     "Abandoning new direct message": "Teachtaireacht dhíreach nua a thréigean",
     "Press Enter to continue": "Brúigh Enter chun leanúint ar aghaidh",
-    "PGP Public Key": "Eochair Phoiblí PGP"
+    "PGP Public Key": "Eochair Phoiblí PGP",
+    "Don't show already seen posts": "Ná taispeáin postálacha atá feicthe cheana féin"
 }

@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "לשלוח הודעה ישירה זו, כן או לא?",
     "Abandoning new direct message": "נטישת הודעה ישירה חדשה",
     "Press Enter to continue": "לחץ על Enter כדי להמשיך",
-    "PGP Public Key": "מפתח PGP ציבורי"
+    "PGP Public Key": "מפתח PGP ציבורי",
+    "Don't show already seen posts": "אל תראה פוסטים שכבר נראו"
 }

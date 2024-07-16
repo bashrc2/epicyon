@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "Envoyer ce message direct, oui ou non ?",
     "Abandoning new direct message": "Abandonner un nouveau message direct",
     "Press Enter to continue": "Appuyez sur Entrée pour continuer",
-    "PGP Public Key": "Clé publique PGP"
+    "PGP Public Key": "Clé publique PGP",
+    "Don't show already seen posts": "Ne pas afficher les messages déjà vus"
 }

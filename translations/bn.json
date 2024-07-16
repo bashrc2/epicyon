@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "এই সরাসরি বার্তা পাঠান, হ্যাঁ বা না?",
     "Abandoning new direct message": "নতুন সরাসরি বার্তা পরিত্যাগ",
     "Press Enter to continue": "চালিয়ে যেতে এন্টার টিপুন",
-    "PGP Public Key": "PGP পাবলিক কী"
+    "PGP Public Key": "PGP পাবলিক কী",
+    "Don't show already seen posts": "ইতিমধ্যে দেখা পোস্ট দেখাবেন না"
 }

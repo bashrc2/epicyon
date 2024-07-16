@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "این پیام مستقیم را ارسال کنید، بله یا خیر؟",
     "Abandoning new direct message": "رها کردن پیام مستقیم جدید",
     "Press Enter to continue": "برای ادامه Enter را فشار دهید",
-    "PGP Public Key": "کلید عمومی PGP"
+    "PGP Public Key": "کلید عمومی PGP",
+    "Don't show already seen posts": "پست های قبلا دیده شده را نشان ندهید"
 }

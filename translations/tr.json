@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "Bu doğrudan mesajı gönder, evet mi hayır mı?",
     "Abandoning new direct message": "Yeni doğrudan mesajdan vazgeçiliyor",
     "Press Enter to continue": "Devam etmek için Enter'a basın",
-    "PGP Public Key": "PGP Genel Anahtarı"
+    "PGP Public Key": "PGP Genel Anahtarı",
+    "Don't show already seen posts": "Daha önce görülen gönderileri gösterme"
 }

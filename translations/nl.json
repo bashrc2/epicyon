@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "Dit directe bericht versturen, ja of nee?",
     "Abandoning new direct message": "Nieuw privéchat verlaten",
     "Press Enter to continue": "Druk op Enter om door te gaan",
-    "PGP Public Key": "PGP publieke sleutel"
+    "PGP Public Key": "PGP publieke sleutel",
+    "Don't show already seen posts": "Toon geen reeds bekeken berichten"
 }

@@ -839,6 +839,35 @@ def _profile_post_no_reply_boosts(base_dir: str, nickname: str, domain: str,
                       no_reply_boosts_filename)
 
 
+def _profile_post_no_seen_posts(base_dir: str, nickname: str, domain: str,
+                                fields: {}) -> bool:
+    """ HTTP POST disallow seen posts in timelines
+    """
+    no_seen_posts_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.noSeenPosts'
+    no_seen_posts = False
+    if fields.get('noSeenPosts'):
+        if fields['noSeenPosts'] == 'on':
+            no_seen_posts = True
+    if no_seen_posts:
+        if not os.path.isfile(no_seen_posts_filename):
+            try:
+                with open(no_seen_posts_filename, 'w+',
+                          encoding='utf-8') as fp_seen:
+                    fp_seen.write('\n')
+            except OSError:
+                print('EX: unable to write noSeenPosts ' +
+                      no_seen_posts_filename)
+    if not no_seen_posts:
+        if os.path.isfile(no_seen_posts_filename):
+            try:
+                os.remove(no_seen_posts_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      no_seen_posts_filename)
+
+
 def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
                                actor_json: {}, fields: {}, self,
                                actor_changed: bool,
@@ -2991,6 +3020,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 _profile_post_block_military(nickname, fields, self)
                 _profile_post_no_reply_boosts(base_dir, nickname, domain,
                                               fields)
+                _profile_post_no_seen_posts(base_dir, nickname, domain,
+                                            fields)
 
                 notify_likes_filename = \
                     acct_dir(base_dir, nickname, domain) + '/.notifyLikes'

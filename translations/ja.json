@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "このダイレクト メッセージを送信します。はい、いいえ?",
     "Abandoning new direct message": "新しいダイレクトメッセージの放棄",
     "Press Enter to continue": "続行するには Enter キーを押してください",
-    "PGP Public Key": "PGP公開鍵"
+    "PGP Public Key": "PGP公開鍵",
+    "Don't show already seen posts": "すでに閲覧した投稿を表示しない"
 }

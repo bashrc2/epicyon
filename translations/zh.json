@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "发送此直接消息，是还是否？",
     "Abandoning new direct message": "放弃新的私信",
     "Press Enter to continue": "按 Enter 继续",
-    "PGP Public Key": "PGP 公钥"
+    "PGP Public Key": "PGP 公钥",
+    "Don't show already seen posts": "不显示已经看过的帖子"
 }

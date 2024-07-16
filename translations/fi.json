@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "Lähetä tämä suora viesti, kyllä ​​vai ei?",
     "Abandoning new direct message": "Uuden suoran viestin hylkääminen",
     "Press Enter to continue": "Jatka painamalla Enter",
-    "PGP Public Key": "PGP julkinen avain"
+    "PGP Public Key": "PGP julkinen avain",
+    "Don't show already seen posts": "Älä näytä jo nähtyjä viestejä"
 }

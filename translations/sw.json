@@ -693,5 +693,6 @@
     "Send this direct message, yes or no?": "Tuma ujumbe huu wa moja kwa moja, ndiyo au hapana?",
     "Abandoning new direct message": "Kuacha ujumbe mpya wa moja kwa moja",
     "Press Enter to continue": "Bonyeza Enter ili kuendelea",
-    "PGP Public Key": "Ufunguo wa Umma wa PGP"
+    "PGP Public Key": "Ufunguo wa Umma wa PGP",
+    "Don't show already seen posts": "Usionyeshe machapisho ambayo tayari yameonekana"
 }
