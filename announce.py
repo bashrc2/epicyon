@@ -508,6 +508,7 @@ def announce_seen(base_dir: str, nickname: str, domain: str,
     announce_id = remove_id_ending(message_json['id'])
     if text_in_file(announce_id, seen_filename):
         return False
+    print('DEBUG: post already seen ' + post_url)
     return True
 
 
