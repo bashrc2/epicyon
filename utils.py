@@ -473,16 +473,18 @@ def get_content_from_post(post_json_object: {}, system_language: str,
             # is there a contentMap/summaryMap entry for one of
             # the understood languages?
             for lang in languages_understood:
-                if this_post_json[map_dict].get(lang):
-                    map_lang = this_post_json[map_dict][lang]
-                    if isinstance(map_lang, str):
-                        content = map_lang
-                        content = remove_markup_tag(content, 'pre')
-                        content = content.replace('&amp;', '&')
-                        # remove underlines
-                        content = content.replace('<u>', '')
-                        content = content.replace('</u>', '')
-                        return standardize_text(content)
+                if not this_post_json[map_dict].get(lang):
+                    continue
+                map_lang = this_post_json[map_dict][lang]
+                if not isinstance(map_lang, str):
+                    continue
+                content = map_lang
+                content = remove_markup_tag(content, 'pre')
+                content = content.replace('&amp;', '&')
+                # remove underlines
+                content = content.replace('<u>', '')
+                content = content.replace('</u>', '')
+                return standardize_text(content)
     else:
         if isinstance(this_post_json[content_type], str):
             content = this_post_json[content_type]
@@ -839,17 +841,22 @@ def is_editor(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    with open(editors_file, 'r', encoding='utf-8') as fp_editors:
-        lines = fp_editors.readlines()
-        if len(lines) == 0:
-            admin_name = get_config_param(base_dir, 'admin')
-            if admin_name:
-                if admin_name == nickname:
-                    return True
-        for editor in lines:
-            editor = editor.strip('\n').strip('\r')
-            if editor == nickname:
+    lines = []
+    try:
+        with open(editors_file, 'r', encoding='utf-8') as fp_editors:
+            lines = fp_editors.readlines()
+    except OSError:
+        print('EX: is_editor unable to read ' + editors_file)
+
+    if len(lines) == 0:
+        admin_name = get_config_param(base_dir, 'admin')
+        if admin_name:
+            if admin_name == nickname:
                 return True
+    for editor in lines:
+        editor = editor.strip('\n').strip('\r')
+        if editor == nickname:
+            return True
     return False
 
 
