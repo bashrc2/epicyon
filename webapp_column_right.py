@@ -376,20 +376,21 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     citations_selected = []
     if os.path.isfile(citations_filename):
         citations_separator = '#####'
+        citations = []
         try:
             with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
                 citations = fp_cit.readlines()
-                for line in citations:
-                    if citations_separator not in line:
-                        continue
-                    sections = line.strip().split(citations_separator)
-                    if len(sections) != 3:
-                        continue
-                    date_str = sections[0]
-                    citations_selected.append(date_str)
         except OSError as exc:
             print('EX: html_citations unable to read ' +
                   citations_filename + ' ' + str(exc))
+        for line in citations:
+            if citations_separator not in line:
+                continue
+            sections = line.strip().split(citations_separator)
+            if len(sections) != 3:
+                continue
+            date_str = sections[0]
+            citations_selected.append(date_str)
 
     # the css filename
     css_filename = base_dir + '/epicyon-profile.css'
