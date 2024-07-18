@@ -8,6 +8,10 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from shutil import copyfile
+from shutil import make_archive
+from shutil import unpack_archive
+from shutil import rmtree
 from utils import data_dir
 from utils import string_ends_with
 from utils import is_account_dir
@@ -22,10 +26,6 @@ from utils import remove_html
 from utils import text_in_file
 from utils import remove_eol
 from utils import language_right_to_left
-from shutil import copyfile
-from shutil import make_archive
-from shutil import unpack_archive
-from shutil import rmtree
 from content import dangerous_css
 
 
