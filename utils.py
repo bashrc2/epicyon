@@ -872,17 +872,22 @@ def is_artist(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    with open(artists_file, 'r', encoding='utf-8') as fp_artists:
-        lines = fp_artists.readlines()
-        if len(lines) == 0:
-            admin_name = get_config_param(base_dir, 'admin')
-            if admin_name:
-                if admin_name == nickname:
-                    return True
-        for artist in lines:
-            artist = artist.strip('\n').strip('\r')
-            if artist == nickname:
+    lines = []
+    try:
+        with open(artists_file, 'r', encoding='utf-8') as fp_artists:
+            lines = fp_artists.readlines()
+    except OSError:
+        print('EX: is_artist unable to read ' + artists_file)
+
+    if len(lines) == 0:
+        admin_name = get_config_param(base_dir, 'admin')
+        if admin_name:
+            if admin_name == nickname:
                 return True
+    for artist in lines:
+        artist = artist.strip('\n').strip('\r')
+        if artist == nickname:
+            return True
     return False
 
 
