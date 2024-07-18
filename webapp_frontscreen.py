@@ -68,42 +68,43 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
         if len(outbox_feed['orderedItems']) == 0:
             break
         for item in outbox_feed['orderedItems']:
-            if item['type'] == 'Create':
-                timezone = get_account_timezone(base_dir, nickname, domain)
-                minimize_all_images = False
-                if nickname in min_images_for_accounts:
-                    minimize_all_images = True
-                post_str = \
-                    individual_post_as_html(signing_priv_key_pem,
-                                            True, recent_posts_cache,
-                                            max_recent_posts,
-                                            translate, None,
-                                            base_dir, session,
-                                            cached_webfingers,
-                                            person_cache,
-                                            nickname, domain, port, item,
-                                            None, True, False,
-                                            http_prefix,
-                                            project_version, 'inbox',
-                                            yt_replace_domain,
-                                            twitter_replacement_domain,
-                                            show_published_date_only,
-                                            peertube_instances,
-                                            allow_local_network_access,
-                                            theme_name, system_language,
-                                            max_like_count,
-                                            False, False, False,
-                                            True, False, False,
-                                            cw_lists, lists_enabled,
-                                            timezone, False,
-                                            bold_reading, dogwhistles,
-                                            minimize_all_images, None,
-                                            buy_sites, auto_cw_cache)
-                if post_str:
-                    profile_str += post_str + separator_str
-                    ctr += 1
-                    if ctr >= max_items:
-                        break
+            if item['type'] != 'Create':
+                continue
+            timezone = get_account_timezone(base_dir, nickname, domain)
+            minimize_all_images = False
+            if nickname in min_images_for_accounts:
+                minimize_all_images = True
+            post_str = \
+                individual_post_as_html(signing_priv_key_pem,
+                                        True, recent_posts_cache,
+                                        max_recent_posts,
+                                        translate, None,
+                                        base_dir, session,
+                                        cached_webfingers,
+                                        person_cache,
+                                        nickname, domain, port, item,
+                                        None, True, False,
+                                        http_prefix,
+                                        project_version, 'inbox',
+                                        yt_replace_domain,
+                                        twitter_replacement_domain,
+                                        show_published_date_only,
+                                        peertube_instances,
+                                        allow_local_network_access,
+                                        theme_name, system_language,
+                                        max_like_count,
+                                        False, False, False,
+                                        True, False, False,
+                                        cw_lists, lists_enabled,
+                                        timezone, False,
+                                        bold_reading, dogwhistles,
+                                        minimize_all_images, None,
+                                        buy_sites, auto_cw_cache)
+            if post_str:
+                profile_str += post_str + separator_str
+                ctr += 1
+                if ctr >= max_items:
+                    break
         curr_page += 1
     return profile_str
 
