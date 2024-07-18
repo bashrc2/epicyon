@@ -431,14 +431,22 @@ def _set_background_format(base_dir: str,
     css_filename = base_dir + '/' + background_type + '.css'
     if not os.path.isfile(css_filename):
         return
+
+    css = None
     try:
         with open(css_filename, 'r', encoding='utf-8') as fp_css:
             css = fp_css.read()
-            css = css.replace('background.jpg', 'background.' + extension)
+    except OSError as exc:
+        print('EX: _set_background_format 1 ' + css_filename + ' ' + str(exc))
+
+    if css:
+        css = css.replace('background.jpg', 'background.' + extension)
+        try:
             with open(css_filename, 'w+', encoding='utf-8') as fp_css2:
                 fp_css2.write(css)
-    except OSError as ex:
-        print('EX: _set_background_format ' + css_filename + ' ' + str(ex))
+        except OSError as exc:
+            print('EX: _set_background_format 2 ' +
+                  css_filename + ' ' + str(exc))
 
 
 def enable_grayscale(base_dir: str) -> None:
