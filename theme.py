@@ -565,13 +565,19 @@ def _set_custom_font(base_dir: str):
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        with open(template_filename, 'r', encoding='utf-8') as fp_css:
-            css = fp_css.read()
+
+        css = None
+        try:
+            with open(template_filename, 'r', encoding='utf-8') as fp_css:
+                css = fp_css.read()
+        except OSError:
+            print('EX: _set_custom_font unable to read ' + template_filename)
+
+        if css:
             css = \
                 set_css_param(css, "*src",
                               "url('./fonts/custom." +
-                              custom_font_ext +
-                              "') format('" +
+                              custom_font_ext + "') format('" +
                               custom_font_type + "')")
             css = set_css_param(css, "*font-family", "'CustomFont'")
             css = set_css_param(css, "header-font", "'CustomFont'")
@@ -1012,8 +1018,12 @@ def scan_themes_for_scripts(base_dir: str) -> bool:
                 continue
             svg_filename = os.path.join(subdir, fname)
             content = ''
-            with open(svg_filename, 'r', encoding='utf-8') as fp_svg:
-                content = fp_svg.read()
+            try:
+                with open(svg_filename, 'r', encoding='utf-8') as fp_svg:
+                    content = fp_svg.read()
+            except OSError:
+                print('EX: scan_themes_for_scripts unable to read ' +
+                      svg_filename)
             svg_dangerous = dangerous_svg(content, False)
             if svg_dangerous:
                 print('svg file contains script: ' + svg_filename)
