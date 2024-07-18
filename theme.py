@@ -518,8 +518,15 @@ def _set_dyslexic_font(base_dir: str) -> bool:
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        with open(template_filename, 'r', encoding='utf-8') as fp_css:
-            css = fp_css.read()
+
+        css = None
+        try:
+            with open(template_filename, 'r', encoding='utf-8') as fp_css:
+                css = fp_css.read()
+        except OSError:
+            print('EX: _set_dyslexic_font unable to read ' + template_filename)
+
+        if css:
             css = \
                 set_css_param(css, "*src",
                               "url('./fonts/OpenDyslexic-Regular.woff2" +
