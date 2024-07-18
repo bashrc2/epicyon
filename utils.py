@@ -144,13 +144,16 @@ def get_attributed_to(field) -> str:
         return field
     if isinstance(field, list):
         for attrib in field:
-            if isinstance(attrib, dict):
-                if attrib.get('type') and attrib.get('id'):
-                    if isinstance(attrib['type'], str) and \
-                       isinstance(attrib['id'], str):
-                        if attrib['type'] == 'Person' and \
-                           resembles_url(attrib['id']):
-                            return attrib['id']
+            if not isinstance(attrib, dict):
+                continue
+            if not (attrib.get('type') and attrib.get('id')):
+                continue
+            if not (isinstance(attrib['type'], str) and
+                    isinstance(attrib['id'], str)):
+                continue
+            if attrib['type'] == 'Person' and \
+               resembles_url(attrib['id']):
+                return attrib['id']
         if isinstance(field[0], str):
             return field[0]
     return None
