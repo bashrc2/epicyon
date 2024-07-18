@@ -1179,8 +1179,13 @@ def is_suspended(base_dir: str, nickname: str) -> bool:
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        with open(suspended_filename, 'r', encoding='utf-8') as fp_susp:
-            lines = fp_susp.readlines()
+        lines = []
+        try:
+            with open(suspended_filename, 'r', encoding='utf-8') as fp_susp:
+                lines = fp_susp.readlines()
+        except OSError:
+            print('EX: is_suspended unable to read ' + suspended_filename)
+
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return True
@@ -1234,13 +1239,18 @@ def get_followers_of_person(base_dir: str,
                 continue
             if not os.path.isfile(filename):
                 continue
-            with open(filename, 'r', encoding='utf-8') as fp_following:
-                for following_handle in fp_following:
-                    following_handle2 = remove_eol(following_handle)
-                    if following_handle2 == handle:
+            try:
+                with open(filename, 'r', encoding='utf-8') as fp_following:
+                    for following_handle in fp_following:
+                        following_handle2 = remove_eol(following_handle)
+                        if following_handle2 != handle:
+                            continue
                         if account not in followers:
                             followers.append(account)
                         break
+            except OSError as exc:
+                print('EX: get_followers_of_person unable to read ' +
+                      filename + ' ' + str(exc))
         break
     return followers
 
@@ -1308,13 +1318,14 @@ def remove_avatar_from_cache(base_dir: str, actor_str: str) -> None:
     for extension in avatar_filename_extensions:
         avatar_filename = \
             base_dir + '/cache/avatars/' + actor_str + '.' + extension
-        if os.path.isfile(avatar_filename):
-            try:
-                os.remove(avatar_filename)
-            except OSError:
-                print('EX: remove_avatar_from_cache ' +
-                      'unable to delete cached avatar ' +
-                      str(avatar_filename))
+        if not os.path.isfile(avatar_filename):
+            continue
+        try:
+            os.remove(avatar_filename)
+        except OSError:
+            print('EX: remove_avatar_from_cache ' +
+                  'unable to delete cached avatar ' +
+                  str(avatar_filename))
 
 
 def save_json(json_object: {}, filename: str) -> bool:
@@ -2405,10 +2416,16 @@ def remove_moderation_post_from_index(base_dir: str, post_url: str,
         return
     post_id = remove_id_ending(post_url)
     if text_in_file(post_id, moderation_index_file):
+        lines = []
         try:
-            with open(moderation_index_file, 'r',
-                      encoding='utf-8') as fp_mod1:
+            with open(moderation_index_file, 'r', encoding='utf-8') as fp_mod1:
                 lines = fp_mod1.readlines()
+        except OSError as exc:
+            print('EX: remove_moderation_post_from_index unable to read ' +
+                  moderation_index_file + ' ' + str(exc))
+
+        if lines:
+            try:
                 with open(moderation_index_file, 'w+',
                           encoding='utf-8') as fp_mod2:
                     for line in lines:
@@ -2418,9 +2435,10 @@ def remove_moderation_post_from_index(base_dir: str, post_url: str,
                         if debug:
                             print('DEBUG: removed ' + post_id +
                                   ' from moderation index')
-        except OSError as ex:
-            print('EX: remove_moderation_post_from_index unable to read ' +
-                  moderation_index_file + ' ' + str(ex))
+            except OSError as exc:
+                print('EX: ' +
+                      'remove_moderation_post_from_index unable to write ' +
+                      moderation_index_file + ' ' + str(exc))
 
 
 def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
