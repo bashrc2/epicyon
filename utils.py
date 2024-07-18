@@ -1197,8 +1197,14 @@ def get_followers_list(base_dir: str,
     if not os.path.isfile(filename):
         return []
 
-    with open(filename, 'r', encoding='utf-8') as fp_foll:
-        lines = fp_foll.readlines()
+    lines = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_foll:
+            lines = fp_foll.readlines()
+    except OSError:
+        print('EX: get_followers_list unable to read ' + filename)
+
+    if lines:
         for i, _ in enumerate(lines):
             lines[i] = lines[i].strip()
         return lines
