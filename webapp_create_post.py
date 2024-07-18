@@ -879,24 +879,25 @@ def html_new_post(edit_post_params: {},
                 translate['Citations'] + ':</label></p>\n'
             citations_str += '  <ul>\n'
             citations_separator = '#####'
+            citations = []
             try:
                 with open(citations_filename, 'r',
                           encoding='utf-8') as fp_cit:
                     citations = fp_cit.readlines()
-                    for line in citations:
-                        if citations_separator not in line:
-                            continue
-                        sections = line.strip().split(citations_separator)
-                        if len(sections) != 3:
-                            continue
-                        title = sections[1]
-                        link = sections[2]
-                        citations_str += \
-                            '    <li><a href="' + link + '"><cite>' + \
-                            title + '</cite></a></li>'
             except OSError as exc:
                 print('EX: html_new_post unable to read ' +
                       citations_filename + ' ' + str(exc))
+            for line in citations:
+                if citations_separator not in line:
+                    continue
+                sections = line.strip().split(citations_separator)
+                if len(sections) != 3:
+                    continue
+                title = sections[1]
+                link = sections[2]
+                citations_str += \
+                    '    <li><a href="' + link + '"><cite>' + \
+                    title + '</cite></a></li>'
             citations_str += '  </ul>\n'
             citations_str += '</div>\n'
 
