@@ -138,48 +138,52 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
                       tags_filename)
                 continue
 
-            with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
-                while True:
-                    line = fp_tags.readline()
-                    if not line:
-                        break
-                    if '  ' not in line:
-                        break
-                    sections = line.split('  ')
-                    if len(sections) != 3:
-                        break
-                    post_days_since_epoch_str = sections[0]
-                    if not post_days_since_epoch_str.isdigit():
-                        break
-                    post_days_since_epoch = int(post_days_since_epoch_str)
-                    if post_days_since_epoch < recently:
-                        break
-                    post_url = sections[2]
-                    if '##' not in post_url:
-                        break
-                    post_domain = post_url.split('##')[1]
-                    if '#' in post_domain:
-                        post_domain = post_domain.split('#')[0]
+            try:
+                with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
+                    while True:
+                        line = fp_tags.readline()
+                        if not line:
+                            break
+                        if '  ' not in line:
+                            break
+                        sections = line.split('  ')
+                        if len(sections) != 3:
+                            break
+                        post_days_since_epoch_str = sections[0]
+                        if not post_days_since_epoch_str.isdigit():
+                            break
+                        post_days_since_epoch = int(post_days_since_epoch_str)
+                        if post_days_since_epoch < recently:
+                            break
+                        post_url = sections[2]
+                        if '##' not in post_url:
+                            break
+                        post_domain = post_url.split('##')[1]
+                        if '#' in post_domain:
+                            post_domain = post_domain.split('#')[0]
 
-                    if domain_histogram.get(post_domain):
-                        domain_histogram[post_domain] = \
-                            domain_histogram[post_domain] + 1
-                    else:
-                        domain_histogram[post_domain] = 1
-                    tag_swarm.append(hash_tag_name)
-                    category_filename = \
-                        tags_filename.replace('.txt', '.category')
-                    if os.path.isfile(category_filename):
-                        category_str = \
-                            get_hashtag_category(base_dir, hash_tag_name)
-                        if len(category_str) < max_tag_length:
-                            if '#' not in category_str and \
-                               '&' not in category_str and \
-                               '"' not in category_str and \
-                               "'" not in category_str:
-                                if category_str not in category_swarm:
-                                    category_swarm.append(category_str)
-                    break
+                        if domain_histogram.get(post_domain):
+                            domain_histogram[post_domain] = \
+                                domain_histogram[post_domain] + 1
+                        else:
+                            domain_histogram[post_domain] = 1
+                        tag_swarm.append(hash_tag_name)
+                        category_filename = \
+                            tags_filename.replace('.txt', '.category')
+                        if os.path.isfile(category_filename):
+                            category_str = \
+                                get_hashtag_category(base_dir, hash_tag_name)
+                            if len(category_str) < max_tag_length:
+                                if '#' not in category_str and \
+                                   '&' not in category_str and \
+                                   '"' not in category_str and \
+                                   "'" not in category_str:
+                                    if category_str not in category_swarm:
+                                        category_swarm.append(category_str)
+                        break
+            except OSError as exc:
+                print('EX: html_hash_tag_swarm unable to read ' +
+                      tags_filename + ' ' + str(exc))
         break
 
     if not tag_swarm:
