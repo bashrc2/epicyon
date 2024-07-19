@@ -254,12 +254,13 @@ def _add_ssml_emphasis(say_text: str) -> str:
     words_list = text.split(' ')
     replacements = {}
     for word in words_list:
-        if word.startswith('*'):
-            if word.endswith('*'):
-                replacements[word] = \
-                    '<emphasis level="strong">' + \
-                    word.replace('*', '') + \
-                    '</emphasis>'
+        if not word.startswith('*'):
+            continue
+        if not word.endswith('*'):
+            continue
+        replacements[word] = \
+            '<emphasis level="strong">' + word.replace('*', '') + \
+            '</emphasis>'
     for replace_str, new_str in replacements.items():
         say_text = say_text.replace(replace_str, new_str)
     return say_text
@@ -276,9 +277,10 @@ def _remove_emoji_from_text(say_text: str) -> str:
     words_list = text.split(' ')
     replacements = {}
     for word in words_list:
-        if word.startswith(':'):
-            if word.endswith(':'):
-                replacements[word] = ''
+        if not word.startswith(':'):
+            continue
+        if word.endswith(':'):
+            replacements[word] = ''
     for replace_str, new_str in replacements.items():
         say_text = say_text.replace(replace_str, new_str)
     return say_text.replace('  ', ' ').strip()
@@ -481,10 +483,10 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
             for img in post_attachments:
                 if not isinstance(img, dict):
                     continue
-                if img.get('name'):
-                    if isinstance(img['name'], str):
-                        image_description += \
-                            remove_html(img['name']) + '. '
+                if not img.get('name'):
+                    continue
+                if isinstance(img['name'], str):
+                    image_description += remove_html(img['name']) + '. '
 
     is_direct = is_dm(post_json_object)
     actor = local_actor_url(http_prefix, nickname, domain_full)
@@ -534,18 +536,20 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     accounts_dir = acct_dir(base_dir, nickname, domain_full)
     approve_follows_filename = accounts_dir + '/followrequests.txt'
     if os.path.isfile(approve_follows_filename):
+        follows = []
         try:
             with open(approve_follows_filename, 'r',
                       encoding='utf-8') as fp_foll:
                 follows = fp_foll.readlines()
-                if len(follows) > 0:
-                    follow_requests_exist = True
-                    for i, _ in enumerate(follows):
-                        follows[i] = follows[i].strip()
-                    follow_requests_list = follows
         except OSError:
             print('EX: _post_to_speaker_json unable to read ' +
                   approve_follows_filename)
+        if follows:
+            if len(follows) > 0:
+                follow_requests_exist = True
+                for i, _ in enumerate(follows):
+                    follows[i] = follows[i].strip()
+                follow_requests_list = follows
     post_dm = False
     dm_filename = accounts_dir + '/.newDM'
     if os.path.isfile(dm_filename):
