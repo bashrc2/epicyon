@@ -150,28 +150,30 @@ def _speaker_pronounce(base_dir: str, say_text: str, translate: {}) -> str:
             ")": ","
         }
     if os.path.isfile(pronounce_filename):
+        pronounce_list = []
         try:
             with open(pronounce_filename, 'r', encoding='utf-8') as fp_pro:
                 pronounce_list = fp_pro.readlines()
-                for conversion in pronounce_list:
-                    separator = None
-                    if '->' in conversion:
-                        separator = '->'
-                    elif ';' in conversion:
-                        separator = ';'
-                    elif ':' in conversion:
-                        separator = ':'
-                    elif ',' in conversion:
-                        separator = ','
-                    if not separator:
-                        continue
-
-                    text = conversion.split(separator)[0].strip()
-                    converted = conversion.split(separator)[1].strip()
-                    convert_dict[text] = converted
         except OSError:
             print('EX: _speaker_pronounce unable to read ' +
                   pronounce_filename)
+        if pronounce_list:
+            for conversion in pronounce_list:
+                separator = None
+                if '->' in conversion:
+                    separator = '->'
+                elif ';' in conversion:
+                    separator = ';'
+                elif ':' in conversion:
+                    separator = ':'
+                elif ',' in conversion:
+                    separator = ','
+                if not separator:
+                    continue
+
+                text = conversion.split(separator)[0].strip()
+                converted = conversion.split(separator)[1].strip()
+                convert_dict[text] = converted
     for text, converted in convert_dict.items():
         if text in say_text:
             say_text = say_text.replace(text, converted)
