@@ -706,9 +706,15 @@ def post_image(session, attach_image_filename: str, federation_list: [],
         content_type = 'image/svg+xml'
     headers['Content-type'] = content_type
 
-    with open(attach_image_filename, 'rb') as fp_av:
-        media_binary = fp_av.read()
+    media_binary = None
+    try:
+        with open(attach_image_filename, 'rb') as fp_av:
+            media_binary = fp_av.read()
+    except OSError:
+        print('EX: post_image unable to read binary ' +
+              attach_image_filename)
 
+    if media_binary:
         _set_user_agent(session, http_prefix, domain_full)
 
         try:
