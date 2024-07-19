@@ -267,9 +267,10 @@ def remove_scheduled_posts(base_dir: str, nickname: str, domain: str) -> None:
         return
     for scheduled_post_filename in os.listdir(scheduled_dir):
         file_path = os.path.join(scheduled_dir, scheduled_post_filename)
-        if os.path.isfile(file_path):
-            try:
-                os.remove(file_path)
-            except OSError:
-                print('EX: remove_scheduled_posts unable to delete ' +
-                      file_path)
+        if not os.path.isfile(file_path):
+            continue
+        try:
+            os.remove(file_path)
+        except OSError:
+            print('EX: remove_scheduled_posts unable to delete ' +
+                  file_path)
