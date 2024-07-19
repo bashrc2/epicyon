@@ -105,12 +105,13 @@ def _load_dfc_ids(base_dir: str, system_language: str,
                 continue
             if not label.get('@value'):
                 continue
-            if label['@language'] == system_language:
-                item_id = \
-                    item['@id'].replace('http://static.datafoodconsortium.org',
-                                        http_prefix + '://' + domain_full)
-                dfc_ids[label['@value'].lower()] = item_id
-                break
+            if label['@language'] != system_language:
+                continue
+            item_id = \
+                item['@id'].replace('http://static.datafoodconsortium.org',
+                                    http_prefix + '://' + domain_full)
+            dfc_ids[label['@value'].lower()] = item_id
+            break
     return dfc_ids
 
 
@@ -155,13 +156,15 @@ def remove_shared_item2(base_dir: str, nickname: str, domain: str,
         if shares_json[item_id]['imageUrl']:
             formats = get_image_extensions()
             for ext in formats:
-                if shares_json[item_id]['imageUrl'].endswith('.' + ext):
-                    if os.path.isfile(item_idfile + '.' + ext):
-                        try:
-                            os.remove(item_idfile + '.' + ext)
-                        except OSError:
-                            print('EX: remove_shared_item unable to delete ' +
-                                  item_idfile + '.' + ext)
+                if not shares_json[item_id]['imageUrl'].endswith('.' + ext):
+                    continue
+                if not os.path.isfile(item_idfile + '.' + ext):
+                    continue
+                try:
+                    os.remove(item_idfile + '.' + ext)
+                except OSError:
+                    print('EX: remove_shared_item unable to delete ' +
+                          item_idfile + '.' + ext)
         # remove the item itself
         del shares_json[item_id]
         save_json(shares_json, shares_filename)
@@ -358,9 +361,10 @@ def add_share(base_dir: str,
             acct_dir(base_dir, nickname, domain) + '/upload'
         formats = get_image_extensions()
         for ext in formats:
-            if os.path.isfile(shares_image_filename + '.' + ext):
-                image_filename = shares_image_filename + '.' + ext
-                move_image = True
+            if not os.path.isfile(shares_image_filename + '.' + ext):
+                continue
+            image_filename = shares_image_filename + '.' + ext
+            move_image = True
 
     domain_full = get_full_domain(domain, port)
 
@@ -486,12 +490,13 @@ def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
         item_idfile = base_dir + '/sharefiles/' + nickname + '/' + item_id
         formats = get_image_extensions()
         for ext in formats:
-            if os.path.isfile(item_idfile + '.' + ext):
-                try:
-                    os.remove(item_idfile + '.' + ext)
-                except OSError:
-                    print('EX: _expire_shares_for_account unable to delete ' +
-                          item_idfile + '.' + ext)
+            if not os.path.isfile(item_idfile + '.' + ext):
+                continue
+            try:
+                os.remove(item_idfile + '.' + ext)
+            except OSError:
+                print('EX: _expire_shares_for_account unable to delete ' +
+                      item_idfile + '.' + ext)
     save_json(shares_json, shares_filename)
     return removed_ctr
 
@@ -2297,15 +2302,16 @@ def actor_attached_shares_as_html(actor_json: {},
     html_str = ''
     ctr = 0
     for attach_item in actor_json['attachment']:
-        if _is_valueflows_attachment(attach_item):
-            if not html_str:
-                html_str = '<ul>\n'
-            html_str += \
-                '  <li><a href="' + attach_item['href'] + '" tabindex="1">' + \
-                remove_html(attach_item['name']) + '</a></li>\n'
-            ctr += 1
-            if ctr >= max_shares_on_profile:
-                break
+        if not _is_valueflows_attachment(attach_item):
+            continue
+        if not html_str:
+            html_str = '<ul>\n'
+        html_str += \
+            '  <li><a href="' + attach_item['href'] + '" tabindex="1">' + \
+            remove_html(attach_item['name']) + '</a></li>\n'
+        ctr += 1
+        if ctr >= max_shares_on_profile:
+            break
     if html_str:
         html_str = html_str.strip() + '</ul>\n'
     return html_str
