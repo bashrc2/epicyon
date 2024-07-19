@@ -85,6 +85,7 @@ from httpcodes import http_304
 from httpcodes import http_400
 from httpcodes import http_503
 from httpcodes import write2
+from utils import contains_invalid_chars
 from utils import save_json
 from utils import data_dir
 from utils import user_agent_domain
@@ -244,10 +245,16 @@ def daemon_http_get(self) -> None:
 
     if self.headers.get('Server'):
         if self.headers['Server'] in corp_servers():
-            if self.server.debug:
-                print('Corporate leech bounced: ' + self.headers['Server'])
+            print('GET HTTP Corporate leech bounced: ' +
+                  self.headers['Server'])
             http_402(self)
             return
+
+    if contains_invalid_chars(str(self.headers)):
+        print('GET HTTP headers contain invalid characters ' +
+              str(self.headers))
+        http_402(self)
+        return
 
     if self.headers.get('Host'):
         calling_domain = decoded_host(self.headers['Host'])

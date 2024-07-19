@@ -1,2 +1,2 @@
 #!/bin/bash
-journalctl -u epicyon | grep "invalid header"
+journalctl -u epicyon | grep "invalid header\|invalid characters"

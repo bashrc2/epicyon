@@ -11,6 +11,7 @@ import time
 import errno
 import json
 from socket import error as SocketError
+from utils import corp_servers
 from utils import string_ends_with
 from utils import get_config_param
 from utils import decoded_host
@@ -29,8 +30,9 @@ from inbox import inbox_message_has_params
 from inbox import inbox_permitted_message
 from httpsig import getheader_signature_input
 from httpcodes import http_200
-from httpcodes import http_404
 from httpcodes import http_400
+from httpcodes import http_402
+from httpcodes import http_404
 from httpcodes import http_503
 from httpheaders import redirect_headers
 from daemon_utils import get_user_agent
@@ -117,6 +119,21 @@ def daemon_http_post(self) -> None:
             return
     self.server.postreq_busy = True
     self.server.last_postreq = curr_time_postreq
+
+    if self.headers.get('Server'):
+        if self.headers['Server'] in corp_servers():
+            print('POST HTTP Corporate leech bounced: ' +
+                  self.headers['Server'])
+            http_402(self)
+            self.server.postreq_busy = False
+            return
+
+    if contains_invalid_chars(str(self.headers)):
+        print('POST HTTP headers contain invalid characters ' +
+              str(self.headers))
+        http_402(self)
+        self.server.postreq_busy = False
+        return
 
     ua_str = get_user_agent(self)
 
