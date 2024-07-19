@@ -5298,7 +5298,7 @@ def corp_servers() -> ():
     """Returns a list of despised corporate thieves
     """
     return ('GitHub.com', 'github.com', 'cloudflare', 'microsoft.com',
-            'google.com')
+            'google.com', 'google.co.')
 
 
 def get_media_url_from_video(post_json_object: {}) -> (str, str, str, str):
