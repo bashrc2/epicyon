@@ -28,18 +28,18 @@ def create_session(proxy_type: str):
     session = None
     try:
         session = requests.session()
-    except requests.exceptions.RequestException as ex:
-        print('EX: requests error during create_session ' + str(ex))
+    except requests.exceptions.RequestException as exc:
+        print('EX: requests error during create_session ' + str(exc))
         return None
-    except SocketError as ex:
-        if ex.errno == errno.ECONNRESET:
+    except SocketError as exc:
+        if exc.errno == errno.ECONNRESET:
             print('EX: connection was reset during create_session ' +
-                  str(ex))
+                  str(exc))
         else:
-            print('EX: socket error during create_session ' + str(ex))
+            print('EX: socket error during create_session ' + str(exc))
         return None
-    except ValueError as ex:
-        print('EX: error during create_session ' + str(ex))
+    except ValueError as exc:
+        print('EX: error during create_session ' + str(exc))
         return None
     if not session:
         return None
@@ -93,8 +93,8 @@ def url_exists(session, url: str, timeout_sec: int = 3,
                 return True
             print('url_exists for ' + url + ' returned ' +
                   str(result.status_code))
-    except BaseException:
-        print('EX: url_exists GET failed ' + str(url))
+    except BaseException as exc:
+        print('EX: url_exists GET failed ' + str(url) + ' ' + str(exc))
     return False
 
 
@@ -150,27 +150,27 @@ def _get_json_request(session, url: str, session_headers: {},
         if return_json:
             return result.json()
         return result.content
-    except requests.exceptions.RequestException as ex:
+    except requests.exceptions.RequestException as exc:
         session_headers2 = session_headers.copy()
         if session_headers2.get('Authorization'):
             session_headers2['Authorization'] = 'REDACTED'
         if debug and not quiet:
             print('EX: get_json failed, url: ' + str(url) + ', ' +
                   'headers: ' + str(session_headers2) + ', ' +
-                  'params: ' + str(session_params) + ', ' + str(ex))
-    except ValueError as ex:
+                  'params: ' + str(session_params) + ', ' + str(exc))
+    except ValueError as exc:
         session_headers2 = session_headers.copy()
         if session_headers2.get('Authorization'):
             session_headers2['Authorization'] = 'REDACTED'
         if debug and not quiet:
             print('EX: get_json failed, url: ' + str(url) + ', ' +
                   'headers: ' + str(session_headers2) + ', ' +
-                  'params: ' + str(session_params) + ', ' + str(ex))
-    except SocketError as ex:
+                  'params: ' + str(session_params) + ', ' + str(exc))
+    except SocketError as exc:
         if not quiet:
-            if ex.errno == errno.ECONNRESET:
+            if exc.errno == errno.ECONNRESET:
                 print('EX: get_json failed, ' +
-                      'connection was reset during get_json ' + str(ex))
+                      'connection was reset during get_json ' + str(exc))
     return None
 
 
@@ -363,19 +363,19 @@ def get_vcard(xml_format: bool,
             print('EX: get_vcard failed, url: ' + str(url) + ', ' +
                   'headers: ' + str(session_headers2) + ', ' +
                   'params: ' + str(session_params) + ', ' + str(ex))
-    except ValueError as ex:
+    except ValueError as exc:
         session_headers2 = session_headers.copy()
         if session_headers2.get('Authorization'):
             session_headers2['Authorization'] = 'REDACTED'
         if debug and not quiet:
             print('EX: get_vcard failed, url: ' + str(url) + ', ' +
                   'headers: ' + str(session_headers2) + ', ' +
-                  'params: ' + str(session_params) + ', ' + str(ex))
-    except SocketError as ex:
+                  'params: ' + str(session_params) + ', ' + str(exc))
+    except SocketError as exc:
         if not quiet:
-            if ex.errno == errno.ECONNRESET:
+            if exc.errno == errno.ECONNRESET:
                 print('EX: get_vcard failed, ' +
-                      'connection was reset during get_vcard ' + str(ex))
+                      'connection was reset during get_vcard ' + str(exc))
     return None
 
 
@@ -586,27 +586,27 @@ def post_json(http_prefix: str, domain_full: str,
                          data=json.dumps(post_json_object),
                          headers=headers, timeout=timeout_sec,
                          allow_redirects=True)
-    except requests.Timeout as ex:
+    except requests.Timeout as exc:
         if not quiet:
             print('EX: post_json timeout ' + inbox_url + ' ' +
                   json.dumps(post_json_object) + ' ' + str(headers))
-            print(ex)
+            print(exc)
         return ''
-    except requests.exceptions.RequestException as ex:
+    except requests.exceptions.RequestException as exc:
         if not quiet:
             print('EX: post_json requests failed ' + inbox_url + ' ' +
                   json.dumps(post_json_object) + ' ' + str(headers) +
-                  ' ' + str(ex))
+                  ' ' + str(exc))
         return None
-    except SocketError as ex:
-        if not quiet and ex.errno == errno.ECONNRESET:
+    except SocketError as exc:
+        if not quiet and exc.errno == errno.ECONNRESET:
             print('EX: connection was reset during post_json')
         return None
-    except ValueError as ex:
+    except ValueError as exc:
         if not quiet:
             print('EX: post_json failed ' + inbox_url + ' ' +
                   json.dumps(post_json_object) + ' ' + str(headers) +
-                  ' ' + str(ex))
+                  ' ' + str(exc))
         return None
     if post_result:
         return post_result.text
@@ -640,20 +640,20 @@ def post_json_string(session, post_json_str: str,
             session.post(url=inbox_url, data=post_json_str,
                          headers=headers, timeout=timeout_sec,
                          allow_redirects=True)
-    except requests.exceptions.RequestException as ex:
+    except requests.exceptions.RequestException as exc:
         if not quiet:
-            print('EX: error during post_json_string requests ' + str(ex))
+            print('EX: error during post_json_string requests ' + str(exc))
         return None, None, 0
-    except SocketError as ex:
-        if not quiet and ex.errno == errno.ECONNRESET:
+    except SocketError as exc:
+        if not quiet and exc.errno == errno.ECONNRESET:
             print('EX: connection was reset during post_json_string')
         if not quiet:
             print('EX: post_json_string failed ' + inbox_url + ' ' +
                   post_json_str + ' ' + str(headers))
         return None, None, 0
-    except ValueError as ex:
+    except ValueError as exc:
         if not quiet:
-            print('EX: error during post_json_string ' + str(ex))
+            print('EX: error during post_json_string ' + str(exc))
         return None, None, 0
     if post_result.status_code < 200 or post_result.status_code > 204:
         if post_result.status_code >= 400 and \
