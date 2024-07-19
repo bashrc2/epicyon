@@ -36,7 +36,7 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
                   encoding='utf-8') as fp_refollow:
             refollow_str = fp_refollow.read()
     except OSError:
-        print('EX: get_moved_accounts unable to read ' +
+        print('EX: get_moved_accounts unable to read 1 ' +
               moved_accounts_filename)
     refollow_list = refollow_str.split('\n')
     refollow_dict = {}
@@ -49,7 +49,7 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
                   encoding='utf-8') as fp_follow:
             follow_str = fp_follow.read()
     except OSError:
-        print('EX: get_moved_accounts unable to read ' +
+        print('EX: get_moved_accounts unable to read 2 ' +
               follow_filename)
     follow_list = follow_str.split('\n')
 
