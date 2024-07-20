@@ -837,6 +837,12 @@ def run_daemon(accounts_data_dir: str,
     # cache for automatic content warnings
     httpd.auto_cw_cache = load_auto_cw_cache(base_dir)
 
+    # loads a catalog of http header fields
+    headers_catalog_fieldname = data_dir(base_dir) + '/headers_catalog.json'
+    httpd.headers_catalog = {}
+    if os.path.isfile(headers_catalog_fieldname):
+        httpd.headers_catalog = load_json(headers_catalog_fieldname)
+
     # list of websites which are currently down
     httpd.sites_unavailable = load_unavailable_sites(base_dir)
 

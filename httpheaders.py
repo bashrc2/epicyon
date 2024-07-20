@@ -12,6 +12,8 @@ import urllib.parse
 from hashlib import md5
 from utils import string_contains
 from utils import get_instance_url
+from utils import data_dir
+from utils import save_json
 
 
 def login_headers(self, file_format: str, length: int,
@@ -205,3 +207,20 @@ def set_headers_etag(self, media_filename: str, file_format: str,
         self.send_header('last-modified', last_modified)
     self.send_header('accept-ranges', 'bytes')
     self.end_headers()
+
+
+def update_headers_catalog(base_dir: str, headers_catalog: {},
+                           headers: {}) -> None:
+    """Creates a catalog of headers
+    This allows us to spot anything unexpected for later investigation
+    """
+    headers_catalog_fieldname = data_dir(base_dir) + '/headers_catalog.json'
+    changed = False
+    for fieldname, fieldvalue in headers.items():
+        if fieldname in headers_catalog:
+            continue
+        headers_catalog[fieldname] = fieldvalue
+        changed = True
+
+    if changed:
+        save_json(headers_catalog, headers_catalog_fieldname)

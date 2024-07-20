@@ -34,6 +34,7 @@ from httpcodes import http_400
 from httpcodes import http_402
 from httpcodes import http_404
 from httpcodes import http_503
+from httpheaders import update_headers_catalog
 from httpheaders import redirect_headers
 from daemon_utils import get_user_agent
 from daemon_utils import post_to_outbox
@@ -86,6 +87,10 @@ def daemon_http_post(self) -> None:
         print('DEBUG: POST to ' + self.server.base_dir +
               ' path: ' + self.path + ' busy: ' +
               str(self.server.postreq_busy))
+
+    update_headers_catalog(self.server.base_dir,
+                           self.server.headers_catalog,
+                           self.headers)
 
     calling_domain = self.server.domain_full
     if self.headers.get('Host'):

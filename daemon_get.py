@@ -67,6 +67,7 @@ from daemon_utils import has_accept
 from daemon_utils import show_person_options
 from daemon_utils import is_authorized
 from daemon_utils import get_user_agent
+from httpheaders import update_headers_catalog
 from httpheaders import set_headers_etag
 from httpheaders import login_headers
 from httpheaders import redirect_headers
@@ -242,6 +243,11 @@ def daemon_http_get(self) -> None:
         return
 
     calling_domain = self.server.domain_full
+
+    # record header fields encountered
+    update_headers_catalog(self.server.base_dir,
+                           self.server.headers_catalog,
+                           self.headers)
 
     if self.headers.get('Server'):
         if self.headers['Server'] in corp_servers():
