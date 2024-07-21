@@ -32,6 +32,7 @@ from httpsig import getheader_signature_input
 from httpcodes import http_200
 from httpcodes import http_400
 from httpcodes import http_402
+from httpcodes import http_403
 from httpcodes import http_404
 from httpcodes import http_503
 from httpheaders import update_headers_catalog
@@ -142,7 +143,7 @@ def daemon_http_post(self) -> None:
     if contains_invalid_chars(str(self.headers)):
         print('POST HTTP headers contain invalid characters ' +
               str(self.headers))
-        http_402(self)
+        http_403(self)
         self.server.postreq_busy = False
         return
 

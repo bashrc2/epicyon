@@ -265,7 +265,7 @@ def daemon_http_get(self) -> None:
     if contains_invalid_chars(str(self.headers)):
         print('GET HTTP headers contain invalid characters ' +
               str(self.headers))
-        http_402(self)
+        http_403(self)
         return
 
     if self.headers.get('Host'):
