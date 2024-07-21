@@ -256,6 +256,12 @@ def daemon_http_get(self) -> None:
             http_402(self)
             return
 
+    # headers used by LLM scrapers
+    if 'oai-host-hash' in self.headers:
+        print('GET HTTP LLM scraper bounced: ' + str(self.headers))
+        http_402(self)
+        return
+
     if contains_invalid_chars(str(self.headers)):
         print('GET HTTP headers contain invalid characters ' +
               str(self.headers))

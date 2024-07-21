@@ -92,6 +92,12 @@ def daemon_http_post(self) -> None:
                            self.server.headers_catalog,
                            self.headers)
 
+    # headers used by LLM scrapers
+    if 'oai-host-hash' in self.headers:
+        print('POST HTTP LLM scraper bounced: ' + str(self.headers))
+        http_402(self)
+        return
+
     calling_domain = self.server.domain_full
     if self.headers.get('Host'):
         calling_domain = decoded_host(self.headers['Host'])
