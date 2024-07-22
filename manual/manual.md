@@ -446,6 +446,10 @@ Attachments can use a variety of formats.
 
 Attachments should be as small as possible in terms of file size. Videos should be no more than 20 seconds in length. Epicyon is not suitable for hosting lengthy or high resolution videos, although podcasts might be feasible.
 
+![Image watermarking](manual-watermark-ai.png)
+
+When attaching an image it is possible to overlay a watermark image in order to mess with faux-AI scrapers trying to grift upon your photos. Epicyon will do it's best to bounce AI scraper bots, but since those systems are fundamentally unethical they may trivially be able to get around simple user agent based blocking methods. A watermark image can be uploaded from the **Edit Profile** screen under the **Background Images** section. You may need to experiment with the watermark image size to get the proportions as you wish.
+
 ## Events
 You can specify a date, time and location for the post. If a date is set then the post will appear as an event on the calendar of recipients. This makes it easy for people to organize events without needing to explicitly manage calendars.
 ![New post event](manual-date-time.png)
