@@ -1728,13 +1728,13 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if low_bandwidth:
                 print('Converting to low bandwidth ' + filename)
                 convert_image_to_low_bandwidth(filename)
+            _apply_watermark_to_image(base_dir, nickname, domain,
+                                      post_image_filename)
             print('Removing metadata from ' + post_image_filename)
             city = get_spoofed_city(city, base_dir, nickname, domain)
             process_meta_data(base_dir, nickname, domain,
                               filename, post_image_filename, city,
                               content_license_url)
-            _apply_watermark_to_image(base_dir, nickname, domain,
-                                      post_image_filename)
             if os.path.isfile(post_image_filename):
                 print('POST media saved to ' + post_image_filename)
             else:
