@@ -83,7 +83,7 @@ def _apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(watermark_filename):
         return False
     cmd = \
-        '/usr/bin/composite -watermark 20% -gravity east ' + \
+        '/usr/bin/composite -watermark 10% -gravity east ' + \
         safe_system_string(watermark_filename) + ' ' + \
         safe_system_string(post_image_filename) + ' ' + \
         safe_system_string(post_image_filename + '.watermarked')
