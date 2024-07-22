@@ -2674,6 +2674,11 @@ def _html_edit_profile_background(news_instance: bool, translate: {}) -> str:
             translate['Right column image'] + '</label>\n' + \
             '      <input type="file" id="right_col_image" ' + \
             'name="right_col_image"' + \
+            '            accept="' + image_formats + '">\n' + \
+            '      <br><label class="labels">' + \
+            translate['Watermark image'] + '</label>\n' + \
+            '      <input type="file" id="watermark_image" ' + \
+            'name="watermark_image"' + \
             '            accept="' + image_formats + '">\n'
 
     edit_profile_form += end_edit_section()

@@ -694,5 +694,6 @@
     "Abandoning new direct message": "새 다이렉트 메시지 포기하기",
     "Press Enter to continue": "계속하려면 Enter를 누르세요.",
     "PGP Public Key": "PGP 공개 키",
-    "Don't show already seen posts": "이미 본 게시물을 표시하지 않음"
+    "Don't show already seen posts": "이미 본 게시물을 표시하지 않음",
+    "Watermark image": "워터마크 이미지"
 }

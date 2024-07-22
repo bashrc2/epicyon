@@ -694,5 +694,6 @@
     "Abandoning new direct message": "التخلي عن الرسالة المباشرة الجديدة",
     "Press Enter to continue": "إضغط مفتاح الدخول للاستمرار",
     "PGP Public Key": "مفتاح PGP العام",
-    "Don't show already seen posts": "لا تظهر المشاركات التي تمت مشاهدتها بالفعل"
+    "Don't show already seen posts": "لا تظهر المشاركات التي تمت مشاهدتها بالفعل",
+    "Watermark image": "صورة العلامة المائية"
 }

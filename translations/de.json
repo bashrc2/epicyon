@@ -694,5 +694,6 @@
     "Abandoning new direct message": "Neue Direktnachricht abbrechen",
     "Press Enter to continue": "Drücken Sie die Eingabetaste, um fortzufahren",
     "PGP Public Key": "Öffentlicher PGP-Schlüssel",
-    "Don't show already seen posts": "Bereits gesehene Beiträge nicht anzeigen"
+    "Don't show already seen posts": "Bereits gesehene Beiträge nicht anzeigen",
+    "Watermark image": "Wasserzeichenbild"
 }

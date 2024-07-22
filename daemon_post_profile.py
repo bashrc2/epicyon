@@ -2541,6 +2541,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
             'banner', 'search_banner',
             'instanceLogo',
             'left_col_image', 'right_col_image',
+            'watermark_image',
             'importFollows',
             'importTheme'
         )

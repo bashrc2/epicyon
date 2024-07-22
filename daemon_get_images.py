@@ -72,6 +72,8 @@ def show_avatar_or_banner(self, referer_domain: str, path: str,
         avatar_file = 'left_col_image.' + avatar_file_ext
     elif avatar_file.startswith('right_col_image'):
         avatar_file = 'right_col_image.' + avatar_file_ext
+    elif avatar_file.startswith('watermark_image'):
+        avatar_file = 'watermark_image.' + avatar_file_ext
     avatar_filename = \
         acct_dir(base_dir, avatar_nickname, domain) + '/' + avatar_file
     if not os.path.isfile(avatar_filename):

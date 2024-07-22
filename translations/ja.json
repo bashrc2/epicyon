@@ -694,5 +694,6 @@
     "Abandoning new direct message": "新しいダイレクトメッセージの放棄",
     "Press Enter to continue": "続行するには Enter キーを押してください",
     "PGP Public Key": "PGP公開鍵",
-    "Don't show already seen posts": "すでに閲覧した投稿を表示しない"
+    "Don't show already seen posts": "すでに閲覧した投稿を表示しない",
+    "Watermark image": "透かし画像"
 }

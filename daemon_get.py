@@ -2490,8 +2490,8 @@ def daemon_http_get(self) -> None:
                         '_GET', 'account qrcode done',
                         self.server.debug)
 
-    # search screen banner image
     if users_in_path:
+        # search screen banner image
         if self.path.endswith('/search_banner.png'):
             if search_screen_banner(self, self.path,
                                     self.server.base_dir,
@@ -2502,6 +2502,7 @@ def daemon_http_get(self) -> None:
                                     self.server.debug):
                 return
 
+        # main timeline left column
         if self.path.endswith('/left_col_image.png'):
             if column_image(self, 'left', self.path,
                             self.server.base_dir,
@@ -2512,6 +2513,7 @@ def daemon_http_get(self) -> None:
                             self.server.debug):
                 return
 
+        # main timeline right column
         if self.path.endswith('/right_col_image.png'):
             if column_image(self, 'right', self.path,
                             self.server.base_dir,
@@ -2521,6 +2523,11 @@ def daemon_http_get(self) -> None:
                             self.server.fitness,
                             self.server.debug):
                 return
+
+        # watermark for image uploads/attachments
+        if self.path.endswith('/watermark_image.png'):
+            # TODO
+            return
 
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'search screen banner done',

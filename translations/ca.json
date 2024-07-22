@@ -694,5 +694,6 @@
     "Abandoning new direct message": "S'abandona el nou missatge directe",
     "Press Enter to continue": "Premeu Intro per continuar",
     "PGP Public Key": "Clau pública PGP",
-    "Don't show already seen posts": "No mostris les publicacions ja vistes"
+    "Don't show already seen posts": "No mostris les publicacions ja vistes",
+    "Watermark image": "Imatge de filigrana"
 }
