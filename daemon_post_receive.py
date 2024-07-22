@@ -1729,7 +1729,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 print('Converting to low bandwidth ' + filename)
                 convert_image_to_low_bandwidth(filename)
             _apply_watermark_to_image(base_dir, nickname, domain,
-                                      post_image_filename)
+                                      filename)
             print('Removing metadata from ' + post_image_filename)
             city = get_spoofed_city(city, base_dir, nickname, domain)
             process_meta_data(base_dir, nickname, domain,
