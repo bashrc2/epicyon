@@ -16,7 +16,7 @@
     "doap:name": "Epicyon",
     "doap:homepage": "https://libreserver.org/epicyon",
     "doap:description": {
-        "en": "ActivityPub server with no javascript and suitable for self-hosting, designed for simplicity and accessibility. Includes calendar, news and sharing economy features to empower your federated community"
+        "en": "ActivityPub server with no javascript and suitable for self-hosting, designed for simplicity and accessibility. Includes calendar, news and sharing economy features to empower your federated community."
     },
     "doap:shortdesc": {
         "en": "ActivityPub server, designed for simplicity and accessibility. Includes calendar, news and sharing economy features to empower your federated community."
