@@ -22,16 +22,17 @@ def _text_in_file2(text: str, filename: str,
     """
     if not case_sensitive:
         text = text.lower()
+    content = ''
     try:
         with open(filename, 'r', encoding='utf-8') as fp_file:
             content = fp_file.read()
-            if content:
-                if not case_sensitive:
-                    content = content.lower()
-                if text in content:
-                    return True
     except OSError:
         print('EX: unable to find text in missing file 2 ' + filename)
+    if content:
+        if not case_sensitive:
+            content = content.lower()
+        if text in content:
+            return True
     return False
 
 
