@@ -789,6 +789,11 @@ def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
         get_image_dimensions(post_image_filename)
     if not watermark_image_width or not watermark_image_height:
         return False
+    watermark_width_percent += randint(-5, 5)
+    if watermark_width_percent < 0:
+        watermark_width_percent = 0
+    if watermark_width_percent > 100:
+        watermark_width_percent = 100
     scaled_watermark_image_width = \
         int(post_image_width * watermark_width_percent / 100)
     scaled_watermark_image_height = \
@@ -811,6 +816,7 @@ def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
                            'northeast', 'northwest',
                            'southeast', 'southwest'])
 
+    watermark_opacity += randint(-5, 5)
     if watermark_opacity < 0:
         watermark_opacity = 0
     if watermark_opacity > 100:
