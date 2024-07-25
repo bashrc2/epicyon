@@ -2524,11 +2524,6 @@ def daemon_http_get(self) -> None:
                             self.server.debug):
                 return
 
-        # watermark for image uploads/attachments
-        if self.path.endswith('/watermark_image.png'):
-            # TODO
-            return
-
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'search screen banner done',
                         self.server.debug)

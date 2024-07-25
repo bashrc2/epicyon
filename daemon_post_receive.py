@@ -1596,7 +1596,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               onion_domain: str,
                               i2p_domain: str,
                               max_shares_on_profile: int,
-                              watermark_width_percent: int) -> int:
+                              watermark_width_percent: int,
+                              watermark_position: str) -> int:
     # Note: this needs to happen synchronously
     # 0=this is not a new post
     # 1=new post success
@@ -1689,7 +1690,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                 print('Converting to low bandwidth ' + filename)
                 convert_image_to_low_bandwidth(filename)
             apply_watermark_to_image(base_dir, nickname, domain,
-                                     filename, watermark_width_percent)
+                                     filename, watermark_width_percent,
+                                     watermark_position)
             post_image_filename = filename.replace('.temp', '')
             print('Removing metadata from ' + post_image_filename)
             city = get_spoofed_city(city, base_dir, nickname, domain)
@@ -2197,7 +2199,8 @@ def receive_new_post(self, post_type, path: str,
                      onion_domain: str,
                      i2p_domain: str,
                      max_shares_on_profile: int,
-                     watermark_width_percent: int) -> int:
+                     watermark_width_percent: int,
+                     watermark_position: str) -> int:
     """A new post has been created
     This creates a thread to send the new post
     """
@@ -2336,7 +2339,8 @@ def receive_new_post(self, post_type, path: str,
                                           onion_domain,
                                           i2p_domain,
                                           max_shares_on_profile,
-                                          watermark_width_percent)
+                                          watermark_width_percent,
+                                          watermark_position)
             if debug:
                 print('DEBUG: _receive_new_post_process returned ' +
                       str(retval))

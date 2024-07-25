@@ -256,6 +256,11 @@ def _command_options() -> None:
                         default=30,
                         help='Width of the watermark applied to attached ' +
                         'images as a percentage of the attached image width')
+    parser.add_argument('--watermarkPosition',
+                        dest='watermark_position', type=str,
+                        default="east",
+                        help='Position of image watermarks ' +
+                        'north/south/east/west')
     parser.add_argument('--check-actor-timeout', dest='check_actor_timeout',
                         type=int, default=2,
                         help='Timeout in seconds used for checking is ' +
@@ -3863,6 +3868,16 @@ def _command_options() -> None:
     if argb.watermark_width_percent > 100:
         argb.watermark_width_percent = 100
 
+    watermark_position = \
+        get_config_param(base_dir, 'watermarkPosition')
+    if watermark_position is not None:
+        argb.watermark_position = watermark_width_percent
+    if argb.watermark_position.lower() not in ('north', 'south',
+                                               'east', 'west',
+                                               'northeast', 'northwest',
+                                               'southeast', 'southwest'):
+        argb.watermark_position = 'east'
+
     show_publish_as_icon = \
         get_config_param(base_dir, 'showPublishAsIcon')
     if show_publish_as_icon is not None:
@@ -4095,4 +4110,5 @@ if __name__ == "__main__":
                argb2.allowdeletion, opt2['debug'], False,
                argb2.instance_only_skills_search, [],
                not argb2.noapproval,
-               argb2.watermark_width_percent)
+               argb2.watermark_width_percent,
+               argb2.watermark_position)

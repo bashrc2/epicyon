@@ -765,7 +765,8 @@ def get_image_dimensions(image_filename: str) -> (int, int):
 
 def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
                              post_image_filename: str,
-                             watermark_width_percent: int) -> bool:
+                             watermark_width_percent: int,
+                             watermark_position: str) -> bool:
     """Applies a watermark to the given image
     """
     if not os.path.isfile(post_image_filename):
@@ -789,11 +790,17 @@ def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
         int(watermark_image_height *
             scaled_watermark_image_width / watermark_image_width)
 
+    if watermark_position.lower() not in ('north', 'south',
+                                          'east', 'west',
+                                          'northeast', 'northwest',
+                                          'southeast', 'southwest'):
+        watermark_position = 'east'
+
     cmd = \
         '/usr/bin/composite ' + \
         '-geometry ' + str(scaled_watermark_image_width) + 'x' + \
         str(scaled_watermark_image_height) + '+30+5 ' + \
-        '-watermark 10% -gravity east ' + \
+        '-watermark 10% -gravity ' + watermark_position + ' ' + \
         safe_system_string(watermark_filename) + ' ' + \
         safe_system_string(post_image_filename) + ' ' + \
         safe_system_string(post_image_filename + '.watermarked')
