@@ -253,7 +253,7 @@ def _command_options() -> None:
                         'for the given account')
     parser.add_argument('--watermarkWidthPercent',
                         dest='watermark_width_percent', type=int,
-                        default=20,
+                        default=30,
                         help='Width of the watermark applied to attached ' +
                         'images as a percentage of the attached image width')
     parser.add_argument('--check-actor-timeout', dest='check_actor_timeout',
