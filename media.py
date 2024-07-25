@@ -782,8 +782,12 @@ def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
     # scale the watermark so that it is a fixed percentage of the image width
     post_image_width, _ = \
         get_image_dimensions(post_image_filename)
+    if not post_image_width:
+        return False
     watermark_image_width, watermark_image_height = \
         get_image_dimensions(post_image_filename)
+    if not watermark_image_width or not watermark_image_height:
+        return False
     scaled_watermark_image_width = \
         int(post_image_width * watermark_width_percent / 100)
     scaled_watermark_image_height = \
