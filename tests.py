@@ -895,6 +895,7 @@ def create_server_alice(path: str, domain: str, port: int,
     accounts_data_dir = None
     watermark_width_percent = 30
     watermark_position = 'east'
+    watermark_opacity = 10
     print('Server running: Alice')
     run_daemon(accounts_data_dir,
                no_of_books, public_replies_unlisted,
@@ -927,7 +928,7 @@ def create_server_alice(path: str, domain: str, port: int,
                domain_max_posts_per_day, account_max_posts_per_day,
                allow_deletion, True, True, False, send_threads,
                False, watermark_width_percent,
-               watermark_position)
+               watermark_position, watermark_opacity)
 
 
 def create_server_bob(path: str, domain: str, port: int,
@@ -1084,6 +1085,7 @@ def create_server_bob(path: str, domain: str, port: int,
     accounts_data_dir = None
     watermark_width_percent = 30
     watermark_position = 'east'
+    watermark_opacity = 10
     print('Server running: Bob')
     run_daemon(accounts_data_dir,
                no_of_books, public_replies_unlisted,
@@ -1116,7 +1118,7 @@ def create_server_bob(path: str, domain: str, port: int,
                domain_max_posts_per_day, account_max_posts_per_day,
                allow_deletion, True, True, False, send_threads,
                False, watermark_width_percent,
-               watermark_position)
+               watermark_position, watermark_opacity)
 
 
 def create_server_eve(path: str, domain: str, port: int, federation_list: [],
@@ -1181,6 +1183,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     accounts_data_dir = None
     watermark_width_percent = 30
     watermark_position = 'east'
+    watermark_opacity = 10
     print('Server running: Eve')
     run_daemon(accounts_data_dir, no_of_books,
                public_replies_unlisted,
@@ -1234,7 +1237,8 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
                True, True, False,
                send_threads, False,
                watermark_width_percent,
-               watermark_position)
+               watermark_position,
+               watermark_opacity)
 
 
 def create_server_group(path: str, domain: str, port: int,
@@ -1301,6 +1305,7 @@ def create_server_group(path: str, domain: str, port: int,
     accounts_data_dir = None
     watermark_width_percent = 30
     watermark_position = 'east'
+    watermark_opacity = 10
     print('Server running: Group')
     run_daemon(accounts_data_dir,
                no_of_books, public_replies_unlisted,
@@ -1333,7 +1338,7 @@ def create_server_group(path: str, domain: str, port: int,
                domain_max_posts_per_day, account_max_posts_per_day,
                allow_deletion, True, True, False, send_threads,
                False, watermark_width_percent,
-               watermark_position)
+               watermark_position, watermark_opacity)
 
 
 def test_post_message_between_servers(base_dir: str) -> None:

@@ -256,6 +256,10 @@ def _command_options() -> None:
                         default=30,
                         help='Width of the watermark applied to attached ' +
                         'images as a percentage of the attached image width')
+    parser.add_argument('--watermarkOpacity',
+                        dest='watermark_opacity', type=int,
+                        default=10,
+                        help='Opacity of watermark applied to attached images')
     parser.add_argument('--watermarkPosition',
                         dest='watermark_position', type=str,
                         default="east",
@@ -3878,6 +3882,15 @@ def _command_options() -> None:
                                                'southeast', 'southwest'):
         argb.watermark_position = 'east'
 
+    watermark_opacity = \
+        get_config_param(base_dir, 'watermarkOpacity')
+    if watermark_opacity is not None:
+        argb.watermark_opacity = int(watermark_opacity)
+    if argb.watermark_opacity < 0:
+        argb.watermark_opacity = 0
+    if argb.watermark_opacity > 100:
+        argb.watermark_opacity = 100
+
     show_publish_as_icon = \
         get_config_param(base_dir, 'showPublishAsIcon')
     if show_publish_as_icon is not None:
@@ -4111,4 +4124,5 @@ if __name__ == "__main__":
                argb2.instance_only_skills_search, [],
                not argb2.noapproval,
                argb2.watermark_width_percent,
-               argb2.watermark_position)
+               argb2.watermark_position,
+               argb2.watermark_opacity)
