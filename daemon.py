@@ -758,7 +758,8 @@ def run_daemon(accounts_data_dir: str,
                unit_test: bool,
                instance_only_skills_search: bool,
                send_threads: [],
-               manual_follower_approval: bool) -> None:
+               manual_follower_approval: bool,
+               watermark_width_percent: int) -> None:
     if len(domain) == 0:
         domain = 'localhost'
     if '.' not in domain:
@@ -801,6 +802,10 @@ def run_daemon(accounts_data_dir: str,
         return False
 
     httpd.starting_daemon = True
+
+    # width of watermark applied to attached images
+    # as a percentage of the attached image width
+    httpd.watermark_width_percent = watermark_width_percent
 
     # for each account whether to hide announces
     httpd.hide_announces = {}

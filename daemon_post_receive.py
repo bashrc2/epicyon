@@ -11,7 +11,6 @@ import os
 import time
 import copy
 import errno
-import subprocess
 from socket import error as SocketError
 from shares import add_share
 from languages import get_understood_languages
@@ -22,13 +21,13 @@ from content import add_html_tags
 from content import extract_text_fields_in_post
 from content import extract_media_in_form_post
 from content import save_media_in_form_post
+from media import apply_watermark_to_image
 from media import replace_twitter
 from media import replace_you_tube
 from media import process_meta_data
 from media import convert_image_to_low_bandwidth
 from media import attach_media
 from city import get_spoofed_city
-from utils import safe_system_string
 from utils import get_instance_url
 from utils import is_float
 from utils import save_json
@@ -55,7 +54,6 @@ from inbox import populate_replies
 from inbox import update_edited_post
 from daemon_utils import post_to_outbox
 from webapp_column_right import html_citations
-from webapp_utils import get_watermark_file
 from httpheaders import set_headers
 from httpcodes import write2
 from cache import store_person_in_cache
@@ -67,44 +65,6 @@ from person import get_actor_update_json
 NEW_POST_SUCCESS = 1
 NEW_POST_FAILED = -1
 NEW_POST_CANCELLED = 2
-
-
-def _apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
-                              post_image_filename: str) -> bool:
-    """Applies a watermark to the given image
-    """
-    if not os.path.isfile(post_image_filename):
-        return False
-    if not os.path.isfile('/usr/bin/composite'):
-        return False
-    _, watermark_filename = get_watermark_file(base_dir, nickname, domain)
-    if not watermark_filename:
-        return False
-    if not os.path.isfile(watermark_filename):
-        return False
-    cmd = \
-        '/usr/bin/composite -watermark 10% -gravity east ' + \
-        safe_system_string(watermark_filename) + ' ' + \
-        safe_system_string(post_image_filename) + ' ' + \
-        safe_system_string(post_image_filename + '.watermarked')
-    subprocess.call(cmd, shell=True)
-    if not os.path.isfile(post_image_filename + '.watermarked'):
-        return False
-
-    try:
-        os.remove(post_image_filename)
-    except OSError:
-        print('EX: _apply_watermark_to_image unable to remove ' +
-              post_image_filename)
-        return False
-
-    try:
-        os.rename(post_image_filename + '.watermarked', post_image_filename)
-    except OSError:
-        print('EX: _apply_watermark_to_image unable to rename ' +
-              post_image_filename + '.watermarked')
-        return False
-    return True
 
 
 def _receive_new_post_process_newpost(self, fields: {},
@@ -1635,7 +1595,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               block_federated: [],
                               onion_domain: str,
                               i2p_domain: str,
-                              max_shares_on_profile: int) -> int:
+                              max_shares_on_profile: int,
+                              watermark_width_percent: int) -> int:
     # Note: this needs to happen synchronously
     # 0=this is not a new post
     # 1=new post success
@@ -1727,8 +1688,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if low_bandwidth:
                 print('Converting to low bandwidth ' + filename)
                 convert_image_to_low_bandwidth(filename)
-            _apply_watermark_to_image(base_dir, nickname, domain,
-                                      filename)
+            apply_watermark_to_image(base_dir, nickname, domain,
+                                     filename, watermark_width_percent)
             post_image_filename = filename.replace('.temp', '')
             print('Removing metadata from ' + post_image_filename)
             city = get_spoofed_city(city, base_dir, nickname, domain)
@@ -2235,7 +2196,8 @@ def receive_new_post(self, post_type, path: str,
                      block_federated: [],
                      onion_domain: str,
                      i2p_domain: str,
-                     max_shares_on_profile: int) -> int:
+                     max_shares_on_profile: int,
+                     watermark_width_percent: int) -> int:
     """A new post has been created
     This creates a thread to send the new post
     """
@@ -2373,7 +2335,8 @@ def receive_new_post(self, post_type, path: str,
                                           dm_license_url, block_federated,
                                           onion_domain,
                                           i2p_domain,
-                                          max_shares_on_profile)
+                                          max_shares_on_profile,
+                                          watermark_width_percent)
             if debug:
                 print('DEBUG: _receive_new_post_process returned ' +
                       str(retval))

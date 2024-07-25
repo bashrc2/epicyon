@@ -5586,3 +5586,43 @@ def remove_link_tracking(url: str) -> str:
     if '?utm_' not in url:
         return url
     return url.split('?utm_')[0]
+
+
+def get_image_file(base_dir: str, name: str, directory: str,
+                   theme: str) -> (str, str):
+    """returns the filenames for an image with the given name
+    """
+    banner_extensions = get_image_extensions()
+    banner_file = ''
+    banner_filename = ''
+    im_name = name
+    for ext in banner_extensions:
+        banner_file_test = im_name + '.' + ext
+        banner_filename_test = directory + '/' + banner_file_test
+        if os.path.isfile(banner_filename_test):
+            banner_file = banner_file_test
+            banner_filename = banner_filename_test
+            return banner_file, banner_filename
+    # if not found then use the default image
+    curr_theme = 'default'
+    if theme:
+        curr_theme = theme
+    directory = base_dir + '/theme/' + curr_theme
+    for ext in banner_extensions:
+        banner_file_test = name + '.' + ext
+        banner_filename_test = directory + '/' + banner_file_test
+        if os.path.isfile(banner_filename_test):
+            banner_file = name + '_' + curr_theme + '.' + ext
+            banner_filename = banner_filename_test
+            break
+    return banner_file, banner_filename
+
+
+def get_watermark_file(base_dir: str,
+                       nickname: str, domain: str) -> (str, str):
+    """Gets the filename for watermarking when an image is attached to a post
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    watermark_file, watermark_filename = \
+        get_image_file(base_dir, 'watermark_image', account_dir, '')
+    return watermark_file, watermark_filename

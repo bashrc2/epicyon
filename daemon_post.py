@@ -867,7 +867,8 @@ def daemon_http_post(self) -> None:
                              self.server.block_federated,
                              self.server.onion_domain,
                              self.server.i2p_domain,
-                             self.server.max_shares_on_profile)
+                             self.server.max_shares_on_profile,
+                             self.server.watermark_width_percent)
         if page_number:
             print(curr_post_type + ' post received')
             nickname = self.path.split('/users/')[1]

@@ -251,6 +251,11 @@ def _command_options() -> None:
                         default=None,
                         help='Number of days after which posts expire ' +
                         'for the given account')
+    parser.add_argument('--watermarkWidthPercent',
+                        dest='watermark_width_percent', type=int,
+                        default=20,
+                        help='Width of the watermark applied to attached ' +
+                        'images as a percentage of the attached image width')
     parser.add_argument('--check-actor-timeout', dest='check_actor_timeout',
                         type=int, default=2,
                         help='Timeout in seconds used for checking is ' +
@@ -4080,4 +4085,5 @@ if __name__ == "__main__":
                argb2.account_max_posts_per_day,
                argb2.allowdeletion, opt2['debug'], False,
                argb2.instance_only_skills_search, [],
-               not argb2.noapproval)
+               not argb2.noapproval,
+               argb2.watermark_width_percent)

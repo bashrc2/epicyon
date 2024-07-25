@@ -26,6 +26,7 @@ from utils import get_audio_extensions
 from utils import get_media_extensions
 from utils import has_object_dict
 from utils import acct_dir
+from utils import get_watermark_file
 from shutil import copyfile
 from shutil import rmtree
 from shutil import move
@@ -760,3 +761,57 @@ def get_image_dimensions(image_filename: str) -> (int, int):
     if not height_str.isdigit():
         return None, None
     return int(width_str), int(height_str)
+
+
+def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
+                             post_image_filename: str,
+                             watermark_width_percent: int) -> bool:
+    """Applies a watermark to the given image
+    """
+    if not os.path.isfile(post_image_filename):
+        return False
+    if not os.path.isfile('/usr/bin/composite'):
+        return False
+    _, watermark_filename = get_watermark_file(base_dir, nickname, domain)
+    if not watermark_filename:
+        return False
+    if not os.path.isfile(watermark_filename):
+        return False
+
+    # scale the watermark so that it is a fixed percentage of the image width
+    post_image_width, _ = \
+        get_image_dimensions(post_image_filename)
+    watermark_image_width, watermark_image_height = \
+        get_image_dimensions(post_image_filename)
+    scaled_watermark_image_width = \
+        int(post_image_width * watermark_width_percent / 100)
+    scaled_watermark_image_height = \
+        int(watermark_image_height *
+            scaled_watermark_image_width / watermark_image_width)
+
+    cmd = \
+        '/usr/bin/composite ' + \
+        '-geometry ' + str(scaled_watermark_image_width) + 'x' + \
+        str(scaled_watermark_image_height) + '+30+5 ' + \
+        '-watermark 10% -gravity east ' + \
+        safe_system_string(watermark_filename) + ' ' + \
+        safe_system_string(post_image_filename) + ' ' + \
+        safe_system_string(post_image_filename + '.watermarked')
+    subprocess.call(cmd, shell=True)
+    if not os.path.isfile(post_image_filename + '.watermarked'):
+        return False
+
+    try:
+        os.remove(post_image_filename)
+    except OSError:
+        print('EX: _apply_watermark_to_image unable to remove ' +
+              post_image_filename)
+        return False
+
+    try:
+        os.rename(post_image_filename + '.watermarked', post_image_filename)
+    except OSError:
+        print('EX: _apply_watermark_to_image unable to rename ' +
+              post_image_filename + '.watermarked')
+        return False
+    return True
