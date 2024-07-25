@@ -606,13 +606,19 @@ podcasts might be feasible.</p>
 <figcaption aria-hidden="true">Image watermarking</figcaption>
 </figure>
 <p>When attaching an image it is possible to overlay a watermark image
-in order to mess with faux-AI scrapers trying to grift upon your photos.
-Epicyon will do it’s best to bounce AI scraper bots, but since those
-systems are fundamentally unethical they may trivially be able to get
-around simple user agent based blocking methods. A watermark image can
-be uploaded from the <strong>Edit Profile</strong> screen under the
-<strong>Background Images</strong> section. You may need to experiment
-with the watermark image size to get the proportions as you wish.</p>
+in order to mess with generative AI scrapers trying to grift upon your
+photos. Epicyon will do it’s best to bounce AI scraper bots, but since
+those systems are fundamentally unethical they cannot be relied upon to
+follow user agent conventions. A watermark image can be uploaded from
+the <strong>Edit Profile</strong> screen under the <strong>Background
+Images</strong> section. You may need to experiment with the watermark
+image width, position and opacity, which can be set as command options
+on the daemon. See <a
+href="https://gitlab.com/bashrc2/epicyon/-/blob/main/README_commandline.md">README_commandline.md</a>
+for details.</p>
+<p>Even if the scraper bot tries to remove your watermark from the image
+by filling in from the surrounding pixels, the removal itself may leave
+a detectable trace indicative of improper use.</p>
 <h2 id="events">Events</h2>
 <p>You can specify a date, time and location for the post. If a date is
 set then the post will appear as an event on the calendar of recipients.
