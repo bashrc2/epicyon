@@ -3875,7 +3875,7 @@ def _command_options() -> None:
     watermark_position = \
         get_config_param(base_dir, 'watermarkPosition')
     if watermark_position is not None:
-        argb.watermark_position = watermark_width_percent
+        argb.watermark_position = watermark_position
     if argb.watermark_position.lower() not in ('north', 'south',
                                                'east', 'west',
                                                'northeast', 'northwest',
