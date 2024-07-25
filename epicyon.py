@@ -3854,6 +3854,15 @@ def _command_options() -> None:
     if max_like_count is not None:
         argb.max_like_count = int(max_like_count)
 
+    watermark_width_percent = \
+        get_config_param(base_dir, 'watermarkWidthPercent')
+    if watermark_width_percent is not None:
+        argb.watermark_width_percent = int(watermark_width_percent)
+    if argb.watermark_width_percent < 1:
+        argb.watermark_width_percent = 1
+    if argb.watermark_width_percent > 100:
+        argb.watermark_width_percent = 100
+
     show_publish_as_icon = \
         get_config_param(base_dir, 'showPublishAsIcon')
     if show_publish_as_icon is not None:
