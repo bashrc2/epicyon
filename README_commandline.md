@@ -431,6 +431,22 @@ If you want to allow specific web crawlers then when running the daemon (typical
 Typically web crawlers have names ending in "bot", but partial names can also be used.
 
 
+## Image watermarks and generative AI
+
+When attaching an image to a new post it is possible to have a watermark image stamped onto it. This helps to mess with generative "AI" scrapers, using images improperly without permission, attribution or financial compensation.
+
+The watermark image can be set via editing your profile and then going to the **background images** section. Once that is set you can also use daemon options as follows to determine how the watermark is displayed.
+
+```bash
+--watermarkWidthPercent 30 --watermarkPosition east --watermarkOpacity 10
+```
+
+The opacity is a percentage value, and you could potentially use 100% opacity together with a watermark which has a transparent background.
+
+The watermark position is a compass direction: north, south, east, west, or combinations thereof.
+
+Even if the scraper bot tries to remove your watermark from the image by filling in from the surrounding pixels, the removal itself may leave a detectable trace indicative of improper use.
+
 ## Maintenance
 
 You can check for any novel ActivityPub fields with:
