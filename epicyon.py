@@ -262,7 +262,7 @@ def _command_options() -> None:
                         help='Opacity of watermark applied to attached images')
     parser.add_argument('--watermarkPosition',
                         dest='watermark_position', type=str,
-                        default="east",
+                        default="random",
                         help='Position of image watermarks ' +
                         'north/south/east/west')
     parser.add_argument('--check-actor-timeout', dest='check_actor_timeout',
@@ -3879,7 +3879,8 @@ def _command_options() -> None:
     if argb.watermark_position.lower() not in ('north', 'south',
                                                'east', 'west',
                                                'northeast', 'northwest',
-                                               'southeast', 'southwest'):
+                                               'southeast', 'southwest',
+                                               'random'):
         argb.watermark_position = 'east'
 
     watermark_opacity = \

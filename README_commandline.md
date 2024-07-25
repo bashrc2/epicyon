@@ -443,7 +443,7 @@ The watermark image can be set via editing your profile and then going to the **
 
 The opacity is a percentage value, and you could potentially use 100% opacity together with a watermark which has a transparent background.
 
-The watermark position is a compass direction: north, south, east, west, or combinations thereof.
+The watermark position is a compass direction: north, south, east, west, or combinations thereof. It can also be set to "random" to choose a random position. Random positioning will make it more difficult for any scraper bot to try to remove.
 
 Even if the scraper bot tries to remove your watermark from the image by filling in from the surrounding pixels, the removal itself may leave a detectable trace indicative of improper use.
 

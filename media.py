@@ -795,11 +795,21 @@ def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
         int(watermark_image_height *
             scaled_watermark_image_width / watermark_image_width)
 
-    if watermark_position.lower() not in ('north', 'south',
-                                          'east', 'west',
-                                          'northeast', 'northwest',
-                                          'southeast', 'southwest'):
+    watermark_position = watermark_position.lower()
+    if watermark_position not in ('north', 'south',
+                                  'east', 'west',
+                                  'northeast', 'northwest',
+                                  'southeast', 'southwest',
+                                  'random'):
         watermark_position = 'east'
+
+    # choose a random position for the watermark
+    if watermark_position == 'random':
+        watermark_position = \
+            random.choice(['north', 'south',
+                           'east', 'west',
+                           'northeast', 'northwest',
+                           'southeast', 'southwest'])
 
     if watermark_opacity < 0:
         watermark_opacity = 0
