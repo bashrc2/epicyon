@@ -532,6 +532,8 @@ def html_profile_after_search(authorized: bool,
             minimize_all_images = True
         i = 0
         for item in user_feed:
+            if not isinstance(item, dict):
+                continue
             if item.get('type') and item.get('object'):
                 if str(item['type']) == 'Announce' and \
                    isinstance(item['object'], str):
