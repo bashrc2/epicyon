@@ -35,6 +35,7 @@ from httpcodes import http_402
 from httpcodes import http_403
 from httpcodes import http_404
 from httpcodes import http_503
+from httpheaders import contains_suspicious_headers
 from httpheaders import update_headers_catalog
 from httpheaders import redirect_headers
 from daemon_utils import get_user_agent
@@ -97,6 +98,12 @@ def daemon_http_post(self) -> None:
     if 'oai-host-hash' in self.headers:
         print('POST HTTP LLM scraper bounced: ' + str(self.headers))
         http_402(self)
+        return
+
+    # suspicious headers
+    if contains_suspicious_headers(self.headers):
+        print('POST HTTP suspicious headers ' + str(self.headers))
+        http_403(self)
         return
 
     calling_domain = self.server.domain_full

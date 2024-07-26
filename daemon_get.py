@@ -78,6 +78,7 @@ from httprequests import request_http
 from httpheaders import set_headers
 from httpheaders import logout_headers
 from httpheaders import logout_redirect
+from httpheaders import contains_suspicious_headers
 from httpcodes import http_200
 from httpcodes import http_402
 from httpcodes import http_403
@@ -260,6 +261,12 @@ def daemon_http_get(self) -> None:
     if 'oai-host-hash' in self.headers:
         print('GET HTTP LLM scraper bounced: ' + str(self.headers))
         http_402(self)
+        return
+
+    # suspicious headers
+    if contains_suspicious_headers(self.headers):
+        print('GET HTTP suspicious headers ' + str(self.headers))
+        http_403(self)
         return
 
     if contains_invalid_chars(str(self.headers)):

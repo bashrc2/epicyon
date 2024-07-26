@@ -219,10 +219,23 @@ def update_headers_catalog(base_dir: str, headers_catalog: {},
     for fieldname, fieldvalue in headers.items():
         if fieldname in headers_catalog:
             continue
-        if fieldname == 'cookie' or fieldname == 'Cookie':
+        if fieldname in ('cookie', 'Cookie'):
             fieldvalue = ""
         headers_catalog[fieldname] = fieldvalue
         changed = True
 
     if changed:
         save_json(headers_catalog, headers_catalog_fieldname)
+
+
+def contains_suspicious_headers(headers: {}) -> bool:
+    """returns true if the given headers contain something suspicious
+    """
+    if 'Shellshock' in headers or \
+       'shellshock' in headers or \
+       'think-lang' in headers or \
+       'Think-lang' in headers:
+        return True
+    if '../../' in str(headers):
+        return True
+    return False
