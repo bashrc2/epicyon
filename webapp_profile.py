@@ -531,9 +531,9 @@ def html_profile_after_search(authorized: bool,
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         i = 0
+        print('DEBUG: user feed test: ' + str(user_feed))
         for item in user_feed:
             if not isinstance(item, dict):
-                print('DEBUG: invalid user feed item: ' + str(item))
                 continue
             if item.get('type') and item.get('object'):
                 if str(item['type']) == 'Announce' and \
