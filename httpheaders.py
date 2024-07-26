@@ -219,7 +219,7 @@ def update_headers_catalog(base_dir: str, headers_catalog: {},
     for fieldname, fieldvalue in headers.items():
         if fieldname in headers_catalog:
             continue
-        if fieldname == 'cookie':
+        if fieldname == 'cookie' or fieldname == 'Cookie':
             fieldvalue = ""
         headers_catalog[fieldname] = fieldvalue
         changed = True
