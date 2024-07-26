@@ -2948,8 +2948,8 @@ def _get_reserved_words() -> str:
             'activity', 'undo', 'pinned',
             'actor', 'Actor', 'instance.actor',
             'reply', 'replies', 'question', 'like',
-            'likes', 'users', 'statuses', 'tags', 'author',
-            'accounts', 'headers', 'snac',
+            'likes', 'user', 'users', 'statuses',
+            'tags', 'author', 'accounts', 'headers', 'snac',
             'channels', 'profile', 'u', 'c',
             'updates', 'repeat', 'announce',
             'shares', 'fonts', 'icons', 'avatars',
@@ -2963,7 +2963,7 @@ def _get_reserved_words() -> str:
             'inactive', 'activitypub', 'actors',
             'note', 'notes', 'offers', 'wanted', 'honk',
             'button', 'post', 'item', 'comment',
-            'content')
+            'content', 'federation')
 
 
 def get_nickname_validation_pattern() -> str:
