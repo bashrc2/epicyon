@@ -1700,7 +1700,7 @@ def _get_statuses_list() -> []:
     return ('/statuses/', '/objects/', '/honk/', '/p/', '/h/', '/api/posts/',
             '/note/', '/notes/', '/comment/', '/post/', '/item/', '/videos/',
             '/button/', '/x/', '/o/', '/posts/', '/items/', '/object/', '/r/',
-            '/content/')
+            '/content/', '/federation/')
 
 
 def contains_statuses(url: str) -> bool:
@@ -1929,7 +1929,7 @@ def get_user_paths() -> []:
     """
     return ('/users/', '/profile/', '/accounts/', '/channel/',
             '/u/', '/c/', '/m/', '/a/', '/video-channels/',
-            '/nieuws/author/', '/author/',
+            '/nieuws/author/', '/author/', '/federation/user/',
             '/activitypub/', '/actors/', '/snac/', '/@/', '/~/',
             '/fediverse/blog/', '/user/', '/@', '/api/collections/',
             '/feed/', '/actor/')
