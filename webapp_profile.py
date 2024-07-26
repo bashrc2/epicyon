@@ -533,6 +533,7 @@ def html_profile_after_search(authorized: bool,
         i = 0
         for item in user_feed:
             if not isinstance(item, dict):
+                print('DEBUG: invalid user feed item: ' + str(item))
                 continue
             if item.get('type') and item.get('object'):
                 if str(item['type']) == 'Announce' and \
