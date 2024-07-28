@@ -106,6 +106,12 @@ def daemon_http_post(self) -> None:
         http_403(self)
         return
 
+    # php
+    if 'index.php' in self.path:
+        print('POST HTTP Attempt to access PHP file ' + self.path)
+        http_404(self)
+        return
+
     calling_domain = self.server.domain_full
     if self.headers.get('Host'):
         calling_domain = decoded_host(self.headers['Host'])

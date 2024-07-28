@@ -269,6 +269,12 @@ def daemon_http_get(self) -> None:
         http_403(self)
         return
 
+    # php
+    if 'index.php' in self.path:
+        print('GET HTTP Attempt to access PHP file ' + self.path)
+        http_404(self)
+        return
+
     if contains_invalid_chars(str(self.headers)):
         print('GET HTTP headers contain invalid characters ' +
               str(self.headers))
