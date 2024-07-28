@@ -58,8 +58,17 @@ def html_get_login_credentials(login_params: str,
             if '@' in nickname:
                 # the full nickname@domain has been entered
                 nickname = nickname.split('@')[0]
+            # validation on nickname
+            if 'passwd' in nickname or \
+               '`' in nickname or \
+               ';' in nickname or \
+               ' ' in nickname:
+                nickname = None
         elif arg.split('=', 1)[0] == 'password':
             password = arg.split('=', 1)[1]
+            # validation on password
+            if '`' in password:
+                password = None
         elif registrations_open and arg.split('=', 1)[0] == 'register':
             register = True
     return nickname, password, register

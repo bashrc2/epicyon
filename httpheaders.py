@@ -236,6 +236,9 @@ def contains_suspicious_headers(headers: {}) -> bool:
        'think-lang' in headers or \
        'Think-lang' in headers:
         return True
-    if '../../' in str(headers):
+    headers_str = str(headers)
+    if '../../' in headers_str or \
+       'index.php' in headers_str or \
+       'passwd' in headers_str:
         return True
     return False
