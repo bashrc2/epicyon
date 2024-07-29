@@ -695,5 +695,6 @@
     "Press Enter to continue": "Πατήστε Enter για να συνεχίσετε",
     "PGP Public Key": "Δημόσιο κλειδί PGP",
     "Don't show already seen posts": "Να μην εμφανίζονται οι αναρτήσεις που έχετε ήδη δει",
-    "Watermark image": "Εικόνα υδατογραφήματος"
+    "Watermark image": "Εικόνα υδατογραφήματος",
+    "Apply a watermark to uploaded images": "Εφαρμόστε ένα υδατογράφημα στις μεταφορτωμένες εικόνες"
 }

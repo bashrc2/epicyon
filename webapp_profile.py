@@ -2821,7 +2821,8 @@ def _html_edit_profile_options(is_admin: bool,
                                hide_follows: bool,
                                premium: bool,
                                no_reply_boosts: bool,
-                               no_seen_posts: bool) -> str:
+                               no_seen_posts: bool,
+                               watermark_enabled: bool) -> str:
     """option checkboxes section of edit profile screen
     """
     edit_profile_form = '    <div class="container">\n'
@@ -2914,6 +2915,10 @@ def _html_edit_profile_options(is_admin: bool,
     no_seen_posts_str = translate["Don't show already seen posts"]
     edit_profile_form += \
         edit_check_box(no_seen_posts_str, 'noSeenPosts', no_seen_posts)
+
+    watermark_str = translate["Apply a watermark to uploaded images"]
+    edit_profile_form += \
+        edit_check_box(watermark_str, 'watermarkEnabled', watermark_enabled)
 
     edit_profile_form += '    </div>\n'
     return edit_profile_form
@@ -3342,6 +3347,12 @@ def html_edit_profile(server, translate: {},
     if os.path.isfile(no_seen_posts_filename):
         no_seen_posts = True
 
+    # is watermarking enabled?
+    watermark_enabled_filename = account_dir + '/.watermarkEnabled'
+    watermark_enabled = False
+    if os.path.isfile(watermark_enabled_filename):
+        watermark_enabled = True
+
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
@@ -3356,7 +3367,7 @@ def html_edit_profile(server, translate: {},
                                    show_vote_posts, show_replies_followers,
                                    show_replies_mutuals, hide_follows,
                                    premium, no_reply_boosts,
-                                   no_seen_posts)
+                                   no_seen_posts, watermark_enabled)
 
     # Contact information
     edit_profile_form += \

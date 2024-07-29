@@ -695,5 +695,6 @@
     "Press Enter to continue": "按 Enter 继续",
     "PGP Public Key": "PGP 公钥",
     "Don't show already seen posts": "不显示已经看过的帖子",
-    "Watermark image": "水印图像"
+    "Watermark image": "水印图像",
+    "Apply a watermark to uploaded images": "将水印应用于上传的图像"
 }

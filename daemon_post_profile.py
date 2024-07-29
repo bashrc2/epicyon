@@ -868,6 +868,36 @@ def _profile_post_no_seen_posts(base_dir: str, nickname: str, domain: str,
                       no_seen_posts_filename)
 
 
+def _profile_post_watermark_enabled(base_dir: str,
+                                    nickname: str, domain: str,
+                                    fields: {}) -> bool:
+    """ HTTP POST apply watermark to image attachments
+    """
+    watermark_enabled_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.watermarkEnabled'
+    watermark_enabled = False
+    if fields.get('watermarkEnabled'):
+        if fields['watermarkEnabled'] == 'on':
+            watermark_enabled = True
+    if watermark_enabled:
+        if not os.path.isfile(watermark_enabled_filename):
+            try:
+                with open(watermark_enabled_filename, 'w+',
+                          encoding='utf-8') as fp_wm:
+                    fp_wm.write('\n')
+            except OSError:
+                print('EX: unable to write watermarkEnabled ' +
+                      watermark_enabled_filename)
+    if not watermark_enabled:
+        if os.path.isfile(watermark_enabled_filename):
+            try:
+                os.remove(watermark_enabled_filename)
+            except OSError:
+                print('EX: _profile_edit ' +
+                      'unable to delete ' +
+                      watermark_enabled_filename)
+
+
 def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
                                actor_json: {}, fields: {}, self,
                                actor_changed: bool,
@@ -3023,6 +3053,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                               fields)
                 _profile_post_no_seen_posts(base_dir, nickname, domain,
                                             fields)
+                _profile_post_watermark_enabled(base_dir, nickname, domain,
+                                                fields)
 
                 notify_likes_filename = \
                     acct_dir(base_dir, nickname, domain) + '/.notifyLikes'

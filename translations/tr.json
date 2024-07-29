@@ -695,5 +695,6 @@
     "Press Enter to continue": "Devam etmek için Enter'a basın",
     "PGP Public Key": "PGP Genel Anahtarı",
     "Don't show already seen posts": "Daha önce görülen gönderileri gösterme",
-    "Watermark image": "Filigran resmi"
+    "Watermark image": "Filigran resmi",
+    "Apply a watermark to uploaded images": "Yüklenen görsellere filigran uygulayın"
 }

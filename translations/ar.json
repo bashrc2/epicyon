@@ -695,5 +695,6 @@
     "Press Enter to continue": "إضغط مفتاح الدخول للاستمرار",
     "PGP Public Key": "مفتاح PGP العام",
     "Don't show already seen posts": "لا تظهر المشاركات التي تمت مشاهدتها بالفعل",
-    "Watermark image": "صورة العلامة المائية"
+    "Watermark image": "صورة العلامة المائية",
+    "Apply a watermark to uploaded images": "إضافة علامة مائية على الصور التي تم تحميلها"
 }

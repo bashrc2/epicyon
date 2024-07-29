@@ -695,5 +695,6 @@
     "Press Enter to continue": "Presione Entrar para continuar",
     "PGP Public Key": "Clave pública PGP",
     "Don't show already seen posts": "No mostrar publicaciones ya vistas",
-    "Watermark image": "Imagen de marca de agua"
+    "Watermark image": "Imagen de marca de agua",
+    "Apply a watermark to uploaded images": "Aplicar una marca de agua a las imágenes cargadas"
 }

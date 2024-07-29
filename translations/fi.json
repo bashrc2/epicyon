@@ -695,5 +695,6 @@
     "Press Enter to continue": "Jatka painamalla Enter",
     "PGP Public Key": "PGP julkinen avain",
     "Don't show already seen posts": "Älä näytä jo nähtyjä viestejä",
-    "Watermark image": "Vesileiman kuva"
+    "Watermark image": "Vesileiman kuva",
+    "Apply a watermark to uploaded images": "Lisää ladattuihin kuviin vesileima"
 }

@@ -695,5 +695,6 @@
     "Press Enter to continue": "Premeu Intro per continuar",
     "PGP Public Key": "Clau pública PGP",
     "Don't show already seen posts": "No mostris les publicacions ja vistes",
-    "Watermark image": "Imatge de filigrana"
+    "Watermark image": "Imatge de filigrana",
+    "Apply a watermark to uploaded images": "Apliqueu una marca d'aigua a les imatges penjades"
 }

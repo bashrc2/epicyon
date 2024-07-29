@@ -691,5 +691,6 @@
     "Press Enter to continue": "Press Enter to continue",
     "PGP Public Key": "PGP Public Key",
     "Don't show already seen posts": "Don't show already seen posts",
-    "Watermark image": "Watermark image"
+    "Watermark image": "Watermark image",
+    "Apply a watermark to uploaded images": "Apply a watermark to uploaded images"
 }

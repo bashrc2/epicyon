@@ -695,5 +695,6 @@
     "Press Enter to continue": "Premere Invio per continuare",
     "PGP Public Key": "Chiave pubblica PGP",
     "Don't show already seen posts": "Non mostrare i post già visti",
-    "Watermark image": "Immagine filigrana"
+    "Watermark image": "Immagine filigrana",
+    "Apply a watermark to uploaded images": "Applicare una filigrana alle immagini caricate"
 }

@@ -695,5 +695,6 @@
     "Press Enter to continue": "برای ادامه Enter را فشار دهید",
     "PGP Public Key": "کلید عمومی PGP",
     "Don't show already seen posts": "پست های قبلا دیده شده را نشان ندهید",
-    "Watermark image": "تصویر واترمارک"
+    "Watermark image": "تصویر واترمارک",
+    "Apply a watermark to uploaded images": "اعمال واترمارک روی تصاویر آپلود شده"
 }

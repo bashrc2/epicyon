@@ -695,5 +695,6 @@
     "Press Enter to continue": "Нажмите Enter, чтобы продолжить",
     "PGP Public Key": "Открытый ключ PGP",
     "Don't show already seen posts": "Не показывать уже просмотренные публикации",
-    "Watermark image": "Изображение водяного знака"
+    "Watermark image": "Изображение водяного знака",
+    "Apply a watermark to uploaded images": "Накладывать водяной знак на загружаемые изображения"
 }

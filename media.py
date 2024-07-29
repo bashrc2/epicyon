@@ -774,7 +774,16 @@ def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
         return False
     if not os.path.isfile('/usr/bin/composite'):
         return False
+    watermark_enabled_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.watermarkEnabled'
+    if not os.path.isfile(watermark_enabled_filename):
+        return False
     _, watermark_filename = get_watermark_file(base_dir, nickname, domain)
+    if not watermark_filename:
+        # does a default watermark filename exist?
+        default_watermark_file = base_dir + '/manual/manual-watermark-ai.png'
+        if os.path.isfile(default_watermark_file):
+            watermark_filename = default_watermark_file
     if not watermark_filename:
         return False
     if not os.path.isfile(watermark_filename):
