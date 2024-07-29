@@ -109,7 +109,7 @@ def daemon_http_post(self) -> None:
     # php
     if 'index.php' in self.path:
         print('POST HTTP Attempt to access PHP file ' + self.path)
-        http_404(self)
+        http_404(self, 146)
         return
 
     calling_domain = self.server.domain_full

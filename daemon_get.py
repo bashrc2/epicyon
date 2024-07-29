@@ -272,7 +272,7 @@ def daemon_http_get(self) -> None:
     # php
     if 'index.php' in self.path:
         print('GET HTTP Attempt to access PHP file ' + self.path)
-        http_404(self)
+        http_404(self, 145)
         return
 
     if contains_invalid_chars(str(self.headers)):
