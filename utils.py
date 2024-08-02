@@ -5062,13 +5062,11 @@ def license_link_from_name(license_name: str) -> str:
     if '://' in license_name:
         return license_name
     value_upper = license_name.upper()
-    if 'CC-BY-SA-NC' in value_upper or \
-       'CC-BY-NC-SA' in value_upper or \
-       'CC BY SA NC' in value_upper or \
-       'CC BY NC SA' in value_upper:
+    cc_strings1 = ('CC-BY-SA-NC', 'CC-BY-NC-SA', 'CC BY SA NC', 'CC BY NC SA')
+    cc_strings2 = ('CC-BY-SA', 'CC-SA-BY', 'CC BY SA', 'CC SA BY')
+    if string_contains(value_upper, cc_strings1):
         value = 'https://creativecommons.org/licenses/by-nc-sa/4.0'
-    elif 'CC-BY-SA' in value_upper or 'CC-SA-BY' in value_upper or \
-         'CC BY SA' in value_upper or 'CC SA BY' in value_upper:
+    elif string_contains(value_upper, cc_strings2):
         value = 'https://creativecommons.org/licenses/by-sa/4.0'
     elif 'CC-BY-NC' in value_upper or 'CC BY NC' in value_upper:
         value = 'https://creativecommons.org/licenses/by-nc/4.0'
