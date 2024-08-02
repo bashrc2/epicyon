@@ -15,6 +15,7 @@ from utils import get_config_param
 from utils import escape_text
 from utils import date_utcnow
 from utils import date_epoch
+from utils import string_contains
 from categories import get_hashtag_categories
 from categories import get_hashtag_category
 from webapp_utils import set_custom_background
@@ -118,10 +119,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
             if len(hash_tag_name) > max_tag_length:
                 # NoIncrediblyLongAndBoringHashtagsShownHere
                 continue
-            if '#' in hash_tag_name or \
-               '&' in hash_tag_name or \
-               '"' in hash_tag_name or \
-               "'" in hash_tag_name:
+            if string_contains(hash_tag_name, ['#', '&', '"', "'"]):
                 continue
             if '#' + hash_tag_name + '\n' in blocked_str:
                 continue
