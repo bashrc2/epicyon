@@ -2171,8 +2171,8 @@ def reject_twitter_summary(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(remove_twitter):
         return False
     summary_lower = summary.lower()
-    if 'twitter' in summary_lower or \
-       'birdsite' in summary_lower:
+    twitter_strings = ('twitter', '/x.com', ' x.com', 'birdsite')
+    if string_contains(summary_lower, twitter_strings):
         return True
     return False
 
