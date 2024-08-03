@@ -5510,13 +5510,13 @@ def check_bad_path(path: str):
     """for http GET or POST check that the path looks valid
     """
     path_lower = path.lower()
+    bad_strings = ('..', '/.', '%2e%2e', '%252e%252e')
 
     # allow /.well-known/...
     if '/.' in path_lower and \
        path_lower.startswith('/.well-known/'):
-        return False
+        bad_strings = ('..', '%2e%2e', '%252e%252e')
 
-    bad_strings = ('..', '/.', '%2e%2e', '%252e%252e')
     if string_contains(path_lower, bad_strings):
         print('WARN: bad path ' + path)
         return True
