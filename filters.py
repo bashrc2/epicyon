@@ -114,7 +114,7 @@ def _is_twitter_post(content: str) -> bool:
     """
     features = (
         '/x.com', '/twitter.', '/nitter.',
-        '@twitter.', '@nitter.','@x.com',
+        '@twitter.', '@nitter.', '@x.com',
         '>RT <', '_tw<', '_tw@', 'tweet', 'Tweet', '🐦🔗'
     )
     for feat in features:
