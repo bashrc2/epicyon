@@ -5508,9 +5508,8 @@ def check_bad_path(path: str):
     """for http GET or POST check that the path looks valid
     """
     path_lower = path.lower()
-    if '..' in path_lower or \
-       '%2e%2e' in path_lower or \
-       '%252e%252e' in path_lower:
+    bad_strings = ('..', '/.', '%2e%2e', '%252e%252e')
+    if string_contains(path_lower, bad_strings):
         print('WARN: bad path ' + path)
         return True
     return False
