@@ -5604,10 +5604,11 @@ def get_image_file(base_dir: str, name: str, directory: str,
     for ext in banner_extensions:
         banner_file_test = im_name + '.' + ext
         banner_filename_test = directory + '/' + banner_file_test
-        if os.path.isfile(banner_filename_test):
-            banner_file = banner_file_test
-            banner_filename = banner_filename_test
-            return banner_file, banner_filename
+        if not os.path.isfile(banner_filename_test):
+            continue
+        banner_file = banner_file_test
+        banner_filename = banner_filename_test
+        return banner_file, banner_filename
     # if not found then use the default image
     curr_theme = 'default'
     if theme:
@@ -5616,10 +5617,11 @@ def get_image_file(base_dir: str, name: str, directory: str,
     for ext in banner_extensions:
         banner_file_test = name + '.' + ext
         banner_filename_test = directory + '/' + banner_file_test
-        if os.path.isfile(banner_filename_test):
-            banner_file = name + '_' + curr_theme + '.' + ext
-            banner_filename = banner_filename_test
-            break
+        if not os.path.isfile(banner_filename_test):
+            continue
+        banner_file = name + '_' + curr_theme + '.' + ext
+        banner_filename = banner_filename_test
+        break
     return banner_file, banner_filename
 
 
