@@ -3562,14 +3562,16 @@ def undo_announce_collection_entry(recent_posts_cache: {},
         total_items = post_json_object['object']['shares']['totalItems']
     item_found = False
     for announce_item in post_json_object['object']['shares']['items']:
-        if announce_item.get('actor'):
-            if announce_item['actor'] == actor:
-                if debug:
-                    print('DEBUG: Announce was removed for ' + actor)
-                an_it = announce_item
-                post_json_object['object']['shares']['items'].remove(an_it)
-                item_found = True
-                break
+        if not announce_item.get('actor'):
+            continue
+        if announce_item['actor'] != actor:
+            continue
+        if debug:
+            print('DEBUG: Announce was removed for ' + actor)
+        an_it = announce_item
+        post_json_object['object']['shares']['items'].remove(an_it)
+        item_found = True
+        break
     if not item_found:
         return
     if total_items == 1:
