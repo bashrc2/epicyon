@@ -1895,11 +1895,12 @@ def get_nickname_from_actor(actor: str) -> str:
         actor = actor[1:]
     users_paths = get_user_paths()
     for possible_path in users_paths:
-        if possible_path in actor:
-            nick_str = actor.split(possible_path)[1].replace('@', '')
-            if '/' not in nick_str:
-                return nick_str
-            return nick_str.split('/')[0]
+        if possible_path not in actor:
+            continue
+        nick_str = actor.split(possible_path)[1].replace('@', '')
+        if '/' not in nick_str:
+            return nick_str
+        return nick_str.split('/')[0]
     if '/@/' not in actor:
         if '/@' in actor:
             # https://domain/@nick
@@ -1951,11 +1952,12 @@ def get_domain_from_actor(actor: str) -> (str, int):
     prefixes = get_protocol_prefixes()
     users_paths = get_user_paths()
     for possible_path in users_paths:
-        if possible_path in actor:
-            domain = actor.split(possible_path)[0]
-            for prefix in prefixes:
-                domain = domain.replace(prefix, '')
-            break
+        if possible_path not in actor:
+            continue
+        domain = actor.split(possible_path)[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+        break
     if '/@' in actor and '/@/' not in actor:
         domain = actor.split('/@')[0]
         for prefix in prefixes:
@@ -2480,10 +2482,11 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
                 reply_file = locate_post(base_dir, nickname, domain, reply_id)
                 if not reply_file:
                     continue
-                if os.path.isfile(reply_file):
-                    delete_post(base_dir, http_prefix,
-                                nickname, domain, reply_file, debug,
-                                recent_posts_cache, manual)
+                if not os.path.isfile(reply_file):
+                    continue
+                delete_post(base_dir, http_prefix,
+                            nickname, domain, reply_file, debug,
+                            recent_posts_cache, manual)
     except OSError:
         print('EX: _delete_post_remove_replies unable to read ' +
               replies_filename)
@@ -3425,13 +3428,15 @@ def undo_likes_collection_entry(recent_posts_cache: {},
         total_items = obj['likes']['totalItems']
     item_found = False
     for like_item in obj['likes']['items']:
-        if like_item.get('actor'):
-            if like_item['actor'] == actor:
-                if debug:
-                    print('DEBUG: like was removed for ' + actor)
-                obj['likes']['items'].remove(like_item)
-                item_found = True
-                break
+        if not like_item.get('actor'):
+            continue
+        if like_item['actor'] != actor:
+            continue
+        if debug:
+            print('DEBUG: like was removed for ' + actor)
+        obj['likes']['items'].remove(like_item)
+        item_found = True
+        break
     if not item_found:
         return
     if total_items == 1:
