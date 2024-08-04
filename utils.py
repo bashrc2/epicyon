@@ -3492,14 +3492,15 @@ def undo_reaction_collection_entry(recent_posts_cache: {},
         total_items = obj['reactions']['totalItems']
     item_found = False
     for like_item in obj['reactions']['items']:
-        if like_item.get('actor'):
-            if like_item['actor'] == actor and \
-               like_item['content'] == emoji_content:
-                if debug:
-                    print('DEBUG: emoji reaction was removed for ' + actor)
-                obj['reactions']['items'].remove(like_item)
-                item_found = True
-                break
+        if not like_item.get('actor'):
+            continue
+        if like_item['actor'] == actor and \
+           like_item['content'] == emoji_content:
+            if debug:
+                print('DEBUG: emoji reaction was removed for ' + actor)
+            obj['reactions']['items'].remove(like_item)
+            item_found = True
+            break
     if not item_found:
         return
     if total_items == 1:
