@@ -508,18 +508,20 @@ def get_language_from_post(post_json_object: {}, system_language: str,
     if not this_post_json.get(content_type):
         return system_language
     map_dict = content_type + 'Map'
-    if this_post_json.get(map_dict):
-        if isinstance(this_post_json[map_dict], dict):
-            if this_post_json[map_dict].get(system_language):
-                sys_lang = this_post_json[map_dict][system_language]
-                if isinstance(sys_lang, str):
-                    return system_language
-            else:
-                # is there a contentMap/summaryMap entry for one of
-                # the understood languages?
-                for lang in languages_understood:
-                    if this_post_json[map_dict].get(lang):
-                        return lang
+    if not this_post_json.get(map_dict):
+        return system_language
+    if not isinstance(this_post_json[map_dict], dict):
+        return system_language
+    if this_post_json[map_dict].get(system_language):
+        sys_lang = this_post_json[map_dict][system_language]
+        if isinstance(sys_lang, str):
+            return system_language
+    else:
+        # is there a contentMap/summaryMap entry for one of
+        # the understood languages?
+        for lang in languages_understood:
+            if this_post_json[map_dict].get(lang):
+                return lang
     return system_language
 
 
@@ -4250,15 +4252,20 @@ def is_group_actor(base_dir: str, actor: str, person_cache: {},
                    debug: bool = False) -> bool:
     """Is the given actor a group?
     """
+    person_cache_actor = None
     if person_cache:
         if person_cache.get(actor):
             if person_cache[actor].get('actor'):
-                if person_cache[actor]['actor'].get('type'):
-                    if person_cache[actor]['actor']['type'] == 'Group':
-                        if debug:
-                            print('Cached actor ' + actor + ' has Group type')
-                        return True
-                return False
+                person_cache_actor = person_cache[actor]['actor']
+
+    if person_cache_actor:
+        if person_cache_actor.get('type'):
+            if person_cache_actor['type'] == 'Group':
+                if debug:
+                    print('Cached actor ' + actor + ' has Group type')
+                return True
+        return False
+
     if debug:
         print('Actor ' + actor + ' not in cache')
     cached_actor_filename = \
@@ -4984,11 +4991,12 @@ def get_quote_toot_url(post_json_object: str) -> str:
     object_quote_url_fields = ('quoteUri', 'quoteUrl', 'quoteReply',
                                'toot:quoteReply', '_misskey_quote')
     for fieldname in object_quote_url_fields:
-        if post_json_object['object'].get(fieldname):
-            quote_url = post_json_object['object'][fieldname]
-            if isinstance(quote_url, str):
-                if resembles_url(quote_url):
-                    return remove_html(quote_url)
+        if not post_json_object['object'].get(fieldname):
+            continue
+        quote_url = post_json_object['object'][fieldname]
+        if isinstance(quote_url, str):
+            if resembles_url(quote_url):
+                return remove_html(quote_url)
 
     # More correct ActivityPub implementation - adding a Link tag
     if not post_json_object['object'].get('tag'):
