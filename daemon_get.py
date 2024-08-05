@@ -263,6 +263,10 @@ def daemon_http_get(self) -> None:
         http_402(self)
         return
 
+    # replace invalid .well-known path, prior to checking for suspicious paths
+    if self.path.startswith('/users/.well-known/'):
+        self.path = self.path.replace('/users/.well-known/', '/.well-known/')
+
     # suspicious headers
     if contains_suspicious_headers(self.headers):
         print('GET HTTP suspicious headers ' + str(self.headers))
