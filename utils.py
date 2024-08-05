@@ -4991,43 +4991,46 @@ def get_quote_toot_url(post_json_object: str) -> str:
                     return remove_html(quote_url)
 
     # More correct ActivityPub implementation - adding a Link tag
-    if post_json_object['object'].get('tag'):
-        if isinstance(post_json_object['object']['tag'], list):
-            for item in post_json_object['object']['tag']:
-                if not isinstance(item, dict):
-                    continue
-                if item.get('rel'):
-                    mk_quote = False
-                    if isinstance(item['rel'], list):
-                        for rel_str in item['rel']:
-                            if not isinstance(rel_str, str):
-                                continue
-                            if '_misskey_quote' in rel_str:
-                                mk_quote = True
-                    elif isinstance(item['rel'], str):
-                        if '_misskey_quote' in item['rel']:
-                            mk_quote = True
-                    if mk_quote:
-                        if item.get('href'):
-                            if isinstance(item['href'], str):
-                                if resembles_url(item['href']):
-                                    return remove_html(item['href'])
-                if not item.get('type'):
-                    continue
-                if not item.get('mediaType'):
-                    continue
-                if not isinstance(item['type'], str):
-                    continue
-                if item['type'] != 'Link':
-                    continue
-                if not isinstance(item['mediaType'], str):
-                    continue
-                if 'json' not in item['mediaType']:
-                    continue
-                if item.get('href'):
-                    if isinstance(item['href'], str):
-                        if resembles_url(item['href']):
-                            return remove_html(item['href'])
+    if not post_json_object['object'].get('tag'):
+        return ''
+
+    if not isinstance(post_json_object['object']['tag'], list):
+        return ''
+
+    for item in post_json_object['object']['tag']:
+        if not isinstance(item, dict):
+            continue
+        if item.get('rel'):
+            mk_quote = False
+            if isinstance(item['rel'], list):
+                for rel_str in item['rel']:
+                    if not isinstance(rel_str, str):
+                        continue
+                    if '_misskey_quote' in rel_str:
+                        mk_quote = True
+            elif isinstance(item['rel'], str):
+                if '_misskey_quote' in item['rel']:
+                    mk_quote = True
+            if mk_quote and item.get('href'):
+                if isinstance(item['href'], str):
+                    if resembles_url(item['href']):
+                        return remove_html(item['href'])
+        if not item.get('type'):
+            continue
+        if not item.get('mediaType'):
+            continue
+        if not isinstance(item['type'], str):
+            continue
+        if item['type'] != 'Link':
+            continue
+        if not isinstance(item['mediaType'], str):
+            continue
+        if 'json' not in item['mediaType']:
+            continue
+        if item.get('href'):
+            if isinstance(item['href'], str):
+                if resembles_url(item['href']):
+                    return remove_html(item['href'])
     return ''
 
 
