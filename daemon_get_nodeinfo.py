@@ -40,10 +40,15 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
                  registration: bool, domain: str,
                  instance_description_short: str,
                  instance_description: str) -> bool:
+    """Supports nodeinfo version 2.x
+    """
     if path.startswith('/nodeinfo/1.0'):
         http_400(self)
         return True
-    if not path.startswith('/nodeinfo/2.'):
+    if not path.startswith('/nodeinfo/2.') and \
+       not path.startswith('/.well-known/host-meta') and \
+       not path.startswith('/.well-known/nodeinfo') and \
+       not path.startswith('/.well-known/x-nodeinfo'):
         return False
     if not referer_domain:
         if not debug and not unit_test:
