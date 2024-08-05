@@ -5535,9 +5535,10 @@ def check_bad_path(path: str):
     bad_strings = ('..', '/.', '%2e%2e', '%252e%252e')
 
     # allow /.well-known/...
-    if '/.' in path_lower and \
-       path_lower.startswith('/.well-known/'):
-        bad_strings = ('..', '%2e%2e', '%252e%252e')
+    if '/.' in path_lower:
+        if path_lower.startswith('/.well-known/') or \
+           path_lower.startswith('/users/.well-known/'):
+            bad_strings = ('..', '%2e%2e', '%252e%252e')
 
     if string_contains(path_lower, bad_strings):
         print('WARN: bad path ' + path)
