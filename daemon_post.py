@@ -11,6 +11,7 @@ import time
 import errno
 import json
 from socket import error as SocketError
+from utils import replace_strings
 from utils import corp_servers
 from utils import string_ends_with
 from utils import get_config_param
@@ -204,12 +205,15 @@ def daemon_http_post(self) -> None:
 
     # remove any trailing slashes from the path
     if not self.path.endswith('confirm'):
-        self.path = self.path.replace('/outbox/', '/outbox')
-        self.path = self.path.replace('/tlblogs/', '/tlblogs')
-        self.path = self.path.replace('/inbox/', '/inbox')
-        self.path = self.path.replace('/shares/', '/shares')
-        self.path = self.path.replace('/wanted/', '/wanted')
-        self.path = self.path.replace('/sharedInbox/', '/sharedInbox')
+        replacements = {
+            '/outbox/': '/outbox',
+            '/tlblogs/': '/tlblogs',
+            '/inbox/': '/inbox',
+            '/shares/': '/shares',
+            '/wanted/': '/wanted',
+            '/sharedInbox/': '/sharedInbox'
+        }
+        self.path = replace_strings(self.path, replacements)
 
     if self.path == '/inbox':
         if not self.server.enable_shared_inbox:

@@ -23,6 +23,7 @@ from session import post_json
 from session import post_image
 from session import create_session
 from session import get_json_valid
+from utils import replace_strings
 from utils import data_dir
 from utils import resembles_url
 from utils import date_utcnow
@@ -125,10 +126,16 @@ def _get_valid_shared_item_id(actor: str, display_name: str) -> str:
     remove_chars2 = ('+', '/', '\\', '?', '&')
     for char in remove_chars2:
         display_name = display_name.replace(char, '-')
-    display_name = display_name.replace('.', '_')
-    display_name = display_name.replace("’", "'")
-    actor = actor.replace('://', '___')
-    actor = actor.replace('/', '--')
+    replacements = {
+        '.': '_',
+        "’": "'"
+    }
+    display_name = replace_strings(display_name, replacements)
+    replacements2 = {
+        '://': '___',
+        '/': '--'
+    }
+    actor = replace_strings(actor, replacements2)
     return actor + '--shareditems--' + display_name
 
 
@@ -227,8 +234,11 @@ def _getshare_dfc_id(base_dir: str, system_language: str,
     matched_product_type = \
         _dfc_product_type_from_category(base_dir, item_category, translate)
     if not matched_product_type:
-        item_type = item_type.replace(' ', '_')
-        item_type = item_type.replace('.', '')
+        replacements = {
+            ' ': '_',
+            '.': ''
+        }
+        item_type = replace_strings(item_type, replacements)
         return 'epicyon#' + item_type
     if not dfc_ids:
         dfc_ids = _load_dfc_ids(base_dir, system_language,

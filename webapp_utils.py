@@ -12,6 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
+from utils import replace_strings
 from utils import get_image_file
 from utils import data_dir
 from utils import string_contains
@@ -159,10 +160,13 @@ def csv_following_list(following_filename: str,
                                      following_address)
                 if person_notes:
                     # make notes suitable for csv file
-                    person_notes = person_notes.replace(',', ' ')
-                    person_notes = person_notes.replace('"', "'")
-                    person_notes = person_notes.replace('\n', '<br>')
-                    person_notes = person_notes.replace('  ', ' ')
+                    replacements = {
+                        ',': ' ',
+                        '"': "'",
+                        '\n': '<br>',
+                        '  ': ' '
+                    }
+                    person_notes = replace_strings(person_notes, replacements)
                 if not following_list_csv:
                     following_list_csv = \
                         'Account address,Show boosts,' + \
@@ -538,8 +542,12 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                         if '--shareditems--' not in item_id:
                             continue
                         share_actor = item_id.split('--shareditems--')[0]
-                        share_actor = share_actor.replace('___', '://')
-                        share_actor = share_actor.replace('--', '/')
+                        replacements = {
+                            '___': '://',
+                            '--': '/'
+                        }
+                        share_actor = \
+                            replace_strings(share_actor, replacements)
                         share_nickname = get_nickname_from_actor(share_actor)
                         if not share_nickname:
                             continue
@@ -1092,14 +1100,18 @@ def add_emoji_to_display_name(session, base_dir: str, http_prefix: str,
     if ':' not in display_name:
         return display_name
 
-    display_name = display_name.replace('<p>', '').replace('</p>', '')
+    replacements = {
+        '<p>': '',
+        '</p>': ''
+    }
+    display_name = replace_strings(display_name, replacements)
     emoji_tags = {}
 #    print('TAG: display_name before tags: ' + display_name)
     display_name = \
         add_html_tags(base_dir, http_prefix,
                       nickname, domain, display_name, [],
                       emoji_tags, translate)
-    display_name = display_name.replace('<p>', '').replace('</p>', '')
+    display_name = replace_strings(display_name, replacements)
 #    print('TAG: display_name after tags: ' + display_name)
     # convert the emoji dictionary to a list
     emoji_tags_list = []
@@ -2007,7 +2019,11 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
     """
     shares_json = None
 
-    share_url = item_id.replace('___', '://').replace('--', '/')
+    replacements = {
+        '___': '://',
+        '--': '/'
+    }
+    share_url = replace_strings(item_id, replacements)
     contact_nickname = get_nickname_from_actor(share_url)
     if not contact_nickname:
         return None

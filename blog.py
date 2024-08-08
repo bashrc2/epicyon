@@ -16,6 +16,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
+from utils import replace_strings
 from utils import data_dir
 from utils import remove_link_tracking
 from utils import get_url_from_post
@@ -164,8 +165,11 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
         replies_str = ''
         for reply_post_id in lines:
             reply_post_id = remove_eol(reply_post_id)
-            reply_post_id = reply_post_id.replace('.json', '')
-            reply_post_id = reply_post_id.replace('.replies', '')
+            replacements = {
+                '.json': '',
+                '.replies': ''
+            }
+            reply_post_id = replace_strings(reply_post_id, replacements)
             post_filename = acct_dir(base_dir, nickname, domain) + \
                 '/postcache/' + \
                 reply_post_id.replace('/', '#') + '.html'
@@ -438,10 +442,13 @@ def _html_blog_remove_cw_button(blog_str: str, translate: {}) -> str:
     """Removes the CW button from blog posts, where the
     summary field is instead used as the blog title
     """
-    blog_str = blog_str.replace('<details>', '<b>')
-    blog_str = blog_str.replace('</details>', '</b>')
-    blog_str = blog_str.replace('<summary>', '')
-    blog_str = blog_str.replace('</summary>', '')
+    replacements = {
+        '<details>': '<b>',
+        '</details>': '</b>',
+        '<summary>': '',
+        '</summary>': ''
+    }
+    blog_str = replace_strings(blog_str, replacements)
     blog_str = blog_str.replace(translate['SHOW MORE'], '')
     return blog_str
 

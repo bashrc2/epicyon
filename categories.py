@@ -12,6 +12,7 @@ import datetime
 from utils import data_dir
 from utils import date_utcnow
 from utils import date_epoch
+from utils import replace_strings
 
 MAX_TAG_LENGTH = 42
 
@@ -51,6 +52,14 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
     if translate.get(category_str):
         category_str = translate[category_str]
 
+    replacements = {
+        ' & ': ' and ',
+        '/': ''
+    }
+    replacements2 = {
+        '-': '',
+        ' ': ''
+    }
     for _, _, files in os.walk(base_dir + '/data/cities'):
         for cities_file in files:
             if not cities_file.endswith('.txt'):
@@ -68,10 +77,9 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
                 continue
             for hashtag in cities:
                 hashtag = hashtag.lower().strip()
-                hashtag = hashtag.replace(' & ', ' and ')
-                hashtag = hashtag.replace('/', '')
+                hashtag = replace_strings(hashtag, replacements)
 
-                hashtag2 = hashtag.replace('-', '').replace(' ', '')
+                hashtag2 = replace_strings(hashtag, replacements2)
                 city_filename = base_dir + '/tags/' + hashtag2 + '.category'
                 if not os.path.isfile(city_filename):
                     try:

@@ -12,6 +12,7 @@ from uuid import UUID
 from hashlib import md5
 from datetime import datetime
 from datetime import timedelta
+from utils import replace_strings
 from utils import date_from_numbers
 from utils import date_from_string_format
 from utils import acct_handle_dir
@@ -405,9 +406,13 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
 def _ical_date_string(date_str: str) -> str:
     """Returns an icalendar formatted date
     """
-    date_str = date_str.replace('-', '')
-    date_str = date_str.replace(':', '')
-    return date_str.replace(' ', '')
+    replacements = {
+        '-': '',
+        ':': '',
+        ' ': ''
+    }
+    date_str = replace_strings(date_str, replacements)
+    return date_str
 
 
 def _dav_encode_token(year: int, month_number: int,

@@ -34,6 +34,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from utils import replace_strings
 from utils import valid_content_warning
 from utils import get_actor_from_post_id
 from utils import string_contains
@@ -4684,8 +4685,11 @@ def _create_box_items(base_dir: str,
     # Why are url's hashed? Since storage is in the filesystem this avoids
     # confusion with directories by not using the / character
     if first_post_id:
-        first_post_id = first_post_id.replace('--', '#')
-        first_post_id = first_post_id.replace('/', '#')
+        replacements = {
+            '--': '#',
+            '/': '#'
+        }
+        first_post_id = replace_strings(first_post_id, replacements)
 
     try:
         with open(index_filename, 'r', encoding='utf-8') as fp_index:

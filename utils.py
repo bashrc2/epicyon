@@ -458,16 +458,18 @@ def get_content_from_post(post_json_object: {}, system_language: str,
        not has_contentmap_dict:
         return ''
     content = ''
+    replacements = {
+        '&amp;': '&',
+        '<u>': '',
+        '</u>': ''
+    }
     if has_contentmap_dict:
         if this_post_json[map_dict].get(system_language):
             sys_lang = this_post_json[map_dict][system_language]
             if isinstance(sys_lang, str):
                 content = sys_lang
                 content = remove_markup_tag(content, 'pre')
-                content = content.replace('&amp;', '&')
-                # remove underlines
-                content = content.replace('<u>', '')
-                content = content.replace('</u>', '')
+                content = replace_strings(content, replacements)
                 return standardize_text(content)
         else:
             # is there a contentMap/summaryMap entry for one of
@@ -480,18 +482,12 @@ def get_content_from_post(post_json_object: {}, system_language: str,
                     continue
                 content = map_lang
                 content = remove_markup_tag(content, 'pre')
-                content = content.replace('&amp;', '&')
-                # remove underlines
-                content = content.replace('<u>', '')
-                content = content.replace('</u>', '')
+                content = replace_strings(content, replacements)
                 return standardize_text(content)
     else:
         if isinstance(this_post_json[content_type], str):
             content = this_post_json[content_type]
-            content = content.replace('&amp;', '&')
-            # remove underlines
-            content = content.replace('<u>', '')
-            content = content.replace('</u>', '')
+            content = replace_strings(content, replacements)
             content = remove_markup_tag(content, 'pre')
     return standardize_text(content)
 
@@ -1010,9 +1006,14 @@ def remove_html(content: str) -> str:
     if '<' not in content:
         return content
     removing = False
-    content = content.replace('<a href', ' <a href')
-    content = content.replace('<q>', '"').replace('</q>', '"')
-    content = content.replace('</p>', '\n\n').replace('<br>', '\n')
+    replacements = {
+        '<a href': ' <a href',
+        '<q>': '"',
+        '</q>': '"',
+        '</p>': '\n\n',
+        '<br>': '\n'
+    }
+    content = replace_strings(content, replacements)
     result = ''
     for char in content:
         if char == '<':
@@ -5656,3 +5657,11 @@ def get_watermark_file(base_dir: str,
     watermark_file, watermark_filename = \
         get_image_file(base_dir, 'watermark_image', account_dir, '')
     return watermark_file, watermark_filename
+
+
+def replace_strings(text: str, replacements: {}) -> str:
+    """Does a series of string replacements
+    """
+    for orig_str, new_str in replacements.items():
+        text = text.replace(orig_str, new_str)
+    return text

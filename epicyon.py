@@ -74,6 +74,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import replace_strings
 from utils import set_accounts_data_dir
 from utils import data_dir
 from utils import data_dir_testing
@@ -2914,15 +2915,18 @@ def _command_options() -> None:
         if not person_url:
             person_url = get_user_url(wf_request, 0, argb.debug)
         if nickname == domain:
-            person_url = person_url.replace('/users/', '/actor/')
-            person_url = person_url.replace('/accounts/', '/actor/')
-            person_url = person_url.replace('/channel/', '/actor/')
-            person_url = person_url.replace('/profile/', '/actor/')
-            person_url = person_url.replace('/author/', '/actor/')
-            person_url = person_url.replace('/u/', '/actor/')
-            person_url = person_url.replace('/fediverse/blog/', '/actor/')
-            person_url = person_url.replace('/c/', '/actor/')
-            person_url = person_url.replace('/m/', '/actor/')
+            replacements = {
+                '/users/': '/actor/',
+                '/accounts/': '/actor/',
+                '/channel/': '/actor/',
+                '/profile/': '/actor/',
+                '/author/': '/actor/',
+                '/u/': '/actor/',
+                '/fediverse/blog/': '/actor/',
+                '/c/': '/actor/',
+                '/m/': '/actor/'
+            }
+            person_url = replace_strings(person_url, replacements)
         if not person_url:
             # try single user instance
             person_url = http_prefix + '://' + domain

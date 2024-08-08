@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import replace_strings
 from utils import get_post_attachments
 from utils import get_url_from_post
 from utils import get_actor_languages_list
@@ -1996,9 +1997,12 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                    command_str.startswith('direct message ') or \
                    command_str.startswith('post ') or \
                    command_str.startswith('send '):
-                    command_str = command_str.replace(' to ', ' ')
-                    command_str = command_str.replace(' dm ', ' ')
-                    command_str = command_str.replace(' DM ', ' ')
+                    replacements = {
+                        ' to ': ' ',
+                        ' dm ': ' ',
+                        ' DM ': ' '
+                    }
+                    command_str = replace_strings(command_str, replacements)
                     # direct message
                     to_handle = None
                     if command_str.startswith('post '):

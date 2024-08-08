@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from utils import replace_strings
 from utils import data_dir
 from utils import remove_link_tracking
 from utils import string_contains
@@ -143,13 +144,19 @@ def html_replace_email_quote(content: str) -> str:
     if '<p>&quot;' in content:
         if '&quot;</p>' in content:
             if content.count('<p>&quot;') == content.count('&quot;</p>'):
-                content = content.replace('<p>&quot;', '<p><blockquote>')
-                content = content.replace('&quot;</p>', '</blockquote></p>')
+                replacements = {
+                    '<p>&quot;': '<p><blockquote>',
+                    '&quot;</p>': '</blockquote></p>'
+                }
+                content = replace_strings(content, replacements)
     if '>\u201c' in content:
         if '\u201d<' in content:
             if content.count('>\u201c') == content.count('\u201d<'):
-                content = content.replace('>\u201c', '><blockquote>')
-                content = content.replace('\u201d<', '</blockquote><')
+                replacements = {
+                    '>\u201c': '><blockquote>',
+                    '\u201d<': '</blockquote><'
+                }
+                content = replace_strings(content, replacements)
     # replace email style quote
     if '>&gt; ' not in content:
         return content
@@ -161,8 +168,11 @@ def html_replace_email_quote(content: str) -> str:
             continue
         if '>&gt; ' not in line_str:
             if line_str.startswith('&gt; '):
-                line_str = line_str.replace('&gt; ', '<blockquote>')
-                line_str = line_str.replace('&gt;', '<br>')
+                replacements = {
+                    '&gt; ': '<blockquote>',
+                    '&gt;': '<br>'
+                }
+                line_str = replace_strings(line_str, replacements)
                 new_content += '<p>' + line_str + '</blockquote></p>'
             else:
                 new_content += '<p>' + line_str + '</p>'
@@ -1194,8 +1204,12 @@ def _get_simplified_content(content: str) -> str:
     """Returns a simplified version of the content suitable for
     splitting up into individual words
     """
-    content_simplified = \
-        content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
+    replacements = {
+        ',': ' ',
+        ';': ' ',
+        '- ': ' '
+    }
+    content_simplified = replace_strings(content, replacements)
     content_simplified = content_simplified.replace('. ', ' ').strip()
     if content_simplified.endswith('.'):
         content_simplified = content_simplified[:len(content_simplified)-1]
@@ -1338,8 +1352,11 @@ def add_html_tags(base_dir: str, http_prefix: str,
         content = html_replace_email_quote(content)
         return html_replace_quote_marks(content)
     max_word_length = 40
-    content = content.replace('\r', '')
-    content = content.replace('\n', ' --linebreak-- ')
+    replacements = {
+        '\r': '',
+        '\n': ' --linebreak-- '
+    }
+    content = replace_strings(content, replacements)
     now_playing_str = 'NowPlaying'
     if translate.get(now_playing_str):
         now_playing_str = translate[now_playing_str]
@@ -1712,15 +1729,18 @@ def combine_textarea_lines(text: str) -> str:
     result = ''
     ctr = 0
     paragraphs = text.split('\n\n')
+    replacements = {
+        '\n* ': '***BULLET POINT*** ',
+        '\n * ': '***BULLET POINT*** ',
+        '\n- ': '***DASH POINT*** ',
+        '\n - ': '***DASH POINT*** ',
+        '\n': ' ',
+        '  ': ' ',
+        '***BULLET POINT*** ': '\n* ',
+        '***DASH POINT*** ': '\n- '
+    }
     for para in paragraphs:
-        para = para.replace('\n* ', '***BULLET POINT*** ')
-        para = para.replace('\n * ', '***BULLET POINT*** ')
-        para = para.replace('\n- ', '***DASH POINT*** ')
-        para = para.replace('\n - ', '***DASH POINT*** ')
-        para = para.replace('\n', ' ')
-        para = para.replace('  ', ' ')
-        para = para.replace('***BULLET POINT*** ', '\n* ')
-        para = para.replace('***DASH POINT*** ', '\n- ')
+        para = replace_strings(para, replacements)
         if ctr > 0:
             result += '</p><p>'
         result += para
