@@ -9,6 +9,7 @@ __module_group__ = "Onboarding"
 
 import os
 from shutil import copyfile
+from utils import replace_strings
 from utils import data_dir
 from utils import remove_html
 from utils import load_json
@@ -118,8 +119,11 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
 
     bio_str = ''
     if actor_json.get('summary'):
-        bio_str = \
-            actor_json['summary'].replace('<p>', '').replace('</p>', '')
+        replacements = {
+            '<p>': '',
+            '</p>': ''
+        }
+        bio_str = replace_strings(actor_json['summary'], replacements)
     if not bio_str:
         bio_str = translate['Your bio']
     profile_form += '  <label class="labels">' + \

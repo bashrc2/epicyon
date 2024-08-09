@@ -1312,9 +1312,13 @@ def _desktop_show_box(indent: str,
     # say the post number range
     say_str = indent + box_name_str + ' page ' + str(page_number) + \
         ' containing ' + str(ctr - 1) + ' posts. '
-    say_str2 = say_str.replace('\33[3m', '').replace('\33[0m', '')
-    say_str2 = say_str2.replace('show dm', 'show DM')
-    say_str2 = say_str2.replace('dm post', 'Direct message post')
+    replacements = {
+        '\33[3m': '',
+        '\33[0m': '',
+        'show dm': 'show DM',
+        'dm post': 'Direct message post'
+    }
+    say_str2 = replace_strings(say_str, replacements)
     _say_command(say_str, say_str2, screenreader, system_language, espeak)
     print('')
     return True

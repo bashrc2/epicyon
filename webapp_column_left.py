@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
 import os
+from utils import replace_strings
 from utils import data_dir
 from utils import get_config_param
 from utils import get_nickname_from_actor
@@ -440,8 +441,14 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
     """
     if '/users/' not in path:
         return ''
-    path = path.replace('/inbox', '').replace('/outbox', '')
-    path = path.replace('/shares', '').replace('/wanted', '')
+
+    replacements = {
+        '/inbox': '',
+        '/outbox': '',
+        '/shares': '',
+        '/wanted': ''
+    }
+    path = replace_strings(path, replacements)
 
     nickname = get_nickname_from_actor(path)
     if not nickname:

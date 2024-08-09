@@ -55,6 +55,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from utils import replace_strings
 from utils import valid_content_warning
 from utils import data_dir
 from utils import data_dir_testing
@@ -5288,6 +5289,10 @@ def _test_checkbox_names():
     print('test_checkbox_names')
 
     fnames = ['edit_text_field', 'edit_check_box', 'edit_text_area']
+    replacements = {
+        '"': '',
+        "'": ''
+    }
     for _, _, files in os.walk('.'):
         for source_file in files:
             if not source_file.endswith('.py'):
@@ -5315,8 +5320,8 @@ def _test_checkbox_names():
                     if len(allparams_list) < 2:
                         continue
                     param_var_name = allparams_list[1].strip()
-                    param_var_name = param_var_name.replace('"', '')
-                    param_var_name = param_var_name.replace("'", '')
+                    param_var_name = \
+                        replace_strings(param_var_name, replacements)
                     if ' ' in param_var_name:
                         continue
                     if '/' in param_var_name:

@@ -10,6 +10,7 @@ __module_group__ = "Web Interface Columns"
 import os
 from content import remove_long_words
 from content import limit_repeated_words
+from utils import replace_strings
 from utils import data_dir
 from utils import get_image_extensions
 from utils import get_fav_filename_from_url
@@ -234,6 +235,14 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
     """
     separator_str = html_post_separator(base_dir, 'right')
     html_str = ''
+    replacements1 = {
+        'T': ' ',
+        'Z': ''
+    }
+    replacements2 = {
+        ' ': '__',
+        ':': 'aa'
+    }
     for date_str, item in newswire.items():
         item[0] = remove_html(item[0]).strip()
         if not item[0]:
@@ -251,8 +260,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             continue
         date_shown = published_date.strftime("%Y-%m-%d %H:%M")
 
-        date_str_link = date_str.replace('T', ' ')
-        date_str_link = date_str_link.replace('Z', '')
+        date_str_link = replace_strings(date_str, replacements1)
         url = item[1]
         favicon_url = get_newswire_favicon_url(url)
         favicon_link = ''
@@ -286,8 +294,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
             podcast_properties = item[8]
             if podcast_properties:
                 if podcast_properties.get('image'):
-                    episode_id = date_str.replace(' ', '__')
-                    episode_id = episode_id.replace(':', 'aa')
+                    episode_id = replace_strings(date_str, replacements2)
                     link_url = \
                         '/users/' + nickname + '/?podepisode=' + episode_id
 
@@ -565,8 +572,14 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
     """
     if '/users/' not in path:
         return ''
-    path = path.replace('/inbox', '').replace('/outbox', '')
-    path = path.replace('/shares', '').replace('/wanted', '')
+
+    replacements = {
+        '/inbox': '',
+        '/outbox': '',
+        '/shares': '',
+        '/wanted': ''
+    }
+    path = replace_strings(path, replacements)
 
     nickname = get_nickname_from_actor(path)
     if not nickname:

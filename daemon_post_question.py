@@ -11,6 +11,7 @@ import os
 import errno
 import urllib.parse
 from socket import error as SocketError
+from utils import replace_strings
 from utils import remove_post_from_cache
 from utils import get_cached_post_filename
 from utils import load_json
@@ -124,8 +125,11 @@ def receive_vote(self, calling_domain: str, cookie: str,
         self.server.postreq_busy = False
         return
 
-    question_params = question_params.replace('+', ' ')
-    question_params = question_params.replace('%3F', '')
+    replacements = {
+        '+': ' ',
+        '%3F': ''
+    }
+    question_params = replace_strings(question_params, replacements)
     question_params = \
         urllib.parse.unquote_plus(question_params.strip())
 

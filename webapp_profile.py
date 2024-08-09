@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from utils import replace_strings
 from utils import data_dir
 from utils import is_premium_account
 from utils import time_days_ago
@@ -1294,8 +1295,11 @@ def html_profile(signing_priv_key_pem: str,
     avatar_description = ''
     if profile_json.get('summary'):
         avatar_description = profile_json['summary'].replace('<br>', '\n')
-        avatar_description = avatar_description.replace('<p>', '')
-        avatar_description = avatar_description.replace('</p>', '')
+        replacements = {
+            '<p>': '',
+            '</p>': ''
+        }
+        avatar_description = replace_strings(avatar_description, replacements)
 
     moved_to = ''
     if profile_json.get('movedTo'):
@@ -3119,8 +3123,13 @@ def html_edit_profile(server, translate: {},
                       block_federated_endpoints: []) -> str:
     """Shows the edit profile screen
     """
-    path = path.replace('/inbox', '').replace('/outbox', '')
-    path = path.replace('/shares', '').replace('/wanted', '')
+    replacements = {
+        '/inbox': '',
+        '/outbox': '',
+        '/shares': '',
+        '/wanted': ''
+    }
+    path = replace_strings(path, replacements)
     nickname = get_nickname_from_actor(path)
     if not nickname:
         return ''

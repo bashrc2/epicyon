@@ -87,6 +87,7 @@ from httpcodes import http_304
 from httpcodes import http_400
 from httpcodes import http_503
 from httpcodes import write2
+from utils import replace_strings
 from utils import contains_invalid_chars
 from utils import save_json
 from utils import data_dir
@@ -1565,8 +1566,11 @@ def daemon_http_get(self) -> None:
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         episode_timestamp = self.path.split('?podepisode=')[1].strip()
-        episode_timestamp = episode_timestamp.replace('__', ' ')
-        episode_timestamp = episode_timestamp.replace('aa', ':')
+        replacements = {
+            '__': ' ',
+            'aa': ':'
+        }
+        episode_timestamp = replace_strings(episode_timestamp, replacements)
         if self.server.newswire.get(episode_timestamp):
             pod_episode = self.server.newswire[episode_timestamp]
             html_str = \
