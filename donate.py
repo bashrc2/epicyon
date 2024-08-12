@@ -24,7 +24,7 @@ def _get_donation_types() -> []:
 
 
 def _get_website_strings() -> []:
-    return ['www', 'website', 'web', 'homepage', 'contact']
+    return ['www', 'website', 'web', 'homepage', 'home', 'contact']
 
 
 def _get_gemini_strings() -> []:
