@@ -4134,19 +4134,20 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
         property_value['value'] = property_value[prop_value_name].strip()
         prefixes = get_protocol_prefixes()
         prefix_found = False
+        prop_value = remove_html(property_value[prop_value_name])
         for prefix in prefixes:
-            if property_value[prop_value_name].startswith(prefix):
+            if prop_value.startswith(prefix):
                 prefix_found = True
                 break
         if not prefix_found:
             continue
-        if '.' not in property_value[prop_value_name]:
+        if '.' not in prop_value:
             continue
-        if ' ' in property_value[prop_value_name]:
+        if ' ' in prop_value:
             continue
-        if ',' in property_value[prop_value_name]:
+        if ',' in prop_value:
             continue
-        return property_value[prop_value_name]
+        return prop_value
     return ''
 
 
