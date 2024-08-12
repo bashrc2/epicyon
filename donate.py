@@ -47,8 +47,10 @@ def get_donation_url(actor_json: {}) -> str:
             name_value = property_value['schema:name']
         if not name_value:
             continue
-        if name_value.lower() not in donation_type:
-            continue
+        name_value_lower = name_value.lower()
+        if name_value_lower not in donation_type:
+            if 'support' not in name_value_lower:
+                continue
         if not property_value.get('type'):
             continue
         prop_value_name, prop_value = \
