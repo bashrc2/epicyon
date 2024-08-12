@@ -10,6 +10,9 @@ __module_group__ = "Profile Metadata"
 
 from utils import get_attachment_property_value
 from utils import remove_html
+from utils import string_contains
+
+pronoun_fieldnames = ('pronoun', 'they/them', 'he/him', 'she/her')
 
 
 def get_pronouns(actor_json: {}) -> str:
@@ -27,7 +30,7 @@ def get_pronouns(actor_json: {}) -> str:
             name_value = property_value['schema:name'].lower()
         if not name_value:
             continue
-        if 'pronoun' not in name_value:
+        if not string_contains(name_value, pronoun_fieldnames):
             continue
         if not property_value.get('type'):
             continue
@@ -60,7 +63,7 @@ def set_pronouns(actor_json: {}, pronouns: str) -> None:
             continue
         if not property_value.get('type'):
             continue
-        if 'pronoun' not in name_value:
+        if not string_contains(name_value, pronoun_fieldnames):
             continue
         property_found = property_value
         break
@@ -79,7 +82,7 @@ def set_pronouns(actor_json: {}, pronouns: str) -> None:
         if not property_value.get('type'):
             continue
         name_value = name_value.lower()
-        if 'pronoun' not in name_value:
+        if not string_contains(name_value, pronoun_fieldnames):
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
