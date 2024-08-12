@@ -621,7 +621,7 @@ def _profile_shared_items_list(attached_shared_items: str,
 def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         domain: str, domain_full: str, translate: {},
                         default_timeline: str,
-                        display_name: str,
+                        display_name: str, pronouns: str,
                         profile_description_short: str,
                         featured_hashtags: str,
                         login_button: str, avatar_url: str,
@@ -669,6 +669,9 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     if premium:
         html_str += \
             '        <b>' + translate['Premium account'] + '</b><br>\n'
+
+    if pronouns:
+        html_str += '        ' + pronouns + '<br>\n'
 
     html_str += occupation_str
 
@@ -1358,7 +1361,7 @@ def html_profile(signing_priv_key_pem: str,
                             nickname,
                             domain, domain_full, translate,
                             default_timeline, display_name,
-                            profile_description_short,
+                            pronouns, profile_description_short,
                             featured_hashtags,
                             login_button, avatar_url, theme,
                             moved_to, also_known_as,
