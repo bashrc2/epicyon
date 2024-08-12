@@ -87,12 +87,12 @@ def set_pronouns(actor_json: {}, pronouns: str) -> None:
             get_attachment_property_value(property_value)
         if not prop_value_name:
             continue
-        property_value[prop_value_name] = pronouns
+        property_value[prop_value_name] = remove_html(pronouns)
         return
 
     new_pronouns = {
         "type": "PropertyValue",
         "name": "Pronouns",
-        "value": pronouns
+        "value": remove_html(pronouns)
     }
     actor_json['attachment'].append(new_pronouns)
