@@ -16,7 +16,8 @@ from utils import remove_link_tracking
 def _get_donation_types() -> []:
     return ('patreon', 'paypal', 'gofundme', 'liberapay',
             'kickstarter', 'indiegogo', 'crowdsupply',
-            'subscribestar', 'kofi', 'ko-fi', 'fundly', 'crowdrise',
+            'subscribestar', 'kofi', 'ko-fi',
+            'fundly', 'crowdrise',
             'justgiving', 'globalgiving', 'givedirectly',
             'fundrazr', 'kiva', 'thebiggive', 'donorbox',
             'opencollective', 'buymeacoffee', 'flattr',
@@ -50,7 +51,8 @@ def get_donation_url(actor_json: {}) -> str:
         name_value_lower = name_value.lower()
         if name_value_lower not in donation_type:
             if 'support' not in name_value_lower:
-                continue
+                if 'buy me ' not in name_value_lower:
+                    continue
         if not property_value.get('type'):
             continue
         prop_value_name, prop_value = \
