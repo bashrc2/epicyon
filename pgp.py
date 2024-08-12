@@ -28,6 +28,7 @@ from auth import create_basic_auth_header
 from session import post_json
 from pronouns import get_pronouns
 from youtube import get_youtube
+from peertube import get_peertube
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from briar import get_briar_address
@@ -745,6 +746,9 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     youtube = get_youtube(actor)
     if youtube:
         vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=YouTube:' + youtube + '\n'
+    peertube = get_peertube(actor)
+    if peertube:
+        vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=PeerTube:' + peertube + '\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
@@ -822,6 +826,11 @@ def actor_to_vcard_xml(actor: {}, domain: str) -> str:
         vcard_str += '    <url>' + \
             '<parameters><type><text>youtube</text></type></parameters>' + \
             '<uri>' + youtube + '</uri></url>\n'
+    peertube = get_peertube(actor)
+    if peertube:
+        vcard_str += '    <url>' + \
+            '<parameters><type><text>peertube</text></type></parameters>' + \
+            '<uri>' + peertube + '</uri></url>\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += '    <impp>' + \

@@ -83,6 +83,8 @@ from pronouns import get_pronouns
 from pronouns import set_pronouns
 from youtube import get_youtube
 from youtube import set_youtube
+from peertube import get_peertube
+from peertube import set_peertube
 from xmpp import get_xmpp_address
 from xmpp import set_xmpp_address
 from matrix import get_matrix_address
@@ -2001,6 +2003,23 @@ def _profile_post_youtube(actor_json: {}, fields: {},
     return actor_changed
 
 
+def _profile_post_peertube(actor_json: {}, fields: {},
+                           actor_changed: bool) -> bool:
+    """ HTTP POST change peertube channel address
+    """
+    current_peertube = get_peertube(actor_json)
+    if fields.get('peertubeChannel'):
+        if fields['peertubeChannel'] != current_peertube:
+            set_youtube(actor_json,
+                        fields['peertubeChannel'])
+            actor_changed = True
+    else:
+        if current_peertube:
+            set_peertube(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_pronouns(actor_json: {}, fields: {},
                            actor_changed: bool) -> bool:
     """ HTTP POST change pronouns
@@ -2871,6 +2890,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_youtube(actor_json, fields,
                                           actor_changed)
+
+                actor_changed = \
+                    _profile_post_peertube(actor_json, fields,
+                                           actor_changed)
 
                 actor_changed = \
                     _profile_post_pronouns(actor_json, fields,
