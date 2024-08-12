@@ -740,6 +740,7 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     pronouns = get_pronouns(actor)
     if pronouns:
         vcard_str += 'PRONOUNS:' + pronouns + '\n'
+    vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Mastodon:' + actor['url'] + '\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
