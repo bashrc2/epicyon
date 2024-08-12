@@ -696,5 +696,6 @@
     "PGP Public Key": "PGP 공개 키",
     "Don't show already seen posts": "이미 본 게시물을 표시하지 않음",
     "Watermark image": "워터마크 이미지",
-    "Apply a watermark to uploaded images": "업로드한 이미지에 워터마크를 적용합니다"
+    "Apply a watermark to uploaded images": "업로드한 이미지에 워터마크를 적용합니다",
+    "Pronouns": "대명사"
 }

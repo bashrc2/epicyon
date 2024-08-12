@@ -66,6 +66,7 @@ from posts import get_max_profile_posts
 from donate import get_donation_url
 from donate import get_website
 from donate import get_gemini_link
+from pronouns import get_pronouns
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from ssb import get_ssb_address
@@ -1082,6 +1083,7 @@ def html_profile(signing_priv_key_pem: str,
     pgp_pub_key = get_pgp_pub_key(profile_json)
     pgp_fingerprint = get_pgp_fingerprint(profile_json)
     email_address = get_email_address(profile_json)
+    pronouns = get_pronouns(profile_json)
     xmpp_address = get_xmpp_address(profile_json)
     matrix_address = get_matrix_address(profile_json)
     ssb_address = get_ssb_address(profile_json)
@@ -1090,7 +1092,7 @@ def html_profile(signing_priv_key_pem: str,
     cwtch_address = get_cwtch_address(profile_json)
     verified_site_checkmark = '✔'
     premium = is_premium_account(base_dir, nickname, domain)
-    if donate_url or website_url or repo_url or xmpp_address or \
+    if donate_url or website_url or repo_url or pronouns or xmpp_address or \
        matrix_address or ssb_address or tox_address or briar_address or \
        cwtch_address or pgp_pub_key or enigma_pub_key or \
        pgp_fingerprint or email_address:
@@ -1150,6 +1152,9 @@ def html_profile(signing_priv_key_pem: str,
                     '<p>Blog: <a href="' + \
                     blog_address + '" rel="me" tabindex="1">' + \
                     blog_address + '</a></p>\n'
+        if pronouns:
+            donate_section += \
+                '<p>' + translate['Pronouns'] + ': ' + pronouns + '</p>\n'
         if xmpp_address:
             donate_section += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
@@ -2944,7 +2949,8 @@ def _get_supported_languagesSorted(base_dir: str) -> str:
     return languages_str
 
 
-def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
+def _html_edit_profile_main(base_dir: str, display_nickname: str,
+                            pronouns: str, bio_str: str,
                             moved_to: str, donate_url: str, website_url: str,
                             gemini_link: str, blog_address: str,
                             actor_json: {}, translate: {},
@@ -2960,6 +2966,10 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str, bio_str: str,
     edit_profile_form += \
         edit_text_field(translate['Nickname'], 'displayNickname',
                         display_nickname)
+
+    edit_profile_form += \
+        edit_text_field(translate['Pronouns'], 'setPronouns',
+                        pronouns)
 
     edit_profile_form += \
         edit_text_area(translate['Your bio'], None, 'bio', bio_str,
@@ -3154,7 +3164,7 @@ def html_edit_profile(server, translate: {},
     blogs_instance_str = news_instance_str = moved_to = twitter_str = ''
     bio_str = donate_url = website_url = gemini_link = ''
     email_address = featured_hashtags = pgp_pub_key = enigma_pub_key = ''
-    pgp_fingerprint = xmpp_address = matrix_address = ''
+    pgp_fingerprint = pronouns = xmpp_address = matrix_address = ''
     ssb_address = blog_address = tox_address = ''
     cwtch_address = briar_address = ''
     manually_approves_followers = reject_spam_actors = ''
@@ -3167,6 +3177,7 @@ def html_edit_profile(server, translate: {},
         donate_url = get_donation_url(actor_json)
         website_url = get_website(actor_json, translate)
         gemini_link = get_gemini_link(actor_json)
+        pronouns = get_pronouns(actor_json)
         xmpp_address = get_xmpp_address(actor_json)
         matrix_address = get_matrix_address(actor_json)
         ssb_address = get_ssb_address(actor_json)
@@ -3309,7 +3320,8 @@ def html_edit_profile(server, translate: {},
 
     # main info
     edit_profile_form += \
-        _html_edit_profile_main(base_dir, display_nickname, bio_str,
+        _html_edit_profile_main(base_dir, display_nickname,
+                                pronouns, bio_str,
                                 moved_to, donate_url, website_url,
                                 gemini_link,
                                 blog_address, actor_json, translate,

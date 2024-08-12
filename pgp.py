@@ -25,6 +25,7 @@ from webfinger import webfinger_handle
 from posts import get_person_box
 from auth import create_basic_auth_header
 from session import post_json
+from pronouns import get_pronouns
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from briar import get_briar_address
@@ -736,6 +737,9 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
         vcard_str += 'EMAIL;TYPE=internet:' + email_address + '\n'
     vcard_str += 'IMPP:fediverse:' + \
         actor['preferredUsername'] + '@' + domain + '\n'
+    pronouns = get_pronouns(actor)
+    if pronouns:
+        vcard_str += 'PRONOUNS:' + pronouns + '\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
@@ -784,6 +788,9 @@ def actor_to_vcard_xml(actor: {}, domain: str) -> str:
         '<parameters><type><text>fediverse</text></type></parameters>' + \
         '<text>' + actor['preferredUsername'] + '@' + domain + \
         '</text></impp>\n'
+    pronouns = get_pronouns(actor)
+    if pronouns:
+        vcard_str += '    <pronouns><text>' + pronouns + '</text></pronouns>\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += '    <impp>' + \

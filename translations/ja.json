@@ -696,5 +696,6 @@
     "PGP Public Key": "PGP公開鍵",
     "Don't show already seen posts": "すでに閲覧した投稿を表示しない",
     "Watermark image": "透かし画像",
-    "Apply a watermark to uploaded images": "アップロードした画像に透かしを適用する"
+    "Apply a watermark to uploaded images": "アップロードした画像に透かしを適用する",
+    "Pronouns": "代名詞"
 }

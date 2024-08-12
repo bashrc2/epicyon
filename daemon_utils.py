@@ -44,6 +44,7 @@ from cache import get_person_from_cache
 from donate import get_donation_url
 from donate import get_website
 from donate import get_gemini_link
+from pronouns import get_pronouns
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from ssb import get_ssb_address
@@ -654,6 +655,7 @@ def show_person_options(self, calling_domain: str, path: str,
         enigma_pub_key = None
         pgp_pub_key = None
         pgp_fingerprint = None
+        pronouns = None
         xmpp_address = None
         matrix_address = None
         blog_address = None
@@ -682,6 +684,7 @@ def show_person_options(self, calling_domain: str, path: str,
             donate_url = get_donation_url(actor_json)
             website_url = get_website(actor_json, self.server.translate)
             gemini_link = get_gemini_link(actor_json)
+            pronouns = get_pronouns(actor_json)
             xmpp_address = get_xmpp_address(actor_json)
             matrix_address = get_matrix_address(actor_json)
             ssb_address = get_ssb_address(actor_json)
@@ -735,7 +738,7 @@ def show_person_options(self, calling_domain: str, path: str,
                                 options_profile_url,
                                 options_link,
                                 page_number, donate_url, website_url,
-                                gemini_link,
+                                gemini_link, pronouns,
                                 xmpp_address, matrix_address,
                                 ssb_address, blog_address,
                                 tox_address, briar_address,

@@ -145,6 +145,7 @@ def html_person_options(default_timeline: str,
                         donate_url: str,
                         web_address: str,
                         gemini_link: str,
+                        pronouns: str,
                         xmpp_address: str,
                         matrix_address: str,
                         ssb_address: str,
@@ -388,6 +389,10 @@ def html_person_options(default_timeline: str,
         if ctr > 0:
             options_str += other_accounts_html
 
+    if pronouns:
+        options_str += \
+            '  <p class="imText">' + translate['Pronouns'] + \
+            ': ' + pronouns + '</a></p>\n'
     if email_address:
         options_str += \
             '  <p class="imText">' + translate['Email'] + \
