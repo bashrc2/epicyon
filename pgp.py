@@ -757,9 +757,14 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
         vcard_str += 'IMPP:cwtch:' + cwtch_address + '\n'
     oc_skills_list = get_occupation_skills(actor)
     if oc_skills_list:
-        for skill_name, skill_level in oc_skills_list.items():
-            if not isinstance(skill_level, int):
+        for skill_name in oc_skills_list:
+            if ':' not in skill_name:
                 continue
+            skill_level = skill_name.split(':')[1]
+            if not skill_level.isdigit():
+                continue
+            skill_level = int(skill_level)
+            skill_name = skill_name.split(':')[0].strip().lower()
             if not skill_name:
                 continue
             level_str = None
