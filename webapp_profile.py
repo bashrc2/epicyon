@@ -324,6 +324,9 @@ def html_profile_after_search(authorized: bool,
     locked_account = get_locked_account(profile_json)
     if locked_account:
         display_name += '🔒'
+
+    pronouns = get_pronouns(profile_json)
+
     moved_to = ''
     if profile_json.get('movedTo'):
         moved_to = profile_json['movedTo']
@@ -433,7 +436,7 @@ def html_profile_after_search(authorized: bool,
                                          search_nickname,
                                          search_domain_full,
                                          translate,
-                                         display_name,
+                                         display_name, pronouns,
                                          you_follow, follows_you,
                                          profile_description_short,
                                          featured_hashtags,
@@ -795,6 +798,7 @@ def _get_profile_header_after_search(base_dir: str,
                                      search_domain_full: str,
                                      translate: {},
                                      display_name: str,
+                                     pronouns: str,
                                      you_follow: bool,
                                      follows_you: bool,
                                      profile_description_short: str,
@@ -857,7 +861,11 @@ def _get_profile_header_after_search(base_dir: str,
         '        <h1>\n' + \
         '          ' + display_name + '\n' + \
         '        </h1>\n' + \
-        '    <p><b>@' + search_nickname + '@' + search_domain_full + \
+        '    <p><b>'
+    if pronouns:
+        html_str += pronouns + '<br>\n'
+    html_str += \
+        '@' + search_nickname + '@' + search_domain_full + \
         actor_proxied + '</b><br>\n'
     if joined_date:
         joined_str = translate['Joined']
