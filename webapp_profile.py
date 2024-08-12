@@ -329,6 +329,9 @@ def html_profile_after_search(authorized: bool,
         display_name += '🔒'
 
     pronouns = get_pronouns(profile_json)
+    youtube = get_youtube(profile_json)
+    peertube = get_peertube(profile_json)
+    pixelfed = get_pixelfed(profile_json)
 
     moved_to = ''
     if profile_json.get('movedTo'):
@@ -452,7 +455,8 @@ def html_profile_after_search(authorized: bool,
                                          send_blocks_str,
                                          authorized,
                                          person_url, no_of_books,
-                                         birth_date)
+                                         birth_date,
+                                         youtube, peertube, pixelfed)
 
     domain_full = get_full_domain(domain, port)
 
@@ -819,7 +823,10 @@ def _get_profile_header_after_search(base_dir: str,
                                      authorized: bool,
                                      person_url: str,
                                      no_of_books: str,
-                                     birth_date: str) -> str:
+                                     birth_date: str,
+                                     youtube: str,
+                                     peertube: str,
+                                     pixelfed: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -932,6 +939,15 @@ def _get_profile_header_after_search(base_dir: str,
     if website_url:
         html_str += '  <p>🌐 <a href="' + website_url + '">' + \
             website_url + '</a></p>\n'
+    if youtube:
+        html_str += '  <p>YouTube: <a href="' + youtube + '">' + \
+            youtube + '</a></p>\n'
+    if peertube:
+        html_str += '  <p>PeerTube: <a href="' + peertube + '">' + \
+            peertube + '</a></p>\n'
+    if pixelfed:
+        html_str += '  <p>Pixelfed: <a href="' + pixelfed + '">' + \
+            pixelfed + '</a></p>\n'
     if repo_url:
         html_str += '  <p>💻 <a href="' + repo_url + '">' + \
             repo_url + '</a></p>\n'
