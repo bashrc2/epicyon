@@ -12,6 +12,7 @@ import base64
 import subprocess
 from pathlib import Path
 from person import get_actor_json
+from utils import get_occupation_skills
 from utils import get_url_from_post
 from utils import safe_system_string
 from utils import contains_pgp_public_key
@@ -754,6 +755,22 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     cwtch_address = get_cwtch_address(actor)
     if cwtch_address:
         vcard_str += 'IMPP:cwtch:' + cwtch_address + '\n'
+    oc_skills_list = get_occupation_skills(actor)
+    if oc_skills_list:
+        for skill_name, skill_level in oc_skills_list.items():
+            if not isinstance(skill_level, int):
+                continue
+            if not skill_name:
+                continue
+            level_str = None
+            if skill_level < 33:
+                level_str = 'beginner'
+            elif skill_level < 66:
+                level_str = 'average'
+            else:
+                level_str = 'expert'
+            vcard_str += \
+                'EXPERTISE;LEVEL=' + level_str + ':' + skill_name + '\n'
     if actor.get('hasOccupation'):
         if len(actor['hasOccupation']) > 0:
             if actor['hasOccupation'][0].get('name'):
