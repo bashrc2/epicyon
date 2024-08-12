@@ -674,7 +674,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
             '        <b>' + translate['Premium account'] + '</b><br>\n'
 
     if pronouns:
-        html_str += '        ' + pronouns + '<br>\n'
+        html_str += '        ' + pronouns + '<br><br>\n'
 
     html_str += occupation_str
 
