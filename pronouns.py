@@ -27,7 +27,7 @@ def get_pronouns(actor_json: {}) -> str:
             name_value = property_value['schema:name'].lower()
         if not name_value:
             continue
-        if 'pronouns' not in name_value:
+        if 'pronoun' not in name_value:
             continue
         if not property_value.get('type'):
             continue
@@ -60,7 +60,7 @@ def set_pronouns(actor_json: {}, pronouns: str) -> None:
             continue
         if not property_value.get('type'):
             continue
-        if 'pronouns' not in name_value:
+        if 'pronoun' not in name_value:
             continue
         property_found = property_value
         break
@@ -79,7 +79,7 @@ def set_pronouns(actor_json: {}, pronouns: str) -> None:
         if not property_value.get('type'):
             continue
         name_value = name_value.lower()
-        if 'pronouns' not in name_value:
+        if 'pronoun' not in name_value:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
