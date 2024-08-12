@@ -720,10 +720,6 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     vcard_str += 'REV:' + actor['published'] + '\n'
     vcard_str += 'FN:' + remove_html(actor['name']) + '\n'
     vcard_str += 'NICKNAME:' + actor['preferredUsername'] + '\n'
-    vcard_str += 'URL;TYPE=profile:' + actor_url_str + '\n'
-    blog_address = get_blog_address(actor)
-    if blog_address:
-        vcard_str += 'URL;TYPE=blog:' + blog_address + '\n'
     vcard_str += 'NOTE:' + remove_html(actor['summary']) + '\n'
     url_str = get_url_from_post(actor['icon']['url'])
     if url_str:
@@ -740,7 +736,10 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     pronouns = get_pronouns(actor)
     if pronouns:
         vcard_str += 'PRONOUNS:' + pronouns + '\n'
-    vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Mastodon:' + actor['url'] + '\n'
+    vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Mastodon:' + actor_url_str + '\n'
+    blog_address = get_blog_address(actor)
+    if blog_address:
+        vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Blog:' + blog_address + '\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
