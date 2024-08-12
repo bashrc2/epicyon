@@ -62,12 +62,14 @@ def get_donation_url(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        if '<a href="' not in property_value[prop_value_name]:
-            continue
-        donate_url = property_value[prop_value_name].split('<a href="')[1]
-        if '"' in donate_url:
-            donate_url = donate_url.split('"')[0]
-            donate_url = remove_html(donate_url)
+        if '<a href="' in property_value[prop_value_name]:
+            donate_url = property_value[prop_value_name].split('<a href="')[1]
+            if '"' in donate_url:
+                donate_url = donate_url.split('"')[0]
+                donate_url = remove_html(donate_url)
+                return remove_link_tracking(donate_url)
+        else:
+            donate_url = remove_html(property_value[prop_value_name])
             return remove_link_tracking(donate_url)
     return ''
 
