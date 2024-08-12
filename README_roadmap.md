@@ -1,7 +1,6 @@
 # Roadmap
 
 ## UX
- * Minimize button shows different icons or highlighting
  * Layout of buttons on person options screen
 
 ## Groups
@@ -11,7 +10,6 @@
 
 ## Questions
 
- * Still not implemented ideally
  * Instance-only questions
  * Active polls screen?
  * Questions more integrated into overall organization

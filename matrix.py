@@ -27,8 +27,10 @@ def get_matrix_address(actor_json: {}) -> str:
             name_value = property_value['schema:name']
         if not name_value:
             continue
-        if not name_value.lower().startswith('matrix'):
-            continue
+        name_value_lower = name_value.lower()
+        if not name_value_lower.startswith('matrix'):
+            if not name_value_lower.startswith('chat'):
+                continue
         if not property_value.get('type'):
             continue
         prop_value_name, _ = \
@@ -37,15 +39,25 @@ def get_matrix_address(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        if '@' not in property_value[prop_value_name]:
+        address_text = property_value[prop_value_name]
+        if 'matrix' in address_text:
+            address_text = address_text.split('matrix')[1]
+        elif 'Matrix' in address_text:
+            address_text = address_text.split('Matrix')[1]
+        if '@' not in address_text:
             continue
-        if not property_value[prop_value_name].startswith('@'):
+        address_text = '@' + address_text.split('@', 1)[1]
+        if ' ' in address_text:
+            address_text = address_text.split(' ')[0]
+        if '|' in address_text:
+            address_text = address_text.split('|')[0]
+        if ',' in address_text:
+            address_text = address_text.split(',')[0]
+        if ':' not in address_text:
             continue
-        if ':' not in property_value[prop_value_name]:
+        if '"' in address_text:
             continue
-        if '"' in property_value[prop_value_name]:
-            continue
-        return remove_html(property_value[prop_value_name])
+        return remove_html(address_text)
     return ''
 
 
