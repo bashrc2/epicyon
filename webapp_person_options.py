@@ -640,14 +640,13 @@ def html_person_options(default_timeline: str,
                         checkbox_str = checkbox_str.replace(' checked>', '>')
                     options_str += checkbox_str
 
-    options_str += options_link_str
+    options_str += options_link_str + donate_str
     if authorized:
         options_str += \
             '    <button type="submit" class="button" ' + \
             'name="submitView" accesskey="' + \
             access_keys['viewButton'] + '">' + \
             translate['View'] + '</button>\n'
-    options_str += donate_str
     if authorized:
         options_str += \
             '    <button type="submit" class="button" name="submit' + \
