@@ -16,7 +16,7 @@ from utils import remove_link_tracking
 def _get_donation_types() -> []:
     return ('patreon', 'paypal', 'gofundme', 'liberapay',
             'kickstarter', 'indiegogo', 'crowdsupply',
-            'subscribestar', 'kofi', 'fundly', 'crowdrise',
+            'subscribestar', 'kofi', 'ko-fi', 'fundly', 'crowdrise',
             'justgiving', 'globalgiving', 'givedirectly',
             'fundrazr', 'kiva', 'thebiggive', 'donorbox',
             'opencollective', 'buymeacoffee', 'flattr',
