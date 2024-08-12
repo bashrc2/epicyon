@@ -83,6 +83,8 @@ from pronouns import get_pronouns
 from pronouns import set_pronouns
 from youtube import get_youtube
 from youtube import set_youtube
+from pixelfed import get_pixelfed
+from pixelfed import set_pixelfed
 from peertube import get_peertube
 from peertube import set_peertube
 from xmpp import get_xmpp_address
@@ -2003,6 +2005,23 @@ def _profile_post_youtube(actor_json: {}, fields: {},
     return actor_changed
 
 
+def _profile_post_pixelfed(actor_json: {}, fields: {},
+                           actor_changed: bool) -> bool:
+    """ HTTP POST change pixelfed channel address
+    """
+    current_pixelfed = get_pixelfed(actor_json)
+    if fields.get('pixelfedChannel'):
+        if fields['pixelfedChannel'] != current_pixelfed:
+            set_pixelfed(actor_json,
+                         fields['pixelfedChannel'])
+            actor_changed = True
+    else:
+        if current_pixelfed:
+            set_pixelfed(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_peertube(actor_json: {}, fields: {},
                            actor_changed: bool) -> bool:
     """ HTTP POST change peertube channel address
@@ -2010,8 +2029,8 @@ def _profile_post_peertube(actor_json: {}, fields: {},
     current_peertube = get_peertube(actor_json)
     if fields.get('peertubeChannel'):
         if fields['peertubeChannel'] != current_peertube:
-            set_youtube(actor_json,
-                        fields['peertubeChannel'])
+            set_peertube(actor_json,
+                         fields['peertubeChannel'])
             actor_changed = True
     else:
         if current_peertube:
@@ -2886,6 +2905,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_xmpp_address(actor_json, fields,
                                                actor_changed)
+
+                actor_changed = \
+                    _profile_post_pixelfed(actor_json, fields,
+                                           actor_changed)
 
                 actor_changed = \
                     _profile_post_youtube(actor_json, fields,

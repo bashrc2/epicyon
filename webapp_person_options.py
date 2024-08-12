@@ -171,7 +171,8 @@ def html_person_options(default_timeline: str,
                         blocked_cache: [],
                         repo_url: str,
                         sites_unavailable: [],
-                        youtube: str, peertube: str) -> str:
+                        youtube: str, peertube: str,
+                        pixelfed: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_link_str = ''
@@ -437,6 +438,11 @@ def html_person_options(default_timeline: str,
             '  <p class="imText">Blog: <a href="' + \
             remove_html(blog_address) + '">' + \
             remove_html(blog_address) + '</a></p>\n'
+    if pixelfed:
+        options_str += \
+            '  <p class="imText">Pixelfed' + \
+            ': <a href="' + remove_html(pixelfed) + '">' + \
+            pixelfed + '</a></p>\n'
     if youtube:
         options_str += \
             '  <p class="imText">YouTube' + \

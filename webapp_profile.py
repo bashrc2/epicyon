@@ -67,6 +67,7 @@ from donate import get_donation_url
 from donate import get_website
 from donate import get_gemini_link
 from pronouns import get_pronouns
+from pixelfed import get_pixelfed
 from youtube import get_youtube
 from peertube import get_peertube
 from xmpp import get_xmpp_address
@@ -1097,6 +1098,7 @@ def html_profile(signing_priv_key_pem: str,
     pgp_fingerprint = get_pgp_fingerprint(profile_json)
     email_address = get_email_address(profile_json)
     pronouns = get_pronouns(profile_json)
+    pixelfed = get_pixelfed(profile_json)
     youtube = get_youtube(profile_json)
     peertube = get_peertube(profile_json)
     xmpp_address = get_xmpp_address(profile_json)
@@ -1108,9 +1110,9 @@ def html_profile(signing_priv_key_pem: str,
     verified_site_checkmark = '✔'
     premium = is_premium_account(base_dir, nickname, domain)
     if donate_url or website_url or repo_url or pronouns or youtube or \
-       xmpp_address or matrix_address or ssb_address or tox_address or \
-       briar_address or cwtch_address or pgp_pub_key or enigma_pub_key or \
-       pgp_fingerprint or email_address:
+       peertube or pixelfed or xmpp_address or matrix_address or \
+       ssb_address or tox_address or briar_address or cwtch_address or \
+       pgp_pub_key or enigma_pub_key or pgp_fingerprint or email_address:
         donate_section = '<div class="container">\n'
         donate_section += '  <center>\n'
         if donate_url and not is_system_account(nickname):
@@ -1174,10 +1176,18 @@ def html_profile(signing_priv_key_pem: str,
             donate_section += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
                 xmpp_address + '" tabindex="1">' + xmpp_address + '</a></p>\n'
+        if pixelfed:
+            donate_section += \
+                '<p>Pixelfed: <a href="' + \
+                pixelfed + '" tabindex="1">' + pixelfed + '</a></p>\n'
         if youtube:
             donate_section += \
                 '<p>YouTube: <a href="' + \
                 youtube + '" tabindex="1">' + youtube + '</a></p>\n'
+        if peertube:
+            donate_section += \
+                '<p>PeerTube: <a href="' + \
+                peertube + '" tabindex="1">' + peertube + '</a></p>\n'
         if matrix_address:
             donate_section += \
                 '<p>' + translate['Matrix'] + ': ' + matrix_address + '</p>\n'
@@ -2724,7 +2734,8 @@ def _html_edit_profile_contact_info(email_address: str,
                                     cwtch_address: str,
                                     translate: {},
                                     youtube: str,
-                                    peertube: str) -> str:
+                                    peertube: str,
+                                    pixelfed: str) -> str:
     """Contact Information section of edit profile screen
     """
     edit_profile_form = begin_edit_section(translate['Contact Details'])
@@ -2743,7 +2754,9 @@ def _html_edit_profile_contact_info(email_address: str,
     edit_profile_form += edit_text_field('YouTube', 'youtubeChannel',
                                          youtube)
     edit_profile_form += edit_text_field('PeerTube', 'peertubeChannel',
-                                         youtube)
+                                         peertube)
+    edit_profile_form += edit_text_field('Pixelfed', 'pixelfedChannel',
+                                         pixelfed)
     edit_profile_form += end_edit_section()
     return edit_profile_form
 
@@ -3189,9 +3202,9 @@ def html_edit_profile(server, translate: {},
     blogs_instance_str = news_instance_str = moved_to = twitter_str = ''
     bio_str = donate_url = website_url = gemini_link = ''
     email_address = featured_hashtags = pgp_pub_key = enigma_pub_key = ''
-    pgp_fingerprint = pronouns = peertube = youtube = xmpp_address = ''
+    pgp_fingerprint = pronouns = peertube = youtube = pixelfed = ''
     ssb_address = blog_address = matrix_address = tox_address = ''
-    cwtch_address = briar_address = ''
+    cwtch_address = briar_address = xmpp_address = ''
     manually_approves_followers = reject_spam_actors = ''
 
     actor_json = load_json(actor_filename)
@@ -3203,6 +3216,7 @@ def html_edit_profile(server, translate: {},
         website_url = get_website(actor_json, translate)
         gemini_link = get_gemini_link(actor_json)
         pronouns = get_pronouns(actor_json)
+        pixelfed = get_pixelfed(actor_json)
         youtube = get_youtube(actor_json)
         peertube = get_peertube(actor_json)
         xmpp_address = get_xmpp_address(actor_json)
@@ -3424,7 +3438,7 @@ def html_edit_profile(server, translate: {},
                                         ssb_address, tox_address,
                                         briar_address,
                                         cwtch_address, translate,
-                                        youtube, peertube)
+                                        youtube, peertube, pixelfed)
 
     # notification settings
     edit_profile_form += \
