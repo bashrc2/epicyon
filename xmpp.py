@@ -40,14 +40,18 @@ def get_xmpp_address(actor_json: {}) -> str:
         if not property_value['type'].endswith('PropertyValue') and \
            not property_value['type'] == 'Link':
             continue
-        if '@' not in property_value[prop_value_name]:
+        address_text = property_value[prop_value_name]
+        if 'matrix' in address_text.lower():
             continue
-        if '"' in property_value[prop_value_name]:
+        if '@' not in address_text:
             continue
-        if property_value[prop_value_name].startswith('xmpp://'):
-            property_value[prop_value_name] = \
-                property_value[prop_value_name].split('xmpp://', 1)[1]
-        return remove_html(property_value[prop_value_name])
+        if '.' not in address_text:
+            continue
+        if '"' in address_text:
+            continue
+        if address_text.startswith('xmpp://'):
+            address_text = address_text.split('xmpp://', 1)[1]
+        return remove_html(address_text)
     return ''
 
 

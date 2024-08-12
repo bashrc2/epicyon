@@ -40,6 +40,10 @@ def get_matrix_address(actor_json: {}) -> str:
         if not property_value['type'].endswith('PropertyValue'):
             continue
         address_text = property_value[prop_value_name]
+        if 'xmpp' in address_text.lower():
+            continue
+        if 'jabber' in address_text.lower():
+            continue
         if 'matrix' in address_text:
             address_text = address_text.split('matrix')[1]
         elif 'Matrix' in address_text:
