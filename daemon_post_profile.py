@@ -81,6 +81,8 @@ from pgp import set_pgp_fingerprint
 from pgp import get_pgp_fingerprint
 from pronouns import get_pronouns
 from pronouns import set_pronouns
+from youtube import get_youtube
+from youtube import set_youtube
 from xmpp import get_xmpp_address
 from xmpp import set_xmpp_address
 from matrix import get_matrix_address
@@ -1982,6 +1984,23 @@ def _profile_post_xmpp_address(actor_json: {}, fields: {},
     return actor_changed
 
 
+def _profile_post_youtube(actor_json: {}, fields: {},
+                          actor_changed: bool) -> bool:
+    """ HTTP POST change youtube channel address
+    """
+    current_youtube = get_youtube(actor_json)
+    if fields.get('youtubeChannel'):
+        if fields['youtubeChannel'] != current_youtube:
+            set_youtube(actor_json,
+                        fields['youtubeChannel'])
+            actor_changed = True
+    else:
+        if current_youtube:
+            set_youtube(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_pronouns(actor_json: {}, fields: {},
                            actor_changed: bool) -> bool:
     """ HTTP POST change pronouns
@@ -2848,6 +2867,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_xmpp_address(actor_json, fields,
                                                actor_changed)
+
+                actor_changed = \
+                    _profile_post_youtube(actor_json, fields,
+                                          actor_changed)
 
                 actor_changed = \
                     _profile_post_pronouns(actor_json, fields,

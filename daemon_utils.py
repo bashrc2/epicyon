@@ -45,6 +45,7 @@ from donate import get_donation_url
 from donate import get_website
 from donate import get_gemini_link
 from pronouns import get_pronouns
+from youtube import get_youtube
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from ssb import get_ssb_address
@@ -656,6 +657,7 @@ def show_person_options(self, calling_domain: str, path: str,
         pgp_pub_key = None
         pgp_fingerprint = None
         pronouns = None
+        youtube = None
         xmpp_address = None
         matrix_address = None
         blog_address = None
@@ -685,6 +687,7 @@ def show_person_options(self, calling_domain: str, path: str,
             website_url = get_website(actor_json, self.server.translate)
             gemini_link = get_gemini_link(actor_json)
             pronouns = get_pronouns(actor_json)
+            youtube = get_youtube(actor_json)
             xmpp_address = get_xmpp_address(actor_json)
             matrix_address = get_matrix_address(actor_json)
             ssb_address = get_ssb_address(actor_json)
@@ -757,7 +760,8 @@ def show_person_options(self, calling_domain: str, path: str,
                                 self.server.theme_name,
                                 self.server.blocked_cache,
                                 repo_url,
-                                self.server.sites_unavailable)
+                                self.server.sites_unavailable,
+                                youtube)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

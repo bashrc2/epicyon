@@ -67,6 +67,7 @@ from donate import get_donation_url
 from donate import get_website
 from donate import get_gemini_link
 from pronouns import get_pronouns
+from youtube import get_youtube
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from ssb import get_ssb_address
@@ -1095,6 +1096,7 @@ def html_profile(signing_priv_key_pem: str,
     pgp_fingerprint = get_pgp_fingerprint(profile_json)
     email_address = get_email_address(profile_json)
     pronouns = get_pronouns(profile_json)
+    youtube = get_youtube(profile_json)
     xmpp_address = get_xmpp_address(profile_json)
     matrix_address = get_matrix_address(profile_json)
     ssb_address = get_ssb_address(profile_json)
@@ -1103,9 +1105,9 @@ def html_profile(signing_priv_key_pem: str,
     cwtch_address = get_cwtch_address(profile_json)
     verified_site_checkmark = '✔'
     premium = is_premium_account(base_dir, nickname, domain)
-    if donate_url or website_url or repo_url or pronouns or xmpp_address or \
-       matrix_address or ssb_address or tox_address or briar_address or \
-       cwtch_address or pgp_pub_key or enigma_pub_key or \
+    if donate_url or website_url or repo_url or pronouns or youtube or \
+       xmpp_address or matrix_address or ssb_address or tox_address or \
+       briar_address or cwtch_address or pgp_pub_key or enigma_pub_key or \
        pgp_fingerprint or email_address:
         donate_section = '<div class="container">\n'
         donate_section += '  <center>\n'
@@ -1170,6 +1172,10 @@ def html_profile(signing_priv_key_pem: str,
             donate_section += \
                 '<p>' + translate['XMPP'] + ': <a href="xmpp:' + \
                 xmpp_address + '" tabindex="1">' + xmpp_address + '</a></p>\n'
+        if youtube:
+            donate_section += \
+                '<p>YouTube: <a href="' + \
+                youtube + '" tabindex="1">' + youtube + '</a></p>\n'
         if matrix_address:
             donate_section += \
                 '<p>' + translate['Matrix'] + ': ' + matrix_address + '</p>\n'
@@ -2714,7 +2720,8 @@ def _html_edit_profile_contact_info(email_address: str,
                                     tox_address: str,
                                     briar_address: str,
                                     cwtch_address: str,
-                                    translate: {}) -> str:
+                                    translate: {},
+                                    youtube: str) -> str:
     """Contact Information section of edit profile screen
     """
     edit_profile_form = begin_edit_section(translate['Contact Details'])
@@ -2730,6 +2737,8 @@ def _html_edit_profile_contact_info(email_address: str,
                                          briar_address)
     edit_profile_form += edit_text_field('Cwtch', 'cwtchAddress',
                                          cwtch_address)
+    edit_profile_form += edit_text_field('YouTube', 'youtubeChannel',
+                                         youtube)
     edit_profile_form += end_edit_section()
     return edit_profile_form
 
@@ -3175,7 +3184,7 @@ def html_edit_profile(server, translate: {},
     blogs_instance_str = news_instance_str = moved_to = twitter_str = ''
     bio_str = donate_url = website_url = gemini_link = ''
     email_address = featured_hashtags = pgp_pub_key = enigma_pub_key = ''
-    pgp_fingerprint = pronouns = xmpp_address = matrix_address = ''
+    pgp_fingerprint = pronouns = youtube = xmpp_address = matrix_address = ''
     ssb_address = blog_address = tox_address = ''
     cwtch_address = briar_address = ''
     manually_approves_followers = reject_spam_actors = ''
@@ -3189,6 +3198,7 @@ def html_edit_profile(server, translate: {},
         website_url = get_website(actor_json, translate)
         gemini_link = get_gemini_link(actor_json)
         pronouns = get_pronouns(actor_json)
+        youtube = get_youtube(actor_json)
         xmpp_address = get_xmpp_address(actor_json)
         matrix_address = get_matrix_address(actor_json)
         ssb_address = get_ssb_address(actor_json)
@@ -3407,7 +3417,8 @@ def html_edit_profile(server, translate: {},
                                         xmpp_address, matrix_address,
                                         ssb_address, tox_address,
                                         briar_address,
-                                        cwtch_address, translate)
+                                        cwtch_address, translate,
+                                        youtube)
 
     # notification settings
     edit_profile_form += \

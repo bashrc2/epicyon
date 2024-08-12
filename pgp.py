@@ -27,6 +27,7 @@ from posts import get_person_box
 from auth import create_basic_auth_header
 from session import post_json
 from pronouns import get_pronouns
+from youtube import get_youtube
 from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from briar import get_briar_address
@@ -741,6 +742,9 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     blog_address = get_blog_address(actor)
     if blog_address:
         vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Blog:' + blog_address + '\n'
+    youtube = get_youtube(actor)
+    if youtube:
+        vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=YouTube:' + youtube + '\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
@@ -813,6 +817,11 @@ def actor_to_vcard_xml(actor: {}, domain: str) -> str:
     pronouns = get_pronouns(actor)
     if pronouns:
         vcard_str += '    <pronouns><text>' + pronouns + '</text></pronouns>\n'
+    youtube = get_youtube(actor)
+    if youtube:
+        vcard_str += '    <url>' + \
+            '<parameters><type><text>youtube</text></type></parameters>' + \
+            '<uri>' + youtube + '</uri></url>\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += '    <impp>' + \

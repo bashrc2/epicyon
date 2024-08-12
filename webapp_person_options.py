@@ -170,7 +170,8 @@ def html_person_options(default_timeline: str,
                         theme: str,
                         blocked_cache: [],
                         repo_url: str,
-                        sites_unavailable: []) -> str:
+                        sites_unavailable: [],
+                        youtube: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_link_str = ''
@@ -436,6 +437,11 @@ def html_person_options(default_timeline: str,
             '  <p class="imText">Blog: <a href="' + \
             remove_html(blog_address) + '">' + \
             remove_html(blog_address) + '</a></p>\n'
+    if youtube:
+        options_str += \
+            '  <p class="imText">YouTube' + \
+            ': <a href="' + remove_html(youtube) + '">' + \
+            youtube + '</a></p>\n'
     if tox_address:
         options_str += \
             '  <p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
