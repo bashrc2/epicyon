@@ -863,7 +863,7 @@ def _get_profile_header_after_search(base_dir: str,
         '        </h1>\n' + \
         '    <p><b>'
     if pronouns:
-        html_str += pronouns + '<br>\n'
+        html_str += pronouns + '<br><br>\n'
     html_str += \
         '@' + search_nickname + '@' + search_domain_full + \
         actor_proxied + '</b><br>\n'
