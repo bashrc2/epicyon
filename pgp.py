@@ -57,7 +57,9 @@ def get_email_address(actor_json: {}) -> str:
             continue
         name_value_lower = name_value.lower()
         if 'email' not in name_value_lower:
-            continue
+            if 'e-mail' not in name_value_lower:
+                if 'electronic mail' not in name_value_lower:
+                    continue
         if not property_value.get('type'):
             continue
         prop_value_name, _ = \
