@@ -245,7 +245,8 @@ def html_person_options(default_timeline: str,
     if donate_url:
         donate_str = \
             '    <a href="' + donate_url + \
-            '" tabindex="-1"><button class="button" name="submitDonate">' + \
+            '" tabindex="-1"><button class="button" ' + \
+            'name="submitDonate" value="' + donate_url + '">' + \
             translate['Donate'] + '</button></a>\n'
 
     instance_title = \
