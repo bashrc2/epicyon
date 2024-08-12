@@ -245,9 +245,7 @@ def html_person_options(default_timeline: str,
     if donate_url:
         donate_str = \
             '    <a href="' + donate_url + \
-            '" tabindex="-1"><button class="button" ' + \
-            'name="submitDonate" value="' + donate_url + '">' + \
-            translate['Donate'] + '</button></a>\n'
+            '" tabindex="-1">' + translate['Donate'] + '</a>\n'
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
