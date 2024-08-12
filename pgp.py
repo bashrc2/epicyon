@@ -55,9 +55,9 @@ def get_email_address(actor_json: {}) -> str:
             name_value = property_value['schema:name']
         if not name_value:
             continue
-        if not name_value.lower().startswith('email'):
-            if 'Mail' not in name_value:
-                continue
+        name_value_lower = name_value.lower()
+        if 'email' not in name_value_lower:
+            continue
         if not property_value.get('type'):
             continue
         prop_value_name, _ = \
