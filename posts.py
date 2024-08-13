@@ -139,7 +139,8 @@ def convert_post_content_to_html(message_json: {}) -> None:
         return
     if not obj_json.get('content'):
         return
-    if obj_json['mediaType'] != 'text/markdown':
+    if obj_json['mediaType'] not in ('text/markdown',
+                                     'text/x.misskeymarkdown'):
         return
     content_str = obj_json['content']
     obj_json['content'] = markdown_to_html(content_str)
