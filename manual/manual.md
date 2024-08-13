@@ -473,7 +473,7 @@ This is a reference to a paper: arxiv:2203.15752
 
 On a desktop system the main timeline screen has a multi-column layout. The main content containing posts is in the centre. To the left is a column containing useful web links. To the right is the newswire containing links from RSS feeds.
 
-At the top right of the centre column there are a few icons known as *action buttons*, for show/hide, calendar, search and creating a new post.
+At the top right of the centre column there are a few icons known as *action buttons*, for show/hide extra timelines, show/hide announces or boosts, calendar, search and creating a new post.
 
 On mobile screens there is a single column layout, and the *links* and *newswire* column content is available via action buttons.
 
