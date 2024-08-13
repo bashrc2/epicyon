@@ -6283,6 +6283,17 @@ def _test_markdown_to_html():
         print(result)
     assert result == expected
 
+    markdown = \
+        'Some text $[jelly.speed=2s Misskey expands the world of the ' + \
+        'Fediverse]. Some other text.'
+    expected = \
+        'Some text <span class="mfm-jelly">Misskey expands the world ' + \
+        'of the Fediverse</span>. Some other text.'
+    result = markdown_to_html(markdown)
+    if result != expected:
+        print(result)
+    assert result == expected
+
 
 def _test_extract_text_fields_from_post():
     print('test_extract_text_fields_in_post')
