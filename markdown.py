@@ -222,8 +222,7 @@ def _markdown_replace_links(markdown: str) -> str:
 def _markdown_replace_misskey(markdown: str) -> str:
     """Replaces misskey animations with emojis
     https://codeberg.org/fediverse/fep/src/branch/main/fep/c16b/fep-c16b.md
-    https://akkoma.dev/nbsp/marked-mfm/src/commit/
-    600dd77e50ca9afaf415f1ec4672c2575a3923c1/docs/syntax.md
+    https://akkoma.dev/nbsp/marked-mfm/src/branch/master/docs/syntax.md
     """
     animation_types = {
         'tada': '✨',
