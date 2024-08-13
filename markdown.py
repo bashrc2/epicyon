@@ -219,6 +219,85 @@ def _markdown_replace_links(markdown: str) -> str:
     return result
 
 
+def _markdown_replace_misskey(markdown: str) -> str:
+    """Replaces misskey animations with emojis
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/c16b/fep-c16b.md
+    https://akkoma.dev/nbsp/marked-mfm/src/commit/
+    600dd77e50ca9afaf415f1ec4672c2575a3923c1/docs/syntax.md
+    """
+    animation_types = {
+        'tada': '✨',
+        'jelly': '',
+        'twitch': '😛',
+        'shake': '🫨',
+        'spin': '⟳',
+        'jump': '🦘',
+        'bounce': '⚽',
+        'flip': '🙃',
+        'x2': '',
+        'x3': '',
+        'x4': '',
+        'font': '',
+        'rotate': ''
+    }
+    if '$[' not in markdown or ']' not in markdown:
+        return markdown
+    sections = _markdown_get_sections(markdown)
+    result = ''
+    for section_text in sections:
+        if '<code>' in section_text or \
+           '$[' not in section_text or \
+           ']' not in section_text or \
+           ' ' not in section_text:
+            result += section_text
+            continue
+        sections_links = section_text.split('$[')
+        ctr = 0
+        for link_section in sections_links:
+            if ctr == 0:
+                ctr += 1
+                continue
+
+            if ']' not in link_section:
+                ctr += 1
+                continue
+
+            misskey_str = link_section.split(']')[0]
+            if ' ' not in misskey_str:
+                ctr += 1
+                continue
+
+            # get the type of animation
+            animation_type = misskey_str.split(' ')[0]
+            append_emoji = None
+            mfm_type = ''
+            found = False
+            for anim, anim_emoji in animation_types.items():
+                if animation_type.startswith(anim):
+                    mfm_type = anim
+                    append_emoji = anim_emoji
+                    found = True
+                    break
+
+            if not found:
+                ctr += 1
+                continue
+
+            animation_text = misskey_str.split(' ', 1)[1]
+
+            orig_str = '$[' + misskey_str + ']'
+            if append_emoji:
+                animation_text += ' ' + append_emoji
+            replace_str = \
+                '<span class="mfm-' + mfm_type + '">' + animation_text + \
+                '</span>'
+            section_text = section_text.replace(orig_str, replace_str)
+
+            ctr += 1
+        result += section_text
+    return result
+
+
 def _markdown_replace_bullet_points(markdown: str) -> str:
     """Replaces bullet points
     """
@@ -355,6 +434,7 @@ def markdown_example_numbers(markdown: str) -> str:
 def markdown_to_html(markdown: str) -> str:
     """Converts markdown formatted text to html
     """
+    markdown = _markdown_replace_misskey(markdown)
     markdown = _markdown_replace_code(markdown)
     markdown = _markdown_replace_bullet_points(markdown)
     markdown = _markdown_replace_quotes(markdown)
