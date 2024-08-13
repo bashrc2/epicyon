@@ -81,6 +81,8 @@ from pgp import set_pgp_fingerprint
 from pgp import get_pgp_fingerprint
 from pronouns import get_pronouns
 from pronouns import set_pronouns
+from discord import get_discord
+from discord import set_discord
 from youtube import get_youtube
 from youtube import set_youtube
 from pixelfed import get_pixelfed
@@ -2005,6 +2007,23 @@ def _profile_post_youtube(actor_json: {}, fields: {},
     return actor_changed
 
 
+def _profile_post_discord(actor_json: {}, fields: {},
+                          actor_changed: bool) -> bool:
+    """ HTTP POST change discord channel address
+    """
+    current_discord = get_discord(actor_json)
+    if fields.get('discordChannel'):
+        if fields['discordChannel'] != current_discord:
+            set_discord(actor_json,
+                        fields['discordChannel'])
+            actor_changed = True
+    else:
+        if current_discord:
+            set_discord(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_pixelfed(actor_json: {}, fields: {},
                            actor_changed: bool) -> bool:
     """ HTTP POST change pixelfed channel address
@@ -2909,6 +2928,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_pixelfed(actor_json, fields,
                                            actor_changed)
+
+                actor_changed = \
+                    _profile_post_discord(actor_json, fields,
+                                          actor_changed)
 
                 actor_changed = \
                     _profile_post_youtube(actor_json, fields,

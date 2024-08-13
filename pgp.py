@@ -28,6 +28,7 @@ from auth import create_basic_auth_header
 from session import post_json
 from pronouns import get_pronouns
 from pixelfed import get_pixelfed
+from discord import get_discord
 from youtube import get_youtube
 from peertube import get_peertube
 from xmpp import get_xmpp_address
@@ -746,6 +747,9 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     blog_address = get_blog_address(actor)
     if blog_address:
         vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Blog:' + blog_address + '\n'
+    discord = get_discord(actor)
+    if discord:
+        vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Discord:' + discord + '\n'
     pixelfed = get_pixelfed(actor)
     if pixelfed:
         vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Pixelfed:' + pixelfed + '\n'
@@ -832,6 +836,11 @@ def actor_to_vcard_xml(actor: {}, domain: str) -> str:
         vcard_str += '    <url>' + \
             '<parameters><type><text>pixelfed</text></type></parameters>' + \
             '<uri>' + pixelfed + '</uri></url>\n'
+    discord = get_discord(actor)
+    if discord:
+        vcard_str += '    <url>' + \
+            '<parameters><type><text>discord</text></type></parameters>' + \
+            '<uri>' + discord + '</uri></url>\n'
     youtube = get_youtube(actor)
     if youtube:
         vcard_str += '    <url>' + \
