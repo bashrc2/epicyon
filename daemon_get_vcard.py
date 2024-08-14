@@ -25,6 +25,7 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
                referer_domain: str, domain: str) -> bool:
     """Returns a vcard for the given account
     """
+    print('DEBUG: vcard path 1 ' + path + ' ' + str(self.headers))
     if not has_accept(self, calling_domain):
         return False
     if path.endswith('.vcf'):
@@ -36,7 +37,7 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
         'text/vcard',
         'application/vcard+xml'
     )
-    print('DEBUG: vcard path ' + path)
+    print('DEBUG: vcard path 2 ' + path)
     if not string_contains(accept_str, vcard_mime_types):
         return False
     print('Downloading vcard ' + path)
