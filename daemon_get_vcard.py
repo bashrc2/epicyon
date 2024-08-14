@@ -31,6 +31,7 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
         accept_str = 'text/vcard'
     else:
         accept_str = self.headers['Accept']
+    print('vcard Accept: ' + accept_str)
     if 'text/vcard' not in accept_str and \
        'application/vcard+xml' not in accept_str:
         return False
