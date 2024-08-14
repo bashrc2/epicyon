@@ -785,6 +785,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     # show vcard download link
     html_str += \
         '    <a href="/users/' + nickname + '.vcf" ' + \
+        'type="text/vcard" ' + \
         'download="contact_' + nickname + '@' + domain_full + \
         '.vcf" tabindex="1" class="imageAnchor">' + \
         '<img class="vcard" src="/icons/vcard.png" ' + \
