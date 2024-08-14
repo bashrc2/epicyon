@@ -31,16 +31,15 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
         path = path.split('.vcf')[0]
         accept_str = 'text/vcard'
     else:
-        return False
+        accept_str = self.headers['Accept']
     vcard_mime_types = (
         'text/vcard',
-        'application/vcard+xml',
-        'application/xml',
-        'application/xhtml+xml'
+        'application/vcard+xml'
     )
     if not string_contains(accept_str, vcard_mime_types):
-        print('WARN: vcard is not of an expected mime type: ' +
-              accept_str)
+        if '.vcf' in path:
+            print('WARN: vcard is not of an expected mime type: ' +
+                  accept_str + ' ' + path)
         return False
     if path.startswith('/@'):
         if '/@/' not in path:
