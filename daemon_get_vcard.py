@@ -37,9 +37,8 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
         'application/vcard+xml'
     )
     if not string_contains(accept_str, vcard_mime_types):
-        print('WARN: vcard is not of an expected mime type: ' +
-              accept_str + ' ' + path)
         return False
+    print('Downloading vcard ' + path)
     if path.startswith('/@'):
         if '/@/' not in path:
             path = path.replace('/@', '/users/', 1)
