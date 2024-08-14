@@ -36,6 +36,7 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
         'text/vcard',
         'application/vcard+xml'
     )
+    print('DEBUG: vcard path ' + path)
     if not string_contains(accept_str, vcard_mime_types):
         return False
     print('Downloading vcard ' + path)
