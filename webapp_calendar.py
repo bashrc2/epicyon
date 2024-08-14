@@ -336,9 +336,11 @@ def _html_calendar_day(person_cache: {}, translate: {},
     calendar_str += '</table>\n</main>\n'
 
     # icalendar download link
+    # NOTE: don't use download="preferredfilename" which is
+    # unsupported by some browsers
     calendar_str += \
         '    <a href="' + path + '?ical=true" ' + \
-        'download="icalendar.ics" class="imageAnchor" tabindex="3">' + \
+        'download class="imageAnchor" tabindex="3">' + \
         '<img class="ical" src="/icons/ical.png" ' + \
         'title="iCalendar" alt="iCalendar" /></a>\n'
 
@@ -657,9 +659,11 @@ def html_calendar(person_cache: {}, translate: {},
         translate['Add to the calendar'] + '</a></p>\n<p>' + \
         show_reminders_link + '</p>\n</center>\n'
 
+    # NOTE: don't use download="preferredfilename" which is
+    # unsupported by some browsers
     calendar_icon_str = \
         '    <a href="' + path + '?ical=true" ' + \
-        'download="icalendar.ics" class="imageAnchor" tabindex="3">' + \
+        'download class="imageAnchor" tabindex="3">' + \
         '<img class="ical" src="/icons/ical.png" ' + \
         'title="iCalendar" alt="iCalendar" /></a>\n'
 

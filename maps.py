@@ -831,16 +831,14 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
         period_str2 = period_str.replace('Last ', '').lower()
         endpoint_str = \
             '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
-        download_filename = \
-            (tag_name + '-' +
-             period_str.lower()).replace(' ', '_') + '.' + map_format
         if html_str:
             html_str += ' '
         description = period_str
         if translate.get(period_str):
             description = translate[period_str]
-        html_str += '<a href="' + endpoint_str + \
-            '" download="' + download_filename + '">' + \
+        # NOTE: don't use download="preferredfilename" which is
+        # unsupported by some browsers
+        html_str += '<a href="' + endpoint_str + '" download>' + \
             description + '</a>'
     if html_str:
         html_str = '📌 ' + html_str

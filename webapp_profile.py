@@ -783,10 +783,11 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                                        translate)
 
     # show vcard download link
+    # NOTE: don't use download="preferredfilename" which is
+    # unsupported by some browsers
     html_str += \
         '    <a href="/users/' + nickname + '.vcf" ' + \
-        'type="text/vcard" ' + \
-        'tabindex="1" class="imageAnchor">' + \
+        'type="text/vcard" tabindex="1" class="imageAnchor">' + \
         '<img class="vcard" src="/icons/vcard.png" ' + \
         'title="vCard" alt="vCard" /></a>\n'
 
@@ -2842,9 +2843,11 @@ def _html_edit_profile_import_export(nickname: str, domain: str,
         '<p><a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
         translate['Following'] + '</label></a>'
+    # NOTE: don't use download="preferredfilename" which is
+    # unsupported by some browsers
     edit_profile_form += \
         ' <a href="/users/' + nickname + '/followingaccounts.csv" ' + \
-        'download="' + nickname + '@' + domain + '_following.csv">' + \
+        'download>' + \
         '<label class="labels">⇩ CSV</label></a></p><br>\n'
     followers_str = translate['Followers']
     if premium:
