@@ -16,6 +16,7 @@ from httpcodes import http_503
 from httpheaders import set_headers
 from utils import acct_dir
 from utils import load_json
+from utils import string_contains
 from pgp import actor_to_vcard_xml
 from pgp import actor_to_vcard
 
@@ -31,9 +32,15 @@ def show_vcard(self, base_dir: str, path: str, calling_domain: str,
         accept_str = 'text/vcard'
     else:
         accept_str = self.headers['Accept']
-    print('vcard Accept: ' + accept_str)
-    if 'text/vcard' not in accept_str and \
-       'application/vcard+xml' not in accept_str:
+    vcard_mime_types = (
+        'text/vcard',
+        'application/vcard+xml',
+        'application/xml',
+        'application/xhtml+xml'
+    )
+    if not string_contains(accept_str, vcard_mime_types):
+        print('WARN: vcard is not of an expected mime type: ' +
+              accept_str)
         return False
     if path.startswith('/@'):
         if '/@/' not in path:
