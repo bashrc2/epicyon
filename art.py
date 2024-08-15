@@ -25,7 +25,9 @@ art_sites = (
     'squarespace.com', 'alamy.com', 'shutterstock.com',
     'dreamstime.com', 'canstockphoto.com',
     'stock.adobe.com', 'gettyimages.', 'istockphoto.com',
-    'stocksy.com', '500px.com', 'fineartamerica.com'
+    'stocksy.com', '500px.com', 'fineartamerica.com',
+    '//photos.', 'ipernity.com', 'imgur.com', 'flickr.com',
+    'shotshare.dev'
 )
 
 
