@@ -31,6 +31,9 @@ def get_matrix_address(actor_json: {}) -> str:
         if not name_value_lower.startswith('matrix'):
             if not name_value_lower.startswith('chat'):
                 continue
+        if 'xmpp' in name_value_lower or \
+           'jabber' in name_value_lower:
+            continue
         if not property_value.get('type'):
             continue
         prop_value_name, _ = \
@@ -48,9 +51,8 @@ def get_matrix_address(actor_json: {}) -> str:
             address_text = address_text.split('matrix')[1]
         elif 'Matrix' in address_text:
             address_text = address_text.split('Matrix')[1]
-        if '@' not in address_text:
-            continue
-        address_text = '@' + address_text.split('@', 1)[1]
+        if '@' in address_text:
+            address_text = '@' + address_text.split('@', 1)[1]
         if ' ' in address_text:
             address_text = address_text.split(' ')[0]
         if '|' in address_text:
