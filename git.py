@@ -265,7 +265,7 @@ def get_repo_url(actor_json: {}) -> str:
         repo_url = remove_html(repo_url)
         return remove_link_tracking(repo_url)
 
-    repo_sites = ('github.com', 'gitlab.com', 'codeberg.net')
+    repo_sites = ('github.com', 'gitlab.com', 'codeberg.org')
 
     for property_value in actor_json['attachment']:
         if not property_value.get('type'):
