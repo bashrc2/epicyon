@@ -42,6 +42,21 @@ def get_pixelfed(actor_json: {}) -> str:
             continue
         pixelfed_text = property_value[prop_value_name]
         return remove_html(pixelfed_text)
+
+    for property_value in actor_json['attachment']:
+        if not property_value.get('type'):
+            continue
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        if not property_value['type'].endswith('PropertyValue'):
+            continue
+        pixelfed_text = property_value[prop_value_name]
+        if '//pixelfed.' not in pixelfed_text:
+            continue
+        return remove_html(pixelfed_text)
+
     return ''
 
 
