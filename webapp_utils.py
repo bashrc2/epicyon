@@ -287,6 +287,7 @@ def get_content_warning_button(post_id: str, translate: {},
 
 def open_content_warning(text: str, translate: {}) -> str:
     """Opens content warning when replying to a post with a cw
+    so that you can see what you are replying to
     """
     text = text.replace('<details>', '').replace('</details>', '')
     return text.replace(translate['SHOW MORE'], '', 1)
