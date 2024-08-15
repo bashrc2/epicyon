@@ -14,7 +14,12 @@ from utils import string_contains
 from utils import resembles_url
 
 music_fieldnames = ('music')
-music_sites = ('bandcamp.com', 'soundcloud.com')
+
+music_sites = (
+    'bandcamp.com', 'soundcloud.com', 'beatport.com', 'last.fm',
+    'hypeddit.com', 'mixcloud.com', 'reverbnation.com', 'soundclick.com',
+    'pandora.com'
+)
 
 
 def get_music_site_url(actor_json: {}) -> str:
