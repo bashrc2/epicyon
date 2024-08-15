@@ -16,6 +16,7 @@ from utils import text_in_file
 from utils import get_attachment_property_value
 from utils import remove_html
 from utils import get_attributed_to
+from utils import string_contains
 
 
 def _git_format_content(content: str) -> str:
@@ -263,4 +264,22 @@ def get_repo_url(actor_json: {}) -> str:
             continue
         repo_url = remove_html(repo_url)
         return remove_link_tracking(repo_url)
+
+    repo_sites = ('github.com', 'gitlab.com', 'codeberg.net')
+
+    for property_value in actor_json['attachment']:
+        if not property_value.get('type'):
+            continue
+        prop_value_name, prop_value = \
+            get_attachment_property_value(property_value)
+        if not prop_value:
+            continue
+        if not property_value['type'].endswith('PropertyValue'):
+            continue
+        repo_url = property_value[prop_value_name]
+        if not string_contains(repo_url, repo_sites):
+            continue
+        repo_url = remove_html(repo_url)
+        return remove_link_tracking(repo_url)
+
     return ''
