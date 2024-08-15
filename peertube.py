@@ -42,6 +42,20 @@ def get_peertube(actor_json: {}) -> str:
             continue
         peertube_text = property_value[prop_value_name]
         return remove_html(peertube_text)
+
+    for property_value in actor_json['attachment']:
+        if not property_value.get('type'):
+            continue
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        if not property_value['type'].endswith('PropertyValue'):
+            continue
+        peertube_text = property_value[prop_value_name]
+        if '//peertube.' not in peertube_text:
+            continue
+        return remove_html(peertube_text)
     return ''
 
 
