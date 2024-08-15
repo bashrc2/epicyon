@@ -457,7 +457,8 @@ def html_new_post(edit_post_params: {},
                                                     bold_reading, dogwhistles,
                                                     minimize_all_images, None,
                                                     buy_sites, auto_cw_cache)
-                        new_post_text += open_content_warning(replied_to_post)
+                        new_post_text += \
+                            open_content_warning(replied_to_post, translate)
                         # about the author
                         if has_object_dict(post_json_object):
                             if post_json_object['object'].get('attributedTo'):
