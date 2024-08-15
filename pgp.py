@@ -37,6 +37,7 @@ from matrix import get_matrix_address
 from briar import get_briar_address
 from cwtch import get_cwtch_address
 from blog import get_blog_address
+from donate import get_website
 
 
 from utils import get_attachment_property_value
@@ -719,7 +720,7 @@ def pgp_public_key_upload(base_dir: str, session,
     return actor_update
 
 
-def actor_to_vcard(actor: {}, domain: str) -> str:
+def actor_to_vcard(actor: {}, domain: str, translate: {}) -> str:
     """Returns a vcard for a given actor
     """
     actor_url_str = get_url_from_post(actor['url'])
@@ -771,6 +772,9 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     peertube = get_peertube(actor)
     if peertube:
         vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=PeerTube:' + peertube + '\n'
+    website = get_website(actor, translate)
+    if website:
+        vcard_str += 'URL:' + website + '\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
@@ -821,7 +825,7 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
     return vcard_str
 
 
-def actor_to_vcard_xml(actor: {}, domain: str) -> str:
+def actor_to_vcard_xml(actor: {}, domain: str, translate: {}) -> str:
     """Returns a xml formatted vcard for a given actor
     """
     vcard_str = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -906,6 +910,11 @@ def actor_to_vcard_xml(actor: {}, domain: str) -> str:
         vcard_str += '    <url>' + \
             '<parameters><type><text>blog</text></type></parameters>' + \
             '<uri>' + blog_address + '</uri></url>\n'
+    website = get_website(actor, translate)
+    if website:
+        vcard_str += '    <url>' + \
+            '<parameters><type><text>website</text></type></parameters>' + \
+            '<uri>' + website + '</uri></url>\n'
     vcard_str += '    <rev>' + actor['published'] + '</rev>\n'
     url_str = get_url_from_post(actor['icon']['url'])
     if url_str:
