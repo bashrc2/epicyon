@@ -141,6 +141,20 @@ def get_gemini_link(actor_json: {}) -> str:
             continue
         url = remove_html(property_value[prop_value_name])
         return remove_link_tracking(url)
+
+    for property_value in actor_json['attachment']:
+        if not property_value.get('type'):
+            continue
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        if not property_value['type'].endswith('PropertyValue'):
+            continue
+        url = remove_html(property_value[prop_value_name])
+        if 'gemini://' not in url:
+            continue
+        return remove_link_tracking(url)
     return ''
 
 
