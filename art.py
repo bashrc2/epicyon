@@ -27,7 +27,22 @@ art_sites = (
     'stock.adobe.com', 'gettyimages.', 'istockphoto.com',
     'stocksy.com', '500px.com', 'fineartamerica.com',
     '//photos.', 'ipernity.com', 'imgur.com', 'flickr.com',
-    'shotshare.dev'
+    'shotshare.dev', 'artsy.net', 'saatchiart.com',
+    'society6.com', 'artpal.com', 'artfinder.com',
+    'singulart.com', 'fineartamerica.com', 'redbubble.com',
+    'amazon.com/Art/', 'mademe.co.uk', 'artsthread.com',
+    'theaoi.com', 'marketplace.asos.com', 'behance.net',
+    'bristolmarket.co.uk', 'craftersmarket.uk',
+    'craftscouncil.org.uk', 'craftyfoxmarket.co.uk',
+    'designnation.co.uk', 'eclecticartisans.com',
+    'findamaker.co.uk', 'handmadeinbritain.co.uk',
+    'lisavalentinehome.co.uk', 'notonthehighstreet.com',
+    'numonday.com', 'odissa.co.uk', 'onlineceramics.com',
+    'pedddle.com', 'rebelsmarket.com', 'rockettstgeorge.co.uk',
+    'spoonflower.com', 'artisanfounder.com',
+    'thebritishcrafthouse.co.uk', 'thefuturekept.com',
+    'threadless.com', 'trouva.com', 'wolfandbadger.com',
+    'yoyoandflo.com'
 )
 
 
