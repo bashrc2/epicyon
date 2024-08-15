@@ -741,6 +741,13 @@ def actor_to_vcard(actor: {}, domain: str) -> str:
         vcard_str += 'EMAIL;TYPE=internet:' + email_address + '\n'
     vcard_str += 'IMPP:fediverse:' + \
         actor['preferredUsername'] + '@' + domain + '\n'
+    if actor.get('vcard:bday'):
+        birthday_str = actor['vcard:bday']
+        if '-' in birthday_str:
+            birthday = birthday_str.split('-')
+            if len(birthday) == 3:
+                vcard_str += \
+                    'BDAY:' + birthday[0] + birthday[1] + birthday[2] + '\n'
     pronouns = get_pronouns(actor)
     if pronouns:
         vcard_str += 'PRONOUNS:' + pronouns + '\n'
@@ -833,6 +840,15 @@ def actor_to_vcard_xml(actor: {}, domain: str) -> str:
         '<parameters><type><text>fediverse</text></type></parameters>' + \
         '<text>' + actor['preferredUsername'] + '@' + domain + \
         '</text></impp>\n'
+    if actor.get('vcard:bday'):
+        birthday_str = actor['vcard:bday']
+        if '-' in birthday_str:
+            birthday = birthday_str.split('-')
+            if len(birthday) == 3:
+                vcard_str += \
+                    '    <bday><text>' + \
+                    birthday[0] + birthday[1] + birthday[2] + \
+                    '</text></bday>\n'
     pronouns = get_pronouns(actor)
     if pronouns:
         vcard_str += '    <pronouns><text>' + pronouns + '</text></pronouns>\n'
