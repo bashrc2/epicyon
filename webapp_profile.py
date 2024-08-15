@@ -69,6 +69,7 @@ from donate import get_gemini_link
 from pronouns import get_pronouns
 from pixelfed import get_pixelfed
 from discord import get_discord
+from art import get_art_site_url
 from music import get_music_site_url
 from youtube import get_youtube
 from peertube import get_peertube
@@ -332,6 +333,7 @@ def html_profile_after_search(authorized: bool,
 
     pronouns = get_pronouns(profile_json)
     discord = get_discord(profile_json)
+    art_site_url = get_art_site_url(profile_json)
     music_site_url = get_music_site_url(profile_json)
     youtube = get_youtube(profile_json)
     peertube = get_peertube(profile_json)
@@ -461,7 +463,8 @@ def html_profile_after_search(authorized: bool,
                                          person_url, no_of_books,
                                          birth_date,
                                          youtube, peertube, pixelfed,
-                                         discord, music_site_url)
+                                         discord, music_site_url,
+                                         art_site_url)
 
     domain_full = get_full_domain(domain, port)
 
@@ -834,7 +837,8 @@ def _get_profile_header_after_search(base_dir: str,
                                      peertube: str,
                                      pixelfed: str,
                                      discord: str,
-                                     music_site_url: str) -> str:
+                                     music_site_url: str,
+                                     art_site_url: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -959,6 +963,9 @@ def _get_profile_header_after_search(base_dir: str,
     if discord:
         html_str += '  <p>Discord: <a href="' + discord + '">' + \
             discord + '</a></p>\n'
+    if art_site_url:
+        html_str += '  <p>' + translate['Art'] + ': <a href="' + \
+            art_site_url + '">' + art_site_url + '</a></p>\n'
     if music_site_url:
         html_str += '  <p>' + translate['Music'] + ': <a href="' + \
             music_site_url + '">' + music_site_url + '</a></p>\n'
@@ -1130,6 +1137,7 @@ def html_profile(signing_priv_key_pem: str,
     pronouns = get_pronouns(profile_json)
     pixelfed = get_pixelfed(profile_json)
     discord = get_discord(profile_json)
+    art_site_url = get_art_site_url(profile_json)
     music_site_url = get_music_site_url(profile_json)
     youtube = get_youtube(profile_json)
     peertube = get_peertube(profile_json)
@@ -1142,7 +1150,7 @@ def html_profile(signing_priv_key_pem: str,
     verified_site_checkmark = '✔'
     premium = is_premium_account(base_dir, nickname, domain)
     if donate_url or website_url or repo_url or pronouns or discord or \
-       music_site_url or youtube or peertube or pixelfed or \
+       art_site_url or music_site_url or youtube or peertube or pixelfed or \
        xmpp_address or matrix_address or \
        ssb_address or tox_address or briar_address or cwtch_address or \
        pgp_pub_key or enigma_pub_key or pgp_fingerprint or email_address:
@@ -1217,6 +1225,11 @@ def html_profile(signing_priv_key_pem: str,
             donate_section += \
                 '<p>Discord: <a href="' + \
                 discord + '" tabindex="1">' + discord + '</a></p>\n'
+        if art_site_url:
+            donate_section += \
+                '<p>' + translate['Art'] + ': <a href="' + \
+                art_site_url + '" tabindex="1">' + \
+                art_site_url + '</a></p>\n'
         if music_site_url:
             donate_section += \
                 '<p>' + translate['Music'] + ': <a href="' + \
@@ -2779,7 +2792,8 @@ def _html_edit_profile_contact_info(email_address: str,
                                     peertube: str,
                                     pixelfed: str,
                                     discord: str,
-                                    music_site_url: str) -> str:
+                                    music_site_url: str,
+                                    art_site_url: str) -> str:
     """Contact Information section of edit profile screen
     """
     edit_profile_form = begin_edit_section(translate['Contact Details'])
@@ -2803,6 +2817,8 @@ def _html_edit_profile_contact_info(email_address: str,
                                          pixelfed)
     edit_profile_form += edit_text_field('Discord', 'discordChannel',
                                          discord)
+    edit_profile_form += edit_text_field(translate['Art'],
+                                         'artSiteUrl', art_site_url)
     edit_profile_form += edit_text_field(translate['Music'],
                                          'musicSiteUrl', music_site_url)
     edit_profile_form += end_edit_section()
@@ -3255,7 +3271,7 @@ def html_edit_profile(server, translate: {},
     pgp_fingerprint = pronouns = peertube = youtube = pixelfed = ''
     ssb_address = blog_address = matrix_address = tox_address = ''
     cwtch_address = briar_address = xmpp_address = ''
-    discord = music_site_url = ''
+    discord = music_site_url = art_site_url = ''
     manually_approves_followers = reject_spam_actors = ''
 
     actor_json = load_json(actor_filename)
@@ -3269,6 +3285,7 @@ def html_edit_profile(server, translate: {},
         pronouns = get_pronouns(actor_json)
         pixelfed = get_pixelfed(actor_json)
         discord = get_discord(actor_json)
+        art_site_url = get_art_site_url(actor_json)
         music_site_url = get_music_site_url(actor_json)
         youtube = get_youtube(actor_json)
         peertube = get_peertube(actor_json)
@@ -3492,7 +3509,8 @@ def html_edit_profile(server, translate: {},
                                         briar_address,
                                         cwtch_address, translate,
                                         youtube, peertube, pixelfed,
-                                        discord, music_site_url)
+                                        discord, music_site_url,
+                                        art_site_url)
 
     # notification settings
     edit_profile_form += \

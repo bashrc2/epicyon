@@ -29,6 +29,7 @@ from session import post_json
 from pronouns import get_pronouns
 from pixelfed import get_pixelfed
 from discord import get_discord
+from art import get_art_site_url
 from music import get_music_site_url
 from youtube import get_youtube
 from peertube import get_peertube
@@ -762,6 +763,10 @@ def actor_to_vcard(actor: {}, domain: str, translate: {}) -> str:
     pixelfed = get_pixelfed(actor)
     if pixelfed:
         vcard_str += 'SOCIALPROFILE;SERVICE-TYPE=Pixelfed:' + pixelfed + '\n'
+    art_site_url = get_art_site_url(actor)
+    if art_site_url:
+        vcard_str += \
+            'SOCIALPROFILE;SERVICE-TYPE=Art:' + art_site_url + '\n'
     music_site_url = get_music_site_url(actor)
     if music_site_url:
         vcard_str += \
@@ -871,6 +876,11 @@ def actor_to_vcard_xml(actor: {}, domain: str, translate: {}) -> str:
         vcard_str += '    <url>' + \
             '<parameters><type><text>youtube</text></type></parameters>' + \
             '<uri>' + youtube + '</uri></url>\n'
+    art_site_url = get_art_site_url(actor)
+    if art_site_url:
+        vcard_str += '    <url>' + \
+            '<parameters><type><text>art</text></type></parameters>' + \
+            '<uri>' + art_site_url + '</uri></url>\n'
     music_site_url = get_music_site_url(actor)
     if music_site_url:
         vcard_str += '    <url>' + \
