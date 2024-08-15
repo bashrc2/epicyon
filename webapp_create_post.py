@@ -30,6 +30,7 @@ from utils import get_supported_languages
 from utils import text_in_file
 from utils import get_attributed_to
 from utils import get_full_domain
+from webapp_utils import open_content_warning
 from webapp_utils import edit_check_box
 from webapp_utils import get_buy_links
 from webapp_utils import html_following_data_list
@@ -428,7 +429,7 @@ def html_new_post(edit_post_params: {},
                         minimize_all_images = False
                         if nickname in min_images_for_accounts:
                             minimize_all_images = True
-                        new_post_text += \
+                        replied_to_post = \
                             individual_post_as_html(signing_priv_key_pem,
                                                     True, recent_posts_cache,
                                                     max_recent_posts,
@@ -456,6 +457,7 @@ def html_new_post(edit_post_params: {},
                                                     bold_reading, dogwhistles,
                                                     minimize_all_images, None,
                                                     buy_sites, auto_cw_cache)
+                        new_post_text += open_content_warning(replied_to_post)
                         # about the author
                         if has_object_dict(post_json_object):
                             if post_json_object['object'].get('attributedTo'):

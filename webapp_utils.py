@@ -285,6 +285,12 @@ def get_content_warning_button(post_id: str, translate: {},
         '</div></details>\n'
 
 
+def open_content_warning(text: str) -> str:
+    """Opens content warning when replying to a post with a cw
+    """
+    return text.replace('<details>', '<div>').replace('</details>', '</div>')
+
+
 def _set_actor_property_url(actor_json: {},
                             property_name: str, url: str) -> None:
     """Sets a url for the given actor property
