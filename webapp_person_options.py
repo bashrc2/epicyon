@@ -173,7 +173,8 @@ def html_person_options(default_timeline: str,
                         sites_unavailable: [],
                         youtube: str, peertube: str,
                         pixelfed: str,
-                        discord: str) -> str:
+                        discord: str,
+                        music_site_url: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_link_str = ''
@@ -448,6 +449,11 @@ def html_person_options(default_timeline: str,
             '  <p class="imText">Discord' + \
             ': <a href="' + remove_html(discord) + '">' + \
             discord + '</a></p>\n'
+    if music_site_url:
+        options_str += \
+            '  <p class="imText">' + translate['Music'] + \
+            ': <a href="' + remove_html(music_site_url) + '">' + \
+            music_site_url + '</a></p>\n'
     if youtube:
         options_str += \
             '  <p class="imText">YouTube' + \

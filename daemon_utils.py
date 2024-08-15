@@ -46,6 +46,7 @@ from donate import get_website
 from donate import get_gemini_link
 from pronouns import get_pronouns
 from discord import get_discord
+from music import get_music_site_url
 from youtube import get_youtube
 from pixelfed import get_pixelfed
 from peertube import get_peertube
@@ -662,6 +663,7 @@ def show_person_options(self, calling_domain: str, path: str,
         pronouns = None
         pixelfed = None
         discord = None
+        music_site_url = None
         youtube = None
         peertube = None
         xmpp_address = None
@@ -695,6 +697,7 @@ def show_person_options(self, calling_domain: str, path: str,
             pronouns = get_pronouns(actor_json)
             pixelfed = get_pixelfed(actor_json)
             discord = get_discord(actor_json)
+            music_site_url = get_music_site_url(actor_json)
             youtube = get_youtube(actor_json)
             peertube = get_peertube(actor_json)
             xmpp_address = get_xmpp_address(actor_json)
@@ -771,7 +774,7 @@ def show_person_options(self, calling_domain: str, path: str,
                                 repo_url,
                                 self.server.sites_unavailable,
                                 youtube, peertube, pixelfed,
-                                discord)
+                                discord, music_site_url)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

@@ -83,6 +83,8 @@ from pronouns import get_pronouns
 from pronouns import set_pronouns
 from discord import get_discord
 from discord import set_discord
+from music import get_music_site_url
+from music import set_music_site_url
 from youtube import get_youtube
 from youtube import set_youtube
 from pixelfed import get_pixelfed
@@ -2007,6 +2009,23 @@ def _profile_post_youtube(actor_json: {}, fields: {},
     return actor_changed
 
 
+def _profile_post_music_site_url(actor_json: {}, fields: {},
+                                 actor_changed: bool) -> bool:
+    """ HTTP POST change music site url address
+    """
+    current_music = get_music_site_url(actor_json)
+    if fields.get('musicSiteUrl'):
+        if fields['musicSiteUrl'] != current_music:
+            set_music_site_url(actor_json,
+                               fields['musicSiteUrl'])
+            actor_changed = True
+    else:
+        if current_music:
+            set_music_site_url(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_discord(actor_json: {}, fields: {},
                           actor_changed: bool) -> bool:
     """ HTTP POST change discord channel address
@@ -2936,6 +2955,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_youtube(actor_json, fields,
                                           actor_changed)
+
+                actor_changed = \
+                    _profile_post_music_site_url(actor_json, fields,
+                                                 actor_changed)
 
                 actor_changed = \
                     _profile_post_peertube(actor_json, fields,
