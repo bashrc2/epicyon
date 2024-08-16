@@ -11,6 +11,10 @@ __module_group__ = "Profile Metadata"
 from utils import get_attachment_property_value
 from utils import remove_html
 from utils import string_contains
+from utils import resembles_url
+from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
+from utils import get_full_domain
 
 pixelfed_fieldnames = ['pixelfed']
 
@@ -40,8 +44,25 @@ def get_pixelfed(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        pixelfed_text = property_value[prop_value_name]
-        return remove_html(pixelfed_text)
+        pixelfed_text = remove_html(property_value[prop_value_name])
+        if not resembles_url(pixelfed_text):
+            if '@' not in pixelfed_text:
+                continue
+            # a pixelfed handle has been given, rather than a url
+            nickname = get_nickname_from_actor(pixelfed_text)
+            domain, port = get_domain_from_actor(pixelfed_text)
+            if not nickname or not domain:
+                continue
+            http_prefix = 'https://'
+            if domain.endswith('.onion') or \
+               domain.endswith('.i2p'):
+                http_prefix = 'http://'
+            pixelfed_text = \
+                http_prefix + \
+                get_full_domain(domain, port) + '/@' + nickname
+        if not resembles_url(pixelfed_text):
+            continue
+        return pixelfed_text
 
     for property_value in actor_json['attachment']:
         if not property_value.get('type'):
@@ -55,7 +76,8 @@ def get_pixelfed(actor_json: {}) -> str:
         pixelfed_text = property_value[prop_value_name]
         if '//pixelfed.' not in pixelfed_text:
             continue
-        return remove_html(pixelfed_text)
+        pixelfed_text = remove_html(pixelfed_text)
+        return pixelfed_text
 
     return ''
 
