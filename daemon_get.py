@@ -260,6 +260,8 @@ def daemon_http_get(self) -> None:
             return
 
     # headers used by LLM scrapers
+    # oai-host-hash requests come from Microsoft Corporation,
+    # which has a long term partnership with OpenAI
     if 'oai-host-hash' in self.headers:
         msg = html_poisoned(self.server.dictionary)
         msg = msg.encode('utf-8')
