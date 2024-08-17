@@ -15,7 +15,7 @@ Key features:
  * Does not require much RAM, either on server or client.
  * Suitable for installation on single board computers.
  * No timeline algorithms.
- * No javascript.
+ * No javascript. [Progressive enhancement class A](https://dillo-browser.github.io/pec/).
  * No database. Data stored as ordinary files.
  * No fashionable web frameworks. *"Boring by design"*.
  * No blockchain garbage.
@@ -23,6 +23,8 @@ Key features:
  * AGPL license, which big tech hates.
 
 Epicyon is for people who are tired of *big anything* and just want to DIY their online social experience without much fuss or expense. Think *water cooler discussions* rather than *shouting into the void*, in which you're mainly just reading and responding to the posts of people that you're following.
+
+<img src="https://libreserver.org/epicyon/img/progressive_enhancement_badge.png" width="10%" alt="When Javascript is disabled all the essential and non-essential functionality works well. It maintains a high degree of similarity with the reference page." title="When Javascript is disabled all the essential and non-essential functionality works well. It maintains a high degree of similarity with the reference page."/>
 
 [User Manual](manual/manual.epub) - [Keyboard navigation](README_keyboard_navigation.md) - [Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Software Architecture](README_architecture.md) - [Code of Conduct](code-of-conduct.md) - [Principles of Unity](principlesofunity.md) - [C2S Desktop Client](README_desktop_client.md) - [Coding Style](README_coding_style.md)
 
