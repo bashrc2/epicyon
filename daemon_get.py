@@ -320,7 +320,7 @@ def daemon_http_get(self) -> None:
     ua_str = get_user_agent(self)
 
     if not _permitted_crawler_path(self.path):
-        block, self.server.blocked_cache_last_updated = \
+        block, self.server.blocked_cache_last_updated, llm = \
             blocked_user_agent(calling_domain, ua_str,
                                self.server.news_instance,
                                self.server.debug,
@@ -334,6 +334,15 @@ def daemon_http_get(self) -> None:
                                self.server.known_bots,
                                self.path, self.server.block_military)
         if block:
+            if llm:
+                msg = html_poisoned(self.server.dictionary)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                set_headers(self, 'text/html', msglen,
+                            '', calling_domain, False)
+                write2(self, msg)
+                print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
+                return
             http_400(self)
             return
 

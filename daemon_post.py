@@ -163,7 +163,7 @@ def daemon_http_post(self) -> None:
 
     ua_str = get_user_agent(self)
 
-    block, self.server.blocked_cache_last_updated = \
+    block, self.server.blocked_cache_last_updated, _ = \
         blocked_user_agent(calling_domain, ua_str,
                            self.server.news_instance,
                            self.server.debug,

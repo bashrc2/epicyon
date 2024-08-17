@@ -110,32 +110,49 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
                        blocked_cache_update_secs: int,
                        crawlers_allowed: [],
                        known_bots: [], path: str,
-                       block_military: {}) -> (bool,):
+                       block_military: {}):
     """Should a GET or POST be blocked based upon its user agent?
     """
     if not agent_str:
-        return True, blocked_cache_last_updated
+        return True, blocked_cache_last_updated, False
 
     agent_str_lower = agent_str.lower()
     for ua_block in default_user_agent_blocks:
         if ua_block in agent_str_lower:
             print('BLOCK: Blocked User agent 1: ' + ua_block)
-            return True, blocked_cache_last_updated
+            return True, blocked_cache_last_updated, False
 
     agent_domain = None
 
     if agent_str:
+        contains_bot_string = False
+        llm = False
+
+        # is this an LLM crawler?
+        llm_bot_strings = (
+            'gptbot', '-ai/', ' ai/', '-ai ', ' ai ', 'chatgpt',
+            'anthropic', 'mlbot'
+        )
+        for bot_str in llm_bot_strings:
+            if bot_str in agent_str_lower:
+                if '://bot' not in agent_str_lower and \
+                   '://robot' not in agent_str_lower and \
+                   '://spider' not in agent_str_lower and \
+                   'pixelfedbot/' not in agent_str_lower:
+                    contains_bot_string = True
+                    llm = True
+                    break
+
         # is this a web crawler? If so then block it by default
         # unless this is a news instance or if it is in the allowed list
         bot_strings = (
             'bot/', 'bot-', '/bot', '_bot', 'bot_', 'bot;', ' bot ',
-            '/robot', 'gptbot', '-ai/', ' ai/', '-ai ',
-            ' ai ', 'spider/', 'spider.ht', '/spider.', '-spider',
-            'externalhit/', 'chatgpt', 'google', 'anthropic',
+            '/robot', 'spider/', 'spider.ht', '/spider.', '-spider',
+            'externalhit/', 'google',
             'facebook', 'slurp', 'crawler', 'crawling', ' crawl ',
             'gigablast', 'archive.org', 'httrack',
             'spider-', ' spider ', 'findlink', 'ips-agent',
-            'woriobot', 'mlbot', 'webbot', 'webcrawl',
+            'woriobot', 'webbot', 'webcrawl',
             'voilabot', 'rank/', 'ezooms', 'heritrix', 'indeedbot',
             'woobot', 'infobot', 'viewbot', 'swimgbot', 'eright',
             'apercite', 'bot (', 'summify', 'ccbot', 'linkfind',
@@ -143,7 +160,6 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'drupact', 'searchengine', 'coccoc',
             'explorer/', 'explorer;', 'crystalsemantics',
             'scraper/', ' scraper ', ' scrape ', 'scraping')
-        contains_bot_string = False
         for bot_str in bot_strings:
             if bot_str in agent_str_lower:
                 if '://bot' not in agent_str_lower and \
@@ -160,18 +176,18 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             # if this is a news instance then we want it
             # to be indexed by search engines
             if news_instance:
-                return False, blocked_cache_last_updated
+                return False, blocked_cache_last_updated, llm
             # is this crawler allowed?
             for crawler in crawlers_allowed:
                 if crawler.lower() in agent_str_lower:
-                    return False, blocked_cache_last_updated
+                    return False, blocked_cache_last_updated, llm
             print('BLOCK: Blocked Crawler: ' + agent_str)
-            return True, blocked_cache_last_updated
+            return True, blocked_cache_last_updated, llm
         # get domain name from User-Agent
         agent_domain = user_agent_domain(agent_str, debug)
     else:
         # no User-Agent header is present
-        return True, blocked_cache_last_updated
+        return True, blocked_cache_last_updated, False
 
     # is the User-Agent type blocked? eg. "Mastodon"
     if user_agents_blocked:
@@ -181,10 +197,10 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
                 blocked_ua = True
                 break
         if blocked_ua:
-            return True, blocked_cache_last_updated
+            return True, blocked_cache_last_updated, False
 
     if not agent_domain:
-        return False, blocked_cache_last_updated
+        return False, blocked_cache_last_updated, False
 
     # is the User-Agent domain blocked
     blocked_ua = False
@@ -225,4 +241,4 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
                                   agent_domain)
                             break
 
-    return blocked_ua, blocked_cache_last_updated
+    return blocked_ua, blocked_cache_last_updated, False
