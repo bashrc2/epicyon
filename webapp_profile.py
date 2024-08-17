@@ -63,9 +63,9 @@ from posts import is_moderator
 from posts import parse_user_feed
 from posts import is_create_inside_announce
 from posts import get_max_profile_posts
+from website import get_website
+from website import get_gemini_link
 from donate import get_donation_url
-from donate import get_website
-from donate import get_gemini_link
 from pronouns import get_pronouns
 from pixelfed import get_pixelfed
 from discord import get_discord

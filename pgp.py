@@ -38,7 +38,7 @@ from matrix import get_matrix_address
 from briar import get_briar_address
 from cwtch import get_cwtch_address
 from blog import get_blog_address
-from donate import get_website
+from website import get_website
 
 
 from utils import get_attachment_property_value

@@ -41,9 +41,9 @@ from utils import resembles_url
 from utils import is_system_account
 from cache import check_for_changed_actor
 from cache import get_person_from_cache
+from website import get_website
+from website import get_gemini_link
 from donate import get_donation_url
-from donate import get_website
-from donate import get_gemini_link
 from pronouns import get_pronouns
 from discord import get_discord
 from art import get_art_site_url

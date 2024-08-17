@@ -120,12 +120,12 @@ from cwtch import get_cwtch_address
 from cwtch import set_cwtch_address
 from enigma import get_enigma_pub_key
 from enigma import set_enigma_pub_key
+from website import get_website
+from website import set_website
+from website import get_gemini_link
+from website import set_gemini_link
 from donate import get_donation_url
 from donate import set_donation_url
-from donate import get_website
-from donate import set_website
-from donate import get_gemini_link
-from donate import set_gemini_link
 from person import get_featured_hashtags
 from person import set_featured_hashtags
 from blocking import save_block_federated_endpoints
