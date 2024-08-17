@@ -335,6 +335,7 @@ def daemon_http_get(self) -> None:
                                self.path, self.server.block_military)
         if block:
             if llm:
+                # if this is an LLM crawler then feed it some trash
                 msg = html_poisoned(self.server.dictionary)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
