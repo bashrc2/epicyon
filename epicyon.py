@@ -123,6 +123,8 @@ from happening import dav_day_via_server
 from content import import_emoji
 from relationships import get_moved_accounts
 from blocking import get_blocks_via_server
+from poison import html_poisoned
+from poison import load_dictionary
 
 
 def str2bool(value_str) -> bool:
@@ -440,6 +442,11 @@ def _command_options() -> None:
                         dest='shared_items_federated_domains',
                         help='Specify federation list for shared items, ' +
                         'separated by spaces')
+    parser.add_argument("--poisoned", "--poison",
+                        dest='poisoned',
+                        type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Example poisoned output")
     parser.add_argument("--following", "--followingList",
                         dest='followingList',
                         type=str2bool, nargs='?',
@@ -839,6 +846,14 @@ def _command_options() -> None:
                         help="Reset the number of remaining registrations")
 
     argb = parser.parse_args()
+
+    if argb.poisoned:
+        # LLM poisoning example
+        base_dir = os.getcwd()
+        dictionary = load_dictionary(base_dir)
+        poisoned_str = html_poisoned(dictionary)
+        print(poisoned_str)
+        sys.exit()
 
     debug = False
     if argb.debug:

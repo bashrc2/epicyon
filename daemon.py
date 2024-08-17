@@ -95,6 +95,7 @@ from httpcodes import write2
 from httpheaders import set_headers
 from daemon_utils import has_accept
 from daemon_utils import is_authorized
+from poison import load_dictionary
 
 
 class PubServer(BaseHTTPRequestHandler):
@@ -875,6 +876,9 @@ def run_daemon(accounts_data_dir: str,
 
     # timeout used when getting rss feeds
     httpd.rss_timeout_sec = 20
+
+    # load dictionary used for LLM poisoning
+    httpd.dictionary = load_dictionary(base_dir)
 
     # timeout used when checking for actor changes when clicking an avatar
     # and entering person options screen

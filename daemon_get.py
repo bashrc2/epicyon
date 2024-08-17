@@ -210,6 +210,7 @@ from daemon_get_blog import show_blog_page
 from daemon_get_links import edit_links2
 from daemon_get_login import redirect_to_login_screen
 from daemon_get_login import show_login_screen
+from poison import html_poisoned
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -260,8 +261,13 @@ def daemon_http_get(self) -> None:
 
     # headers used by LLM scrapers
     if 'oai-host-hash' in self.headers:
-        print('GET HTTP LLM scraper bounced: ' + str(self.headers))
-        http_402(self)
+        msg = html_poisoned(self.server.dictionary)
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        set_headers(self, 'text/html', msglen,
+                    '', calling_domain, False)
+        write2(self, msg)
+        print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
         return
 
     # replace invalid .well-known path, prior to checking for suspicious paths
