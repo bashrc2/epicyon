@@ -263,13 +263,13 @@ def daemon_http_get(self) -> None:
     # oai-host-hash requests come from Microsoft Corporation,
     # which has a long term partnership with OpenAI
     if 'oai-host-hash' in self.headers:
+        print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
         msg = html_poisoned(self.server.dictionary)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         set_headers(self, 'text/html', msglen,
                     '', calling_domain, False)
         write2(self, msg)
-        print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
         return
 
     # replace invalid .well-known path, prior to checking for suspicious paths
@@ -336,13 +336,13 @@ def daemon_http_get(self) -> None:
         if block:
             if llm:
                 # if this is an LLM crawler then feed it some trash
+                print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
                 msg = html_poisoned(self.server.dictionary)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
                             '', calling_domain, False)
                 write2(self, msg)
-                print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
                 return
             http_400(self)
             return
