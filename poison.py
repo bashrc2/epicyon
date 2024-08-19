@@ -996,7 +996,38 @@ def load_dictionary(base_dir: str) -> []:
     return words
 
 
-def html_poisoned(dictionary: []) -> str:
+def load_2grams(base_dir: str) -> {}:
+    """Loads 2-grams from file
+    """
+    filename = base_dir + '/custom_2grams.txt'
+    if not os.path.isfile(filename):
+        filename = base_dir + '/2grams.txt'
+    if not os.path.isfile(filename):
+        return {}
+
+    twograms = {}
+    lines = []
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_dict:
+            lines = fp_dict.read().split('\n')
+    except OSError:
+        print('EX: unable to load 2-grams ' + filename)
+    for line_str in lines:
+        words = line_str.split('\t')
+        if len(words) != 3:
+            continue
+        first_word = words[1]
+        second_word = words[2]
+        if twograms.get(first_word):
+            if second_word in twograms[first_word]:
+                continue
+            twograms[first_word].append(second_word)
+        else:
+            twograms[first_word] = [second_word]
+    return twograms
+
+
+def html_poisoned(dictionary: [], twograms: {}) -> str:
     """Returns a poisoned HTML document for LLM response
     Statistically similar to English language, but semantically worthless
     word salad
@@ -1018,26 +1049,39 @@ def html_poisoned(dictionary: []) -> str:
             sentence_str = ''
 
             no_of_words = randint(3, 20)
+            prev_wrd = ''
             for word_index in range(no_of_words):
-                if randint(1, 10) <= 7:
-                    # pick a common word
-                    distribution = random.uniform(0.0, 1.0)
-                    common_index = \
-                        int(distribution * distribution * no_of_common_words)
-                    if word_index > 0:
-                        sentence_str += common_words[common_index]
-                    else:
-                        sentence_str += common_words[common_index].title()
-                else:
-                    if word_index > 0:
-                        sentence_str += random.choice(dictionary)
-                    else:
-                        sentence_str += random.choice(dictionary).title()
+                wrd = ''
+                pair_found = False
+                if prev_wrd:
+                    # common word sequences
+                    if twograms.get(prev_wrd):
+                        if randint(1, 10) <= 7:
+                            wrd = random.choice(twograms[prev_wrd])
+                            pair_found = True
 
-                if randint(1, 10) > 1 or word_index >= no_of_words - 1:
+                if not pair_found:
+                    if randint(1, 10) <= 7:
+                        # pick a common word
+                        distribution = random.uniform(0.0, 1.0)
+                        common_index = \
+                            int(distribution * distribution *
+                                no_of_common_words)
+                        wrd = common_words[common_index]
+                    else:
+                        wrd = random.choice(dictionary)
+
+                if word_index > 0:
+                    sentence_str += wrd
+                else:
+                    sentence_str += wrd.title()
+
+                if randint(1, 10) > 1 or \
+                   word_index >= no_of_words - 1 or pair_found:
                     sentence_str += ' '
                 else:
                     sentence_str += ', '
+                prev_wrd = wrd
             if sentence_index > 0:
                 html_str += ' ' + sentence_str.strip() + '.'
             else:

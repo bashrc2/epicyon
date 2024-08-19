@@ -96,6 +96,7 @@ from httpheaders import set_headers
 from daemon_utils import has_accept
 from daemon_utils import is_authorized
 from poison import load_dictionary
+from poison import load_2grams
 
 
 class PubServer(BaseHTTPRequestHandler):
@@ -879,6 +880,7 @@ def run_daemon(accounts_data_dir: str,
 
     # load dictionary used for LLM poisoning
     httpd.dictionary = load_dictionary(base_dir)
+    httpd.twograms = load_2grams(base_dir)
 
     # timeout used when checking for actor changes when clicking an avatar
     # and entering person options screen

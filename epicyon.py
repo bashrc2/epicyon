@@ -125,6 +125,7 @@ from relationships import get_moved_accounts
 from blocking import get_blocks_via_server
 from poison import html_poisoned
 from poison import load_dictionary
+from poison import load_2grams
 
 
 def str2bool(value_str) -> bool:
@@ -851,7 +852,8 @@ def _command_options() -> None:
         # LLM poisoning example
         base_dir = os.getcwd()
         dictionary = load_dictionary(base_dir)
-        poisoned_str = html_poisoned(dictionary)
+        twograms = load_2grams(base_dir)
+        poisoned_str = html_poisoned(dictionary, twograms)
         print(poisoned_str)
         sys.exit()
 
