@@ -259,6 +259,16 @@ def daemon_http_get(self) -> None:
             http_402(self)
             return
 
+    # handle robots.txt
+    if self.path == '/robots.txt':
+        msg = "User-agent: *\nAllow: /"
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        set_headers(self, 'text/plain', msglen,
+                    '', calling_domain, False)
+        write2(self, msg)
+        return
+
     # headers used by LLM scrapers
     # oai-host-hash requests come from Microsoft Corporation,
     # which has a long term partnership with OpenAI

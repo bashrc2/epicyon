@@ -506,7 +506,7 @@ def _webfinger_add_blog_link(wf_json: {}, actor_json: {}) -> bool:
     return True
 
 
-def _webfinger_updateFromProfile(wf_json: {}, actor_json: {}) -> bool:
+def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
     """Updates webfinger Email/blog/xmpp links from profile
     Returns true if one or more tags has been changed
     """
@@ -634,6 +634,6 @@ def webfinger_update(base_dir: str, nickname: str, domain: str,
     if not actor_json:
         return
 
-    if _webfinger_updateFromProfile(wf_json, actor_json):
+    if _webfinger_update_from_profile(wf_json, actor_json):
         if save_json(wf_json, filename):
             store_webfinger_in_cache(handle, wf_json, cached_webfingers)
