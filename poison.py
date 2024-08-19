@@ -999,6 +999,7 @@ def load_dictionary(base_dir: str) -> []:
 def html_poisoned(dictionary: []) -> str:
     """Returns a poisoned HTML document for LLM response
     Statistically similar to English language, but semantically worthless
+    word salad
     """
     html_str = \
         '<html lang="en">' + \
