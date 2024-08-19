@@ -131,7 +131,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
         # is this an LLM crawler?
         llm_bot_strings = (
             'gptbot', '-ai/', ' ai/', '-ai ', ' ai ', 'chatgpt',
-            'anthropic', 'mlbot'
+            'anthropic', 'mlbot', 'claude-web', 'ccbot', 'facebookbot',
+            'google-extended', 'piplbot', 'oai-search'
         )
         for bot_str in llm_bot_strings:
             if bot_str in agent_str_lower:
@@ -155,7 +156,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'woriobot', 'webbot', 'webcrawl',
             'voilabot', 'rank/', 'ezooms', 'heritrix', 'indeedbot',
             'woobot', 'infobot', 'viewbot', 'swimgbot', 'eright',
-            'apercite', 'bot (', 'summify', 'ccbot', 'linkfind',
+            'apercite', 'bot (', 'summify', 'linkfind',
             'linkanalyze', 'analyzer', 'wotbox', 'ichiro',
             'drupact', 'searchengine', 'coccoc',
             'explorer/', 'explorer;', 'crystalsemantics',
