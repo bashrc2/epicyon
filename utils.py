@@ -5208,9 +5208,9 @@ def harmless_markup(post_json_object: {}) -> None:
 
                     # take out the trash
                     for trash in remove_trash:
-                        if trash in text:
+                        if trash in content:
                             post_json_object['object'][map_name][lang] = \
-                                text.replace(trash, '')
+                                content.replace(trash, '')
 
                     # remove things which would cause display issues
                     if dangerous_markup(content, False, ['pre']):
