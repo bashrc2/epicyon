@@ -5168,6 +5168,8 @@ def harmless_markup(post_json_object: {}) -> None:
     if not isinstance(post_json_object['object'], dict):
         return
 
+    remove_trash = [' id="wordads-inline-marker"']
+
     for field_name in ('content', 'summary'):
         if post_json_object['object'].get(field_name):
             # tidy up content warnings
@@ -5176,13 +5178,19 @@ def harmless_markup(post_json_object: {}) -> None:
                 post_json_object['object'][field_name] = \
                     valid_content_warning(summary)
 
-            if dangerous_markup(post_json_object['object'][field_name],
-                                False, ['pre']):
-                post_json_object['object'][field_name] = \
-                    remove_html(post_json_object['object'][field_name])
+            text = post_json_object['object'][field_name]
+
+            # take out the trash
+            for trash in remove_trash:
+                if trash in text:
+                    post_json_object['object'][field_name] = \
+                        text.replace(trash, '')
+
+            # remove things which would cause display issues
+            if dangerous_markup(text, False, ['pre']):
+                post_json_object['object'][field_name] = remove_html(text)
             post_json_object['object'][field_name] = \
-                remove_markup_tag(post_json_object['object'][field_name],
-                                  'pre')
+                remove_markup_tag(text, 'pre')
 
         map_name = field_name + 'Map'
         if post_json_object['object'].get(map_name):
@@ -5198,6 +5206,13 @@ def harmless_markup(post_json_object: {}) -> None:
                             valid_content_warning(content)
                         content = post_json_object['object'][map_name][lang]
 
+                    # take out the trash
+                    for trash in remove_trash:
+                        if trash in text:
+                            post_json_object['object'][map_name][lang] = \
+                                text.replace(trash, '')
+
+                    # remove things which would cause display issues
                     if dangerous_markup(content, False, ['pre']):
                         content = remove_html(content)
                         post_json_object['object'][map_name][lang] = \
