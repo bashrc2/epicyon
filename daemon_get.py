@@ -273,6 +273,9 @@ def daemon_http_get(self) -> None:
     # oai-host-hash requests come from Microsoft Corporation,
     # which has a long term partnership with OpenAI
     if 'oai-host-hash' in self.headers:
+        if is_image_file(self.path):
+            http_404(self)
+            return
         print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
         msg = html_poisoned(self.server.dictionary,
                             self.server.twograms)
@@ -346,6 +349,9 @@ def daemon_http_get(self) -> None:
                                self.path, self.server.block_military)
         if block:
             if llm:
+                if is_image_file(self.path):
+                    http_404(self)
+                    return
                 # if this is an LLM crawler then feed it some trash
                 print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
                 msg = html_poisoned(self.server.dictionary,
