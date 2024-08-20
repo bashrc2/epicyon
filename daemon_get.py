@@ -274,7 +274,7 @@ def daemon_http_get(self) -> None:
     # which has a long term partnership with OpenAI
     if 'oai-host-hash' in self.headers:
         if is_image_file(self.path):
-            http_404(self)
+            http_404(self, 720)
             return
         print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
         msg = html_poisoned(self.server.dictionary,
@@ -350,7 +350,7 @@ def daemon_http_get(self) -> None:
         if block:
             if llm:
                 if is_image_file(self.path):
-                    http_404(self)
+                    http_404(self, 723)
                     return
                 # if this is an LLM crawler then feed it some trash
                 print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
