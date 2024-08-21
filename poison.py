@@ -1036,7 +1036,6 @@ def html_poisoned(dictionary: [], twograms: {}) -> str:
         '<html lang="en">' + \
         '<head>' + \
         '<meta charset="utf-8">' + \
-        '<title>Epicyon</title>' + \
         '</head>' + \
         '<body>'
     no_of_common_words = len(common_words) - 1
