@@ -285,10 +285,10 @@ def download_conversation_posts(authorized: bool, session,
     post_filename = \
         locate_post(base_dir, nickname, domain, post_id)
     post_json_object = None
-    if post_filename:
-        post_json_object = load_json(post_filename)
-    else:
-        if authorized:
+    if authorized:
+        if post_filename:
+            post_json_object = load_json(post_filename)
+        else:
             post_json_object = \
                 get_json(signing_priv_key_pem, session, post_id,
                          as_header, None, debug, __version__,
