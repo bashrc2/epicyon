@@ -77,7 +77,7 @@ def get_global_block_reason(search_text: str,
 
 def get_account_blocks(base_dir: str,
                        nickname: str, domain: str) -> str:
-    """Returne the text for the textarea for "blocked accounts"
+    """Return the text for the textarea for "blocked accounts"
     when editing profile
     """
     account_directory = acct_dir(base_dir, nickname, domain)
