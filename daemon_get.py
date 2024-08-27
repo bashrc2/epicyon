@@ -158,8 +158,8 @@ from daemon_get_buttons import follow_approve_button
 from daemon_get_buttons import follow_deny_button
 from daemon_get_buttons_like import like_button
 from daemon_get_buttons_like import like_button_undo
-from daemon_get_buttons import reaction_button
-from daemon_get_buttons import reaction_button_undo
+from daemon_get_buttons_reaction import reaction_button
+from daemon_get_buttons_reaction import reaction_button_undo
 from daemon_get_buttons_bookmark import bookmark_button
 from daemon_get_buttons_bookmark import bookmark_button_undo
 from daemon_get_buttons import delete_button

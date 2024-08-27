@@ -1,6 +1,6 @@
-""" HTTP GET for bookmark buttons within the user interface """
+""" HTTP GET for reaction buttons within the user interface """
 
-__filename__ = "daemon_get_buttons_bookmark.py"
+__filename__ = "daemon_get_buttons_reaction.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.5.0"
@@ -10,26 +10,29 @@ __status__ = "Production"
 __module_group__ = "Core GET"
 
 import os
+import urllib.parse
+from utils import undo_reaction_collection_entry
 from utils import get_cached_post_filename
 from utils import load_json
 from utils import locate_post
 from utils import is_dm
-from utils import get_nickname_from_actor
-from utils import get_instance_url
 from utils import local_actor_url
-from session import establish_session
+from utils import get_instance_url
+from utils import get_nickname_from_actor
 from httpheaders import redirect_headers
+from session import establish_session
 from httpcodes import http_404
-from bookmarks import bookmark_post
-from bookmarks import undo_bookmark_post
+from posts import get_original_post_from_announce_url
+from daemon_utils import post_to_outbox
+from fitnessFunctions import fitness_performance
+from reaction import update_reaction_collection
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
-from fitnessFunctions import fitness_performance
 
 
-def bookmark_button(self, calling_domain: str, path: str,
+def reaction_button(self, calling_domain: str, path: str,
                     base_dir: str, http_prefix: str,
-                    domain: str, domain_full: str, port: int,
+                    domain: str, domain_full: str,
                     onion_domain: str, i2p_domain: str,
                     getreq_start_time,
                     proxy_type: str, cookie: str,
@@ -41,6 +44,7 @@ def bookmark_button(self, calling_domain: str, path: str,
                     translate: {},
                     cached_webfingers: {},
                     person_cache: {},
+                    port: int,
                     allow_deletion: bool,
                     project_version: str,
                     yt_replace_domain: str,
@@ -57,19 +61,18 @@ def bookmark_button(self, calling_domain: str, path: str,
                     buy_sites: [],
                     auto_cw_cache: {},
                     fitness: {},
-                    federation_list: [],
-                    icons_cache: {},
                     account_timezone: {},
                     bold_reading_nicknames: {},
                     min_images_for_accounts: [],
-                    session_onion,
-                    session_i2p) -> None:
-    """Bookmark button was pressed
+                    session_onion, session_i2p) -> None:
+    """Press an emoji reaction button
+    Note that this is not the emoji reaction selection icon at the
+    bottom of the post
     """
     page_number = 1
-    bookmark_url = path.split('?bookmark=')[1]
-    if '?' in bookmark_url:
-        bookmark_url = bookmark_url.split('?')[0]
+    reaction_url = path.split('?react=')[1]
+    if '?' in reaction_url:
+        reaction_url = reaction_url.split('?')[0]
     first_post_id = ''
     if '?firstpost=' in path:
         first_post_id = path.split('?firstpost=')[1]
@@ -83,7 +86,7 @@ def bookmark_button(self, calling_domain: str, path: str,
         if '?' in timeline_bookmark:
             timeline_bookmark = timeline_bookmark.split('?')[0]
         timeline_bookmark = '#' + timeline_bookmark
-    actor = path.split('?bookmark=')[0]
+    actor = path.split('?react=')[0]
     if '?page=' in path:
         page_number_str = path.split('?page=')[1]
         if ';' in page_number_str:
@@ -101,7 +104,27 @@ def bookmark_button(self, calling_domain: str, path: str,
         timeline_str = path.split('?tl=')[1]
         if '?' in timeline_str:
             timeline_str = timeline_str.split('?')[0]
-
+    emoji_content_encoded = None
+    if '?emojreact=' in path:
+        emoji_content_encoded = path.split('?emojreact=')[1]
+        if '?' in emoji_content_encoded:
+            emoji_content_encoded = emoji_content_encoded.split('?')[0]
+    if not emoji_content_encoded:
+        print('WARN: no emoji reaction ' + actor)
+        actor_absolute = \
+            get_instance_url(calling_domain,
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
+            actor
+        actor_path_str = \
+            actor_absolute + '/' + timeline_str + \
+            '?page=' + str(page_number) + timeline_bookmark
+        redirect_headers(self, actor_path_str, cookie,
+                         calling_domain, 303)
+        return
+    emoji_content = urllib.parse.unquote_plus(emoji_content_encoded)
     self.post_to_nickname = get_nickname_from_actor(actor)
     if not self.post_to_nickname:
         print('WARN: unable to find nickname in ' + actor)
@@ -114,7 +137,7 @@ def bookmark_button(self, calling_domain: str, path: str,
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
-            '?page=' + str(page_number)
+            '?page=' + str(page_number) + timeline_bookmark
         redirect_headers(self, actor_path_str, cookie,
                          calling_domain, 303)
         return
@@ -129,46 +152,96 @@ def bookmark_button(self, calling_domain: str, path: str,
             proxy_type = 'i2p'
 
     curr_session = \
-        establish_session("bookmarkButton",
+        establish_session("reactionButton",
                           curr_session, proxy_type,
                           self.server)
     if not curr_session:
-        http_404(self, 56)
+        http_404(self, 54)
         return
-    bookmark_actor = \
+    reaction_actor = \
         local_actor_url(http_prefix, self.post_to_nickname, domain_full)
-    cc_list = []
-    bookmark_post(recent_posts_cache,
-                  base_dir, federation_list,
-                  self.post_to_nickname, domain, port,
-                  cc_list, http_prefix, bookmark_url, bookmark_actor,
-                  debug)
-    # clear the icon from the cache so that it gets updated
-    if icons_cache.get('bookmark.png'):
-        del icons_cache['bookmark.png']
-    bookmark_filename = \
-        locate_post(base_dir, self.post_to_nickname, domain, bookmark_url)
-    if bookmark_filename:
-        print('Regenerating html post for changed bookmark')
-        bookmark_post_json = load_json(bookmark_filename)
-        if bookmark_post_json:
+    actor_reaction = path.split('?actor=')[1]
+    if '?' in actor_reaction:
+        actor_reaction = actor_reaction.split('?')[0]
+
+    # if this is an announce then send the emoji reaction
+    # to the original post
+    orig_actor, orig_post_url, orig_filename = \
+        get_original_post_from_announce_url(reaction_url, base_dir,
+                                            self.post_to_nickname, domain)
+    reaction_url2 = reaction_url
+    reaction_post_filename = orig_filename
+    if orig_actor and orig_post_url:
+        actor_reaction = orig_actor
+        reaction_url2 = orig_post_url
+        reaction_post_filename = None
+
+    reaction_json = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'EmojiReact',
+        'actor': reaction_actor,
+        'to': [actor_reaction],
+        'object': reaction_url2,
+        'content': emoji_content
+    }
+
+    # send out the emoji reaction to followers
+    post_to_outbox(self, reaction_json, project_version, None,
+                   curr_session, proxy_type)
+
+    fitness_performance(getreq_start_time, fitness,
+                        '_GET', '_reaction_button postToOutbox',
+                        debug)
+
+    print('Locating emoji reaction post ' + reaction_url)
+    # directly emoji reaction the post file
+    if not reaction_post_filename:
+        reaction_post_filename = \
+            locate_post(base_dir, self.post_to_nickname, domain,
+                        reaction_url)
+    if reaction_post_filename:
+        reaction_post_json = load_json(reaction_post_filename)
+        if orig_filename and orig_post_url:
+            update_reaction_collection(recent_posts_cache,
+                                       base_dir, reaction_post_filename,
+                                       reaction_url,
+                                       reaction_actor,
+                                       self.post_to_nickname,
+                                       domain, debug, reaction_post_json,
+                                       emoji_content)
+            reaction_url = orig_post_url
+            reaction_post_filename = orig_filename
+        if debug:
+            print('Updating emoji reaction for ' + reaction_post_filename)
+        update_reaction_collection(recent_posts_cache,
+                                   base_dir, reaction_post_filename,
+                                   reaction_url,
+                                   reaction_actor,
+                                   self.post_to_nickname, domain,
+                                   debug, None, emoji_content)
+        if debug:
+            print('Regenerating html post for changed ' +
+                  'emoji reaction collection')
+        # clear the icon from the cache so that it gets updated
+        if reaction_post_json:
             cached_post_filename = \
                 get_cached_post_filename(base_dir, self.post_to_nickname,
-                                         domain, bookmark_post_json)
-            print('Bookmarked post json: ' + str(bookmark_post_json))
-            print('Bookmarked post nickname: ' +
-                  self.post_to_nickname + ' ' + domain)
-            print('Bookmarked post cache: ' + str(cached_post_filename))
+                                         domain, reaction_post_json)
+            if debug:
+                print('Reaction post json: ' + str(reaction_post_json))
+                print('Reaction post nickname: ' +
+                      self.post_to_nickname + ' ' + domain)
+                print('Reaction post cache: ' + str(cached_post_filename))
             show_individual_post_icons = True
             manually_approve_followers = \
                 follower_approval_active(base_dir,
                                          self.post_to_nickname, domain)
-            show_repeats = not is_dm(bookmark_post_json)
+            show_repeats = not is_dm(reaction_post_json)
             timezone = None
             if account_timezone.get(self.post_to_nickname):
                 timezone = account_timezone.get(self.post_to_nickname)
             mitm = False
-            if os.path.isfile(bookmark_filename.replace('.json', '') +
+            if os.path.isfile(reaction_post_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
             bold_reading = False
@@ -187,7 +260,7 @@ def bookmark_button(self, calling_domain: str, path: str,
                                     cached_webfingers,
                                     person_cache,
                                     self.post_to_nickname, domain,
-                                    port, bookmark_post_json,
+                                    port, reaction_post_json,
                                     None, True,
                                     allow_deletion,
                                     http_prefix,
@@ -213,7 +286,12 @@ def bookmark_button(self, calling_domain: str, path: str,
                                     buy_sites,
                                     auto_cw_cache)
         else:
-            print('WARN: Bookmarked post not found: ' + bookmark_filename)
+            print('WARN: Emoji reaction post not found: ' +
+                  reaction_post_filename)
+    else:
+        print('WARN: unable to locate file for emoji reaction post ' +
+              reaction_url)
+
     actor_absolute = \
         get_instance_url(calling_domain,
                          http_prefix,
@@ -227,15 +305,15 @@ def bookmark_button(self, calling_domain: str, path: str,
         '?page=' + str(page_number) + first_post_id + \
         timeline_bookmark
     fitness_performance(getreq_start_time, fitness,
-                        '_GET', '_bookmark_button',
+                        '_GET', '_reaction_button',
                         debug)
     redirect_headers(self, actor_path_str, cookie,
                      calling_domain, 303)
 
 
-def bookmark_button_undo(self, calling_domain: str, path: str,
+def reaction_button_undo(self, calling_domain: str, path: str,
                          base_dir: str, http_prefix: str,
-                         domain: str, domain_full: str, port: int,
+                         domain: str, domain_full: str,
                          onion_domain: str, i2p_domain: str,
                          getreq_start_time,
                          proxy_type: str, cookie: str,
@@ -247,6 +325,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                          translate: {},
                          cached_webfingers: {},
                          person_cache: {},
+                         port: int,
                          allow_deletion: bool,
                          project_version: str,
                          yt_replace_domain: str,
@@ -263,19 +342,17 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                          buy_sites: [],
                          auto_cw_cache: {},
                          fitness: {},
-                         federation_list: [],
-                         icons_cache: {},
                          account_timezone: {},
                          bold_reading_nicknames: {},
                          min_images_for_accounts: [],
                          session_onion,
                          session_i2p) -> None:
-    """Button pressed to undo a bookmark
+    """A button is pressed to undo emoji reaction
     """
     page_number = 1
-    bookmark_url = path.split('?unbookmark=')[1]
-    if '?' in bookmark_url:
-        bookmark_url = bookmark_url.split('?')[0]
+    reaction_url = path.split('?unreact=')[1]
+    if '?' in reaction_url:
+        reaction_url = reaction_url.split('?')[0]
     first_post_id = ''
     if '?firstpost=' in path:
         first_post_id = path.split('?firstpost=')[1]
@@ -306,7 +383,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
         timeline_str = path.split('?tl=')[1]
         if '?' in timeline_str:
             timeline_str = timeline_str.split('?')[0]
-    actor = path.split('?unbookmark=')[0]
+    actor = path.split('?unreact=')[0]
     self.post_to_nickname = get_nickname_from_actor(actor)
     if not self.post_to_nickname:
         print('WARN: unable to find nickname in ' + actor)
@@ -323,6 +400,27 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
         redirect_headers(self, actor_path_str, cookie,
                          calling_domain, 303)
         return
+    emoji_content_encoded = None
+    if '?emojreact=' in path:
+        emoji_content_encoded = path.split('?emojreact=')[1]
+        if '?' in emoji_content_encoded:
+            emoji_content_encoded = emoji_content_encoded.split('?')[0]
+    if not emoji_content_encoded:
+        print('WARN: no emoji reaction ' + actor)
+        actor_absolute = \
+            get_instance_url(calling_domain,
+                             http_prefix,
+                             domain_full,
+                             onion_domain,
+                             i2p_domain) + \
+            actor
+        actor_path_str = \
+            actor_absolute + '/' + timeline_str + \
+            '?page=' + str(page_number) + timeline_bookmark
+        redirect_headers(self, actor_path_str, cookie,
+                         calling_domain, 303)
+        return
+    emoji_content = urllib.parse.unquote_plus(emoji_content_encoded)
 
     if onion_domain:
         if '.onion/' in actor:
@@ -334,46 +432,84 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
             proxy_type = 'i2p'
 
     curr_session = \
-        establish_session("undo_bookmarkButton",
+        establish_session("undoReactionButton",
                           curr_session, proxy_type,
                           self.server)
     if not curr_session:
-        http_404(self, 57)
+        http_404(self, 55)
         return
     undo_actor = \
         local_actor_url(http_prefix, self.post_to_nickname, domain_full)
-    cc_list = []
-    undo_bookmark_post(recent_posts_cache,
-                       base_dir, federation_list,
-                       self.post_to_nickname,
-                       domain, port, cc_list, http_prefix,
-                       bookmark_url, undo_actor, debug)
-    # clear the icon from the cache so that it gets updated
-    if icons_cache.get('bookmark_inactive.png'):
-        del icons_cache['bookmark_inactive.png']
-    bookmark_filename = \
-        locate_post(base_dir, self.post_to_nickname, domain, bookmark_url)
-    if bookmark_filename:
-        print('Regenerating html post for changed unbookmark')
-        bookmark_post_json = load_json(bookmark_filename)
-        if bookmark_post_json:
-            cached_post_filename = \
-                get_cached_post_filename(base_dir, self.post_to_nickname,
-                                         domain, bookmark_post_json)
-            print('Unbookmarked post json: ' + str(bookmark_post_json))
-            print('Unbookmarked post nickname: ' +
-                  self.post_to_nickname + ' ' + domain)
-            print('Unbookmarked post cache: ' + str(cached_post_filename))
+    actor_reaction = path.split('?actor=')[1]
+    if '?' in actor_reaction:
+        actor_reaction = actor_reaction.split('?')[0]
+
+    # if this is an announce then send the emoji reaction
+    # to the original post
+    orig_actor, orig_post_url, orig_filename = \
+        get_original_post_from_announce_url(reaction_url, base_dir,
+                                            self.post_to_nickname, domain)
+    reaction_url2 = reaction_url
+    reaction_post_filename = orig_filename
+    if orig_actor and orig_post_url:
+        actor_reaction = orig_actor
+        reaction_url2 = orig_post_url
+        reaction_post_filename = None
+
+    undo_reaction_json = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'Undo',
+        'actor': undo_actor,
+        'to': [actor_reaction],
+        'object': {
+            'type': 'EmojiReact',
+            'actor': undo_actor,
+            'to': [actor_reaction],
+            'object': reaction_url2
+        }
+    }
+
+    # send out the undo emoji reaction to followers
+    post_to_outbox(self, undo_reaction_json,
+                   project_version, None,
+                   curr_session, proxy_type)
+
+    # directly undo the emoji reaction within the post file
+    if not reaction_post_filename:
+        reaction_post_filename = \
+            locate_post(base_dir, self.post_to_nickname, domain,
+                        reaction_url)
+    if reaction_post_filename:
+        reaction_post_json = load_json(reaction_post_filename)
+        if orig_filename and orig_post_url:
+            undo_reaction_collection_entry(recent_posts_cache,
+                                           base_dir,
+                                           reaction_post_filename,
+                                           undo_actor, domain, debug,
+                                           reaction_post_json,
+                                           emoji_content)
+            reaction_url = orig_post_url
+            reaction_post_filename = orig_filename
+        if debug:
+            print('Removing emoji reaction for ' + reaction_post_filename)
+        undo_reaction_collection_entry(recent_posts_cache,
+                                       base_dir, reaction_post_filename,
+                                       undo_actor, domain, debug,
+                                       reaction_post_json, emoji_content)
+        if debug:
+            print('Regenerating html post for changed ' +
+                  'emoji reaction collection')
+        if reaction_post_json:
             show_individual_post_icons = True
             manually_approve_followers = \
                 follower_approval_active(base_dir,
                                          self.post_to_nickname, domain)
-            show_repeats = not is_dm(bookmark_post_json)
+            show_repeats = not is_dm(reaction_post_json)
             timezone = None
             if account_timezone.get(self.post_to_nickname):
                 timezone = account_timezone.get(self.post_to_nickname)
             mitm = False
-            if os.path.isfile(bookmark_filename.replace('.json', '') +
+            if os.path.isfile(reaction_post_filename.replace('.json', '') +
                               '.mitm'):
                 mitm = True
             bold_reading = False
@@ -392,7 +528,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                                     cached_webfingers,
                                     person_cache,
                                     self.post_to_nickname, domain,
-                                    port, bookmark_post_json,
+                                    port, reaction_post_json,
                                     None, True,
                                     allow_deletion,
                                     http_prefix,
@@ -418,8 +554,9 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                                     buy_sites,
                                     auto_cw_cache)
         else:
-            print('WARN: Unbookmarked post not found: ' +
-                  bookmark_filename)
+            print('WARN: Unreaction post not found: ' +
+                  reaction_post_filename)
+
     actor_absolute = \
         get_instance_url(calling_domain,
                          http_prefix,
@@ -433,7 +570,6 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
         '?page=' + str(page_number) + first_post_id + \
         timeline_bookmark
     fitness_performance(getreq_start_time, fitness,
-                        '_GET', '_undo_bookmark_button',
+                        '_GET', '_undo_reaction_button',
                         debug)
-    redirect_headers(self, actor_path_str, cookie,
-                     calling_domain, 303)
+    redirect_headers(self, actor_path_str, cookie, calling_domain, 303)
