@@ -152,8 +152,8 @@ from daemon_get_feeds import show_following_feed
 from daemon_get_feeds import show_moved_feed
 from daemon_get_feeds import show_inactive_feed
 from daemon_get_feeds import show_followers_feed
-from daemon_get_buttons import announce_button
-from daemon_get_buttons import announce_button_undo
+from daemon_get_buttons_announce import announce_button
+from daemon_get_buttons_announce import announce_button_undo
 from daemon_get_buttons import follow_approve_button
 from daemon_get_buttons import follow_deny_button
 from daemon_get_buttons import like_button
