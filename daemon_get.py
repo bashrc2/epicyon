@@ -156,8 +156,8 @@ from daemon_get_buttons_announce import announce_button
 from daemon_get_buttons_announce import announce_button_undo
 from daemon_get_buttons import follow_approve_button
 from daemon_get_buttons import follow_deny_button
-from daemon_get_buttons import like_button
-from daemon_get_buttons import like_button_undo
+from daemon_get_buttons_like import like_button
+from daemon_get_buttons_like import like_button_undo
 from daemon_get_buttons import reaction_button
 from daemon_get_buttons import reaction_button_undo
 from daemon_get_buttons import bookmark_button
