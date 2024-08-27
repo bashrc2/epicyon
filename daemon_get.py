@@ -163,8 +163,8 @@ from daemon_get_buttons import reaction_button_undo
 from daemon_get_buttons import bookmark_button
 from daemon_get_buttons import bookmark_button_undo
 from daemon_get_buttons import delete_button
-from daemon_get_buttons import mute_button
-from daemon_get_buttons import mute_button_undo
+from daemon_get_buttons_mute import mute_button
+from daemon_get_buttons_mute import mute_button_undo
 from daemon_get_newswire import get_newswire_feed
 from daemon_get_newswire import newswire_vote
 from daemon_get_newswire import newswire_unvote
