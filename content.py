@@ -274,13 +274,15 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
         url_list = content.split('url(')
         ctr = 0
         for url_str in url_list:
-            if ctr > 0:
-                if ')' in url_str:
-                    url_str = url_str.split(')')[0]
-                    if string_contains(url_str, ('http', 'ipfs', 'ipns')):
-                        print('ERROR: non-local web link in CSS ' +
-                              filename)
-                        return True
+            if ctr == 0:
+                ctr = 1
+                continue
+            if ')' in url_str:
+                url_str = url_str.split(')')[0]
+                if string_contains(url_str, ('http', 'ipfs', 'ipns')):
+                    print('ERROR: non-local web link in CSS ' +
+                          filename)
+                    return True
             ctr += 1
 
     # an attacker can include html inside of the css
