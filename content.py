@@ -84,11 +84,12 @@ def valid_url_lengths(content: str, max_url_length: int) -> bool:
         if ctr == 0:
             ctr += 1
             continue
-        if '"' in text:
-            url = text.split('"')[0]
-            if '<' not in url and '>' not in url:
-                if len(url) > max_url_length:
-                    return False
+        if '"' not in text:
+            continue
+        url = text.split('"')[0]
+        if '<' not in url and '>' not in url:
+            if len(url) > max_url_length:
+                return False
     return True
 
 
