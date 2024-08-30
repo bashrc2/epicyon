@@ -472,76 +472,74 @@ def replace_emoji_from_tags(session, base_dir: str,
         if not tag_url:
             continue
         icon_name = tag_url.split('/')[-1]
-        if icon_name:
-            if len(icon_name) > 1:
-                if icon_name[0].isdigit():
-                    if '.' in icon_name:
-                        icon_name = icon_name.split('.')[0]
-                        # see https://unicode.org/
-                        # emoji/charts/full-emoji-list.html
-                        if '-' not in icon_name:
-                            # a single code
-                            replaced = False
-                            try:
-                                replace_char = chr(int("0x" + icon_name, 16))
-                                if not screen_readable:
-                                    replace_char = \
-                                        '<span aria-hidden="true">' + \
-                                        replace_char + '</span>'
-                                content = \
-                                    content.replace(tag_item['name'],
-                                                    replace_char)
-                                replaced = True
-                            except BaseException:
-                                if debug:
-                                    print('EX: replace_emoji_from_tags 1 ' +
-                                          'no conversion of ' +
-                                          str(icon_name) + ' to chr ' +
-                                          tag_item['name'] + ' ' +
-                                          tag_url)
-                            if not replaced:
-                                _save_custom_emoji(session, base_dir,
-                                                   tag_item['name'],
-                                                   tag_url, debug)
-                                _update_common_emoji(base_dir, icon_name)
-                            else:
-                                _update_common_emoji(base_dir,
-                                                     "0x" + icon_name)
-                        else:
-                            # sequence of codes
-                            icon_codes = icon_name.split('-')
+        if len(icon_name) > 1:
+            if icon_name[0].isdigit() and '.' in icon_name:
+                icon_name = icon_name.split('.')[0]
+                # see https://unicode.org/
+                # emoji/charts/full-emoji-list.html
+                if '-' not in icon_name:
+                    # a single code
+                    replaced = False
+                    try:
+                        replace_char = chr(int("0x" + icon_name, 16))
+                        if not screen_readable:
+                            replace_char = \
+                                '<span aria-hidden="true">' + \
+                                replace_char + '</span>'
+                        content = \
+                            content.replace(tag_item['name'],
+                                            replace_char)
+                        replaced = True
+                    except BaseException:
+                        if debug:
+                            print('EX: replace_emoji_from_tags 1 ' +
+                                  'no conversion of ' +
+                                  str(icon_name) + ' to chr ' +
+                                  tag_item['name'] + ' ' +
+                                  tag_url)
+                    if not replaced:
+                        _save_custom_emoji(session, base_dir,
+                                           tag_item['name'],
+                                           tag_url, debug)
+                        _update_common_emoji(base_dir, icon_name)
+                    else:
+                        _update_common_emoji(base_dir,
+                                             "0x" + icon_name)
+                else:
+                    # sequence of codes
+                    icon_codes = icon_name.split('-')
+                    icon_code_sequence = ''
+                    for icode in icon_codes:
+                        replaced = False
+                        try:
+                            icon_code_sequence += chr(int("0x" +
+                                                          icode, 16))
+                            replaced = True
+                        except BaseException:
                             icon_code_sequence = ''
-                            for icode in icon_codes:
-                                replaced = False
-                                try:
-                                    icon_code_sequence += chr(int("0x" +
-                                                                  icode, 16))
-                                    replaced = True
-                                except BaseException:
-                                    icon_code_sequence = ''
-                                    if debug:
-                                        print('EX: ' +
-                                              'replace_emoji_from_tags 2 ' +
-                                              'no conversion of ' +
-                                              str(icode) + ' to chr ' +
-                                              tag_item['name'] + ' ' +
-                                              tag_url)
-                                if not replaced:
-                                    _save_custom_emoji(session, base_dir,
-                                                       tag_item['name'],
-                                                       tag_url, debug)
-                                    _update_common_emoji(base_dir,
-                                                         icon_name)
-                                else:
-                                    _update_common_emoji(base_dir,
-                                                         "0x" + icon_name)
-                            if icon_code_sequence:
-                                if not screen_readable:
-                                    icon_code_sequence = \
-                                        '<span aria-hidden="true">' + \
-                                        icon_code_sequence + '</span>'
-                                content = content.replace(tag_item['name'],
-                                                          icon_code_sequence)
+                            if debug:
+                                print('EX: ' +
+                                      'replace_emoji_from_tags 2 ' +
+                                      'no conversion of ' +
+                                      str(icode) + ' to chr ' +
+                                      tag_item['name'] + ' ' +
+                                      tag_url)
+                        if not replaced:
+                            _save_custom_emoji(session, base_dir,
+                                               tag_item['name'],
+                                               tag_url, debug)
+                            _update_common_emoji(base_dir,
+                                                 icon_name)
+                        else:
+                            _update_common_emoji(base_dir,
+                                                 "0x" + icon_name)
+                    if icon_code_sequence:
+                        if not screen_readable:
+                            icon_code_sequence = \
+                                '<span aria-hidden="true">' + \
+                                icon_code_sequence + '</span>'
+                        content = content.replace(tag_item['name'],
+                                                  icon_code_sequence)
 
         html_class = 'emoji'
         if message_type == 'post header':
@@ -950,24 +948,25 @@ def _add_mention(base_dir: str, word_str: str, http_prefix: str,
             if '@' not in follow:
                 continue
             follow_nick = follow.split('@')[0]
-            if possible_nickname == follow_nick:
-                follow_str = remove_eol(follow)
-                replace_domain = follow_str.split('@')[1]
-                recipient_actor = \
-                    _mention_to_url(base_dir, http_prefix,
-                                    replace_domain, possible_nickname)
-                if recipient_actor not in recipients:
-                    recipients.append(recipient_actor)
-                tags[word_str] = {
-                    'href': recipient_actor,
-                    'name': word_str,
-                    'type': 'Mention'
-                }
-                replace_mentions[word_str] = \
-                    "<span class=\"h-card\"><a href=\"" + recipient_actor + \
-                    "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
-                    possible_nickname + "</span></a></span>"
-                return True
+            if possible_nickname != follow_nick:
+                continue
+            follow_str = remove_eol(follow)
+            replace_domain = follow_str.split('@')[1]
+            recipient_actor = \
+                _mention_to_url(base_dir, http_prefix,
+                                replace_domain, possible_nickname)
+            if recipient_actor not in recipients:
+                recipients.append(recipient_actor)
+            tags[word_str] = {
+                'href': recipient_actor,
+                'name': word_str,
+                'type': 'Mention'
+            }
+            replace_mentions[word_str] = \
+                "<span class=\"h-card\"><a href=\"" + recipient_actor + \
+                "\" tabindex=\"10\" class=\"u-url mention\">@<span>" + \
+                possible_nickname + "</span></a></span>"
+            return True
         # try replacing petnames with mentions
         follow_ctr = 0
         for follow in following:
@@ -976,26 +975,28 @@ def _add_mention(base_dir: str, word_str: str, http_prefix: str,
                 continue
             pet = remove_eol(petnames[follow_ctr])
             if pet:
-                if possible_nickname == pet:
-                    follow_str = remove_eol(follow)
-                    replace_nickname = follow_str.split('@')[0]
-                    replace_domain = follow_str.split('@')[1]
-                    recipient_actor = \
-                        _mention_to_url(base_dir, http_prefix,
-                                        replace_domain, replace_nickname)
-                    if recipient_actor not in recipients:
-                        recipients.append(recipient_actor)
-                    tags[word_str] = {
-                        'href': recipient_actor,
-                        'name': word_str,
-                        'type': 'Mention'
-                    }
-                    replace_mentions[word_str] = \
-                        "<span class=\"h-card\"><a href=\"" + \
-                        recipient_actor + "\" tabindex=\"10\" " + \
-                        "class=\"u-url mention\">@<span>" + \
-                        replace_nickname + "</span></a></span>"
-                    return True
+                if possible_nickname != pet:
+                    follow_ctr += 1
+                    continue
+                follow_str = remove_eol(follow)
+                replace_nickname = follow_str.split('@')[0]
+                replace_domain = follow_str.split('@')[1]
+                recipient_actor = \
+                    _mention_to_url(base_dir, http_prefix,
+                                    replace_domain, replace_nickname)
+                if recipient_actor not in recipients:
+                    recipients.append(recipient_actor)
+                tags[word_str] = {
+                    'href': recipient_actor,
+                    'name': word_str,
+                    'type': 'Mention'
+                }
+                replace_mentions[word_str] = \
+                    "<span class=\"h-card\"><a href=\"" + \
+                    recipient_actor + "\" tabindex=\"10\" " + \
+                    "class=\"u-url mention\">@<span>" + \
+                    replace_nickname + "</span></a></span>"
+                return True
             follow_ctr += 1
         return False
     possible_nickname = None
