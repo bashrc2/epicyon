@@ -47,7 +47,6 @@ from media import replace_you_tube
 from media import replace_twitter
 from media import get_media_path
 from media import create_media_dirs
-from inbox import store_hash_tags
 from inbox import inbox_update_index
 from announce import outbox_announce
 from announce import outbox_undo_announce
@@ -65,6 +64,7 @@ from delete import outbox_delete
 from shares import outbox_share_upload
 from shares import outbox_undo_share_upload
 from webapp_post import individual_post_as_html
+from webapp_hashtagswarm import store_hash_tags
 from speaker import update_speaker
 from reading import store_book_events
 from reading import has_edition_tag

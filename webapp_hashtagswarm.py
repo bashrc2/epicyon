@@ -9,6 +9,15 @@ __module_group__ = "Web Interface"
 
 import os
 from datetime import datetime, timezone
+from utils import valid_hash_tag
+from utils import remove_id_ending
+from utils import resembles_url
+from utils import has_object_dict
+from utils import is_public_post
+from utils import local_actor_url
+from utils import date_from_string_format
+from utils import file_last_modified
+from utils import acct_dir
 from utils import data_dir
 from utils import get_nickname_from_actor
 from utils import get_config_param
@@ -16,6 +25,13 @@ from utils import escape_text
 from utils import date_utcnow
 from utils import date_epoch
 from utils import string_contains
+from delete import remove_old_hashtags
+from maps import add_tag_map_links
+from maps import geocoords_from_map_link
+from maps import get_map_links_from_post_content
+from maps import get_location_from_post
+from categories import set_hashtag_category
+from categories import guess_hashtag_category
 from categories import get_hashtag_categories
 from categories import get_hashtag_category
 from webapp_utils import set_custom_background
@@ -271,3 +287,168 @@ def html_search_hashtag_category(translate: {},
         '</div>'
     html_str += html_footer()
     return html_str
+
+
+def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
+                                 http_prefix: str, domain_full: str,
+                                 translate: {}) -> bool:
+    """Updates the hashtag swarm stored as a file
+    """
+    cached_hashtag_swarm_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.hashtagSwarm'
+    save_swarm = True
+    if os.path.isfile(cached_hashtag_swarm_filename):
+        last_modified = file_last_modified(cached_hashtag_swarm_filename)
+        modified_date = None
+        try:
+            modified_date = \
+                date_from_string_format(last_modified, ["%Y-%m-%dT%H:%M:%S%z"])
+        except BaseException:
+            print('EX: unable to parse last modified cache date ' +
+                  str(last_modified))
+        if modified_date:
+            curr_date = date_utcnow()
+            time_diff = curr_date - modified_date
+            diff_mins = int(time_diff.total_seconds() / 60)
+            if diff_mins < 30:
+                # was saved recently, so don't save again
+                # This avoids too much disk I/O
+                save_swarm = False
+                print('Not updating hashtag swarm')
+            else:
+                print('Updating cached hashtag swarm, last changed ' +
+                      str(diff_mins) + ' minutes ago')
+        else:
+            print('WARN: no modified date for ' + str(last_modified))
+    if save_swarm:
+        actor = local_actor_url(http_prefix, nickname, domain_full)
+        new_swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
+        if new_swarm_str:
+            try:
+                with open(cached_hashtag_swarm_filename, 'w+',
+                          encoding='utf-8') as fp_swarm:
+                    fp_swarm.write(new_swarm_str)
+                    return True
+            except OSError:
+                print('EX: unable to write cached hashtag swarm ' +
+                      cached_hashtag_swarm_filename)
+        remove_old_hashtags(base_dir, 3)
+    return False
+
+
+def store_hash_tags(base_dir: str, nickname: str, domain: str,
+                    http_prefix: str, domain_full: str,
+                    post_json_object: {}, translate: {}) -> None:
+    """Extracts hashtags from an incoming post and updates the
+    relevant tags files.
+    """
+    if not is_public_post(post_json_object):
+        return
+    if not has_object_dict(post_json_object):
+        return
+    if not post_json_object['object'].get('tag'):
+        return
+    if not post_json_object.get('id'):
+        return
+    if not isinstance(post_json_object['object']['tag'], list):
+        return
+    tags_dir = base_dir + '/tags'
+
+    # add tags directory if it doesn't exist
+    if not os.path.isdir(tags_dir):
+        print('Creating tags directory')
+        os.mkdir(tags_dir)
+
+    # obtain any map links and these can be associated with hashtags
+    # get geolocations from content
+    map_links = []
+    published = None
+    if 'content' in post_json_object['object']:
+        published = post_json_object['object']['published']
+        post_content = post_json_object['object']['content']
+        map_links += get_map_links_from_post_content(post_content)
+    # get geolocation from tags
+    location_str = get_location_from_post(post_json_object)
+    if location_str:
+        if resembles_url(location_str):
+            zoom, latitude, longitude = \
+                geocoords_from_map_link(location_str,
+                                        'openstreetmap.org')
+            if latitude and longitude and zoom and \
+               location_str not in map_links:
+                map_links.append(location_str)
+    tag_maps_dir = base_dir + '/tagmaps'
+    if map_links:
+        # add tagmaps directory if it doesn't exist
+        if not os.path.isdir(tag_maps_dir):
+            print('Creating tagmaps directory')
+            os.mkdir(tag_maps_dir)
+
+    post_url = remove_id_ending(post_json_object['id'])
+    post_url = post_url.replace('/', '#')
+    hashtags_ctr = 0
+    for tag in post_json_object['object']['tag']:
+        if not tag.get('type'):
+            continue
+        if not isinstance(tag['type'], str):
+            continue
+        if tag['type'] != 'Hashtag':
+            continue
+        if not tag.get('name'):
+            continue
+        tag_name = tag['name'].replace('#', '').strip()
+        if not valid_hash_tag(tag_name):
+            continue
+        tags_filename = tags_dir + '/' + tag_name + '.txt'
+        days_diff = date_utcnow() - date_epoch()
+        days_since_epoch = days_diff.days
+        tag_line = \
+            str(days_since_epoch) + '  ' + nickname + '  ' + post_url + '\n'
+        if map_links and published:
+            add_tag_map_links(tag_maps_dir, tag_name, map_links,
+                              published, post_url)
+        hashtag_added = False
+        if not os.path.isfile(tags_filename):
+            try:
+                with open(tags_filename, 'w+', encoding='utf-8') as fp_tags:
+                    fp_tags.write(tag_line)
+                    hashtag_added = True
+            except OSError:
+                print('EX: store_hash_tags unable to write ' + tags_filename)
+        else:
+            content = ''
+            try:
+                with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
+                    content = fp_tags.read()
+            except OSError:
+                print('EX: store_hash_tags failed to read ' + tags_filename)
+            if post_url not in content:
+                content = tag_line + content
+                try:
+                    with open(tags_filename, 'w+',
+                              encoding='utf-8') as fp_tags2:
+                        fp_tags2.write(content)
+                        hashtag_added = True
+                except OSError as ex:
+                    print('EX: Failed to write entry to tags file ' +
+                          tags_filename + ' ' + str(ex))
+
+        if hashtag_added:
+            hashtags_ctr += 1
+
+            # automatically assign a category to the tag if possible
+            category_filename = tags_dir + '/' + tag_name + '.category'
+            if not os.path.isfile(category_filename):
+                hashtag_categories = \
+                    get_hashtag_categories(base_dir, False, None)
+                category_str = \
+                    guess_hashtag_category(tag_name, hashtag_categories, 6)
+                if category_str:
+                    set_hashtag_category(base_dir, tag_name,
+                                         category_str, False, False)
+
+    # if some hashtags were found then recalculate the swarm
+    # ready for later display
+    if hashtags_ctr > 0:
+        _update_cached_hashtag_swarm(base_dir, nickname, domain,
+                                     http_prefix, domain_full, translate)

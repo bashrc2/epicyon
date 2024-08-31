@@ -37,9 +37,9 @@ from utils import dangerous_markup
 from utils import local_actor_url
 from utils import text_in_file
 from utils import data_dir
-from inbox import store_hash_tags
 from session import create_session
 from threads import begin_thread
+from webapp_hashtagswarm import store_hash_tags
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,
