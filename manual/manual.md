@@ -1182,6 +1182,9 @@ In November, the oligarch Elon Musk, known for electric vehicles and spacecraft,
 ### 2023: Facebook joins the fediverse
 In August Facebook launched its own fediverse instance, known as Threads. This was a cynical attempt to scoop up disgruntled Twitter users looking for an alternative social media site due to the chaos being created by its new owner, Elon Musk. There was a lot of concern about the evil empire of Zuckerberg joining the fediverse, and possibly squashing it by sheer weight of numbers. A website called [fediPact](https://fedipact.online) was created on which administrators could express their intention to block the Facebook instance. Many people had come to the fediverse precisely to get away from harassment on Facebook or Twitter, so the prospect of BigTech companies showing up in the fediverse and perhaps taking it over was scary.
 
+### 2024: Facebook increases its fediverse integration
+In June, Zuckerberg expanded the availability of Threads - which had previously been an early beta release - to 100 countries and enabled users on his servers to post to the wider fediverse on the open web.
+
 ### Fediverse culture shock
 This is what happens when someone has only had a presence within large corporate sites, such as the website formerly known as Twitter or Facebook, and then moves to a federated system on the open internet.
 
