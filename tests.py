@@ -30,6 +30,7 @@ from httpsig import sign_post_headers
 from httpsig import sign_post_headers_new
 from httpsig import verify_post_headers
 from httpsig import message_content_digest
+from cache import cache_svg_images
 from cache import store_person_in_cache
 from cache import get_person_from_cache
 from threads import thread_with_trace
@@ -149,7 +150,6 @@ from delete import send_delete_via_server
 from inbox import json_post_allows_comments
 from inbox import valid_inbox
 from inbox import valid_inbox_filenames
-from inbox import cache_svg_images
 from categories import guess_hashtag_category
 from content import remove_link_trackers_from_content
 from content import format_mixed_right_to_left

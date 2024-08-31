@@ -8,9 +8,18 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
+from session import download_image
 from session import url_exists
 from session import get_json
 from session import get_json_valid
+from utils import url_permitted
+from utils import remove_html
+from utils import get_url_from_post
+from utils import data_dir
+from utils import get_attributed_to
+from utils import remove_id_ending
+from utils import get_post_attachments
+from utils import has_object_dict
 from utils import contains_statuses
 from utils import load_json
 from utils import save_json
@@ -18,6 +27,7 @@ from utils import get_file_case_insensitive
 from utils import get_user_paths
 from utils import date_utcnow
 from utils import date_from_string_format
+from content import remove_script
 
 
 def remove_person_from_cache(base_dir: str, person_url: str,
@@ -254,3 +264,95 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
     store_person_in_cache(base_dir, person_url, person_json,
                           person_cache, True)
     return pub_key
+
+
+def cache_svg_images(session, base_dir: str, http_prefix: str,
+                     domain: str, domain_full: str,
+                     onion_domain: str, i2p_domain: str,
+                     post_json_object: {},
+                     federation_list: [], debug: bool,
+                     test_image_filename: str) -> bool:
+    """Creates a local copy of a remote svg file
+    """
+    if has_object_dict(post_json_object):
+        obj = post_json_object['object']
+    else:
+        obj = post_json_object
+    if not obj.get('id'):
+        return False
+    post_attachments = get_post_attachments(obj)
+    if not post_attachments:
+        return False
+    cached = False
+    post_id = remove_id_ending(obj['id']).replace('/', '--')
+    actor = 'unknown'
+    if post_attachments and obj.get('attributedTo'):
+        actor = get_attributed_to(obj['attributedTo'])
+    log_filename = data_dir(base_dir) + '/svg_scripts_log.txt'
+    for index in range(len(post_attachments)):
+        attach = post_attachments[index]
+        if not attach.get('mediaType'):
+            continue
+        if not attach.get('url'):
+            continue
+        url_str = get_url_from_post(attach['url'])
+        if url_str.endswith('.svg') or \
+           'svg' in attach['mediaType']:
+            url = remove_html(url_str)
+            if not url_permitted(url, federation_list):
+                continue
+            # if this is a local image then it has already been
+            # validated on upload
+            if '://' + domain in url:
+                continue
+            if onion_domain:
+                if '://' + onion_domain in url:
+                    continue
+            if i2p_domain:
+                if '://' + i2p_domain in url:
+                    continue
+            if '/' in url:
+                filename = url.split('/')[-1]
+            else:
+                filename = url
+            if not test_image_filename:
+                image_filename = \
+                    base_dir + '/media/' + post_id + '_' + filename
+                if not download_image(session, url,
+                                      image_filename, debug):
+                    continue
+            else:
+                image_filename = test_image_filename
+            image_data = None
+            try:
+                with open(image_filename, 'rb') as fp_svg:
+                    image_data = fp_svg.read()
+            except OSError:
+                print('EX: unable to read svg file data')
+            if not image_data:
+                continue
+            image_data = image_data.decode()
+            cleaned_up = \
+                remove_script(image_data, log_filename, actor, url)
+            if cleaned_up != image_data:
+                # write the cleaned up svg image
+                svg_written = False
+                cleaned_up = cleaned_up.encode('utf-8')
+                try:
+                    with open(image_filename, 'wb') as fp_im:
+                        fp_im.write(cleaned_up)
+                        svg_written = True
+                except OSError:
+                    print('EX: unable to write cleaned up svg ' + url)
+                if svg_written:
+                    # convert to list if needed
+                    if isinstance(obj['attachment'], dict):
+                        obj['attachment'] = [obj['attachment']]
+                    # change the url to be the local version
+                    obj['attachment'][index]['url'] = \
+                        http_prefix + '://' + domain_full + '/media/' + \
+                        post_id + '_' + filename
+                    cached = True
+            else:
+                cached = True
+    return cached
