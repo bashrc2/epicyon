@@ -38,6 +38,7 @@ from daemon import run_daemon
 from session import get_json_valid
 from session import create_session
 from session import get_json
+from posts import json_post_allows_comments
 from posts import convert_post_content_to_html
 from posts import get_actor_from_in_reply_to
 from posts import regenerate_index_for_box
@@ -147,7 +148,6 @@ from media import get_image_dimensions
 from media import get_media_path
 from media import get_attachment_media_type
 from delete import send_delete_via_server
-from inbox import json_post_allows_comments
 from inbox import valid_inbox
 from inbox import valid_inbox_filenames
 from categories import guess_hashtag_category

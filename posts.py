@@ -6985,3 +6985,58 @@ def set_max_profile_posts(base_dir: str, nickname: str, domain: str,
               max_posts_filename)
         return False
     return True
+
+
+def json_post_allows_comments(post_json_object: {}) -> bool:
+    """Returns true if the given post allows comments/replies
+    """
+    # reply control with
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/5624/fep-5624.md
+    reply_control = None
+    if 'canReply' in post_json_object:
+        reply_control = post_json_object['canReply']
+    if 'capabilities' in post_json_object:
+        if isinstance(post_json_object['capabilities'], dict):
+            if 'reply' in post_json_object['capabilities']:
+                if isinstance(post_json_object['capabilities']['reply'], str):
+                    reply_control = post_json_object['capabilities']['reply']
+            else:
+                # capabilities exist but there is no reply field
+                reply_control = 'noreply'
+    obj_dict_exists = False
+    if has_object_dict(post_json_object):
+        obj_dict_exists = True
+        post_obj = post_json_object['object']
+        if 'canReply' in post_obj:
+            reply_control = post_obj['canReply']
+        if 'capabilities' in post_obj:
+            if isinstance(post_obj['capabilities'], dict):
+                if 'reply' in post_obj['capabilities']:
+                    if isinstance(post_obj['capabilities']['reply'], str):
+                        reply_control = post_obj['capabilities']['reply']
+                else:
+                    # capabilities exist but there is no reply field
+                    reply_control = 'noreply'
+    if reply_control:
+        if isinstance(reply_control, str):
+            if reply_control == 'noreply':
+                return False
+            if not reply_control.endswith('#Public'):
+                # TODO handle non-public reply permissions
+                print('CAPABILITIES: replies ' + str(reply_control))
+                return False
+
+    if 'commentsEnabled' in post_json_object:
+        return post_json_object['commentsEnabled']
+    if 'rejectReplies' in post_json_object:
+        return not post_json_object['rejectReplies']
+
+    if post_json_object.get('object'):
+        if not obj_dict_exists:
+            return False
+        if 'commentsEnabled' in post_json_object['object']:
+            return post_json_object['object']['commentsEnabled']
+        if 'rejectReplies' in post_json_object['object']:
+            return not post_json_object['object']['rejectReplies']
+
+    return True
