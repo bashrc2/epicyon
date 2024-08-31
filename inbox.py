@@ -1768,7 +1768,6 @@ def _receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                              auto_cw_cache: {},
                              onion_domain: str,
                              i2p_domain: str) -> bool:
-
     """Receives an Update activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Update':
