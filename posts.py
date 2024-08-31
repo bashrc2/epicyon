@@ -109,6 +109,8 @@ from content import add_html_tags
 from content import replace_emoji_from_tags
 from content import remove_text_formatting
 from content import add_auto_cw
+from content import contains_invalid_local_links
+from content import valid_url_lengths
 from auth import create_basic_auth_header
 from blocking import is_blocked_hashtag
 from blocking import is_blocked
@@ -116,6 +118,7 @@ from blocking import is_blocked_domain
 from filters import is_filtered
 from filters import is_question_filtered
 from git import convert_post_to_patch
+from git import is_git_patch
 from linked_data_sig import generate_json_signature
 from petnames import resolve_petnames
 from video import convert_video_to_note
@@ -126,6 +129,7 @@ from keys import get_person_key
 from markdown import markdown_to_html
 from followerSync import update_followers_sync_cache
 from question import is_question
+from question import dangerous_question
 from pyjsonld import JsonLdError
 
 
@@ -7039,4 +7043,251 @@ def json_post_allows_comments(post_json_object: {}) -> bool:
         if 'rejectReplies' in post_json_object['object']:
             return not post_json_object['object']['rejectReplies']
 
+    return True
+
+
+def _estimate_number_of_mentions(content: str) -> int:
+    """Returns a rough estimate of the number of mentions
+    """
+    return content.count('>@<')
+
+
+def _estimate_number_of_emoji(content: str) -> int:
+    """Returns a rough estimate of the number of emoji
+    """
+    return content.count(' :')
+
+
+def _estimate_number_of_hashtags(content: str) -> int:
+    """Returns a rough estimate of the number of hashtags
+    """
+    return content.count('>#<')
+
+
+def post_allow_comments(post_filename: str) -> bool:
+    """Returns true if the given post allows comments/replies
+    """
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
+        return False
+    return json_post_allows_comments(post_json_object)
+
+
+def valid_post_content(base_dir: str, nickname: str, domain: str,
+                       message_json: {}, max_mentions: int, max_emoji: int,
+                       allow_local_network_access: bool, debug: bool,
+                       system_language: str,
+                       http_prefix: str, domain_full: str,
+                       person_cache: {},
+                       max_hashtags: int,
+                       onion_domain: str, i2p_domain: str) -> bool:
+    """Is the content of a received post valid?
+    Check for bad html
+    Check for hellthreads
+    Check that the language is understood
+    Check if it's a git patch
+    Check number of tags and mentions is reasonable
+    """
+    if not has_object_dict(message_json):
+        return True
+    if 'content' not in message_json['object']:
+        return True
+
+    if not message_json['object'].get('published'):
+        if message_json['object'].get('id'):
+            print('REJECT inbox post does not have a published date. ' +
+                  str(message_json['object']['id']))
+        return False
+    published = message_json['object']['published']
+    if 'T' not in published:
+        if message_json['object'].get('id'):
+            print('REJECT inbox post does not use expected time format. ' +
+                  published + ' ' + str(message_json['object']['id']))
+        return False
+    if 'Z' not in published:
+        if message_json['object'].get('id'):
+            print('REJECT inbox post does not use Zulu time format. ' +
+                  published + ' ' + str(message_json['object']['id']))
+        return False
+    if '.' in published:
+        # converts 2022-03-30T17:37:58.734Z into 2022-03-30T17:37:58Z
+        published = published.split('.')[0] + 'Z'
+        message_json['object']['published'] = published
+    if not valid_post_date(published, 90, debug):
+        if message_json['object'].get('id'):
+            print('REJECT: invalid post published date ' +
+                  str(published) + ' ' +
+                  str(message_json['object']['id']))
+        return False
+
+    # if the post has been edited then check its edit date
+    if message_json['object'].get('updated'):
+        published_update = message_json['object']['updated']
+        if 'T' not in published_update:
+            if message_json['object'].get('id'):
+                print('REJECT: invalid post update date format ' +
+                      str(published_update) + ' ' +
+                      str(message_json['object']['id']))
+            return False
+        if 'Z' not in published_update:
+            if message_json['object'].get('id'):
+                print('REJECT: post update date not in Zulu time ' +
+                      str(published_update) + ' ' +
+                      str(message_json['object']['id']))
+            return False
+        if '.' in published_update:
+            # converts 2022-03-30T17:37:58.734Z into 2022-03-30T17:37:58Z
+            published_update = published_update.split('.')[0] + 'Z'
+            message_json['object']['updated'] = published_update
+        if not valid_post_date(published_update, 90, debug):
+            if message_json['object'].get('id'):
+                print('REJECT: invalid post update date ' +
+                      str(published_update) + ' ' +
+                      str(message_json['object']['id']))
+            return False
+
+    summary = None
+    if message_json['object'].get('summary'):
+        summary = message_json['object']['summary']
+        if not isinstance(summary, str):
+            if message_json['object'].get('id'):
+                print('REJECT: content warning is not a string ' +
+                      str(summary) + ' ' + str(message_json['object']['id']))
+            return False
+        if summary != valid_content_warning(summary):
+            if message_json['object'].get('id'):
+                print('REJECT: invalid content warning ' + summary + ' ' +
+                      str(message_json['object']['id']))
+            return False
+        if dangerous_markup(summary, allow_local_network_access, []):
+            if message_json['object'].get('id'):
+                print('REJECT ARBITRARY HTML 1: ' +
+                      message_json['object']['id'])
+            print('REJECT ARBITRARY HTML: bad string in summary - ' +
+                  summary)
+            return False
+
+    # check for patches before dangeousMarkup, which excludes code
+    if is_git_patch(base_dir, nickname, domain,
+                    message_json['object']['type'],
+                    summary,
+                    message_json['object']['content']):
+        return True
+
+    if is_question(message_json):
+        if is_question_filtered(base_dir, nickname, domain,
+                                system_language, message_json):
+            print('REJECT: incoming question options filter')
+            return False
+        if dangerous_question(message_json, allow_local_network_access):
+            print('REJECT: incoming question markup filter')
+            return False
+
+    content_str = get_base_content_from_post(message_json, system_language)
+    if dangerous_markup(content_str, allow_local_network_access, ['pre']):
+        if message_json['object'].get('id'):
+            print('REJECT ARBITRARY HTML 2: ' +
+                  str(message_json['object']['id']))
+        if debug:
+            print('REJECT ARBITRARY HTML: bad string in post - ' +
+                  content_str)
+        return False
+
+    if contains_invalid_local_links(domain_full,
+                                    onion_domain, i2p_domain,
+                                    content_str):
+        if message_json['object'].get('id'):
+            print('REJECT: post contains invalid local links ' +
+                  str(message_json['object']['id']) + ' ' +
+                  str(content_str))
+        return False
+
+    # check (rough) number of mentions
+    mentions_est = _estimate_number_of_mentions(content_str)
+    if mentions_est > max_mentions:
+        if message_json['object'].get('id'):
+            print('REJECT HELLTHREAD: ' + str(message_json['object']['id']))
+        if debug:
+            print('REJECT HELLTHREAD: Too many mentions in post - ' +
+                  content_str)
+        return False
+    if _estimate_number_of_emoji(content_str) > max_emoji:
+        if message_json['object'].get('id'):
+            print('REJECT EMOJI OVERLOAD: ' +
+                  str(message_json['object']['id']))
+        if debug:
+            print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
+                  content_str)
+        return False
+    if _estimate_number_of_hashtags(content_str) > max_hashtags:
+        if message_json['object'].get('id'):
+            print('REJECT HASHTAG OVERLOAD: ' +
+                  str(message_json['object']['id']))
+        if debug:
+            print('REJECT HASHTAG OVERLOAD: Too many hashtags in post - ' +
+                  content_str)
+        return False
+    # check number of tags
+    if message_json['object'].get('tag'):
+        if not isinstance(message_json['object']['tag'], list):
+            message_json['object']['tag'] = []
+        else:
+            if len(message_json['object']['tag']) > int(max_mentions * 2):
+                if message_json['object'].get('id'):
+                    print('REJECT: ' + message_json['object']['id'])
+                print('REJECT: Too many tags in post - ' +
+                      str(message_json['object']['tag']))
+                return False
+    # check that the post is in a language suitable for this account
+    if not understood_post_language(base_dir, nickname,
+                                    message_json, system_language,
+                                    http_prefix, domain_full,
+                                    person_cache):
+        if message_json['object'].get('id'):
+            print('REJECT: content not understood ' +
+                  str(message_json['object']['id']))
+        return False
+
+    # check for urls which are too long
+    if not valid_url_lengths(content_str, 2048):
+        print('REJECT: url within content too long')
+        return False
+
+    # check for filtered content
+    media_descriptions = get_media_descriptions_from_post(message_json)
+    content_all = content_str
+    if summary:
+        content_all = summary + ' ' + content_str + ' ' + media_descriptions
+    if is_filtered(base_dir, nickname, domain, content_all,
+                   system_language):
+        if message_json['object'].get('id'):
+            print('REJECT: content filtered ' +
+                  str(message_json['object']['id']))
+        return False
+    reply_id = get_reply_to(message_json['object'])
+    if reply_id:
+        if isinstance(reply_id, str):
+            # this is a reply
+            original_post_id = reply_id
+            post_post_filename = locate_post(base_dir, nickname, domain,
+                                             original_post_id)
+            if post_post_filename:
+                if not post_allow_comments(post_post_filename):
+                    print('REJECT: reply to post which does not ' +
+                          'allow comments: ' + original_post_id)
+                    return False
+    if contains_private_key(message_json['object']['content']):
+        if message_json['object'].get('id'):
+            print('REJECT: someone posted their private key ' +
+                  str(message_json['object']['id']) + ' ' +
+                  message_json['object']['content'])
+        return False
+    if invalid_ciphertext(message_json['object']['content']):
+        if message_json['object'].get('id'):
+            print('REJECT: malformed ciphertext in content ' +
+                  str(message_json['object']['id']) + ' ' +
+                  message_json['object']['content'])
+        return False
+    if debug:
+        print('ACCEPT: post content is valid')
     return True

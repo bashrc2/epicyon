@@ -47,7 +47,6 @@ from media import replace_you_tube
 from media import replace_twitter
 from media import get_media_path
 from media import create_media_dirs
-from inbox import inbox_update_index
 from announce import outbox_announce
 from announce import outbox_undo_announce
 from follow import outbox_undo_follow
@@ -68,6 +67,7 @@ from webapp_hashtagswarm import store_hash_tags
 from speaker import update_speaker
 from reading import store_book_events
 from reading import has_edition_tag
+from inbox_receive import inbox_update_index
 
 
 def _localonly_not_local(message_json: {}, domain_full: str) -> bool:
