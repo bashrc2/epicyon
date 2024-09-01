@@ -687,6 +687,9 @@ def run_daemon(accounts_data_dir: str,
 
     httpd.starting_daemon = True
 
+    # the last time when an LLM scraper was replied to
+    httpd.last_llm_time = None
+
     # width, position and opacity of watermark applied to attached images
     # as a percentage of the attached image width
     httpd.watermark_width_percent = watermark_width_percent

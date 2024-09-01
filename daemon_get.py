@@ -87,6 +87,7 @@ from httpcodes import http_304
 from httpcodes import http_400
 from httpcodes import http_503
 from httpcodes import write2
+from utils import date_utcnow
 from utils import replace_strings
 from utils import contains_invalid_chars
 from utils import save_json
@@ -349,8 +350,16 @@ def daemon_http_get(self) -> None:
                                self.path, self.server.block_military)
         if block:
             if llm:
+                # check if LLM is too frequent
+                if self.server.last_llm_time:
+                    curr_date = date_utcnow()
+                    time_diff = curr_date - self.server.last_llm_time
+                    diff_secs = time_diff.total_seconds()
+                    if diff_secs < 60:
+                        http_402(self)
+                        return
                 if is_image_file(self.path):
-                    http_404(self, 723)
+                    http_402(self)
                     return
                 # if this is an LLM crawler then feed it some trash
                 print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
@@ -361,6 +370,7 @@ def daemon_http_get(self) -> None:
                 set_headers(self, 'text/html', msglen,
                             '', calling_domain, False)
                 write2(self, msg)
+                self.server.last_llm_time = date_utcnow()
                 return
             http_400(self)
             return
