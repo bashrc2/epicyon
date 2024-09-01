@@ -2962,7 +2962,7 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += '    </div>\n'
 
     # other options
-    edit_profile_form = '    <div class="container">\n'
+    edit_profile_form += '    <div class="container">\n'
     edit_profile_form += \
         edit_check_box(translate['Premium account'], 'premiumAccount', premium)
     approve_followers_str = translate['Approve follower requests']
