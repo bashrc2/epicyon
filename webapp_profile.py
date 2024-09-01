@@ -2915,31 +2915,15 @@ def _html_edit_profile_encryption_keys(pgp_fingerprint: str,
     return edit_profile_form
 
 
-def _html_edit_profile_options(is_admin: bool,
-                               manually_approves_followers: str,
-                               reject_spam_actors: str,
-                               is_bot: str, is_group: str,
-                               follow_dms: str, remove_twitter: str,
-                               notify_likes: str, notify_reactions: str,
-                               hide_like_button: str,
-                               hide_reaction_button: str,
-                               translate: {}, bold_reading: bool,
-                               nickname: str,
-                               min_images_for_accounts: [],
-                               reverse_sequence: [],
-                               show_quote_toots: bool,
-                               show_vote_posts: bool,
-                               show_replies_followers: bool,
-                               show_replies_mutuals: bool,
-                               hide_follows: bool,
-                               premium: bool,
-                               no_reply_boosts: bool,
-                               no_seen_posts: bool,
-                               watermark_enabled: bool) -> str:
-    """option checkboxes section of edit profile screen
+def _html_edit_profile_reply_controls(translate: {},
+                                      follow_dms: bool,
+                                      premium: bool,
+                                      show_replies_followers: bool,
+                                      show_replies_mutuals: bool,
+                                      no_reply_boosts: bool) -> str:
+    """option checkboxes for reply controls
     """
-    # reply controls
-    edit_profile_form = '    <div class="container">\n'
+    edit_profile_form = begin_edit_section(translate['Reply Controls'])
     edit_profile_form += \
         edit_check_box(translate['Only people I follow can send me DMs'],
                        'followDMs', follow_dms)
@@ -2959,10 +2943,31 @@ def _html_edit_profile_options(is_admin: bool,
     no_reply_boosts_str = translate["Don't show boosted replies"]
     edit_profile_form += \
         edit_check_box(no_reply_boosts_str, 'noReplyBoosts', no_reply_boosts)
-    edit_profile_form += '    </div>\n'
+    edit_profile_form += end_edit_section()
+    return edit_profile_form
 
-    # other options
-    edit_profile_form += '    <div class="container">\n'
+
+def _html_edit_profile_options(is_admin: bool,
+                               manually_approves_followers: str,
+                               reject_spam_actors: str,
+                               is_bot: str, is_group: str,
+                               remove_twitter: str,
+                               notify_likes: str, notify_reactions: str,
+                               hide_like_button: str,
+                               hide_reaction_button: str,
+                               translate: {}, bold_reading: bool,
+                               nickname: str,
+                               min_images_for_accounts: [],
+                               reverse_sequence: [],
+                               show_quote_toots: bool,
+                               show_vote_posts: bool,
+                               hide_follows: bool,
+                               premium: bool,
+                               no_seen_posts: bool,
+                               watermark_enabled: bool) -> str:
+    """option checkboxes section of edit profile screen
+    """
+    edit_profile_form = '    <div class="container">\n'
     edit_profile_form += \
         edit_check_box(translate['Premium account'], 'premiumAccount', premium)
     approve_followers_str = translate['Approve follower requests']
@@ -3493,18 +3498,23 @@ def html_edit_profile(server, translate: {},
     # Option checkboxes
     edit_profile_form += \
         _html_edit_profile_options(is_admin, manually_approves_followers,
-                                   reject_spam_actors,
-                                   is_bot, is_group, follow_dms,
-                                   remove_twitter,
-                                   notify_likes, notify_reactions,
-                                   hide_like_button, hide_reaction_button,
-                                   translate, bold_reading,
-                                   nickname, min_images_for_accounts,
+                                   reject_spam_actors, is_bot, is_group,
+                                   remove_twitter, notify_likes,
+                                   notify_reactions, hide_like_button,
+                                   hide_reaction_button, translate,
+                                   bold_reading, nickname,
+                                   min_images_for_accounts,
                                    reverse_sequence, show_quote_toots,
-                                   show_vote_posts, show_replies_followers,
-                                   show_replies_mutuals, hide_follows,
-                                   premium, no_reply_boosts,
-                                   no_seen_posts, watermark_enabled)
+                                   show_vote_posts, hide_follows,
+                                   premium, no_seen_posts, watermark_enabled)
+
+    # reply controls
+    edit_profile_form += \
+        _html_edit_profile_reply_controls(translate, follow_dms,
+                                          premium,
+                                          show_replies_followers,
+                                          show_replies_mutuals,
+                                          no_reply_boosts)
 
     # Contact information
     edit_profile_form += \
