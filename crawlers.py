@@ -133,9 +133,12 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'gptbot', '-ai/', ' ai/', '-ai ', ' ai ', 'chatgpt',
             'anthropic', 'mlbot', 'claude-web', 'claudebot', 'ccbot',
             'facebookbot', 'google-extended', 'piplbot', 'oai-search',
-            'applebot-extended', 'meta-external', 'diffbot', 'perplexitybot',
+            'applebot', 'meta-external', 'diffbot', 'perplexitybot',
             'omgili', 'imagesiftbot', 'bytespider', 'amazonbot', 'youbot',
-            'petalbot', 'ai2bot', 'allenai'
+            'petalbot', 'ai2bot', 'allenai', 'firecrawl', 'friendlycrawler',
+            'googleother', 'icc-crawler', 'scrapy', 'timpibot',
+            'velenpublic', 'webzio-extended', 'cohere-ai', 'facebookexternal',
+            'img2dataset'
         )
         for bot_str in llm_bot_strings:
             if bot_str in agent_str_lower:
