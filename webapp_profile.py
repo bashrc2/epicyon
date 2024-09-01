@@ -2938,6 +2938,30 @@ def _html_edit_profile_options(is_admin: bool,
                                watermark_enabled: bool) -> str:
     """option checkboxes section of edit profile screen
     """
+    # reply controls
+    edit_profile_form = '    <div class="container">\n'
+    edit_profile_form += \
+        edit_check_box(translate['Only people I follow can send me DMs'],
+                       'followDMs', follow_dms)
+
+    show_replies_followers_str = translate['Only allow replies from followers']
+    if premium:
+        show_replies_followers_str = translate['Only allow replies from fans']
+    edit_profile_form += \
+        edit_check_box(show_replies_followers_str, 'repliesFromFollowersOnly',
+                       show_replies_followers)
+
+    show_replies_mutuals_str = translate['Only allow replies from mutuals']
+    edit_profile_form += \
+        edit_check_box(show_replies_mutuals_str, 'repliesFromMutualsOnly',
+                       show_replies_mutuals)
+
+    no_reply_boosts_str = translate["Don't show boosted replies"]
+    edit_profile_form += \
+        edit_check_box(no_reply_boosts_str, 'noReplyBoosts', no_reply_boosts)
+    edit_profile_form += '    </div>\n'
+
+    # other options
     edit_profile_form = '    <div class="container">\n'
     edit_profile_form += \
         edit_check_box(translate['Premium account'], 'premiumAccount', premium)
@@ -2957,9 +2981,6 @@ def _html_edit_profile_options(is_admin: bool,
         edit_profile_form += \
             edit_check_box(translate['This is a group account'],
                            'isGroup', is_group)
-    edit_profile_form += \
-        edit_check_box(translate['Only people I follow can send me DMs'],
-                       'followDMs', follow_dms)
     edit_profile_form += \
         edit_check_box(translate['Remove Twitter posts'],
                        'removeTwitter', remove_twitter)
@@ -3003,27 +3024,11 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(show_vote_posts_str, 'showVotes', show_vote_posts)
 
-    show_replies_followers_str = translate['Only allow replies from followers']
-    if premium:
-        show_replies_followers_str = translate['Only allow replies from fans']
-    edit_profile_form += \
-        edit_check_box(show_replies_followers_str, 'repliesFromFollowersOnly',
-                       show_replies_followers)
-
-    show_replies_mutuals_str = translate['Only allow replies from mutuals']
-    edit_profile_form += \
-        edit_check_box(show_replies_mutuals_str, 'repliesFromMutualsOnly',
-                       show_replies_mutuals)
-
     hide_follows_str = translate['Do not show follows on your profile']
     if premium:
         hide_follows_str = translate['Do not show fans on your profile']
     edit_profile_form += \
         edit_check_box(hide_follows_str, 'hideFollows', hide_follows)
-
-    no_reply_boosts_str = translate["Don't show boosted replies"]
-    edit_profile_form += \
-        edit_check_box(no_reply_boosts_str, 'noReplyBoosts', no_reply_boosts)
 
     no_seen_posts_str = translate["Don't show already seen posts"]
     edit_profile_form += \
