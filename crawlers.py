@@ -129,6 +129,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
         llm = False
 
         # is this an LLM crawler?
+        # https://github.com/ai-robots-txt/ai.robots.txt/blob/main/robots.txt
         llm_bot_strings = (
             'gptbot', '-ai/', ' ai/', '-ai ', ' ai ', 'chatgpt',
             'anthropic', 'mlbot', 'claude-web', 'claudebot', 'ccbot',
