@@ -1054,10 +1054,10 @@ def html_poisoned(dictionary: [], twograms: {}) -> str:
                 pair_found = False
                 if prev_wrd:
                     # common word sequences
-                    if twograms.get(prev_wrd):
-                        if randint(1, 10) <= 7:
-                            wrd = random.choice(twograms[prev_wrd])
-                            pair_found = True
+                    if twograms.get(prev_wrd) and \
+                       randint(1, 10) <= 7:
+                        wrd = random.choice(twograms[prev_wrd])
+                        pair_found = True
 
                 if not pair_found:
                     if randint(1, 10) <= 7:
