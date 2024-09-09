@@ -944,7 +944,6 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                           city: str, base_dir: str,
                                           http_prefix: str,
                                           person_cache: {},
-                                          content_license_url: str,
                                           port: int,
                                           filename: str,
                                           attachment_media_type: str,
@@ -999,12 +998,7 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
         get_understood_languages(base_dir, http_prefix,
                                  nickname, domain_full,
                                  person_cache)
-    media_license_url = content_license_url
-    if fields.get('mediaLicense'):
-        media_license_url = fields['mediaLicense']
-        if '://' not in media_license_url:
-            media_license_url = \
-                license_link_from_name(media_license_url)
+    media_license_url = ''
     media_creator = ''
     if fields.get('mediaCreator'):
         media_creator = fields['mediaCreator']
@@ -2033,7 +2027,6 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             city, base_dir,
             http_prefix,
             person_cache,
-            content_license_url,
             port,
             filename,
             attachment_media_type,
