@@ -24,6 +24,6 @@
 
 There is some indication that W3C may add E2EE to the ActivityPub spec.
 If they do this then consider the best way to add it. It may mean giving up
-on the "no javascript" policy, or it could be comething only usable
+on the "no javascript" policy, or it could be something only usable
 via a C2S client.
 https://github.com/swicg/activitypub-e2ee
