@@ -322,7 +322,7 @@ def standardize_text(text: str) -> str:
     return uninvert_text(text)
 
 
-def remove_eol(line: str):
+def remove_eol(line: str) -> str:
     """Removes line ending characters
     """
     return line.rstrip()
@@ -668,7 +668,7 @@ def acct_handle_dir(base_dir: str, handle: str) -> str:
     return data_dir(base_dir) + '/' + handle
 
 
-def refresh_newswire(base_dir: str):
+def refresh_newswire(base_dir: str) -> None:
     """Causes the newswire to be updates after a change to user accounts
     """
     refresh_newswire_filename = data_dir(base_dir) + '/.refresh_newswire'
@@ -1031,7 +1031,7 @@ def set_config_param(base_dir: str, variable_name: str,
     save_json(config_json, config_filename)
 
 
-def get_config_param(base_dir: str, variable_name: str):
+def get_config_param(base_dir: str, variable_name: str) -> str:
     """Gets a configuration value
     """
     _create_config(base_dir)
@@ -2182,7 +2182,7 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
 
 
 def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
-                       post_json: {}):
+                       post_json: {}) -> None:
     """Removes media files for an attachment
     """
     post_attachments = get_post_attachments(post_json)
@@ -2253,7 +2253,7 @@ def remove_moderation_post_from_index(base_dir: str, post_url: str,
 
 
 def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
-                           post_json_object: str):
+                           post_json_object: str) -> bool:
     """Is the given post a reply to a blog post?
     """
     if not has_object_dict(post_json_object):
@@ -2354,7 +2354,7 @@ def remove_post_from_cache(post_json_object: {},
 
 
 def delete_cached_html(base_dir: str, nickname: str, domain: str,
-                       post_json_object: {}):
+                       post_json_object: {}) -> None:
     """Removes cached html file for the given post
     """
     cached_post_filename = \
