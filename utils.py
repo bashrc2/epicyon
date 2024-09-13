@@ -5683,3 +5683,19 @@ def replace_strings(text: str, replacements: {}) -> str:
     for orig_str, new_str in replacements.items():
         text = text.replace(orig_str, new_str)
     return text
+
+
+def account_is_indexable(actor_json: {}) -> bool:
+    """Returns true if the given actor is indexable
+    """
+    if 'indexable' not in actor_json:
+        return False
+    if isinstance(actor_json['indexable'], bool):
+        return actor_json['indexable']
+    if isinstance(actor_json['indexable'], list):
+        if '#Public' in str(actor_json['indexable']):
+            return True
+    elif isinstance(actor_json['indexable'], str):
+        if '#Public' in actor_json['indexable']:
+            return True
+    return False

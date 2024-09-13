@@ -37,6 +37,7 @@ from roles import set_role
 from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
+from utils import account_is_indexable
 from utils import get_image_mime_type
 from utils import get_instance_url
 from utils import get_url_from_post
@@ -218,9 +219,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
     memorial = False
     if actor_json.get('memorial'):
         memorial = True
-    indexable = False
-    if actor_json.get('indexable'):
-        indexable = True
+    indexable = account_is_indexable(actor_json)
     searchable_by = []
     if actor_json.get('searchableBy'):
         if isinstance(actor_json['searchableBy'], list):

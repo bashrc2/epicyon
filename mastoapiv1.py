@@ -19,6 +19,7 @@ from utils import no_of_accounts
 from utils import get_status_count
 from utils import lines_in_file
 from utils import data_dir
+from utils import account_is_indexable
 
 
 def _meta_data_instance_v1(show_accounts: bool,
@@ -220,10 +221,7 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     joined_date = "2016-10-05T10:30:00Z"
     if account_json.get('published'):
         joined_date = account_json['published']
-    noindex = True
-    if 'indexable' in account_json:
-        if account_json['indexable'] is True:
-            noindex = False
+    noindex = not account_is_indexable(account_json)
     discoverable = True
     if 'discoverable' in account_json:
         if account_json['discoverable'] is False:

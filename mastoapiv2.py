@@ -21,6 +21,7 @@ from utils import get_audio_extensions
 from utils import get_image_mime_type
 from utils import lines_in_file
 from utils import data_dir
+from utils import account_is_indexable
 
 
 def _get_masto_api_v2id_from_nickname(nickname: str) -> int:
@@ -96,10 +97,7 @@ def _meta_data_instance_v2(show_accounts: bool,
     image_url = remove_html(url_str)
     thumbnail_url = http_prefix + '://' + domain_full + '/login.png'
     admin_email = None
-    noindex = True
-    if 'indexable' in admin_actor:
-        if admin_actor['indexable'] is True:
-            noindex = False
+    noindex = not account_is_indexable(admin_actor)
     discoverable = True
     if 'discoverable' in admin_actor:
         if admin_actor['discoverable'] is False:
