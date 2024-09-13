@@ -38,7 +38,7 @@ from utils import get_domain_from_actor
 from utils import get_actor_from_post
 from utils import has_actor
 from utils import resembles_url
-from utils import is_system_account
+from flags import is_system_account
 from cache import check_for_changed_actor
 from cache import get_person_from_cache
 from website import get_website

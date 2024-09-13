@@ -12,6 +12,7 @@ from shutil import copyfile
 from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
+from flags import is_float
 from utils import replace_strings
 from utils import get_image_file
 from utils import data_dir
@@ -35,7 +36,6 @@ from utils import get_config_param
 from utils import acct_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
-from utils import is_float
 from utils import get_audio_extensions
 from utils import get_video_extensions
 from utils import get_image_extensions

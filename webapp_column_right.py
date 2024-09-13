@@ -10,6 +10,7 @@ __module_group__ = "Web Interface Columns"
 import os
 from content import remove_long_words
 from content import limit_repeated_words
+from flags import is_editor
 from utils import replace_strings
 from utils import data_dir
 from utils import get_image_extensions
@@ -20,7 +21,6 @@ from utils import locate_post
 from utils import load_json
 from utils import votes_on_newswire_item
 from utils import get_nickname_from_actor
-from utils import is_editor
 from utils import get_config_param
 from utils import remove_domain_port
 from utils import acct_dir

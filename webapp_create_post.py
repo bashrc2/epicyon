@@ -8,8 +8,9 @@ __status__ = "Production"
 __module_group__ = "Web Interface"
 
 import os
+from flags import is_public_post_from_url
+from flags import is_premium_account
 from utils import data_dir
-from utils import is_premium_account
 from utils import dangerous_markup
 from utils import remove_html
 from utils import get_content_from_post
@@ -17,7 +18,6 @@ from utils import has_object_dict
 from utils import load_json
 from utils import locate_post
 from utils import get_new_post_endpoints
-from utils import is_public_post_from_url
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_media_formats

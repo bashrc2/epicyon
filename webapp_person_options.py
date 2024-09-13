@@ -12,15 +12,15 @@ from shutil import copyfile
 from petnames import get_pet_name
 from person import is_person_snoozed
 from posts import is_moderator
+from flags import is_featured_writer
+from flags import is_dormant
 from utils import data_dir
 from utils import quote_toots_allowed
 from utils import get_full_domain
 from utils import get_config_param
-from utils import is_dormant
 from utils import remove_html
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
-from utils import is_featured_writer
 from utils import acct_dir
 from utils import text_in_file
 from utils import remove_domain_port

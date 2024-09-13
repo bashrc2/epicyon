@@ -87,6 +87,9 @@ from httpcodes import http_304
 from httpcodes import http_400
 from httpcodes import http_503
 from httpcodes import write2
+from flags import is_image_file
+from flags import is_artist
+from flags import is_blog_post
 from utils import date_utcnow
 from utils import replace_strings
 from utils import contains_invalid_chars
@@ -97,9 +100,6 @@ from utils import local_network_host
 from utils import permitted_dir
 from utils import has_users_path
 from utils import media_file_mime_type
-from utils import is_image_file
-from utils import is_artist
-from utils import is_blog_post
 from utils import replace_users_with_at
 from utils import remove_id_ending
 from utils import local_actor_url

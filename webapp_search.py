@@ -10,6 +10,8 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 import urllib.parse
+from flags import is_editor
+from flags import is_public_post
 from utils import data_dir
 from utils import get_post_attachments
 from utils import get_url_from_post
@@ -25,11 +27,9 @@ from utils import get_base_content_from_post
 from utils import is_account_dir
 from utils import get_config_param
 from utils import get_full_domain
-from utils import is_editor
 from utils import load_json
 from utils import get_nickname_from_actor
 from utils import locate_post
-from utils import is_public_post
 from utils import first_paragraph_from_string
 from utils import search_box_posts
 from utils import get_alt_path

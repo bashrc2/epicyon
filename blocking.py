@@ -12,6 +12,7 @@ import json
 import time
 from session import get_json_valid
 from session import create_session
+from flags import is_evil
 from utils import get_user_paths
 from utils import contains_statuses
 from utils import data_dir
@@ -33,7 +34,6 @@ from utils import set_config_param
 from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
-from utils import is_evil
 from utils import locate_post
 from utils import evil_incarnate
 from utils import get_domain_from_actor

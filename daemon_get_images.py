@@ -24,7 +24,7 @@ from utils import media_file_mime_type
 from utils import get_image_mime_type
 from utils import get_image_extensions
 from utils import acct_dir
-from utils import is_image_file
+from flags import is_image_file
 from daemon_utils import etag_exists
 from fitnessFunctions import fitness_performance
 from person import save_person_qrcode

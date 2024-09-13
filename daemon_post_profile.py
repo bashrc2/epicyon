@@ -14,11 +14,12 @@ from socket import error as SocketError
 from blocking import save_blocked_military
 from httpheaders import redirect_headers
 from httpheaders import clear_login_details
+from flags import is_artist
+from flags import is_memorial_account
+from flags import is_premium_account
 from utils import data_dir
 from utils import set_premium_account
-from utils import is_premium_account
 from utils import remove_avatar_from_cache
-from utils import is_memorial_account
 from utils import save_json
 from utils import save_reverse_timeline
 from utils import set_minimize_all_images
@@ -35,7 +36,6 @@ from utils import remove_eol
 from utils import remove_html
 from utils import get_url_from_post
 from utils import load_json
-from utils import is_artist
 from utils import acct_dir
 from utils import get_config_param
 from utils import get_instance_url

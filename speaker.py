@@ -11,12 +11,13 @@ import os
 import html
 import random
 import urllib.parse
+from flags import is_reply
+from flags import is_pgp_encrypted
 from utils import data_dir
 from utils import get_post_attachments
 from utils import get_cached_post_filename
 from utils import remove_id_ending
 from utils import is_dm
-from utils import is_reply
 from utils import camel_case_split
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
@@ -25,7 +26,6 @@ from utils import get_display_name
 from utils import remove_html
 from utils import load_json
 from utils import save_json
-from utils import is_pgp_encrypted
 from utils import has_object_dict
 from utils import acct_dir
 from utils import local_actor_url

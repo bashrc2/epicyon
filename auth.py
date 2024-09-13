@@ -12,9 +12,9 @@ import hashlib
 import binascii
 import os
 import secrets
+from flags import is_system_account
+from flags import is_memorial_account
 from utils import data_dir
-from utils import is_system_account
-from utils import is_memorial_account
 from utils import has_users_path
 from utils import text_in_file
 from utils import remove_eol

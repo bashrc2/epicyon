@@ -9,7 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 import time
-from utils import is_recent_post
+from flags import is_recent_post
 from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
 from utils import get_attributed_to

@@ -16,6 +16,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from flags import is_pgp_encrypted
 from utils import replace_strings
 from utils import get_post_attachments
 from utils import get_url_from_post
@@ -33,7 +34,6 @@ from utils import is_dm
 from utils import load_translations_from_file
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
-from utils import is_pgp_encrypted
 from utils import local_actor_url
 from utils import get_reply_to
 from utils import get_actor_from_post

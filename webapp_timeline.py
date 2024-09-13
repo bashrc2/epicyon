@@ -10,15 +10,15 @@ __module_group__ = "Timeline"
 import os
 import time
 from shutil import copyfile
+from flags import is_editor
+from flags import is_artist
+from flags import is_float
 from utils import data_dir
-from utils import is_artist
 from utils import dangerous_markup
 from utils import get_config_param
 from utils import get_full_domain
-from utils import is_editor
 from utils import remove_id_ending
 from utils import acct_dir
-from utils import is_float
 from utils import local_actor_url
 from utils import remove_eol
 from utils import get_actor_from_post

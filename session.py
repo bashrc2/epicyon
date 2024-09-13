@@ -9,17 +9,17 @@ __module_group__ = "Session"
 
 import os
 import requests
+import json
+import errno
+from socket import error as SocketError
+from http.client import HTTPConnection
+from flags import is_image_file
+from flags import url_permitted
 from utils import text_in_file
 from utils import acct_dir
-from utils import url_permitted
-from utils import is_image_file
 from utils import binary_is_image
 from utils import image_mime_types_dict
 from httpsig import create_signed_header
-import json
-from socket import error as SocketError
-import errno
-from http.client import HTTPConnection
 
 
 def create_session(proxy_type: str):

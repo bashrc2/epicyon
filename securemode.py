@@ -9,7 +9,7 @@ __module_group__ = "Security"
 
 from httpsig import verify_post_headers
 from session import establish_session
-from utils import url_permitted
+from flags import url_permitted
 from httpsig import signed_get_key_id
 from cache import get_person_pub_key
 

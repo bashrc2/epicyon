@@ -23,6 +23,7 @@ from session import post_json
 from session import post_image
 from session import create_session
 from session import get_json_valid
+from flags import is_float
 from utils import replace_strings
 from utils import data_dir
 from utils import resembles_url
@@ -44,7 +45,6 @@ from utils import get_image_extensions
 from utils import remove_domain_port
 from utils import is_account_dir
 from utils import acct_dir
-from utils import is_float
 from utils import get_category_types
 from utils import get_shares_files_list
 from utils import local_actor_url

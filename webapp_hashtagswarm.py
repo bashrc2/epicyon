@@ -9,11 +9,11 @@ __module_group__ = "Web Interface"
 
 import os
 from datetime import datetime, timezone
+from flags import is_public_post
 from utils import valid_hash_tag
 from utils import remove_id_ending
 from utils import resembles_url
 from utils import has_object_dict
-from utils import is_public_post
 from utils import local_actor_url
 from utils import date_from_string_format
 from utils import file_last_modified

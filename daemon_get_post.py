@@ -10,9 +10,10 @@ __module_group__ = "Core GET"
 import os
 import json
 from webapp_conversation import html_conversation_view
-from utils import is_premium_account
+from flags import is_public_post_from_url
+from flags import is_public_post
+from flags import is_premium_account
 from utils import get_instance_url
-from utils import is_public_post_from_url
 from utils import local_actor_url
 from utils import locate_post
 from utils import get_config_param
@@ -23,7 +24,6 @@ from utils import acct_dir
 from utils import get_json_content_from_accept
 from utils import convert_domains
 from utils import has_object_dict
-from utils import is_public_post
 from utils import load_json
 from session import establish_session
 from languages import get_understood_languages

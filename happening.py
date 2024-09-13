@@ -12,11 +12,12 @@ from uuid import UUID
 from hashlib import md5
 from datetime import datetime
 from datetime import timedelta
+from flags import is_reminder
+from flags import is_public_post
 from utils import replace_strings
 from utils import date_from_numbers
 from utils import date_from_string_format
 from utils import acct_handle_dir
-from utils import is_public_post
 from utils import load_json
 from utils import save_json
 from utils import locate_post
@@ -29,7 +30,6 @@ from utils import get_status_number
 from utils import get_full_domain
 from utils import text_in_file
 from utils import remove_eol
-from utils import is_reminder
 from filters import is_filtered
 from context import get_individual_post_context
 from session import get_method

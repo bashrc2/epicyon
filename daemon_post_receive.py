@@ -28,8 +28,9 @@ from media import process_meta_data
 from media import convert_image_to_low_bandwidth
 from media import attach_media
 from city import get_spoofed_city
+from flags import is_image_file
+from flags import is_float
 from utils import get_instance_url
-from utils import is_float
 from utils import save_json
 from utils import remove_post_from_cache
 from utils import load_json
@@ -39,7 +40,6 @@ from utils import get_base_content_from_post
 from utils import license_link_from_name
 from utils import get_config_param
 from utils import acct_dir
-from utils import is_image_file
 from posts import create_reading_post
 from posts import create_question_post
 from posts import create_report_post

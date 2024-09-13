@@ -10,9 +10,14 @@ __module_group__ = "Web Interface"
 import os
 from pprint import pprint
 from webfinger import webfinger_handle
+from flags import is_dormant
+from flags import is_artist
+from flags import is_system_account
+from flags import is_group_account
+from flags import is_valid_date
+from flags import is_premium_account
 from utils import replace_strings
 from utils import data_dir
-from utils import is_premium_account
 from utils import time_days_ago
 from utils import uninvert_text
 from utils import get_attributed_to
@@ -24,16 +29,12 @@ from utils import ap_proxy_type
 from utils import remove_id_ending
 from utils import standardize_text
 from utils import get_display_name
-from utils import is_group_account
 from utils import has_object_dict
 from utils import get_occupation_name
 from utils import get_locked_account
 from utils import get_full_domain
-from utils import is_artist
-from utils import is_dormant
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
-from utils import is_system_account
 from utils import remove_html
 from utils import load_json
 from utils import get_config_param
@@ -44,7 +45,6 @@ from utils import local_actor_url
 from utils import get_reply_interval_hours
 from utils import get_account_timezone
 from utils import remove_eol
-from utils import is_valid_date
 from utils import get_actor_from_post
 from utils import resembles_url
 from languages import get_actor_languages

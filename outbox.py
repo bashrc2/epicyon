@@ -15,6 +15,8 @@ from posts import outbox_message_create_wrap
 from posts import save_post_to_box
 from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
+from flags import is_featured_writer
+from flags import is_quote_toot
 from utils import data_dir
 from utils import quote_toots_allowed
 from utils import get_post_attachments
@@ -30,13 +32,11 @@ from utils import get_full_domain
 from utils import remove_id_ending
 from utils import get_domain_from_actor
 from utils import dangerous_markup
-from utils import is_featured_writer
 from utils import load_json
 from utils import save_json
 from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
-from utils import is_quote_toot
 from utils import get_actor_from_post
 from blocking import is_blocked_domain
 from blocking import outbox_block

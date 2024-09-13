@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Web Interface Columns"
 
 import os
+from flags import is_editor
+from flags import is_artist
 from utils import replace_strings
 from utils import data_dir
 from utils import get_config_param
 from utils import get_nickname_from_actor
-from utils import is_editor
-from utils import is_artist
 from utils import remove_domain_port
 from utils import local_actor_url
 from webapp_utils import shares_timeline_json

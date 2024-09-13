@@ -10,11 +10,11 @@ __module_group__ = "Timeline"
 
 import os
 from conversation import download_conversation_posts
+from flags import is_public_post
 from utils import remove_id_ending
 from utils import get_config_param
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
-from utils import is_public_post
 from utils import get_attributed_to
 from blocking import is_blocked
 from webapp_utils import text_mode_browser

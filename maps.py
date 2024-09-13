@@ -9,8 +9,8 @@ __module_group__ = "Core"
 
 
 import os
+from flags import is_float
 from utils import get_url_from_post
-from utils import is_float
 from utils import acct_dir
 from utils import load_json
 from utils import save_json

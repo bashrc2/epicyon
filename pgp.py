@@ -12,11 +12,11 @@ import base64
 import subprocess
 from pathlib import Path
 from person import get_actor_json
+from flags import is_pgp_encrypted
+from flags import contains_pgp_public_key
 from utils import get_occupation_skills
 from utils import get_url_from_post
 from utils import safe_system_string
-from utils import contains_pgp_public_key
-from utils import is_pgp_encrypted
 from utils import get_full_domain
 from utils import get_status_number
 from utils import local_actor_url

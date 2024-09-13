@@ -9,6 +9,7 @@ __module_group__ = "ActivityPub"
 
 import os
 from pprint import pprint
+from flags import has_group_type
 from utils import get_user_paths
 from utils import acct_handle_dir
 from utils import has_object_string_object
@@ -29,7 +30,6 @@ from utils import load_json
 from utils import save_json
 from utils import is_account_dir
 from utils import acct_dir
-from utils import has_group_type
 from utils import local_actor_url
 from utils import text_in_file
 from utils import remove_eol

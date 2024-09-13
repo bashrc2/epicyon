@@ -12,7 +12,7 @@ from session import download_image
 from session import url_exists
 from session import get_json
 from session import get_json_valid
-from utils import url_permitted
+from flags import url_permitted
 from utils import remove_html
 from utils import get_url_from_post
 from utils import data_dir

@@ -8,9 +8,9 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
+from flags import is_dormant
 from utils import data_dir
 from utils import get_user_paths
-from utils import is_dormant
 from utils import acct_dir
 from utils import valid_nickname
 from utils import get_full_domain

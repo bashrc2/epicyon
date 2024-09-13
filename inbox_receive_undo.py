@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
+from flags import has_group_type
 from utils import undo_announce_collection_entry
 from utils import has_object_dict
 from utils import remove_domain_port
@@ -25,7 +26,6 @@ from utils import acct_handle_dir
 from utils import has_object_string_object
 from utils import has_object_string_type
 from utils import has_actor
-from utils import has_group_type
 from utils import get_full_domain
 from utils import get_actor_from_post
 from utils import has_users_path

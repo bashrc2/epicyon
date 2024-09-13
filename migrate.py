@@ -8,12 +8,12 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
+from flags import has_group_type
 from utils import data_dir
 from utils import is_account_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import acct_dir
-from utils import has_group_type
 from webfinger import webfinger_handle
 from blocking import is_blocked
 from posts import get_user_url

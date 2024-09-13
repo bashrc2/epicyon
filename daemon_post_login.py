@@ -25,13 +25,13 @@ from httpheaders import redirect_headers
 from httpheaders import clear_login_details
 from webapp_login import html_get_login_credentials
 from webapp_suspended import html_suspended
+from flags import is_suspended
+from flags import is_local_network_address
 from utils import data_dir
 from utils import acct_dir
-from utils import is_suspended
-from utils import is_local_network_address
 from utils import get_instance_url
 from utils import valid_password
-from utils import is_system_account
+from flags import is_system_account
 from person import person_upgrade_actor
 from person import activate_account2
 from person import register_account

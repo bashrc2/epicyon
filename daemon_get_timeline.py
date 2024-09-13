@@ -10,8 +10,8 @@ __module_group__ = "Core GET"
 import json
 from securemode import secure_mode
 from posts import is_moderator
-from utils import is_artist
-from utils import is_editor
+from flags import is_artist
+from flags import is_editor
 from utils import convert_domains
 from utils import get_json_content_from_accept
 from httpheaders import set_headers

@@ -15,6 +15,10 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from flags import is_pgp_encrypted
+from flags import contains_pgp_public_key
+from flags import is_float
+from flags import is_right_to_left_text
 from utils import replace_strings
 from utils import data_dir
 from utils import remove_link_tracking
@@ -22,7 +26,6 @@ from utils import string_contains
 from utils import string_ends_with
 from utils import is_account_dir
 from utils import get_url_from_post
-from utils import is_right_to_left_text
 from utils import language_right_to_left
 from utils import binary_is_image
 from utils import get_content_from_post
@@ -39,10 +42,7 @@ from utils import save_json
 from utils import file_last_modified
 from utils import get_link_prefixes
 from utils import dangerous_markup
-from utils import is_pgp_encrypted
-from utils import contains_pgp_public_key
 from utils import acct_dir
-from utils import is_float
 from utils import get_currencies
 from utils import remove_html
 from utils import remove_eol

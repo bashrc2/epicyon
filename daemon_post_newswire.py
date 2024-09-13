@@ -10,6 +10,7 @@ __module_group__ = "Core POST"
 import os
 import errno
 from socket import error as SocketError
+from flags import is_editor
 from utils import data_dir
 from utils import clear_from_post_caches
 from utils import remove_id_ending
@@ -18,7 +19,6 @@ from utils import first_paragraph_from_string
 from utils import date_from_string_format
 from utils import load_json
 from utils import locate_post
-from utils import is_editor
 from utils import acct_dir
 from utils import get_instance_url
 from utils import get_nickname_from_actor

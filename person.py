@@ -37,6 +37,7 @@ from roles import set_role
 from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
+from flags import is_image_file
 from utils import account_is_indexable
 from utils import get_image_mime_type
 from utils import get_instance_url
@@ -66,7 +67,6 @@ from utils import refresh_newswire
 from utils import get_protocol_prefixes
 from utils import has_users_path
 from utils import get_image_extensions
-from utils import is_image_file
 from utils import acct_dir
 from utils import get_user_paths
 from utils import get_group_paths

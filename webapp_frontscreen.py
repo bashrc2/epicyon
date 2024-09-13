@@ -8,7 +8,7 @@ __status__ = "Production"
 __module_group__ = "Timeline"
 
 import os
-from utils import is_system_account
+from flags import is_system_account
 from utils import get_domain_from_actor
 from utils import get_config_param
 from utils import get_account_timezone

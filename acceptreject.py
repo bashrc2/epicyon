@@ -10,18 +10,18 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+from flags import has_group_type
+from flags import url_permitted
 from utils import get_user_paths
 from utils import text_in_file
 from utils import has_object_string_object
 from utils import has_users_path
 from utils import get_full_domain
-from utils import url_permitted
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import domain_permitted
 from utils import follow_person
 from utils import acct_dir
-from utils import has_group_type
 from utils import local_actor_url
 from utils import has_actor
 from utils import has_object_string_type

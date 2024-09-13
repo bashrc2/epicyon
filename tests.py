@@ -57,6 +57,10 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from flags import contains_pgp_public_key
+from flags import is_group_actor
+from flags import is_group_account
+from flags import is_right_to_left_text
 from utils import replace_strings
 from utils import valid_content_warning
 from utils import data_dir
@@ -66,7 +70,6 @@ from utils import uninvert_text
 from utils import get_url_from_post
 from utils import date_from_string_format
 from utils import date_utcnow
-from utils import is_right_to_left_text
 from utils import remove_markup_tag
 from utils import remove_style_within_html
 from utils import html_tag_has_closing
@@ -80,12 +83,10 @@ from utils import convert_to_snake_case
 from utils import get_sha_256
 from utils import dangerous_svg
 from utils import can_reply_to
-from utils import is_group_account
 from utils import get_actor_languages_list
 from utils import get_category_types
 from utils import get_supported_languages
 from utils import set_config_param
-from utils import is_group_actor
 from utils import date_string_to_seconds
 from utils import date_seconds_to_string
 from utils import valid_password
@@ -111,7 +112,6 @@ from utils import dangerous_markup
 from utils import acct_dir
 from pgp import extract_pgp_public_key
 from pgp import pgp_public_key_upload
-from utils import contains_pgp_public_key
 from follow import add_follower_of_person
 from follow import unfollow_account
 from follow import unfollower_of_account

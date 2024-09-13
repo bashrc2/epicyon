@@ -11,6 +11,8 @@ import os
 import re
 import urllib.parse
 from pprint import pprint
+from flags import has_group_type
+from flags import url_permitted
 from utils import data_dir
 from utils import has_object_string
 from utils import has_object_string_object
@@ -20,12 +22,10 @@ from utils import has_object_dict
 from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
-from utils import url_permitted
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import undo_reaction_collection_entry
-from utils import has_group_type
 from utils import local_actor_url
 from utils import load_json
 from utils import save_json

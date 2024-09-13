@@ -19,7 +19,9 @@ from datetime import timezone
 from collections import OrderedDict
 from utils import valid_post_date
 from categories import set_hashtag_category
-from utils import is_local_network_address
+from flags import is_suspended
+from flags import is_local_network_address
+from flags import is_public_post
 from utils import data_dir
 from utils import string_contains
 from utils import image_mime_types_dict
@@ -36,11 +38,9 @@ from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import has_object_dict
 from utils import first_paragraph_from_string
-from utils import is_public_post
 from utils import locate_post
 from utils import load_json
 from utils import save_json
-from utils import is_suspended
 from utils import contains_invalid_chars
 from utils import remove_html
 from utils import is_account_dir

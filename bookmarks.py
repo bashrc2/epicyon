@@ -11,13 +11,13 @@ import os
 from pprint import pprint
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
+from flags import url_permitted
 from utils import get_url_from_post
 from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
 from utils import remove_post_from_cache
-from utils import url_permitted
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post

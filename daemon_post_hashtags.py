@@ -15,7 +15,7 @@ from httpcodes import http_404
 from httpheaders import redirect_headers
 from utils import get_instance_url
 from utils import get_nickname_from_actor
-from utils import is_editor
+from flags import is_editor
 from content import extract_text_fields_in_post
 from blocking import is_blocked_hashtag
 from filters import is_filtered

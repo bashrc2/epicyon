@@ -10,11 +10,11 @@ __module_group__ = "Core POST"
 import os
 import errno
 from socket import error as SocketError
+from flags import is_editor
 from utils import data_dir
 from utils import dangerous_markup
 from utils import get_instance_url
 from utils import get_nickname_from_actor
-from utils import is_editor
 from utils import get_config_param
 from httpheaders import redirect_headers
 from content import extract_text_fields_in_post
