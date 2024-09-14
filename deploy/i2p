@@ -213,7 +213,7 @@ echo 'Creating Epicyon daemon'
   echo "User=$username";
   echo "Group=$username";
   echo "WorkingDirectory=${install_destination}";
-  echo "ExecStart=/usr/bin/python3 ${install_destination}/epicyon.py --http --i2p --port 80 --proxy ${EPICYON_PORT} --domain ${I2P_DOMAIN} --registration open";
+  echo "ExecStart=/usr/bin/python3 ${install_destination}/epicyon.py --http --i2p --bind 0.0.0.0 --port 80 --proxy ${EPICYON_PORT} --domain ${I2P_DOMAIN} --registration open";
   echo "Environment=USER=$username";
   echo 'Environment=PYTHONUNBUFFERED=true';
   echo 'Environment=PYTHONIOENCODING=utf-8';
