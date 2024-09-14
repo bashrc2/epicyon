@@ -51,7 +51,10 @@ def send_delete_via_server(base_dir: str, session,
     cc_url = actor + '/followers'
 
     new_delete_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'actor': actor,
         'cc': [cc_url],
         'object': delete_object_url,

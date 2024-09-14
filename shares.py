@@ -568,7 +568,10 @@ def get_shares_feed_for_person(base_dir: str,
                 no_of_shares = len(shares_json.items())
         id_str = local_actor_url(http_prefix, nickname, domain)
         shares = {
-            '@context': 'https://www.w3.org/ns/activitystreams',
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'first': id_str + '/' + shares_file_type + '?page=1',
             'id': id_str + '/' + shares_file_type,
             'totalItems': str(no_of_shares),
@@ -582,7 +585,10 @@ def get_shares_feed_for_person(base_dir: str,
     next_page_number = int(page_number + 1)
     id_str = local_actor_url(http_prefix, nickname, domain)
     shares = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': id_str + '/' + shares_file_type + '?page=' + str(page_number),
         'orderedItems': [],
         'partOf': id_str + '/' + shares_file_type,
@@ -650,7 +656,10 @@ def send_share_via_server(base_dir, session,
     cc_url = actor + '/followers'
 
     new_share_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Add',
         'actor': actor,
         'target': actor + '/shares',
@@ -764,7 +773,10 @@ def send_undo_share_via_server(base_dir: str, session,
     cc_url = actor + '/followers'
 
     undo_share_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Remove',
         'actor': actor,
         'target': actor + '/shares',
@@ -873,7 +885,10 @@ def send_wanted_via_server(base_dir, session,
     cc_url = actor + '/followers'
 
     new_share_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Add',
         'actor': actor,
         'target': actor + '/wanted',
@@ -987,7 +1002,10 @@ def send_undo_wanted_via_server(base_dir: str, session,
     cc_url = actor + '/followers'
 
     undo_share_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Remove',
         'actor': actor,
         'target': actor + '/wanted',

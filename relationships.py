@@ -128,7 +128,10 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             local_actor_url(http_prefix, nickname, domain) + '/moved'
         total_str = str(len(lines.items()))
         following = {
-            '@context': 'https://www.w3.org/ns/activitystreams',
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'first': first_str,
             'id': id_str,
             'orderedItems': [],
@@ -147,7 +150,10 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
     part_of_str = \
         local_actor_url(http_prefix, nickname, domain) + '/moved'
     following = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': id_str,
         'orderedItems': [],
         'partOf': part_of_str,
@@ -432,7 +438,10 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
             local_actor_url(http_prefix, nickname, domain) + '/inactive'
         total_str = str(len(lines))
         following = {
-            '@context': 'https://www.w3.org/ns/activitystreams',
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'first': first_str,
             'id': id_str,
             'orderedItems': [],
@@ -451,7 +460,10 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
     part_of_str = \
         local_actor_url(http_prefix, nickname, domain) + '/inactive'
     following = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': id_str,
         'orderedItems': [],
         'partOf': part_of_str,

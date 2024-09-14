@@ -514,7 +514,10 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
         total_str = \
             _get_no_of_follows(base_dir, nickname, domain)
         following = {
-            '@context': 'https://www.w3.org/ns/activitystreams',
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'first': first_str,
             'id': id_str,
             'totalItems': total_str,
@@ -532,7 +535,10 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     part_of_str = \
         local_actor_url(http_prefix, nickname, domain) + '/' + follow_file
     following = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': id_str,
         'orderedItems': [],
         'partOf': part_of_str,
@@ -990,7 +996,10 @@ def send_follow_request(session, base_dir: str,
                           unfollowed_filename)
 
     new_follow_json = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': follow_actor + '/statuses/' + str(status_number),
         'type': 'Follow',
         'actor': follow_actor,
@@ -1052,7 +1061,10 @@ def send_follow_request_via_server(base_dir: str, session,
 
     status_number, _ = get_status_number()
     new_follow_json = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': follow_actor + '/statuses/' + str(status_number),
         'type': 'Follow',
         'actor': follow_actor,
@@ -1145,7 +1157,10 @@ def send_unfollow_request_via_server(base_dir: str, session,
     status_number, _ = get_status_number()
 
     unfollow_json = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': follow_actor + '/statuses/' + str(status_number) + '/undo',
         'type': 'Undo',
         'actor': follow_actor,
@@ -1587,7 +1602,8 @@ def pending_followers_timeline_json(actor: str, base_dir: str,
     """
     result_json = {
         "@context": [
-            "https://www.w3.org/ns/activitystreams"
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
         ],
         "id": actor,
         "type": "OrderedCollection",

@@ -363,7 +363,10 @@ def announce_button_undo(self, calling_domain: str, path: str,
         '/users/' + self.post_to_nickname
     un_repeat_to_str = 'https://www.w3.org/ns/activitystreams#Public'
     new_undo_announce = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'actor': undo_announce_actor,
         'type': 'Undo',
         'cc': [undo_announce_actor + '/followers'],

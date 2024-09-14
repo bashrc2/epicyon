@@ -227,7 +227,10 @@ def _get_replies_to_post(post_json_object: {},
                 if not isinstance(item['cc'], list):
                     continue
                 wrapped_post = {
-                    "@context": "https://www.w3.org/ns/activitystreams",
+                    "@context": [
+                        'https://www.w3.org/ns/activitystreams',
+                        'https://w3id.org/security/v1'
+                    ],
                     'id': item['id'] + '/activity',
                     'type': 'Create',
                     'actor': attrib_str,
@@ -343,7 +346,10 @@ def download_conversation_posts(authorized: bool, session,
             if not isinstance(post_json_object['cc'], list):
                 break
             wrapped_post = {
-                "@context": "https://www.w3.org/ns/activitystreams",
+                "@context": [
+                    'https://www.w3.org/ns/activitystreams',
+                    'https://w3id.org/security/v1'
+                ],
                 'id': post_json_object['id'] + '/activity',
                 'type': 'Create',
                 'actor': attrib_str,

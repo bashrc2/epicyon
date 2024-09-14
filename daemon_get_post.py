@@ -928,9 +928,6 @@ def show_replies_to_post(self, authorized: bool,
     if not os.path.isfile(post_replies_filename):
         # There are no replies,
         # so show empty collection
-        context_str = \
-            'https://www.w3.org/ns/activitystreams'
-
         first_str = \
             local_actor_url(http_prefix, nickname, domain_full) + \
             '/statuses/' + status_number + '/replies?page=true'
@@ -944,7 +941,10 @@ def show_replies_to_post(self, authorized: bool,
             '/statuses/' + status_number + '/replies?page=true'
 
         replies_json = {
-            '@context': context_str,
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'first': first_str,
             'id': id_str,
             'last': last_str,
@@ -1031,8 +1031,6 @@ def show_replies_to_post(self, authorized: bool,
 
     # replies exist. Itterate through the
     # text file containing message ids
-    context_str = 'https://www.w3.org/ns/activitystreams'
-
     id_str = \
         local_actor_url(http_prefix, nickname, domain_full) + \
         '/statuses/' + status_number + '?page=true'
@@ -1042,7 +1040,10 @@ def show_replies_to_post(self, authorized: bool,
         '/statuses/' + status_number
 
     replies_json = {
-        '@context': context_str,
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': id_str,
         'orderedItems': [
         ],

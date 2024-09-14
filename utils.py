@@ -3302,7 +3302,10 @@ def update_announce_collection(recent_posts_cache: {},
             print('DEBUG: Adding initial shares (announcements) to ' +
                   post_url)
         announcements_json = {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'id': post_url,
             'type': 'Collection',
             "totalItems": 1,

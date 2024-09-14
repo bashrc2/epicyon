@@ -637,6 +637,7 @@ def attach_media(base_dir: str, http_prefix: str,
     if content_license_url or creator:
         attachment_json['@context'] = [
             'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1',
             {'schema': 'https://schema.org#'}
         ]
     if content_license_url:

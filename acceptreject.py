@@ -48,7 +48,10 @@ def _create_accept_reject(federation_list: [],
     domain = get_full_domain(domain, port)
 
     new_accept = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': accept_type,
         'actor': local_actor_url(http_prefix, nickname, domain),
         'to': [to_url],

@@ -103,7 +103,10 @@ def unfollow_confirm(self, calling_domain: str, cookie: str,
             status_number, _ = get_status_number()
             follow_id = follow_actor + '/statuses/' + str(status_number)
             unfollow_json = {
-                '@context': 'https://www.w3.org/ns/activitystreams',
+                "@context": [
+                    'https://www.w3.org/ns/activitystreams',
+                    'https://w3id.org/security/v1'
+                ],
                 'id': follow_id + '/undo',
                 'type': 'Undo',
                 'actor': follow_actor,

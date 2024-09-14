@@ -94,7 +94,10 @@ def _create_like(recent_posts_cache: {},
     full_domain = get_full_domain(domain, port)
 
     new_like_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Like',
         'actor': local_actor_url(http_prefix, nickname, full_domain),
         'object': object_url
@@ -208,7 +211,10 @@ def send_like_via_server(base_dir: str, session,
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
 
     new_like_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Like',
         'actor': actor,
         'object': like_url
@@ -293,7 +299,10 @@ def send_undo_like_via_server(base_dir: str, session,
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
 
     new_undo_like_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Undo',
         'actor': actor,
         'object': {
@@ -470,7 +479,10 @@ def update_likes_collection(recent_posts_cache: {},
         if debug:
             print('DEBUG: Adding initial like to ' + object_url)
         likes_json = {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'id': object_url,
             'type': 'Collection',
             "totalItems": 1,

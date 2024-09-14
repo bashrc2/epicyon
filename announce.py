@@ -191,7 +191,10 @@ def create_announce(session, base_dir: str, federation_list: [],
     atom_uri_str = local_actor_url(http_prefix, nickname, full_domain) + \
         '/statuses/' + status_number
     new_announce = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'actor': local_actor_url(http_prefix, nickname, full_domain),
         'atomUri': atom_uri_str,
         'cc': [],
@@ -296,7 +299,10 @@ def send_announce_via_server(base_dir: str, session,
     status_number, published = get_status_number()
     new_announce_id = actor_str + '/statuses/' + status_number
     new_announce_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'actor': actor_str,
         'atomUri': new_announce_id,
         'cc': [cc_url],
@@ -387,7 +393,10 @@ def send_undo_announce_via_server(base_dir: str, session,
 
     status_number, _ = get_status_number()
     unannounce_json = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': actor + '/statuses/' + str(status_number) + '/undo',
         'type': 'Undo',
         'actor': actor,

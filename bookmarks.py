@@ -205,7 +205,10 @@ def update_bookmarks_collection(recent_posts_cache: {},
         if debug:
             print('DEBUG: Adding initial bookmarks to ' + object_url)
         bookmarks_json = {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'id': object_url,
             'type': 'Collection',
             "totalItems": 1,
@@ -283,7 +286,10 @@ def bookmark_post(recent_posts_cache: {},
     full_domain = get_full_domain(domain, port)
 
     new_bookmark_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Bookmark',
         'actor': local_actor_url(http_prefix, nickname, full_domain),
         'object': object_url
@@ -337,7 +343,10 @@ def undo_bookmark_post(recent_posts_cache: {},
     full_domain = get_full_domain(domain, port)
 
     new_undo_bookmark_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Undo',
         'actor': local_actor_url(http_prefix, nickname, full_domain),
         'object': {
@@ -397,7 +406,10 @@ def send_bookmark_via_server(base_dir: str, session,
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
     new_bookmark_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         "type": "Add",
         "actor": actor,
         "to": [actor],
@@ -490,7 +502,10 @@ def send_undo_bookmark_via_server(base_dir: str, session,
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
     new_bookmark_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         "type": "Remove",
         "actor": actor,
         "to": [actor],

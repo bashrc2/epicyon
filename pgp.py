@@ -643,7 +643,10 @@ def pgp_public_key_upload(base_dir: str, session,
     # create an actor update
     status_number, _ = get_status_number()
     actor_update = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': actor + '#updates/' + status_number,
         'type': 'Update',
         'actor': actor,

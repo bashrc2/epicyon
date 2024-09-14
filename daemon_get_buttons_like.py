@@ -155,7 +155,10 @@ def like_button(self, calling_domain: str, path: str,
         liked_post_filename = None
 
     like_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Like',
         'actor': like_actor,
         'to': [actor_liked],
@@ -409,7 +412,10 @@ def like_button_undo(self, calling_domain: str, path: str,
         liked_post_filename = None
 
     undo_like_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Undo',
         'actor': undo_actor,
         'to': [actor_liked],

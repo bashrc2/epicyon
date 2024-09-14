@@ -380,7 +380,10 @@ def receive_remove_post(self, calling_domain: str, cookie: str,
                 remove_post_actor
             ]
             delete_json = {
-                "@context": "https://www.w3.org/ns/activitystreams",
+                "@context": [
+                    'https://www.w3.org/ns/activitystreams',
+                    'https://w3id.org/security/v1'
+                ],
                 'actor': remove_post_actor,
                 'object': remove_message_id,
                 'to': to_list,

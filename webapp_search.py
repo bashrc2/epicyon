@@ -1440,7 +1440,10 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
     url = http_prefix + '://' + domain_full + '/tags/' + \
         hashtag + '?page=' + str(page_number)
     hashtag_json = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': url,
         'orderedItems': [],
         'totalItems': 0,

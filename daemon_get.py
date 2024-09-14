@@ -919,7 +919,8 @@ def daemon_http_get(self) -> None:
         actor += '/blocked'
         blocked_json = {
             "@context": [
-                "https://www.w3.org/ns/activitystreams",
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1',
                 "https://purl.archive.org/socialweb/blocked"
             ],
             "id": actor,
@@ -979,7 +980,8 @@ def daemon_http_get(self) -> None:
         actor += '/pendingFollowers'
         pending_json = {
             "@context": [
-                "https://www.w3.org/ns/activitystreams"
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
             ],
             "id": actor,
             "type": "OrderedCollection",

@@ -1035,7 +1035,10 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
                     "type": "Mention"
                 },
                 {
-                    "@context": "https://www.w3.org/ns/activitystreams",
+                    "@context": [
+                        'https://www.w3.org/ns/activitystreams',
+                        'https://w3id.org/security/v1'
+                    ],
                     "type": "Event",
                     "name": content,
                     "startTime": start_time,
@@ -1056,7 +1059,10 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
     }
     if location:
         event_json['object']['tag'].append({
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             "type": "Place",
             "name": location
         })

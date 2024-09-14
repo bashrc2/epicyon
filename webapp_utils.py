@@ -625,7 +625,8 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
 
     result_json = {
         "@context": [
-            "https://www.w3.org/ns/activitystreams"
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
         ],
         "id": actor + '?page=' + str(page_number),
         "type": "OrderedCollection",

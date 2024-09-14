@@ -98,7 +98,10 @@ def _get_followers_sync_json(base_dir: str,
     id_str = http_prefix + '://' + domain_full + \
         '/users/' + nickname + '/followers?domain=' + search_domain
     sync_json = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': id_str,
         'orderedItems': sync_list,
         'type': 'OrderedCollection'

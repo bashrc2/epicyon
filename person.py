@@ -358,7 +358,10 @@ def get_actor_move_json(actor_json: {}) -> {}:
         return None
     pub_number, _ = get_status_number()
     return {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         "id": actor_json['id'] + '#moved/' + pub_number,
         "type": "Move",
         "actor": actor_json['id'],

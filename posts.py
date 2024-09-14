@@ -1513,7 +1513,10 @@ def _create_post_place_and_time(event_date: str, end_date: str,
             end_date_str = event_date_str
         if not schedule_post and not event_uuid:
             tags.append({
-                "@context": "https://www.w3.org/ns/activitystreams",
+                "@context": [
+                    'https://www.w3.org/ns/activitystreams',
+                    'https://w3id.org/security/v1'
+                ],
                 "type": "Event",
                 "name": event_name,
                 "startTime": event_date_str,
@@ -1526,7 +1529,10 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                 geocoords_from_map_link(location, 'openstreetmap.org')
         if latitude and longitude:
             tags.append({
-                "@context": "https://www.w3.org/ns/activitystreams",
+                "@context": [
+                    'https://www.w3.org/ns/activitystreams',
+                    'https://w3id.org/security/v1'
+                ],
                 "type": "Place",
                 "name": location,
                 "latitude": latitude,
@@ -1534,7 +1540,10 @@ def _create_post_place_and_time(event_date: str, end_date: str,
             })
         else:
             tags.append({
-                "@context": "https://www.w3.org/ns/activitystreams",
+                "@context": [
+                    'https://www.w3.org/ns/activitystreams',
+                    'https://w3id.org/security/v1'
+                ],
                 "type": "Place",
                 "name": location
             })
@@ -1912,7 +1921,10 @@ def outbox_message_create_wrap(http_prefix: str,
     if message_json.get('cc'):
         cc_list = message_json['cc']
     new_post = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': new_post_id + '/activity',
         'type': 'Create',
         'actor': local_actor_url(http_prefix, nickname, domain),
@@ -4391,7 +4403,10 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
     page_str = '?page=' + str(page_number)
     box_url = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
     box_header = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'first': box_url + '?page=true',
         'id': box_url,
         'last': box_url + '?page=true',
@@ -4399,7 +4414,10 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
         'type': 'OrderedCollection'
     }
     box_items = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': box_url + page_str,
         'orderedItems': [
         ],
@@ -4859,7 +4877,10 @@ def _create_box_indexed(recent_posts_cache: {},
                   'unable to convert page number to string')
     box_url = local_actor_url(http_prefix, nickname, domain) + '/' + boxname
     box_header = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'first': box_url + '?page=true',
         'id': box_url,
         'last': box_url + '?page=true',
@@ -4867,7 +4888,10 @@ def _create_box_indexed(recent_posts_cache: {},
         'type': 'OrderedCollection'
     }
     box_items = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'id': box_url + page_str,
         'orderedItems': [
         ],
@@ -6385,7 +6409,10 @@ def send_block_via_server(base_dir: str, session,
     cc_url = block_actor + '/followers'
 
     new_block_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Block',
         'actor': block_actor,
         'object': blocked_url,
@@ -6472,7 +6499,10 @@ def send_mute_via_server(base_dir: str, session,
     handle = replace_users_with_at(actor)
 
     new_mute_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Ignore',
         'actor': actor,
         'to': [actor],
@@ -6555,7 +6585,10 @@ def send_undo_mute_via_server(base_dir: str, session,
     handle = replace_users_with_at(actor)
 
     undo_mute_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Undo',
         'actor': actor,
         'to': [actor],
@@ -6645,7 +6678,10 @@ def send_undo_block_via_server(base_dir: str, session,
     cc_url = block_actor + '/followers'
 
     new_block_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Undo',
         'actor': block_actor,
         'object': {

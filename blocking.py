@@ -133,7 +133,8 @@ def blocked_timeline_json(actor: str, page_number: int, items_per_page: int,
 
     result_json = {
         "@context": [
-            "https://www.w3.org/ns/activitystreams",
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1',
             "https://purl.archive.org/socialweb/blocked"
         ],
         "id": actor + '?page=' + str(page_number),
@@ -1247,7 +1248,10 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
         if debug:
             print('DEBUG: Adding initial mute to ' + post_id)
         ignores_json = {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'id': post_id,
             'type': 'Collection',
             "totalItems": 1,

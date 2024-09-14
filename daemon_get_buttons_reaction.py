@@ -177,7 +177,10 @@ def reaction_button(self, calling_domain: str, path: str,
         reaction_post_filename = None
 
     reaction_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'EmojiReact',
         'actor': reaction_actor,
         'to': [actor_reaction],
@@ -457,7 +460,10 @@ def reaction_button_undo(self, calling_domain: str, path: str,
         reaction_post_filename = None
 
     undo_reaction_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Undo',
         'actor': undo_actor,
         'to': [actor_reaction],

@@ -92,7 +92,10 @@ def _reactionpost(recent_posts_cache: {},
     full_domain = get_full_domain(domain, port)
 
     new_reaction_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'EmojiReact',
         'actor': local_actor_url(http_prefix, nickname, full_domain),
         'object': object_url,
@@ -216,7 +219,10 @@ def send_reaction_via_server(base_dir: str, session,
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
 
     new_reaction_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'EmojiReact',
         'actor': actor,
         'object': reaction_url,
@@ -304,7 +310,10 @@ def send_undo_reaction_via_server(base_dir: str, session,
     actor = local_actor_url(http_prefix, from_nickname, from_domain_full)
 
     new_undo_reaction_json = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         'type': 'Undo',
         'actor': actor,
         'object': {
@@ -550,7 +559,10 @@ def update_reaction_collection(recent_posts_cache: {},
         if debug:
             print('DEBUG: Adding initial emoji reaction to ' + object_url)
         reactions_json = {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
             'id': object_url,
             'type': 'Collection',
             "totalItems": 1,

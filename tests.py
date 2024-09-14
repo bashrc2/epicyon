@@ -4147,7 +4147,10 @@ def _test_jsonld():
     print("test_jsonld")
 
     jld_document = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         "actor": "https://somesite.net/users/gerbil",
         "description": "My json document",
         "numberField": 83582,
@@ -4209,7 +4212,10 @@ def _test_jsonld():
     assert not verify_json_signature(signed_document, public_key_pem)
 
     jld_document2 = {
-        "@context": "https://www.w3.org/ns/activitystreams",
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
         "actor": "https://somesite.net/users/gerbil",
         "description": "Another json document",
         "numberField": 13353,
@@ -8525,11 +8531,18 @@ def _test_book_link(base_dir: str):
     id_str = actor + '/generatednote/63472854'
     published = '2024-01-01T10:30:00.2+00:00'
     post_json_object = {
-        '@context': 'https://www.w3.org/ns/activitystreams',
-        'attachment': [{'@context': 'https://www.w3.org/ns/activitystreams',
-                        'name': title,
-                        'type': 'Document',
-                        'url': image_url}],
+        "@context": [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1'
+        ],
+        'attachment': [{
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
+            'name': title,
+            'type': 'Document',
+            'url': image_url}],
         'attributedTo': actor,
         'cc': [actor + '/followers'],
         'content': content,
