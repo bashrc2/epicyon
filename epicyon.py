@@ -251,6 +251,9 @@ def _command_options() -> None:
     parser.add_argument('-p', '--port', dest='port', type=int,
                         default=None,
                         help='Port number to run on')
+    parser.add_argument('--bind', dest='bind_to_ip_address', type=str,
+                        default='',
+                        help='Bind the HTTP server to an IP address')
     parser.add_argument('--expiryDays', dest='expiryDays', type=int,
                         default=None,
                         help='Number of days after which posts expire ' +
@@ -4147,4 +4150,5 @@ if __name__ == "__main__":
                not argb2.noapproval,
                argb2.watermark_width_percent,
                argb2.watermark_position,
-               argb2.watermark_opacity)
+               argb2.watermark_opacity,
+               argb2.bind_to_ip_address)

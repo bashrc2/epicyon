@@ -643,7 +643,8 @@ def run_daemon(accounts_data_dir: str,
                manual_follower_approval: bool,
                watermark_width_percent: int,
                watermark_position: str,
-               watermark_opacity: int) -> None:
+               watermark_opacity: int,
+               bind_to_ip_address: str) -> None:
     if len(domain) == 0:
         domain = 'localhost'
     if '.' not in domain:
@@ -657,7 +658,10 @@ def run_daemon(accounts_data_dir: str,
         server_address = (domain, proxy_port)
         pub_handler = partial(PubServerUnitTest)
     else:
-        server_address = ('', proxy_port)
+        if not bind_to_ip_address:
+            server_address = ('', proxy_port)
+        else:
+            server_address = (bind_to_ip_address, proxy_port)
         pub_handler = partial(PubServer)
 
     if accounts_data_dir:
