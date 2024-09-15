@@ -1012,8 +1012,7 @@ def _create_config(base_dir: str) -> None:
     config_filename = base_dir + '/config.json'
     if os.path.isfile(config_filename):
         return
-    config_json = {
-    }
+    config_json = {}
     save_json(config_json, config_filename)
 
 

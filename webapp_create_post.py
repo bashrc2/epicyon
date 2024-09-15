@@ -48,6 +48,7 @@ from maps import get_map_preferences_url
 from maps import get_map_preferences_coords
 from maps import get_location_from_post
 from cache import get_person_from_cache
+from person import get_person_notes
 
 
 def _html_new_post_drop_down(scope_icon: str, scope_description: str,
@@ -478,6 +479,34 @@ def html_new_post(edit_post_params: {},
                                         summary = None
                                         if reply_to_actor.get('summary'):
                                             summary = reply_to_actor['summary']
+                                        attrib_nickname = \
+                                            get_nickname_from_actor(attrib_url)
+                                        attrib_domain, attrib_port = \
+                                            get_domain_from_actor(attrib_url)
+                                        if attrib_nickname and attrib_domain:
+                                            attrib_domain_full = \
+                                                get_full_domain(attrib_domain,
+                                                                attrib_port)
+                                            attrib_handle = \
+                                                attrib_nickname + '@' + \
+                                                attrib_domain_full
+                                            person_notes = \
+                                                get_person_notes(base_dir,
+                                                                 nickname,
+                                                                 domain,
+                                                                 attrib_handle)
+                                            if person_notes:
+                                                if summary:
+                                                    summary = \
+                                                        '<b>' + \
+                                                        person_notes + \
+                                                        '</b>' + \
+                                                        '<br><br>' + summary
+                                                else:
+                                                    summary = \
+                                                        '<b>' + \
+                                                        person_notes + \
+                                                        '</b>'
                                         if summary:
                                             if not dangerous_markup(summary,
                                                                     False, []):
