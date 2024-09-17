@@ -473,6 +473,14 @@ class EpicyonServer(ThreadingHTTPServer):
     qrcode_scale = 6
     instance_description = ''
     instance_description_short = 'Epicyon'
+    robots_txt = None
+    last_llm_time = None
+    watermark_width_percent = 0
+    watermark_position = 0
+    watermark_opacity = 0
+    headers_catalog = {}
+    dictionary = []
+    twograms = {}
 
     def handle_error(self, request, client_address):
         # surpress connection reset errors
@@ -693,6 +701,20 @@ def run_daemon(accounts_data_dir: str,
 
     # the last time when an LLM scraper was replied to
     httpd.last_llm_time = None
+
+    # if a custom robots.txt exists then read it
+    robots_txt_filename = data_dir(base_dir) + '/robots.txt'
+    httpd.robots_txt = None
+    if os.path.isfile(robots_txt_filename):
+        new_robots_txt = ''
+        try:
+            with open(robots_txt_filename, 'r',
+                      encoding='utf-8') as fp_robots:
+                new_robots_txt = fp_robots.read()
+        except OSError:
+            print('EX: error reading ' + robots_txt_filename)
+        if new_robots_txt:
+            httpd.robots_txt = new_robots_txt
 
     # width, position and opacity of watermark applied to attached images
     # as a percentage of the attached image width
