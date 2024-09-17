@@ -1677,7 +1677,7 @@ def receive_announce(recent_posts_cache: {},
     if not has_users_path(message_json['object']):
         # log any unrecognised statuses
         if not contains_statuses(str(message_json['object'])):
-            print('WARN: unknown users path ' + str(message_json['object']))
+            print('WARN: unknown statuses path ' + str(message_json['object']))
         if debug:
             print('DEBUG: ' +
                   '"users", "channel" or "profile" missing in ' +
