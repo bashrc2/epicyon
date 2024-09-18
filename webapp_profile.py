@@ -2655,6 +2655,23 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                            block_federated_endpoints_list_str,
                            200, '', False)
 
+        robots_txt_filename = data_dir(base_dir) + '/robots.txt'
+        robots_txt = ''
+        if os.path.isfile(robots_txt_filename):
+            new_robots_txt = ''
+            try:
+                with open(robots_txt_filename, 'r',
+                          encoding='utf-8') as fp_robots:
+                    new_robots_txt = fp_robots.read()
+            except OSError:
+                print('EX: error reading 2 ' + robots_txt_filename)
+            if new_robots_txt:
+                robots_txt = new_robots_txt
+        edit_profile_form += \
+            edit_text_area("robots.txt", None,
+                           'robotsTxt', robots_txt,
+                           200, '', False)
+
         idx = 'Block military instances'
         if translate.get(idx):
             name = translate[idx]

@@ -712,7 +712,7 @@ def run_daemon(accounts_data_dir: str,
                       encoding='utf-8') as fp_robots:
                 new_robots_txt = fp_robots.read()
         except OSError:
-            print('EX: error reading ' + robots_txt_filename)
+            print('EX: error reading 1 ' + robots_txt_filename)
         if new_robots_txt:
             httpd.robots_txt = new_robots_txt
 

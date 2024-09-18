@@ -300,6 +300,27 @@ def _profile_post_block_federated(base_dir: str, fields: {}, self) -> None:
             self.server.block_federated = []
 
 
+def _profile_post_robots_txt(base_dir: str, fields: {}, self) -> None:
+    """ HTTP POST save robots.txt file
+    """
+    new_robots_txt = ''
+    if fields.get('robotsTxt'):
+        new_robots_txt = fields['robotsTxt']
+    if str(self.server.robots_txt) != str(new_robots_txt):
+        if not new_robots_txt:
+            self.server.robots_txt = ''
+        else:
+            robots_txt_filename = data_dir(base_dir) + '/robots.txt'
+            try:
+                with open(robots_txt_filename, 'w+',
+                          encoding='utf-8') as fp_robots:
+                    fp_robots.write(new_robots_txt)
+            except OSError:
+                print('EX: unable to save ' + robots_txt_filename)
+
+            self.server.robots_txt = new_robots_txt
+
+
 def _profile_post_buy_domains(base_dir: str, fields: {}, self) -> None:
     """ HTTP POST save allowed buy domains
     """
@@ -3291,6 +3312,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     _profile_post_crawlers_allowed(base_dir, fields, self)
                     _profile_post_buy_domains(base_dir, fields, self)
                     _profile_post_block_federated(base_dir, fields, self)
+                    _profile_post_robots_txt(base_dir, fields, self)
                     _profile_post_peertube_instances(base_dir, fields, self,
                                                      peertube_instances)
 
