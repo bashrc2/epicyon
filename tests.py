@@ -8971,6 +8971,21 @@ def _test_link_tracking() -> None:
     assert remove_link_trackers_from_content(content) == expected
 
 
+def _test_bridgy() -> None:
+    print('bridgy')
+    bridgy_url = \
+        'https://brid.gy/convert/ap/at://' + \
+        'did:plc:dcbhwedfgwuyfgwfnj/app.bsky.feed.post/fchbuiweefwui'
+    nickname = get_nickname_from_actor(bridgy_url)
+    if nickname != 'did:plc:dcbhwedfgwuyfgwfnj':
+        print('nickname: ' + nickname)
+    assert nickname == 'did:plc:dcbhwedfgwuyfgwfnj'
+    domain, _ = get_domain_from_actor(bridgy_url)
+    if domain != 'brid.gy':
+        print('domain: ' + domain)
+    assert domain == 'brid.gy'
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -8989,6 +9004,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_bridgy()
     _test_link_tracking()
     _test_remove_tags()
     _test_check_individual_post_content()

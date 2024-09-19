@@ -1508,7 +1508,7 @@ def _get_statuses_list() -> []:
             '/note/', '/notes/', '/comment/', '/post/', '/item/', '/videos/',
             '/button/', '/x/', '/o/', '/posts/', '/items/', '/object/', '/r/',
             '/content/', '/federation/', '/elsewhere/', '/article/',
-            '/activity/', '/blog/')
+            '/activity/', '/blog/', '/app.bsky.feed.post/')
 
 
 def contains_statuses(url: str) -> bool:
@@ -1701,6 +1701,10 @@ def get_nickname_from_actor(actor: str) -> str:
     """
     if actor.startswith('@'):
         actor = actor[1:]
+
+    # handle brid.gy urls
+    actor = actor.replace('at://did:', 'did:')
+
     users_paths = get_user_paths()
     for possible_path in users_paths:
         if possible_path not in actor:
@@ -1741,7 +1745,7 @@ def get_user_paths() -> []:
             '/nieuws/author/', '/author/', '/federation/user/',
             '/activitypub/', '/actors/', '/snac/', '/@/', '/~/',
             '/fediverse/blog/', '/user/', '/@', '/api/collections/',
-            '/feed/', '/actor/')
+            '/feed/', '/actor/', '/ap/')
 
 
 def get_group_paths() -> []:
