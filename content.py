@@ -1088,6 +1088,16 @@ def remove_long_words(content: str, max_word_length: int,
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     content = replace_content_duplicates(content)
+
+    non_html_list = False
+    if '\n\n' in content and '<p>' not in content:
+        content = '<p>' + content.replace('\n\n', '</p> <p>') + '</p>'
+        non_html_list = True
+    non_html_list2 = False
+    if '\n' in content and '<p>' not in content:
+        content = '<p>' + content.replace('\n', '</p> <p>') + '</p>'
+        non_html_list2 = True
+
     if ' ' not in content and '</p><p>' not in content:
         # handle a single very long string with no spaces
         content_str = content.replace('<p>', '').replace(r'<\p>', '')
@@ -1166,6 +1176,16 @@ def remove_long_words(content: str, max_word_length: int,
         if not content.endswith('</p>'):
             content = content.strip() + '</p>'
     content = content.replace('<p> </p>', '<p></p>')
+    if non_html_list:
+        content = content.replace('</p> <p>', '\n\n')
+        content = content.replace('<p>', '')
+        content = content.replace('</p>', '')
+    if non_html_list2:
+        content = content.replace('</p> <p>', '\n')
+        content = content.replace('<p>', '')
+        content = content.replace('</p>', '')
+    content = content.replace('</p> <p>', '</p><p>')
+
     return content
 
 
