@@ -307,16 +307,24 @@ def _profile_post_robots_txt(base_dir: str, fields: {}, self) -> None:
     if fields.get('robotsTxt'):
         new_robots_txt = fields['robotsTxt']
     if str(self.server.robots_txt) != str(new_robots_txt):
+        robots_txt_filename = data_dir(base_dir) + '/robots.txt'
         if not new_robots_txt:
             self.server.robots_txt = ''
+            if os.path.isfile(robots_txt_filename):
+                try:
+                    os.remove(robots_txt_filename)
+                except OSError:
+                    print('EX: _profile_post_robots_txt' +
+                          ' unable to delete ' +
+                          robots_txt_filename)
         else:
-            robots_txt_filename = data_dir(base_dir) + '/robots.txt'
             try:
                 with open(robots_txt_filename, 'w+',
                           encoding='utf-8') as fp_robots:
                     fp_robots.write(new_robots_txt)
             except OSError:
-                print('EX: unable to save ' + robots_txt_filename)
+                print('EX: _profile_post_robots_txt unable to save ' +
+                      robots_txt_filename)
 
             self.server.robots_txt = new_robots_txt
 
