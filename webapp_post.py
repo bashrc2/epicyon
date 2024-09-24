@@ -34,6 +34,7 @@ from flags import is_news_post
 from flags import is_recent_post
 from flags import is_chat_message
 from flags import is_pgp_encrypted
+from utils import remove_header_tags
 from utils import get_actor_from_post_id
 from utils import contains_statuses
 from utils import data_dir
@@ -2871,9 +2872,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
                not post_is_blog:
                 content_str = bold_reading_string(content_str)
 
-            object_content = remove_link_trackers_from_content(content_str)
+            object_content = remove_header_tags(content_str)
             object_content = \
-                remove_long_words(content_str, 40, [])
+                remove_link_trackers_from_content(object_content)
+            object_content = \
+                remove_long_words(object_content, 40, [])
             object_content = \
                 remove_text_formatting(object_content, bold_reading)
             object_content = limit_repeated_words(object_content, 6)

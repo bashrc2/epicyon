@@ -450,6 +450,15 @@ def remove_markup_tag(html: str, tag: str) -> str:
     return result
 
 
+def remove_header_tags(html: str) -> str:
+    """Removes any header tags from the given html text
+    """
+    header_tags = ('h1', 'h2', 'h3', 'h4', 'h5')
+    for tag_str in header_tags:
+        html = remove_markup_tag(html, tag_str)
+    return html
+
+
 def get_content_from_post(post_json_object: {}, system_language: str,
                           languages_understood: [],
                           content_type: str) -> str:
