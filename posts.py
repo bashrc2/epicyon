@@ -6154,9 +6154,11 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache)
             return None
+
         announced_actor = announced_json['id']
         if announced_json.get('attributedTo'):
             announced_actor = get_attributed_to(announced_json['attributedTo'])
+
         if not announced_json.get('type'):
             print('WARN: announced post does not have a type ' +
                   str(announced_json))

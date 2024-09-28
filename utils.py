@@ -745,6 +745,9 @@ def get_locked_account(actor_json: {}) -> bool:
 def has_users_path(path_str: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
+    if not path_str:
+        return False
+
     users_list = get_user_paths()
     for users_str in users_list:
         if users_str in path_str:
