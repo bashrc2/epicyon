@@ -998,73 +998,73 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
         '\" class=\"u-url mention\" tabindex="10">@<span>' + nickname + \
         '</span></a></span>' + remove_html(description) + '</p>'
     event_json = {
-        "@context": post_context,
-        "id": post_id + "/activity",
-        "type": "Create",
-        "actor": actor,
-        "published": published,
-        "to": [actor],
-        "cc": [],
-        "object": {
-            "id": post_id,
-            "conversation": post_id,
-            "context": post_id,
-            "type": "Note",
-            "summary": None,
-            "inReplyTo": None,
-            "published": published,
-            "url": actor + "/" + status_number,
-            "attributedTo": actor,
-            "to": [actor],
-            "cc": [],
-            "sensitive": False,
-            "atomUri": post_id,
-            "inReplyToAtomUri": None,
-            "commentsEnabled": False,
-            "rejectReplies": True,
-            "mediaType": "text/html",
-            "content": content,
-            "contentMap": {
+        '@context': post_context,
+        'id': post_id + '/activity',
+        'type': 'Create',
+        'actor': actor,
+        'published': published,
+        'to': [actor],
+        'cc': [],
+        'object': {
+            'id': post_id,
+            'conversation': post_id,
+            'context': post_id,
+            'type': "Note",
+            'summary': None,
+            'inReplyTo': None,
+            'published': published,
+            'url': actor + '/' + status_number,
+            'attributedTo': actor,
+            'to': [actor],
+            'cc': [],
+            'sensitive': False,
+            'atomUri': post_id,
+            'inReplyToAtomUri': None,
+            'commentsEnabled': False,
+            'rejectReplies': True,
+            'mediaType': 'text/html',
+            'content': content,
+            'contentMap': {
                 system_language: content
             },
-            "attachment": [],
-            "tag": [
+            'attachment': [],
+            'tag': [
                 {
-                    "href": actor2,
-                    "name": "@" + nickname + "@" + domain,
-                    "type": "Mention"
+                    'href': actor2,
+                    'name': '@' + nickname + '@' + domain,
+                    'type': 'Mention'
                 },
                 {
-                    "@context": [
+                    '@context': [
                         'https://www.w3.org/ns/activitystreams',
                         'https://w3id.org/security/v1'
                     ],
-                    "type": "Event",
-                    "name": content,
-                    "startTime": start_time,
-                    "endTime": end_time
+                    'type': 'Event',
+                    'name': content,
+                    'startTime': start_time,
+                    'endTime': end_time
                 }
             ],
-            "replies": {
-                "id": post_id + "/replies",
-                "type": "Collection",
-                "first": {
-                    "type": "CollectionPage",
-                    "next": next_str,
-                    "partOf": post_id + "/replies",
-                    "items": []
+            'replies': {
+                'id': post_id + '/replies',
+                'type': 'Collection',
+                'first': {
+                    'type': 'CollectionPage',
+                    'next': next_str,
+                    'partOf': post_id + '/replies',
+                    'items': []
                 }
             }
         }
     }
     if location:
         event_json['object']['tag'].append({
-            "@context": [
+            '@context': [
                 'https://www.w3.org/ns/activitystreams',
                 'https://w3id.org/security/v1'
             ],
-            "type": "Place",
-            "name": location
+            'type': 'Place',
+            'name': location
         })
         event_json['object']['location'] = {
             'type': 'Place',
