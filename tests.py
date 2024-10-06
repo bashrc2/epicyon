@@ -226,6 +226,7 @@ from reading import get_book_from_post
 from reading import get_reading_status
 from reading import store_book_events
 from conversation import conversation_tag_to_convthread_id
+from conversation import convthread_id_to_conversation_tag
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -9044,10 +9045,16 @@ def _test_bridgy() -> None:
 
 def _test_conversation_to_convthread() -> None:
     print('conversation to thread')
+    domain = 'the.domain.of.last.resort'
     conversation_id = \
-        'tag:domain,2024-09-28:objectId=647832678:objectType=Conversation'
+        'tag:' + domain + \
+        ',2024-09-28:objectId=647832678:objectType=Conversation'
     convthread_id = conversation_tag_to_convthread_id(conversation_id)
     assert convthread_id == '20240928647832678'
+
+    conversation_id2 = \
+        convthread_id_to_conversation_tag(domain, convthread_id)
+    assert conversation_id2 == conversation_id
 
 
 def run_all_tests():

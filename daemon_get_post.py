@@ -45,6 +45,7 @@ from webapp_likers import html_likers_of_post
 from fitnessFunctions import fitness_performance
 from securemode import secure_mode
 from context import get_individual_post_context
+from conversation import convthread_id_to_conversation_tag
 
 
 def _show_post_from_file(self, post_filename: str, liked_by: str,
@@ -1281,6 +1282,15 @@ def show_conversation_thread(self, authorized: bool,
     if not path.startswith('/users/'):
         return False
     conv_separator = '?convthread='
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
+    if conv_separator not in path and '/thread/' in path:
+        convthread_id = path.split('/thread/', 1)[1].strip()
+        if convthread_id.isdigit():
+            new_tag = convthread_id_to_conversation_tag(domain_full,
+                                                        convthread_id)
+            if new_tag:
+                path = \
+                    path.split(conv_separator)[0] + conv_separator + new_tag
     if conv_separator not in path:
         return False
     post_id = path.split(conv_separator)[1].strip()

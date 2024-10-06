@@ -425,3 +425,21 @@ def conversation_tag_to_convthread_id(tag: str) -> str:
         if tag_chr.isdigit():
             convthread_id += tag_chr
     return convthread_id
+
+
+def convthread_id_to_conversation_tag(domain: str,
+                                      convthread_id: str) -> str:
+    """Converts a convthread id such as 20240928647832678
+    into a converation tag, such as
+    tag:domain,2024-09-28:objectId=647832678:objectType=Conversation
+    """
+    if len(convthread_id) < 10:
+        return ''
+    year = convthread_id[:4]
+    month = convthread_id[4:][:2]
+    day = convthread_id[6:][:2]
+    post_id = convthread_id[8:]
+    conversation_id = \
+        'tag:' + domain + ',' + year + '-' + month + '-' + day + \
+        ':objectId=' + post_id + ':objectType=Conversation'
+    return conversation_id
