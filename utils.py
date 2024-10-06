@@ -2481,7 +2481,10 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
     """
     if not has_object_dict(post_json_object):
         return False
+    # Due to lack of AP specification maintenance, a conversation can also be
+    # referred to as a thread or (confusingly) "context"
     if not post_json_object['object'].get('conversation') and \
+       not post_json_object['object'].get('thread') and \
        not post_json_object['object'].get('context'):
         return False
     if not post_json_object['object'].get('id'):
@@ -2490,8 +2493,12 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/conversation'
     if post_json_object['object'].get('conversation'):
         conversation_id = post_json_object['object']['conversation']
+    elif post_json_object['object'].get('thread'):
+        conversation_id = post_json_object['object']['thread']
     else:
         conversation_id = post_json_object['object']['context']
+    if not isinstance(conversation_id, str):
+        return False
     conversation_id = conversation_id.replace('/', '#')
     post_id = post_json_object['object']['id']
     conversation_filename = conversation_dir + '/' + conversation_id
@@ -2760,7 +2767,7 @@ def _get_reserved_words() -> str:
             'bookmark', 'bookmarks', 'tlbookmarks',
             'ignores', 'linksmobile', 'newswiremobile',
             'minimal', 'search', 'eventdelete',
-            'searchemoji', 'catalog', 'conversationId',
+            'searchemoji', 'catalog', 'conversationId', 'thread',
             'mention', 'http', 'https', 'ipfs', 'ipns',
             'ontologies', 'data', 'postedit', 'moved',
             'inactive', 'activitypub', 'actors',

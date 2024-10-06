@@ -1532,9 +1532,13 @@ def _create_reply_notification_file(base_dir: str, nickname: str, domain: str,
     # replies index will be updated
     update_index_list.append('tlreplies')
 
+    # Due to lack of AP specification maintenance, a conversation can also be
+    # referred to as a thread or (confusingly) "context"
     conversation_id = None
     if post_json_object['object'].get('conversation'):
         conversation_id = post_json_object['object']['conversation']
+    elif post_json_object['object'].get('thread'):
+        conversation_id = post_json_object['object']['thread']
     elif post_json_object['object'].get('context'):
         conversation_id = post_json_object['object']['context']
 

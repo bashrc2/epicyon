@@ -1236,9 +1236,14 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
 
+    # Due to lack of AP specification maintenance, a conversation can also be
+    # referred to as a thread or (confusingly) "context"
     if post_json_obj.get('conversation'):
         mute_conversation(base_dir, nickname, domain,
                           post_json_obj['conversation'])
+    elif post_json_obj.get('thread'):
+        mute_conversation(base_dir, nickname, domain,
+                          post_json_obj['thread'])
     elif post_json_obj.get('context'):
         mute_conversation(base_dir, nickname, domain,
                           post_json_obj['context'])
@@ -1380,9 +1385,14 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
         if has_object_string(post_json_object, debug):
             also_update_post_id = remove_id_ending(post_json_object['object'])
 
+    # Due to lack of AP specification maintenance, a conversation can also be
+    # referred to as a thread or (confusingly) "context"
     if post_json_obj.get('conversation'):
         unmute_conversation(base_dir, nickname, domain,
                             post_json_obj['conversation'])
+    elif post_json_obj.get('thread'):
+        unmute_conversation(base_dir, nickname, domain,
+                            post_json_obj['thread'])
     elif post_json_obj.get('context'):
         unmute_conversation(base_dir, nickname, domain,
                             post_json_obj['context'])

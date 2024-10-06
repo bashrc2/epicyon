@@ -295,10 +295,16 @@ def html_new_post(edit_post_params: {},
             for _, buy_url in buy_links.items():
                 default_buy_site = buy_url
                 break
+
+        # Due to lack of AP specification maintenance, a conversation can also
+        # be referred to as a thread or (confusingly) "context"
         if edited_post_json['object'].get('conversation'):
             conversation_id = edited_post_json['object']['conversation']
+        elif edited_post_json['object'].get('thread'):
+            conversation_id = edited_post_json['object']['thread']
         elif edited_post_json['object'].get('context'):
             conversation_id = edited_post_json['object']['context']
+
         if edit_post_params.get('replyTo'):
             in_reply_to = edit_post_params['replyTo']
         if edit_post_params['scope'] == 'dm':
@@ -1113,11 +1119,12 @@ def html_new_post(edit_post_params: {},
         dropdown_dm_suffix += '?mention=' + mentioned_actor
         dropdown_report_suffix += '?mention=' + mentioned_actor
     if conversation_id and in_reply_to:
-        dropdown_new_post_suffix += '?conversationId=' + conversation_id
-        dropdown_new_blog_suffix += '?conversationId=' + conversation_id
-        dropdown_unlisted_suffix += '?conversationId=' + conversation_id
-        dropdown_followers_suffix += '?conversationId=' + conversation_id
-        dropdown_dm_suffix += '?conversationId=' + conversation_id
+        if isinstance(conversation_id, str):
+            dropdown_new_post_suffix += '?conversationId=' + conversation_id
+            dropdown_new_blog_suffix += '?conversationId=' + conversation_id
+            dropdown_unlisted_suffix += '?conversationId=' + conversation_id
+            dropdown_followers_suffix += '?conversationId=' + conversation_id
+            dropdown_dm_suffix += '?conversationId=' + conversation_id
 
     drop_down_content = ''
     if not report_url and not share_description:
@@ -1159,9 +1166,10 @@ def html_new_post(edit_post_params: {},
         new_post_form += \
             '    <input type="hidden" name="replychatmsg" value="yes">\n'
     if conversation_id:
-        new_post_form += \
-            '    <input type="hidden" name="conversationId" value="' + \
-            conversation_id + '">\n'
+        if isinstance(conversation_id, str):
+            new_post_form += \
+                '    <input type="hidden" name="conversationId" value="' + \
+                conversation_id + '">\n'
     new_post_form += '  <div class="vertical-center">\n'
     new_post_form += \
         '    <label for="nickname"><b>' + new_post_text + '</b></label>\n'

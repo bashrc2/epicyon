@@ -213,9 +213,10 @@ def _command_options() -> None:
     parser.add_argument('-n', '--nickname', dest='nickname', type=str,
                         default=None,
                         help='Nickname of the account to use')
-    parser.add_argument('--conversation', dest='conversation', type=str,
-                        default=None,
-                        help='Download a conversation for the given post id')
+    parser.add_argument('--conversation', '--thread', dest='conversation',
+                        type=str, default=None,
+                        help='Download a conversation/thread ' +
+                        'for the given post id')
     parser.add_argument('--screenreader', dest='screenreader', type=str,
                         default=None,
                         help='Name of the screen reader: ' +

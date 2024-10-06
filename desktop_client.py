@@ -1964,9 +1964,15 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                             if post_json_object['object'].get('summary'):
                                 subject = post_json_object['object']['summary']
                             conversation_id = None
+                            # Due to lack of AP specification maintenance,
+                            # a conversation can also be referred to as a
+                            # thread or (confusingly) "context"
                             if post_json_object['object'].get('conversation'):
                                 conversation_id = \
                                     post_json_object['object']['conversation']
+                            elif post_json_object['object'].get('thread'):
+                                conversation_id = \
+                                    post_json_object['object']['thread']
                             elif post_json_object['object'].get('context'):
                                 conversation_id = \
                                     post_json_object['object']['context']

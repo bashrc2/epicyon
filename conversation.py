@@ -26,10 +26,13 @@ from session import get_json_valid
 def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
                                post_json_object: {}) -> str:
     """Returns the conversation filename
+    Due to lack of AP specification maintenance, a conversation can also be
+    referred to as a thread or (confusingly) "context"
     """
     if not has_object_dict(post_json_object):
         return None
     if not post_json_object['object'].get('conversation') and \
+       not post_json_object['object'].get('thread') and \
        not post_json_object['object'].get('context'):
         return None
     if not post_json_object['object'].get('id'):
@@ -39,8 +42,12 @@ def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
         os.mkdir(conversation_dir)
     if post_json_object['object'].get('conversation'):
         conversation_id = post_json_object['object']['conversation']
+    elif post_json_object['object'].get('thread'):
+        conversation_id = post_json_object['object']['thread']
     else:
         conversation_id = post_json_object['object']['context']
+    if not isinstance(conversation_id, str):
+        return None
     conversation_id = conversation_id.replace('/', '#')
     return conversation_dir + '/' + conversation_id
 
@@ -80,6 +87,9 @@ def mute_conversation(base_dir: str, nickname: str, domain: str,
                       conversation_id: str) -> None:
     """Mutes the given conversation
     """
+    if not isinstance(conversation_id, str):
+        return
+
     conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
     conversation_filename = \
         conversation_dir + '/' + conversation_id.replace('/', '#')
@@ -99,6 +109,9 @@ def unmute_conversation(base_dir: str, nickname: str, domain: str,
                         conversation_id: str) -> None:
     """Unmutes the given conversation
     """
+    if not isinstance(conversation_id, str):
+        return
+
     conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
     conversation_filename = \
         conversation_dir + '/' + conversation_id.replace('/', '#')

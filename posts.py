@@ -1281,6 +1281,8 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         local_actor_url(http_prefix, nickname, domain)
     if not conversation_id:
         conversation_id = new_post_id
+    if not isinstance(conversation_id, str):
+        conversation_id = new_post_id
     # add opt-outs as in:
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/5e53/fep-5e53.md
     new_post = {
@@ -1387,6 +1389,8 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
     new_post_url = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
     if not conversation_id:
+        conversation_id = new_post_id
+    if not isinstance(conversation_id, str):
         conversation_id = new_post_id
     # add opt-outs as in:
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/5e53/fep-5e53.md
@@ -5160,7 +5164,8 @@ def _novel_fields_for_person(nickname: str, domain: str,
         'secGPC',
         'xRobotsTag',
         'content_is_html',
-        'repliesCount'
+        'repliesCount',
+        'thread'
     )
     for post_filename in posts_in_box:
         post_filename = post_filename.name
@@ -6377,6 +6382,8 @@ def is_muted_conv(base_dir: str, nickname: str, domain: str, post_id: str,
     """Returns true if the given post is muted
     """
     if conversation_id:
+        if not isinstance(conversation_id, str):
+            return False
         conv_muted_filename = \
             acct_dir(base_dir, nickname, domain) + '/conversation/' + \
             conversation_id.replace('/', '#') + '.muted'

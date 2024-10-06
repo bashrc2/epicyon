@@ -653,7 +653,8 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
         reply_to_this_post_str = translate[reply_to_this_post_str]
     conversation_str = ''
     if conversation_id:
-        conversation_str = '?conversationId=' + conversation_id
+        if isinstance(conversation_id, str):
+            conversation_str = '?conversationId=' + conversation_id
     if is_public_reply:
         actor_url = get_actor_from_post(post_json_object)
         reply_str += \
@@ -2500,9 +2501,14 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     conversation_id = None
     if isinstance(post_json_object['object'], dict):
+        # Due to lack of AP specification maintenance, a conversation can also
+        # be referred to as a thread or (confusingly) "context"
         if 'conversation' in post_json_object['object']:
             if post_json_object['object']['conversation']:
                 conversation_id = post_json_object['object']['conversation']
+        elif 'thread' in post_json_object['object']:
+            if post_json_object['object']['thread']:
+                conversation_id = post_json_object['object']['thread']
         elif 'context' in post_json_object['object']:
             if post_json_object['object']['context']:
                 conversation_id = post_json_object['object']['context']
