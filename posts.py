@@ -5090,6 +5090,38 @@ def _expire_announce_cache_for_person(base_dir: str,
     return expired_post_count
 
 
+def _expire_conversations_for_person(base_dir: str,
+                                     nickname: str, domain: str,
+                                     max_age_days: int) -> int:
+    """Expires entries within the conversation directory
+    """
+    conv_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
+    if not os.path.isdir(conv_dir):
+        print('No conversations for ' + nickname + '@' + domain)
+        return 0
+    expired_post_count = 0
+    posts_in_conv = os.scandir(conv_dir)
+    for conv_filename in posts_in_conv:
+        conv_filename = conv_filename.name
+        if conv_filename.endswith('.muted'):
+            # don't expire muted conversations, so they stay muted
+            continue
+        # Time of file creation
+        full_filename = os.path.join(conv_dir, conv_filename)
+        if not os.path.isfile(full_filename):
+            continue
+        last_modified = file_last_modified(full_filename)
+        # get time difference
+        if not valid_post_date(last_modified, max_age_days, False):
+            try:
+                os.remove(full_filename)
+            except OSError:
+                print('EX: unable to delete from conversations ' +
+                      full_filename)
+            expired_post_count += 1
+    return expired_post_count
+
+
 def _expire_posts_cache_for_person(base_dir: str,
                                    nickname: str, domain: str,
                                    max_age_days: int) -> int:
@@ -5278,6 +5310,14 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                                                       max_cache_age_days)
                 print('Expired ' + str(expired_announces) +
                       ' cached announces for ' + nickname + '@' + domain)
+
+                expired_conversations = \
+                    _expire_conversations_for_person(base_dir,
+                                                     nickname, domain,
+                                                     max_cache_age_days)
+                print('Expired ' + str(expired_conversations) +
+                      ' conversations for ' + nickname + '@' + domain)
+
                 expired_posts = \
                     _expire_posts_cache_for_person(base_dir,
                                                    nickname, domain,
