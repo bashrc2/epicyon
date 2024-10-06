@@ -411,3 +411,17 @@ def download_conversation_posts(authorized: bool, session,
                 print(post_id + ' returned no json')
 
     return conversation_view + replies_to_post
+
+
+def conversation_tag_to_thread_id(tag: str) -> str:
+    """Converts a converation tag, such as
+    tag:domain,2024-09-28:objectId=647832678:objectType=Conversation
+    into a thread id such as 20240928647832678
+    """
+    if not isinstance(tag, str):
+        return ''
+    thread_id = ''
+    for tag_chr in tag:
+        if tag_chr.isdigit():
+            thread_id += tag_chr
+    return thread_id
