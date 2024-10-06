@@ -1280,9 +1280,10 @@ def show_conversation_thread(self, authorized: bool,
     """
     if not path.startswith('/users/'):
         return False
-    if '?convthread=' not in path:
+    conv_separator = '?convthread='
+    if conv_separator not in path:
         return False
-    post_id = path.split('?convthread=')[1].strip()
+    post_id = path.split(conv_separator)[1].strip()
     post_id = post_id.replace('--', '/')
     if post_id.startswith('/users/'):
         instance_url = get_instance_url(calling_domain,
@@ -1292,8 +1293,8 @@ def show_conversation_thread(self, authorized: bool,
                                         i2p_domain)
         post_id = instance_url + post_id
     nickname = path.split('/users/')[1]
-    if '?convthread=' in nickname:
-        nickname = nickname.split('?convthread=')[0]
+    if conv_separator in nickname:
+        nickname = nickname.split(conv_separator)[0]
     if '/' in nickname:
         nickname = nickname.split('/')[0]
     timezone = None
