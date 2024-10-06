@@ -21,6 +21,7 @@ from utils import get_media_url_from_video
 from utils import resembles_url
 from blocking import is_blocked
 from filters import is_filtered
+from conversation import post_id_to_convthread_id
 
 
 def convert_video_to_note(base_dir: str, nickname: str, domain: str,
@@ -95,6 +96,8 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                               languages_understood, "content")
 
     conversation_id = remove_id_ending(post_json_object['id'])
+    conversation_id = post_id_to_convthread_id(conversation_id,
+                                               post_json_object['published'])
 
     media_type, media_url, media_torrent, media_magnet = \
         get_media_url_from_video(post_json_object)

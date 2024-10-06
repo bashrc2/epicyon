@@ -443,3 +443,13 @@ def convthread_id_to_conversation_tag(domain: str,
         'tag:' + domain + ',' + year + '-' + month + '-' + day + \
         ':objectId=' + post_id + ':objectType=Conversation'
     return conversation_id
+
+
+def post_id_to_convthread_id(post_id: str, published: str) -> str:
+    """Converts a post ID into a conversation thread ID
+    """
+    if '/statuses/' not in post_id or len(published) < 10:
+        return post_id
+    date_prefix = published[:10].replace('-', '')
+    convthread_id = post_id.replace('/statuses/', '/thread/' + date_prefix)
+    return convthread_id

@@ -34,6 +34,7 @@ from filters import is_filtered
 from context import get_individual_post_context
 from session import get_method
 from auth import create_basic_auth_header
+from conversation import post_id_to_convthread_id
 
 
 def _strings_are_digits(strings_list: []) -> bool:
@@ -1007,7 +1008,7 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
         'cc': [],
         'object': {
             'id': post_id,
-            'conversation': post_id,
+            'conversation': post_id_to_convthread_id(post_id, published),
             'context': post_id,
             'type': "Note",
             'summary': None,

@@ -132,6 +132,7 @@ from question import is_question
 from question import dangerous_question
 from pyjsonld import JsonLdError
 from conversation import conversation_tag_to_convthread_id
+from conversation import post_id_to_convthread_id
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -1281,9 +1282,9 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
     new_post_attributed_to = \
         local_actor_url(http_prefix, nickname, domain)
     if not conversation_id:
-        conversation_id = new_post_id
+        conversation_id = post_id_to_convthread_id(new_post_id, published)
     if not isinstance(conversation_id, str):
-        conversation_id = new_post_id
+        conversation_id = post_id_to_convthread_id(new_post_id, published)
     if conversation_id.startswith('tag:'):
         new_convthread_id = conversation_tag_to_convthread_id(conversation_id)
         if new_convthread_id:
@@ -1400,9 +1401,9 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
     new_post_url = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
     if not conversation_id:
-        conversation_id = new_post_id
+        conversation_id = post_id_to_convthread_id(new_post_id, published)
     if not isinstance(conversation_id, str):
-        conversation_id = new_post_id
+        conversation_id = post_id_to_convthread_id(new_post_id, published)
     if conversation_id.startswith('tag:'):
         new_convthread_id = conversation_tag_to_convthread_id(conversation_id)
         if new_convthread_id:
