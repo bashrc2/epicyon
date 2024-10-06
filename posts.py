@@ -131,6 +131,7 @@ from followerSync import update_followers_sync_cache
 from question import is_question
 from question import dangerous_question
 from pyjsonld import JsonLdError
+from conversation import conversation_tag_to_convthread_id
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -1283,6 +1284,10 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         conversation_id = new_post_id
     if not isinstance(conversation_id, str):
         conversation_id = new_post_id
+    if conversation_id.startswith('tag:'):
+        new_convthread_id = conversation_tag_to_convthread_id(conversation_id)
+        if new_convthread_id:
+            convthread_id = new_convthread_id
     # add opt-outs as in:
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/5e53/fep-5e53.md
     new_post = {
@@ -1398,6 +1403,10 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         conversation_id = new_post_id
     if not isinstance(conversation_id, str):
         conversation_id = new_post_id
+    if conversation_id.startswith('tag:'):
+        new_convthread_id = conversation_tag_to_convthread_id(conversation_id)
+        if new_convthread_id:
+            convthread_id = new_convthread_id
     # add opt-outs as in:
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/5e53/fep-5e53.md
     new_post = {
