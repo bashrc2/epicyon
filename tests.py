@@ -225,7 +225,7 @@ from reading import get_book_link_from_content
 from reading import get_book_from_post
 from reading import get_reading_status
 from reading import store_book_events
-from conversation import conversation_tag_to_thread_id
+from conversation import conversation_tag_to_convthread_id
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -9042,12 +9042,12 @@ def _test_bridgy() -> None:
     assert domain == 'brid.gy'
 
 
-def _test_conversation_to_thread() -> None:
+def _test_conversation_to_convthread() -> None:
     print('conversation to thread')
     conversation_id = \
         'tag:domain,2024-09-28:objectId=647832678:objectType=Conversation'
-    thread_id = conversation_tag_to_thread_id(conversation_id)
-    assert thread_id == '20240928647832678'
+    convthread_id = conversation_tag_to_convthread_id(conversation_id)
+    assert convthread_id == '20240928647832678'
 
 
 def run_all_tests():
@@ -9068,7 +9068,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
-    _test_conversation_to_thread()
+    _test_conversation_to_convthread()
     _test_bridgy()
     _test_link_tracking()
     _test_remove_tags()
