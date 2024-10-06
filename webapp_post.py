@@ -605,7 +605,7 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
                          show_icons: bool, comments_enabled: bool,
                          post_json_object: {}, page_number_param: str,
                          translate: {}, system_language: str,
-                         conversation_id: str) -> str:
+                         conversation_id: str, convthread_id: str) -> str:
     """Returns html for the reply icon/button
     """
     reply_str = ''
@@ -655,6 +655,9 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
     if conversation_id:
         if isinstance(conversation_id, str):
             conversation_str = '?conversationId=' + conversation_id
+    if convthread_id:
+        if isinstance(convthread_id, str):
+            conversation_str = '?convthreadId=' + convthread_id
     if is_public_reply:
         actor_url = get_actor_from_post(post_json_object)
         reply_str += \
@@ -2500,18 +2503,19 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 comments_enabled = False
 
     conversation_id = None
+    convthread_id = None
     if isinstance(post_json_object['object'], dict):
         # Due to lack of AP specification maintenance, a conversation can also
         # be referred to as a thread or (confusingly) "context"
         if 'conversation' in post_json_object['object']:
             if post_json_object['object']['conversation']:
                 conversation_id = post_json_object['object']['conversation']
-        elif 'thread' in post_json_object['object']:
-            if post_json_object['object']['thread']:
-                conversation_id = post_json_object['object']['thread']
         elif 'context' in post_json_object['object']:
             if post_json_object['object']['context']:
                 conversation_id = post_json_object['object']['context']
+        if 'thread' in post_json_object['object']:
+            if post_json_object['object']['thread']:
+                convthread_id = post_json_object['object']['thread']
 
     public_reply = False
     unlisted_reply = False
@@ -2525,7 +2529,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                      show_icons, comments_enabled,
                                      post_json_object, page_number_param,
                                      translate, system_language,
-                                     conversation_id)
+                                     conversation_id, convthread_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '10')
 

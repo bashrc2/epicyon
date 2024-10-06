@@ -516,7 +516,7 @@ def _desktop_reply_to_post(session, post_id: str,
                            debug: bool, subject: str,
                            screenreader: str, system_language: str,
                            languages_understood: [],
-                           espeak, conversation_id: str,
+                           espeak, conversation_id: str, convthread_id: str,
                            low_bandwidth: bool,
                            content_license_url: str,
                            media_license_url: str, media_creator: str,
@@ -592,7 +592,7 @@ def _desktop_reply_to_post(session, post_id: str,
                             event_date, event_time, event_end_time, location,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, post_id, post_id,
-                            conversation_id, subject) == 0:
+                            conversation_id, convthread_id, subject) == 0:
         say_str = translate['Sent']
     else:
         say_str = translate['Post failed']
@@ -614,6 +614,7 @@ def _desktop_new_post(session,
     """Use the desktop client to create a new post
     """
     conversation_id = None
+    convthread_id = None
     say_str = translate['Create a new post']
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     say_str = translate['Type your post, then press Enter'] + '.'
@@ -673,7 +674,7 @@ def _desktop_new_post(session,
                             event_date, event_time, event_end_time, location,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
-                            conversation_id, subject) == 0:
+                            conversation_id, convthread_id, subject) == 0:
         say_str = translate['Sent']
     else:
         say_str = translate['Post failed']
@@ -1378,6 +1379,7 @@ def _desktop_new_dm_base(session, to_handle: str,
     """Use the desktop client to create a new direct message
     """
     conversation_id = None
+    convthread_id = None
     to_port = port
     if '://' in to_handle:
         to_nickname = get_nickname_from_actor(to_handle)
@@ -1489,7 +1491,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                             event_date, event_time, event_end_time, location,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
-                            conversation_id, subject) == 0:
+                            conversation_id, convthread_id, subject) == 0:
         say_str = translate['Sent']
     else:
         say_str = translate['Post failed']
@@ -1964,18 +1966,19 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                             if post_json_object['object'].get('summary'):
                                 subject = post_json_object['object']['summary']
                             conversation_id = None
+                            convthread_id = None
                             # Due to lack of AP specification maintenance,
                             # a conversation can also be referred to as a
                             # thread or (confusingly) "context"
                             if post_json_object['object'].get('conversation'):
                                 conversation_id = \
                                     post_json_object['object']['conversation']
-                            elif post_json_object['object'].get('thread'):
-                                conversation_id = \
-                                    post_json_object['object']['thread']
                             elif post_json_object['object'].get('context'):
                                 conversation_id = \
                                     post_json_object['object']['context']
+                            if post_json_object['object'].get('thread'):
+                                convthread_id = \
+                                    post_json_object['object']['thread']
                             session_reply = create_session(proxy_type)
                             _desktop_reply_to_post(session_reply, post_id,
                                                    base_dir, nickname,
@@ -1988,6 +1991,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                    system_language,
                                                    languages_understood,
                                                    espeak, conversation_id,
+                                                   convthread_id,
                                                    low_bandwidth,
                                                    content_license_url,
                                                    media_license_url,

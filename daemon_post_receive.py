@@ -130,6 +130,10 @@ def _receive_new_post_process_newpost(self, fields: {},
     if fields.get('conversationId'):
         conversation_id = fields['conversationId']
 
+    convthread_id = None
+    if fields.get('convthreadId'):
+        convthread_id = fields['convthreadId']
+
     languages_understood = \
         get_understood_languages(base_dir, http_prefix,
                                  nickname, domain_full,
@@ -165,7 +169,7 @@ def _receive_new_post_process_newpost(self, fields: {},
                            fields['eventEndTime'],
                            fields['location'], False,
                            fields['languagesDropdown'],
-                           conversation_id,
+                           conversation_id, convthread_id,
                            low_bandwidth,
                            content_license_url,
                            media_license_url, media_creator,
@@ -286,6 +290,9 @@ def _receive_new_post_process_newblog(self, fields: {},
     conversation_id = None
     if fields.get('conversationId'):
         conversation_id = fields['conversationId']
+    convthread_id = None
+    if fields.get('convthreadId'):
+        convthread_id = fields['convthreadId']
     languages_understood = \
         get_understood_languages(base_dir, http_prefix,
                                  nickname, domain_full,
@@ -318,7 +325,7 @@ def _receive_new_post_process_newblog(self, fields: {},
                          fields['eventEndTime'],
                          fields['location'],
                          fields['languagesDropdown'],
-                         conversation_id,
+                         conversation_id, convthread_id,
                          low_bandwidth,
                          content_license_url,
                          media_license_url, media_creator,
@@ -518,6 +525,10 @@ def _receive_new_post_process_newunlisted(self, fields: {},
     if fields.get('conversationId'):
         conversation_id = fields['conversationId']
 
+    convthread_id = None
+    if fields.get('convthreadId'):
+        convthread_id = fields['convthreadId']
+
     languages_understood = \
         get_understood_languages(base_dir, http_prefix, nickname,
                                  domain_full, person_cache)
@@ -552,7 +563,7 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                              fields['eventEndTime'],
                              fields['location'],
                              fields['languagesDropdown'],
-                             conversation_id,
+                             conversation_id, convthread_id,
                              low_bandwidth,
                              content_license_url,
                              media_license_url, media_creator,
@@ -668,6 +679,10 @@ def _receive_new_post_process_newfollowers(self, fields: {},
     if fields.get('conversationId'):
         conversation_id = fields['conversationId']
 
+    convthread_id = None
+    if fields.get('convthreadId'):
+        convthread_id = fields['convthreadId']
+
     mentions_message = mentions_str + fields['message']
     languages_understood = \
         get_understood_languages(base_dir, http_prefix,
@@ -705,7 +720,7 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                    fields['eventEndTime'],
                                    fields['location'],
                                    fields['languagesDropdown'],
-                                   conversation_id,
+                                   conversation_id, convthread_id,
                                    low_bandwidth,
                                    content_license_url,
                                    media_license_url,
@@ -827,6 +842,10 @@ def _receive_new_post_process_newdm(self, fields: {},
         if fields.get('conversationId'):
             conversation_id = fields['conversationId']
 
+        convthread_id = None
+        if fields.get('convthreadId'):
+            convthread_id = fields['convthreadId']
+
         languages_understood = \
             get_understood_languages(base_dir, http_prefix,
                                      nickname, domain_full,
@@ -871,7 +890,7 @@ def _receive_new_post_process_newdm(self, fields: {},
                                        fields['eventEndTime'],
                                        fields['location'],
                                        fields['languagesDropdown'],
-                                       conversation_id,
+                                       conversation_id, convthread_id,
                                        low_bandwidth,
                                        dm_license_url,
                                        media_license_url,
@@ -993,6 +1012,7 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
     client_to_server = False
     comments_enabled = False
     conversation_id = None
+    convthread_id = None
     mentions_message = mentions_str + fields['message']
     languages_understood = \
         get_understood_languages(base_dir, http_prefix,
@@ -1024,7 +1044,7 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                    fields['eventEndTime'],
                                    fields['location'],
                                    fields['languagesDropdown'],
-                                   conversation_id,
+                                   conversation_id, convthread_id,
                                    low_bandwidth,
                                    dm_license_url,
                                    media_license_url,
@@ -1314,6 +1334,7 @@ def _receive_new_post_process_newreading(self, fields: {},
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
     conversation_id = None
+    convthread_id = None
     languages_understood = \
         get_understood_languages(base_dir, http_prefix,
                                  nickname, domain_full,
@@ -1341,7 +1362,7 @@ def _receive_new_post_process_newreading(self, fields: {},
                             fields['eventEndTime'],
                             fields['location'], False,
                             fields['languagesDropdown'],
-                            conversation_id,
+                            conversation_id, convthread_id,
                             low_bandwidth,
                             content_license_url,
                             media_license_url, media_creator,

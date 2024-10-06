@@ -1241,12 +1241,12 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
     if post_json_obj.get('conversation'):
         mute_conversation(base_dir, nickname, domain,
                           post_json_obj['conversation'])
-    elif post_json_obj.get('thread'):
-        mute_conversation(base_dir, nickname, domain,
-                          post_json_obj['thread'])
     elif post_json_obj.get('context'):
         mute_conversation(base_dir, nickname, domain,
                           post_json_obj['context'])
+    elif post_json_obj.get('thread'):
+        mute_conversation(base_dir, nickname, domain,
+                          post_json_obj['thread'])
 
     # does this post have ignores on it from differenent actors?
     if not post_json_obj.get('ignores'):
@@ -1390,12 +1390,12 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
     if post_json_obj.get('conversation'):
         unmute_conversation(base_dir, nickname, domain,
                             post_json_obj['conversation'])
-    elif post_json_obj.get('thread'):
-        unmute_conversation(base_dir, nickname, domain,
-                            post_json_obj['thread'])
     elif post_json_obj.get('context'):
         unmute_conversation(base_dir, nickname, domain,
                             post_json_obj['context'])
+    elif post_json_obj.get('thread'):
+        unmute_conversation(base_dir, nickname, domain,
+                            post_json_obj['thread'])
 
     if post_json_obj.get('ignores'):
         domain_full = get_full_domain(domain, port)

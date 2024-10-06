@@ -220,6 +220,7 @@ def _send_reply_to_question(self, base_dir: str,
     event_end_time = None
     location = None
     conversation_id = None
+    convthread_id = None
     buy_url = ''
     chat_url = ''
     city = get_spoofed_city(city_name, base_dir, nickname, domain)
@@ -251,7 +252,7 @@ def _send_reply_to_question(self, base_dir: str,
                                        event_end_time,
                                        location,
                                        system_language,
-                                       conversation_id,
+                                       conversation_id, convthread_id,
                                        low_bandwidth,
                                        dm_license_url,
                                        content_license_url, '',

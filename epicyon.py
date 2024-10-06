@@ -203,6 +203,10 @@ def _command_options() -> None:
                         default=None,
                         help='Conversation Id which can be added ' +
                         'when sending a post')
+    parser.add_argument('--convthreadId', dest='convthreadId', type=str,
+                        default=None,
+                        help='Conversation thread Id which can be added ' +
+                        'when sending a post')
     parser.add_argument('--libretranslateApiKey',
                         dest='libretranslateApiKey', type=str,
                         default=None,
@@ -1866,7 +1870,8 @@ def _command_options() -> None:
                              argb.eventDate, argb.eventTime, argb.eventEndTime,
                              argb.eventLocation, translate, argb.buyUrl,
                              argb.chatUrl, auto_cw_cache, argb.debug,
-                             reply_to, reply_to, argb.conversationId, subject)
+                             reply_to, reply_to, argb.conversationId,
+                             argb.convthreadId, subject)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3635,6 +3640,7 @@ def _command_options() -> None:
         test_location = None
         test_is_article = False
         conversation_id = None
+        convthread_id = None
         low_bandwidth = False
         languages_understood = [argb.language]
         translate = {}
@@ -3656,6 +3662,7 @@ def _command_options() -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
+                           convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3673,6 +3680,7 @@ def _command_options() -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
+                           convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3690,6 +3698,7 @@ def _command_options() -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
+                           convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3707,6 +3716,7 @@ def _command_options() -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
+                           convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3725,6 +3735,7 @@ def _command_options() -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
+                           convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3742,6 +3753,7 @@ def _command_options() -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
+                           convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3759,6 +3771,7 @@ def _command_options() -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
+                           convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3776,6 +3789,7 @@ def _command_options() -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, argb.language, conversation_id,
+                           convthread_id,
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,

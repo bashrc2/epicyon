@@ -1346,6 +1346,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     event_end_time = None
     location = None
     conversation_id = None
+    convthread_id = None
     low_bandwidth = False
     buy_url = ''
     chat_url = ''
@@ -1361,6 +1362,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    subject, debug, schedule_post,
                                    event_date, event_time, event_end_time,
                                    location, system_language, conversation_id,
+                                   convthread_id,
                                    low_bandwidth, dm_license_url,
                                    dm_license_url, '',
                                    languages_understood, bounce_is_chat,
@@ -1537,10 +1539,10 @@ def _create_reply_notification_file(base_dir: str, nickname: str, domain: str,
     conversation_id = None
     if post_json_object['object'].get('conversation'):
         conversation_id = post_json_object['object']['conversation']
-    elif post_json_object['object'].get('thread'):
-        conversation_id = post_json_object['object']['thread']
     elif post_json_object['object'].get('context'):
         conversation_id = post_json_object['object']['context']
+    elif post_json_object['object'].get('thread'):
+        conversation_id = post_json_object['object']['thread']
 
     in_reply_to = get_reply_to(post_json_object['object'])
     if not in_reply_to:

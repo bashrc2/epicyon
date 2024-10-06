@@ -799,6 +799,7 @@ def create_server_alice(path: str, domain: str, port: int,
         test_location = None
         test_is_article = False
         conversation_id = None
+        convthread_id = None
         translate = {}
         content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
         media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
@@ -821,6 +822,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -839,6 +841,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -858,6 +861,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -990,6 +994,7 @@ def create_server_bob(path: str, domain: str, port: int,
         test_location = None
         test_is_article = False
         conversation_id = None
+        convthread_id = None
         content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
         media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
         media_creator = 'Hamster'
@@ -1012,6 +1017,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -1031,6 +1037,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -1049,6 +1056,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3080,6 +3088,7 @@ def _test_create_person_account(base_dir: str):
     attach_image_filename = None
     media_type = None
     conversation_id = None
+    convthread_id = None
     low_bandwidth = True
     translate = {}
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
@@ -3104,6 +3113,7 @@ def _test_create_person_account(base_dir: str):
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3132,6 +3142,7 @@ def _test_create_person_account(base_dir: str):
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -3309,6 +3320,7 @@ def test_client_to_server(base_dir: str):
     person_cache = {}
     password = 'alicepass'
     conversation_id = None
+    convthread_id = None
 
     alice_inbox_path = \
         data_dir(alice_dir) + '/alice@' + alice_domain + '/inbox'
@@ -3358,7 +3370,8 @@ def test_client_to_server(base_dir: str):
                              media_license_url, media_creator,
                              event_date, event_time, event_end_time, location,
                              translate, buy_url, chat_url, auto_cw_cache,
-                             True, None, None, conversation_id, None)
+                             True, None, None, conversation_id, convthread_id,
+                             None)
     print('send_result: ' + str(send_result))
 
     for _ in range(30):
@@ -4982,6 +4995,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     test_location = None
     test_is_article = False
     conversation_id = None
+    convthread_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
@@ -5003,6 +5017,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -6026,6 +6041,7 @@ def _test_links_within_post(base_dir: str) -> None:
     test_location = None
     test_is_article = False
     conversation_id = None
+    convthread_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
@@ -6047,6 +6063,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -6093,6 +6110,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -6117,6 +6135,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -7212,6 +7231,7 @@ def _test_can_replyto(base_dir: str) -> None:
     test_location = None
     test_is_article = False
     conversation_id = None
+    convthread_id = None
     low_bandwidth = True
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
@@ -7233,6 +7253,7 @@ def _test_can_replyto(base_dir: str) -> None:
                            test_event_date, test_event_time,
                            test_event_end_time, test_location,
                            test_is_article, system_language, conversation_id,
+                           convthread_id,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
@@ -9044,7 +9065,7 @@ def _test_bridgy() -> None:
 
 
 def _test_conversation_to_convthread() -> None:
-    print('conversation to thread')
+    print('conversation to convthread')
     domain = 'the.domain.of.last.resort'
     conversation_id = \
         'tag:' + domain + \

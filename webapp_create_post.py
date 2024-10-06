@@ -249,7 +249,7 @@ def html_new_post(edit_post_params: {},
                   default_timeline: str, newswire: {},
                   theme: str, no_drop_down: bool,
                   access_keys: {}, custom_submit_text: str,
-                  conversation_id: str,
+                  conversation_id: str, convthread_id: str,
                   recent_posts_cache: {}, max_recent_posts: int,
                   session, cached_webfingers: {},
                   person_cache: {}, port: int,
@@ -300,10 +300,11 @@ def html_new_post(edit_post_params: {},
         # be referred to as a thread or (confusingly) "context"
         if edited_post_json['object'].get('conversation'):
             conversation_id = edited_post_json['object']['conversation']
-        elif edited_post_json['object'].get('thread'):
-            conversation_id = edited_post_json['object']['thread']
         elif edited_post_json['object'].get('context'):
             conversation_id = edited_post_json['object']['context']
+
+        if edited_post_json['object'].get('thread'):
+            convthread_id = edited_post_json['object']['thread']
 
         if edit_post_params.get('replyTo'):
             in_reply_to = edit_post_params['replyTo']
@@ -1125,6 +1126,13 @@ def html_new_post(edit_post_params: {},
             dropdown_unlisted_suffix += '?conversationId=' + conversation_id
             dropdown_followers_suffix += '?conversationId=' + conversation_id
             dropdown_dm_suffix += '?conversationId=' + conversation_id
+    if convthread_id and in_reply_to:
+        if isinstance(convthread_id, str):
+            dropdown_new_post_suffix += '?convthreadId=' + convthread_id
+            dropdown_new_blog_suffix += '?convthreadId=' + convthread_id
+            dropdown_unlisted_suffix += '?convthreadId=' + convthread_id
+            dropdown_followers_suffix += '?convthreadId=' + convthread_id
+            dropdown_dm_suffix += '?convthreadId=' + convthread_id
 
     drop_down_content = ''
     if not report_url and not share_description:

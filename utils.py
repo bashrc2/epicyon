@@ -2493,10 +2493,10 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/conversation'
     if post_json_object['object'].get('conversation'):
         conversation_id = post_json_object['object']['conversation']
-    elif post_json_object['object'].get('thread'):
-        conversation_id = post_json_object['object']['thread']
-    else:
+    elif post_json_object['object'].get('context'):
         conversation_id = post_json_object['object']['context']
+    else:
+        conversation_id = post_json_object['object']['thread']
     if not isinstance(conversation_id, str):
         return False
     conversation_id = conversation_id.replace('/', '#')

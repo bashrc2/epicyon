@@ -4011,11 +4011,16 @@ def daemon_http_get(self) -> None:
     reply_category = ''
     share_description = None
     conversation_id = None
+    convthread_id = None
     if html_getreq:
         if '?conversationId=' in self.path:
             conversation_id = self.path.split('?conversationId=')[1]
             if '?' in conversation_id:
                 conversation_id = conversation_id.split('?')[0]
+        if '?convthreadId=' in self.path:
+            convthread_id = self.path.split('?convthreadId=')[1]
+            if '?' in convthread_id:
+                convthread_id = convthread_id.split('?')[0]
         # public reply
         if '?replyto=' in self.path:
             in_reply_to_url = self.path.split('?replyto=')[1]
@@ -4306,6 +4311,7 @@ def daemon_http_get(self) -> None:
                          self.server.domain_full,
                          getreq_start_time,
                          cookie, no_drop_down, conversation_id,
+                         convthread_id,
                          curr_session,
                          self.server.default_reply_interval_hrs,
                          self.server.debug,

@@ -932,6 +932,7 @@ def _person_options_dm(self, options_confirm_params: str,
 
         custom_submit_text = get_config_param(base_dir, 'customSubmitText')
         conversation_id = None
+        convthread_id = None
         reply_is_chat = False
 
         bold_reading = False
@@ -964,7 +965,7 @@ def _person_options_dm(self, options_confirm_params: str,
                           theme_name,
                           True, access_keys,
                           custom_submit_text,
-                          conversation_id,
+                          conversation_id, convthread_id,
                           recent_posts_cache,
                           max_recent_posts,
                           curr_session,
@@ -1165,6 +1166,7 @@ def _person_options_report(self, options_confirm_params: str,
 
         custom_submit_text = get_config_param(base_dir, 'customSubmitText')
         conversation_id = None
+        convthread_id = None
         reply_is_chat = False
 
         bold_reading = False
@@ -1196,7 +1198,7 @@ def _person_options_report(self, options_confirm_params: str,
                           theme_name,
                           True, access_keys,
                           custom_submit_text,
-                          conversation_id,
+                          conversation_id, convthread_id,
                           recent_posts_cache,
                           max_recent_posts,
                           curr_session,

@@ -660,6 +660,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         video_transcript = None
         city = 'London, England'
         conversation_id = None
+        convthread_id = None
         languages_understood = [system_language]
         buy_url = ''
         chat_url = ''
@@ -670,7 +671,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                 attach_image_filename, media_type,
                                 image_description, video_transcript,
                                 city, rss_title, system_language,
-                                conversation_id, low_bandwidth,
+                                conversation_id, convthread_id, low_bandwidth,
                                 content_license_url,
                                 media_license_url, media_creator,
                                 languages_understood, translate,
