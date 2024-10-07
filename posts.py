@@ -1346,15 +1346,17 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         }
     }
 
-    # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
-    if convthread_id:
-        if isinstance(convthread_id, str):
-            new_post['object']['thread'] = convthread_id
-
     # is this a root post of a conversation?
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
     if conversation_root and not in_reply_to:
         new_post['object']['root'] = conversation_root
+        if not convthread_id:
+            convthread_id = post_id_to_convthread_id(new_post_id, published)
+
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
+    if convthread_id:
+        if isinstance(convthread_id, str):
+            new_post['object']['thread'] = convthread_id
 
     # pixelfed/friendica style location representation
     location = get_location_dict_from_tags(tags)
@@ -1466,15 +1468,17 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         "crawlable": False
     }
 
-    # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
-    if convthread_id:
-        if isinstance(convthread_id, str):
-            new_post['thread'] = convthread_id
-
     # is this a root post of a conversation?
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
     if conversation_root and not in_reply_to:
         new_post['root'] = conversation_root
+        if not convthread_id:
+            convthread_id = post_id_to_convthread_id(new_post_id, published)
+
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
+    if convthread_id:
+        if isinstance(convthread_id, str):
+            new_post['thread'] = convthread_id
 
     # pixelfed/friendica style location representation
     location = get_location_dict_from_tags(tags)
