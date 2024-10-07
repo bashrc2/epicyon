@@ -31,6 +31,7 @@ VALID_CONTEXTS = (
 
 def get_individual_post_context() -> []:
     """Returns the context for an individual post
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
     """
     return [
         'https://www.w3.org/ns/activitystreams',
@@ -42,7 +43,16 @@ def get_individual_post_context() -> []:
             "sensitive": "as:sensitive",
             "toot": "http://joinmastodon.org/ns#",
             "votersCount": "toot:votersCount",
-            "blurhash": "toot:blurhash"
+            "blurhash": "toot:blurhash",
+            "thr": "https://purl.archive.org/socialweb/thread#",
+            "thread": {
+                "@id": "thr:thread",
+                "@type": "@id"
+            },
+            "root": {
+                "@id": "thr:root",
+                "@type": "@id"
+            }
         }
     ]
 
