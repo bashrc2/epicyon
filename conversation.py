@@ -129,8 +129,9 @@ def unmute_conversation(base_dir: str, nickname: str, domain: str,
 def _get_replies_to_post(post_json_object: {},
                          signing_priv_key_pem: str,
                          session, as_header, debug: bool,
-                         http_prefix: str, domain: str,
-                         depth: int, ids: []) -> []:
+                         http_prefix: str,
+                         base_dir: str, nickname: str,
+                         domain: str, depth: int, ids: []) -> []:
     """Returns a list of reply posts to the given post as json
     """
     result = []
@@ -271,13 +272,17 @@ def _get_replies_to_post(post_json_object: {},
             # add it to the list
             result.append(item)
 
+            update_conversation(base_dir, nickname, domain,
+                                item)
+
             if depth < 10 and reply_post_id:
                 result += \
                     _get_replies_to_post(item,
                                          signing_priv_key_pem,
                                          session, as_header,
                                          debug,
-                                         http_prefix, domain,
+                                         http_prefix, base_dir,
+                                         nickname, domain,
                                          depth + 1, ids)
     return result
 
@@ -313,6 +318,10 @@ def download_conversation_posts(authorized: bool, session,
         if not get_json_valid(post_json_object):
             print(post_id + ' returned no json')
 
+    if post_json_object:
+        update_conversation(base_dir, nickname, domain,
+                            post_json_object)
+
     # get any replies
     replies_to_post = []
     if get_json_valid(post_json_object):
@@ -320,7 +329,8 @@ def download_conversation_posts(authorized: bool, session,
             _get_replies_to_post(post_json_object,
                                  signing_priv_key_pem,
                                  session, as_header, debug,
-                                 http_prefix, domain, 0, [])
+                                 http_prefix, base_dir, nickname,
+                                 domain, 0, [])
 
     ids = []
     while get_json_valid(post_json_object):
@@ -386,6 +396,10 @@ def download_conversation_posts(authorized: bool, session,
         harmless_markup(post_json_object)
 
         conversation_view = [post_json_object] + conversation_view
+
+        update_conversation(base_dir, nickname, domain,
+                            post_json_object)
+
         if not authorized:
             # only show a single post to non-authorized viewers
             break
@@ -406,8 +420,9 @@ def download_conversation_posts(authorized: bool, session,
                     get_json(signing_priv_key_pem, session, post_id,
                              as_header, None, debug, __version__,
                              http_prefix, domain)
+
         if debug:
-            if not get_json_valid(post_json_object):
+            if get_json_valid(post_json_object):
                 print(post_id + ' returned no json')
 
     return conversation_view + replies_to_post
