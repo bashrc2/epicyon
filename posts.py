@@ -1281,10 +1281,15 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
     new_post_attributed_to = \
         local_actor_url(http_prefix, nickname, domain)
+    conversation_root = ''
+    if new_post_id == conversation_id:
+        conversation_root = new_post_id
     if not conversation_id:
         conversation_id = post_id_to_convthread_id(new_post_id, published)
+        conversation_root = new_post_id
     if not isinstance(conversation_id, str):
         conversation_id = post_id_to_convthread_id(new_post_id, published)
+        conversation_root = new_post_id
     if conversation_id.startswith('tag:'):
         new_convthread_id = conversation_tag_to_convthread_id(conversation_id)
         if new_convthread_id:
@@ -1346,6 +1351,11 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         if isinstance(convthread_id, str):
             new_post['object']['thread'] = convthread_id
 
+    # is this a root post of a conversation?
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
+    if conversation_root and not in_reply_to:
+        new_post['object']['root'] = conversation_root
+
     # pixelfed/friendica style location representation
     location = get_location_dict_from_tags(tags)
     if location:
@@ -1400,10 +1410,15 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         '/statuses/' + status_number + '/replies'
     new_post_url = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
+    conversation_root = ''
+    if new_post_id == conversation_id:
+        conversation_root = new_post_id
     if not conversation_id:
         conversation_id = post_id_to_convthread_id(new_post_id, published)
+        conversation_root = new_post_id
     if not isinstance(conversation_id, str):
         conversation_id = post_id_to_convthread_id(new_post_id, published)
+        conversation_root = new_post_id
     if conversation_id.startswith('tag:'):
         new_convthread_id = conversation_tag_to_convthread_id(conversation_id)
         if new_convthread_id:
@@ -1455,6 +1470,11 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
     if convthread_id:
         if isinstance(convthread_id, str):
             new_post['thread'] = convthread_id
+
+    # is this a root post of a conversation?
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
+    if conversation_root and not in_reply_to:
+        new_post['root'] = conversation_root
 
     # pixelfed/friendica style location representation
     location = get_location_dict_from_tags(tags)
