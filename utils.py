@@ -3304,6 +3304,8 @@ def update_announce_collection(recent_posts_cache: {},
                                  post_json_object)
     if cached_post_filename:
         if os.path.isfile(cached_post_filename):
+            print('update_announce_collection: removing ' +
+                  cached_post_filename)
             try:
                 os.remove(cached_post_filename)
             except OSError:
