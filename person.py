@@ -1732,12 +1732,12 @@ def get_person_notes_endpoint(base_dir: str, nickname: str, domain: str,
             notes_text = get_person_notes(base_dir, nickname, domain, handle2)
             if not notes_text:
                 continue
-            notes_json['items'] += {
+            notes_json['items'].append({
                 "id": actor + "/private_account_notes/" + handle2,
                 "type": "Annotation",
                 "bodyValue": notes_text,
                 "target": handle2
-            }
+            })
         break
     return notes_json
 
