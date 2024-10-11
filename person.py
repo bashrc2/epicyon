@@ -1703,6 +1703,45 @@ def get_person_notes(base_dir: str, nickname: str, domain: str,
     return person_notes
 
 
+def get_person_notes_endpoint(base_dir: str, nickname: str, domain: str,
+                              handle: str,
+                              http_prefix: str, domain_full: str) -> {}:
+    """Returns a json endpoint for account notes, for use by c2s
+    """
+    actor = local_actor_url(http_prefix, nickname, domain_full)
+    notes_json = {
+        "@context": "http://www.w3.org/ns/anno.jsonld",
+        "id": actor + "/private_account_notes",
+        "type": "AnnotationCollection",
+        "items": []
+    }
+    dir_str = acct_dir(base_dir, nickname, domain) + '/notes'
+    if not os.path.isdir(dir_str):
+        return notes_json
+    handle_txt = ''
+    if handle:
+        handle_txt = handle + '.txt'
+    for _, _, files in os.walk(dir_str):
+        for filename in files:
+            if not filename.endswith('.txt'):
+                continue
+            if handle:
+                if filename != handle_txt:
+                    continue
+            handle2 = filename.replace('.txt', '')
+            notes_text = get_person_notes(base_dir, nickname, domain, handle2)
+            if not notes_text:
+                continue
+            notes_json['items'] += {
+                "id": actor + "/private_account_notes/" + handle2,
+                "type": "Annotation",
+                "bodyValue": notes_text,
+                "target": handle2
+            }
+        break
+    return notes_json
+
+
 def _detect_users_path(url: str) -> str:
     """Tries to detect the /users/ path
     """

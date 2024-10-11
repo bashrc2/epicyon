@@ -112,6 +112,7 @@ from utils import get_json_content_from_accept
 from utils import check_bad_path
 from utils import corp_servers
 from utils import decoded_host
+from person import get_person_notes_endpoint
 from person import get_account_pub_key
 from shares import actor_attached_shares
 from shares import get_share_category
@@ -656,6 +657,32 @@ def daemon_http_get(self) -> None:
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'isAuthorized',
                         self.server.debug)
+
+    # json endpoint for person options notes
+    if (authorized and
+        ('/private_account_notes/' in self.path or
+         self.path.endswith('/private_account_notes'))):
+        nickname = get_nickname_from_actor(self.path)
+        handle = ''
+        if '/private_account_notes/' in self.path:
+            handle = self.path.split('/private_account_notes/', 1)[1]
+        if nickname:
+            notes_json = \
+                get_person_notes_endpoint(self.server.base_dir,
+                                          nickname,
+                                          self.server.domain,
+                                          handle,
+                                          self.server.http_prefix,
+                                          self.server.domain_full)
+            msg_str = json.dumps(notes_json)
+            msg = msg_str.encode('utf-8')
+            msglen = len(msg)
+            set_headers(self, 'application/json', msglen,
+                        None, calling_domain, True)
+            write2(self, msg)
+            return
+        http_404(self, 212)
+        return
 
     if authorized and self.path.endswith('/bots.txt'):
         known_bots_str = ''
