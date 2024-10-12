@@ -576,6 +576,8 @@ def _desktop_reply_to_post(session, post_id: str,
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
+    # TODO searchable status
+    searchable_by = []
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -592,7 +594,8 @@ def _desktop_reply_to_post(session, post_id: str,
                             event_date, event_time, event_end_time, location,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, post_id, post_id,
-                            conversation_id, convthread_id, subject) == 0:
+                            conversation_id, convthread_id, subject,
+                            searchable_by) == 0:
         say_str = translate['Sent']
     else:
         say_str = translate['Post failed']
@@ -659,6 +662,8 @@ def _desktop_new_post(session,
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
+    # TODO searchable status
+    searchable_by = []
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -674,7 +679,8 @@ def _desktop_new_post(session,
                             event_date, event_time, event_end_time, location,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
-                            conversation_id, convthread_id, subject) == 0:
+                            conversation_id, convthread_id, subject,
+                            searchable_by) == 0:
         say_str = translate['Sent']
     else:
         say_str = translate['Post failed']
@@ -1476,6 +1482,8 @@ def _desktop_new_dm_base(session, to_handle: str,
 
     say_str = 'Sending'
     auto_cw_cache = {}
+    # TODO searchable status
+    searchable_by = []
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -1491,7 +1499,8 @@ def _desktop_new_dm_base(session, to_handle: str,
                             event_date, event_time, event_end_time, location,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
-                            conversation_id, convthread_id, subject) == 0:
+                            conversation_id, convthread_id, subject,
+                            searchable_by) == 0:
         say_str = translate['Sent']
     else:
         say_str = translate['Post failed']

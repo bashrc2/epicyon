@@ -808,6 +808,7 @@ def create_server_alice(path: str, domain: str, port: int,
         chat_url = ''
         auto_cw_cache = {}
         test_video_transcript = ''
+        searchable_by = []
         create_public_post(path, nickname, domain, port, http_prefix,
                            "No wise fish would go anywhere without a porpoise",
                            test_save_to_file,
@@ -826,7 +827,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Curiouser and curiouser!",
                            test_save_to_file,
@@ -845,7 +846,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "In the gardens of memory, in the palace " +
                            "of dreams, that is where you and I shall meet",
@@ -865,7 +866,7 @@ def create_server_alice(path: str, domain: str, port: int,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_ALICE_RUNNING
     TEST_SERVER_ALICE_RUNNING = True
@@ -1003,6 +1004,7 @@ def create_server_bob(path: str, domain: str, port: int,
         chat_url = ''
         auto_cw_cache = {}
         test_video_transcript = ''
+        searchable_by = []
         create_public_post(path, nickname, domain, port, http_prefix,
                            "It's your life, live it your way.",
                            test_save_to_file,
@@ -1021,7 +1023,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "One of the things I've realised is that " +
                            "I am very simple",
@@ -1041,7 +1043,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
         create_public_post(path, nickname, domain, port, http_prefix,
                            "Quantum physics is a bit of a passion of mine",
                            test_save_to_file,
@@ -1060,7 +1062,7 @@ def create_server_bob(path: str, domain: str, port: int,
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_BOB_RUNNING
     TEST_SERVER_BOB_RUNNING = True
@@ -1467,6 +1469,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     buy_url = ''
     chat_url = ''
     auto_cw_cache = {}
+    searchable_by = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -1484,7 +1487,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, media_license_url, media_creator,
                   translate, buy_url, chat_url, auto_cw_cache, True,
-                  in_reply_to, in_reply_to_atom_uri, subject)
+                  in_reply_to, in_reply_to_atom_uri, subject,
+                  searchable_by)
     print('send_result: ' + str(send_result))
 
     queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
@@ -1864,6 +1868,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
+    searchable_by = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -1878,7 +1883,8 @@ def test_follow_between_servers(base_dir: str) -> None:
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, media_license_url, media_creator,
                   translate, buy_url, chat_url, auto_cw_cache, True,
-                  in_reply_to, in_reply_to_atom_uri, subject)
+                  in_reply_to, in_reply_to_atom_uri, subject,
+                  searchable_by)
     print('send_result: ' + str(send_result))
 
     queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
@@ -2263,6 +2269,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
+    searchable_by = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -2277,7 +2284,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, media_license_url, media_creator,
                   translate, buy_url, chat_url, auto_cw_cache, True,
-                  in_reply_to, in_reply_to_atom_uri, subject)
+                  in_reply_to, in_reply_to_atom_uri, subject,
+                  searchable_by)
     print('send_result: ' + str(send_result))
 
     queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
@@ -2704,6 +2712,7 @@ def test_group_follow(base_dir: str) -> None:
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
+    searchable_by = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -2718,7 +2727,8 @@ def test_group_follow(base_dir: str) -> None:
                   alice_shared_item_federation_tokens, low_bandwidth,
                   content_license_url, media_license_url, media_creator,
                   translate, buy_url, chat_url, auto_cw_cache, True,
-                  in_reply_to, in_reply_to_atom_uri, subject)
+                  in_reply_to, in_reply_to_atom_uri, subject,
+                  searchable_by)
     print('send_result: ' + str(send_result))
 
     for _ in range(20):
@@ -3102,6 +3112,7 @@ def _test_create_person_account(base_dir: str):
     buy_url = ''
     chat_url = ''
     auto_cw_cache = {}
+    searchable_by = []
     test_post_json = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
@@ -3117,7 +3128,7 @@ def _test_create_person_account(base_dir: str):
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
     assert test_post_json
     assert test_post_json.get('object')
     assert test_post_json['object']['content']
@@ -3146,7 +3157,7 @@ def _test_create_person_account(base_dir: str):
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
     assert test_post_json
     assert test_post_json.get('object')
     assert test_post_json['object']['content']
@@ -3355,6 +3366,7 @@ def test_client_to_server(base_dir: str):
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
+    searchable_by = []
     send_result = \
         send_post_via_server(signing_priv_key_pem, __version__,
                              alice_dir, session_alice, 'alice', password,
@@ -3371,7 +3383,7 @@ def test_client_to_server(base_dir: str):
                              event_date, event_time, event_end_time, location,
                              translate, buy_url, chat_url, auto_cw_cache,
                              True, None, None, conversation_id, convthread_id,
-                             None)
+                             None, searchable_by)
     print('send_result: ' + str(send_result))
 
     for _ in range(30):
@@ -5005,6 +5017,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     chat_url = ''
     auto_cw_cache = {}
     video_transcript = ''
+    searchable_by = []
     reply = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            content, save_to_file,
@@ -5021,7 +5034,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
     # print(str(reply))
     expected_str = \
         '<p><span class=\"h-card\">' + \
@@ -6051,6 +6064,7 @@ def _test_links_within_post(base_dir: str) -> None:
     chat_url = ''
     auto_cw_cache = {}
     video_transcript = ''
+    searchable_by = []
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
@@ -6067,7 +6081,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
 
     expected_str = \
         '<p>This is a test post with links.<br><br>' + \
@@ -6114,7 +6128,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
     assert post_json_object['object']['content'] == content
     assert post_json_object['object']['contentMap'][system_language] == content
 
@@ -6139,7 +6153,7 @@ def _test_links_within_post(base_dir: str) -> None:
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
     if post_json_object['object']['content'] != content:
         print('content1: ' + post_json_object['object']['content'])
         print('content2: ' + content)
@@ -7241,6 +7255,7 @@ def _test_can_replyto(base_dir: str) -> None:
     chat_url = ''
     auto_cw_cache = {}
     video_transcript = ''
+    searchable_by = []
 
     post_json_object = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
@@ -7257,7 +7272,7 @@ def _test_can_replyto(base_dir: str) -> None:
                            low_bandwidth, content_license_url,
                            media_license_url, media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache)
+                           auto_cw_cache, searchable_by)
     # set the date on the post
     curr_date_str = "2021-09-08T20:45:00Z"
     post_json_object['published'] = curr_date_str
