@@ -965,6 +965,8 @@ def html_new_post(edit_post_params: {},
                 replies_section += \
                     '<input type="hidden" name="commentsEnabled" ' + \
                     'value="true">\n'
+
+            # Language used dropdown
             supported_languages = get_supported_languages(base_dir)
             languages_dropdown = '<select id="themeDropdown" ' + \
                 'name="languagesDropdown" class="theme">'
@@ -986,6 +988,32 @@ def html_new_post(edit_post_params: {},
                 '      <label class="labels">' + \
                 translate['Language used'] + '</label>\n'
             replies_section += languages_dropdown
+
+            # searchable by dropdown
+            searchables = {
+                'yourself': translate['Yourself'],
+                'public': translate['Public'],
+                'followers': translate['Followers'],
+                'mutuals': translate['Mutuals']
+            }
+            searchable_by_dropdown = '<select id="themeDropdown" ' + \
+                'name="searchableByDropdown" class="theme">'
+            searchable_by_default = 'yourself'
+            for srch, srch_text in searchables.items():
+                if srch != searchable_by_default:
+                    searchable_by_dropdown += \
+                        '    <option value="' + srch + '">' + \
+                        srch_text + '</option>'
+                else:
+                    searchable_by_dropdown += \
+                        '    <option value="' + srch + '" selected="">' + \
+                        srch_text + '</option>'
+            replies_section += \
+                '      <label class="labels">🔎 ' + \
+                translate['Searchable by'] + '</label>\n'
+            replies_section += searchable_by_dropdown
+
+            # buy link
             buy_link_str = translate['Buy link']
             replies_section += edit_text_field(buy_link_str, 'buyUrl',
                                                default_buy_site, 'https://...')
