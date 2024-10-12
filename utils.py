@@ -3015,6 +3015,22 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
     return res
 
 
+def _get_mutuals_of_person(base_dir: str,
+                           nickname: str, domain: str) -> []:
+    """Returns the mutuals of a person
+    i.e. accounts which they follow and which also follow back
+    """
+    followers = \
+        get_followers_list(base_dir, nickname, domain, 'followers.txt')
+    following = \
+        get_followers_list(base_dir, nickname, domain, 'following.txt')
+    mutuals = []
+    for handle in following:
+        if handle in followers:
+            mutuals.append(handle)
+    return mutuals
+
+
 def search_box_posts(base_dir: str, nickname: str, domain: str,
                      search_str: str, max_results: int,
                      box_name='outbox') -> []:
@@ -3038,21 +3054,66 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     else:
         search_words = [search_str]
 
+    mutuals_list = []
+    check_searchable_by = False
+    if box_name == 'inbox':
+        check_searchable_by = True
+        # create a string containing all of the mutuals
+        mutuals_list = _get_mutuals_of_person(base_dir, nickname, domain)
+
     res = []
     for root, _, fnames in os.walk(path):
         for fname in fnames:
             file_path = os.path.join(root, fname)
             try:
                 with open(file_path, 'r', encoding='utf-8') as fp_post:
-                    data = fp_post.read().lower()
+                    data = fp_post.read()
+                    data_lower = data.lower()
 
                     not_found = False
                     for keyword in search_words:
-                        if keyword not in data:
+                        if keyword not in data_lower:
                             not_found = True
                             break
                     if not_found:
                         continue
+
+                    # if this is not an outbox/bookmarks search then is the
+                    # post marked as being searchable?
+                    if check_searchable_by:
+                        if '"searchableBy":' not in data:
+                            continue
+                        searchable_by = \
+                            data.split('"searchableBy":')[1].strip()
+                        if searchable_by.startswith('['):
+                            searchable_by = searchable_by.split(']')[0]
+                        if '"' in searchable_by:
+                            searchable_by = searchable_by.split('"')[1]
+                        else:
+                            continue
+                        if '#Public' not in searchable_by and \
+                           '/followers' not in searchable_by:
+                            if '/mutuals' in searchable_by and mutuals_list:
+                                data_actor = \
+                                    searchable_by.split('/mutuals')[0]
+                                if '"' in data_actor:
+                                    data_actor = data_actor.split('"')[-1]
+                                if data_actor not in mutuals_list:
+                                    data_nickname = \
+                                        get_nickname_from_actor(data_actor)
+                                    data_domain, data_port = \
+                                        get_domain_from_actor(data_actor)
+                                    if not data_nickname or \
+                                       not data_domain:
+                                        continue
+                                    data_domain_full = \
+                                        get_full_domain(data_domain, data_port)
+                                    data_handle = \
+                                        data_nickname + '@' + data_domain_full
+                                    if data_handle not in mutuals_list:
+                                        continue
+                            else:
+                                continue
 
                     res.append(file_path)
                     if len(res) >= max_results:

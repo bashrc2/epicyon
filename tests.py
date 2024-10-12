@@ -5878,7 +5878,6 @@ def _test_functions():
         'thread_send_post',
         'send_to_followers',
         'expire_cache',
-        'get_mutuals_of_person',
         'run_posts_queue',
         'run_shares_expire',
         'run_posts_watchdog',

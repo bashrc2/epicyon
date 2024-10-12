@@ -17,7 +17,6 @@ from utils import has_object_string_type
 from utils import remove_domain_port
 from utils import has_users_path
 from utils import get_full_domain
-from utils import get_followers_list
 from utils import valid_nickname
 from utils import domain_permitted
 from utils import get_domain_from_actor
@@ -211,22 +210,6 @@ def is_following_actor(base_dir: str,
     if text_in_file(following_handle, following_file, False):
         return True
     return False
-
-
-def get_mutuals_of_person(base_dir: str,
-                          nickname: str, domain: str) -> []:
-    """Returns the mutuals of a person
-    i.e. accounts which they follow and which also follow back
-    """
-    followers = \
-        get_followers_list(base_dir, nickname, domain, 'followers.txt')
-    following = \
-        get_followers_list(base_dir, nickname, domain, 'following.txt')
-    mutuals = []
-    for handle in following:
-        if handle in followers:
-            mutuals.append(handle)
-    return mutuals
 
 
 def add_follower_of_person(base_dir: str, nickname: str, domain: str,

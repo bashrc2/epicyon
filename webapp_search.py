@@ -730,6 +730,10 @@ def html_history_search(translate: {}, base_dir: str,
     box_filenames = \
         search_box_posts(base_dir, nickname, domain,
                          historysearch, posts_per_page, box_name)
+    if box_name == 'outbox':
+        box_filenames += \
+            search_box_posts(base_dir, nickname, domain,
+                             historysearch, posts_per_page, 'inbox')
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
