@@ -151,8 +151,6 @@ def _receive_new_post_process_newpost(self, fields: {},
     video_transcript = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
-    # TODO specify search
-    searchable_by = []
     message_json = \
         create_public_post(base_dir, nickname, domain,
                            port,
@@ -178,7 +176,8 @@ def _receive_new_post_process_newpost(self, fields: {},
                            languages_understood,
                            translate, buy_url,
                            chat_url,
-                           auto_cw_cache, searchable_by)
+                           auto_cw_cache,
+                           fields['searchableByDropdown'])
     if message_json:
         if edited_postid:
             update_edited_post(base_dir, nickname, domain,
@@ -311,8 +310,6 @@ def _receive_new_post_process_newblog(self, fields: {},
     video_transcript = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
-    # TODO searchable status
-    searchable_by = []
     message_json = \
         create_blog_post(base_dir, nickname,
                          domain, port, http_prefix,
@@ -335,7 +332,7 @@ def _receive_new_post_process_newblog(self, fields: {},
                          media_license_url, media_creator,
                          languages_understood,
                          translate, buy_url, chat_url,
-                         searchable_by)
+                         fields['searchableByDropdown'])
     if message_json:
         if fields['schedulePost']:
             return NEW_POST_SUCCESS
@@ -705,8 +702,6 @@ def _receive_new_post_process_newfollowers(self, fields: {},
     video_transcript = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
-    # TODO searchable status
-    searchable_by = []
     message_json = \
         create_followers_only_post(base_dir, nickname, domain,
                                    port, http_prefix,
@@ -736,7 +731,7 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                    translate,
                                    buy_url, chat_url,
                                    auto_cw_cache,
-                                   searchable_by)
+                                   fields['searchableByDropdown'])
     if message_json:
         if edited_postid:
             update_edited_post(base_dir,
@@ -1350,8 +1345,6 @@ def _receive_new_post_process_newreading(self, fields: {},
     city = get_spoofed_city(city, base_dir,
                             nickname, domain)
     msg_str = fields['readingupdatetype']
-    # TODO searchable status
-    searchable_by = []
     # reading status
     message_json = \
         create_reading_post(base_dir, nickname, domain,
@@ -1380,7 +1373,7 @@ def _receive_new_post_process_newreading(self, fields: {},
                             translate, buy_url,
                             chat_url,
                             auto_cw_cache,
-                            searchable_by)
+                            fields['searchableByDropdown'])
     if message_json:
         if edited_postid:
             update_edited_post(base_dir, nickname, domain,
@@ -1805,6 +1798,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               fields['languagesDropdown'])
     self.server.default_post_language[nickname] = \
         fields['languagesDropdown']
+    if not fields.get('searchableByDropdown'):
+        fields['searchableByDropdown'] = 'yourself'
 
     if not citations_button_press:
         # Store a file which contains the time in seconds
