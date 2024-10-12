@@ -1898,6 +1898,9 @@ def _create_post_base(base_dir: str,
     searchable_by_link = ''
     if searchable_by == 'public':
         searchable_by_link = "https://www.w3.org/ns/activitystreams#Public"
+    elif searchable_by == 'yourself':
+        searchable_by_link = \
+            local_actor_url(http_prefix, nickname, domain)
     elif searchable_by == 'followers':
         searchable_by_link = \
             local_actor_url(http_prefix, nickname, domain) + "/followers"
