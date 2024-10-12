@@ -30,6 +30,7 @@ from media import attach_media
 from city import get_spoofed_city
 from flags import is_image_file
 from flags import is_float
+from utils import set_searchable_by
 from utils import get_instance_url
 from utils import save_json
 from utils import remove_post_from_cache
@@ -151,6 +152,9 @@ def _receive_new_post_process_newpost(self, fields: {},
     video_transcript = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
+    if fields.get('searchableByDropdown'):
+        set_searchable_by(base_dir, nickname, domain,
+                          fields['searchableByDropdown'])
     message_json = \
         create_public_post(base_dir, nickname, domain,
                            port,
@@ -310,6 +314,9 @@ def _receive_new_post_process_newblog(self, fields: {},
     video_transcript = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
+    if fields.get('searchableByDropdown'):
+        set_searchable_by(base_dir, nickname, domain,
+                          fields['searchableByDropdown'])
     message_json = \
         create_blog_post(base_dir, nickname,
                          domain, port, http_prefix,
@@ -702,6 +709,9 @@ def _receive_new_post_process_newfollowers(self, fields: {},
     video_transcript = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
+    if fields.get('searchableByDropdown'):
+        set_searchable_by(base_dir, nickname, domain,
+                          fields['searchableByDropdown'])
     message_json = \
         create_followers_only_post(base_dir, nickname, domain,
                                    port, http_prefix,
@@ -1345,6 +1355,9 @@ def _receive_new_post_process_newreading(self, fields: {},
     city = get_spoofed_city(city, base_dir,
                             nickname, domain)
     msg_str = fields['readingupdatetype']
+    if fields.get('searchableByDropdown'):
+        set_searchable_by(base_dir, nickname, domain,
+                          fields['searchableByDropdown'])
     # reading status
     message_json = \
         create_reading_post(base_dir, nickname, domain,
@@ -1798,8 +1811,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               fields['languagesDropdown'])
     self.server.default_post_language[nickname] = \
         fields['languagesDropdown']
-    if not fields.get('searchableByDropdown'):
-        fields['searchableByDropdown'] = 'yourself'
+    if 'searchableByDropdown' not in fields:
+        fields['searchableByDropdown'] = []
 
     if not citations_button_press:
         # Store a file which contains the time in seconds
