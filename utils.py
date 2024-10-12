@@ -3031,6 +3031,26 @@ def _get_mutuals_of_person(base_dir: str,
     return mutuals
 
 
+def _actor_in_searchable_by(searchable_by: str, following_list: []) -> bool:
+    """Does the given actor within searchable_by exist within the given list?
+    """
+    data_actor = searchable_by.split('/followers')[0]
+
+    if '"' in data_actor:
+        data_actor = data_actor.split('"')[-1]
+
+    if data_actor not in following_list:
+        data_nickname = get_nickname_from_actor(data_actor)
+        data_domain, data_port = get_domain_from_actor(data_actor)
+        if not data_nickname or not data_domain:
+            return False
+        data_domain_full = get_full_domain(data_domain, data_port)
+        data_handle = data_nickname + '@' + data_domain_full
+        if data_handle not in following_list:
+            return False
+    return True
+
+
 def search_box_posts(base_dir: str, nickname: str, domain: str,
                      search_str: str, max_results: int,
                      box_name='outbox') -> []:
@@ -3054,11 +3074,15 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     else:
         search_words = [search_str]
 
+    following_list = []
     mutuals_list = []
     check_searchable_by = False
     if box_name == 'inbox':
         check_searchable_by = True
-        # create a string containing all of the mutuals
+        # create a list containing all of the handles followed
+        following_list = get_followers_list(base_dir, nickname, domain,
+                                            'following.txt')
+        # create a list containing all of the mutuals
         mutuals_list = _get_mutuals_of_person(base_dir, nickname, domain)
 
     res = []
@@ -3089,29 +3113,20 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
                             searchable_by = searchable_by.split(']')[0]
                         if '"' in searchable_by:
                             searchable_by = searchable_by.split('"')[1]
+                        elif "'" in searchable_by:
+                            searchable_by = searchable_by.split("'")[1]
                         else:
                             continue
-                        if '#Public' not in searchable_by and \
-                           '/followers' not in searchable_by:
-                            if '/mutuals' in searchable_by and mutuals_list:
-                                data_actor = \
-                                    searchable_by.split('/mutuals')[0]
-                                if '"' in data_actor:
-                                    data_actor = data_actor.split('"')[-1]
-                                if data_actor not in mutuals_list:
-                                    data_nickname = \
-                                        get_nickname_from_actor(data_actor)
-                                    data_domain, data_port = \
-                                        get_domain_from_actor(data_actor)
-                                    if not data_nickname or \
-                                       not data_domain:
-                                        continue
-                                    data_domain_full = \
-                                        get_full_domain(data_domain, data_port)
-                                    data_handle = \
-                                        data_nickname + '@' + data_domain_full
-                                    if data_handle not in mutuals_list:
-                                        continue
+                        if '#Public' not in searchable_by:
+                            if '/followers' in searchable_by and \
+                               following_list:
+                                if not _actor_in_searchable_by(searchable_by,
+                                                               following_list):
+                                    continue
+                            elif '/mutuals' in searchable_by and mutuals_list:
+                                if not _actor_in_searchable_by(searchable_by,
+                                                               mutuals_list):
+                                    continue
                             else:
                                 continue
 
