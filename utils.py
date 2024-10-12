@@ -3079,6 +3079,8 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     check_searchable_by = False
     if box_name == 'inbox':
         check_searchable_by = True
+        # https://codeberg.org/fediverse/fep/
+        # src/branch/main/fep/268d/fep-268d.md
         # create a list containing all of the handles followed
         following_list = get_followers_list(base_dir, nickname, domain,
                                             'following.txt')
@@ -3104,6 +3106,8 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
 
                     # if this is not an outbox/bookmarks search then is the
                     # post marked as being searchable?
+                    # https://codeberg.org/fediverse/fep/
+                    # src/branch/main/fep/268d/fep-268d.md
                     if check_searchable_by:
                         if '"searchableBy":' not in data:
                             continue

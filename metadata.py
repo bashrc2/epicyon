@@ -97,7 +97,7 @@ def meta_data_node_info(base_dir: str,
                             "text/markdown", "text/x.misskeymarkdown"],
             "FEPs": ["c648", "521a", "8fcf", "4ccd", "c118", "fffd",
                      "1970", "0837", "7628", "2677", "5e53", "c16b",
-                     "5e53"]
+                     "5e53", "268d"]
         }
     }
     return nodeinfo
