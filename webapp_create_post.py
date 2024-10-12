@@ -991,29 +991,30 @@ def html_new_post(edit_post_params: {},
             replies_section += languages_dropdown
 
             # searchable by dropdown
-            searchables = {
-                'yourself': translate['Yourself'],
-                'public': translate['Public'],
-                'followers': translate['Followers'],
-                'mutuals': translate['Mutuals']
-            }
-            searchable_by_dropdown = '<select id="themeDropdown" ' + \
-                'name="searchableByDropdown" class="theme">'
-            if not searchable_by_default:
-                searchable_by_default = 'yourself'
-            for srch, srch_text in searchables.items():
-                if srch != searchable_by_default:
-                    searchable_by_dropdown += \
-                        '    <option value="' + srch + '">' + \
-                        srch_text + '</option>'
-                else:
-                    searchable_by_dropdown += \
-                        '    <option value="' + srch + '" selected="">' + \
-                        srch_text + '</option>'
-            replies_section += \
-                '      <label class="labels">🔎 ' + \
-                translate['Searchable by'] + '</label>\n'
-            replies_section += searchable_by_dropdown
+            if endpoint != 'newdm':
+                searchables = {
+                    'yourself': translate['Yourself'],
+                    'public': translate['Public'],
+                    'followers': translate['Followers'],
+                    'mutuals': translate['Mutuals']
+                }
+                searchable_by_dropdown = '<select id="themeDropdown" ' + \
+                    'name="searchableByDropdown" class="theme">'
+                if not searchable_by_default:
+                    searchable_by_default = 'yourself'
+                for srch, srch_text in searchables.items():
+                    if srch != searchable_by_default:
+                        searchable_by_dropdown += \
+                            '    <option value="' + srch + '">' + \
+                            srch_text + '</option>'
+                    else:
+                        searchable_by_dropdown += \
+                            '    <option value="' + srch + '" selected="">' + \
+                            srch_text + '</option>'
+                replies_section += \
+                    '      <label class="labels">🔎 ' + \
+                    translate['Searchable by'] + '</label>\n'
+                replies_section += searchable_by_dropdown
 
             # buy link
             buy_link_str = translate['Buy link']
