@@ -702,6 +702,10 @@ def run_daemon(accounts_data_dir: str,
     # the last time when an LLM scraper was replied to
     httpd.last_llm_time = None
 
+    # default "searchable by" for new posts for each account
+    # TODO load
+    httpd.searchable_by_default = {}
+
     # if a custom robots.txt exists then read it
     robots_txt_filename = data_dir(base_dir) + '/robots.txt'
     httpd.robots_txt = None

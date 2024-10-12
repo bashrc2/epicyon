@@ -272,7 +272,8 @@ def html_new_post(edit_post_params: {},
                   default_post_language: str,
                   buy_sites: {},
                   default_buy_site: str,
-                  auto_cw_cache: {}) -> str:
+                  auto_cw_cache: {},
+                  searchable_by_default: str) -> str:
     """New post screen
     """
     # get the json if this is an edited post
@@ -998,7 +999,8 @@ def html_new_post(edit_post_params: {},
             }
             searchable_by_dropdown = '<select id="themeDropdown" ' + \
                 'name="searchableByDropdown" class="theme">'
-            searchable_by_default = 'yourself'
+            if not searchable_by_default:
+                searchable_by_default = 'yourself'
             for srch, srch_text in searchables.items():
                 if srch != searchable_by_default:
                     searchable_by_dropdown += \

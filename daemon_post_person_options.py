@@ -950,6 +950,7 @@ def _person_options_dm(self, options_confirm_params: str,
         if default_post_language.get(nickname):
             default_post_language2 = default_post_language[nickname]
         default_buy_site = ''
+        searchable_by_default = 'yourself'
         msg = \
             html_new_post({}, False, translate,
                           base_dir,
@@ -993,7 +994,8 @@ def _person_options_dm(self, options_confirm_params: str,
                           None, None, default_post_language2,
                           buy_sites,
                           default_buy_site,
-                          auto_cw_cache)
+                          auto_cw_cache,
+                          searchable_by_default)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -1184,6 +1186,7 @@ def _person_options_report(self, options_confirm_params: str,
         if default_post_language.get(nickname):
             default_post_language2 = default_post_language[nickname]
         default_buy_site = ''
+        searchable_by_default = 'yourself'
         msg = \
             html_new_post({}, False, translate,
                           base_dir,
@@ -1226,7 +1229,8 @@ def _person_options_report(self, options_confirm_params: str,
                           None, None, default_post_language2,
                           buy_sites,
                           default_buy_site,
-                          auto_cw_cache)
+                          auto_cw_cache,
+                          searchable_by_default)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

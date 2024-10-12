@@ -4369,7 +4369,8 @@ def daemon_http_get(self) -> None:
                          self.server.dogwhistles,
                          self.server.min_images_for_accounts,
                          self.server.buy_sites,
-                         self.server.auto_cw_cache):
+                         self.server.auto_cw_cache,
+                         self.server.searchable_by_default):
             self.server.getreq_busy = False
             return
 

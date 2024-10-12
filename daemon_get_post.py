@@ -388,9 +388,11 @@ def show_new_post(self, edit_post_params: {},
                   dogwhistles: {},
                   min_images_for_accounts: [],
                   buy_sites: [],
-                  auto_cw_cache: {}) -> bool:
+                  auto_cw_cache: {},
+                  searchable_by_default_dict: []) -> bool:
     """Shows the new post screen
     """
+    searchable_by_default = 'yourself'
     is_new_post_endpoint = False
     new_post_month = None
     new_post_year = None
@@ -420,6 +422,8 @@ def show_new_post(self, edit_post_params: {},
         if not nickname:
             http_404(self, 103)
             return True
+        if searchable_by_default_dict.get(nickname):
+            searchable_by_default = searchable_by_default_dict[nickname]
         if in_reply_to_url:
             reply_interval_hours = default_reply_interval_hrs
             if not can_reply_to(base_dir, nickname, domain,
@@ -510,7 +514,8 @@ def show_new_post(self, edit_post_params: {},
                           default_post_language2,
                           buy_sites,
                           default_buy_site,
-                          auto_cw_cache)
+                          auto_cw_cache,
+                          searchable_by_default)
         if not msg:
             print('Error replying to ' + in_reply_to_url)
             http_404(self, 104)
