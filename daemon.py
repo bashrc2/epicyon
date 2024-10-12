@@ -46,6 +46,7 @@ from shares import expire_shares
 from categories import load_city_hashtags
 from categories import update_hashtag_categories
 from languages import load_default_post_languages
+from utils import load_searchable_by_default
 from utils import set_accounts_data_dir
 from utils import data_dir
 from utils import check_bad_path
@@ -703,8 +704,7 @@ def run_daemon(accounts_data_dir: str,
     httpd.last_llm_time = None
 
     # default "searchable by" for new posts for each account
-    # TODO load
-    httpd.searchable_by_default = {}
+    httpd.searchable_by_default = load_searchable_by_default(base_dir)
 
     # if a custom robots.txt exists then read it
     robots_txt_filename = data_dir(base_dir) + '/robots.txt'

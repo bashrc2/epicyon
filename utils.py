@@ -5132,3 +5132,24 @@ def account_is_indexable(actor_json: {}) -> bool:
         if '#Public' in actor_json['indexable']:
             return True
     return False
+
+
+def load_searchable_by_default(base_dir: str) -> {}:
+    """loads the searchable_by states for each account
+    """
+    result = {}
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
+        for account in dirs:
+            if not is_account_dir(account):
+                continue
+            nickname = account.split('@')[0]
+            filename = os.path.join(dir_str, account) + '/.searchableByDefault'
+            if os.path.isfile(filename):
+                try:
+                    with open(filename, 'r', encoding='utf-8') as fp_search:
+                        result[nickname] = fp_search.read().strip()
+                except OSError:
+                    print('EX: unable to load searchableByDefault ' + filename)
+        break
+    return result
