@@ -1895,18 +1895,18 @@ def _create_post_base(base_dir: str,
         post_object_type = 'Article'
 
     # convert the searchable_by state into a url
-    searchable_by_link = ''
+    searchable_by_list = []
     if searchable_by == 'public':
-        searchable_by_link = "https://www.w3.org/ns/activitystreams#Public"
+        searchable_by_list = ["https://www.w3.org/ns/activitystreams#Public"]
     elif searchable_by == 'yourself':
-        searchable_by_link = \
-            local_actor_url(http_prefix, nickname, domain)
+        searchable_by_list = \
+            [local_actor_url(http_prefix, nickname, domain)]
     elif searchable_by == 'followers':
-        searchable_by_link = \
-            local_actor_url(http_prefix, nickname, domain) + "/followers"
+        searchable_by_list = \
+            [local_actor_url(http_prefix, nickname, domain) + "/followers"]
     elif searchable_by == 'mutuals':
-        searchable_by_link = \
-            local_actor_url(http_prefix, nickname, domain) + "/mutuals"
+        searchable_by_list = \
+            [local_actor_url(http_prefix, nickname, domain) + "/mutuals"]
 
     if not client_to_server:
         new_post = \
@@ -1923,7 +1923,7 @@ def _create_post_base(base_dir: str,
                              conversation_id, convthread_id, low_bandwidth,
                              content_license_url, media_license_url,
                              media_creator, buy_url, chat_url,
-                             translate, searchable_by_link)
+                             translate, searchable_by_list)
     else:
         new_post = \
             _create_post_c2s(base_dir, nickname, domain, port,
@@ -1939,7 +1939,7 @@ def _create_post_base(base_dir: str,
                              conversation_id, convthread_id, low_bandwidth,
                              content_license_url, media_license_url,
                              media_creator, buy_url, chat_url,
-                             translate, searchable_by_link)
+                             translate, searchable_by_list)
 
     _create_post_mentions(cc_url, new_post, to_recipients, tags)
 
