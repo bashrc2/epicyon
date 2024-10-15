@@ -345,7 +345,7 @@ def _hashtag_add(base_dir: str, http_prefix: str, domain_full: str,
         domain = domain.split(':')[0]
     store_hash_tags(base_dir, 'news', domain,
                     http_prefix, domain_full,
-                    post_json_object, translate)
+                    post_json_object, translate, session)
 
 
 def _hashtag_remove(http_prefix: str, domain_full: str, post_json_object: {},
@@ -571,7 +571,8 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                 low_bandwidth: bool,
                                 content_license_url: str,
                                 media_license_url: str,
-                                media_creator: str) -> None:
+                                media_creator: str,
+                                session) -> None:
     """Converts rss items in a newswire into posts
     """
     if not newswire:
@@ -675,7 +676,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                 content_license_url,
                                 media_license_url, media_creator,
                                 languages_understood, translate,
-                                buy_url, chat_url)
+                                buy_url, chat_url, session)
         if not blog:
             continue
 
@@ -760,7 +761,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
 
             store_hash_tags(base_dir, 'news', domain,
                             http_prefix, domain_full,
-                            blog, translate)
+                            blog, translate, session)
 
             clear_from_post_caches(base_dir, recent_posts_cache, post_id)
             if save_json(blog, filename):
@@ -865,7 +866,8 @@ def run_newswire_daemon(base_dir: str, httpd,
                                     httpd.system_language,
                                     httpd.low_bandwidth,
                                     httpd.content_license_url,
-                                    httpd.content_license_url, '')
+                                    httpd.content_license_url, '',
+                                    httpd.session)
         print('Newswire feed converted to ActivityPub')
 
         if httpd.max_news_posts > 0:

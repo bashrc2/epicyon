@@ -338,7 +338,8 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
 
 def store_hash_tags(base_dir: str, nickname: str, domain: str,
                     http_prefix: str, domain_full: str,
-                    post_json_object: {}, translate: {}) -> None:
+                    post_json_object: {}, translate: {},
+                    session) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
     """
@@ -366,14 +367,14 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
     if 'content' in post_json_object['object']:
         published = post_json_object['object']['published']
         post_content = post_json_object['object']['content']
-        map_links += get_map_links_from_post_content(post_content)
+        map_links += get_map_links_from_post_content(post_content, session)
     # get geolocation from tags
     location_str = get_location_from_post(post_json_object)
     if location_str:
         if resembles_url(location_str):
             zoom, latitude, longitude = \
                 geocoords_from_map_link(location_str,
-                                        'openstreetmap.org')
+                                        'openstreetmap.org', session)
             if latitude and longitude and zoom and \
                location_str not in map_links:
                 map_links.append(location_str)

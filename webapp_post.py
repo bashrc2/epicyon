@@ -2982,7 +2982,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 map_str = \
                     html_open_street_map(location_str,
                                          bounding_box_degrees,
-                                         translate)
+                                         translate, session,
+                                         session, session)
                 if map_str:
                     map_str = '<center>\n' + map_str + '</center>\n'
         attrib = None
@@ -3009,7 +3010,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 # remember the coordinates
                 map_zoom, map_latitude, map_longitude = \
                     geocoords_from_map_link(location_str,
-                                            'openstreetmap.org')
+                                            'openstreetmap.org',
+                                            session)
                 if map_zoom and map_latitude and map_longitude:
                     set_map_preferences_coords(base_dir, nickname, domain,
                                                map_latitude, map_longitude,

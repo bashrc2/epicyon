@@ -3651,6 +3651,7 @@ def _command_options() -> None:
         auto_cw_cache = {}
         test_video_transcript = ''
         searchable_by = []
+        curr_session = None
 
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "like this is totally just a #test man",
@@ -3669,7 +3670,7 @@ def _command_options() -> None:
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by)
+                           auto_cw_cache, searchable_by, curr_session)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Zoiks!!!",
                            test_save_to_file,
@@ -3687,7 +3688,7 @@ def _command_options() -> None:
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by)
+                           auto_cw_cache, searchable_by, curr_session)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Hey scoob we need like a hundred more #milkshakes",
                            test_save_to_file,
@@ -3705,7 +3706,7 @@ def _command_options() -> None:
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by)
+                           auto_cw_cache, searchable_by, curr_session)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "Getting kinda spooky around here",
                            test_save_to_file,
@@ -3723,7 +3724,7 @@ def _command_options() -> None:
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by)
+                           auto_cw_cache, searchable_by, curr_session)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "And they would have gotten away with it too" +
                            "if it wasn't for those pesky hackers",
@@ -3742,7 +3743,7 @@ def _command_options() -> None:
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by)
+                           auto_cw_cache, searchable_by, curr_session)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "man these centralized sites are like the worst!",
                            test_save_to_file,
@@ -3760,7 +3761,7 @@ def _command_options() -> None:
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by)
+                           auto_cw_cache, searchable_by, curr_session)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "another mystery solved #test",
                            test_save_to_file,
@@ -3778,7 +3779,7 @@ def _command_options() -> None:
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by)
+                           auto_cw_cache, searchable_by, curr_session)
         create_public_post(base_dir, nickname, domain, port, http_prefix,
                            "let's go bowling",
                            test_save_to_file,
@@ -3796,7 +3797,7 @@ def _command_options() -> None:
                            low_bandwidth, argb.content_license_url,
                            argb.media_license_url, argb.media_creator,
                            languages_understood, translate, buy_url, chat_url,
-                           auto_cw_cache, searchable_by)
+                           auto_cw_cache, searchable_by, curr_session)
         domain_full = domain + ':' + str(port)
         clear_follows(base_dir, nickname, domain, 'following.txt')
         follow_person(base_dir, nickname, domain, 'maxboardroom', domain_full,

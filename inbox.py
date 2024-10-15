@@ -1367,7 +1367,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    dm_license_url, '',
                                    languages_understood, bounce_is_chat,
                                    translate, buy_url, chat_url,
-                                   auto_cw_cache)
+                                   auto_cw_cache, session)
     if not post_json_object:
         print('WARN: unable to create bounce message to ' + sending_handle)
         return False
@@ -2525,7 +2525,7 @@ def _inbox_after_initial(server, inbox_start_time,
 
             store_hash_tags(base_dir, handle_name, domain,
                             http_prefix, domain_full,
-                            post_json_object, translate)
+                            post_json_object, translate, session)
             fitness_performance(inbox_start_time,
                                 server.fitness,
                                 'INBOX', 'store_hash_tags',

@@ -117,7 +117,8 @@ def _html_calendar_day(person_cache: {}, translate: {},
                        nickname: str, domain: str, day_events: [],
                        month_name: str, actor: str,
                        theme: str, access_keys: {},
-                       system_language: str) -> str:
+                       system_language: str,
+                       session, session_onion, session_i2p) -> str:
     """Show a day within the calendar
     """
     account_dir = acct_dir(base_dir, nickname, domain)
@@ -232,7 +233,9 @@ def _html_calendar_day(person_cache: {}, translate: {},
                             event_map = \
                                 html_open_street_map(event_place,
                                                      bounding_box_degrees,
-                                                     translate,
+                                                     translate, session,
+                                                     session_onion,
+                                                     session_i2p,
                                                      '320', '320')
                             if event_map:
                                 event_place = event_map
@@ -354,7 +357,8 @@ def html_calendar(person_cache: {}, translate: {},
                   http_prefix: str, domain_full: str,
                   text_mode_banner: str, access_keys: {},
                   icalendar: bool, system_language: str,
-                  default_timeline: str, theme: str) -> str:
+                  default_timeline: str, theme: str,
+                  session, session_onion, session_i2p) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -441,7 +445,8 @@ def html_calendar(person_cache: {}, translate: {},
                                   nickname, domain, day_events,
                                   month_name, actor,
                                   theme, access_keys,
-                                  system_language)
+                                  system_language, session,
+                                  session_onion, session_i2p)
 
     if icalendar:
         return get_month_events_icalendar(base_dir, nickname, domain,

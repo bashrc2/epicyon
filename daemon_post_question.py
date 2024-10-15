@@ -259,7 +259,7 @@ def _send_reply_to_question(self, base_dir: str,
                                        languages_understood, False,
                                        translate, buy_url,
                                        chat_url,
-                                       auto_cw_cache)
+                                       auto_cw_cache, curr_session)
     if message_json:
         # NOTE: content and contentMap are not required, but we will keep
         # them in there so that the post does not get filtered out by

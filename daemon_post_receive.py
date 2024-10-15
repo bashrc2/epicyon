@@ -181,7 +181,8 @@ def _receive_new_post_process_newpost(self, fields: {},
                            translate, buy_url,
                            chat_url,
                            auto_cw_cache,
-                           fields['searchableByDropdown'])
+                           fields['searchableByDropdown'],
+                           curr_session)
     if message_json:
         if edited_postid:
             update_edited_post(base_dir, nickname, domain,
@@ -339,7 +340,8 @@ def _receive_new_post_process_newblog(self, fields: {},
                          media_license_url, media_creator,
                          languages_understood,
                          translate, buy_url, chat_url,
-                         fields['searchableByDropdown'])
+                         fields['searchableByDropdown'],
+                         curr_session)
     if message_json:
         if fields['schedulePost']:
             return NEW_POST_SUCCESS
@@ -579,7 +581,7 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                              languages_understood,
                              translate, buy_url,
                              chat_url,
-                             auto_cw_cache)
+                             auto_cw_cache, curr_session)
     if message_json:
         if edited_postid:
             update_edited_post(base_dir, nickname, domain,
@@ -741,7 +743,8 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                    translate,
                                    buy_url, chat_url,
                                    auto_cw_cache,
-                                   fields['searchableByDropdown'])
+                                   fields['searchableByDropdown'],
+                                   curr_session)
     if message_json:
         if edited_postid:
             update_edited_post(base_dir,
@@ -912,7 +915,7 @@ def _receive_new_post_process_newdm(self, fields: {},
                                        reply_is_chat,
                                        translate,
                                        buy_url, chat_url,
-                                       auto_cw_cache)
+                                       auto_cw_cache, curr_session)
     if message_json:
         print('DEBUG: posting DM edited_postid ' +
               str(edited_postid))
@@ -1065,7 +1068,7 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                    languages_understood,
                                    False, translate,
                                    buy_url, chat_url,
-                                   auto_cw_cache)
+                                   auto_cw_cache, curr_session)
     if message_json:
         if fields['schedulePost']:
             return NEW_POST_SUCCESS
@@ -1173,7 +1176,8 @@ def _receive_new_post_process_newreport(self, fields: {},
                            content_license_url,
                            media_license_url, media_creator,
                            languages_understood,
-                           translate, auto_cw_cache)
+                           translate, auto_cw_cache,
+                           curr_session)
     if message_json:
         if post_to_outbox(self, message_json,
                           project_version,
@@ -1254,7 +1258,7 @@ def _receive_new_post_process_newquestion(self, fields: {},
                              media_license_url, media_creator,
                              languages_understood,
                              translate,
-                             auto_cw_cache)
+                             auto_cw_cache, curr_session)
     if message_json:
         if debug:
             print('DEBUG: new Question')
@@ -1386,7 +1390,8 @@ def _receive_new_post_process_newreading(self, fields: {},
                             translate, buy_url,
                             chat_url,
                             auto_cw_cache,
-                            fields['searchableByDropdown'])
+                            fields['searchableByDropdown'],
+                            curr_session)
     if message_json:
         if edited_postid:
             update_edited_post(base_dir, nickname, domain,

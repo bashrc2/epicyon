@@ -1873,7 +1873,7 @@ def receive_announce(recent_posts_cache: {},
 
         store_hash_tags(base_dir, nickname, domain,
                         http_prefix, domain_full,
-                        post_json_object, translate)
+                        post_json_object, translate, session)
         # Try to obtain the actor for this person
         # so that their avatar can be shown
         lookup_actor = None

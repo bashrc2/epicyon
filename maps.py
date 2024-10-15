@@ -20,6 +20,7 @@ from utils import has_object_dict
 from utils import date_utcnow
 from utils import date_epoch
 from utils import date_from_string_format
+from session import get_resolved_url
 
 
 def _geocoords_to_osm_link(osm_domain: str, zoom: int,
@@ -136,7 +137,7 @@ def _geocoords_from_osmorg_link(url: str) -> (int, float, float):
         return None, None, None
     if 'mlon=' not in url:
         return None, None, None
-    if 'zoom=' not in url:
+    if 'zoom=' not in url and '#map=' not in url:
         return None, None, None
 
     latitude = url.split('mlat=')[1]
@@ -151,14 +152,49 @@ def _geocoords_from_osmorg_link(url: str) -> (int, float, float):
     if not is_float(longitude):
         return None, None, None
 
-    zoom = url.split('zoom=')[1]
-    if '&' in zoom:
-        zoom = zoom.split('&')[0]
+    if 'zoom=' in url:
+        zoom = url.split('zoom=')[1]
+        if '&' in zoom:
+            zoom = zoom.split('&')[0]
+    else:
+        zoom = url.split('#map=')[1]
+        if '/' in zoom:
+            zoom = zoom.split('/')[0]
+
     if not zoom.isdigit():
         return None, None, None
     zoom = int(zoom)
     latitude = float(latitude)
     longitude = float(longitude)
+    return zoom, latitude, longitude
+
+
+def _geocoords_from_osmorg_go_link(url: str, session) -> (int, float, float):
+    """Returns geocoordinates from an OSM go map link
+    """
+    osm_domain = 'osm.org'
+    if osm_domain not in url:
+        return None, None, None
+    if 'mlat=' in url:
+        return None, None, None
+    if 'mlon=' in url:
+        return None, None, None
+    if '/go/' not in url:
+        return None, None, None
+
+    # TODO resolve url equivalent to
+    # curl -Ls -o /dev/null -w %{url_effective} [url]
+    resolved_url = get_resolved_url(session, url)
+
+    if not resolved_url:
+        return None, None, None
+
+    if 'osm.org' in resolved_url:
+        (zoom, latitude, longitude) = \
+            _geocoords_from_osmorg_link(resolved_url)
+    else:
+        (zoom, latitude, longitude) = \
+            _geocoords_from_osm_link(resolved_url, 'openstreetmap.org')
     return zoom, latitude, longitude
 
 
@@ -383,13 +419,17 @@ def _geocoords_from_wego_link(url: str) -> (int, float, float):
     return zoom, latitude, longitude
 
 
-def geocoords_from_map_link(url: str,
-                            osm_domain: str) -> (int, float, float):
+def geocoords_from_map_link(url: str, osm_domain: str,
+                            session) -> (int, float, float):
     """Returns geocoordinates from a map link url
     """
     if osm_domain in url:
         zoom, latitude, longitude = \
             _geocoords_from_osm_link(url, osm_domain)
+        return zoom, latitude, longitude
+    if 'osm.org' in url and 'mlat=' not in url and '/go/' in url:
+        zoom, latitude, longitude = \
+            _geocoords_from_osmorg_go_link(url, session)
         return zoom, latitude, longitude
     if 'osm.org' in url and 'mlat=' in url:
         zoom, latitude, longitude = \
@@ -424,13 +464,20 @@ def geocoords_from_map_link(url: str,
 
 def html_open_street_map(url: str,
                          bounding_box_degrees: float,
-                         translate: {},
+                         translate: {}, session,
+                         session_onion, session_i2p,
                          width: str = "725",
                          height: str = "650") -> str:
     """Returns embed html for an OSM link
     """
     osm_domain = 'openstreetmap.org'
-    zoom, latitude, longitude = geocoords_from_map_link(url, osm_domain)
+    map_session = session
+    if '.onion/' in url:
+        map_session = session_onion
+    elif '.i2p/' in url:
+        map_session = session_i2p
+    zoom, latitude, longitude = \
+        geocoords_from_map_link(url, osm_domain, map_session)
     if not latitude:
         return ''
     if not longitude:
@@ -524,7 +571,7 @@ def get_map_preferences_coords(base_dir: str, nickname: str,
     return None, None, None
 
 
-def get_map_links_from_post_content(content: str) -> []:
+def get_map_links_from_post_content(content: str, session) -> []:
     """Returns a list of map links
     """
     osm_domain = 'openstreetmap.org'
@@ -542,7 +589,8 @@ def get_map_links_from_post_content(content: str) -> []:
             url = url.split('<')[0]
         if not url:
             continue
-        zoom, latitude, longitude = geocoords_from_map_link(url, osm_domain)
+        zoom, latitude, longitude = \
+            geocoords_from_map_link(url, osm_domain, session)
         if not latitude:
             continue
         if not longitude:
@@ -667,7 +715,7 @@ def _hashtag_map_to_format(base_dir: str, tag_name: str,
                            start_hours_since_epoch: int,
                            end_hours_since_epoch: int,
                            nickname: str, domain: str,
-                           map_format: str) -> str:
+                           map_format: str, session) -> str:
     """Returns the KML/GPX for a given hashtag between the given times
     """
     place_ctr = 0
@@ -704,7 +752,7 @@ def _hashtag_map_to_format(base_dir: str, tag_name: str,
                 # get the geocoordinates from the map link
                 map_link = link_line[1]
                 zoom, latitude, longitude = \
-                    geocoords_from_map_link(map_link, osm_domain)
+                    geocoords_from_map_link(map_link, osm_domain, session)
                 if not zoom:
                     continue
                 if not latitude:
@@ -739,7 +787,8 @@ def _hashtag_map_to_format(base_dir: str, tag_name: str,
 
 def _hashtag_map_within_hours(base_dir: str, tag_name: str,
                               hours: int, map_format: str,
-                              nickname: str, domain: str) -> str:
+                              nickname: str, domain: str,
+                              session) -> str:
     """Returns gpx/kml for a hashtag containing maps for the
     last number of hours
     """
@@ -753,7 +802,8 @@ def _hashtag_map_within_hours(base_dir: str, tag_name: str,
         _hashtag_map_to_format(base_dir, tag_name,
                                start_hours_since_epoch,
                                end_hours_since_epoch,
-                               nickname, domain, map_format)
+                               nickname, domain, map_format,
+                               session)
     return map_str
 
 
@@ -777,7 +827,7 @@ def _get_tagmaps_time_periods() -> {}:
 
 def map_format_from_tagmaps_path(base_dir: str, path: str,
                                  map_format: str,
-                                 domain: str) -> str:
+                                 domain: str, session) -> str:
     """Returns gpx/kml for a given tagmaps path
     /tagmaps/tagname-time_period
     """
@@ -802,13 +852,15 @@ def map_format_from_tagmaps_path(base_dir: str, path: str,
                 nickname = nickname.split('/')[0]
         return _hashtag_map_within_hours(base_dir, tag_name,
                                          hours, map_format,
-                                         nickname, domain)
+                                         nickname, domain,
+                                         session)
     return None
 
 
 def html_hashtag_maps(base_dir: str, tag_name: str,
                       translate: {}, map_format: str,
-                      nickname: str, domain: str) -> str:
+                      nickname: str, domain: str,
+                      session) -> str:
     """Returns html for maps associated with a hashtag
     """
     tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
@@ -822,7 +874,8 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
     for period_str, hours in time_period.items():
         new_map_str = \
             _hashtag_map_within_hours(base_dir, tag_name, hours,
-                                      map_format, nickname, domain)
+                                      map_format, nickname, domain,
+                                      session)
         if not new_map_str:
             continue
         if new_map_str == map_str:

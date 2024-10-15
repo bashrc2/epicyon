@@ -98,6 +98,31 @@ def url_exists(session, url: str, timeout_sec: int = 3,
     return False
 
 
+def get_resolved_url(session, url: str, timeout_sec: int = 20) -> {}:
+    """returns the URL after redirections
+    eg. https://osm.org/go/0G0dJ91-?m=&relation=62414
+    becomes
+    https://www.openstreetmap.org/?mlat=53.05289268493652
+    &mlon=8.644180297851562#map=11/53.05289268493652/8.644180297851562
+    """
+    try:
+        result = session.get(url, headers={},
+                             params={}, timeout=timeout_sec,
+                             allow_redirects=True)
+        if result.url:
+            if isinstance(result.url, str):
+                if '://' in result.url:
+                    return result.url
+    except ValueError as exc:
+        print('EX: _get_resolved_url failed, url: ' +
+              str(url) + ', ' + str(exc))
+    except SocketError as exc:
+        if exc.errno == errno.ECONNRESET:
+            print('EX: _get_resolved_url failed, ' +
+                  'connection was reset during _get_resolved_url ' + str(exc))
+    return None
+
+
 def _get_json_request(session, url: str, session_headers: {},
                       session_params: {}, timeout_sec: int,
                       quiet: bool, debug: bool,

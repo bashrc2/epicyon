@@ -3114,7 +3114,8 @@ def daemon_http_get(self) -> None:
         map_str = \
             map_format_from_tagmaps_path(self.server.base_dir, self.path,
                                          self.server.map_format,
-                                         self.server.domain)
+                                         self.server.domain,
+                                         self.server.session)
         if map_str:
             msg = map_str.encode('utf-8')
             msglen = len(msg)
@@ -3249,7 +3250,10 @@ def daemon_http_get(self) -> None:
                                 access_keys,
                                 False, self.server.system_language,
                                 self.server.default_timeline,
-                                self.server.theme_name)
+                                self.server.theme_name,
+                                self.server.session,
+                                self.server.session_onion,
+                                self.server.session_i2p)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -3292,7 +3296,10 @@ def daemon_http_get(self) -> None:
                                 True,
                                 self.server.system_language,
                                 self.server.default_timeline,
-                                self.server.theme_name)
+                                self.server.theme_name,
+                                self.server.session,
+                                self.server.session_onion,
+                                self.server.session_i2p)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)

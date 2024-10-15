@@ -953,7 +953,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
 
     # maps for geolocations with this hashtag
     maps_str = html_hashtag_maps(base_dir, hashtag, translate, map_format,
-                                 nickname, domain)
+                                 nickname, domain, session)
     if maps_str:
         maps_str = '<center>' + maps_str + '</center>\n'
     hashtag_search_form += maps_str
