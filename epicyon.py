@@ -906,6 +906,7 @@ def _command_options() -> None:
         resolved_url = get_resolved_url(session, argb.resolve)
         if resolved_url:
             print('Resolved as: ' + resolved_url)
+        session.close()
         sys.exit()
 
     http_prefix = 'https'
