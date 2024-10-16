@@ -182,7 +182,7 @@ def _geocoords_from_osmorg_go_link(url: str, session) -> (int, float, float):
     if '/go/' not in url:
         return None, None, None
 
-    # TODO resolve url equivalent to
+    # resolve url equivalent to
     # curl -Ls -o /dev/null -w %{url_effective} [url]
     resolved_url = get_resolved_url(session, url)
 

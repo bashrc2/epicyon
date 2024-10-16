@@ -46,6 +46,7 @@ from posts import send_post_via_server
 from posts import get_public_posts_of_person
 from posts import get_user_url
 from posts import check_domains
+from session import get_resolved_url
 from session import get_json_valid
 from session import create_session
 from session import get_json
@@ -844,6 +845,9 @@ def _command_options() -> None:
     parser.add_argument('--registration', dest='registration', type=str,
                         default='open',
                         help='Whether new registrations are open or closed')
+    parser.add_argument('--resolve', dest='resolve', type=str,
+                        default=None,
+                        help='Resolve a shortened url to its full form')
     parser.add_argument("--nosharedinbox", type=str2bool, nargs='?',
                         const=True, default=False,
                         help='Disable shared inbox')
@@ -890,6 +894,18 @@ def _command_options() -> None:
         test_client_to_server(base_dir)
         test_update_actor(base_dir)
         print('All tests succeeded')
+        sys.exit()
+
+    if argb.resolve:
+        proxy_type = None
+        if '.onion/' in argb.resolve:
+            proxy_type = 'tor'
+        elif '.i2p/' in argb.resolve:
+            proxy_type = 'i2p'
+        session = create_session(proxy_type)
+        resolved_url = get_resolved_url(session, argb.resolve)
+        if resolved_url:
+            print('Resolved as: ' + resolved_url)
         sys.exit()
 
     http_prefix = 'https'

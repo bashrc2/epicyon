@@ -114,12 +114,12 @@ def get_resolved_url(session, url: str, timeout_sec: int = 20) -> {}:
                 if '://' in result.url:
                     return result.url
     except ValueError as exc:
-        print('EX: _get_resolved_url failed, url: ' +
+        print('EX: get_resolved_url failed, url: ' +
               str(url) + ', ' + str(exc))
     except SocketError as exc:
         if exc.errno == errno.ECONNRESET:
-            print('EX: _get_resolved_url failed, ' +
-                  'connection was reset during _get_resolved_url ' + str(exc))
+            print('EX: get_resolved_url failed, ' +
+                  'connection was reset ' + str(exc))
     return None
 
 

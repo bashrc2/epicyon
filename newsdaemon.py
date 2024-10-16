@@ -295,7 +295,7 @@ def hashtag_rule_tree(operators: [],
 def _hashtag_add(base_dir: str, http_prefix: str, domain_full: str,
                  post_json_object: {},
                  action_str: str, hashtags: [], system_language: str,
-                 translate: {}) -> None:
+                 translate: {}, session) -> None:
     """Adds a hashtag via a hashtag rule
     """
     add_hashtag = action_str.split('add ', 1)[1].strip()
@@ -386,7 +386,7 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
                                  domain: str, port: int,
                                  moderated: bool, url: str,
                                  system_language: str,
-                                 translate: {}) -> bool:
+                                 translate: {}, session) -> bool:
     """Applies hashtag rules to a news post.
     Returns true if the post should be saved to the news timeline
     of this instance
@@ -436,7 +436,7 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
             # add a hashtag
             _hashtag_add(base_dir, http_prefix, domain_full,
                          post_json_object, action_str, hashtags,
-                         system_language, translate)
+                         system_language, translate, session)
         elif action_str.startswith('remove '):
             # remove a hashtag
             _hashtag_remove(http_prefix, domain_full, post_json_object,
@@ -720,7 +720,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
             _newswire_hashtag_processing(base_dir, blog, hashtags,
                                          http_prefix, domain, port,
                                          moderated, url, system_language,
-                                         translate)
+                                         translate, session)
 
         # save the post and update the index
         if save_post:
