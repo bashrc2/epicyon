@@ -8097,12 +8097,19 @@ def _test_combine_lines():
 
 def _test_hashtag_maps():
     print('hashtag_maps')
+    session = create_session(None)
+
+    expected_link = "https://osm.org/go/0G0dJ91-?m=&relation=62414"
+    content = "<p><span class=\"h-card\"><a href=\"https://free.beer/users/dan\" tabindex=\"10\" class=\"u-url mention\">@<span>dan</span></a></span> Test 4 geo link <a href=\"" + expected_link + "\" tabindex=\"10\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"ellipsis\">osm.org/go/0G0dJ91-?m=&relation=62414</span></a></p>"
+    map_links = get_map_links_from_post_content(content, session)
+    if expected_link not in map_links:
+        print(str(map_links))
+    assert expected_link in map_links
 
     content = \
         "<p>This is a test, with a geo link " + \
         "geo:52.90820,-3.59817;u=35, and some other stuff," + \
         " with commas</p>"
-    session = None
     map_links = get_map_links_from_post_content(content, session)
     link = "geo:52.90820,-3.59817"
     if link not in map_links:
@@ -8133,7 +8140,7 @@ def _test_hashtag_maps():
         "class=\"mention hashtag\" rel=\"tag\" tabindex=\"10\">#" + \
         "<span>AnotherHashtag</span></a></p>"
     map_links = get_map_links_from_post_content(content, session)
-    link = "www.google.com/maps/@52.217291,-3.0811865,20.04z"
+    link = "https://www.google.com/maps/@52.217291,-3.0811865,20.04z"
     assert link in map_links
     session = None
     zoom, latitude, longitude = \
@@ -8143,7 +8150,7 @@ def _test_hashtag_maps():
     assert int(latitude * 1000) == 52217
     assert longitude
     assert int(longitude * 1000) == -3081
-    link = "www.openstreetmap.org/#map=19/52.90860/-3.59917"
+    link = "https://www.openstreetmap.org/#map=19/52.90860/-3.59917"
     assert link in map_links
     zoom, latitude, longitude = \
         geocoords_from_map_link(link, 'openstreetmap.org', session)

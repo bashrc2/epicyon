@@ -599,6 +599,13 @@ def get_map_links_from_post_content(content: str, session) -> []:
             url = url.split('<')[0]
         if not url:
             continue
+
+        # complete the url
+        if 'http://' + url in content:
+            url = 'http://' + url
+        elif 'https://' + url in content:
+            url = 'https://' + url
+
         zoom, latitude, longitude = \
             geocoords_from_map_link(url, osm_domain, session)
         if not latitude:
