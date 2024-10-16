@@ -172,6 +172,7 @@ def _geocoords_from_osmorg_link(url: str) -> (int, float, float):
 def _geocoords_from_osmorg_go_link(url: str, session) -> (int, float, float):
     """Returns geocoordinates from an OSM go map link
     """
+    print('Debug: _geocoords_from_osmorg_go_link ' + url)
     osm_domain = 'osm.org'
     if osm_domain not in url:
         return None, None, None
@@ -429,11 +430,13 @@ def geocoords_from_map_link(url: str, osm_domain: str,
                             session) -> (int, float, float):
     """Returns geocoordinates from a map link url
     """
+    print('Debug: _geocoords_from_osmorg_go_link start')
     if osm_domain in url:
         zoom, latitude, longitude = \
             _geocoords_from_osm_link(url, osm_domain)
         return zoom, latitude, longitude
     if 'osm.org' in url and 'mlat=' not in url and '/go/' in url:
+        print('Debug: _geocoords_from_osmorg_go_link 0')
         zoom, latitude, longitude = \
             _geocoords_from_osmorg_go_link(url, session)
         return zoom, latitude, longitude
