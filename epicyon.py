@@ -940,6 +940,7 @@ def _command_options() -> None:
         print('Importing custom emoji from ' + import_filename)
         session = create_session(None)
         import_emoji(base_dir, import_filename, session)
+        session.close()
         sys.exit()
 
     # automatic translations
@@ -1305,6 +1306,7 @@ def _command_options() -> None:
                              http_prefix, domain)
         if get_json_valid(test_json):
             pprint(test_json)
+        session.close()
         sys.exit()
 
     if argb.conversation:
@@ -1337,6 +1339,7 @@ def _command_options() -> None:
                                                 post_id, argb.debug)
         if conv_json:
             pprint(conv_json)
+        session.close()
         sys.exit()
 
     if argb.ssml:
@@ -1362,6 +1365,7 @@ def _command_options() -> None:
                                   http_prefix, domain)
         if test_ssml:
             print(str(test_ssml))
+        session.close()
         sys.exit()
 
     if argb.vcard:
@@ -1375,6 +1379,7 @@ def _command_options() -> None:
                                None, debug, __version__, http_prefix, domain)
         if test_vcard:
             print(test_vcard)
+        session.close()
         sys.exit()
 
     if argb.xmlvcard:
@@ -1388,6 +1393,7 @@ def _command_options() -> None:
                                None, debug, __version__, http_prefix, domain)
         if test_vcard:
             print(test_vcard)
+        session.close()
         sys.exit()
 
     if argb.htmlpost:
@@ -1413,6 +1419,7 @@ def _command_options() -> None:
                                   http_prefix, domain)
         if test_html:
             print(test_html)
+        session.close()
         sys.exit()
 
     if argb.verifyurl:
@@ -1439,6 +1446,7 @@ def _command_options() -> None:
         verified = \
             verify_html(session, argb.verifyurl, debug, __version__,
                         http_prefix, argb.nickname, domain)
+        session.close()
         if verified:
             print('Verified')
             sys.exit()
@@ -1539,6 +1547,7 @@ def _command_options() -> None:
                            preferred_podcast_formats, timeout_sec,
                            argb.language)
         pprint(test_rss)
+        session.close()
         sys.exit()
 
     if argb.onion:
@@ -1714,6 +1723,7 @@ def _command_options() -> None:
                                       signing_priv_key_pem, proxy_type,
                                       followers_sync_cache,
                                       sites_unavailable, system_language)
+        session.close()
         sys.exit()
 
     if argb.deny:
@@ -1761,6 +1771,7 @@ def _command_options() -> None:
                                    followers_sync_cache,
                                    sites_unavailable,
                                    system_language)
+        session.close()
         sys.exit()
 
     if argb.followerspending:
@@ -1894,6 +1905,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.expiryDays is not None and argb.nickname and argb.domain:
@@ -1950,6 +1962,7 @@ def _command_options() -> None:
                                      argb.password)
         if result:
             print(str(result))
+        session.close()
         sys.exit()
 
     if argb.announce:
@@ -1985,6 +1998,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.box:
@@ -2029,6 +2043,7 @@ def _command_options() -> None:
             pprint(box_json)
         else:
             print('Box not found: ' + argb.box)
+        session.close()
         sys.exit()
 
     if argb.itemName:
@@ -2103,6 +2118,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.undoItemName:
@@ -2139,6 +2155,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.wantedItemName:
@@ -2213,6 +2230,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.undoWantedItemName:
@@ -2249,6 +2267,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.like:
@@ -2284,6 +2303,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.react:
@@ -2325,6 +2345,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.undolike:
@@ -2361,6 +2382,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.undoreact:
@@ -2404,6 +2426,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.bookmark:
@@ -2440,6 +2463,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.unbookmark:
@@ -2475,6 +2499,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.delete:
@@ -2510,6 +2535,7 @@ def _command_options() -> None:
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.follow:
@@ -2562,6 +2588,7 @@ def _command_options() -> None:
             time.sleep(1)
             # TODO some method to know if it worked
         print('Ok')
+        session.close()
         sys.exit()
 
     if argb.unfollow:
@@ -2614,6 +2641,7 @@ def _command_options() -> None:
             time.sleep(1)
             # TODO some method to know if it worked
         print('Ok')
+        session.close()
         sys.exit()
 
     if argb.followingList:
@@ -2647,6 +2675,7 @@ def _command_options() -> None:
                                      debug, __version__, signing_priv_key_pem)
         if following_json:
             pprint(following_json)
+        session.close()
         sys.exit()
 
     if argb.blocked:
@@ -2681,6 +2710,7 @@ def _command_options() -> None:
                                   signing_priv_key_pem)
         if blocked_json:
             pprint(blocked_json)
+        session.close()
         sys.exit()
 
     if argb.followersList:
@@ -2715,6 +2745,7 @@ def _command_options() -> None:
                                      signing_priv_key_pem)
         if followers_json:
             pprint(followers_json)
+        session.close()
         sys.exit()
 
     if argb.followRequestsList:
@@ -2749,6 +2780,7 @@ def _command_options() -> None:
                                            signing_priv_key_pem)
         if follow_requests_json:
             pprint(follow_requests_json)
+        session.close()
         sys.exit()
 
     nickname = 'admin'
@@ -2812,6 +2844,7 @@ def _command_options() -> None:
             print('No followed accounts have moved')
         else:
             print(str(ctr) + ' followed accounts were migrated')
+        session.close()
         sys.exit()
 
     if argb.actor:
@@ -2937,10 +2970,12 @@ def _command_options() -> None:
                                       signing_priv_key_pem)
         if not wf_request:
             print('Unable to webfinger ' + handle)
+            session.close()
             sys.exit()
         if not isinstance(wf_request, dict):
             print('Webfinger for ' + handle + ' did not return a dict. ' +
                   str(wf_request))
+            session.close()
             sys.exit()
 
         person_url = None
@@ -2949,6 +2984,7 @@ def _command_options() -> None:
             if has_users_path(argb.followers):
                 person_url = original_actor
             else:
+                session.close()
                 sys.exit()
 
         profile_str = 'https://www.w3.org/ns/activitystreams'
@@ -2995,6 +3031,7 @@ def _command_options() -> None:
         if followers_list:
             for actor in followers_list:
                 print(actor)
+        session.close()
         sys.exit()
 
     if argb.addaccount:
@@ -3291,6 +3328,7 @@ def _command_options() -> None:
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.availability:
@@ -3327,6 +3365,7 @@ def _command_options() -> None:
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.desktop:
@@ -3442,6 +3481,7 @@ def _command_options() -> None:
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.mute:
@@ -3476,6 +3516,7 @@ def _command_options() -> None:
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.unmute:
@@ -3510,6 +3551,7 @@ def _command_options() -> None:
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.unblock:
@@ -3556,6 +3598,7 @@ def _command_options() -> None:
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
+        session.close()
         sys.exit()
 
     if argb.filterStr:
