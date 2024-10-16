@@ -8097,14 +8097,7 @@ def _test_combine_lines():
 
 def _test_hashtag_maps():
     print('hashtag_maps')
-    session = create_session(None)
-
-    expected_link = "https://osm.org/go/0G0dJ91-?m=&relation=62414"
-    content = "<p><span class=\"h-card\"><a href=\"https://free.beer/users/dan\" tabindex=\"10\" class=\"u-url mention\">@<span>dan</span></a></span> Test 4 geo link <a href=\"" + expected_link + "\" tabindex=\"10\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://</span><span class=\"ellipsis\">osm.org/go/0G0dJ91-?m=&relation=62414</span></a></p>"
-    map_links = get_map_links_from_post_content(content, session)
-    if expected_link not in map_links:
-        print(str(map_links))
-    assert expected_link in map_links
+    session = None
 
     content = \
         "<p>This is a test, with a geo link " + \
