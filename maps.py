@@ -430,8 +430,6 @@ def geocoords_from_map_link(url: str, osm_domain: str,
                             session) -> (int, float, float):
     """Returns geocoordinates from a map link url
     """
-    print('Debug: _geocoords_from_osmorg_go_link start ' + url +
-          ' ' + osm_domain)
     if osm_domain in url:
         zoom, latitude, longitude = \
             _geocoords_from_osm_link(url, osm_domain)
