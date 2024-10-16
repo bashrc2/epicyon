@@ -189,12 +189,18 @@ def _geocoords_from_osmorg_go_link(url: str, session) -> (int, float, float):
     if not resolved_url:
         return None, None, None
 
+    print('Debug: _geocoords_from_osmorg_go_link ' + resolved_url)
+
     if 'osm.org' in resolved_url:
         (zoom, latitude, longitude) = \
             _geocoords_from_osmorg_link(resolved_url)
+        print('Debug: _geocoords_from_osmorg_go_link2 ' + str(zoom) + ' ' +
+              str(latitude) + ' ' + str(longitude))
     else:
         (zoom, latitude, longitude) = \
             _geocoords_from_osm_link(resolved_url, 'openstreetmap.org')
+        print('Debug: _geocoords_from_osmorg_go_link3 ' + str(zoom) + ' ' +
+              str(latitude) + ' ' + str(longitude))
     return zoom, latitude, longitude
 
 
