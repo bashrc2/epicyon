@@ -1291,6 +1291,12 @@ def show_conversation_thread(self, authorized: bool,
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
     if conv_separator not in path and \
        '/thread/' in path and \
+       '?repeat' not in path and \
+       '?un' not in path and \
+       '?like' not in path and \
+       '?bookmark' not in path and \
+       '?selreact' not in path and \
+       '?mute' not in path and \
        '?reply' not in path:
         convthread_id = path.split('/thread/', 1)[1].strip()
         if convthread_id.isdigit():
