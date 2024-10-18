@@ -1294,6 +1294,8 @@ def show_conversation_thread(self, authorized: bool,
        '?repeat' not in path and \
        '?un' not in path and \
        '?like' not in path and \
+       '?delete' not in path and \
+       '?postedit' not in path and \
        '?bookmark' not in path and \
        '?selreact' not in path and \
        '?mute' not in path and \
