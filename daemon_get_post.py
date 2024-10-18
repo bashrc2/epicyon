@@ -1289,7 +1289,9 @@ def show_conversation_thread(self, authorized: bool,
         return False
     conv_separator = '?convthread='
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/76ea/fep-76ea.md
-    if conv_separator not in path and '/thread/' in path:
+    if conv_separator not in path and \
+       '/thread/' in path and \
+       '?reply' not in path:
         convthread_id = path.split('/thread/', 1)[1].strip()
         if convthread_id.isdigit():
             new_tag = convthread_id_to_conversation_tag(domain_full,

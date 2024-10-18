@@ -77,10 +77,6 @@ def redirect_headers(self, redirect: str, cookie: str,
                      calling_domain: str,
                      code: int) -> None:
     if '://' not in redirect:
-        if redirect.startswith('tag:'):
-            # conversation redirect
-            conv_separator = '?convthread='
-            redirect = conv_separator + redirect
         redirect = \
             get_instance_url(calling_domain,
                              self.server.http_prefix,
