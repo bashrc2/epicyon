@@ -60,7 +60,7 @@ def logout_redirect(self, redirect: str, calling_domain: str) -> None:
                                     self.server.i2p_domain) + \
                                     redirect
         print('WARN: redirect was not an absolute url, changed to ' +
-              redirect)
+              redirect + ' ' + calling_domain)
 
     quot_redirect = _quoted_redirect(redirect)
     self.send_response(303)
@@ -77,12 +77,16 @@ def redirect_headers(self, redirect: str, cookie: str,
                      calling_domain: str,
                      code: int) -> None:
     if '://' not in redirect:
-        redirect = get_instance_url(calling_domain,
-                                    self.server.http_prefix,
-                                    self.server.domain_full,
-                                    self.server.onion_domain,
-                                    self.server.i2p_domain) + \
-                                    redirect
+        if redirect.startswith('tag:'):
+            # conversation redirect
+            conv_separator = '?convthread='
+            redirect = conv_separator + redirect
+        redirect = \
+            get_instance_url(calling_domain,
+                             self.server.http_prefix,
+                             self.server.domain_full,
+                             self.server.onion_domain,
+                             self.server.i2p_domain) + redirect
         print('WARN: redirect was not an absolute url, changed to ' +
               redirect)
 
