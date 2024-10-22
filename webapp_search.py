@@ -456,12 +456,6 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     if os.path.isfile(base_dir + '/search.css'):
         css_filename = base_dir + '/search.css'
 
-    instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
-    follow_str = \
-        html_header_with_external_style(css_filename, instance_title, None,
-                                        preload_images)
-
     # set a search banner
     search_banner_filename = \
         acct_dir(base_dir, search_nickname, domain) + \
@@ -472,10 +466,22 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
             copyfile(base_dir +
                      '/theme/' + theme + '/search_banner.png',
                      search_banner_filename)
+    users_path = '/users/' + search_nickname
 
     # show a banner above the search box
     search_banner_file, search_banner_filename = \
         get_search_banner_file(base_dir, search_nickname, domain, theme)
+    search_banner_path = users_path + '/' + search_banner_file
+
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+
+    # these images are pre-loaded to prevent the web page from
+    # jumping around when rendering
+    preload_images = [search_banner_path]
+
+    follow_str = \
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     text_mode_banner_str = html_keyboard_navigation(text_mode_banner, {}, {},
                                                     None, None, None, False)
@@ -484,7 +490,6 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
 
     if os.path.isfile(search_banner_filename):
         timeline_key = access_keys['menuTimeline']
-        users_path = '/users/' + search_nickname
         follow_str += \
             '<header>\n' + text_mode_banner_str + \
             '<a href="' + users_path + '/' + default_timeline + '" title="' + \
@@ -493,7 +498,7 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
             'accesskey="' + timeline_key + '">\n'
         follow_str += '<img loading="lazy" decoding="async" ' + \
             'class="timeline-banner" src="' + \
-            users_path + '/' + search_banner_file + '" alt="" /></a>\n' + \
+            search_banner_path + '" alt="" /></a>\n' + \
             '</header>\n'
 
     # show the search box
