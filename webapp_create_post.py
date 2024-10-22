@@ -389,6 +389,7 @@ def html_new_post(edit_post_params: {},
     # filename of the banner shown at the top
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
+    banner_path = '/users/' + nickname + '/' + banner_file
 
     if not path.endswith('/newshare') and not path.endswith('/newwanted'):
         if not path.endswith('/newreport'):
@@ -1085,7 +1086,7 @@ def html_new_post(edit_post_params: {},
         date_and_location += end_edit_section()
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images = [banner_path]
     new_post_form = html_header_with_external_style(css_filename,
                                                     instance_title, None,
                                                     preload_images)
@@ -1099,7 +1100,7 @@ def html_new_post(edit_post_params: {},
         'accesskey="' + access_keys['menuTimeline'] + '">\n'
     new_post_form += '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + banner_file + '" alt="" /></a>\n' + \
+        banner_path + '" alt="" /></a>\n' + \
         '</header>\n'
 
     mentions_str = ''
