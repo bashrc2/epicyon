@@ -139,8 +139,12 @@ def _html_calendar_day(person_cache: {}, translate: {},
     if '/users/' in actor:
         cal_actor = '/users/' + actor.split('/users/')[1]
 
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    banner_path = '/users/' + nickname + '/' + banner_file
+
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images = [banner_path]
     calendar_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -149,8 +153,6 @@ def _html_calendar_day(person_cache: {}, translate: {},
         '/calendar?year=' + str(year) + '?month=' + str(month_number)
 
     # show banner
-    banner_file, _ = \
-        get_banner_file(base_dir, nickname, domain, theme)
     calendar_str += \
         '<header>\n<a href="' + calendar_link + '" title="' + \
         translate['Switch to calendar view'] + '" alt="' + \
@@ -159,7 +161,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
     calendar_str += \
         '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" alt="" ' + \
-        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        'src="' + banner_path + '" /></a>\n' + \
         '</header>\n<br>\n'
 
     calendar_str += '<main>\n'
