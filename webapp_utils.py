@@ -743,6 +743,7 @@ def html_header_with_external_style(css_filename: str, instance_title: str,
         '    <meta charset="utf-8">\n' + \
         '    <link rel="stylesheet" media="all" ' + \
         'href="' + css_file + '">\n' + \
+        '    <link rel="preload" href="' + css_file + '" as="style">\n' + \
         '    <link rel="manifest" href="/manifest.json">\n' + \
         '    <link href="/favicon.ico" rel="icon" type="image/x-icon">\n' + \
         '    <meta content="/browserconfig.xml" ' + \
