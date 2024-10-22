@@ -406,8 +406,10 @@ def html_citations(base_dir: str, nickname: str, domain: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     html_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # top banner
     banner_file, _ = \
@@ -525,8 +527,10 @@ def html_newswire_mobile(base_dir: str, nickname: str,
     metadata = None
     if text_mode_browser(ua_str):
         metadata = '<meta http-equiv="refresh" content="1800" >\n'
+    preload_images = []
     html_str = \
-        html_header_with_external_style(css_filename, instance_title, metadata)
+        html_header_with_external_style(css_filename, instance_title, metadata,
+                                        preload_images)
 
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
@@ -599,8 +603,10 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     edit_newswire_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # top banner
     edit_newswire_form += \
@@ -755,8 +761,10 @@ def html_edit_news_post(translate: {}, base_dir: str, path: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     edit_news_post_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     edit_news_post_form += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'

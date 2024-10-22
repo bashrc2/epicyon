@@ -323,8 +323,10 @@ def html_podcast_episode(translate: {},
                      dir_str + '/podcast-background.jpg')
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     podcast_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     podcast_properties = newswire_item[8]
     image_url = ''

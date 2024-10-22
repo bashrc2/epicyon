@@ -622,8 +622,10 @@ def html_profile_after_search(authorized: bool,
                 break
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     return html_header_with_external_style(css_filename,
-                                           instance_title, None) + \
+                                           instance_title, None,
+                                           preload_images) + \
         profile_str + text_mode_separator + html_footer()
 
 
@@ -3426,8 +3428,10 @@ def html_edit_profile(server, translate: {},
         system_monitor_str = _html_system_monitor(nickname, translate)
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     edit_profile_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # keyboard navigation
     user_path_str = '/users/' + nickname

@@ -81,8 +81,10 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     html_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     html_str += \
         '<table class="graph">\n' + \
         '<caption>Watchpoints for ' + fitness_id + '</caption>\n' + \

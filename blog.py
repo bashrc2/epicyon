@@ -552,8 +552,10 @@ def html_blog_page(authorized: bool, session,
         css_filename = base_dir + '/epicyon.css'
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     blog_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     _html_blog_remove_cw_button(blog_str, translate)
 
     blogs_index = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
@@ -756,8 +758,10 @@ def html_blog_view(authorized: bool,
         css_filename = base_dir + '/epicyon.css'
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     blog_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     if _no_of_blog_accounts(base_dir) <= 1:
         nickname = _single_blog_account_nickname(base_dir)
@@ -868,8 +872,10 @@ def html_edit_blog(media_instance: bool, translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     edit_blog_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     edit_blog_form += \
         '<form enctype="multipart/form-data" method="POST" ' + \

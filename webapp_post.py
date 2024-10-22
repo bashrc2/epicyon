@@ -3289,8 +3289,10 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         get_config_param(base_dir, 'instanceTitle')
     metadata_str = _html_post_metadata_open_graph(domain, original_post_json,
                                                   system_language)
+    preload_images = []
     header_str = html_header_with_external_style(css_filename,
-                                                 instance_title, metadata_str)
+                                                 instance_title, metadata_str,
+                                                 preload_images)
 
     return header_str + post_str + html_footer()
 
@@ -3353,8 +3355,10 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     metadata = ''
+    preload_images = []
     header_str = \
-        html_header_with_external_style(css_filename, instance_title, metadata)
+        html_header_with_external_style(css_filename, instance_title, metadata,
+                                        preload_images)
     return header_str + replies_str + html_footer()
 
 
@@ -3443,8 +3447,10 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     metadata = ''
+    preload_images = []
     header_str = \
-        html_header_with_external_style(css_filename, instance_title, metadata)
+        html_header_with_external_style(css_filename, instance_title, metadata,
+                                        preload_images)
 
     # banner
     header_str += \

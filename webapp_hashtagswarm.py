@@ -254,8 +254,10 @@ def html_search_hashtag_category(translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     html_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # show a banner above the search box
     search_banner_file, search_banner_filename = \

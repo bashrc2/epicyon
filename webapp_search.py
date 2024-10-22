@@ -79,8 +79,10 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
     # create header
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     emoji_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # show top banner
     if nickname and domain and theme:
@@ -279,8 +281,10 @@ def html_search_shared_items(translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     shared_items_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     if shares_file_type == 'shares':
         title_str = translate['Shared Items Search']
     else:
@@ -405,8 +409,10 @@ def html_search_emoji_text_entry(translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     emoji_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     emoji_str += '<div class="follow">\n'
     emoji_str += '  <div class="followAvatar">\n'
     emoji_str += '  <center>\n'
@@ -451,8 +457,10 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
         css_filename = base_dir + '/search.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     follow_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # set a search banner
     search_banner_filename = \
@@ -637,8 +645,10 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     skill_search_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # show top banner
     if nickname and domain and theme_name:
@@ -741,8 +751,10 @@ def html_history_search(translate: {}, base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     history_search_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # add the page title
     domain_full = get_full_domain(domain, port)
@@ -915,8 +927,10 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     hashtag_search_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     if nickname:
         # banner at top
@@ -1152,8 +1166,10 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     hashtag_search_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # add the page title
     hashtag_search_form += '<center>\n' + \

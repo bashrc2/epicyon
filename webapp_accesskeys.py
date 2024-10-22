@@ -66,8 +66,10 @@ def html_access_keys(base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     access_keys_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     access_keys_form += \
         '<header>\n' + \

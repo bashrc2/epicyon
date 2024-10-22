@@ -48,8 +48,10 @@ def html_terms_of_service(base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     tos_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     tos_form += '<div class="container">' + tos_text + '</div>\n'
     if admin_nickname:
         admin_actor = local_actor_url(http_prefix, admin_nickname, domain_full)

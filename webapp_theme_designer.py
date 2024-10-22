@@ -193,8 +193,10 @@ def html_theme_designer(base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     theme_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme_name)
     theme_form += \

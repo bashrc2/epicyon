@@ -73,8 +73,10 @@ def html_confirm_delete(server,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     delete_post_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     timezone = get_account_timezone(base_dir, nickname, domain)
     mitm = False
     if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
@@ -168,8 +170,10 @@ def html_confirm_remove_shared_item(translate: {},
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     shares_str = html_header_with_external_style(css_filename,
-                                                 instance_title, None)
+                                                 instance_title, None,
+                                                 preload_images)
     shares_str += '<div class="follow">\n'
     shares_str += '  <div class="followAvatar">\n'
     shares_str += '  <center>\n'
@@ -224,8 +228,10 @@ def html_confirm_follow(translate: {}, base_dir: str,
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     follow_str = html_header_with_external_style(css_filename,
-                                                 instance_title, None)
+                                                 instance_title, None,
+                                                 preload_images)
     follow_str += '<div class="follow">\n'
     follow_str += '  <div class="followAvatar">\n'
     follow_str += '  <center>\n'
@@ -283,8 +289,10 @@ def html_confirm_unfollow(translate: {}, base_dir: str,
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     follow_str = html_header_with_external_style(css_filename,
-                                                 instance_title, None)
+                                                 instance_title, None,
+                                                 preload_images)
     follow_str += '<div class="follow">\n'
     follow_str += '  <div class="followAvatar">\n'
     follow_str += '  <center>\n'
@@ -330,8 +338,10 @@ def html_confirm_unblock(translate: {}, base_dir: str,
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     block_str = html_header_with_external_style(css_filename,
-                                                instance_title, None)
+                                                instance_title, None,
+                                                preload_images)
     block_str += '<div class="block">\n'
     block_str += '  <div class="blockAvatar">\n'
     block_str += '  <center>\n'
@@ -377,8 +387,10 @@ def html_confirm_block(translate: {}, base_dir: str,
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     block_str = html_header_with_external_style(css_filename,
-                                                instance_title, None)
+                                                instance_title, None,
+                                                preload_images)
     block_str += '<div class="block">\n'
     block_str += '  <div class="blockAvatar">\n'
     block_str += '  <center>\n'

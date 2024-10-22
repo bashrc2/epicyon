@@ -70,8 +70,10 @@ def html_calendar_delete_confirm(translate: {}, base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     delete_post_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     delete_post_str += \
         '<center>\n<h1>' + post_time + ' ' + str(year) + '/' + \
         str(month_number) + \
@@ -138,8 +140,10 @@ def _html_calendar_day(person_cache: {}, translate: {},
         cal_actor = '/users/' + actor.split('/users/')[1]
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     calendar_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     calendar_link = cal_actor + \
         '/calendar?year=' + str(year) + '?month=' + str(month_number)
@@ -491,8 +495,10 @@ def html_calendar(person_cache: {}, translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     header_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # show banner
     banner_file, _ = \

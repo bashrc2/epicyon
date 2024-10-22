@@ -112,9 +112,11 @@ def html_following_list(base_dir: str, following_filename: str) -> str:
 
             instance_title = \
                 get_config_param(base_dir, 'instanceTitle')
+            preload_images = []
             following_list_html = \
                 html_header_with_external_style(css_filename,
-                                                instance_title, None)
+                                                instance_title, None,
+                                                preload_images)
             for following_address in following_list:
                 if following_address:
                     following_list_html += \
@@ -192,8 +194,10 @@ def html_hashtag_blocked(base_dir: str, translate: {}) -> str:
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     blocked_hashtag_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     blocked_hashtag_form += '<div><center>\n'
     blocked_hashtag_form += \
         '  <p class="screentitle">' + \
@@ -714,12 +718,19 @@ def get_right_image_file(base_dir: str,
 
 
 def html_header_with_external_style(css_filename: str, instance_title: str,
-                                    metadata: str, lang='en') -> str:
+                                    metadata: str, preload_images: [],
+                                    lang='en') -> str:
     if metadata is None:
         metadata = ''
     css_file = '/' + css_filename.split('/')[-1]
     pwa_theme_color, pwa_theme_background_color = \
         get_pwa_theme_colors(css_filename)
+    preload_images_str = ''
+    if preload_images:
+        for image_path in preload_images:
+            preload_images_str += \
+                '    <link rel="preload" as="image" href="' + \
+                image_path + '">\n'
     html_str = \
         '<!DOCTYPE html>\n' + \
         '<!--\n' + \
@@ -738,7 +749,7 @@ def html_header_with_external_style(css_filename: str, instance_title: str,
         'name="msapplication-config">\n' + \
         '    <meta content="yes" name="apple-mobile-web-app-capable">\n' + \
         '    <link href="/apple-touch-icon.png" rel="apple-touch-icon" ' + \
-        'sizes="180x180">\n' + \
+        'sizes="180x180">\n' + preload_images_str + \
         '    <meta name="theme-color" content="' + pwa_theme_color + '">\n' + \
         metadata + \
         '    <meta name="apple-mobile-web-app-status-bar-style" ' + \
@@ -757,9 +768,11 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
     https://schema.org/Person
     """
     if not actor_json:
+        preload_images = []
         html_str = \
             html_header_with_external_style(css_filename,
-                                            instance_title, None, lang)
+                                            instance_title, None,
+                                            preload_images, lang)
         return html_str
 
     city_markup = ''
@@ -939,9 +952,11 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
                     "    <meta content=\"" + value + \
                     "\" property=\"og:" + og_tag + "\" />\n"
 
+    preload_images = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title,
-                                        og_metadata + profile_markup, lang)
+                                        og_metadata + profile_markup,
+                                        preload_images, lang)
     return html_str
 
 
@@ -996,10 +1011,11 @@ def html_header_with_website_markup(css_filename: str, instance_title: str,
         '" property="og:locale" />\n' + \
         '    <meta content="summary_large_image" property="twitter:card" />\n'
 
+    preload_images = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title,
                                         og_metadata + website_markup,
-                                        system_language)
+                                        preload_images, system_language)
     return html_str
 
 
@@ -1054,10 +1070,11 @@ def html_header_with_blog_markup(css_filename: str, instance_title: str,
         '    <meta property="article:modified_time" content="' + \
         modified + '" />\n'
 
+    preload_images = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title,
                                         og_metadata + blog_markup,
-                                        system_language)
+                                        preload_images, system_language)
     return html_str
 
 
@@ -2101,8 +2118,10 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
 
+    preload_images = []
     return html_header_with_external_style(css_filename,
-                                           instance_title, None) + \
+                                           instance_title, None,
+                                           preload_images) + \
         share_str + html_footer()
 
 

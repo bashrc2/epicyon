@@ -1085,8 +1085,10 @@ def html_new_post(edit_post_params: {},
         date_and_location += end_edit_section()
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     new_post_form = html_header_with_external_style(css_filename,
-                                                    instance_title, None)
+                                                    instance_title, None,
+                                                    preload_images)
 
     new_post_form += \
         '<header>\n' + \

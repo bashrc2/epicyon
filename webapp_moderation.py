@@ -119,8 +119,10 @@ def html_account_info(translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     info_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     search_nickname = get_nickname_from_actor(search_handle)
     if not search_nickname:
@@ -337,8 +339,10 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     info_form = html_header_with_external_style(css_filename,
-                                                instance_title, None)
+                                                instance_title, None,
+                                                preload_images)
 
     # show banner
     banner_file, _ = \

@@ -230,7 +230,9 @@ def html_front_screen(signing_priv_key_pem: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     profile_str = \
-        html_header_with_external_style(css_filename, instance_title, None) + \
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images) + \
         profile_str + profile_footer_str + html_footer()
     return profile_str

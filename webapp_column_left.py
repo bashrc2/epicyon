@@ -397,8 +397,10 @@ def html_links_mobile(base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     html_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
     html_str += \
@@ -468,8 +470,10 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
+    preload_images = []
     edit_links_form = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     # top banner
     edit_links_form += \

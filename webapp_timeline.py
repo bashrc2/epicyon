@@ -618,10 +618,6 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    # filename of the banner shown at the top
-    banner_file, _ = \
-        get_banner_file(base_dir, nickname, domain, theme)
-
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '1')
 
     # is the user a moderator?
@@ -774,10 +770,43 @@ def html_timeline(default_timeline: str,
             bookmarks_button + '" tabindex="2">' + \
             '<span>' + translate['Bookmarks'] + '</span></button></a>'
 
+    # filename of the banner shown at the top
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    banner_path = users_path + '/' + banner_file
+
+    # these images are pre-loaded to prevent the web page from
+    # jumping around when rendering
+    preload_images = [
+        banner_path,
+        '/icons/showhide.png',
+        '/icons/repeat_hide.png',
+        '/icons/repeat_show.png',
+        '/icons/calendar.png',
+        '/icons/search.png',
+        '/icons/newpost.png',
+        '/icons/mute.png',
+        '/icons/unmute.png',
+        '/icons/reaction.png',
+        '/icons/bookmark_inactive.png',
+        '/icons/bookmark.png',
+        '/icons/like.png',
+        '/icons/like_inactive.png',
+        '/icons/repeat_inactive.png',
+        '/icons/repeat.png',
+        '/icons/reply.png',
+        '/icons/theme.png',
+        '/icons/logorss.png',
+        '/icons/edit.png',
+        '/icons/publish.png',
+        '/icons/categoriesrss.png'
+    ]
+
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
     tl_str = \
-        html_header_with_external_style(css_filename, instance_title, None)
+        html_header_with_external_style(css_filename, instance_title, None,
+                                        preload_images)
 
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '4')
 
@@ -816,7 +845,7 @@ def html_timeline(default_timeline: str,
         access_keys['menuProfile'] + '">\n'
     tl_str += '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" alt="" ' + \
-        'src="' + users_path + '/' + banner_file + '" /></a>\n' + \
+        'src="' + banner_path + '" /></a>\n' + \
         '</header>\n'
 
     is_text_browser = text_mode_browser(ua_str)
