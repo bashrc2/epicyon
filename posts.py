@@ -4869,7 +4869,8 @@ def _create_box_items(base_dir: str,
                                 posts_added_to_timeline += 1
                                 post_urls_in_box.append(post_url)
                                 continue
-                            print('Post not added to timeline')
+                            print('REJECT: Post not added to timeline ' +
+                                  post_url)
 
                 # read the post from file
                 full_post_filename = \
@@ -4886,7 +4887,7 @@ def _create_box_items(base_dir: str,
                         total_posts_count += 1
                         post_urls_in_box.append(post_url)
                     else:
-                        print('WARN: Unable to add post ' + post_url +
+                        print('REJECT: Unable to add post ' + post_url +
                               ' nickname ' + nickname +
                               ' timeline ' + boxname)
                 else:
@@ -4903,18 +4904,18 @@ def _create_box_items(base_dir: str,
                                 total_posts_count += 1
                                 post_urls_in_box.append(post_url)
                             else:
-                                print('WARN: Unable to add features post ' +
+                                print('REJECT: Unable to add features post ' +
                                       post_url + ' nickname ' + nickname +
                                       ' timeline ' + boxname)
                         else:
-                            print('WARN: features timeline. ' +
+                            print('REJECT: features timeline. ' +
                                   'Unable to locate post ' + post_url)
                     else:
                         if timeline_nickname == 'news':
-                            print('WARN: Unable to locate news post ' +
+                            print('REJECT: Unable to locate news post ' +
                                   post_url + ' nickname ' + nickname)
                         else:
-                            print('WARN: Unable to locate post ' + post_url +
+                            print('REJECT: Unable to locate post ' + post_url +
                                   ' nickname ' + nickname)
     except OSError as exc:
         print('EX: _create_box_items unable to read ' + index_filename +
