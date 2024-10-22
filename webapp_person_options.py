@@ -250,16 +250,18 @@ def html_person_options(default_timeline: str,
             '    <a href="' + donate_url + \
             '" tabindex="-1">' + translate['Donate'] + '</a>\n'
 
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme)
+    banner_path = '/users/' + nickname + '/' + banner_file
+
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images = [banner_path]
     options_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
 
     # show banner
-    banner_file, _ = \
-        get_banner_file(base_dir, nickname, domain, theme)
     back_path = '/'
     if nickname:
         back_path = '/users/' + nickname + '/' + default_timeline
@@ -277,7 +279,7 @@ def html_person_options(default_timeline: str,
     options_str += \
         '<img loading="lazy" decoding="async" ' + \
         'class="timeline-banner" alt="" ' + \
-        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n' + \
+        'src="' + banner_path + '" /></a>\n' + \
         '</header>\n<br><br>\n'
 
     nav_links = {}
