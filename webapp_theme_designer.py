@@ -191,21 +191,23 @@ def html_theme_designer(base_dir: str,
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
+    banner_file, _ = \
+        get_banner_file(base_dir, nickname, domain, theme_name)
+    banner_path = '/users/' + nickname + '/' + banner_file
+
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images = [banner_path]
     theme_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
-    banner_file, _ = \
-        get_banner_file(base_dir, nickname, domain, theme_name)
     theme_form += \
         '<a href="/users/' + nickname + '/' + default_timeline + '" ' + \
         'accesskey="' + access_keys['menuTimeline'] + '">' + \
         '<img loading="lazy" decoding="async" class="timeline-banner" ' + \
         'title="' + translate['Switch to timeline view'] + '" ' + \
         'alt="' + translate['Switch to timeline view'] + '" ' + \
-        'src="/users/' + nickname + '/' + banner_file + '" /></a>\n'
+        'src="' + banner_path + '" /></a>\n'
     theme_form += '<div class="container">\n'
 
     theme_form += \
