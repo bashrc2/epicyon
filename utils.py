@@ -3553,6 +3553,7 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
     if not post_filename:
         return
 
+    post_url = None
     if recent_posts_cache.get('index'):
         # if this is a full path then remove the directories
         index_filename = post_filename
@@ -3582,6 +3583,9 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
     # if the post is in the inbox index then remove it
     index_file = \
         acct_dir(base_dir, nickname, domain) + '/inbox.index'
+    if not post_url:
+        post_url = remove_eol(index_filename)
+        post_url = post_url.replace('.json', '').strip()
     post_url2 = post_url.replace('/', '#') + '.json'
     remove_post_from_index(post_url2, debug, index_file)
 
