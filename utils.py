@@ -3584,6 +3584,9 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
     index_file = \
         acct_dir(base_dir, nickname, domain) + '/inbox.index'
     if not post_url:
+        index_filename = post_filename
+        if '/' in post_filename:
+            index_filename = post_filename.split('/')[-1]
         post_url = remove_eol(index_filename)
         post_url = post_url.replace('.json', '').strip()
     post_url2 = post_url.replace('/', '#') + '.json'
