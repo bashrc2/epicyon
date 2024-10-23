@@ -4854,6 +4854,8 @@ def _create_box_items(base_dir: str,
 
                 # is this a duplicate?
                 if post_url in post_urls_in_box:
+                    print('REJECT: Duplicate in timeline ' +
+                          boxname + ' ' + post_url)
                     continue
 
                 # is the post cached in memory?
@@ -4879,6 +4881,8 @@ def _create_box_items(base_dir: str,
                 if full_post_filename:
                     # has the post been rejected?
                     if os.path.isfile(full_post_filename + '.reject'):
+                        print('REJECT: rejected post in timeline ' +
+                              boxname + ' ' + post_url)
                         continue
 
                     if _add_post_to_timeline(full_post_filename, boxname,
