@@ -4885,7 +4885,8 @@ def _create_box_items(base_dir: str,
                         print('REJECT: rejected post in timeline ' +
                               boxname + ' ' + post_url + ' ' +
                               full_post_filename)
-                        remove_post_from_index(post_url, False, index_filename)
+                        remove_post_from_index(post_url + '.json', False,
+                                               index_filename)
                         continue
 
                     if _add_post_to_timeline(full_post_filename, boxname,
