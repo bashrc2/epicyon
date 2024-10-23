@@ -4882,11 +4882,12 @@ def _create_box_items(base_dir: str,
                 if full_post_filename:
                     # has the post been rejected?
                     if os.path.isfile(full_post_filename + '.reject'):
-                        print('REJECT: rejected post in timeline ' +
-                              boxname + ' ' + post_url + ' ' +
-                              full_post_filename)
-                        remove_post_from_index(post_url + '.json', False,
+                        post_url2 = post_url.replace('/', '#') + '.json'
+                        remove_post_from_index(post_url2, False,
                                                index_filename)
+                        print('REJECT: rejected post in timeline ' +
+                              boxname + ' ' + post_url2 + ' ' +
+                              full_post_filename)
                         continue
 
                     if _add_post_to_timeline(full_post_filename, boxname,

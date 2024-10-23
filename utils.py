@@ -3582,6 +3582,7 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
     # if the post is in the inbox index then remove it
     index_file = \
         acct_dir(base_dir, nickname, domain) + '/inbox.index'
+    post_url = post_url.replace('/', '#')
     remove_post_from_index(post_url + '.json', debug, index_file)
 
 
