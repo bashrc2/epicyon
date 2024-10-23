@@ -4882,7 +4882,8 @@ def _create_box_items(base_dir: str,
                     # has the post been rejected?
                     if os.path.isfile(full_post_filename + '.reject'):
                         print('REJECT: rejected post in timeline ' +
-                              boxname + ' ' + post_url)
+                              boxname + ' ' + post_url + ' ' +
+                              full_post_filename)
                         continue
 
                     if _add_post_to_timeline(full_post_filename, boxname,
