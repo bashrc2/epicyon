@@ -2330,7 +2330,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             # if the announce could not be downloaded then mark it as rejected
             announced_post_id = remove_id_ending(post_json_object['id'])
             reject_post_id(base_dir, nickname, domain, announced_post_id,
-                           recent_posts_cache)
+                           recent_posts_cache, False)
             return ''
         post_json_object = post_json_announce
 

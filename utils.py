@@ -2233,38 +2233,46 @@ def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
     post_json['attachment'] = []
 
 
+def remove_post_from_index(post_url: str, debug: bool,
+                           index_file: str) -> None:
+    """Removes a url from a box index
+    """
+    if not os.path.isfile(index_file):
+        return
+    post_id = remove_id_ending(post_url)
+    if not text_in_file(post_id, index_file):
+        return
+    lines = []
+    try:
+        with open(index_file, 'r', encoding='utf-8') as fp_mod1:
+            lines = fp_mod1.readlines()
+    except OSError as exc:
+        print('EX: remove_post_from_index unable to read ' +
+              index_file + ' ' + str(exc))
+
+    if lines:
+        try:
+            with open(index_file, 'w+',
+                      encoding='utf-8') as fp_mod2:
+                for line in lines:
+                    if line.strip("\n").strip("\r") != post_id:
+                        fp_mod2.write(line)
+                        continue
+                    if debug:
+                        print('DEBUG: removed ' + post_id +
+                              ' from index ' + index_file)
+        except OSError as exc:
+            print('EX: ' +
+                  'remove_post_from_index unable to write ' +
+                  index_file + ' ' + str(exc))
+
+
 def remove_moderation_post_from_index(base_dir: str, post_url: str,
                                       debug: bool) -> None:
     """Removes a url from the moderation index
     """
     moderation_index_file = data_dir(base_dir) + '/moderation.txt'
-    if not os.path.isfile(moderation_index_file):
-        return
-    post_id = remove_id_ending(post_url)
-    if text_in_file(post_id, moderation_index_file):
-        lines = []
-        try:
-            with open(moderation_index_file, 'r', encoding='utf-8') as fp_mod1:
-                lines = fp_mod1.readlines()
-        except OSError as exc:
-            print('EX: remove_moderation_post_from_index unable to read ' +
-                  moderation_index_file + ' ' + str(exc))
-
-        if lines:
-            try:
-                with open(moderation_index_file, 'w+',
-                          encoding='utf-8') as fp_mod2:
-                    for line in lines:
-                        if line.strip("\n").strip("\r") != post_id:
-                            fp_mod2.write(line)
-                            continue
-                        if debug:
-                            print('DEBUG: removed ' + post_id +
-                                  ' from moderation index')
-            except OSError as exc:
-                print('EX: ' +
-                      'remove_moderation_post_from_index unable to write ' +
-                      moderation_index_file + ' ' + str(exc))
+    remove_post_from_index(post_url, debug, moderation_index_file)
 
 
 def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
@@ -3536,7 +3544,8 @@ def _convert_to_camel_case(text: str) -> str:
 
 
 def reject_post_id(base_dir: str, nickname: str, domain: str,
-                   post_id: str, recent_posts_cache: {}) -> None:
+                   post_id: str, recent_posts_cache: {},
+                   debug: bool) -> None:
     """ Marks the given post as rejected,
     for example an announce which is too old
     """
@@ -3569,6 +3578,11 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
     except OSError:
         print('EX: reject_post_id unable to write ' +
               post_filename + '.reject')
+
+    # if the post is in the inbox index then remove it
+    index_file = \
+        acct_dir(base_dir, nickname, domain) + '/inbox.index'
+    remove_post_from_index(post_url, debug, index_file)
 
 
 def load_translations_from_file(base_dir: str, language: str) -> ({}, str):

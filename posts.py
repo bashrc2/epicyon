@@ -41,6 +41,7 @@ from flags import contains_private_key
 from flags import has_group_type
 from flags import is_premium_account
 from flags import url_permitted
+from utils import remove_post_from_index
 from utils import replace_strings
 from utils import valid_content_warning
 from utils import get_actor_from_post_id
@@ -4884,6 +4885,7 @@ def _create_box_items(base_dir: str,
                         print('REJECT: rejected post in timeline ' +
                               boxname + ' ' + post_url + ' ' +
                               full_post_filename)
+                        remove_post_from_index(post_url, False, index_filename)
                         continue
 
                     if _add_post_to_timeline(full_post_filename, boxname,
@@ -6150,11 +6152,12 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
 
 def _reject_announce(announce_filename: str,
                      base_dir: str, nickname: str, domain: str,
-                     announce_post_id: str, recent_posts_cache: {}):
+                     announce_post_id: str, recent_posts_cache: {},
+                     debug: bool):
     """Marks an announce as rejected
     """
     reject_post_id(base_dir, nickname, domain, announce_post_id,
-                   recent_posts_cache)
+                   recent_posts_cache, debug)
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announce_filename + '.reject'):
@@ -6282,7 +6285,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if announced_json.get('error'):
             print('WARN: ' +
@@ -6295,7 +6298,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
 
         announced_actor = announced_json['id']
@@ -6307,7 +6310,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if announced_json['type'] == 'Video':
             converted_json = \
@@ -6323,14 +6326,14 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   'or /objects/ or /p/ ' + str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if not has_users_path(announced_actor):
             print('WARN: announced post id does not contain /users/ ' +
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if announced_json['type'] not in ('Note', 'Event', 'Page',
                                           'Question', 'Article'):
@@ -6339,7 +6342,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
             # You can only announce Note, Page, Article or Question types
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if announced_json['type'] == 'Question':
             if not announced_json.get('endTime') or \
@@ -6350,14 +6353,14 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       str(announced_json))
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
-                                 recent_posts_cache)
+                                 recent_posts_cache, debug)
                 return None
             if not isinstance(announced_json['oneOf'], list):
                 print('WARN: announced Question oneOf should be a list ' +
                       str(announced_json))
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
-                                 recent_posts_cache)
+                                 recent_posts_cache, debug)
                 return None
             if is_question_filtered(base_dir, nickname, domain,
                                     system_language, announced_json):
@@ -6366,21 +6369,21 @@ def download_announce(session, base_dir: str, http_prefix: str,
                           str(announced_json['id']))
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
-                                 recent_posts_cache)
+                                 recent_posts_cache, debug)
                 return None
         if 'content' not in announced_json:
             print('WARN: announced post does not have content ' +
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if not announced_json.get('published'):
             print('WARN: announced post does not have published ' +
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if '.' in announced_json['published'] and \
            'Z' in announced_json['published']:
@@ -6391,7 +6394,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   str(announced_json['published']))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if not understood_post_language(base_dir, nickname,
                                         announced_json, system_language,
@@ -6411,7 +6414,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         summary_str = \
             get_summary_from_post(announced_json, system_language, [])
@@ -6428,7 +6431,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       str(announced_json['id']))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if reject_twitter_summary(base_dir, nickname, domain,
                                   summary_str):
@@ -6436,21 +6439,21 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if contains_private_key(content_str):
             print("WARN: announced post contains someone's private key " +
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
         if invalid_ciphertext(content_str):
             print('WARN: announced post contains invalid ciphertext ' +
                   str(announced_json))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
 
         # remove any long words
@@ -6478,7 +6481,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
             # Create wrap failed
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
-                             recent_posts_cache)
+                             recent_posts_cache, debug)
             return None
 
         # if poll/vote/question is not to be shown
@@ -6504,7 +6507,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       str(attributed_nickname) + '@' + attributed_domain)
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
-                                 recent_posts_cache)
+                                 recent_posts_cache, debug)
                 return None
         post_json_object = announced_json
         replace_you_tube(post_json_object, yt_replace_domain, system_language)
