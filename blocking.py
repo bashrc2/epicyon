@@ -1327,21 +1327,22 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
     if also_update_post_id:
         post_filename = locate_post(base_dir, nickname, domain,
                                     also_update_post_id)
-        if os.path.isfile(post_filename):
-            post_json_obj = load_json(post_filename)
-            cached_post_filename = \
-                get_cached_post_filename(base_dir, nickname, domain,
-                                         post_json_obj)
-            if cached_post_filename:
-                if os.path.isfile(cached_post_filename):
-                    try:
-                        os.remove(cached_post_filename)
-                        print('MUTE: cached referenced post removed ' +
-                              cached_post_filename)
-                    except OSError:
-                        print('EX: ' +
-                              'MUTE cached referenced post not removed ' +
-                              cached_post_filename)
+        if post_filename:
+            if os.path.isfile(post_filename):
+                post_json_obj = load_json(post_filename)
+                cached_post_filename = \
+                    get_cached_post_filename(base_dir, nickname, domain,
+                                             post_json_obj)
+                if cached_post_filename:
+                    if os.path.isfile(cached_post_filename):
+                        try:
+                            os.remove(cached_post_filename)
+                            print('MUTE: cached referenced post removed ' +
+                                  cached_post_filename)
+                        except OSError:
+                            print('EX: ' +
+                                  'MUTE cached referenced post not removed ' +
+                                  cached_post_filename)
 
         if recent_posts_cache.get('json'):
             if recent_posts_cache['json'].get(also_update_post_id):
