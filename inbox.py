@@ -395,11 +395,12 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
                              blocked_cache: [],
                              block_federated: [],
                              system_language: str,
-                             mitm: bool) -> str:
+                             mitm: bool,
+                             max_message_bytes: int) -> str:
     """Saves the given json to the inbox queue for the person
     key_id specifies the actor sending the post
     """
-    if len(message_bytes) > 20000:
+    if len(message_bytes) > max_message_bytes:
         print('REJECT: inbox message too long ' +
               str(len(message_bytes)) + ' bytes')
         return None
