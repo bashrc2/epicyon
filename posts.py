@@ -5299,7 +5299,7 @@ def _novel_fields_for_person(nickname: str, domain: str,
         'xRobotsTag',
         'content_is_html',
         'repliesCount',
-        'thread',
+        'thread', 'root',
         'searchableBy'
     )
     for post_filename in posts_in_box:
