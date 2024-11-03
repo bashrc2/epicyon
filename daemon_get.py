@@ -3104,7 +3104,8 @@ def daemon_http_get(self) -> None:
                         self.server.access_keys,
                         self.server.min_images_for_accounts,
                         self.server.buy_sites,
-                        self.server.auto_cw_cache)
+                        self.server.auto_cw_cache,
+                        ua_str)
         self.server.getreq_busy = False
         return
 

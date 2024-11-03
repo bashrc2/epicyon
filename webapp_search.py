@@ -880,7 +880,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                         dogwhistles: {}, map_format: str,
                         access_keys: {}, box_name: str,
                         min_images_for_accounts: [],
-                        buy_sites: {}, auto_cw_cache: {}) -> str:
+                        buy_sites: {}, auto_cw_cache: {},
+                        ua_str: str) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -972,7 +973,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
 
     # maps for geolocations with this hashtag
     maps_str = html_hashtag_maps(base_dir, hashtag, translate, map_format,
-                                 nickname, domain, session)
+                                 nickname, domain, session, ua_str)
     if maps_str:
         maps_str = '<center>' + maps_str + '</center>\n'
     hashtag_search_form += maps_str

@@ -168,7 +168,8 @@ def hashtag_search2(self, calling_domain: str,
                     access_keys: {},
                     min_images_for_accounts: [],
                     buy_sites: [],
-                    auto_cw_cache: {}) -> None:
+                    auto_cw_cache: {},
+                    ua_str: str) -> None:
     """Return the result of a hashtag search
     """
     page_number = 1
@@ -235,7 +236,7 @@ def hashtag_search2(self, calling_domain: str,
                             'search',
                             min_images_for_accounts,
                             buy_sites,
-                            auto_cw_cache)
+                            auto_cw_cache, ua_str)
     if hashtag_str:
         msg = hashtag_str.encode('utf-8')
         msglen = len(msg)

@@ -84,7 +84,8 @@ def _receive_search_hashtag(self, actor_str: str,
                             min_images_for_accounts: {},
                             buy_sites: [],
                             auto_cw_cache: {},
-                            calling_domain: str) -> bool:
+                            calling_domain: str,
+                            ua_str: str) -> bool:
     """Receive a search for a hashtag from the search screen
     """
     nickname = get_nickname_from_actor(actor_str)
@@ -132,7 +133,7 @@ def _receive_search_hashtag(self, actor_str: str,
                             'search',
                             min_images_for_accounts,
                             buy_sites,
-                            auto_cw_cache)
+                            auto_cw_cache, ua_str)
     if hashtag_str:
         msg = hashtag_str.encode('utf-8')
         msglen = len(msg)
@@ -752,7 +753,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                          key_shortcuts: {},
                          max_shares_on_profile: int,
                          no_of_books: int,
-                         shared_items_federated_domains: []) -> None:
+                         shared_items_federated_domains: [],
+                         ua_str: str) -> None:
     """Receive a search query
     """
     # get the page number
@@ -857,7 +859,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                    min_images_for_accounts,
                                    buy_sites,
                                    auto_cw_cache,
-                                   calling_domain):
+                                   calling_domain,
+                                   ua_str):
             return
     elif (search_str.startswith('*') or
           search_str.endswith(' skill')):

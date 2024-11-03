@@ -867,7 +867,7 @@ def map_format_from_tagmaps_path(base_dir: str, path: str,
 def html_hashtag_maps(base_dir: str, tag_name: str,
                       translate: {}, map_format: str,
                       nickname: str, domain: str,
-                      session) -> str:
+                      session, ua_str: str) -> str:
     """Returns html for maps associated with a hashtag
     """
     tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
@@ -878,6 +878,7 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
 
     html_str = ''
     map_str = None
+    ua_str_lower = ua_str.lower()
     for period_str, hours in time_period.items():
         new_map_str = \
             _hashtag_map_within_hours(base_dir, tag_name, hours,
@@ -889,17 +890,22 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
             continue
         map_str = new_map_str
         period_str2 = period_str.replace('Last ', '').lower()
-        endpoint_str = \
-            '/tagmaps/' + tag_name + '-' + period_str2.replace(' ', '_')
+        tag_name_str = tag_name + '-' + period_str2.replace(' ', '_')
+        endpoint_str = '/tagmaps/' + tag_name_str
         if html_str:
             html_str += ' '
         description = period_str
         if translate.get(period_str):
             description = translate[period_str]
-        # NOTE: don't use download="preferredfilename" which is
-        # unsupported by some browsers
-        html_str += '<a href="' + endpoint_str + '" download>' + \
-            description + '</a>'
+        if 'mozilla' in ua_str_lower or 'firefox' in ua_str_lower:
+            html_str += '<a href="' + endpoint_str + \
+                '" download="' + tag_name_str + '.kml">' + \
+                description + '</a>'
+        else:
+            # NOTE: don't use download="preferredfilename" which is
+            # unsupported by some browsers
+            html_str += '<a href="' + endpoint_str + '" download>' + \
+                description + '</a>'
     if html_str:
         html_str = '📌 ' + html_str
     return html_str

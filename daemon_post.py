@@ -458,7 +458,8 @@ def daemon_http_post(self) -> None:
                              self.server.key_shortcuts,
                              self.server.max_shares_on_profile,
                              self.server.no_of_books,
-                             self.server.shared_items_federated_domains)
+                             self.server.shared_items_federated_domains,
+                             ua_str)
         self.server.postreq_busy = False
         return
 
