@@ -280,9 +280,15 @@ def html_search_hashtag_category(translate: {},
         for _, hashtag_list in hashtags_dict.items():
             hashtag_list.sort()
             for tag_name in hashtag_list:
+                tag_display_name = tag_name
+                tag_map_filename = \
+                    os.path.join(base_dir + '/tagmaps', tag_name + '.txt')
+                if os.path.isfile(tag_map_filename):
+                    tag_display_name = '📌' + tag_name
+
                 html_str += \
                     '<a href="' + actor + '/tags/' + tag_name + \
-                    '" class="hashtagswarm">' + tag_name + '</a>\n'
+                    '" class="hashtagswarm">' + tag_display_name + '</a>\n'
 
     html_str += \
         '</center>' + \
