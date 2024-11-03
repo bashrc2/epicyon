@@ -95,6 +95,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     recently = days_since_epoch - 1
     tag_swarm = []
     category_swarm = []
+    swarm_map = []
     domain_histogram = {}
 
     # Load the blocked hashtags into memory.
@@ -194,6 +195,13 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
                                    "'" not in category_str:
                                     if category_str not in category_swarm:
                                         category_swarm.append(category_str)
+                                    # check if the tag has an associated map
+                                    tag_map_filename = \
+                                        os.path.join(base_dir + '/tagmaps',
+                                                     hash_tag_name + '.txt')
+                                    if os.path.isfile(tag_map_filename):
+                                        if category_str not in swarm_map:
+                                            swarm_map.append(category_str)
                         break
             except OSError as exc:
                 print('EX: html_hash_tag_swarm unable to read ' +
@@ -210,9 +218,15 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
         if len(category_swarm) > 3:
             category_swarm.sort()
             for category_str in category_swarm:
+                category_display_str = category_str
+                # does this category have at least one hashtag with an
+                # associated map?
+                if category_str in swarm_map:
+                    category_display_str = '📌' + category_str
                 category_swarm_str += \
                     '<a href="' + actor + '/category/' + category_str + \
-                    '" class="hashtagswarm"><b>' + category_str + '</b></a>\n'
+                    '" class="hashtagswarm"><b>' + \
+                    category_display_str + '</b></a>\n'
             category_swarm_str += '<br>\n'
 
     # swarm of tags
