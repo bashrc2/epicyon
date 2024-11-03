@@ -999,6 +999,11 @@ def show_shares_timeline(self, authorized: bool,
                                     '_GET', '_show_shares_timeline',
                                     debug)
                 return True
+        if debug:
+            nickname = path.replace('/users/', '')
+            nickname = nickname.replace('/tlshares', '')
+            print('DEBUG: ' + nickname +
+                  ' was not authorized to access ' + path)
     # not the shares timeline
     if debug:
         print('DEBUG: GET access to shares timeline is unauthorized')
@@ -1136,6 +1141,11 @@ def show_wanted_timeline(self, authorized: bool,
                                     '_GET', '_show_wanted_timeline',
                                     debug)
                 return True
+        if debug:
+            nickname = path.replace('/users/', '')
+            nickname = nickname.replace('/tlwanted', '')
+            print('DEBUG: ' + nickname +
+                  ' was not authorized to access ' + path)
     # not the shares timeline
     if debug:
         print('DEBUG: GET access to wanted timeline is unauthorized')
