@@ -3254,7 +3254,8 @@ def daemon_http_get(self) -> None:
                                 self.server.theme_name,
                                 self.server.session,
                                 self.server.session_onion,
-                                self.server.session_i2p)
+                                self.server.session_i2p,
+                                ua_str)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -3300,7 +3301,8 @@ def daemon_http_get(self) -> None:
                                 self.server.theme_name,
                                 self.server.session,
                                 self.server.session_onion,
-                                self.server.session_i2p)
+                                self.server.session_i2p,
+                                ua_str)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)

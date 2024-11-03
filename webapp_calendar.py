@@ -120,7 +120,8 @@ def _html_calendar_day(person_cache: {}, translate: {},
                        month_name: str, actor: str,
                        theme: str, access_keys: {},
                        system_language: str,
-                       session, session_onion, session_i2p) -> str:
+                       session, session_onion, session_i2p,
+                       ua_str: str) -> str:
     """Show a day within the calendar
     """
     account_dir = acct_dir(base_dir, nickname, domain)
@@ -345,13 +346,23 @@ def _html_calendar_day(person_cache: {}, translate: {},
     calendar_str += '</table>\n</main>\n'
 
     # icalendar download link
-    # NOTE: don't use download="preferredfilename" which is
-    # unsupported by some browsers
-    calendar_str += \
-        '    <a href="' + path + '?ical=true" ' + \
-        'download class="imageAnchor" tabindex="3">' + \
-        '<img class="ical" src="/icons/ical.png" ' + \
-        'title="iCalendar" alt="iCalendar" /></a>\n'
+    ua_str_lower = ua_str.lower()
+    if 'mozilla' in ua_str_lower or 'firefox' in ua_str_lower:
+        default_cal_filename = 'calendar_day.ics'
+        calendar_str += \
+            '    <a href="' + path + '?ical=true" ' + \
+            'download="' + default_cal_filename + \
+            '" class="imageAnchor" tabindex="3">' + \
+            '<img class="ical" src="/icons/ical.png" ' + \
+            'title="iCalendar" alt="iCalendar" /></a>\n'
+    else:
+        # NOTE: don't use download="preferredfilename" which is
+        # unsupported by some browsers
+        calendar_str += \
+            '    <a href="' + path + '?ical=true" ' + \
+            'download class="imageAnchor" tabindex="3">' + \
+            '<img class="ical" src="/icons/ical.png" ' + \
+            'title="iCalendar" alt="iCalendar" /></a>\n'
 
     calendar_str += html_footer()
 
@@ -364,7 +375,8 @@ def html_calendar(person_cache: {}, translate: {},
                   text_mode_banner: str, access_keys: {},
                   icalendar: bool, system_language: str,
                   default_timeline: str, theme: str,
-                  session, session_onion, session_i2p) -> str:
+                  session, session_onion, session_i2p,
+                  ua_str: str) -> str:
     """Show the calendar for a person
     """
     domain = remove_domain_port(domain_full)
@@ -452,7 +464,8 @@ def html_calendar(person_cache: {}, translate: {},
                                   month_name, actor,
                                   theme, access_keys,
                                   system_language, session,
-                                  session_onion, session_i2p)
+                                  session_onion, session_i2p,
+                                  ua_str)
 
     if icalendar:
         return get_month_events_icalendar(base_dir, nickname, domain,
@@ -674,13 +687,24 @@ def html_calendar(person_cache: {}, translate: {},
         translate['Add to the calendar'] + '</a></p>\n<p>' + \
         show_reminders_link + '</p>\n</center>\n'
 
-    # NOTE: don't use download="preferredfilename" which is
-    # unsupported by some browsers
-    calendar_icon_str = \
-        '    <a href="' + path + '?ical=true" ' + \
-        'download class="imageAnchor" tabindex="3">' + \
-        '<img class="ical" src="/icons/ical.png" ' + \
-        'title="iCalendar" alt="iCalendar" /></a>\n'
+    # calendar download link
+    ua_str_lower = ua_str.lower()
+    if 'mozilla' in ua_str_lower or 'firefox' in ua_str_lower:
+        default_cal_filename = 'calendar_month.ics'
+        calendar_icon_str = \
+            '    <a href="' + path + '?ical=true" ' + \
+            'download="' + default_cal_filename + \
+            '" class="imageAnchor" tabindex="3">' + \
+            '<img class="ical" src="/icons/ical.png" ' + \
+            'title="iCalendar" alt="iCalendar" /></a>\n'
+    else:
+        # NOTE: don't use download="preferredfilename" which is
+        # unsupported by some browsers
+        calendar_icon_str = \
+            '    <a href="' + path + '?ical=true" ' + \
+            'download class="imageAnchor" tabindex="3">' + \
+            '<img class="ical" src="/icons/ical.png" ' + \
+            'title="iCalendar" alt="iCalendar" /></a>\n'
 
     cal_str = \
         header_str + screen_reader_cal + calendar_str + \
