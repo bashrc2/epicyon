@@ -188,7 +188,8 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
                         if os.path.isfile(category_filename):
                             category_str = \
                                 get_hashtag_category(base_dir, hash_tag_name)
-                            if len(category_str) < max_tag_length:
+                            if category_str and \
+                               len(category_str) < max_tag_length:
                                 if '#' not in category_str and \
                                    '&' not in category_str and \
                                    '"' not in category_str and \
