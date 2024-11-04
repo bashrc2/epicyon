@@ -10,6 +10,7 @@ __module_group__ = "Calendar"
 import os
 from datetime import datetime
 from datetime import date
+from utils import browser_supports_download_filename
 from utils import remove_html
 from utils import get_display_name
 from utils import get_config_param
@@ -347,7 +348,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
 
     # icalendar download link
     ua_str_lower = ua_str.lower()
-    if 'mozilla' in ua_str_lower or 'firefox' in ua_str_lower:
+    if browser_supports_download_filename(ua_str_lower):
         default_cal_filename = 'calendar_day.ics'
         calendar_str += \
             '    <a href="' + path + '?ical=true" ' + \
@@ -689,7 +690,7 @@ def html_calendar(person_cache: {}, translate: {},
 
     # calendar download link
     ua_str_lower = ua_str.lower()
-    if 'mozilla' in ua_str_lower or 'firefox' in ua_str_lower:
+    if browser_supports_download_filename(ua_str_lower):
         default_cal_filename = 'calendar_month.ics'
         calendar_icon_str = \
             '    <a href="' + path + '?ical=true" ' + \

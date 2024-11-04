@@ -10,6 +10,7 @@ __module_group__ = "Core"
 
 import os
 from flags import is_float
+from utils import browser_supports_download_filename
 from utils import get_url_from_post
 from utils import acct_dir
 from utils import load_json
@@ -897,7 +898,7 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
         description = period_str
         if translate.get(period_str):
             description = translate[period_str]
-        if 'mozilla' in ua_str_lower or 'firefox' in ua_str_lower:
+        if browser_supports_download_filename(ua_str_lower):
             html_str += '<a href="' + endpoint_str + \
                 '" download="' + tag_name_str + '.kml">' + \
                 description + '</a>'

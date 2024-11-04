@@ -5277,3 +5277,14 @@ def set_searchable_by(base_dir: str, nickname: str, domain: str,
             fp_search.write(searchable_by)
     except OSError:
         print('EX: unable to write searchableByDropdown ' + filename)
+
+
+def browser_supports_download_filename(ua_str: str) -> bool:
+    """Does the browser indicated by the user agent string support specifying
+    a default download filename?
+    https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#download
+    https://www.w3schools.com/howto/howto_html_download_link.asp
+    """
+    if 'mozilla' in ua_str or 'firefox' in ua_str:
+        return True
+    return False
