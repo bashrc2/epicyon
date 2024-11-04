@@ -697,3 +697,11 @@ def outbox_undo_bookmark(recent_posts_cache: {},
                                 actor_url, domain, debug)
     if debug:
         print('DEBUG: post unbookmarked via c2s - ' + post_filename)
+
+
+def bookmark_from_id(post_id: str) -> str:
+    """ Converts a post id into a bookmark
+    """
+    timeline_post_bookmark = remove_id_ending(post_id)
+    timeline_post_bookmark = timeline_post_bookmark.replace('://', '-')
+    return timeline_post_bookmark.replace('/', '-')
