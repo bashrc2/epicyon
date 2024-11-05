@@ -89,7 +89,7 @@ def _get_followers_sync_json(base_dir: str,
                              search_domain: str) -> {}:
     """Returns a response for followers synchronization
     See https://github.com/mastodon/mastodon/pull/14510
-    https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/8fcf/fep-8fcf.md
     """
     sync_list = \
         _get_followers_for_domain(base_dir,
@@ -112,7 +112,7 @@ def _get_followers_sync_json(base_dir: str,
 def get_followers_sync_hash(sync_json: {}) -> str:
     """Returns a hash used within the Collection-Synchronization http header
     See https://github.com/mastodon/mastodon/pull/14510
-    https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/8fcf/fep-8fcf.md
     """
     if not sync_json:
         return None
@@ -140,7 +140,7 @@ def update_followers_sync_cache(base_dir: str,
                                 sync_cache: {}) -> ({}, str):
     """Updates the followers synchronization cache
     See https://github.com/mastodon/mastodon/pull/14510
-    https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/8fcf/fep-8fcf.md
     """
     foll_sync_key = nickname + ':' + calling_domain
     if sync_cache.get(foll_sync_key):
