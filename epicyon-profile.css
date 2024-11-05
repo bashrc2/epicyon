@@ -1203,6 +1203,11 @@ h3 {
     color: var(--verified-site-color)
 }
 
+h1, h2, h3, h4, h5, h6 {
+    break-after: avoid;
+    break-inside: avoid;
+}
+
 @media screen and (min-width: 400px) {
     body, html {
         background-color: var(--main-bg-color);
