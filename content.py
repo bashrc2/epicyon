@@ -178,13 +178,14 @@ def html_replace_email_quote(content: str) -> str:
                 new_content += '<p>' + line_str + '</blockquote></p>'
             else:
                 new_content += '<p>' + line_str + '</p>'
+            continue
+
+        line_str = line_str.replace('>&gt; ', '><blockquote>')
+        if line_str.startswith('&gt;'):
+            line_str = line_str.replace('&gt;', '<blockquote>', 1)
         else:
-            line_str = line_str.replace('>&gt; ', '><blockquote>')
-            if line_str.startswith('&gt;'):
-                line_str = line_str.replace('&gt;', '<blockquote>', 1)
-            else:
-                line_str = line_str.replace('&gt;', '<br>')
-            new_content += '<p>' + line_str + '</blockquote></p>'
+            line_str = line_str.replace('&gt;', '<br>')
+        new_content += '<p>' + line_str + '</blockquote></p>'
     return _remove_quotes_within_quotes(new_content)
 
 
