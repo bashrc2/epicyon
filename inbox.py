@@ -2662,7 +2662,8 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                     except OSError:
                         print('EX: _inbox_quota_exceeded unable to delete 1 ' +
                               str(queue_filename))
-                    queue.pop(0)
+                    if len(queue) > 0:
+                        queue.pop(0)
                 return True
             quotas_daily['domains'][post_domain] += 1
         else:
@@ -2684,7 +2685,8 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                     except OSError:
                         print('EX: _inbox_quota_exceeded unable to delete 2 ' +
                               str(queue_filename))
-                    queue.pop(0)
+                    if len(queue) > 0:
+                        queue.pop(0)
                 return True
             quotas_per_min['domains'][post_domain] += 1
         else:
@@ -2705,7 +2707,8 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                     except OSError:
                         print('EX: _inbox_quota_exceeded unable to delete 3 ' +
                               str(queue_filename))
-                    queue.pop(0)
+                    if len(queue) > 0:
+                        queue.pop(0)
                 return True
             quotas_daily['accounts'][post_handle] += 1
         else:
@@ -2727,7 +2730,8 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                     except OSError:
                         print('EX: _inbox_quota_exceeded unable to delete 4 ' +
                               str(queue_filename))
-                    queue.pop(0)
+                    if len(queue) > 0:
+                        queue.pop(0)
                 return True
             quotas_per_min['accounts'][post_handle] += 1
         else:

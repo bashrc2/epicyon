@@ -474,74 +474,76 @@ def replace_emoji_from_tags(session, base_dir: str,
         if not tag_url:
             continue
         icon_name = tag_url.split('/')[-1]
-        if len(icon_name) > 1:
-            if icon_name[0].isdigit() and '.' in icon_name:
-                icon_name = icon_name.split('.')[0]
-                # see https://unicode.org/
-                # emoji/charts/full-emoji-list.html
-                if '-' not in icon_name:
-                    # a single code
-                    replaced = False
-                    try:
-                        replace_char = chr(int("0x" + icon_name, 16))
-                        if not screen_readable:
-                            replace_char = \
-                                '<span aria-hidden="true">' + \
-                                replace_char + '</span>'
-                        content = \
-                            content.replace(tag_item['name'],
-                                            replace_char)
-                        replaced = True
-                    except BaseException:
-                        if debug:
-                            print('EX: replace_emoji_from_tags 1 ' +
-                                  'no conversion of ' +
-                                  str(icon_name) + ' to chr ' +
-                                  tag_item['name'] + ' ' +
-                                  tag_url)
-                    if not replaced:
-                        _save_custom_emoji(session, base_dir,
-                                           tag_item['name'],
-                                           tag_url, debug)
-                        _update_common_emoji(base_dir, icon_name)
-                    else:
-                        _update_common_emoji(base_dir,
-                                             "0x" + icon_name)
-                else:
-                    # sequence of codes
-                    icon_codes = icon_name.split('-')
+        if len(icon_name) <= 1:
+            continue
+        if not (icon_name[0].isdigit() and '.' in icon_name):
+            continue
+        icon_name = icon_name.split('.')[0]
+        # see https://unicode.org/
+        # emoji/charts/full-emoji-list.html
+        if '-' not in icon_name:
+            # a single code
+            replaced = False
+            try:
+                replace_char = chr(int("0x" + icon_name, 16))
+                if not screen_readable:
+                    replace_char = \
+                        '<span aria-hidden="true">' + \
+                        replace_char + '</span>'
+                content = \
+                    content.replace(tag_item['name'],
+                                    replace_char)
+                replaced = True
+            except BaseException:
+                if debug:
+                    print('EX: replace_emoji_from_tags 1 ' +
+                          'no conversion of ' +
+                          str(icon_name) + ' to chr ' +
+                          tag_item['name'] + ' ' +
+                          tag_url)
+            if not replaced:
+                _save_custom_emoji(session, base_dir,
+                                   tag_item['name'],
+                                   tag_url, debug)
+                _update_common_emoji(base_dir, icon_name)
+            else:
+                _update_common_emoji(base_dir,
+                                     "0x" + icon_name)
+        else:
+            # sequence of codes
+            icon_codes = icon_name.split('-')
+            icon_code_sequence = ''
+            for icode in icon_codes:
+                replaced = False
+                try:
+                    icon_code_sequence += chr(int("0x" +
+                                                  icode, 16))
+                    replaced = True
+                except BaseException:
                     icon_code_sequence = ''
-                    for icode in icon_codes:
-                        replaced = False
-                        try:
-                            icon_code_sequence += chr(int("0x" +
-                                                          icode, 16))
-                            replaced = True
-                        except BaseException:
-                            icon_code_sequence = ''
-                            if debug:
-                                print('EX: ' +
-                                      'replace_emoji_from_tags 2 ' +
-                                      'no conversion of ' +
-                                      str(icode) + ' to chr ' +
-                                      tag_item['name'] + ' ' +
-                                      tag_url)
-                        if not replaced:
-                            _save_custom_emoji(session, base_dir,
-                                               tag_item['name'],
-                                               tag_url, debug)
-                            _update_common_emoji(base_dir,
-                                                 icon_name)
-                        else:
-                            _update_common_emoji(base_dir,
-                                                 "0x" + icon_name)
-                    if icon_code_sequence:
-                        if not screen_readable:
-                            icon_code_sequence = \
-                                '<span aria-hidden="true">' + \
-                                icon_code_sequence + '</span>'
-                        content = content.replace(tag_item['name'],
-                                                  icon_code_sequence)
+                    if debug:
+                        print('EX: ' +
+                              'replace_emoji_from_tags 2 ' +
+                              'no conversion of ' +
+                              str(icode) + ' to chr ' +
+                              tag_item['name'] + ' ' +
+                              tag_url)
+                if not replaced:
+                    _save_custom_emoji(session, base_dir,
+                                       tag_item['name'],
+                                       tag_url, debug)
+                    _update_common_emoji(base_dir,
+                                         icon_name)
+                else:
+                    _update_common_emoji(base_dir,
+                                         "0x" + icon_name)
+            if icon_code_sequence:
+                if not screen_readable:
+                    icon_code_sequence = \
+                        '<span aria-hidden="true">' + \
+                        icon_code_sequence + '</span>'
+                content = content.replace(tag_item['name'],
+                                          icon_code_sequence)
 
         html_class = 'emoji'
         if message_type == 'post header':
