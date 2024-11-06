@@ -124,14 +124,15 @@ def _remove_quotes_within_quotes(content: str) -> str:
         quoted_str = content.split('<blockquote>', ctr)[1]
         if '</blockquote>' not in quoted_str:
             found = False
-        else:
-            end_str = quoted_str.split('</blockquote>')[1]
-            quoted_str = quoted_str.split('</blockquote>')[0]
-            if '<blockquote>' not in end_str:
-                found = False
-            if '<blockquote>' in quoted_str:
-                quoted_str = quoted_str.replace('<blockquote>', '')
-                content = prefix + quoted_str + '</blockquote>' + end_str
+            continue
+
+        end_str = quoted_str.split('</blockquote>')[1]
+        quoted_str = quoted_str.split('</blockquote>')[0]
+        if '<blockquote>' not in end_str:
+            found = False
+        if '<blockquote>' in quoted_str:
+            quoted_str = quoted_str.replace('<blockquote>', '')
+            content = prefix + quoted_str + '</blockquote>' + end_str
         ctr += 1
     return content
 
