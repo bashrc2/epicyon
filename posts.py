@@ -223,7 +223,8 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
 
 
 def _clean_html(raw_html: str) -> str:
-    # text=BeautifulSoup(raw_html, 'html.parser').get_text()
+    """Remove escape codes from html string
+    """
     text = raw_html
     return html.unescape(text)
 
