@@ -573,11 +573,17 @@ def _valid_summary(possible_summary: str) -> bool:
 def get_summary_from_post(post_json_object: {}, system_language: str,
                           languages_understood: []) -> str:
     """Returns the summary from the post in the given language
-    including searching for a matching entry within summaryMap
+    including searching for a matching entry within summaryMap.
+    Also try the "name" field if summary is not available. See
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/b2b8/fep-b2b8.md
     """
-    summary_str = \
-        get_content_from_post(post_json_object, system_language,
-                              languages_understood, "summary")
+    summary_str = ''
+    for summary_fieldname in ('summary', 'name'):
+        summary_str = \
+            get_content_from_post(post_json_object, system_language,
+                                  languages_understood, summary_fieldname)
+        if summary_str:
+            break
     if summary_str:
         summary_str = summary_str.strip()
         if not _valid_summary(summary_str):
