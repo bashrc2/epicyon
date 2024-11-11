@@ -574,16 +574,24 @@ def get_summary_from_post(post_json_object: {}, system_language: str,
                           languages_understood: []) -> str:
     """Returns the summary from the post in the given language
     including searching for a matching entry within summaryMap.
-    Also try the "name" field if summary is not available. See
-    https://codeberg.org/fediverse/fep/src/branch/main/fep/b2b8/fep-b2b8.md
     """
-    summary_str = ''
-    for summary_fieldname in ('summary', 'name'):
-        summary_str = \
-            get_content_from_post(post_json_object, system_language,
-                                  languages_understood, summary_fieldname)
-        if summary_str:
-            break
+    summary_str = \
+        get_content_from_post(post_json_object, system_language,
+                              languages_understood, 'summary')
+    if not summary_str:
+        # Also try the "name" field if summary is not available.
+        # See https://codeberg.org/
+        # fediverse/fep/src/branch/main/fep/b2b8/fep-b2b8.md
+        obj = post_json_object
+        if has_object_dict(post_json_object):
+            obj = post_json_object['object']
+        if obj.get('type'):
+            if isinstance(obj['type'], str):
+                if obj['type'] == 'Article':
+                    summary_str = \
+                        get_content_from_post(post_json_object,
+                                              system_language,
+                                              languages_understood, 'name')
     if summary_str:
         summary_str = summary_str.strip()
         if not _valid_summary(summary_str):
