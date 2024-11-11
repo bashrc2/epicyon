@@ -4652,6 +4652,7 @@ def _test_constant_time_string():
     assert not constant_time_string_check('testing', '1234')
     assert not constant_time_string_check('testing', '1234567')
 
+    time_threshold_microseconds = 10
     itterations = 256
 
     start = time.time()
@@ -4669,7 +4670,10 @@ def _test_constant_time_string():
     av_time2 = ((end - start) * 1000000 / itterations)
     time_diff_microseconds = abs(av_time2 - av_time1)
     # time difference should be less than 10uS
-    assert int(time_diff_microseconds) < 10
+    if int(time_diff_microseconds) >= time_threshold_microseconds:
+        print('single character time_diff_microseconds: ' +
+              str(time_diff_microseconds))
+    assert int(time_diff_microseconds) < time_threshold_microseconds
 
     # change multiple characters and observe timing difference
     start = time.time()
@@ -4680,7 +4684,10 @@ def _test_constant_time_string():
     av_time2 = ((end - start) * 1000000 / itterations)
     time_diff_microseconds = abs(av_time2 - av_time1)
     # time difference should be less than 10uS
-    assert int(time_diff_microseconds) < 10
+    if int(time_diff_microseconds) >= time_threshold_microseconds:
+        print('multi character time_diff_microseconds: ' +
+              str(time_diff_microseconds))
+    assert int(time_diff_microseconds) < time_threshold_microseconds
 
 
 def _test_replace_email_quote():
