@@ -598,6 +598,10 @@ def get_base_content_from_post(post_json_object: {},
     this_post_json = post_json_object
     if has_object_dict(post_json_object):
         this_post_json = post_json_object['object']
+    if 'contentMap' in this_post_json:
+        if isinstance(this_post_json['contentMap'], dict):
+            if this_post_json['contentMap'].get(system_language):
+                return this_post_json['contentMap'][system_language]
     if 'content' not in this_post_json:
         return ''
     return this_post_json['content']
