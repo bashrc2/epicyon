@@ -341,7 +341,7 @@ You can set your posts to expire after a number of days. If this value is zero t
 ### Quitting the website formerly known as Twitter
 If you are coming to the fediverse as an exile from the website formerly known as Twitter then you may want to select the option to remove any Twitter posts from your timeline. Sometimes people want to make a clean break from Twitter and have no further involvement with it.
 
-As Twitter turns into an information black hole it's expected that posts on that site may become no longer visible on the open web.
+As Twitter turns into an information black hole populated by generative AI grifters it's expected that posts on that site may become no longer visible on the open web, and even when they are visible they may be unreliable or fake content generated in whole or in part by algorithms.
 
 ### Alternative contact details
 You can set additional contact details, such as email, XMPP and Matrix addresses. So if people want to contact you for private [end-to-end secure](https://en.wikipedia.org/wiki/End-to-end_encryption) chat then they can do so. The fediverse was never designed for end-to-end security - it is primarily for public communications - and so it's better to leave secure private chat to the apps which are specialized for that purpose.
@@ -1186,6 +1186,8 @@ In August Facebook launched its own fediverse instance, known as Threads. This w
 In June, Zuckerberg expanded the availability of Threads - which had previously been an early beta release - to 100 countries and enabled users on his servers to post to the wider fediverse on the open web.
 
 In September the [Social Web Foundation](https://socialwebfoundation.org) was launched by identica founder and original ActivityPub specification author [Evan Prodromou](https://en.wikipedia.org/wiki/Evan_Prodromou), to help create a *"growing, healthy, financially viable and multi-polar Fediverse"*. Given the history of Free Software related foundations (such as the [Linux Foundation](https://www.linuxfoundation.org)) there was scepticism about the motives of this new foundation.
+
+In November the website formerly known as Twitter changed it's terms of service such that any posts made by users, including attached images or videos, could be used worldwide and royalty-free to train its generative AI model and produce derivative grifter-oriented content. This resulted in another exodus and shutdowns of Twitter accounts in order to try to forestall such abuses of content.
 
 ### Fediverse culture shock
 This is what happens when someone has only had a presence within large corporate sites, such as the website formerly known as Twitter or Facebook, and then moves to a federated system on the open internet.
