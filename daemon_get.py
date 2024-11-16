@@ -2263,7 +2263,7 @@ def daemon_http_get(self) -> None:
                             self.server.debug)
         return
 
-    if self.path == '/knowninstances':
+    if self.path.endswith('/knowninstances'):
         if not authorized:
             http_403(self)
             return
