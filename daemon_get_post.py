@@ -33,6 +33,7 @@ from httpcodes import http_401
 from httpcodes import http_403
 from httpcodes import http_404
 from httpheaders import set_headers
+from httpheaders import set_html_post_headers
 from httpheaders import login_headers
 from httpheaders import redirect_headers
 from httprequests import request_http
@@ -161,8 +162,9 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                                  auto_cw_cache)
         msg = msg.encode('utf-8')
         msglen = len(msg)
-        set_headers(self, 'text/html', msglen,
-                          cookie, calling_domain, False)
+        set_html_post_headers(self, msglen,
+                              cookie, calling_domain, False,
+                              post_json_object)
         write2(self, msg)
         fitness_performance(getreq_start_time, fitness,
                             '_GET', 'show_post_from_file',
