@@ -164,9 +164,10 @@ def daemon_http_post(self) -> None:
 
     ua_str = get_user_agent(self)
 
-    if 'Epicyon/' in ua_str:
-        log_epicyon_instances(self.server.base_dir, calling_domain,
-                              self.server.known_epicyon_instances)
+    if ua_str:
+        if 'Epicyon/' in ua_str:
+            log_epicyon_instances(self.server.base_dir, calling_domain,
+                                  self.server.known_epicyon_instances)
 
     block, self.server.blocked_cache_last_updated, _ = \
         blocked_user_agent(calling_domain, ua_str,

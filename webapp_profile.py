@@ -1031,7 +1031,8 @@ def html_profile(signing_priv_key_pem: str,
                  max_shares_on_profile: int,
                  sites_unavailable: [],
                  no_of_books: int,
-                 auto_cw_cache: {}) -> str:
+                 auto_cw_cache: {},
+                 known_epicyon_instances: []) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -1063,7 +1064,8 @@ def html_profile(signing_priv_key_pem: str,
                                  shared_items_federated_domains, cw_lists,
                                  lists_enabled, {},
                                  min_images_for_accounts, buy_sites,
-                                 auto_cw_cache)
+                                 auto_cw_cache,
+                                 known_epicyon_instances)
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:

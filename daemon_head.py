@@ -38,9 +38,10 @@ def daemon_http_head(self) -> None:
 
     ua_str = get_user_agent(self)
 
-    if 'Epicyon/' in ua_str:
-        log_epicyon_instances(self.server.base_dir, calling_domain,
-                              self.server.known_epicyon_instances)
+    if ua_str:
+        if 'Epicyon/' in ua_str:
+            log_epicyon_instances(self.server.base_dir, calling_domain,
+                                  self.server.known_epicyon_instances)
 
     if self.headers.get('Host'):
         calling_domain = decoded_host(self.headers['Host'])

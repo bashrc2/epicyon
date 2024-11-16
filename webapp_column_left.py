@@ -123,7 +123,8 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
                             rss_icon_at_top: bool, show_header_image: bool,
                             front_page: bool, theme: str,
                             access_keys: {},
-                            shared_items_federated_domains: []) -> str:
+                            shared_items_federated_domains: [],
+                            known_epicyon_instances: []) -> str:
     """Returns html content for the left column
     """
     html_str = ''
@@ -351,10 +352,11 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     html_str += \
         '<p class="login-text"><a href="/about">' + \
         translate['About this Instance'] + '</a></p>'
-    html_str += \
-        '<p class="login-text"><a href="/users/' + \
-        nickname + '/knowninstances">' + \
-        translate['Epicyon Instances'] + '</a></p>'
+    if known_epicyon_instances:
+        html_str += \
+            '<p class="login-text"><a href="/users/' + \
+            nickname + '/knowninstances">' + \
+            translate['Epicyon Instances'] + '</a></p>'
     html_str += \
         '<p class="login-text"><a href="/manual">' + \
         translate['User Manual'] + '</a></p>'
@@ -379,7 +381,8 @@ def html_links_mobile(base_dir: str,
                       icons_as_buttons: bool,
                       default_timeline: str,
                       theme: str, access_keys: {},
-                      shared_items_federated_domains: []) -> str:
+                      shared_items_federated_domains: [],
+                      known_epicyon_instances: []) -> str:
     """Show the left column links within mobile view
     """
     html_str = ''
@@ -426,7 +429,8 @@ def html_links_mobile(base_dir: str,
                                 False, timeline_path,
                                 rss_icon_at_top, False, False,
                                 theme, access_keys,
-                                shared_items_federated_domains)
+                                shared_items_federated_domains,
+                                known_epicyon_instances)
     if editor and not _links_exist(base_dir):
         html_str += '<br><br><br>\n<center>\n  '
         html_str += translate['Select the edit icon to add web links']

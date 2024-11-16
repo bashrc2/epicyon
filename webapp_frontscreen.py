@@ -131,7 +131,8 @@ def html_front_screen(signing_priv_key_pem: str,
                       dogwhistles: {},
                       min_images_for_accounts: [],
                       buy_sites: {},
-                      auto_cw_cache: {}) -> str:
+                      auto_cw_cache: {},
+                      known_epicyon_instances: []) -> str:
     """Show the news instance front screen
     """
     bold_reading = False
@@ -176,7 +177,8 @@ def html_front_screen(signing_priv_key_pem: str,
                                 False, False,
                                 False, None, rss_icon_at_top, True,
                                 True, theme, access_keys,
-                                shared_items_federated_domains)
+                                shared_items_federated_domains,
+                                known_epicyon_instances)
     profile_header_str += \
         '      </td>\n' + \
         '      <td valign="top" class="col-center" tabindex="-1">\n'

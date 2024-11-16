@@ -66,7 +66,8 @@ def html_moderation(default_timeline: str,
                     min_images_for_accounts: [],
                     reverse_sequence: bool,
                     buy_sites: {},
-                    auto_cw_cache: {}) -> str:
+                    auto_cw_cache: {},
+                    known_epicyon_instances: []) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -95,7 +96,8 @@ def html_moderation(default_timeline: str,
                          signing_priv_key_pem, cw_lists, lists_enabled,
                          timezone, bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts, reverse_sequence, None,
-                         buy_sites, auto_cw_cache, show_announces)
+                         buy_sites, auto_cw_cache, show_announces,
+                         known_epicyon_instances)
 
 
 def html_account_info(translate: {},

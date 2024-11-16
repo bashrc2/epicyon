@@ -340,9 +340,10 @@ def daemon_http_get(self) -> None:
 
     ua_str = get_user_agent(self)
 
-    if 'Epicyon/' in ua_str:
-        log_epicyon_instances(self.server.base_dir, calling_domain,
-                              self.server.known_epicyon_instances)
+    if ua_str:
+        if 'Epicyon/' in ua_str:
+            log_epicyon_instances(self.server.base_dir, calling_domain,
+                                  self.server.known_epicyon_instances)
 
     if not _permitted_crawler_path(self.path):
         block, self.server.blocked_cache_last_updated, llm = \
@@ -2968,6 +2969,7 @@ def daemon_http_get(self) -> None:
             default_timeline = self.server.default_timeline
             shared_items_domains = \
                 self.server.shared_items_federated_domains
+            known_instances = self.server.known_epicyon_instances
             msg = \
                 html_links_mobile(self.server.base_dir, nickname,
                                   self.server.domain_full,
@@ -2980,7 +2982,8 @@ def daemon_http_get(self) -> None:
                                   default_timeline,
                                   self.server.theme_name,
                                   access_keys,
-                                  shared_items_domains).encode('utf-8')
+                                  shared_items_domains,
+                                  known_instances).encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen, cookie, calling_domain,
                         False)
