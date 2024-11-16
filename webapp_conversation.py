@@ -74,9 +74,18 @@ def html_conversation_view(authorized: bool, post_id: str,
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
     preload_images = []
+
+    metadata_str = ''
+    if post_id:
+        # https://swicg.github.io/activitypub-html-discovery/#html-link-element
+        # link to the activitypub post
+        metadata_str += \
+            '    <link rel="alternate" type="application/activity+json" ' + \
+            'href="' + post_id + '" />\n'
+
     conv_str = \
-        html_header_with_external_style(css_filename, instance_title, None,
-                                        preload_images)
+        html_header_with_external_style(css_filename, instance_title,
+                                        metadata_str, preload_images)
 
     # banner and row of buttons
     users_path = '/users/' + nickname
