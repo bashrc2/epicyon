@@ -3282,6 +3282,12 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         get_config_param(base_dir, 'instanceTitle')
     metadata_str = _html_post_metadata_open_graph(domain, original_post_json,
                                                   system_language)
+    if post_json_object.get('id'):
+        # https://swicg.github.io/activitypub-html-discovery/#html-link-element
+        post_id = remove_id_ending(post_json_object)
+        metadata_str += \
+            '    <link rel="alternate" type="application/activity+json" ' + \
+            'href="' + post_id + '" />'
     preload_images = []
     header_str = html_header_with_external_style(css_filename,
                                                  instance_title, metadata_str,
