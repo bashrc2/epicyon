@@ -3186,7 +3186,9 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
+    obj = post_json_object
     if has_object_dict(post_json_object):
+        obj = post_json_object['object']
         post_id = True
         while post_id:
             if not post_json_object:
@@ -3284,10 +3286,19 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                                   system_language)
     if post_json_object.get('id'):
         # https://swicg.github.io/activitypub-html-discovery/#html-link-element
+        # link to the activitypub post
         post_id = remove_id_ending(post_json_object)
         metadata_str += \
             '    <link rel="alternate" type="application/activity+json" ' + \
             'href="' + post_id + '" />'
+        # link to the author's actor
+        if obj.get('attributedTo'):
+            actor = get_attributed_to(obj['attributedTo'])
+            if actor:
+                metadata_str += \
+                    '    <link rel="author" ' + \
+                    'type="application/activity+json" ' + \
+                    'href="' + actor + '" />'
     preload_images = []
     header_str = html_header_with_external_style(css_filename,
                                                  instance_title, metadata_str,
