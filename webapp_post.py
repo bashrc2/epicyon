@@ -3290,7 +3290,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         post_id = remove_id_ending(post_json_object)
         metadata_str += \
             '    <link rel="alternate" type="application/activity+json" ' + \
-            'href="' + post_id + '" />'
+            'href="' + post_id + '" />\n'
         # link to the author's actor
         if obj.get('attributedTo'):
             actor = get_attributed_to(obj['attributedTo'])
@@ -3298,7 +3298,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                 metadata_str += \
                     '    <link rel="author" ' + \
                     'type="application/activity+json" ' + \
-                    'href="' + actor + '" />'
+                    'href="' + actor + '" />\n'
     preload_images = []
     header_str = html_header_with_external_style(css_filename,
                                                  instance_title, metadata_str,
