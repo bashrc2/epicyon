@@ -961,7 +961,7 @@ def show_replies_to_post(self, authorized: bool,
 
         if request_http(self.headers, debug):
             curr_session = \
-                establish_session("showRepliesToPost",
+                establish_session("show_replies_to_post",
                                   curr_session, proxy_type,
                                   self.server)
             if not curr_session:
@@ -1073,7 +1073,7 @@ def show_replies_to_post(self, authorized: bool,
     # send the replies json
     if request_http(self.headers, debug):
         curr_session = \
-            establish_session("showRepliesToPost2",
+            establish_session("show_replies_to_post2",
                               curr_session, proxy_type,
                               self.server)
         if not curr_session:

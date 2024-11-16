@@ -53,7 +53,7 @@ def show_blog_page(self, authorized: bool,
             elif page_number > 10:
                 page_number = 10
     curr_session = \
-        establish_session("showBlogPage",
+        establish_session("show_blog_page",
                           curr_session, proxy_type,
                           self.server)
     if not curr_session:

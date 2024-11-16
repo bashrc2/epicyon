@@ -281,7 +281,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                     curr_proxy_type = 'i2p'
 
             curr_session = \
-                establish_session("follow request",
+                establish_session("follow request confirm",
                                   curr_session,
                                   curr_proxy_type,
                                   self.server)

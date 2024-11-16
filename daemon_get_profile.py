@@ -88,7 +88,7 @@ def show_person_profile(self, authorized: bool,
     add_alternate_domains(actor_json, domain, onion_domain, i2p_domain)
     if request_http(self.headers, debug):
         curr_session = \
-            establish_session("showPersonProfile",
+            establish_session("show_person_profile",
                               curr_session, proxy_type,
                               self.server)
         if not curr_session:

@@ -280,7 +280,7 @@ def delete_button(self, calling_domain: str, path: str,
                 proxy_type = 'i2p'
 
         curr_session = \
-            establish_session("deleteButton",
+            establish_session("delete_button",
                               curr_session, proxy_type,
                               self.server)
         if not curr_session:

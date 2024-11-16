@@ -131,7 +131,7 @@ def like_button(self, calling_domain: str, path: str,
             proxy_type = 'i2p'
 
     curr_session = \
-        establish_session("likeButton",
+        establish_session("like_button",
                           curr_session, proxy_type,
                           self.server)
     if not curr_session:
@@ -388,7 +388,7 @@ def like_button_undo(self, calling_domain: str, path: str,
             proxy_type = 'i2p'
 
     curr_session = \
-        establish_session("undoLikeButton",
+        establish_session("like_button_undo",
                           curr_session, proxy_type,
                           self.server)
     if not curr_session:

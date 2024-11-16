@@ -4511,7 +4511,8 @@ def daemon_http_get(self) -> None:
                         self.server.debug)
 
     # get replies to a post /users/nickname/statuses/number/replies
-    if self.path.endswith('/replies') or '/replies?page=' in self.path:
+    if self.path.endswith('/replies') or \
+       ('/replies?' in self.path and 'page=' in self.path):
         if show_replies_to_post(self, authorized,
                                 calling_domain, referer_domain,
                                 self.path,
