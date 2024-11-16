@@ -352,6 +352,9 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
         '<p class="login-text"><a href="/about">' + \
         translate['About this Instance'] + '</a></p>'
     html_str += \
+        '<p class="login-text"><a href="/knowninstances">' + \
+        translate['Epicyon Instances'] + '</a></p>'
+    html_str += \
         '<p class="login-text"><a href="/manual">' + \
         translate['User Manual'] + '</a></p>'
     html_str += \

@@ -48,6 +48,7 @@ from webapp_welcome_final import html_welcome_final
 from webapp_welcome import html_welcome_screen
 from webapp_welcome import is_welcome_screen_complete
 from webapp_podcast import html_podcast_episode
+from webapp_utils import html_known_epicyon_instances
 from webapp_utils import get_default_path
 from webapp_utils import csv_following_list
 from webapp_utils import get_shares_collection
@@ -2259,6 +2260,42 @@ def daemon_http_get(self) -> None:
         write2(self, msg)
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', 'show specification screen',
+                            self.server.debug)
+        return
+
+    if self.path == '/knowninstances':
+        if not authorized:
+            http_403(self)
+            return
+
+        if calling_domain.endswith('.onion'):
+            msg = \
+                html_known_epicyon_instances(
+                    self.server.base_dir, 'http',
+                    self.server.onion_domain,
+                    self.server.system_language,
+                    self.server.known_epicyon_instances)
+        elif calling_domain.endswith('.i2p'):
+            msg = \
+                html_known_epicyon_instances(
+                    self.server.base_dir, 'http',
+                    self.server.i2p_domain,
+                    self.server.system_language,
+                    self.server.known_epicyon_instances)
+        else:
+            msg = \
+                html_known_epicyon_instances(
+                    self.server.base_dir,
+                    self.server.http_prefix,
+                    self.server.domain_full,
+                    self.server.system_language,
+                    self.server.known_epicyon_instances)
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        login_headers(self, 'text/html', msglen, calling_domain)
+        write2(self, msg)
+        fitness_performance(getreq_start_time, self.server.fitness,
+                            '_GET', 'known epicyon instances',
                             self.server.debug)
         return
 

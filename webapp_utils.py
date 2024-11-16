@@ -2430,3 +2430,29 @@ def load_buy_sites(base_dir: str) -> {}:
         if buy_sites_json:
             return buy_sites_json
     return {}
+
+
+def html_known_epicyon_instances(base_dir: str, http_prefix: str,
+                                 domain_full: str,
+                                 system_language: str,
+                                 known_epicyon_instances: []) -> str:
+    """Show a list of known epicyon instances
+    """
+    html_str = ''
+    css_filename = base_dir + '/epicyon-profile.css'
+    if os.path.isfile(base_dir + '/epicyon.css'):
+        css_filename = base_dir + '/epicyon.css'
+
+    instance_title = get_config_param(base_dir, 'instanceTitle')
+    html_str = \
+        html_header_with_website_markup(css_filename, instance_title,
+                                        http_prefix, domain_full,
+                                        system_language)
+    if known_epicyon_instances:
+        instances_text = ''
+        for instance in known_epicyon_instances:
+            instances_text += instance + '<br>\n'
+        html_str += \
+            '<div class="container">' + instances_text + '</div>\n'
+    html_str += html_footer()
+    return html_str
