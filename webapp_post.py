@@ -3287,7 +3287,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
     if post_json_object.get('id'):
         # https://swicg.github.io/activitypub-html-discovery/#html-link-element
         # link to the activitypub post
-        post_id = remove_id_ending(post_json_object)
+        post_id = remove_id_ending(post_json_object['id'])
         metadata_str += \
             '    <link rel="alternate" type="application/activity+json" ' + \
             'href="' + post_id + '" />\n'
