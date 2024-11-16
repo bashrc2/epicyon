@@ -21,6 +21,8 @@ from httpcodes import http_404
 from httpheaders import set_headers_head
 from media import path_is_video
 from media import path_is_audio
+from daemon_utils import get_user_agent
+from daemon_utils import log_epicyon_instances
 
 
 def daemon_http_head(self) -> None:
@@ -33,6 +35,13 @@ def daemon_http_head(self) -> None:
         return
 
     calling_domain = self.server.domain_full
+
+    ua_str = get_user_agent(self)
+
+    if 'Epicyon/' in ua_str:
+        log_epicyon_instances(self.server.base_dir, calling_domain,
+                              self.server.known_epicyon_instances)
+
     if self.headers.get('Host'):
         calling_domain = decoded_host(self.headers['Host'])
         if self.server.onion_domain:

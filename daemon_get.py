@@ -67,6 +67,7 @@ from daemon_utils import has_accept
 from daemon_utils import show_person_options
 from daemon_utils import is_authorized
 from daemon_utils import get_user_agent
+from daemon_utils import log_epicyon_instances
 from httpheaders import update_headers_catalog
 from httpheaders import set_headers_etag
 from httpheaders import login_headers
@@ -337,6 +338,10 @@ def daemon_http_get(self) -> None:
                 return
 
     ua_str = get_user_agent(self)
+
+    if 'Epicyon/' in ua_str:
+        log_epicyon_instances(self.server.base_dir, calling_domain,
+                              self.server.known_epicyon_instances)
 
     if not _permitted_crawler_path(self.path):
         block, self.server.blocked_cache_last_updated, llm = \

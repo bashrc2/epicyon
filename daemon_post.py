@@ -39,6 +39,7 @@ from httpcodes import http_503
 from httpheaders import contains_suspicious_headers
 from httpheaders import update_headers_catalog
 from httpheaders import redirect_headers
+from daemon_utils import log_epicyon_instances
 from daemon_utils import get_user_agent
 from daemon_utils import post_to_outbox
 from daemon_utils import update_inbox_queue
@@ -162,6 +163,10 @@ def daemon_http_post(self) -> None:
         return
 
     ua_str = get_user_agent(self)
+
+    if 'Epicyon/' in ua_str:
+        log_epicyon_instances(self.server.base_dir, calling_domain,
+                              self.server.known_epicyon_instances)
 
     block, self.server.blocked_cache_last_updated, _ = \
         blocked_user_agent(calling_domain, ua_str,

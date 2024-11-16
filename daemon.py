@@ -94,6 +94,7 @@ from httpcodes import http_304
 from httpcodes import http_400
 from httpcodes import write2
 from httpheaders import set_headers
+from daemon_utils import load_known_epicyon_instances
 from daemon_utils import has_accept
 from daemon_utils import is_authorized
 from poison import load_dictionary
@@ -482,6 +483,8 @@ class EpicyonServer(ThreadingHTTPServer):
     headers_catalog = {}
     dictionary = []
     twograms = {}
+    searchable_by_default = {}
+    known_epicyon_instances = []
 
     def handle_error(self, request, client_address):
         # surpress connection reset errors
@@ -705,6 +708,9 @@ def run_daemon(accounts_data_dir: str,
 
     # default "searchable by" for new posts for each account
     httpd.searchable_by_default = load_searchable_by_default(base_dir)
+
+    # load the list of known Epicyon instances
+    httpd.known_epicyon_instances = load_known_epicyon_instances(base_dir)
 
     # if a custom robots.txt exists then read it
     robots_txt_filename = data_dir(base_dir) + '/robots.txt'

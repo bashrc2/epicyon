@@ -26,6 +26,9 @@ from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from content import valid_url_lengths
 from posts import add_to_field
+from utils import data_dir
+from utils import load_json
+from utils import save_json
 from utils import get_instance_url
 from utils import remove_html
 from utils import get_locked_account
@@ -863,3 +866,29 @@ def etag_exists(self, media_filename: str) -> bool:
                 # The file has not changed
                 return True
     return False
+
+
+def log_epicyon_instances(base_dir: str, calling_domain: str,
+                          known_epicyon_instances: []) -> None:
+    """Saves a log of known epicyon instances
+    """
+    if calling_domain in known_epicyon_instances:
+        return
+    known_epicyon_instances.append(calling_domain)
+    known_epicyon_instances.sort()
+    epicyon_instances_filename = \
+        data_dir(base_dir) + '/known_epicyon_instances.txt'
+    save_json(known_epicyon_instances, epicyon_instances_filename)
+
+
+def load_known_epicyon_instances(base_dir: str) -> []:
+    """Loads a list of known epicyon instances
+    """
+    epicyon_instances_filename = \
+        data_dir(base_dir) + '/known_epicyon_instances.txt'
+    if not os.path.isfile(epicyon_instances_filename):
+        return []
+    known_epicyon_instances = load_json(epicyon_instances_filename)
+    if not known_epicyon_instances:
+        return []
+    return known_epicyon_instances
