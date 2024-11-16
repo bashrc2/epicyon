@@ -3291,6 +3291,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         metadata_str += \
             '    <link rel="alternate" type="application/activity+json" ' + \
             'href="' + post_id + '" />\n'
+        # https://swicg.github.io/
+        # activitypub-html-discovery/#discovering-author-html
         # link to the author's actor
         if obj.get('attributedTo'):
             actor = get_attributed_to(obj['attributedTo'])

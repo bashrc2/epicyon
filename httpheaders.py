@@ -15,6 +15,8 @@ from utils import get_instance_url
 from utils import data_dir
 from utils import save_json
 from utils import remove_id_ending
+from utils import has_object_dict
+from utils import get_attributed_to
 
 
 def login_headers(self, file_format: str, length: int,
@@ -175,11 +177,26 @@ def set_html_post_headers(self, length: int, cookie: str,
     if post_json_object.get('id'):
         # Discover activitypub version of the html post
         # https://swicg.github.io/activitypub-html-discovery/#http-link-header
+        # link to the activitypub post
         post_id = remove_id_ending(post_json_object['id'])
-        ap_link = \
+        ap_post_link = \
             '<' + post_id + '>; rel="alternate"; ' + \
             'type="application/activity+json"'
-        self.send_header('Link', ap_link)
+        self.send_header('Link', ap_post_link)
+
+        # https://swicg.github.io/
+        # activitypub-html-discovery/#http-link-header-1
+        # link to the author's actor
+        obj = post_json_object
+        if has_object_dict(post_json_object):
+            obj = post_json_object['object']
+        if obj.get('attributedTo'):
+            actor = get_attributed_to(obj['attributedTo'])
+            if actor:
+                ap_author_link = \
+                    '<' + actor + '>; rel="author"; ' + \
+                    'type="application/activity+json"'
+                self.send_header('Link', ap_author_link)
 
     self.end_headers()
 
