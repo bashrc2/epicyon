@@ -140,7 +140,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'googleother', 'icc-crawler', 'scrapy', 'timpibot',
             'velenpublic', 'webzio-extended', 'cohere-ai', 'facebookexternal',
             'img2dataset', 'isscyberriskcrawler', 'sidetrade', 'kangaroo.ai',
-            'kangaroo bot', 'iaskspider'
+            'kangaroo bot', 'iaskspider', 'duckassistbot'
         )
         for bot_str in llm_bot_strings:
             if bot_str in agent_str_lower:
