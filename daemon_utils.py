@@ -878,6 +878,8 @@ def log_epicyon_instances(base_dir: str, calling_domain: str,
     known_epicyon_instances.sort()
     epicyon_instances_filename = \
         data_dir(base_dir) + '/known_epicyon_instances.txt'
+    print('DEBUG: log_epicyon_instances: ' +
+          epicyon_instances_filename + ' ' + str(known_epicyon_instances))
     save_json(known_epicyon_instances, epicyon_instances_filename)
 
 
