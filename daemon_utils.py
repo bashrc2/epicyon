@@ -877,7 +877,7 @@ def log_epicyon_instances(base_dir: str, calling_domain: str,
     known_epicyon_instances.append(calling_domain)
     known_epicyon_instances.sort()
     epicyon_instances_filename = \
-        data_dir(base_dir) + '/known_epicyon_instances.txt'
+        data_dir(base_dir) + '/known_epicyon_instances.json'
     print('DEBUG: log_epicyon_instances: ' +
           epicyon_instances_filename + ' ' + str(known_epicyon_instances))
     save_json(known_epicyon_instances, epicyon_instances_filename)
@@ -887,7 +887,7 @@ def load_known_epicyon_instances(base_dir: str) -> []:
     """Loads a list of known epicyon instances
     """
     epicyon_instances_filename = \
-        data_dir(base_dir) + '/known_epicyon_instances.txt'
+        data_dir(base_dir) + '/known_epicyon_instances.json'
     if not os.path.isfile(epicyon_instances_filename):
         return []
     known_epicyon_instances = load_json(epicyon_instances_filename)
