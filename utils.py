@@ -1213,8 +1213,9 @@ def save_json(json_object: {}, filename: str) -> bool:
     """Saves json to a file
     """
     if not isinstance(json_object, dict):
-        print('EX: save_json object is not json ' + str(json_object))
-        return False
+        if not isinstance(json_object, list):
+            print('EX: save_json object is not json ' + str(json_object))
+            return False
 
     tries = 1
     while tries <= 5:
