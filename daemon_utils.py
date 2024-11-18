@@ -868,10 +868,27 @@ def etag_exists(self, media_filename: str) -> bool:
     return False
 
 
-def log_epicyon_instances(base_dir: str, calling_domain: str,
+def _get_epicyon_domain_from_user_agent(ua_str: str) -> str:
+    """Extracts the epicyon domain from the user agent
+    """
+    if 'Epicyon/' not in ua_str:
+        return ''
+    ua_text = ua_str.split('Epicyon/')[1]
+    if '://' not in ua_text:
+        return ''
+    domain = ua_text.split('://')[1]
+    if '/' in domain:
+        domain = domain.split('/')[0]
+    return domain
+
+
+def log_epicyon_instances(base_dir: str, ua_str: str,
                           known_epicyon_instances: []) -> None:
     """Saves a log of known epicyon instances
     """
+    calling_domain = _get_epicyon_domain_from_user_agent(ua_str)
+    if not calling_domain:
+        return
     if calling_domain in known_epicyon_instances:
         return
     known_epicyon_instances.append(calling_domain)

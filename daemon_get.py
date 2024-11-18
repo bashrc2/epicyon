@@ -342,7 +342,7 @@ def daemon_http_get(self) -> None:
 
     if ua_str:
         if 'Epicyon/' in ua_str:
-            log_epicyon_instances(self.server.base_dir, calling_domain,
+            log_epicyon_instances(self.server.base_dir, ua_str,
                                   self.server.known_epicyon_instances)
 
     if not _permitted_crawler_path(self.path):

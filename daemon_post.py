@@ -166,7 +166,7 @@ def daemon_http_post(self) -> None:
 
     if ua_str:
         if 'Epicyon/' in ua_str:
-            log_epicyon_instances(self.server.base_dir, calling_domain,
+            log_epicyon_instances(self.server.base_dir, ua_str,
                                   self.server.known_epicyon_instances)
 
     block, self.server.blocked_cache_last_updated, _ = \
