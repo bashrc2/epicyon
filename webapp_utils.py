@@ -2458,7 +2458,7 @@ def html_known_epicyon_instances(base_dir: str, http_prefix: str,
                 http_prefix = 'http'
             instances_text += \
                 instance + ' <a href="' + http_prefix + '://' + instance + \
-                '/newswire.xml"><img class="leftColEditImage" ' + \
+                '/newswire.xml"><img class="newswire_rss_image" ' + \
                 'loading="lazy" decoding="async" alt="' + newswire_str + \
                 '" title="' + newswire_str + \
                 '" src="/icons/logorss.png"></a><br>\n'

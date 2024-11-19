@@ -347,7 +347,9 @@ details {
 .accesskeys-right {
     width: 10%;
 }
-
+.newswire_rss_image {
+    width: 30px;
+}
 .cw {
     font-style: var(--cw-style);
     font-weight: var(--cw-weight);
