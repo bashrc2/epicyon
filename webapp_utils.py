@@ -2454,11 +2454,18 @@ def html_known_epicyon_instances(base_dir: str, http_prefix: str,
         newswire_str = translate['Newswire RSS Feed']
         for instance in known_epicyon_instances:
             http_prefix = 'https'
-            if instance.endswith('.onion') or instance.endswith('.i2p'):
+            if instance.endswith('.onion') or \
+               instance.endswith('.i2p') or \
+               local_network_host(instance):
                 http_prefix = 'http'
             instances_text += \
-                instance + ' <a href="' + http_prefix + '://' + instance + \
-                '/newswire.xml"><img class="newswire_rss_image" ' + \
+                '<a href="' + http_prefix + '://' + instance + \
+                '" target="_blank" rel="nofollow noopener noreferrer">' + \
+                instance + '</a>' + \
+                ' <a href="' + http_prefix + '://' + instance + \
+                '/newswire.xml" ' + \
+                'target="_blank" rel="nofollow noopener noreferrer">' + \
+                '<img class="newswire_rss_image" ' + \
                 'loading="lazy" decoding="async" alt="' + newswire_str + \
                 '" title="' + newswire_str + \
                 '" src="/icons/logorss.png"></a><br>\n'
