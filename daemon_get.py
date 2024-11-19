@@ -2275,14 +2275,16 @@ def daemon_http_get(self) -> None:
                     self.server.base_dir, 'http',
                     self.server.onion_domain,
                     self.server.system_language,
-                    self.server.known_epicyon_instances)
+                    self.server.known_epicyon_instances,
+                    self.server.translate)
         elif calling_domain.endswith('.i2p'):
             msg = \
                 html_known_epicyon_instances(
                     self.server.base_dir, 'http',
                     self.server.i2p_domain,
                     self.server.system_language,
-                    self.server.known_epicyon_instances)
+                    self.server.known_epicyon_instances,
+                    self.server.translate)
         else:
             msg = \
                 html_known_epicyon_instances(
@@ -2290,7 +2292,8 @@ def daemon_http_get(self) -> None:
                     self.server.http_prefix,
                     self.server.domain_full,
                     self.server.system_language,
-                    self.server.known_epicyon_instances)
+                    self.server.known_epicyon_instances,
+                    self.server.translate)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         login_headers(self, 'text/html', msglen, calling_domain)

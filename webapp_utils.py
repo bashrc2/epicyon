@@ -2435,7 +2435,8 @@ def load_buy_sites(base_dir: str) -> {}:
 def html_known_epicyon_instances(base_dir: str, http_prefix: str,
                                  domain_full: str,
                                  system_language: str,
-                                 known_epicyon_instances: []) -> str:
+                                 known_epicyon_instances: [],
+                                 translate: {}) -> str:
     """Show a list of known epicyon instances
     """
     html_str = ''
@@ -2450,8 +2451,13 @@ def html_known_epicyon_instances(base_dir: str, http_prefix: str,
                                         system_language)
     if known_epicyon_instances:
         instances_text = ''
+        newswire_str = translate['Newswire RSS Feed']
         for instance in known_epicyon_instances:
-            instances_text += instance + '<br>\n'
+            instances_text += \
+                instance + ' <a href="' + instance + '/newswire.xml">' + \
+                '<img class="leftColEditImage" loading="lazy" ' + \
+                'decoding="async" alt="' + newswire_str + '" title="' + \
+                newswire_str + '" src="/icons/logorss.png"></a><br>\n'
         html_str += \
             '<div class="container">' + instances_text + '</div>\n'
     html_str += html_footer()
