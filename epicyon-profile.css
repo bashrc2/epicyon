@@ -347,9 +347,6 @@ details {
 .accesskeys-right {
     width: 10%;
 }
-.newswire_rss_image {
-    width: 30px;
-}
 .cw {
     font-style: var(--cw-style);
     font-weight: var(--cw-weight);
@@ -608,6 +605,10 @@ a:focus img{
 
 .timeline-posts {
     background-color: var(--timeline-posts-background-color);
+}
+
+.container img.newswire_rss_image {
+    width: 30px;
 }
 
 .container img.markdownImage {
