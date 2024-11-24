@@ -467,6 +467,11 @@ It is possible to have references to scientific papers linked automatically, suc
 This is a reference to a paper: arxiv:2203.15752
 ```
 
+## Pinned posts
+It is possible to pin additional information to your profile page. This can be done by making a Public scoped post and selecting *Pin this post to your profile*.
+
+To clear a pinned post, make a blank Public scoped post and also select *Pin this post to your profile*.
+
 # The Timeline
 ## Layout
 ![Layout](manual-layout.png)
