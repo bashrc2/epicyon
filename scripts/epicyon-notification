@@ -97,12 +97,50 @@ function matrix_synapse_server_message {
         admin_username="${notifications_username}"
         TOKEN=$(sqlite3 homeserver.db "select token from access_tokens where user_id like '$MATRIXUSER' order by id desc limit 1;")
         if [ ! "$TOKEN" ]; then
-            echo "No matrix token for $MATRIXADMIN"
+            echo "No matrix access token for $MATRIXADMIN"
             return
         fi
     fi
     # send server notice
     MATRIXPOST="${homebase}/_synapse/admin/v1/send_server_notice?access_token=${TOKEN}"
+    MATRIXMESSAGE="{\"user_id\": \"${MATRIXUSER}\",\"content\": { \"msgtype\": \"m.text\",\"body\": \"${message}\" }}"
+    # shellcheck disable=SC2086
+    ${curl_command} --request POST --silent --header "Content-Type: application/json" --data "${MATRIXMESSAGE}" ${MATRIXPOST} > /dev/null
+}
+
+function matrix_conduit_server_message {
+    admin_username="$1"
+    notifications_username="$2"
+    message="$3"
+
+    MATRIX_DATA_DIR='/var/lib/matrix-conduit'
+    homeserver_config="/etc/matrix-conduit/conduit.toml"
+
+    # shellcheck disable=SC2002
+    MATRIX_DOMAIN_NAME=$(cat "$homeserver_config" | grep "server_name =" | head -n 1 | awk -F '"' '{print $2}')
+    if [ ! "$MATRIX_DOMAIN_NAME" ]; then
+        return
+    fi
+
+    # get the curl command and domain to send to
+    curl_command='curl'
+    homebase="https://$MATRIX_DOMAIN_NAME"
+    if [ -f /var/lib/tor/hidden_service_conduit/hostname ]; then
+        curl_command='torsocks curl'
+        homebase="http://$(cat /var/lib/tor/hidden_service_matrix/hostname)"
+    fi
+
+    # get the access token for the matrix admin user
+    MATRIXADMIN="@${admin_username}:$MATRIX_DOMAIN_NAME"
+    MATRIXUSER="@${notifications_username}:$MATRIX_DOMAIN_NAME"
+    cd "$MATRIX_DATA_DIR" || return
+    # TODO
+    echo "No matrix access token for $MATRIXADMIN"
+    return
+    # send server notice
+    # NOTE: this might not be implemented within Conduit yet.
+    # See https://gitlab.com/famedly/conduit/-/blob/next/src/api/client_server/message.rs
+    MATRIXPOST="${homebase}/_matrix/admin/r0/send_server_notice?access_token=${TOKEN}"
     MATRIXMESSAGE="{\"user_id\": \"${MATRIXUSER}\",\"content\": { \"msgtype\": \"m.text\",\"body\": \"${message}\" }}"
     # shellcheck disable=SC2086
     ${curl_command} --request POST --silent --header "Content-Type: application/json" --data "${MATRIXMESSAGE}" ${MATRIXPOST} > /dev/null
@@ -185,6 +223,11 @@ function sendNotification {
     if [ -d /etc/matrix ]; then
         matrix_synapse_server_message "${USERNAME}" "${USERNAME}" "$MESSAGE"
         hasSent=1
+    fi
+
+    if [ -d /etc/matrix-conduit ]l then
+       matrix_conduit_server_message "${USERNAME}" "${USERNAME}" "$MESSAGE"
+       hasSent=1
     fi
 
     if [ ! "$hasSent" ]; then
