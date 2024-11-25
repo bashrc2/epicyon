@@ -227,7 +227,7 @@ function sendNotification {
 
     if [ -d /etc/matrix-conduit ]l then
        matrix_conduit_server_message "${USERNAME}" "${USERNAME}" "$MESSAGE"
-       hasSent=1
+       # hasSent=1
     fi
 
     if [ ! "$hasSent" ]; then
