@@ -66,7 +66,7 @@ function kill_sendxmpp_process {
     fi
 }
 
-function matrix_server_message {
+function matrix_synapse_server_message {
     admin_username="$1"
     notifications_username="$2"
     message="$3"
@@ -183,7 +183,7 @@ function sendNotification {
     fi
 
     if [ -d /etc/matrix ]; then
-        matrix_server_message "${USERNAME}" "${USERNAME}" "$MESSAGE"
+        matrix_synapse_server_message "${USERNAME}" "${USERNAME}" "$MESSAGE"
         hasSent=1
     fi
 
