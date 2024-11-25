@@ -1545,11 +1545,21 @@ def _create_reply_notification_file(base_dir: str, nickname: str, domain: str,
     elif post_json_object['object'].get('thread'):
         conversation_id = post_json_object['object']['thread']
 
+    # is there a post being replied to?
     in_reply_to = get_reply_to(post_json_object['object'])
     if not in_reply_to:
         return is_reply_to_muted_post
     if not isinstance(in_reply_to, str):
         return is_reply_to_muted_post
+
+    # is this your own reply?
+    if post_json_object['object'].get('attributedTo'):
+        attrib = get_attributed_to(post_json_object['object']['attributedTo'])
+        if attrib:
+            if attrib == actor:
+                # no need to notify about your own replies
+                return False
+
     if not is_muted_conv(base_dir, nickname, domain, in_reply_to,
                          conversation_id):
         # check if the reply is within the allowed time period
