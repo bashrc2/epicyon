@@ -4980,8 +4980,16 @@ def get_reply_to(post_json_object: {}) -> str:
     """Returns the reply to link from a post
     """
     if post_json_object.get('inReplyTo'):
+        if not isinstance(post_json_object['inReplyTo'], str):
+            print('WARN: inReplyTo is not a string ' +
+                  str(post_json_object['inReplyTo']))
+            return ''
         return post_json_object['inReplyTo']
     if post_json_object.get('inReplyToBook'):
+        if not isinstance(post_json_object['inReplyToBook'], str):
+            print('WARN: inReplyToBook is not a string ' +
+                  str(post_json_object['inReplyToBook']))
+            return ''
         return post_json_object['inReplyToBook']
     return ''
 
