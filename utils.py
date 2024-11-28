@@ -4981,12 +4981,22 @@ def get_reply_to(post_json_object: {}) -> str:
     """
     if post_json_object.get('inReplyTo'):
         if not isinstance(post_json_object['inReplyTo'], str):
+            if isinstance(post_json_object['inReplyTo'], dict):
+                if post_json_object['inReplyTo'].get('id'):
+                    reply_id = post_json_object['inReplyTo']['id']
+                    if isinstance(reply_id, str):
+                        return reply_id
             print('WARN: inReplyTo is not a string ' +
                   str(post_json_object['inReplyTo']))
             return ''
         return post_json_object['inReplyTo']
     if post_json_object.get('inReplyToBook'):
         if not isinstance(post_json_object['inReplyToBook'], str):
+            if isinstance(post_json_object['inReplyToBook'], dict):
+                if post_json_object['inReplyToBook'].get('id'):
+                    reply_id = post_json_object['inReplyToBook']['id']
+                    if isinstance(reply_id, str):
+                        return reply_id
             print('WARN: inReplyToBook is not a string ' +
                   str(post_json_object['inReplyToBook']))
             return ''
