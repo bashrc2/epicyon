@@ -299,7 +299,7 @@ def daemon_http_get(self) -> None:
 
     # suspicious headers
     if contains_suspicious_headers(self.headers):
-        print('GET HTTP suspicious headers ' + str(self.headers))
+        print('GET HTTP suspicious headers 1 ' + str(self.headers))
         http_403(self)
         return
 

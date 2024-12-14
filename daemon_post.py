@@ -105,7 +105,7 @@ def daemon_http_post(self) -> None:
 
     # suspicious headers
     if contains_suspicious_headers(self.headers):
-        print('POST HTTP suspicious headers ' + str(self.headers))
+        print('POST HTTP suspicious headers 2 ' + str(self.headers))
         http_403(self)
         return
 
