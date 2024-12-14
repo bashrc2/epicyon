@@ -1985,7 +1985,7 @@ def get_mil_domains_list() -> []:
 def get_bsky_domains_list() -> []:
     """returns a list of bluesky bridges
     """
-    return ('bsky.brid.gy', 'fed.brid.gy')
+    return ['brid.gy']
 
 
 def contains_military_domain(message_str: str) -> bool:
