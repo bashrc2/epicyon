@@ -12,6 +12,7 @@ import errno
 from webfinger import webfinger_update
 from socket import error as SocketError
 from blocking import save_blocked_military
+from blocking import save_blocked_bluesky
 from httpheaders import redirect_headers
 from httpheaders import clear_login_details
 from flags import is_artist
@@ -851,6 +852,25 @@ def _profile_post_block_military(nickname: str, fields: {}, self) -> None:
             del self.server.block_military[nickname]
             save_blocked_military(self.server.base_dir,
                                   self.server.block_military)
+
+
+def _profile_post_block_bluesky(nickname: str, fields: {}, self) -> None:
+    """ HTTP POST block bluesky bridges
+    """
+    block_bsky_instances = False
+    if fields.get('blockBlueSky'):
+        if fields['blockBlueSky'] == 'on':
+            block_bsky_instances = True
+    if block_bsky_instances:
+        if not self.server.block_bluesky.get(nickname):
+            self.server.block_bluesky[nickname] = True
+            save_blocked_bluesky(self.server.base_dir,
+                                 self.server.block_bluesky)
+    else:
+        if self.server.block_bluesky.get(nickname):
+            del self.server.block_bluesky[nickname]
+            save_blocked_bluesky(self.server.base_dir,
+                                 self.server.block_bluesky)
 
 
 def _profile_post_no_reply_boosts(base_dir: str, nickname: str, domain: str,
@@ -3239,6 +3259,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                actor_json, fields, self,
                                                actor_changed, premium)
                 _profile_post_block_military(nickname, fields, self)
+                _profile_post_block_bluesky(nickname, fields, self)
                 _profile_post_no_reply_boosts(base_dir, nickname, domain,
                                               fields)
                 _profile_post_no_seen_posts(base_dir, nickname, domain,

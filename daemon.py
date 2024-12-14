@@ -32,6 +32,7 @@ from cwlists import load_cw_lists
 from blocking import run_federated_blocks_daemon
 from blocking import load_federated_blocks_endpoints
 from blocking import load_blocked_military
+from blocking import load_blocked_bluesky
 from blocking import update_blocked_cache
 from blocking import set_broch_mode
 from blocking import get_domain_blocklist
@@ -305,7 +306,8 @@ class EpicyonServer(ThreadingHTTPServer):
     auto_cw_cache = {}
     sites_unavailable = None
     max_shares_on_profile = 0
-    block_military = []
+    block_military = {}
+    block_bluesky = {}
     followers_synchronization = False
     followers_sync_cache = {}
     buy_sites = None
@@ -782,6 +784,9 @@ def run_daemon(accounts_data_dir: str,
 
     # load a list of nicknames for accounts blocking military instances
     httpd.block_military = load_blocked_military(base_dir)
+
+    # load a list of nicknames for accounts blocking bluesky bridges
+    httpd.block_bluesky = load_blocked_bluesky(base_dir)
 
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)

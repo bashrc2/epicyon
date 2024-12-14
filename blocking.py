@@ -1922,6 +1922,27 @@ def load_blocked_military(base_dir: str) -> {}:
     return nicknames_dict
 
 
+def load_blocked_bluesky(base_dir: str) -> {}:
+    """Loads a list of nicknames for accounts which block bluesky bridges
+    """
+    block_bluesky_filename = data_dir(base_dir) + '/block_bluesky.txt'
+    nicknames_list = []
+    if os.path.isfile(block_bluesky_filename):
+        try:
+            with open(block_bluesky_filename, 'r',
+                      encoding='utf-8') as fp_mil:
+                nicknames_list = fp_mil.read()
+        except OSError:
+            print('EX: error while reading block bluesky file')
+    if not nicknames_list:
+        return {}
+    nicknames_list = nicknames_list.split('\n')
+    nicknames_dict = {}
+    for nickname in nicknames_list:
+        nicknames_dict[nickname] = True
+    return nicknames_dict
+
+
 def save_blocked_military(base_dir: str, block_military: {}) -> None:
     """Saves a list of nicknames for accounts which block military instances
     """
@@ -1938,6 +1959,22 @@ def save_blocked_military(base_dir: str, block_military: {}) -> None:
         print('EX: error while saving block military file')
 
 
+def save_blocked_bluesky(base_dir: str, block_bluesky: {}) -> None:
+    """Saves a list of nicknames for accounts which block bluesky bridges
+    """
+    nicknames_str = ''
+    for nickname, _ in block_bluesky.items():
+        nicknames_str += nickname + '\n'
+
+    block_bluesky_filename = data_dir(base_dir) + '/block_bluesky.txt'
+    try:
+        with open(block_bluesky_filename, 'w+',
+                  encoding='utf-8') as fp_mil:
+            fp_mil.write(nicknames_str)
+    except OSError:
+        print('EX: error while saving block bluesky file')
+
+
 def get_mil_domains_list() -> []:
     """returns a list of military domains
     """
@@ -1945,11 +1982,34 @@ def get_mil_domains_list() -> []:
             'sncorp.com', 'sierranevadacorp.us', 'ncontext.com')
 
 
+def get_bsky_domains_list() -> []:
+    """returns a list of bluesky bridges
+    """
+    return ('bsky.brid.gy', 'fed.brid.gy')
+
+
 def contains_military_domain(message_str: str) -> bool:
     """Returns true if the given string contains a military domain
     """
     mil_domains = get_mil_domains_list()
     for domain_str in mil_domains:
+        if '.' not in domain_str:
+            tld = domain_str
+            if '.' + tld + '"' in message_str or \
+               '.' + tld + '/' in message_str:
+                return True
+        else:
+            if domain_str + '"' in message_str or \
+               domain_str + '/' in message_str:
+                return True
+    return False
+
+
+def contains_bluesky_domain(message_str: str) -> bool:
+    """Returns true if the given string contains a bluesky bridge domain
+    """
+    bsky_domains = get_bsky_domains_list()
+    for domain_str in bsky_domains:
         if '.' not in domain_str:
             tld = domain_str
             if '.' + tld + '"' in message_str or \

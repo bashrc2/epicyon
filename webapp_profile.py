@@ -2408,6 +2408,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                                  translate: {}, reply_interval_hours: int,
                                  cw_lists: {}, lists_enabled: str,
                                  buy_sites: {}, block_military: {},
+                                 block_bluesky: {},
                                  block_federated_endpoints: []) -> str:
     """Filtering and blocking section of edit profile screen
     """
@@ -2684,6 +2685,15 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             block_mil = block_military[nickname]
         edit_profile_form += \
             edit_check_box(idx, 'blockMilitary', block_mil)
+
+        idx = 'Block BlueSky bridges'
+        if translate.get(idx):
+            name = translate[idx]
+        block_bsky = False
+        if block_bluesky.get(nickname):
+            block_bsky = block_bluesky[nickname]
+        edit_profile_form += \
+            edit_check_box(idx, 'blockBlueSky', block_bsky)
 
         cw_lists_str = ''
         for name, _ in cw_lists.items():
@@ -3265,6 +3275,7 @@ def html_edit_profile(server, translate: {},
                       reverse_sequence: [],
                       buy_sites: {},
                       block_military: {},
+                      block_bluesky: {},
                       block_federated_endpoints: []) -> str:
     """Shows the edit profile screen
     """
@@ -3589,7 +3600,8 @@ def html_edit_profile(server, translate: {},
                                      user_agents_blocked, crawlers_allowed,
                                      translate, reply_interval_hours,
                                      cw_lists, lists_enabled, buy_sites,
-                                     block_military, block_federated_endpoints)
+                                     block_military, block_bluesky,
+                                     block_federated_endpoints)
 
     # git projects section
     edit_profile_form += \
