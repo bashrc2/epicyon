@@ -12,6 +12,7 @@ import errno
 from webfinger import webfinger_update
 from socket import error as SocketError
 from blocking import save_blocked_military
+from blocking import save_blocked_government
 from blocking import save_blocked_bluesky
 from httpheaders import redirect_headers
 from httpheaders import clear_login_details
@@ -852,6 +853,25 @@ def _profile_post_block_military(nickname: str, fields: {}, self) -> None:
             del self.server.block_military[nickname]
             save_blocked_military(self.server.base_dir,
                                   self.server.block_military)
+
+
+def _profile_post_block_government(nickname: str, fields: {}, self) -> None:
+    """ HTTP POST block government instances
+    """
+    block_gov_instances = False
+    if fields.get('blockGovernment'):
+        if fields['blockGovernment'] == 'on':
+            block_gov_instances = True
+    if block_gov_instances:
+        if not self.server.block_government.get(nickname):
+            self.server.block_government[nickname] = True
+            save_blocked_government(self.server.base_dir,
+                                    self.server.block_government)
+    else:
+        if self.server.block_government.get(nickname):
+            del self.server.block_government[nickname]
+            save_blocked_government(self.server.base_dir,
+                                    self.server.block_government)
 
 
 def _profile_post_block_bluesky(nickname: str, fields: {}, self) -> None:
@@ -3259,6 +3279,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                actor_json, fields, self,
                                                actor_changed, premium)
                 _profile_post_block_military(nickname, fields, self)
+                _profile_post_block_government(nickname, fields, self)
                 _profile_post_block_bluesky(nickname, fields, self)
                 _profile_post_no_reply_boosts(base_dir, nickname, domain,
                                               fields)

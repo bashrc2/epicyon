@@ -14,6 +14,7 @@ from utils import save_json
 from utils import user_agent_domain
 from utils import remove_eol
 from blocking import get_mil_domains_list
+from blocking import get_gov_domains_list
 from blocking import get_bsky_domains_list
 from blocking import update_blocked_cache
 from blocking import is_blocked_domain
@@ -112,6 +113,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
                        crawlers_allowed: [],
                        known_bots: [], path: str,
                        block_military: {},
+                       block_government: {},
                        block_bluesky: {}):
     """Should a GET or POST be blocked based upon its user agent?
     """
@@ -249,6 +251,32 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
                         if agent_domain.endswith(domain_str):
                             blocked_ua = True
                             print('BLOCK: Blocked military user agent: ' +
+                                  agent_domain)
+                            break
+
+    # optionally block government domains on a per account basis
+    if not blocked_ua and block_government:
+        if '/users/' in path:
+            # which accounts is this?
+            nickname = path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            # does this account block government domains?
+            if block_government.get(nickname):
+                gov_domains = get_gov_domains_list()
+                for domain_str in gov_domains:
+                    if '.' not in domain_str:
+                        tld = domain_str
+                        if agent_domain.endswith('.' + tld):
+                            blocked_ua = True
+                            print('BLOCK: ' +
+                                  'Blocked government tld user agent: ' +
+                                  agent_domain)
+                            break
+                    else:
+                        if agent_domain.endswith(domain_str):
+                            blocked_ua = True
+                            print('BLOCK: Blocked government user agent: ' +
                                   agent_domain)
                             break
 

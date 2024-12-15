@@ -22,6 +22,7 @@ from utils import contains_invalid_chars
 from utils import remove_id_ending
 from utils import check_bad_path
 from blocking import contains_military_domain
+from blocking import contains_government_domain
 from blocking import contains_bluesky_domain
 from crawlers import blocked_user_agent
 from session import get_session_for_domain
@@ -183,6 +184,7 @@ def daemon_http_post(self) -> None:
                            self.server.crawlers_allowed,
                            self.server.known_bots,
                            self.path, self.server.block_military,
+                           self.server.block_government,
                            self.server.block_bluesky)
     if block:
         http_400(self)
@@ -1119,6 +1121,12 @@ def daemon_http_post(self) -> None:
             if contains_military_domain(decoded_message_bytes):
                 http_400(self)
                 print('BLOCK: blocked military domain')
+                self.server.postreq_busy = False
+                return
+        if self.server.block_government.get(nickname):
+            if contains_government_domain(decoded_message_bytes):
+                http_400(self)
+                print('BLOCK: blocked government domain')
                 self.server.postreq_busy = False
                 return
         if self.server.block_bluesky.get(nickname):

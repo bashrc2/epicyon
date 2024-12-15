@@ -534,6 +534,7 @@ def edit_profile2(self, calling_domain: str, path: str,
                   reverse_sequence: bool,
                   buy_sites: [],
                   block_military: {},
+                  block_government: {},
                   block_bluesky: {},
                   block_federated_endpoints: []) -> bool:
     """Show the edit profile screen
@@ -563,6 +564,7 @@ def edit_profile2(self, calling_domain: str, path: str,
                                 reverse_sequence,
                                 buy_sites,
                                 block_military,
+                                block_government,
                                 block_bluesky,
                                 block_federated_endpoints)
         if msg:

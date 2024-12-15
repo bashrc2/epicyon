@@ -359,6 +359,7 @@ def daemon_http_get(self) -> None:
                                self.server.crawlers_allowed,
                                self.server.known_bots,
                                self.path, self.server.block_military,
+                               self.server.block_government,
                                self.server.block_bluesky)
         if block:
             if llm:
@@ -4342,6 +4343,7 @@ def daemon_http_get(self) -> None:
                          self.server.reverse_sequence,
                          self.server.buy_sites,
                          self.server.block_military,
+                         self.server.block_government,
                          self.server.block_bluesky,
                          self.server.block_federated_endpoints):
             self.server.getreq_busy = False
