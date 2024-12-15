@@ -229,80 +229,41 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
         if blocked_ua:
             print('BLOCK: Blocked User agent 2: ' + agent_domain)
 
-    # optionally block military domains on a per account basis
-    if not blocked_ua and block_military:
-        if '/users/' in path:
-            # which accounts is this?
-            nickname = path.split('/users/')[1]
-            if '/' in nickname:
-                nickname = nickname.split('/')[0]
-            # does this account block military domains?
-            if block_military.get(nickname):
-                mil_domains = get_mil_domains_list()
-                for domain_str in mil_domains:
-                    if '.' not in domain_str:
-                        tld = domain_str
-                        if agent_domain.endswith('.' + tld):
-                            blocked_ua = True
-                            print('BLOCK: Blocked military tld user agent: ' +
-                                  agent_domain)
-                            break
-                    else:
-                        if agent_domain.endswith(domain_str):
-                            blocked_ua = True
-                            print('BLOCK: Blocked military user agent: ' +
-                                  agent_domain)
-                            break
-
-    # optionally block government domains on a per account basis
-    if not blocked_ua and block_government:
-        if '/users/' in path:
-            # which accounts is this?
-            nickname = path.split('/users/')[1]
-            if '/' in nickname:
-                nickname = nickname.split('/')[0]
-            # does this account block government domains?
-            if block_government.get(nickname):
-                gov_domains = get_gov_domains_list()
-                for domain_str in gov_domains:
-                    if '.' not in domain_str:
-                        tld = domain_str
-                        if agent_domain.endswith('.' + tld):
-                            blocked_ua = True
-                            print('BLOCK: ' +
-                                  'Blocked government tld user agent: ' +
-                                  agent_domain)
-                            break
-                    else:
-                        if agent_domain.endswith(domain_str):
-                            blocked_ua = True
-                            print('BLOCK: Blocked government user agent: ' +
-                                  agent_domain)
-                            break
-
-    # optionally block bluesky bridges on a per account basis
-    if not blocked_ua and block_bluesky:
-        if '/users/' in path:
-            # which accounts is this?
-            nickname = path.split('/users/')[1]
-            if '/' in nickname:
-                nickname = nickname.split('/')[0]
-            # does this account block bluesky bridges?
-            if block_bluesky.get(nickname):
-                bsky_domains = get_bsky_domains_list()
-                for domain_str in bsky_domains:
-                    if '.' not in domain_str:
-                        tld = domain_str
-                        if agent_domain.endswith('.' + tld):
-                            blocked_ua = True
-                            print('BLOCK: Blocked bluesky tld user agent: ' +
-                                  agent_domain)
-                            break
-                    else:
-                        if agent_domain.endswith(domain_str):
-                            blocked_ua = True
-                            print('BLOCK: Blocked bluesky user agent: ' +
-                                  agent_domain)
-                            break
+    block_dicts = {
+        "military": block_military,
+        "government": block_government,
+        "bluesky": block_bluesky
+    }
+    for block_type, block_dict in block_dicts.items():
+        if blocked_ua or not block_dict:
+            continue
+        if '/users/' not in path:
+            continue
+        # which accounts is this?
+        nickname = path.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        # does this account block?
+        if not block_dict.get(nickname):
+            continue
+        if block_type == "military":
+            blk_domains = get_mil_domains_list()
+        elif block_type == "government":
+            blk_domains = get_gov_domains_list()
+        else:
+            blk_domains = get_bsky_domains_list()
+        for domain_str in blk_domains:
+            if '.' not in domain_str:
+                tld = domain_str
+                if agent_domain.endswith('.' + tld):
+                    blocked_ua = True
+                    print('BLOCK: Blocked ' + block_type +
+                          ' tld user agent: ' + agent_domain)
+                    break
+            elif agent_domain.endswith(domain_str):
+                blocked_ua = True
+                print('BLOCK: Blocked ' + block_type +
+                      ' user agent: ' + agent_domain)
+                break
 
     return blocked_ua, blocked_cache_last_updated, False
