@@ -41,6 +41,7 @@ from httpcodes import http_503
 from httpheaders import contains_suspicious_headers
 from httpheaders import update_headers_catalog
 from httpheaders import redirect_headers
+from daemon_utils import detect_mitm
 from daemon_utils import log_epicyon_instances
 from daemon_utils import get_user_agent
 from daemon_utils import post_to_outbox
@@ -97,6 +98,10 @@ def daemon_http_post(self) -> None:
     update_headers_catalog(self.server.base_dir,
                            self.server.headers_catalog,
                            self.headers)
+
+    mitm = detect_mitm(self)
+    if mitm:
+        print('DEBUG: MITM on HTTP POST, ' + str(self.headers))
 
     # headers used by LLM scrapers
     if 'oai-host-hash' in self.headers:

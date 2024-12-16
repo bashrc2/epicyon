@@ -392,7 +392,7 @@ def daemon_http_get(self) -> None:
     referer_domain = _get_referer_domain(self, ua_str)
 
     mitm = detect_mitm(self)
-    if mitm:
+    if mitm and referer_domain:
         print('DEBUG: MITM on HTTP GET, ' + str(referer_domain))
 
     curr_session, proxy_type = \
