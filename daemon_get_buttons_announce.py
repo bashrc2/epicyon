@@ -24,6 +24,7 @@ from httpcodes import http_404
 from announce import create_announce
 from posts import save_post_to_box
 from daemon_utils import post_to_outbox
+from daemon_utils import detect_mitm
 from fitnessFunctions import fitness_performance
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
@@ -212,10 +213,12 @@ def announce_button(self, calling_domain: str, path: str,
         timezone = None
         if account_timezone.get(self.post_to_nickname):
             timezone = account_timezone.get(self.post_to_nickname)
-        mitm = False
-        if os.path.isfile(announce_filename.replace('.json', '') +
-                          '.mitm'):
-            mitm = True
+        mitm = detect_mitm(self)
+        if not mitm:
+            mitm_filename = \
+                announce_filename.replace('.json', '') + '.mitm'
+            if os.path.isfile(mitm_filename):
+                mitm = True
         bold_reading = False
         if bold_reading_nicknames.get(self.post_to_nickname):
             bold_reading = True

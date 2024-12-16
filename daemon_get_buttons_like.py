@@ -27,6 +27,7 @@ from posts import get_original_post_from_announce_url
 from fitnessFunctions import fitness_performance
 from like import update_likes_collection
 from webapp_post import individual_post_as_html
+from daemon_utils import detect_mitm
 
 
 def like_button(self, calling_domain: str, path: str,
@@ -214,10 +215,12 @@ def like_button(self, calling_domain: str, path: str,
             timezone = None
             if account_timezone.get(self.post_to_nickname):
                 timezone = account_timezone.get(self.post_to_nickname)
-            mitm = False
-            if os.path.isfile(liked_post_filename.replace('.json', '') +
-                              '.mitm'):
-                mitm = True
+            mitm = detect_mitm(self)
+            if not mitm:
+                mitm_filename = \
+                    liked_post_filename.replace('.json', '') + '.mitm'
+                if os.path.isfile(mitm_filename):
+                    mitm = True
             bold_reading = False
             if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
@@ -463,10 +466,12 @@ def like_button_undo(self, calling_domain: str, path: str,
             timezone = None
             if account_timezone.get(self.post_to_nickname):
                 timezone = account_timezone.get(self.post_to_nickname)
-            mitm = False
-            if os.path.isfile(liked_post_filename.replace('.json', '') +
-                              '.mitm'):
-                mitm = True
+            mitm = detect_mitm(self)
+            if not mitm:
+                mitm_filename = \
+                    liked_post_filename.replace('.json', '') + '.mitm'
+                if os.path.isfile(mitm_filename):
+                    mitm = True
             bold_reading = False
             if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True

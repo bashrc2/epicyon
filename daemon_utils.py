@@ -207,7 +207,7 @@ def post_to_outbox_thread(self, message_json: {},
     return True
 
 
-def _detect_mitm(self) -> bool:
+def detect_mitm(self) -> bool:
     """Detect if a request contains a MiTM
     """
     mitm_domains = ['cloudflare']
@@ -524,7 +524,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
                              self.server.blocked_cache_last_updated,
                              self.server.blocked_cache_update_secs)
 
-    mitm = _detect_mitm(self)
+    mitm = detect_mitm(self)
 
     if debug:
         print('INBOX: saving post to queue')

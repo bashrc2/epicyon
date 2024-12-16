@@ -22,6 +22,7 @@ from blocking import mute_post
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
 from fitnessFunctions import fitness_performance
+from daemon_utils import detect_mitm
 
 
 def mute_button(self, calling_domain: str, path: str,
@@ -129,10 +130,12 @@ def mute_button(self, calling_domain: str, path: str,
             timezone = None
             if account_timezone.get(nickname):
                 timezone = account_timezone.get(nickname)
-            mitm = False
-            if os.path.isfile(mute_filename.replace('.json', '') +
-                              '.mitm'):
-                mitm = True
+            mitm = detect_mitm(self)
+            if not mitm:
+                mitm_filename = \
+                    mute_filename.replace('.json', '') + '.mitm'
+                if os.path.isfile(mitm_filename):
+                    mitm = True
             bold_reading = False
             if bold_reading_nicknames.get(nickname):
                 bold_reading = True
@@ -301,10 +304,12 @@ def mute_button_undo(self, calling_domain: str, path: str,
             timezone = None
             if account_timezone.get(nickname):
                 timezone = account_timezone.get(nickname)
-            mitm = False
-            if os.path.isfile(mute_filename.replace('.json', '') +
-                              '.mitm'):
-                mitm = True
+            mitm = detect_mitm(self)
+            if not mitm:
+                mitm_filename = \
+                    mute_filename.replace('.json', '') + '.mitm'
+                if os.path.isfile(mitm_filename):
+                    mitm = True
             bold_reading = False
             if bold_reading_nicknames.get(nickname):
                 bold_reading = True

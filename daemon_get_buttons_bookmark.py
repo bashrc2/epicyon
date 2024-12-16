@@ -25,6 +25,7 @@ from bookmarks import undo_bookmark_post
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
 from fitnessFunctions import fitness_performance
+from daemon_utils import detect_mitm
 
 
 def bookmark_button(self, calling_domain: str, path: str,
@@ -167,10 +168,12 @@ def bookmark_button(self, calling_domain: str, path: str,
             timezone = None
             if account_timezone.get(self.post_to_nickname):
                 timezone = account_timezone.get(self.post_to_nickname)
-            mitm = False
-            if os.path.isfile(bookmark_filename.replace('.json', '') +
-                              '.mitm'):
-                mitm = True
+            mitm = detect_mitm(self)
+            if not mitm:
+                mitm_filename = \
+                    bookmark_filename.replace('.json', '') + '.mitm'
+                if os.path.isfile(mitm_filename):
+                    mitm = True
             bold_reading = False
             if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
@@ -372,10 +375,12 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
             timezone = None
             if account_timezone.get(self.post_to_nickname):
                 timezone = account_timezone.get(self.post_to_nickname)
-            mitm = False
-            if os.path.isfile(bookmark_filename.replace('.json', '') +
-                              '.mitm'):
-                mitm = True
+            mitm = detect_mitm(self)
+            if not mitm:
+                mitm_filename = \
+                    bookmark_filename.replace('.json', '') + '.mitm'
+                if os.path.isfile(mitm_filename):
+                    mitm = True
             bold_reading = False
             if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True

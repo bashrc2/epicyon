@@ -47,6 +47,7 @@ from fitnessFunctions import fitness_performance
 from securemode import secure_mode
 from context import get_individual_post_context
 from conversation import convthread_id_to_conversation_tag
+from daemon_utils import detect_mitm
 
 
 def _show_post_from_file(self, post_filename: str, liked_by: str,
@@ -121,10 +122,12 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
         if account_timezone.get(nickname):
             timezone = account_timezone.get(nickname)
 
-        mitm = False
-        if os.path.isfile(post_filename.replace('.json', '') +
-                          '.mitm'):
-            mitm = True
+        mitm = detect_mitm(self)
+        if not mitm:
+            mitm_filename = \
+                post_filename.replace('.json', '') + '.mitm'
+            if os.path.isfile(mitm_filename):
+                mitm = True
 
         bold_reading = False
         if bold_reading_nicknames.get(nickname):
