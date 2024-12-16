@@ -63,6 +63,7 @@ from fitnessFunctions import html_watch_points_graph
 from session import establish_session
 from session import get_session_for_domains
 from crawlers import blocked_user_agent
+from daemon_utils import detect_mitm
 from daemon_utils import etag_exists
 from daemon_utils import has_accept
 from daemon_utils import show_person_options
@@ -389,6 +390,10 @@ def daemon_http_get(self) -> None:
             return
 
     referer_domain = _get_referer_domain(self, ua_str)
+
+    mitm = detect_mitm(self)
+    if mitm:
+        print('DEBUG: MITM on HTTP GET, ' + str(referer_domain))
 
     curr_session, proxy_type = \
         get_session_for_domains(self.server,
