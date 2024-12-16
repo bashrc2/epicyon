@@ -218,11 +218,12 @@ def _detect_mitm(self) -> bool:
     )
     for interloper in mitm_domains:
         for header_name in check_headers:
-            if self.headers.get(header_name):
-                if interloper in self.headers[header_name]:
-                    print('MITM: ' + header_name + ' = ' +
-                          self.headers[header_name])
-                    return True
+            if not self.headers.get(header_name):
+                continue
+            if interloper in str(self.headers[header_name]):
+                print('MITM: ' + header_name + ' = ' +
+                      str(self.headers[header_name]))
+                return True
     # The presence of these headers on their own indicates a MiTM
     mitm_headers = (
         'CF-Connecting-IP', 'CF-RAY', 'CF-IPCountry', 'CF-Visitor',
