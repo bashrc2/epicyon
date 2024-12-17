@@ -22,6 +22,7 @@ from flags import is_group_account
 from flags import has_group_type
 from flags import is_quote_toot
 from flags import url_permitted
+from utils import save_mitm_servers
 from utils import harmless_markup
 from utils import quote_toots_allowed
 from utils import lines_in_file
@@ -3227,6 +3228,7 @@ def run_inbox_queue(server,
 
     heart_beat_ctr = 0
     queue_restore_ctr = 0
+    curr_mitm_servers = []
 
     # time when the last DM bounce message was sent
     # This is in a list so that it can be changed by reference
@@ -3258,6 +3260,11 @@ def run_inbox_queue(server,
             print('>>> Heartbeat Q:' + str(len(queue)) + ' ' +
                   '{:%F %T}'.format(datetime.datetime.now()))
             heart_beat_ctr = 0
+
+            # save MITM servers list if it has changed
+            if str(server.mitm_servers) != str(curr_mitm_servers):
+                curr_mitm_servers = server.mitm_servers.copy()
+                save_mitm_servers(base_dir, curr_mitm_servers)
 
         if len(queue) == 0:
             # restore any remaining queue items

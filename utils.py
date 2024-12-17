@@ -5359,3 +5359,38 @@ def detect_mitm(self) -> bool:
                   self.headers[header_name.lower()])
             return True
     return False
+
+
+def load_mitm_servers(base_dir: str) -> []:
+    """Loads a list of servers implementing insecure transport security
+    """
+    mitm_servers_filename = data_dir(base_dir) + '/mitm_servers.txt'
+    mitm_servers = []
+    if os.path.isfile(mitm_servers_filename):
+        try:
+            with open(mitm_servers_filename, 'r',
+                      encoding='utf-8') as fp_mitm:
+                mitm_servers = fp_mitm.read()
+        except OSError:
+            print('EX: error while reading mitm_servers.txt')
+    if not mitm_servers:
+        return {}
+    mitm_servers = mitm_servers.split('\n')
+    return mitm_servers
+
+
+def save_mitm_servers(base_dir: str, mitm_servers: []) -> None:
+    """Saves a list of servers implementing insecure transport security
+    """
+    mitm_servers_str = ''
+    for domain in mitm_servers:
+        if domain:
+            mitm_servers_str += domain + '\n'
+
+    mitm_servers_filename = data_dir(base_dir) + '/mitm_servers.txt'
+    try:
+        with open(mitm_servers_filename, 'w+',
+                  encoding='utf-8') as fp_mitm:
+            fp_mitm.write(mitm_servers_str)
+    except OSError:
+        print('EX: error while saving mitm_servers.txt')

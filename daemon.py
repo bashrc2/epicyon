@@ -63,6 +63,7 @@ from utils import get_full_domain
 from utils import set_config_param
 from utils import get_config_param
 from utils import load_json
+from utils import load_mitm_servers
 from content import load_auto_cw_cache
 from content import load_dogwhistles
 from theme import scan_themes_for_scripts
@@ -712,7 +713,7 @@ def run_daemon(accounts_data_dir: str,
     httpd.last_llm_time = None
 
     # servers with man-in-the-middle transport encryption
-    httpd.mitm_servers = []
+    httpd.mitm_servers = load_mitm_servers(base_dir)
 
     # default "searchable by" for new posts for each account
     httpd.searchable_by_default = load_searchable_by_default(base_dir)
