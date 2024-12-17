@@ -2484,4 +2484,4 @@ def mitm_warning_html(translate: {}) -> str:
     return '        <img loading="lazy" decoding="async" title="' + \
         mitm_warning_str + '" alt="' + \
         mitm_warning_str + '" src="/icons' + \
-        '/mitm.png" class="announceOrReply"/>\n'
+        '/mitm.png" class="mitm"/>\n'

@@ -790,6 +790,16 @@ a:focus img{
     transform: scaleX(var(--reply-icon-direction));
 }
 
+.container img.mitm {
+    float: none;
+    width: 30px;
+    margin: 0 0;
+    padding: 0 0;
+    border-radius: 0;
+    -ms-transform: scaleX(var(--reply-icon-direction));
+    transform: scaleX(var(--reply-icon-direction));
+}
+
 .container img.DMicon {
     float: none;
     width: 40px;
