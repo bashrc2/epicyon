@@ -751,7 +751,8 @@ def show_person_options(self, calling_domain: str, path: str,
                                 self.server.sites_unavailable,
                                 youtube, peertube, pixelfed,
                                 discord, music_site_url,
-                                art_site_url)
+                                art_site_url,
+                                self.server.mitm_servers)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

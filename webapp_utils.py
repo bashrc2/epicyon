@@ -2475,3 +2475,13 @@ def html_known_epicyon_instances(base_dir: str, http_prefix: str,
             '<div class="container">' + instances_text + '</div>\n'
     html_str += html_footer()
     return html_str
+
+
+def mitm_warning_html(translate: {}) -> str:
+    """Returns html for a MITM warning icon
+    """
+    mitm_warning_str = translate['mitm']
+    return '        <img loading="lazy" decoding="async" title="' + \
+        mitm_warning_str + '" alt="' + \
+        mitm_warning_str + '" src="/icons' + \
+        '/mitm.png" class="announceOrReply"/>\n'

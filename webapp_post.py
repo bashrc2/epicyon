@@ -100,6 +100,7 @@ from content import switch_words
 from content import add_auto_cw
 from person import is_person_snoozed
 from person import get_person_avatar_url
+from webapp_utils import mitm_warning_html
 from webapp_utils import text_mode_browser
 from webapp_utils import get_buy_links
 from webapp_utils import get_banner_file
@@ -1467,7 +1468,7 @@ def _get_post_title_announce_html(base_dir: str,
                                          nickname, announce_handle)
 
     if mitm or announce_domain in mitm_servers:
-        title_str += _mitm_warning_html(translate)
+        title_str += mitm_warning_html(translate)
 
     # show avatar of person replied to
     announce_actor = attributed_to
@@ -1548,16 +1549,6 @@ def _reply_to_unknown_html(translate: {},
         '        <a href="' + \
         post_link + \
         '" class="announceOrReply" tabindex="10">@unknown</a>\n'
-
-
-def _mitm_warning_html(translate: {}) -> str:
-    """Returns the html title for a reply to an unknown handle
-    """
-    mitm_warning_str = translate['mitm']
-    return '        <img loading="lazy" decoding="async" title="' + \
-        mitm_warning_str + '" alt="' + \
-        mitm_warning_str + '" src="/icons' + \
-        '/mitm.png" class="announceOrReply"/>\n'
 
 
 def _reply_with_unknown_path_html(translate: {},
@@ -1746,7 +1737,7 @@ def _get_post_title_reply_html(base_dir: str,
                             nickname, post_json_object, reply_handle)
 
     if mitm or reply_domain in mitm_servers:
-        title_str += _mitm_warning_html(translate)
+        title_str += mitm_warning_html(translate)
 
     _log_post_timing(enable_timing_log, post_start_time, '13.7')
 
@@ -2456,6 +2447,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
            display_name_is_emoji(display_name):
             display_name = None
     actor_handle = actor_nickname + '@' + actor_domain
+
+    # MITM warning icon
+    mitm_str = ''
+    if mitm or actor_domain in mitm_servers:
+        mitm_str = ' ' + mitm_warning_html(translate)
+
     if display_name:
         display_name = _enforce_max_display_name_length(display_name)
         # add emojis
@@ -2469,8 +2466,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
             '" tabindex="10" title="' + actor_handle + '">' + \
-            '<span itemprop="author">' + display_name + '</span>' + \
-            '</a>\n'
+            '<span itemprop="author">' + display_name + \
+            mitm_str + '</span></a>\n'
     else:
         if not message_id:
             # pprint(post_json_object)
@@ -2486,7 +2483,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
             '" tabindex="10">' + \
-            '@<span itemprop="author">' + actor_handle + '</span></a>\n'
+            '@<span itemprop="author">' + actor_handle + \
+            mitm_str + '</span></a>\n'
 
     # benchmark 9
     _log_post_timing(enable_timing_log, post_start_time, '9')

@@ -30,6 +30,7 @@ from follow import is_following_actor
 from followingCalendar import receiving_calendar_events
 from notifyOnPost import notify_when_person_posts
 from person import get_person_notes
+from webapp_utils import mitm_warning_html
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import get_broken_link_substitute
@@ -175,7 +176,8 @@ def html_person_options(default_timeline: str,
                         pixelfed: str,
                         discord: str,
                         music_site_url: str,
-                        art_site_url: str) -> str:
+                        art_site_url: str,
+                        mitm_servers: []) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_link_str = ''
@@ -313,9 +315,12 @@ def html_person_options(default_timeline: str,
         handle_shown += ' 💤'
     if offline:
         handle_shown += ' [' + translate['offline'].upper() + ']'
+    mitm_str = ''
+    if options_domain in mitm_servers:
+        mitm_str = ' ' + mitm_warning_html(translate)
     options_str += \
         '  <p class="optionsText">' + translate['Options for'] + \
-        ' @' + handle_shown + '</p>\n'
+        ' @' + handle_shown + mitm_str + '</p>\n'
 
     # is sending posts to this account blocked?
     send_block_filename = \
