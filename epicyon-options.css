@@ -157,6 +157,10 @@ a:focus {
     width: 15%;
 }
 
+.options img.announceOrReply {
+    width: 2%;
+}
+
 @media screen and (min-width: 400px) {
     .timeline-banner {
         vertical-align: top;
