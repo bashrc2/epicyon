@@ -5374,7 +5374,7 @@ def load_mitm_servers(base_dir: str) -> []:
         except OSError:
             print('EX: error while reading mitm_servers.txt')
     if not mitm_servers:
-        return {}
+        return []
     mitm_servers = mitm_servers.split('\n')
     return mitm_servers
 
