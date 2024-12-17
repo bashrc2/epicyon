@@ -55,14 +55,15 @@ def html_conversation_view(authorized: bool, post_id: str,
                            block_federated: [],
                            auto_cw_cache: {},
                            ua_str: str,
-                           default_timeline: str) -> str:
+                           default_timeline: str,
+                           mitm_servers: []) -> str:
     """Show a page containing a conversation thread
     """
     conv_posts = \
         download_conversation_posts(authorized,
                                     session, http_prefix, base_dir,
                                     nickname, domain,
-                                    post_id, debug)
+                                    post_id, debug, mitm_servers)
 
     if not conv_posts:
         return None
@@ -154,7 +155,8 @@ def html_conversation_view(authorized: bool, post_id: str,
                                     timezone, False, bold_reading,
                                     dogwhistles,
                                     minimize_all_images, None,
-                                    buy_sites, auto_cw_cache)
+                                    buy_sites, auto_cw_cache,
+                                    mitm_servers)
         if post_str:
             conv_str += \
                 current_reading_str + text_mode_separator + \

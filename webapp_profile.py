@@ -248,7 +248,8 @@ def html_profile_after_search(authorized: bool,
                               buy_sites: {},
                               max_shares_on_profile: int,
                               no_of_books: int,
-                              auto_cw_cache: {}) -> str:
+                              auto_cw_cache: {},
+                              mitm_servers: []) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -275,7 +276,8 @@ def html_profile_after_search(authorized: bool,
     profile_json, as_header = \
         get_actor_json(from_domain, profile_handle, http,
                        gnunet, ipfs, ipns, debug, False,
-                       signing_priv_key_pem, session)
+                       signing_priv_key_pem, session,
+                       mitm_servers)
     if not profile_json:
         return None
     if not profile_json.get('id'):
@@ -542,7 +544,8 @@ def html_profile_after_search(authorized: bool,
     user_feed = \
         parse_user_feed(signing_priv_key_pem,
                         session, outbox_url, as_header, project_version,
-                        http_prefix, from_domain, debug, 0)
+                        http_prefix, from_domain, debug, 0,
+                        mitm_servers)
     if not user_feed:
         if debug:
             print('DEBUG: no user feed in profile preview')
@@ -566,8 +569,8 @@ def html_profile_after_search(authorized: bool,
                     }
                     item = \
                         get_json(signing_priv_key_pem, session, item['object'],
-                                 as_header2, None, debug, __version__,
-                                 http_prefix, from_domain)
+                                 as_header2, None, debug, mitm_servers,
+                                 __version__, http_prefix, from_domain)
                     if debug:
                         print('DEBUG: resolved public feed announce ' +
                               str(item))
@@ -609,7 +612,8 @@ def html_profile_after_search(authorized: bool,
                                         timezone, False,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
-                                        buy_sites, auto_cw_cache)
+                                        buy_sites, auto_cw_cache,
+                                        mitm_servers)
             if not profile_post_html:
                 if debug:
                     print('DEBUG: no html produced for profile post: ' +
@@ -1032,7 +1036,8 @@ def html_profile(signing_priv_key_pem: str,
                  sites_unavailable: [],
                  no_of_books: int,
                  auto_cw_cache: {},
-                 known_epicyon_instances: []) -> str:
+                 known_epicyon_instances: [],
+                 mitm_servers: []) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -1065,7 +1070,8 @@ def html_profile(signing_priv_key_pem: str,
                                  lists_enabled, {},
                                  min_images_for_accounts, buy_sites,
                                  auto_cw_cache,
-                                 known_epicyon_instances)
+                                 known_epicyon_instances,
+                                 mitm_servers)
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
@@ -1172,7 +1178,8 @@ def html_profile(signing_priv_key_pem: str,
         if website_url:
             if site_is_verified(session, base_dir, http_prefix,
                                 nickname, domain,
-                                website_url, False, debug):
+                                website_url, False, debug,
+                                mitm_servers):
                 donate_section += \
                     '<p><div class="verified_site">' + \
                     translate['Website'] + ': ' + \
@@ -1202,7 +1209,8 @@ def html_profile(signing_priv_key_pem: str,
         if blog_address:
             if site_is_verified(session, base_dir, http_prefix,
                                 nickname, domain,
-                                blog_address, False, debug):
+                                blog_address, False, debug,
+                                mitm_servers):
                 donate_section += \
                     '<p><div class="verified_site">' + \
                     'Blog: ' + verified_site_checkmark + \
@@ -1637,7 +1645,8 @@ def html_profile(signing_priv_key_pem: str,
                                 min_images_for_accounts,
                                 max_profile_posts,
                                 buy_sites,
-                                auto_cw_cache) + license_str
+                                auto_cw_cache,
+                                mitm_servers) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1653,7 +1662,8 @@ def html_profile(signing_priv_key_pem: str,
                                         dormant_months, debug,
                                         signing_priv_key_pem,
                                         sites_unavailable,
-                                        system_language)
+                                        system_language,
+                                        mitm_servers)
         if show_moved_accounts and selected == 'moved':
             profile_str += \
                 _html_profile_following(translate, base_dir, http_prefix,
@@ -1668,7 +1678,8 @@ def html_profile(signing_priv_key_pem: str,
                                         dormant_months, debug,
                                         signing_priv_key_pem,
                                         sites_unavailable,
-                                        system_language)
+                                        system_language,
+                                        mitm_servers)
     if selected == 'followers':
         profile_str += \
             _html_profile_following(translate, base_dir, http_prefix,
@@ -1680,7 +1691,7 @@ def html_profile(signing_priv_key_pem: str,
                                     selected, users_path, page_number,
                                     max_items_per_page, dormant_months, debug,
                                     signing_priv_key_pem, sites_unavailable,
-                                    system_language)
+                                    system_language, mitm_servers)
     if authorized and selected == 'inactive':
         profile_str += \
             _html_profile_following(translate, base_dir, http_prefix,
@@ -1692,7 +1703,7 @@ def html_profile(signing_priv_key_pem: str,
                                     selected, users_path, page_number,
                                     max_items_per_page, dormant_months, debug,
                                     signing_priv_key_pem, sites_unavailable,
-                                    system_language)
+                                    system_language, mitm_servers)
     if not is_group:
         if selected == 'roles':
             profile_str += \
@@ -1745,7 +1756,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         min_images_for_accounts: [],
                         max_profile_posts: int,
                         buy_sites: {},
-                        auto_cw_cache: {}) -> str:
+                        auto_cw_cache: {},
+                        mitm_servers: []) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1804,7 +1816,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             timezone, False,
                                             bold_reading, dogwhistles,
                                             minimize_all_images, None,
-                                            buy_sites, auto_cw_cache)
+                                            buy_sites, auto_cw_cache,
+                                            mitm_servers)
                 if post_str and item_id not in shown_items:
                     profile_str += post_str + separator_str
                     shown_items.append(item_id)
@@ -1826,7 +1839,8 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                             dormant_months: int, debug: bool,
                             signing_priv_key_pem: str,
                             sites_unavailable: [],
-                            system_language: str) -> str:
+                            system_language: str,
+                            mitm_servers: []) -> str:
     """Shows following on the profile screen
     """
     profile_str = ''
@@ -1874,7 +1888,9 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
                                        authorized, nickname,
                                        http_prefix, project_version,
                                        dormant, offline,
-                                       debug, system_language, buttons)
+                                       debug, system_language,
+                                       mitm_servers,
+                                       buttons)
 
     if authorized and max_items_per_page and page_number:
         if len(following_json['orderedItems']) >= max_items_per_page:
@@ -3657,7 +3673,8 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                offline: bool,
                                debug: bool,
                                system_language: str,
-                               buttons=[]) -> str:
+                               mitm_servers: [],
+                               buttons: list = []) -> str:
     """An individual follow entry on the profile screen
     """
     follow_url_nickname = get_nickname_from_actor(follow_url)
@@ -3683,7 +3700,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
             webfinger_handle(session, follow_url_handle, http_prefix,
                              cached_webfingers,
                              domain, __version__, debug, False,
-                             signing_priv_key_pem)
+                             signing_priv_key_pem, mitm_servers)
 
         origin_domain = domain
         (_, _, _, _, _, avatar_url2,
@@ -3696,7 +3713,8 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                                   http_prefix,
                                                   follow_url_nickname,
                                                   domain, 'outbox', 43036,
-                                                  system_language)
+                                                  system_language,
+                                                  mitm_servers)
         if avatar_url2:
             avatar_url = avatar_url2
 

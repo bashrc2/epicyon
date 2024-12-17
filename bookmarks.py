@@ -394,7 +394,8 @@ def send_bookmark_via_server(base_dir: str, session,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
                              signing_priv_key_pem: str,
-                             system_language: str) -> {}:
+                             system_language: str,
+                             mitm_servers: []) -> {}:
     """Creates a bookmark via c2s
     """
     if not session:
@@ -428,7 +429,7 @@ def send_bookmark_via_server(base_dir: str, session,
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
                          domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: bookmark webfinger failed for ' + handle)
@@ -450,7 +451,7 @@ def send_bookmark_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             nickname, domain,
                             post_to_box, 58391,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -490,7 +491,8 @@ def send_undo_bookmark_via_server(base_dir: str, session,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool, project_version: str,
                                   signing_priv_key_pem: str,
-                                  system_language: str) -> {}:
+                                  system_language: str,
+                                  mitm_servers: []) -> {}:
     """Removes a bookmark via c2s
     """
     if not session:
@@ -524,7 +526,7 @@ def send_undo_bookmark_via_server(base_dir: str, session,
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
                          domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: unbookmark webfinger failed for ' + handle)
@@ -546,7 +548,8 @@ def send_undo_bookmark_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             nickname, domain,
                             post_to_box, 52594,
-                            system_language)
+                            system_language,
+                            mitm_servers)
 
     if not inbox_url:
         if debug:

@@ -18,7 +18,8 @@ def instances_graph(base_dir: str, handles: str,
                     proxy_type: str,
                     port: int, http_prefix: str,
                     debug: bool, project_version: str,
-                    system_language: str, signing_priv_key_pem: str) -> str:
+                    system_language: str, signing_priv_key_pem: str,
+                    mitm_servers: []) -> str:
     """ Returns a dot graph of federating instances
     based upon a few sample handles.
     The handles argument should contain a comma separated list
@@ -51,7 +52,7 @@ def instances_graph(base_dir: str, handles: str,
             webfinger_handle(session, handle, http_prefix,
                              cached_webfingers,
                              domain, project_version, debug, False,
-                             signing_priv_key_pem)
+                             signing_priv_key_pem, mitm_servers)
         if not wf_request:
             return dot_graph_str + '}\n'
         if not isinstance(wf_request, dict):
@@ -67,13 +68,14 @@ def instances_graph(base_dir: str, handles: str,
                                 person_cache,
                                 project_version, http_prefix,
                                 nickname, domain, 'outbox',
-                                27261, system_language)
+                                27261, system_language,
+                                mitm_servers)
         word_frequency = {}
         post_domains = \
             get_post_domains(session, person_url, 64, debug,
                              project_version, http_prefix, domain,
                              word_frequency, [], system_language,
-                             signing_priv_key_pem)
+                             signing_priv_key_pem, mitm_servers)
         post_domains.sort()
         for fed_domain in post_domains:
             dot_line_str = '    "' + domain + '" -> "' + fed_domain + '";\n'

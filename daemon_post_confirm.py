@@ -153,7 +153,8 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                     cached_webfingers: {},
                     person_cache: {},
                     project_version: str,
-                    sites_unavailable: []) -> None:
+                    sites_unavailable: [],
+                    mitm_servers: []) -> None:
     """Confirm to follow
     """
     users_path = path.split('/followconfirm')[0]
@@ -214,7 +215,8 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                                   system_language,
                                   signing_priv_key_pem,
                                   users_path,
-                                  block_federated)
+                                  block_federated,
+                                  mitm_servers)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -305,7 +307,8 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                                 onion_domain,
                                 i2p_domain,
                                 sites_unavailable,
-                                system_language)
+                                system_language,
+                                mitm_servers)
 
     if '&submitUnblock=' in follow_confirm_params:
         blocking_actor = \

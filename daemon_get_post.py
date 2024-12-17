@@ -25,6 +25,7 @@ from utils import get_json_content_from_accept
 from utils import convert_domains
 from utils import has_object_dict
 from utils import load_json
+from utils import detect_mitm
 from session import establish_session
 from languages import get_understood_languages
 from languages import get_reply_language
@@ -47,7 +48,6 @@ from fitnessFunctions import fitness_performance
 from securemode import secure_mode
 from context import get_individual_post_context
 from conversation import convthread_id_to_conversation_tag
-from daemon_utils import detect_mitm
 
 
 def _show_post_from_file(self, post_filename: str, liked_by: str,
@@ -84,7 +84,8 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                          auto_cw_cache: {},
                          fitness: {}, path: str,
                          onion_domain: str,
-                         i2p_domain: str) -> bool:
+                         i2p_domain: str,
+                         mitm_servers: []) -> bool:
     """Shows an individual post from its filename
     """
     if not os.path.isfile(post_filename):
@@ -162,7 +163,8 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                                  dogwhistles,
                                  min_images_for_accounts,
                                  buy_sites,
-                                 auto_cw_cache)
+                                 auto_cw_cache,
+                                 mitm_servers)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         set_html_post_headers(self, msglen,
@@ -241,7 +243,8 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                          buy_sites: [],
                          auto_cw_cache: {},
                          onion_domain: str,
-                         i2p_domain: str) -> bool:
+                         i2p_domain: str,
+                         mitm_servers: []) -> bool:
     """Shows an individual post
     """
     liked_by = None
@@ -346,7 +349,8 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                                   auto_cw_cache,
                                   fitness, path,
                                   onion_domain,
-                                  i2p_domain)
+                                  i2p_domain,
+                                  mitm_servers)
 
     fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_individual_post',
@@ -394,7 +398,8 @@ def show_new_post(self, edit_post_params: {},
                   min_images_for_accounts: [],
                   buy_sites: [],
                   auto_cw_cache: {},
-                  searchable_by_default_dict: []) -> bool:
+                  searchable_by_default_dict: [],
+                  mitm_servers: []) -> bool:
     """Shows the new post screen
     """
     searchable_by_default = 'yourself'
@@ -520,7 +525,8 @@ def show_new_post(self, edit_post_params: {},
                           buy_sites,
                           default_buy_site,
                           auto_cw_cache,
-                          searchable_by_default)
+                          searchable_by_default,
+                          mitm_servers)
         if not msg:
             print('Error replying to ' + in_reply_to_url)
             http_404(self, 104)
@@ -570,7 +576,8 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                             auto_cw_cache: {},
                             onion_domain: str,
                             i2p_domain: str,
-                            bold_reading_nicknames: {}) -> bool:
+                            bold_reading_nicknames: {},
+                            mitm_servers: []) -> bool:
     """get an individual post from the path /@nickname/statusnumber
     """
     if '/@' not in path:
@@ -681,7 +688,8 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                                   auto_cw_cache,
                                   fitness, path,
                                   onion_domain,
-                                  i2p_domain)
+                                  i2p_domain,
+                                  mitm_servers)
 
     fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_individual_at_post',
@@ -719,7 +727,8 @@ def show_likers_of_post(self, authorized: bool,
                         min_images_for_accounts: [],
                         buy_sites: [],
                         auto_cw_cache: {},
-                        fitness: {}) -> bool:
+                        fitness: {},
+                        mitm_servers: []) -> bool:
     """Show the likers of a post
     """
     if not authorized:
@@ -767,7 +776,8 @@ def show_likers_of_post(self, authorized: bool,
                             dogwhistles,
                             min_images_for_accounts,
                             buy_sites,
-                            auto_cw_cache, 'likes')
+                            auto_cw_cache, 'likes',
+                            mitm_servers)
     if not msg:
         http_404(self, 69)
         return True
@@ -812,7 +822,8 @@ def show_announcers_of_post(self, authorized: bool,
                             min_images_for_accounts: [],
                             buy_sites: [],
                             auto_cw_cache: {},
-                            fitness: {}) -> bool:
+                            fitness: {},
+                            mitm_servers: []) -> bool:
     """Show the announcers of a post
     """
     if not authorized:
@@ -861,7 +872,7 @@ def show_announcers_of_post(self, authorized: bool,
                             min_images_for_accounts,
                             buy_sites,
                             auto_cw_cache,
-                            'shares')
+                            'shares', mitm_servers)
     if not msg:
         http_404(self, 70)
         return True
@@ -908,7 +919,8 @@ def show_replies_to_post(self, authorized: bool,
                          auto_cw_cache: {},
                          fitness: {},
                          onion_domain: str,
-                         i2p_domain: str) -> bool:
+                         i2p_domain: str,
+                         mitm_servers: []) -> bool:
     """Shows the replies to a post
     """
     if not ('/statuses/' in path and '/users/' in path):
@@ -1008,7 +1020,8 @@ def show_replies_to_post(self, authorized: bool,
                                   dogwhistles,
                                   min_images_for_accounts,
                                   buy_sites,
-                                  auto_cw_cache)
+                                  auto_cw_cache,
+                                  mitm_servers)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
@@ -1120,7 +1133,8 @@ def show_replies_to_post(self, authorized: bool,
                               dogwhistles,
                               min_images_for_accounts,
                               buy_sites,
-                              auto_cw_cache)
+                              auto_cw_cache,
+                              mitm_servers)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         set_headers(self, 'text/html', msglen,
@@ -1187,7 +1201,8 @@ def show_notify_post(self, authorized: bool,
                      auto_cw_cache: {},
                      onion_domain: str,
                      i2p_domain: str,
-                     bold_reading_nicknames: {}) -> bool:
+                     bold_reading_nicknames: {},
+                     mitm_servers: []) -> bool:
     """Shows an individual post from an account which you are following
     and where you have the notify checkbox set on person options
     """
@@ -1245,7 +1260,8 @@ def show_notify_post(self, authorized: bool,
                                   auto_cw_cache,
                                   fitness, path,
                                   onion_domain,
-                                  i2p_domain)
+                                  i2p_domain,
+                                  mitm_servers)
     fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_notify_post',
                         debug)
@@ -1287,7 +1303,8 @@ def show_conversation_thread(self, authorized: bool,
                              blocked_cache: {},
                              block_federated: {},
                              auto_cw_cache: {},
-                             default_timeline: str) -> bool:
+                             default_timeline: str,
+                             mitm_servers: []) -> bool:
     """get conversation thread from the date link on a post
     """
     if not path.startswith('/users/'):
@@ -1369,7 +1386,8 @@ def show_conversation_thread(self, authorized: bool,
                                block_federated,
                                auto_cw_cache,
                                ua_str,
-                               default_timeline)
+                               default_timeline,
+                               mitm_servers)
     if conv_str:
         msg = conv_str.encode('utf-8')
         msglen = len(msg)

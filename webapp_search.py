@@ -734,7 +734,8 @@ def html_history_search(translate: {}, base_dir: str,
                         dogwhistles: {}, access_keys: {},
                         min_images_for_accounts: [],
                         buy_sites: {},
-                        auto_cw_cache: {}) -> str:
+                        auto_cw_cache: {},
+                        mitm_servers: []) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -851,7 +852,8 @@ def html_history_search(translate: {}, base_dir: str,
                                     timezone, False, bold_reading,
                                     dogwhistles,
                                     minimize_all_images, None,
-                                    buy_sites, auto_cw_cache)
+                                    buy_sites, auto_cw_cache,
+                                    mitm_servers)
         if post_str:
             history_search_form += separator_str + post_str
         index += 1
@@ -881,7 +883,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                         access_keys: {}, box_name: str,
                         min_images_for_accounts: [],
                         buy_sites: {}, auto_cw_cache: {},
-                        ua_str: str) -> str:
+                        ua_str: str,
+                        mitm_servers: []) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -1080,7 +1083,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                                     lists_enabled, timezone, False,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None,
-                                    buy_sites, auto_cw_cache)
+                                    buy_sites, auto_cw_cache,
+                                    mitm_servers)
         if post_str:
             hashtag_search_form += \
                 text_mode_separator + separator_str + post_str
@@ -1124,7 +1128,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                dogwhistles: {},
                                min_images_for_accounts: [],
                                debug: bool, buy_sites: {},
-                               auto_cw_cache: {}) -> str:
+                               auto_cw_cache: {},
+                               mitm_servers: []) -> str:
     """Show a page containing search results for a remote hashtag
     """
     hashtag = urllib.parse.unquote(hashtag_url.split('/')[-1])
@@ -1139,7 +1144,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     hashtag_json = \
         get_json(signing_priv_key_pem,
                  session, hashtag_url_with_page, as_header, None, debug,
-                 __version__, http_prefix, domain)
+                 mitm_servers, __version__, http_prefix, domain)
     lines = []
     if get_json_valid(hashtag_json):
         if 'orderedItems' in hashtag_json:
@@ -1213,7 +1218,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         post_json_object = \
             get_json(signing_priv_key_pem,
                      session, post_id, as_header, None, debug,
-                     __version__, http_prefix, domain)
+                     mitm_servers, __version__, http_prefix, domain)
         if not get_json_valid(post_json_object):
             print('No hashtag post for ' + post_id)
             continue
@@ -1287,7 +1292,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                     lists_enabled, timezone, False,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None,
-                                    buy_sites, auto_cw_cache)
+                                    buy_sites, auto_cw_cache,
+                                    mitm_servers)
         if post_str:
             hashtag_search_form += \
                 text_mode_separator + separator_str + post_str

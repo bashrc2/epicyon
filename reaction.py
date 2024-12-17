@@ -77,7 +77,8 @@ def _reactionpost(recent_posts_cache: {},
                   curr_domain: str,
                   onion_domain: str, i2p_domain: str,
                   sites_unavailable: [],
-                  system_language: str) -> {}:
+                  system_language: str,
+                  mitm_servers: []) -> {}:
     """Creates an emoji reaction
     actor is the person doing the reacting
     'to' might be a specific person (actor) whose post was reaction
@@ -157,7 +158,7 @@ def _reactionpost(recent_posts_cache: {},
                          signing_priv_key_pem, 7165392,
                          curr_domain, onion_domain, i2p_domain,
                          extra_headers, sites_unavailable,
-                         system_language)
+                         system_language, mitm_servers)
 
     return new_reaction_json
 
@@ -174,7 +175,8 @@ def reaction_post(recent_posts_cache: {},
                   debug: bool, project_version: str,
                   signing_priv_key_pem: str,
                   curr_domain: str, onion_domain: str, i2p_domain: str,
-                  sites_unavailable: [], system_language: str) -> {}:
+                  sites_unavailable: [], system_language: str,
+                  mitm_servers: []) -> {}:
     """Adds a reaction to a given status post. This is only used by unit tests
     """
     reaction_domain = get_full_domain(reaction_domain, reaction_port)
@@ -192,7 +194,8 @@ def reaction_post(recent_posts_cache: {},
                          cached_webfingers,
                          debug, project_version, signing_priv_key_pem,
                          curr_domain, onion_domain, i2p_domain,
-                         sites_unavailable, system_language)
+                         sites_unavailable, system_language,
+                         mitm_servers)
 
 
 def send_reaction_via_server(base_dir: str, session,
@@ -203,7 +206,8 @@ def send_reaction_via_server(base_dir: str, session,
                              cached_webfingers: {}, person_cache: {},
                              debug: bool, project_version: str,
                              signing_priv_key_pem: str,
-                             system_language: str) -> {}:
+                             system_language: str,
+                             mitm_servers: []) -> {}:
     """Creates a reaction via c2s
     """
     if not session:
@@ -235,7 +239,7 @@ def send_reaction_via_server(base_dir: str, session,
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
                                   from_domain, project_version, debug, False,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: reaction webfinger failed for ' + handle)
@@ -257,7 +261,7 @@ def send_reaction_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             from_nickname, from_domain,
                             post_to_box, 72873,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -298,7 +302,8 @@ def send_undo_reaction_via_server(base_dir: str, session,
                                   cached_webfingers: {}, person_cache: {},
                                   debug: bool, project_version: str,
                                   signing_priv_key_pem: str,
-                                  system_language: str) -> {}:
+                                  system_language: str,
+                                  mitm_servers: []) -> {}:
     """Undo a reaction via c2s
     """
     if not session:
@@ -330,7 +335,7 @@ def send_undo_reaction_via_server(base_dir: str, session,
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
                                   from_domain, project_version, debug, False,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: unreaction webfinger failed for ' + handle)
@@ -352,7 +357,8 @@ def send_undo_reaction_via_server(base_dir: str, session,
                             person_cache, project_version,
                             http_prefix, from_nickname,
                             from_domain, post_to_box,
-                            72625, system_language)
+                            72625, system_language,
+                            mitm_servers)
 
     if not inbox_url:
         if debug:

@@ -299,7 +299,8 @@ def post_message_to_outbox(session, translate: {},
                            books_cache: {},
                            max_cached_readers: int,
                            auto_cw_cache: {},
-                           block_federated: []) -> bool:
+                           block_federated: [],
+                           mitm_servers: []) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -618,7 +619,8 @@ def post_message_to_outbox(session, translate: {},
                                   signing_priv_key_pem,
                                   bold_reading,
                                   show_vote_posts,
-                                  languages_understood):
+                                  languages_understood,
+                                  mitm_servers):
                     inbox_update_index('tlmedia', base_dir,
                                        post_to_nickname + '@' + domain,
                                        saved_filename, debug)
@@ -679,7 +681,8 @@ def post_message_to_outbox(session, translate: {},
                                         timezone, mitm,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
-                                        buy_sites, auto_cw_cache)
+                                        buy_sites, auto_cw_cache,
+                                        mitm_servers)
 
     if is_edited_post:
         message_json['type'] = 'Update'
@@ -728,7 +731,8 @@ def post_message_to_outbox(session, translate: {},
                                  shared_item_federation_tokens,
                                  signing_priv_key_pem,
                                  sites_unavailable,
-                                 system_language)
+                                 system_language,
+                                 mitm_servers)
     followers_threads.append(followers_thread)
 
     if debug:
@@ -864,6 +868,7 @@ def post_message_to_outbox(session, translate: {},
                                        proxy_type,
                                        server.followers_sync_cache,
                                        server.sites_unavailable,
-                                       server.system_language)
+                                       server.system_language,
+                                       server.mitm_servers)
     followers_threads.append(named_addresses_thread)
     return True

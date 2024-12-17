@@ -90,7 +90,8 @@ def send_availability_via_server(base_dir: str, session,
                                  cached_webfingers: {}, person_cache: {},
                                  debug: bool, project_version: str,
                                  signing_priv_key_pem: str,
-                                 system_language: str) -> {}:
+                                 system_language: str,
+                                 mitm_servers: []) -> {}:
     """Sets the availability for a person via c2s
     """
     if not session:
@@ -116,7 +117,7 @@ def send_availability_via_server(base_dir: str, session,
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
                                   domain, project_version, debug, False,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: availability webfinger failed for ' + handle)
@@ -137,7 +138,7 @@ def send_availability_via_server(base_dir: str, session,
                             person_cache, project_version,
                             http_prefix, nickname,
                             domain, post_to_box, 57262,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:

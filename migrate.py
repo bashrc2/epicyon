@@ -28,7 +28,8 @@ def _move_following_handles_for_account(base_dir: str,
                                         cached_webfingers: {},
                                         debug: bool,
                                         signing_priv_key_pem: str,
-                                        block_federated: []) -> int:
+                                        block_federated: [],
+                                        mitm_servers: []) -> int:
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
@@ -46,7 +47,7 @@ def _move_following_handles_for_account(base_dir: str,
                                          follow_handle, session,
                                          http_prefix, cached_webfingers,
                                          debug, signing_priv_key_pem,
-                                         block_federated)
+                                         block_federated, mitm_servers)
     except OSError:
         print('EX: _move_following_handles_for_account unable to read ' +
               following_filename)
@@ -57,7 +58,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
                          handle: str, session,
                          http_prefix: str, cached_webfingers: {},
                          debug: bool, signing_priv_key_pem: str,
-                         block_federated: []) -> int:
+                         block_federated: [],
+                         mitm_servers: []) -> int:
     """Check if an account has moved, and if so then alter following.txt
     for each account.
     Returns 1 if moved, 0 otherwise
@@ -72,7 +74,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     wf_request = webfinger_handle(session, handle,
                                   http_prefix, cached_webfingers,
                                   domain, __version__, debug, False,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem,
+                                  mitm_servers)
     if not wf_request:
         print('updateMovedHandle unable to webfinger ' + handle)
         return ctr
@@ -101,10 +104,11 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     ipns = False
     if http_prefix == 'ipns':
         ipns = True
+    mitm_servers = []
     person_json = \
         get_actor_json(domain, person_url, http_prefix, gnunet, ipfs, ipns,
                        debug, False,
-                       signing_priv_key_pem, None)
+                       signing_priv_key_pem, None, mitm_servers)
     if not person_json:
         return ctr
     if not person_json.get('movedTo'):
@@ -221,7 +225,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
 def migrate_accounts(base_dir: str, session,
                      http_prefix: str, cached_webfingers: {},
                      debug: bool, signing_priv_key_pem: str,
-                     block_federated: []) -> int:
+                     block_federated: [],
+                     mitm_servers: []) -> int:
     """If followed accounts change then this modifies the
     following lists for each account accordingly.
     Returns the number of accounts migrated
@@ -240,6 +245,7 @@ def migrate_accounts(base_dir: str, session,
                                                     session, http_prefix,
                                                     cached_webfingers, debug,
                                                     signing_priv_key_pem,
-                                                    block_federated)
+                                                    block_federated,
+                                                    mitm_servers)
         break
     return ctr

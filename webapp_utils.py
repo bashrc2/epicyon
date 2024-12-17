@@ -379,6 +379,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
                               session, base_dir: str, http_prefix: str,
                               actor: str, avatar_url: str,
                               person_cache: {}, allow_downloads: bool,
+                              mitm_servers: [],
                               force: bool = False, debug: bool = False) -> str:
     """Updates the cached avatar for the given actor
     """
@@ -451,7 +452,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
         person_json = \
             get_json(signing_priv_key_pem, session, actor,
                      session_headers, None,
-                     debug, __version__, http_prefix, None)
+                     debug, mitm_servers, __version__, http_prefix, None)
         if get_json_valid(person_json):
             if not person_json.get('id'):
                 return None
@@ -1765,7 +1766,8 @@ def html_highlight_label(label: str, highlight: bool) -> str:
 def get_avatar_image_url(session, base_dir: str, http_prefix: str,
                          post_actor: str, person_cache: {},
                          avatar_url: str, allow_downloads: bool,
-                         signing_priv_key_pem: str) -> str:
+                         signing_priv_key_pem: str,
+                         mitm_servers: []) -> str:
     """Returns the avatar image url
     """
     # get the avatar image url for the post actor
@@ -1776,12 +1778,12 @@ def get_avatar_image_url(session, base_dir: str, http_prefix: str,
             update_avatar_image_cache(signing_priv_key_pem,
                                       session, base_dir, http_prefix,
                                       post_actor, avatar_url, person_cache,
-                                      allow_downloads)
+                                      allow_downloads, mitm_servers)
     else:
         update_avatar_image_cache(signing_priv_key_pem,
                                   session, base_dir, http_prefix,
                                   post_actor, avatar_url, person_cache,
-                                  allow_downloads)
+                                  allow_downloads, mitm_servers)
 
     if not avatar_url:
         avatar_url = post_actor + '/avatar.png'

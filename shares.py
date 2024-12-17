@@ -634,7 +634,8 @@ def send_share_via_server(base_dir, session,
                           debug: bool, project_version: str,
                           item_price: str, item_currency: str,
                           signing_priv_key_pem: str,
-                          system_language: str) -> {}:
+                          system_language: str,
+                          mitm_servers: []) -> {}:
     """Creates an item share via c2s
     """
     if not session:
@@ -688,7 +689,7 @@ def send_share_via_server(base_dir, session,
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
                          from_domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
@@ -709,7 +710,8 @@ def send_share_via_server(base_dir, session,
                                        person_cache, project_version,
                                        http_prefix, from_nickname,
                                        from_domain, post_to_box,
-                                       83653, system_language)
+                                       83653, system_language,
+                                       mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -759,7 +761,8 @@ def send_undo_share_via_server(base_dir: str, session,
                                cached_webfingers: {}, person_cache: {},
                                debug: bool, project_version: str,
                                signing_priv_key_pem: str,
-                               system_language: str) -> {}:
+                               system_language: str,
+                               mitm_servers: []) -> {}:
     """Undoes a share via c2s
     """
     if not session:
@@ -796,7 +799,7 @@ def send_undo_share_via_server(base_dir: str, session,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          from_domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: unshare webfinger failed for ' + handle)
@@ -817,7 +820,8 @@ def send_undo_share_via_server(base_dir: str, session,
                                        person_cache, project_version,
                                        http_prefix, from_nickname,
                                        from_domain, post_to_box,
-                                       12663, system_language)
+                                       12663, system_language,
+                                       mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -862,7 +866,8 @@ def send_wanted_via_server(base_dir, session,
                            debug: bool, project_version: str,
                            item_max_price: str, item_currency: str,
                            signing_priv_key_pem: str,
-                           system_language: str) -> {}:
+                           system_language: str,
+                           mitm_servers: []) -> {}:
     """Creates a wanted item via c2s
     """
     if not session:
@@ -917,7 +922,7 @@ def send_wanted_via_server(base_dir, session,
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
                          from_domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: share webfinger failed for ' + handle)
@@ -938,7 +943,8 @@ def send_wanted_via_server(base_dir, session,
                                        person_cache, project_version,
                                        http_prefix, from_nickname,
                                        from_domain, post_to_box,
-                                       23653, system_language)
+                                       23653, system_language,
+                                       mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -988,7 +994,8 @@ def send_undo_wanted_via_server(base_dir: str, session,
                                 cached_webfingers: {}, person_cache: {},
                                 debug: bool, project_version: str,
                                 signing_priv_key_pem: str,
-                                system_language: str) -> {}:
+                                system_language: str,
+                                mitm_servers: []) -> {}:
     """Undoes a wanted item via c2s
     """
     if not session:
@@ -1025,7 +1032,7 @@ def send_undo_wanted_via_server(base_dir: str, session,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          from_domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: unwant webfinger failed for ' + handle)
@@ -1046,7 +1053,8 @@ def send_undo_wanted_via_server(base_dir: str, session,
                                        person_cache, project_version,
                                        http_prefix, from_nickname,
                                        from_domain, post_to_box,
-                                       12693, system_language)
+                                       12693, system_language,
+                                       mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -1083,7 +1091,8 @@ def send_undo_wanted_via_server(base_dir: str, session,
 def get_shared_items_catalog_via_server(session, nickname: str, password: str,
                                         domain: str, port: int,
                                         http_prefix: str, debug: bool,
-                                        signing_priv_key_pem: str) -> {}:
+                                        signing_priv_key_pem: str,
+                                        mitm_servers: []) -> {}:
     """Returns the shared items catalog via c2s
     """
     if not session:
@@ -1103,7 +1112,8 @@ def get_shared_items_catalog_via_server(session, nickname: str, password: str,
     if debug:
         print('Shared items catalog request to: ' + url)
     catalog_json = get_json(signing_priv_key_pem, session, url, headers, None,
-                            debug, __version__, http_prefix, None)
+                            debug, mitm_servers, __version__, http_prefix,
+                            None)
     if not get_json_valid(catalog_json):
         if debug:
             print('DEBUG: GET shared items catalog failed for c2s to ' + url)
@@ -1118,7 +1128,8 @@ def get_shared_items_catalog_via_server(session, nickname: str, password: str,
 def get_offers_via_server(session, nickname: str, password: str,
                           domain: str, port: int,
                           http_prefix: str, debug: bool,
-                          signing_priv_key_pem: str) -> {}:
+                          signing_priv_key_pem: str,
+                          mitm_servers: []) -> {}:
     """Returns the offers collection for shared items via c2s
     """
     if not session:
@@ -1138,7 +1149,7 @@ def get_offers_via_server(session, nickname: str, password: str,
     if debug:
         print('Offers collection request to: ' + url)
     offers_json = get_json(signing_priv_key_pem, session, url, headers, None,
-                           debug, __version__, http_prefix, None)
+                           debug, mitm_servers, __version__, http_prefix, None)
     if not get_json_valid(offers_json):
         if debug:
             print('DEBUG: GET offers collection failed for c2s to ' + url)
@@ -1153,7 +1164,8 @@ def get_offers_via_server(session, nickname: str, password: str,
 def get_wanted_via_server(session, nickname: str, password: str,
                           domain: str, port: int,
                           http_prefix: str, debug: bool,
-                          signing_priv_key_pem: str) -> {}:
+                          signing_priv_key_pem: str,
+                          mitm_servers: []) -> {}:
     """Returns the wanted collection for shared items via c2s
     """
     if not session:
@@ -1173,7 +1185,7 @@ def get_wanted_via_server(session, nickname: str, password: str,
     if debug:
         print('Wanted collection request to: ' + url)
     wanted_json = get_json(signing_priv_key_pem, session, url, headers, None,
-                           debug, __version__, http_prefix, None)
+                           debug, mitm_servers, __version__, http_prefix, None)
     if not get_json_valid(wanted_json):
         if debug:
             print('DEBUG: GET wanted collection failed for c2s to ' + url)
@@ -1708,7 +1720,8 @@ def _update_federated_shares_cache(session, shared_items_federated_domains: [],
                                    tokens_json: {}, debug: bool,
                                    system_language: str,
                                    shares_file_type: str,
-                                   sites_unavailable: []) -> None:
+                                   sites_unavailable: [],
+                                   mitm_servers: []) -> None:
     """Updates the cache of federated shares for the instance.
     This enables shared items to be available even when other instances
     might not be online
@@ -1746,7 +1759,8 @@ def _update_federated_shares_cache(session, shared_items_federated_domains: [],
             url = http_prefix + '://' + federated_domain_full + '/wantedItems'
         as_header['Authorization'] = tokens_json[federated_domain_full]
         catalog_json = get_json(session, url, as_header, None,
-                                debug, __version__, http_prefix, None)
+                                debug, mitm_servers, __version__, http_prefix,
+                                None)
         if not get_json_valid(catalog_json):
             print('WARN: failed to download shared items catalog for ' +
                   federated_domain_full)
@@ -1880,7 +1894,8 @@ def _regenerate_shares_token(base_dir: str, domain_full: str,
 
 def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
                                 domain_full: str, proxy_type: str, debug: bool,
-                                system_language: str) -> None:
+                                system_language: str,
+                                mitm_servers: []) -> None:
     """Runs the daemon used to update federated shared items
     """
     seconds_per_hour = 60 * 60
@@ -1930,7 +1945,8 @@ def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
                                            shared_items_federated_domains,
                                            base_dir, domain_full, http_prefix,
                                            tokens_json, debug, system_language,
-                                           shares_file_type, sites_unavailable)
+                                           shares_file_type, sites_unavailable,
+                                           mitm_servers)
         time.sleep(seconds_per_hour * 6)
 
 

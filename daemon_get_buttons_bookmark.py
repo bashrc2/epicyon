@@ -17,6 +17,7 @@ from utils import is_dm
 from utils import get_nickname_from_actor
 from utils import get_instance_url
 from utils import local_actor_url
+from utils import detect_mitm
 from session import establish_session
 from httpheaders import redirect_headers
 from httpcodes import http_404
@@ -25,7 +26,6 @@ from bookmarks import undo_bookmark_post
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
 from fitnessFunctions import fitness_performance
-from daemon_utils import detect_mitm
 
 
 def bookmark_button(self, calling_domain: str, path: str,
@@ -64,7 +64,8 @@ def bookmark_button(self, calling_domain: str, path: str,
                     bold_reading_nicknames: {},
                     min_images_for_accounts: [],
                     session_onion,
-                    session_i2p) -> None:
+                    session_i2p,
+                    mitm_servers: []) -> None:
     """Bookmark button was pressed
     """
     page_number = 1
@@ -214,7 +215,8 @@ def bookmark_button(self, calling_domain: str, path: str,
                                     dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache,
+                                    mitm_servers)
         else:
             print('WARN: Bookmarked post not found: ' + bookmark_filename)
     actor_absolute = \
@@ -272,7 +274,8 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                          bold_reading_nicknames: {},
                          min_images_for_accounts: [],
                          session_onion,
-                         session_i2p) -> None:
+                         session_i2p,
+                         mitm_servers: []) -> None:
     """Button pressed to undo a bookmark
     """
     page_number = 1
@@ -421,7 +424,8 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                                     dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache,
+                                    mitm_servers)
         else:
             print('WARN: Unbookmarked post not found: ' +
                   bookmark_filename)

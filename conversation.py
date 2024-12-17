@@ -131,7 +131,8 @@ def _get_replies_to_post(post_json_object: {},
                          session, as_header, debug: bool,
                          http_prefix: str,
                          base_dir: str, nickname: str,
-                         domain: str, depth: int, ids: []) -> []:
+                         domain: str, depth: int, ids: [],
+                         mitm_servers: []) -> []:
     """Returns a list of reply posts to the given post as json
     """
     result = []
@@ -156,7 +157,7 @@ def _get_replies_to_post(post_json_object: {},
 
         replies_collection = \
             get_json(signing_priv_key_pem, session, replies_collection_id,
-                     as_header, None, debug, __version__,
+                     as_header, None, debug, mitm_servers, __version__,
                      http_prefix, domain)
         if not get_json_valid(replies_collection):
             return result
@@ -183,7 +184,7 @@ def _get_replies_to_post(post_json_object: {},
                 return result
             replies_collection = \
                 get_json(signing_priv_key_pem, session, next_page_id,
-                         as_header, None, debug, __version__,
+                         as_header, None, debug, mitm_servers, __version__,
                          http_prefix, domain)
             if debug:
                 print('DEBUG: get_replies_to_post next replies_collection ' +
@@ -212,8 +213,8 @@ def _get_replies_to_post(post_json_object: {},
                         print('Downloading conversation item ' + item)
                     item_dict = \
                         get_json(signing_priv_key_pem, session, item,
-                                 as_header, None, debug, __version__,
-                                 http_prefix, domain)
+                                 as_header, None, debug, mitm_servers,
+                                 __version__, http_prefix, domain)
                     if not get_json_valid(item_dict):
                         continue
                     item = item_dict
@@ -283,14 +284,16 @@ def _get_replies_to_post(post_json_object: {},
                                          debug,
                                          http_prefix, base_dir,
                                          nickname, domain,
-                                         depth + 1, ids)
+                                         depth + 1, ids,
+                                         mitm_servers)
     return result
 
 
 def download_conversation_posts(authorized: bool, session,
                                 http_prefix: str, base_dir: str,
                                 nickname: str, domain: str,
-                                post_id: str, debug: bool) -> []:
+                                post_id: str, debug: bool,
+                                mitm_servers: []) -> []:
     """Downloads all posts for a conversation and returns a list of the
     json objects
     """
@@ -312,8 +315,8 @@ def download_conversation_posts(authorized: bool, session,
         else:
             post_json_object = \
                 get_json(signing_priv_key_pem, session, post_id,
-                         as_header, None, debug, __version__,
-                         http_prefix, domain)
+                         as_header, None, debug, mitm_servers,
+                         __version__, http_prefix, domain)
     if debug:
         if not get_json_valid(post_json_object):
             print(post_id + ' returned no json')
@@ -330,7 +333,7 @@ def download_conversation_posts(authorized: bool, session,
                                  signing_priv_key_pem,
                                  session, as_header, debug,
                                  http_prefix, base_dir, nickname,
-                                 domain, 0, [])
+                                 domain, 0, [], mitm_servers)
 
     ids = []
     while get_json_valid(post_json_object):
@@ -418,8 +421,8 @@ def download_conversation_posts(authorized: bool, session,
             if authorized:
                 post_json_object = \
                     get_json(signing_priv_key_pem, session, post_id,
-                             as_header, None, debug, __version__,
-                             http_prefix, domain)
+                             as_header, None, debug, mitm_servers,
+                             __version__, http_prefix, domain)
 
         if debug:
             if get_json_valid(post_json_object):

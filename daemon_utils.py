@@ -26,6 +26,7 @@ from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from content import valid_url_lengths
 from posts import add_to_field
+from utils import detect_mitm
 from utils import data_dir
 from utils import load_json
 from utils import save_json
@@ -141,7 +142,8 @@ def post_to_outbox(self, message_json: {}, version: str,
                                   self.server.books_cache,
                                   self.server.max_cached_readers,
                                   self.server.auto_cw_cache,
-                                  self.server.block_federated)
+                                  self.server.block_federated,
+                                  self.server.mitm_servers)
 
 
 def _get_outbox_thread_index(self, nickname: str,
@@ -205,40 +207,6 @@ def post_to_outbox_thread(self, message_json: {},
         self.server.outboxThread[account_outbox_thread_name][index]
     begin_thread(outbox_thread, '_post_to_outbox_thread')
     return True
-
-
-def detect_mitm(self) -> bool:
-    """Detect if a request contains a MiTM
-    """
-    mitm_domains = ['cloudflare']
-    # look for domains within these headers
-    check_headers = (
-        'Server', 'Report-To', 'Report-to', 'report-to',
-        'Expect-CT', 'Expect-Ct', 'expect-ct'
-    )
-    for interloper in mitm_domains:
-        for header_name in check_headers:
-            if not self.headers.get(header_name):
-                continue
-            if interloper in str(self.headers[header_name]):
-                print('MITM: ' + header_name + ' = ' +
-                      str(self.headers[header_name]))
-                return True
-    # The presence of these headers on their own indicates a MiTM
-    mitm_headers = (
-        'CF-Connecting-IP', 'CF-RAY', 'CF-IPCountry', 'CF-Visitor',
-        'CDN-Loop', 'CF-Worker', 'CF-Cache-Status'
-    )
-    for header_name in mitm_headers:
-        if self.headers.get(header_name):
-            print('MITM: ' + header_name + ' = ' +
-                  self.headers[header_name])
-            return True
-        if self.headers.get(header_name.lower()):
-            print('MITM: ' + header_name + ' = ' +
-                  self.headers[header_name.lower()])
-            return True
-    return False
 
 
 def update_inbox_queue(self, nickname: str, message_json: {},

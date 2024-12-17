@@ -67,7 +67,8 @@ def html_moderation(default_timeline: str,
                     reverse_sequence: bool,
                     buy_sites: {},
                     auto_cw_cache: {},
-                    known_epicyon_instances: []) -> str:
+                    known_epicyon_instances: [],
+                    mitm_servers: []) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -97,7 +98,7 @@ def html_moderation(default_timeline: str,
                          timezone, bold_reading, dogwhistles, ua_str,
                          min_images_for_accounts, reverse_sequence, None,
                          buy_sites, auto_cw_cache, show_announces,
-                         known_epicyon_instances)
+                         known_epicyon_instances, mitm_servers)
 
 
 def html_account_info(translate: {},
@@ -106,7 +107,8 @@ def html_account_info(translate: {},
                       search_handle: str, debug: bool,
                       system_language: str, signing_priv_key_pem: str,
                       back_url: str,
-                      block_federated: []) -> str:
+                      block_federated: [],
+                      mitm_servers: []) -> str:
     """Shows which domains a search handle interacts with.
     This screen is shown if a moderator enters a handle and selects info
     on the moderation screen
@@ -162,13 +164,15 @@ def html_account_info(translate: {},
                                        http_prefix, debug,
                                        __version__, word_frequency,
                                        system_language,
-                                       signing_priv_key_pem)
+                                       signing_priv_key_pem,
+                                       mitm_servers)
 
     # get a list of any blocked followers
     followers_list = \
         download_follow_collection(signing_priv_key_pem,
                                    'followers', session,
-                                   http_prefix, search_actor, 1, 5, debug)
+                                   http_prefix, search_actor, 1, 5, debug,
+                                   mitm_servers)
     blocked_followers = []
     for follower_actor in followers_list:
         follower_nickname = get_nickname_from_actor(follower_actor)
@@ -187,7 +191,8 @@ def html_account_info(translate: {},
     following_list = \
         download_follow_collection(signing_priv_key_pem,
                                    'following', session,
-                                   http_prefix, search_actor, 1, 5, debug)
+                                   http_prefix, search_actor, 1, 5, debug,
+                                   mitm_servers)
     blocked_following = []
     for following_actor in following_list:
         following_nickname = get_nickname_from_actor(following_actor)

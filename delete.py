@@ -37,7 +37,8 @@ def send_delete_via_server(base_dir: str, session,
                            cached_webfingers: {}, person_cache: {},
                            debug: bool, project_version: str,
                            signing_priv_key_pem: str,
-                           system_language: str) -> {}:
+                           system_language: str,
+                           mitm_servers: []) -> {}:
     """Creates a delete request message via c2s
     """
     if not session:
@@ -68,7 +69,7 @@ def send_delete_via_server(base_dir: str, session,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          from_domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: delete webfinger failed for ' + handle)
@@ -89,7 +90,7 @@ def send_delete_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain, post_to_box, 53036,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:

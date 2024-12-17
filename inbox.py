@@ -189,7 +189,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                                     dogwhistles: {},
                                     min_images_for_accounts: [],
                                     buy_sites: {},
-                                    auto_cw_cache: {}) -> None:
+                                    auto_cw_cache: {},
+                                    mitm_servers: []) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -219,7 +220,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             not_dm, True, True, False, True, False,
                             cw_lists, lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles, minimize_all_images,
-                            None, buy_sites, auto_cw_cache)
+                            None, buy_sites, auto_cw_cache,
+                            mitm_servers)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -801,7 +803,8 @@ def update_edited_post(base_dir: str,
                        buy_sites: {},
                        auto_cw_cache: {},
                        onion_domain: str,
-                       i2p_domain: str) -> None:
+                       i2p_domain: str,
+                       mitm_servers: []) -> None:
     """ When an edited post is created this assigns
     a published and updated date to it, and uses
     the previous id
@@ -851,7 +854,8 @@ def update_edited_post(base_dir: str,
                          min_images_for_accounts,
                          max_hashtags, buy_sites,
                          auto_cw_cache,
-                         onion_domain, i2p_domain)
+                         onion_domain, i2p_domain,
+                         mitm_servers)
 
     # update the index
     id_str = edited_postid.split('/')[-1]
@@ -947,7 +951,8 @@ def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
                                   i2p_domain: str,
                                   person_cache: {},
                                   post_json_object: {}, debug: bool,
-                                  signing_priv_key_pem: str) -> None:
+                                  signing_priv_key_pem: str,
+                                  mitm_servers: []) -> None:
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
@@ -980,7 +985,8 @@ def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
                                person_cache, debug,
                                __version__, http_prefix,
                                domain, onion_domain, i2p_domain,
-                               signing_priv_key_pem)
+                               signing_priv_key_pem,
+                               mitm_servers)
         if pub_key:
             if not isinstance(pub_key, dict):
                 if debug:
@@ -1096,7 +1102,8 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                            onion_domain: str, i2p_domain: str,
                            signing_priv_key_pem: str,
                            sites_unavailable: [],
-                           system_language: str) -> None:
+                           system_language: str,
+                           mitm_servers: []) -> None:
     """When a post arrives for a group send it out to the group members
     """
     if debug:
@@ -1153,7 +1160,8 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                         person_cache, cached_webfingers,
                         debug, __version__, signing_priv_key_pem,
                         curr_domain, onion_domain, i2p_domain,
-                        sites_unavailable, system_language)
+                        sites_unavailable, system_language,
+                        mitm_servers)
 
     send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir, nickname, domain,
@@ -1165,7 +1173,8 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                              shared_items_federated_domains,
                              shared_item_federation_tokens,
                              signing_priv_key_pem,
-                             sites_unavailable, system_language)
+                             sites_unavailable, system_language,
+                             mitm_servers)
 
 
 def _inbox_update_calendar_from_tag(base_dir: str, handle: str,
@@ -1299,7 +1308,8 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                languages_understood: [],
                bounce_is_chat: bool,
                curr_domain: str, onion_domain: str, i2p_domain: str,
-               sites_unavailable: []) -> bool:
+               sites_unavailable: [],
+               mitm_servers: []) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
@@ -1383,7 +1393,8 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                      person_cache, debug, __version__, None, group_account,
                      signing_priv_key_pem, 7238634,
                      curr_domain, onion_domain, i2p_domain,
-                     extra_headers, sites_unavailable, system_language)
+                     extra_headers, sites_unavailable, system_language,
+                     mitm_servers)
     return True
 
 
@@ -1401,7 +1412,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                  dm_license_url: str,
                  languages_understood: [],
                  curr_domain: str, onion_domain: str, i2p_domain: str,
-                 sites_unavailable: []) -> bool:
+                 sites_unavailable: [],
+                 mitm_servers: []) -> bool:
     """Is the given message a valid DM?
     """
     if nickname == 'inbox':
@@ -1506,7 +1518,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                                    bounce_chat,
                                    curr_domain,
                                    onion_domain, i2p_domain,
-                                   sites_unavailable)
+                                   sites_unavailable,
+                                   mitm_servers)
                 return False
 
     # dm index will be updated
@@ -1785,7 +1798,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          mitm: bool, bold_reading: bool,
                          dogwhistles: {},
                          max_hashtags: int, buy_sites: {},
-                         sites_unavailable: []) -> bool:
+                         sites_unavailable: [],
+                         mitm_servers: []) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -1849,7 +1863,8 @@ def _inbox_after_initial(server, inbox_start_time,
                     max_like_count, cw_lists, lists_enabled,
                     bold_reading, dogwhistles,
                     server.min_images_for_accounts,
-                    buy_sites, server.auto_cw_cache):
+                    buy_sites, server.auto_cw_cache,
+                    mitm_servers):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1876,7 +1891,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          max_like_count, cw_lists, lists_enabled,
                          bold_reading, dogwhistles,
                          server.min_images_for_accounts,
-                         buy_sites, server.auto_cw_cache):
+                         buy_sites, server.auto_cw_cache,
+                         mitm_servers):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1904,7 +1920,8 @@ def _inbox_after_initial(server, inbox_start_time,
                         max_like_count, cw_lists, lists_enabled,
                         bold_reading, dogwhistles,
                         server.min_images_for_accounts,
-                        buy_sites, server.auto_cw_cache):
+                        buy_sites, server.auto_cw_cache,
+                        mitm_servers):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1932,7 +1949,8 @@ def _inbox_after_initial(server, inbox_start_time,
                             max_like_count, cw_lists, lists_enabled,
                             bold_reading, dogwhistles,
                             server.min_images_for_accounts,
-                            buy_sites, server.auto_cw_cache):
+                            buy_sites, server.auto_cw_cache,
+                            mitm_servers):
         if debug:
             print('DEBUG: Zot reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1959,7 +1977,8 @@ def _inbox_after_initial(server, inbox_start_time,
                              max_like_count, cw_lists, lists_enabled,
                              bold_reading, dogwhistles,
                              server.min_images_for_accounts,
-                             buy_sites, server.auto_cw_cache):
+                             buy_sites, server.auto_cw_cache,
+                             mitm_servers):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1987,7 +2006,8 @@ def _inbox_after_initial(server, inbox_start_time,
                         bold_reading, dogwhistles,
                         server.min_images_for_accounts,
                         server.buy_sites,
-                        server.auto_cw_cache):
+                        server.auto_cw_cache,
+                        mitm_servers):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2015,7 +2035,8 @@ def _inbox_after_initial(server, inbox_start_time,
                              bold_reading, dogwhistles,
                              server.min_images_for_accounts,
                              server.buy_sites,
-                             server.auto_cw_cache):
+                             server.auto_cw_cache,
+                             mitm_servers):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2063,7 +2084,8 @@ def _inbox_after_initial(server, inbox_start_time,
                         server.buy_sites,
                         languages_understood,
                         server.auto_cw_cache,
-                        server.block_federated):
+                        server.block_federated,
+                        mitm_servers):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2132,7 +2154,8 @@ def _inbox_after_initial(server, inbox_start_time,
                               server.min_images_for_accounts,
                               server.buy_sites,
                               server.sites_unavailable,
-                              server.auto_cw_cache)
+                              server.auto_cw_cache,
+                              mitm_servers)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_question_vote',
                             debug)
@@ -2159,7 +2182,7 @@ def _inbox_after_initial(server, inbox_start_time,
         if not valid_sending_actor(session, base_dir, nickname, domain,
                                    person_cache, post_json_object,
                                    signing_priv_key_pem, debug, unit_test,
-                                   system_language):
+                                   system_language, mitm_servers):
             if debug:
                 print('Inbox sending actor is not valid ' +
                       str(post_json_object))
@@ -2233,7 +2256,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                     languages_understood,
                                     domain,
                                     onion_domain, i2p_domain,
-                                    server.sites_unavailable):
+                                    server.sites_unavailable,
+                                    mitm_servers):
                     if debug:
                         print('Invalid DM ' + str(post_json_object))
                     return False
@@ -2274,7 +2298,7 @@ def _inbox_after_initial(server, inbox_start_time,
                               recent_posts_cache, debug, system_language,
                               domain_full, person_cache, signing_priv_key_pem,
                               bold_reading, show_vote_posts,
-                              languages_understood):
+                              languages_understood, mitm_servers):
                 # media index will be updated
                 update_index_list.append('tlmedia')
             fitness_performance(inbox_start_time, server.fitness,
@@ -2290,7 +2314,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                       http_prefix, domain,
                                       onion_domain, i2p_domain,
                                       person_cache, post_json_object, debug,
-                                      signing_priv_key_pem)
+                                      signing_priv_key_pem, mitm_servers)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_obtain_avatar_for_reply_post',
                             debug)
@@ -2488,7 +2512,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                                         dogwhistles,
                                                         min_img_for_accounts,
                                                         buy_sites,
-                                                        server.auto_cw_cache)
+                                                        server.auto_cw_cache,
+                                                        server.mitm_servers)
                         fitness_performance(inbox_start_time,
                                             server.fitness,
                                             'INBOX',
@@ -2556,7 +2581,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                        domain, onion_domain, i2p_domain,
                                        signing_priv_key_pem,
                                        sites_unavailable,
-                                       system_language)
+                                       system_language,
+                                       mitm_servers)
                 fitness_performance(inbox_start_time,
                                     server.fitness,
                                     'INBOX', '_send_to_group_members',
@@ -2827,7 +2853,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                             i2p_domain: str, signing_priv_key_pem: str,
                             unit_test: bool, system_language: str,
                             followers_sync_cache: {},
-                            sites_unavailable: []) -> bool:
+                            sites_unavailable: [],
+                            mitm_servers: []) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not message_json['type'].startswith('Follow'):
@@ -2958,7 +2985,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                nickname_to_follow, domain_to_follow,
                                person_cache, message_json,
                                signing_priv_key_pem, debug, unit_test,
-                               system_language):
+                               system_language, mitm_servers):
         print('REJECT spam follow request ' + approve_handle)
         return True
 
@@ -2996,7 +3023,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                person_cache, debug, project_version,
                                curr_http_prefix,
                                this_domain, onion_domain,
-                               i2p_domain, signing_priv_key_pem)
+                               i2p_domain, signing_priv_key_pem,
+                               mitm_servers)
         if not pubkey_result:
             if debug:
                 print('Unable to obtain following actor: ' +
@@ -3047,7 +3075,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                    person_cache, debug, project_version,
                                    curr_http_prefix, this_domain,
                                    onion_domain, i2p_domain,
-                                   signing_priv_key_pem)
+                                   signing_priv_key_pem,
+                                   mitm_servers)
             if not pubkey_result:
                 if debug:
                     print('Unable to obtain following actor: ' +
@@ -3111,7 +3140,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     signing_priv_key_pem,
                                     this_domain, onion_domain, i2p_domain,
                                     followers_sync_cache, sites_unavailable,
-                                    system_language)
+                                    system_language, mitm_servers)
 
 
 def run_inbox_queue(server,
@@ -3381,7 +3410,8 @@ def run_inbox_queue(server,
                                    person_cache, debug,
                                    project_version, http_prefix,
                                    domain, onion_domain, i2p_domain,
-                                   signing_priv_key_pem)
+                                   signing_priv_key_pem,
+                                   server.mitm_servers)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'get_person_pub_key', debug)
             inbox_start_time = time.time()
@@ -3552,7 +3582,8 @@ def run_inbox_queue(server,
                                    signing_priv_key_pem, unit_test,
                                    system_language,
                                    server.followers_sync_cache,
-                                   server.sites_unavailable):
+                                   server.sites_unavailable,
+                                   server.mitm_servers):
             if os.path.isfile(queue_filename):
                 try:
                     os.remove(queue_filename)
@@ -3606,7 +3637,8 @@ def run_inbox_queue(server,
                                  server.sites_unavailable,
                                  server.blocked_cache,
                                  server.block_federated,
-                                 server.system_language):
+                                 server.system_language,
+                                 server.mitm_servers):
             if debug:
                 print('Queue: _receive_move_activity ' + key_id)
             if os.path.isfile(queue_filename):
@@ -3647,7 +3679,7 @@ def run_inbox_queue(server,
                                    max_hashtags, server.buy_sites,
                                    server.auto_cw_cache,
                                    onion_domain,
-                                   i2p_domain):
+                                   i2p_domain, server.mitm_servers):
             if debug:
                 print('Queue: Update accepted from ' + key_id)
             if os.path.isfile(queue_filename):
@@ -3777,7 +3809,8 @@ def run_inbox_queue(server,
                                  languages_understood, mitm,
                                  bold_reading, dogwhistles,
                                  max_hashtags, server.buy_sites,
-                                 server.sites_unavailable)
+                                 server.sites_unavailable,
+                                 server.mitm_servers)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'handle_after_initial',
                                 debug)

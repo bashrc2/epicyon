@@ -481,6 +481,7 @@ class EpicyonServer(ThreadingHTTPServer):
     instance_description_short = 'Epicyon'
     robots_txt = None
     last_llm_time = None
+    mitm_servers = []
     watermark_width_percent = 0
     watermark_position = 0
     watermark_opacity = 0
@@ -709,6 +710,9 @@ def run_daemon(accounts_data_dir: str,
 
     # the last time when an LLM scraper was replied to
     httpd.last_llm_time = None
+
+    # servers with man-in-the-middle transport encryption
+    httpd.mitm_servers = []
 
     # default "searchable by" for new posts for each account
     httpd.searchable_by_default = load_searchable_by_default(base_dir)
@@ -1362,7 +1366,8 @@ def run_daemon(accounts_data_dir: str,
                           args=(base_dir, httpd,
                                 http_prefix, httpd.domain_full,
                                 proxy_type, debug,
-                                httpd.system_language), daemon=True)
+                                httpd.system_language,
+                                httpd.mitm_servers), daemon=True)
 
     # flags used when restarting the inbox queue
     httpd.restart_inbox_queue_in_progress = False

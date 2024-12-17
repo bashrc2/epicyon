@@ -18,6 +18,7 @@ from utils import locate_post
 from utils import local_actor_url
 from utils import get_nickname_from_actor
 from utils import get_instance_url
+from utils import detect_mitm
 from daemon_utils import post_to_outbox
 from follow import follower_approval_active
 from httpheaders import redirect_headers
@@ -27,7 +28,6 @@ from posts import get_original_post_from_announce_url
 from fitnessFunctions import fitness_performance
 from like import update_likes_collection
 from webapp_post import individual_post_as_html
-from daemon_utils import detect_mitm
 
 
 def like_button(self, calling_domain: str, path: str,
@@ -66,7 +66,8 @@ def like_button(self, calling_domain: str, path: str,
                 bold_reading_nicknames: {},
                 min_images_for_accounts: [],
                 session_onion,
-                session_i2p) -> None:
+                session_i2p,
+                mitm_servers: []) -> None:
     """Press the like button
     """
     page_number = 1
@@ -261,7 +262,8 @@ def like_button(self, calling_domain: str, path: str,
                                     dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache,
+                                    mitm_servers)
         else:
             print('WARN: Liked post not found: ' + liked_post_filename)
         # clear the icon from the cache so that it gets updated
@@ -326,7 +328,8 @@ def like_button_undo(self, calling_domain: str, path: str,
                      min_images_for_accounts: [],
                      icons_cache: {},
                      session_onion,
-                     session_i2p) -> None:
+                     session_i2p,
+                     mitm_servers: []) -> None:
     """A button is pressed to undo
     """
     page_number = 1
@@ -512,7 +515,8 @@ def like_button_undo(self, calling_domain: str, path: str,
                                     dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache,
+                                    mitm_servers)
         else:
             print('WARN: Unliked post not found: ' + liked_post_filename)
         # clear the icon from the cache so that it gets updated

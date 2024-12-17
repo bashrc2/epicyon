@@ -35,7 +35,8 @@ def _html_podcast_chapters(link_url: str,
                            session, session_onion, session_i2p,
                            http_prefix: str, domain: str,
                            podcast_properties: {},
-                           debug: bool) -> str:
+                           debug: bool,
+                           mitm_servers: []) -> str:
     """Returns html for chapters of a podcast
     """
     if not podcast_properties:
@@ -69,7 +70,7 @@ def _html_podcast_chapters(link_url: str,
         if 'json' in url_type:
             chapters_json = \
                 get_json(None, curr_session, chapters_url,
-                         as_header, None, debug, __version__,
+                         as_header, None, debug, mitm_servers, __version__,
                          http_prefix, domain)
             if not get_json_valid(chapters_json):
                 return ''
@@ -309,7 +310,8 @@ def html_podcast_episode(translate: {},
                          newswire_item: [],
                          text_mode_banner: str,
                          session, session_onion, session_i2p,
-                         http_prefix: str, debug: bool) -> str:
+                         http_prefix: str, debug: bool,
+                         mitm_servers: []) -> str:
     """Returns html for a podcast episode, an item from the newswire
     """
     css_filename = base_dir + '/epicyon-podcast.css'
@@ -513,7 +515,7 @@ def html_podcast_episode(translate: {},
         _html_podcast_chapters(link_url,
                                session, session_onion, session_i2p,
                                http_prefix, domain,
-                               podcast_properties, debug)
+                               podcast_properties, debug, mitm_servers)
 
     podcast_str += '  </center>\n'
     podcast_str += '</div>\n'

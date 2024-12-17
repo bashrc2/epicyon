@@ -1758,7 +1758,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
                    ipfs: bool, ipns: bool,
                    debug: bool, quiet: bool,
                    signing_priv_key_pem: str,
-                   existing_session) -> ({}, {}):
+                   existing_session, mitm_servers: []) -> ({}, {}):
     """Returns the actor json
     """
     if debug:
@@ -1887,7 +1887,8 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
         wf_request = webfinger_handle(session, handle,
                                       http_prefix, cached_webfingers,
                                       host_domain, __version__, debug,
-                                      group_account, signing_priv_key_pem)
+                                      group_account, signing_priv_key_pem,
+                                      mitm_servers)
         if not wf_request:
             if not quiet:
                 print('get_actor_json Unable to webfinger ' + handle +
@@ -1949,8 +1950,8 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
         }
         person_json = \
             get_json(signing_priv_key_pem, session, person_url, as_header,
-                     None, debug, __version__, http_prefix, host_domain,
-                     20, quiet)
+                     None, debug, mitm_servers, __version__, http_prefix,
+                     host_domain, 20, quiet)
         if get_json_valid(person_json):
             if not quiet:
                 pprint(person_json)
@@ -2018,7 +2019,8 @@ def valid_sending_actor(session, base_dir: str,
                         post_json_object: {},
                         signing_priv_key_pem: str,
                         debug: bool, unit_test: bool,
-                        system_language: str) -> bool:
+                        system_language: str,
+                        mitm_servers: []) -> bool:
     """When a post arrives in the inbox this is used to check that
     the sending actor is valid
     """
@@ -2049,7 +2051,8 @@ def valid_sending_actor(session, base_dir: str,
     actor_json, _ = get_actor_json(domain, sending_actor,
                                    True, gnunet, ipfs, ipns,
                                    debug, True,
-                                   signing_priv_key_pem, session)
+                                   signing_priv_key_pem, session,
+                                   mitm_servers)
     if not actor_json:
         # if the actor couldn't be obtained then proceed anyway
         return True

@@ -763,7 +763,8 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                              onion_domain: str, i2p_domain: str,
                              followers_sync_cache: {},
                              sites_unavailable: [],
-                             system_language: str):
+                             system_language: str,
+                             mitm_servers: []):
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
@@ -820,7 +821,7 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                             group_account, signing_priv_key_pem,
                             7856837, curr_domain, onion_domain, i2p_domain,
                             extra_headers, sites_unavailable,
-                            system_language)
+                            system_language, mitm_servers)
 
 
 def followed_account_rejects(session, session_onion, session_i2p,
@@ -836,7 +837,8 @@ def followed_account_rejects(session, session_onion, session_i2p,
                              signing_priv_key_pem: str,
                              followers_sync_cache: {},
                              sites_unavailable: [],
-                             system_language: str):
+                             system_language: str,
+                             mitm_servers: []):
     """The person receiving a follow request rejects the new follower
     and sends back a Reject activity
     """
@@ -906,7 +908,7 @@ def followed_account_rejects(session, session_onion, session_i2p,
                             6393063,
                             domain, onion_domain, i2p_domain,
                             extra_headers, sites_unavailable,
-                            system_language)
+                            system_language, mitm_servers)
 
 
 def send_follow_request(session, base_dir: str,
@@ -923,7 +925,8 @@ def send_follow_request(session, base_dir: str,
                         curr_domain: str,
                         onion_domain: str, i2p_domain: str,
                         sites_unavailable: [],
-                        system_language: str) -> {}:
+                        system_language: str,
+                        mitm_servers: []) -> {}:
     """Gets the json object for sending a follow request
     """
     if not signing_priv_key_pem:
@@ -1012,7 +1015,7 @@ def send_follow_request(session, base_dir: str,
                      signing_priv_key_pem, 8234389,
                      curr_domain, onion_domain, i2p_domain,
                      extra_headers, sites_unavailable,
-                     system_language)
+                     system_language, mitm_servers)
 
     return new_follow_json
 
@@ -1026,7 +1029,8 @@ def send_follow_request_via_server(base_dir: str, session,
                                    cached_webfingers: {}, person_cache: {},
                                    debug: bool, project_version: str,
                                    signing_priv_key_pem: str,
-                                   system_language: str) -> {}:
+                                   system_language: str,
+                                   mitm_servers: []) -> {}:
     """Creates a follow request via c2s
     """
     if not session:
@@ -1060,7 +1064,7 @@ def send_follow_request_via_server(base_dir: str, session,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          from_domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: follow request webfinger failed for ' + handle)
@@ -1081,7 +1085,7 @@ def send_follow_request_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain, post_to_box, 52025,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -1123,7 +1127,8 @@ def send_unfollow_request_via_server(base_dir: str, session,
                                      cached_webfingers: {}, person_cache: {},
                                      debug: bool, project_version: str,
                                      signing_priv_key_pem: str,
-                                     system_language: str) -> {}:
+                                     system_language: str,
+                                     mitm_servers: []) -> {}:
     """Creates a unfollow request via c2s
     """
     if not session:
@@ -1161,7 +1166,7 @@ def send_unfollow_request_via_server(base_dir: str, session,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          from_domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: unfollow webfinger failed for ' + handle)
@@ -1183,7 +1188,8 @@ def send_unfollow_request_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain, post_to_box,
-                            76536, system_language)
+                            76536, system_language,
+                            mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -1220,7 +1226,8 @@ def get_following_via_server(session, nickname: str, password: str,
                              domain: str, port: int,
                              http_prefix: str, page_number: int,
                              debug: bool, project_version: str,
-                             signing_priv_key_pem: str) -> {}:
+                             signing_priv_key_pem: str,
+                             mitm_servers: []) -> {}:
     """Gets a page from the following collection as json
     """
     if not session:
@@ -1242,7 +1249,7 @@ def get_following_via_server(session, nickname: str, password: str,
     url = follow_actor + '/following?page=' + str(page_number)
     following_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 project_version, http_prefix, domain, 10, True)
+                 mitm_servers, project_version, http_prefix, domain, 10, True)
     if not get_json_valid(following_json):
         if debug:
             print('DEBUG: GET following list failed for c2s to ' + url)
@@ -1258,7 +1265,8 @@ def get_followers_via_server(session, nickname: str, password: str,
                              domain: str, port: int,
                              http_prefix: str, page_number: int,
                              debug: bool, project_version: str,
-                             signing_priv_key_pem: str) -> {}:
+                             signing_priv_key_pem: str,
+                             mitm_servers: []) -> {}:
     """Gets a page from the followers collection as json
     """
     if not session:
@@ -1280,7 +1288,7 @@ def get_followers_via_server(session, nickname: str, password: str,
     url = follow_actor + '/followers?page=' + str(page_number)
     followers_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 project_version, http_prefix, domain, 10, True)
+                 mitm_servers, project_version, http_prefix, domain, 10, True)
     if not get_json_valid(followers_json):
         if debug:
             print('DEBUG: GET followers list failed for c2s to ' + url)
@@ -1297,7 +1305,8 @@ def get_follow_requests_via_server(session,
                                    domain: str, port: int,
                                    http_prefix: str, page_number: int,
                                    debug: bool, project_version: str,
-                                   signing_priv_key_pem: str) -> {}:
+                                   signing_priv_key_pem: str,
+                                   mitm_servers: []) -> {}:
     """Gets a page from the follow requests collection as json
     """
     if not session:
@@ -1319,7 +1328,7 @@ def get_follow_requests_via_server(session,
     url = follow_actor + '/followrequests?page=' + str(page_number)
     followers_json = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 project_version, http_prefix, domain, 10, True)
+                 mitm_servers, project_version, http_prefix, domain, 10, True)
     if not get_json_valid(followers_json):
         if debug:
             print('DEBUG: GET follow requests list failed for c2s to ' + url)
@@ -1336,7 +1345,8 @@ def approve_follow_request_via_server(session,
                                       domain: str, port: int,
                                       http_prefix: str, approve_handle: int,
                                       debug: bool, project_version: str,
-                                      signing_priv_key_pem: str) -> str:
+                                      signing_priv_key_pem: str,
+                                      mitm_servers: []) -> str:
     """Approves a follow request
     This is not exactly via c2s though. It simulates pressing the Approve
     button on the web interface
@@ -1359,7 +1369,7 @@ def approve_follow_request_via_server(session,
     url = actor + '/followapprove=' + approve_handle
     approve_html = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 project_version, http_prefix, domain, 10, True)
+                 mitm_servers, project_version, http_prefix, domain, 10, True)
     if not get_json_valid(approve_html):
         if debug:
             print('DEBUG: GET approve follow request failed for c2s to ' + url)
@@ -1376,7 +1386,8 @@ def deny_follow_request_via_server(session,
                                    domain: str, port: int,
                                    http_prefix: str, deny_handle: int,
                                    debug: bool, project_version: str,
-                                   signing_priv_key_pem: str) -> str:
+                                   signing_priv_key_pem: str,
+                                   mitm_servers: []) -> str:
     """Denies a follow request
     This is not exactly via c2s though. It simulates pressing the Deny
     button on the web interface
@@ -1399,7 +1410,7 @@ def deny_follow_request_via_server(session,
     url = actor + '/followdeny=' + deny_handle
     deny_html = \
         get_json(signing_priv_key_pem, session, url, headers, {}, debug,
-                 project_version, http_prefix, domain, 10, True)
+                 mitm_servers, project_version, http_prefix, domain, 10, True)
     if not get_json_valid(deny_html):
         if debug:
             print('DEBUG: GET deny follow request failed for c2s to ' + url)

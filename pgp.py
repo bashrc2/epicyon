@@ -442,21 +442,24 @@ def has_local_pg_pkey() -> bool:
     return False
 
 
-def pgp_encrypt_to_actor(domain: str, content: str, toHandle: str,
-                         signing_priv_key_pem: str) -> str:
+def pgp_encrypt_to_actor(domain: str, content: str, to_handle: str,
+                         signing_priv_key_pem: str,
+                         mitm_servers: []) -> str:
     """PGP encrypt a message to the given actor or handle
     """
     # get the actor and extract the pgp public key from it
     recipient_pub_key = \
-        _get_pgp_public_key_from_actor(signing_priv_key_pem, domain, toHandle)
+        _get_pgp_public_key_from_actor(signing_priv_key_pem, domain, to_handle,
+                                       mitm_servers)
     if not recipient_pub_key:
         return None
     # encrypt using the recipient public key
     return _pgp_encrypt(content, recipient_pub_key)
 
 
-def pgp_decrypt(domain: str, content: str, fromHandle: str,
-                signing_priv_key_pem: str) -> str:
+def pgp_decrypt(domain: str, content: str, from_handle: str,
+                signing_priv_key_pem: str,
+                mitm_servers: []) -> str:
     """ Encrypt using your default pgp key to the given recipient
     fromHandle can be a handle or actor url
     """
@@ -469,7 +472,8 @@ def pgp_decrypt(domain: str, content: str, fromHandle: str,
     else:
         pub_key = \
             _get_pgp_public_key_from_actor(signing_priv_key_pem,
-                                           domain, content, fromHandle)
+                                           domain, content, from_handle,
+                                           mitm_servers)
     if pub_key:
         _pgp_import_pub_key(pub_key)
 
@@ -522,6 +526,7 @@ def pgp_local_public_key() -> str:
 
 def _get_pgp_public_key_from_actor(signing_priv_key_pem: str,
                                    domain: str, handle: str,
+                                   mitm_servers: [],
                                    actor_json: {} = None) -> str:
     """Searches tags on the actor to see if there is any PGP
     public key specified
@@ -529,7 +534,8 @@ def _get_pgp_public_key_from_actor(signing_priv_key_pem: str,
     if not actor_json:
         actor_json, _ = \
             get_actor_json(domain, handle, False, False, False, False,
-                           False, True, signing_priv_key_pem, None)
+                           False, True, signing_priv_key_pem, None,
+                           mitm_servers)
     if not actor_json:
         return None
     if not actor_json.get('attachment'):
@@ -557,7 +563,8 @@ def pgp_public_key_upload(base_dir: str, session,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, test: str,
                           signing_priv_key_pem: str,
-                          system_language: str) -> {}:
+                          system_language: str,
+                          mitm_servers: []) -> {}:
     if debug:
         print('pgp_public_key_upload')
 
@@ -590,7 +597,8 @@ def pgp_public_key_upload(base_dir: str, session,
 
     actor_json, _ = \
         get_actor_json(domain_full, handle, False, False, False, False,
-                       debug, True, signing_priv_key_pem, session)
+                       debug, True, signing_priv_key_pem, session,
+                       mitm_servers)
     if not actor_json:
         if debug:
             print('No actor returned for ' + handle)
@@ -661,7 +669,7 @@ def pgp_public_key_upload(base_dir: str, session,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          domain, __version__, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: pgp actor update webfinger failed for ' +
@@ -683,7 +691,7 @@ def pgp_public_key_upload(base_dir: str, session,
                             person_cache,
                             __version__, http_prefix, nickname,
                             domain, post_to_box, 35725,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:

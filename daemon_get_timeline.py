@@ -85,7 +85,8 @@ def show_media_timeline(self, authorized: bool,
                         full_width_tl_button_header: bool,
                         onion_domain: str,
                         i2p_domain: str,
-                        hide_announces: {}) -> bool:
+                        hide_announces: {},
+                        mitm_servers: []) -> bool:
     """Shows the media timeline
     """
     if '/users/' in path:
@@ -203,7 +204,8 @@ def show_media_timeline(self, authorized: bool,
                                      buy_sites,
                                      auto_cw_cache,
                                      show_announces,
-                                     known_epicyon_instances)
+                                     known_epicyon_instances,
+                                     mitm_servers)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -299,7 +301,8 @@ def show_blogs_timeline(self, authorized: bool,
                         auto_cw_cache: {},
                         fitness: {},
                         onion_domain: str,
-                        i2p_domain: str) -> bool:
+                        i2p_domain: str,
+                        mitm_servers: []) -> bool:
     """Shows the blogs timeline
     """
     if '/users/' in path:
@@ -412,7 +415,8 @@ def show_blogs_timeline(self, authorized: bool,
                                      reverse_sequence, last_post_id,
                                      buy_sites,
                                      auto_cw_cache,
-                                     known_epicyon_instances)
+                                     known_epicyon_instances,
+                                     mitm_servers)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -508,7 +512,8 @@ def show_news_timeline(self, authorized: bool,
                        auto_cw_cache: {},
                        fitness: {},
                        onion_domain: str,
-                       i2p_domain: str) -> bool:
+                       i2p_domain: str,
+                       mitm_servers: []) -> bool:
     """Shows the news timeline
     """
     if '/users/' in path:
@@ -626,7 +631,8 @@ def show_news_timeline(self, authorized: bool,
                                     reverse_sequence,
                                     buy_sites,
                                     auto_cw_cache,
-                                    known_epicyon_instances)
+                                    known_epicyon_instances,
+                                    mitm_servers)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -720,7 +726,8 @@ def show_features_timeline(self, authorized: bool,
                            auto_cw_cache: {},
                            fitness: {},
                            onion_domain: str,
-                           i2p_domain: str) -> bool:
+                           i2p_domain: str,
+                           mitm_servers: []) -> bool:
     """Shows the features timeline (all local blogs)
     """
     if '/users/' in path:
@@ -835,7 +842,8 @@ def show_features_timeline(self, authorized: bool,
                                         reverse_sequence,
                                         buy_sites,
                                         auto_cw_cache,
-                                        known_epicyon_instances)
+                                        known_epicyon_instances,
+                                        mitm_servers)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -926,7 +934,8 @@ def show_shares_timeline(self, authorized: bool,
                          min_images_for_accounts: [],
                          buy_sites: [],
                          auto_cw_cache: {},
-                         fitness: {}) -> bool:
+                         fitness: {},
+                         mitm_servers: []) -> bool:
     """Shows the shares timeline
     """
     if '/users/' in path:
@@ -1004,7 +1013,8 @@ def show_shares_timeline(self, authorized: bool,
                                 reverse_sequence,
                                 buy_sites,
                                 auto_cw_cache,
-                                known_epicyon_instances)
+                                known_epicyon_instances,
+                                mitm_servers)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -1072,7 +1082,8 @@ def show_wanted_timeline(self, authorized: bool,
                          min_images_for_accounts: [],
                          buy_sites: [],
                          auto_cw_cache: {},
-                         fitness: {}) -> bool:
+                         fitness: {},
+                         mitm_servers: []) -> bool:
     """Shows the wanted timeline
     """
     if '/users/' in path:
@@ -1149,7 +1160,8 @@ def show_wanted_timeline(self, authorized: bool,
                                 reverse_sequence,
                                 buy_sites,
                                 auto_cw_cache,
-                                known_epicyon_instances)
+                                known_epicyon_instances,
+                                mitm_servers)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -1221,7 +1233,8 @@ def show_bookmarks_timeline(self, authorized: bool,
                             auto_cw_cache: {},
                             fitness: {},
                             onion_domain: str,
-                            i2p_domain: str) -> bool:
+                            i2p_domain: str,
+                            mitm_servers: []) -> bool:
     """Shows the bookmarks timeline
     """
     if '/users/' in path:
@@ -1330,7 +1343,8 @@ def show_bookmarks_timeline(self, authorized: bool,
                                        reverse_sequence,
                                        buy_sites,
                                        auto_cw_cache,
-                                       known_epicyon_instances)
+                                       known_epicyon_instances,
+                                       mitm_servers)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     set_headers(self, 'text/html', msglen,
@@ -1428,7 +1442,8 @@ def show_outbox_timeline(self, authorized: bool,
                          fitness: {},
                          onion_domain: str,
                          i2p_domain: str,
-                         hide_announces: {}) -> bool:
+                         hide_announces: {},
+                         mitm_servers: []) -> bool:
     """Shows the outbox timeline
     """
     # get outbox feed for a person
@@ -1539,7 +1554,8 @@ def show_outbox_timeline(self, authorized: bool,
                             buy_sites,
                             auto_cw_cache,
                             show_announces,
-                            known_epicyon_instances)
+                            known_epicyon_instances,
+                            mitm_servers)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
@@ -1622,7 +1638,8 @@ def show_mod_timeline(self, authorized: bool,
                       auto_cw_cache: {},
                       fitness: {},
                       onion_domain: str,
-                      i2p_domain: str) -> bool:
+                      i2p_domain: str,
+                      mitm_servers: []) -> bool:
     """Shows the moderation timeline
     """
     if '/users/' in path:
@@ -1730,7 +1747,8 @@ def show_mod_timeline(self, authorized: bool,
                                         reverse_sequence,
                                         buy_sites,
                                         auto_cw_cache,
-                                        known_epicyon_instances)
+                                        known_epicyon_instances,
+                                        mitm_servers)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     set_headers(self, 'text/html', msglen,
@@ -1823,7 +1841,8 @@ def show_dms(self, authorized: bool,
              auto_cw_cache: {},
              fitness: {},
              onion_domain: str,
-             i2p_domain: str) -> bool:
+             i2p_domain: str,
+             mitm_servers: []) -> bool:
     """Shows the DMs timeline
     """
     if '/users/' in path:
@@ -1935,7 +1954,8 @@ def show_dms(self, authorized: bool,
                                        reverse_sequence, last_post_id,
                                        buy_sites,
                                        auto_cw_cache,
-                                       known_epicyon_instances)
+                                       known_epicyon_instances,
+                                       mitm_servers)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     set_headers(self, 'text/html', msglen,
@@ -2031,7 +2051,8 @@ def show_replies(self, authorized: bool,
                  auto_cw_cache: {},
                  fitness: {},
                  onion_domain: str,
-                 i2p_domain: str) -> bool:
+                 i2p_domain: str,
+                 mitm_servers: []) -> bool:
     """Shows the replies timeline
     """
     if '/users/' in path:
@@ -2144,7 +2165,8 @@ def show_replies(self, authorized: bool,
                                        reverse_sequence, last_post_id,
                                        buy_sites,
                                        auto_cw_cache,
-                                       known_epicyon_instances)
+                                       known_epicyon_instances,
+                                       mitm_servers)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -2240,7 +2262,8 @@ def show_inbox(self, authorized: bool,
                auto_cw_cache: {},
                onion_domain: str,
                i2p_domain: str,
-               hide_announces: {}) -> bool:
+               hide_announces: {},
+               mitm_servers: []) -> bool:
     """Shows the inbox timeline
     """
     if '/users/' in path:
@@ -2366,7 +2389,8 @@ def show_inbox(self, authorized: bool,
                                    buy_sites,
                                    auto_cw_cache,
                                    show_announces,
-                                   known_epicyon_instances)
+                                   known_epicyon_instances,
+                                   mitm_servers)
                     if getreq_start_time:
                         fitness_performance(getreq_start_time, fitness,
                                             '_GET', '_show_inbox3',

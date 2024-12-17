@@ -1472,6 +1472,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     chat_url = ''
     auto_cw_cache = {}
     searchable_by = []
+    mitm_servers = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -1490,7 +1491,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                   content_license_url, media_license_url, media_creator,
                   translate, buy_url, chat_url, auto_cw_cache, True,
                   in_reply_to, in_reply_to_atom_uri, subject,
-                  searchable_by)
+                  searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
 
     queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
@@ -1602,6 +1603,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
             outbox_post_filename = outbox_path + '/' + name
     assert status_number > 0
     assert outbox_post_filename
+    mitm_servers = []
     assert like_post({}, session_bob, bob_dir, federation_list,
                      'bob', bob_domain, bob_port, http_prefix,
                      'alice', alice_domain, alice_port, [],
@@ -1609,7 +1611,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                      bob_person_cache, bob_cached_webfingers,
                      True, __version__, signing_priv_key_pem,
                      bob_domain, None, None, sites_unavailable,
-                     system_language)
+                     system_language, mitm_servers)
 
     for _ in range(20):
         if text_in_file('likes', outbox_post_filename):
@@ -1626,6 +1628,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     print("Bob reacts to Alice's post")
 
     sites_unavailable = []
+    mitm_servers = []
     assert reaction_post({}, session_bob, bob_dir, federation_list,
                          'bob', bob_domain, bob_port, http_prefix,
                          'alice', alice_domain, alice_port, [],
@@ -1634,7 +1637,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                          bob_person_cache, bob_cached_webfingers,
                          True, __version__, signing_priv_key_pem,
                          bob_domain, None, None, sites_unavailable,
-                         system_language)
+                         system_language, mitm_servers)
 
     for _ in range(20):
         if text_in_file('reactions', outbox_post_filename):
@@ -1667,6 +1670,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     assert outbox_before_announce_count == 0
     assert before_announce_count == 0
     sites_unavailable = []
+    mitm_servers = []
     announce_public(session_bob, bob_dir, federation_list,
                     'bob', bob_domain, bob_port, http_prefix,
                     object_url,
@@ -1674,7 +1678,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                     bob_person_cache, bob_cached_webfingers,
                     True, __version__, signing_priv_key_pem,
                     bob_domain, None, None, sites_unavailable,
-                    system_language)
+                    system_language, mitm_servers)
     announce_message_arrived = False
     outbox_message_arrived = False
     for _ in range(20):
@@ -1813,6 +1817,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     sites_unavailable = []
     bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     signing_priv_key_pem = None
+    mitm_servers = []
     send_result = \
         send_follow_request(session_alice, alice_dir,
                             'alice', alice_domain,
@@ -1824,7 +1829,7 @@ def test_follow_between_servers(base_dir: str) -> None:
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
                             alice_domain, None, None, sites_unavailable,
-                            system_language)
+                            system_language, mitm_servers)
     print('send_result: ' + str(send_result))
 
     alice_dir_str = data_dir(alice_dir)
@@ -1871,6 +1876,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     video_transcript = None
     auto_cw_cache = {}
     searchable_by = []
+    mitm_servers = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -1886,7 +1892,7 @@ def test_follow_between_servers(base_dir: str) -> None:
                   content_license_url, media_license_url, media_creator,
                   translate, buy_url, chat_url, auto_cw_cache, True,
                   in_reply_to, in_reply_to_atom_uri, subject,
-                  searchable_by)
+                  searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
 
     queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
@@ -2015,9 +2021,11 @@ def test_shared_items_federation(base_dir: str) -> None:
         'host': bob_address,
         'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
+    mitm_servers = []
     bob_instance_actor_json = \
         get_json(signing_priv_key_pem, session_client,
                  'http://' + bob_address + '/@actor', test_headers, {}, True,
+                 mitm_servers,
                  __version__, 'http', 'somedomain.or.other', 10, False)
     if not get_json_valid(bob_instance_actor_json):
         print('Unable to get json for ' + 'http://' + bob_address + '/@actor')
@@ -2049,6 +2057,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     alice_cached_webfingers = {}
     alice_post_log = []
     sites_unavailable = []
+    mitm_servers = []
     bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     send_result = \
         send_follow_request(session_alice, alice_dir,
@@ -2061,7 +2070,7 @@ def test_shared_items_federation(base_dir: str) -> None:
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
                             alice_domain, None, None, sites_unavailable,
-                            system_language)
+                            system_language, mitm_servers)
     print('send_result: ' + str(send_result))
 
     alice_dir_str = data_dir(alice_dir)
@@ -2124,6 +2133,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     shared_item_price = "1.30"
     shared_item_currency = "EUR"
     signing_priv_key_pem = None
+    mitm_servers = []
     session_bob = create_session(proxy_type)
     share_json = \
         send_share_via_server(bob_dir, session_bob,
@@ -2138,7 +2148,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                               bob_cached_webfingers, bob_person_cache,
                               True, __version__,
                               shared_item_price, shared_item_currency,
-                              signing_priv_key_pem, system_language)
+                              signing_priv_key_pem, system_language,
+                              mitm_servers)
     assert share_json
     assert isinstance(share_json, dict)
     shared_item_name = 'Epicyon T-shirt'
@@ -2164,7 +2175,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                               bob_cached_webfingers, bob_person_cache,
                               True, __version__,
                               shared_item_price, shared_item_currency,
-                              signing_priv_key_pem, system_language)
+                              signing_priv_key_pem, system_language,
+                              mitm_servers)
     assert share_json
     assert isinstance(share_json, dict)
     shared_item_name = 'Soldering iron'
@@ -2190,7 +2202,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                               bob_cached_webfingers, bob_person_cache,
                               True, __version__,
                               shared_item_price, shared_item_currency,
-                              signing_priv_key_pem, system_language)
+                              signing_priv_key_pem, system_language,
+                              mitm_servers)
     assert share_json
     assert isinstance(share_json, dict)
 
@@ -2213,33 +2226,39 @@ def test_shared_items_federation(base_dir: str) -> None:
     print('\n\n*********************************************************')
     print('Bob can read the shared items catalog on his own instance')
     signing_priv_key_pem = None
+    mitm_servers = []
     catalog_json = \
         get_shared_items_catalog_via_server(session_bob,
                                             'bob', bob_password,
                                             bob_domain, bob_port,
                                             http_prefix, True,
-                                            signing_priv_key_pem)
+                                            signing_priv_key_pem,
+                                            mitm_servers)
     assert catalog_json
     pprint(catalog_json)
     assert 'DFC:supplies' in catalog_json
     assert len(catalog_json.get('DFC:supplies')) == 3
 
+    mitm_servers = []
     offers_json = \
         get_offers_via_server(session_bob, 'bob', bob_password,
                               bob_domain, bob_port,
                               http_prefix, True,
-                              signing_priv_key_pem)
+                              signing_priv_key_pem,
+                              mitm_servers)
     assert offers_json
     print('Offers collection:')
     pprint(offers_json)
     assert isinstance(offers_json, dict)
     assert len(offers_json['orderedItems']) >= 1
 
+    mitm_servers = []
     wanted_json = \
         get_wanted_via_server(session_bob, 'bob', bob_password,
                               bob_domain, bob_port,
                               http_prefix, True,
-                              signing_priv_key_pem)
+                              signing_priv_key_pem,
+                              mitm_servers)
     print('Wanted collection:')
     pprint(wanted_json)
     assert isinstance(wanted_json, dict)
@@ -2272,6 +2291,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     video_transcript = None
     auto_cw_cache = {}
     searchable_by = []
+    mitm_servers = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -2287,7 +2307,7 @@ def test_shared_items_federation(base_dir: str) -> None:
                   content_license_url, media_license_url, media_creator,
                   translate, buy_url, chat_url, auto_cw_cache, True,
                   in_reply_to, in_reply_to_atom_uri, subject,
-                  searchable_by)
+                  searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
 
     queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
@@ -2342,8 +2362,9 @@ def test_shared_items_federation(base_dir: str) -> None:
     }
     url = http_prefix + '://' + bob_address + '/catalog'
     signing_priv_key_pem = None
+    mitm_servers: []
     catalog_json = get_json(signing_priv_key_pem, session_alice, url, headers,
-                            None, True)
+                            None, True, mitm_servers)
     assert get_json_valid(catalog_json)
     pprint(catalog_json)
     assert 'DFC:supplies' in catalog_json
@@ -2493,8 +2514,10 @@ def test_group_follow(base_dir: str) -> None:
         'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
     signing_priv_key_pem = None
+    mitm_servers = []
     outbox_json = get_json(signing_priv_key_pem, session, alice_outbox,
-                           as_header, None, True, __version__, 'http', None)
+                           as_header, None, True, mitm_servers,
+                           __version__, 'http', None)
     assert get_json_valid(outbox_json)
     pprint(outbox_json)
     assert outbox_json['type'] == 'OrderedCollection'
@@ -2504,9 +2527,10 @@ def test_group_follow(base_dir: str) -> None:
     print('Alice outbox totalItems: ' + str(outbox_json['totalItems']))
     assert outbox_json['totalItems'] == 3
 
+    mitm_servers = []
     outbox_json = get_json(signing_priv_key_pem, session,
                            first_page, as_header,
-                           None, True, __version__, 'http', None)
+                           None, True, mitm_servers, __version__, 'http', None)
     assert get_json_valid(outbox_json)
     pprint(outbox_json)
     assert 'orderedItems' in outbox_json
@@ -2539,6 +2563,7 @@ def test_group_follow(base_dir: str) -> None:
     testgroup_actor = \
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signing_priv_key_pem = None
+    mitm_servers = []
     send_result = \
         send_follow_request(session_alice, alice_dir,
                             'alice', alice_domain,
@@ -2550,7 +2575,7 @@ def test_group_follow(base_dir: str) -> None:
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
                             alice_domain, None, None, sites_unavailable,
-                            system_language)
+                            system_language, mitm_servers)
     print('send_result: ' + str(send_result))
 
     alice_following_filename = \
@@ -2619,6 +2644,7 @@ def test_group_follow(base_dir: str) -> None:
     testgroup_actor = \
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signing_priv_key_pem = None
+    mitm_servers = []
     send_result = \
         send_follow_request(session_bob, bob_dir,
                             'bob', bob_domain,
@@ -2630,7 +2656,7 @@ def test_group_follow(base_dir: str) -> None:
                             bob_cached_webfingers, bob_person_cache,
                             True, __version__, signing_priv_key_pem,
                             bob_domain, None, None, sites_unavailable,
-                            system_language)
+                            system_language, mitm_servers)
     print('send_result: ' + str(send_result))
 
     bob_following_filename = \
@@ -2715,6 +2741,7 @@ def test_group_follow(base_dir: str) -> None:
     video_transcript = None
     auto_cw_cache = {}
     searchable_by = []
+    mitm_servers = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -2730,7 +2757,7 @@ def test_group_follow(base_dir: str) -> None:
                   content_license_url, media_license_url, media_creator,
                   translate, buy_url, chat_url, auto_cw_cache, True,
                   in_reply_to, in_reply_to_atom_uri, subject,
-                  searchable_by)
+                  searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
 
     for _ in range(20):
@@ -3370,6 +3397,7 @@ def test_client_to_server(base_dir: str):
     video_transcript = None
     auto_cw_cache = {}
     searchable_by = []
+    mitm_servers = []
     send_result = \
         send_post_via_server(signing_priv_key_pem, __version__,
                              alice_dir, session_alice, 'alice', password,
@@ -3386,7 +3414,7 @@ def test_client_to_server(base_dir: str):
                              event_date, event_time, event_end_time, location,
                              translate, buy_url, chat_url, auto_cw_cache,
                              True, None, None, conversation_id, convthread_id,
-                             None, searchable_by)
+                             None, searchable_by, mitm_servers)
     print('send_result: ' + str(send_result))
 
     for _ in range(30):
@@ -3455,6 +3483,7 @@ def test_client_to_server(base_dir: str):
 
     print('\n\nAlice follows Bob')
     signing_priv_key_pem = None
+    mitm_servers = []
     send_follow_request_via_server(alice_dir, session_alice,
                                    'alice', password,
                                    alice_domain, alice_port,
@@ -3462,7 +3491,7 @@ def test_client_to_server(base_dir: str):
                                    http_prefix,
                                    cached_webfingers, person_cache,
                                    True, __version__, signing_priv_key_pem,
-                                   system_language)
+                                   system_language, mitm_servers)
     alice_petnames_filename = data_dir(alice_dir) + '/' + \
         'alice@' + alice_domain + '/petnames.txt'
     alice_following_filename = \
@@ -3497,6 +3526,7 @@ def test_client_to_server(base_dir: str):
                                  alice_domain, alice_port)
 
     print('\n\nEVENT: Bob follows Alice')
+    mitm_servers = []
     send_follow_request_via_server(alice_dir, session_alice,
                                    'bob', 'bobpass',
                                    bob_domain, bob_port,
@@ -3504,7 +3534,7 @@ def test_client_to_server(base_dir: str):
                                    http_prefix,
                                    cached_webfingers, person_cache,
                                    True, __version__, signing_priv_key_pem,
-                                   system_language)
+                                   system_language, mitm_servers)
     alice_dir_str = data_dir(alice_dir)
     bob_dir_str = data_dir(bob_dir)
     for _ in range(20):
@@ -3590,13 +3620,14 @@ def test_client_to_server(base_dir: str):
     assert 'VEVENT' not in str(result)
 
     print('\n\nEVENT: Bob likes the post')
+    mitm_servers = []
     send_like_via_server(bob_dir, session_bob,
                          'bob', 'bobpass',
                          bob_domain, bob_port,
                          http_prefix, outbox_post_id,
                          cached_webfingers, person_cache,
                          True, __version__, signing_priv_key_pem,
-                         system_language)
+                         system_language, mitm_servers)
     for _ in range(20):
         if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
@@ -3621,13 +3652,14 @@ def test_client_to_server(base_dir: str):
     print('EVENT: Post liked')
 
     print('\n\nEVENT: Bob reacts to the post')
+    mitm_servers = []
     send_reaction_via_server(bob_dir, session_bob,
                              'bob', 'bobpass',
                              bob_domain, bob_port,
                              http_prefix, outbox_post_id, '😃',
                              cached_webfingers, person_cache,
                              True, __version__, signing_priv_key_pem,
-                             system_language)
+                             system_language, mitm_servers)
     for _ in range(20):
         if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
@@ -3669,13 +3701,14 @@ def test_client_to_server(base_dir: str):
     show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
     print('\n\nEVENT: Bob repeats the post')
     signing_priv_key_pem = None
+    mitm_servers = []
     send_announce_via_server(bob_dir, session_bob, 'bob', password,
                              bob_domain, bob_port,
                              http_prefix, outbox_post_id,
                              cached_webfingers,
                              person_cache, True, __version__,
                              signing_priv_key_pem,
-                             system_language)
+                             system_language, mitm_servers)
     for _ in range(30):
         if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
@@ -3711,12 +3744,13 @@ def test_client_to_server(base_dir: str):
     print('\n\nEVENT: Alice deletes her post: ' + outbox_post_id + ' ' +
           str(alice_posts_before))
     password = 'alicepass'
+    mitm_servers = []
     send_delete_via_server(alice_dir, session_alice, 'alice', password,
                            alice_domain, alice_port,
                            http_prefix, outbox_post_id,
                            cached_webfingers, person_cache,
                            True, __version__, signing_priv_key_pem,
-                           system_language)
+                           system_language, mitm_servers)
     for _ in range(30):
         if os.path.isdir(inbox_path):
             test = len([name for name in os.listdir(inbox_path)
@@ -3741,6 +3775,7 @@ def test_client_to_server(base_dir: str):
 
     print('\n\nEVENT: Alice unfollows Bob')
     password = 'alicepass'
+    mitm_servers = []
     send_unfollow_request_via_server(base_dir, session_alice,
                                      'alice', password,
                                      alice_domain, alice_port,
@@ -3748,7 +3783,7 @@ def test_client_to_server(base_dir: str):
                                      http_prefix,
                                      cached_webfingers, person_cache,
                                      True, __version__, signing_priv_key_pem,
-                                     system_language)
+                                     system_language, mitm_servers)
     for _ in range(10):
         test_str = 'alice@' + alice_domain + ':' + str(alice_port)
         if not text_in_file(test_str, bob_followers_filename):
@@ -6592,6 +6627,7 @@ def test_update_actor(base_dir: str):
         '=gv5G\n' + \
         '-----END PGP PUBLIC KEY BLOCK-----'
     signing_priv_key_pem = None
+    mitm_servers = []
     actor_update = \
         pgp_public_key_upload(alice_dir, session_alice,
                               'alice', password,
@@ -6599,7 +6635,7 @@ def test_update_actor(base_dir: str):
                               http_prefix,
                               cached_webfingers, person_cache,
                               True, pub_key, signing_priv_key_pem,
-                              system_language)
+                              system_language, mitm_servers)
     print('actor update result: ' + str(actor_update))
     assert actor_update
 

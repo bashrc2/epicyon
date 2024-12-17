@@ -19,12 +19,12 @@ from utils import is_dm
 from utils import local_actor_url
 from utils import get_instance_url
 from utils import get_nickname_from_actor
+from utils import detect_mitm
 from httpheaders import redirect_headers
 from session import establish_session
 from httpcodes import http_404
 from posts import get_original_post_from_announce_url
 from daemon_utils import post_to_outbox
-from daemon_utils import detect_mitm
 from fitnessFunctions import fitness_performance
 from reaction import update_reaction_collection
 from follow import follower_approval_active
@@ -65,7 +65,8 @@ def reaction_button(self, calling_domain: str, path: str,
                     account_timezone: {},
                     bold_reading_nicknames: {},
                     min_images_for_accounts: [],
-                    session_onion, session_i2p) -> None:
+                    session_onion, session_i2p,
+                    mitm_servers: []) -> None:
     """Press an emoji reaction button
     Note that this is not the emoji reaction selection icon at the
     bottom of the post
@@ -290,7 +291,8 @@ def reaction_button(self, calling_domain: str, path: str,
                                     dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache,
+                                    mitm_servers)
         else:
             print('WARN: Emoji reaction post not found: ' +
                   reaction_post_filename)
@@ -352,7 +354,8 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                          bold_reading_nicknames: {},
                          min_images_for_accounts: [],
                          session_onion,
-                         session_i2p) -> None:
+                         session_i2p,
+                         mitm_servers: []) -> None:
     """A button is pressed to undo emoji reaction
     """
     page_number = 1
@@ -563,7 +566,8 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                                     dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache,
+                                    mitm_servers)
         else:
             print('WARN: Unreaction post not found: ' +
                   reaction_post_filename)

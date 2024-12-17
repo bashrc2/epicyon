@@ -175,7 +175,8 @@ def receive_undo_like(recent_posts_cache: {},
                       bold_reading: bool, dogwhistles: {},
                       min_images_for_accounts: [],
                       buy_sites: {},
-                      auto_cw_cache: {}) -> bool:
+                      auto_cw_cache: {},
+                      mitm_servers: []) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -278,7 +279,8 @@ def receive_undo_like(recent_posts_cache: {},
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None,
-                                    buy_sites, auto_cw_cache)
+                                    buy_sites, auto_cw_cache,
+                                    mitm_servers)
     return True
 
 
@@ -301,7 +303,8 @@ def receive_undo_reaction(recent_posts_cache: {},
                           bold_reading: bool, dogwhistles: {},
                           min_images_for_accounts: [],
                           buy_sites: {},
-                          auto_cw_cache: {}) -> bool:
+                          auto_cw_cache: {},
+                          mitm_servers: []) -> bool:
     """Receives an undo emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -422,7 +425,8 @@ def receive_undo_reaction(recent_posts_cache: {},
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None,
-                                    buy_sites, auto_cw_cache)
+                                    buy_sites, auto_cw_cache,
+                                    mitm_servers)
     return True
 
 
@@ -444,7 +448,8 @@ def receive_undo_bookmark(recent_posts_cache: {},
                           dogwhistles: {},
                           min_images_for_accounts: [],
                           buy_sites: {},
-                          auto_cw_cache: {}) -> bool:
+                          auto_cw_cache: {},
+                          mitm_servers: []) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -549,7 +554,8 @@ def receive_undo_bookmark(recent_posts_cache: {},
                                 False, True, False, cw_lists, lists_enabled,
                                 timezone, mitm, bold_reading,
                                 dogwhistles, minimize_all_images, None,
-                                buy_sites, auto_cw_cache)
+                                buy_sites, auto_cw_cache,
+                                mitm_servers)
     return True
 
 

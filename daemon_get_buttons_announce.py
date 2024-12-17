@@ -18,13 +18,13 @@ from utils import remove_id_ending
 from utils import local_actor_url
 from utils import get_nickname_from_actor
 from utils import get_instance_url
+from utils import detect_mitm
 from httpheaders import redirect_headers
 from session import establish_session
 from httpcodes import http_404
 from announce import create_announce
 from posts import save_post_to_box
 from daemon_utils import post_to_outbox
-from daemon_utils import detect_mitm
 from fitnessFunctions import fitness_performance
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
@@ -69,7 +69,8 @@ def announce_button(self, calling_domain: str, path: str,
                     account_timezone: {},
                     bold_reading_nicknames: {},
                     min_images_for_accounts: int,
-                    session_onion, session_i2p) -> None:
+                    session_onion, session_i2p,
+                    mitm_servers: []) -> None:
     """The announce/repeat button was pressed on a post
     """
     page_number = 1
@@ -167,7 +168,8 @@ def announce_button(self, calling_domain: str, path: str,
                         domain,
                         onion_domain,
                         i2p_domain, sites_unavailable,
-                        system_language)
+                        system_language,
+                        mitm_servers)
     announce_filename = None
     if announce_json:
         # save the announce straight to the outbox
@@ -258,7 +260,8 @@ def announce_button(self, calling_domain: str, path: str,
                                 dogwhistles,
                                 minimize_all_images, None,
                                 buy_sites,
-                                auto_cw_cache)
+                                auto_cw_cache,
+                                mitm_servers)
 
     actor_absolute = \
         get_instance_url(calling_domain,

@@ -490,7 +490,8 @@ def _get_post_from_recent_cache(session,
                                 signing_priv_key_pem: str,
                                 first_post_id: str,
                                 ua_str: str,
-                                translate: {}) -> str:
+                                translate: {},
+                                mitm_servers: []) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if box_name == 'tlmedia':
@@ -517,7 +518,7 @@ def _get_post_from_recent_cache(session,
     update_avatar_image_cache(signing_priv_key_pem,
                               session, base_dir, http_prefix,
                               post_actor, avatar_url, person_cache,
-                              allow_downloads)
+                              allow_downloads, mitm_servers)
 
     _log_post_timing(enable_timing_log, post_start_time, '2.2')
 
@@ -1395,7 +1396,8 @@ def _get_post_title_announce_html(base_dir: str,
                                   message_id_str: str,
                                   container_class_icons: str,
                                   container_class: str,
-                                  mitm: bool) -> (str, str, str, str):
+                                  mitm: bool,
+                                  mitm_servers: []) -> (str, str, str, str):
     """Returns the announce title of a post containing names of participants
     x announces y
     """
@@ -1464,7 +1466,7 @@ def _get_post_title_announce_html(base_dir: str,
                                          announce_display_name,
                                          nickname, announce_handle)
 
-    if mitm:
+    if mitm or announce_domain in mitm_servers:
         title_str += _mitm_warning_html(translate)
 
     # show avatar of person replied to
@@ -1621,7 +1623,8 @@ def _get_post_title_reply_html(base_dir: str,
                                container_class: str,
                                mitm: bool,
                                signing_priv_key_pem: str,
-                               session, debug: bool) -> (str, str, str, str):
+                               session, debug: bool,
+                               mitm_servers: []) -> (str, str, str, str):
     """Returns the reply title of a post containing names of participants
     x replies to y
     """
@@ -1663,7 +1666,7 @@ def _get_post_title_reply_html(base_dir: str,
         reply_post_json = \
             get_json(signing_priv_key_pem,
                      session, reply_url,
-                     headers, None, debug,
+                     headers, None, debug, mitm_servers,
                      __version__, http_prefix, domain)
         if get_json_valid(reply_post_json):
             if isinstance(reply_post_json, dict):
@@ -1742,7 +1745,7 @@ def _get_post_title_reply_html(base_dir: str,
             _get_reply_html(translate, in_reply_to, reply_display_name,
                             nickname, post_json_object, reply_handle)
 
-    if mitm:
+    if mitm or reply_domain in mitm_servers:
         title_str += _mitm_warning_html(translate)
 
     _log_post_timing(enable_timing_log, post_start_time, '13.7')
@@ -1792,7 +1795,8 @@ def _get_post_title_html(base_dir: str,
                          mitm: bool,
                          signing_priv_key_pem: str,
                          session,
-                         debug: bool) -> (str, str, str, str):
+                         debug: bool,
+                         mitm_servers: []) -> (str, str, str, str):
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
@@ -1835,7 +1839,8 @@ def _get_post_title_html(base_dir: str,
                                       container_class_icons,
                                       container_class, mitm,
                                       signing_priv_key_pem,
-                                      session, debug)
+                                      session, debug,
+                                      mitm_servers)
 
 
 def _get_footer_with_icons(show_icons: bool,
@@ -2127,7 +2132,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             minimize_all_images: bool,
                             first_post_id: str,
                             buy_sites: {},
-                            auto_cw_cache: {}) -> str:
+                            auto_cw_cache: {},
+                            mitm_servers: []) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2197,7 +2203,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                     max_recent_posts,
                                     signing_priv_key_pem,
                                     first_post_id, ua_str,
-                                    translate)
+                                    translate,
+                                    mitm_servers)
     if post_html:
         return post_html
     if use_cache_only and post_json_object['type'] != 'Announce':
@@ -2210,7 +2217,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                              base_dir, http_prefix,
                              post_actor, person_cache,
                              avatar_url, allow_downloads,
-                             signing_priv_key_pem)
+                             signing_priv_key_pem,
+                             mitm_servers)
 
     _log_post_timing(enable_timing_log, post_start_time, '5')
 
@@ -2230,7 +2238,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             webfinger_handle(session, post_actor_handle, http_prefix,
                              cached_webfingers,
                              domain, __version__, False, False,
-                             signing_priv_key_pem)
+                             signing_priv_key_pem, mitm_servers)
 
         avatar_url2 = None
         display_name = None
@@ -2246,7 +2254,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                                http_prefix,
                                                nickname, domain,
                                                'outbox', 72367,
-                                               system_language)
+                                               system_language,
+                                               mitm_servers)
 
         _log_post_timing(enable_timing_log, post_start_time, '6')
 
@@ -2318,7 +2327,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                               blocked_cache, block_federated,
                               bold_reading,
                               show_vote_posts,
-                              languages_understood)
+                              languages_understood,
+                              mitm_servers)
         if not post_json_announce:
             # if the announce could not be downloaded then mark it as rejected
             announced_post_id = remove_id_ending(post_json_object['id'])
@@ -2346,7 +2356,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                         max_recent_posts,
                                         signing_priv_key_pem,
                                         first_post_id, ua_str,
-                                        translate)
+                                        translate,
+                                        mitm_servers)
         if post_html:
             return post_html
 
@@ -2652,7 +2663,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                              container_class_icons,
                                              container_class, mitm,
                                              signing_priv_key_pem,
-                                             session, False)
+                                             session, False,
+                                             mitm_servers)
     title_str += title_str2
 
     _log_post_timing(enable_timing_log, post_start_time, '14')
@@ -3095,7 +3107,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          bold_reading: bool, dogwhistles: {},
                          min_images_for_accounts: [],
                          buy_sites: {},
-                         auto_cw_cache: {}) -> str:
+                         auto_cw_cache: {}, mitm_servers: []) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -3182,7 +3194,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 cw_lists, lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None, buy_sites,
-                                auto_cw_cache)
+                                auto_cw_cache, mitm_servers)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -3234,7 +3246,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             dogwhistles,
                                             minimize_all_images,
                                             None, buy_sites,
-                                            auto_cw_cache) + post_str
+                                            auto_cw_cache,
+                                            mitm_servers) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -3275,7 +3288,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             timezone, False,
                                             bold_reading, dogwhistles,
                                             minimize_all_images, None,
-                                            buy_sites, auto_cw_cache)
+                                            buy_sites, auto_cw_cache,
+                                            mitm_servers)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -3327,7 +3341,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       dogwhistles: {},
                       min_images_for_accounts: [],
                       buy_sites: {},
-                      auto_cw_cache: {}) -> str:
+                      auto_cw_cache: {},
+                      mitm_servers: []) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -3359,7 +3374,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         timezone, False,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
-                                        buy_sites, auto_cw_cache)
+                                        buy_sites, auto_cw_cache,
+                                        mitm_servers)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -3394,7 +3410,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                dogwhistles: {},
                                min_images_for_accounts: [],
                                buy_sites: {},
-                               auto_cw_cache: {}) -> str:
+                               auto_cw_cache: {},
+                               mitm_servers: []) -> str:
     """Returns the emoji picker screen
     """
     minimize_all_images = False
@@ -3423,7 +3440,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 cw_lists, lists_enabled, timezone, False,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None, buy_sites,
-                                auto_cw_cache)
+                                auto_cw_cache, mitm_servers)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

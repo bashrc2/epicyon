@@ -61,7 +61,8 @@ def secure_mode(curr_session, proxy_type: str,
                            server.domain,
                            server.onion_domain,
                            server.i2p_domain,
-                           server.signing_priv_key_pem)
+                           server.signing_priv_key_pem,
+                           server.mitm_servers)
     if not pub_key:
         if server.debug:
             print('AUTH: secure mode failed to ' +

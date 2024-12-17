@@ -21,6 +21,7 @@ from utils import local_actor_url
 from utils import contains_invalid_chars
 from utils import remove_id_ending
 from utils import check_bad_path
+from utils import detect_mitm
 from blocking import contains_military_domain
 from blocking import contains_government_domain
 from blocking import contains_bluesky_domain
@@ -41,7 +42,6 @@ from httpcodes import http_503
 from httpheaders import contains_suspicious_headers
 from httpheaders import update_headers_catalog
 from httpheaders import redirect_headers
-from daemon_utils import detect_mitm
 from daemon_utils import log_epicyon_instances
 from daemon_utils import get_user_agent
 from daemon_utils import post_to_outbox
@@ -310,7 +310,8 @@ def daemon_http_post(self) -> None:
                      self.server.translate,
                      self.server.theme_name,
                      self.server.dyslexic_font,
-                     self.server.peertube_instances)
+                     self.server.peertube_instances,
+                     self.server.mitm_servers)
         self.server.postreq_busy = False
         return
 
@@ -402,7 +403,8 @@ def daemon_http_post(self) -> None:
                           self.server.access_keys,
                           self.server.person_cache,
                           self.server.recent_posts_cache,
-                          self.server.blocked_cache)
+                          self.server.blocked_cache,
+                          self.server.mitm_servers)
         self.server.postreq_busy = False
         return
 
@@ -474,7 +476,7 @@ def daemon_http_post(self) -> None:
                              self.server.max_shares_on_profile,
                              self.server.no_of_books,
                              self.server.shared_items_federated_domains,
-                             ua_str)
+                             ua_str, self.server.mitm_servers)
         self.server.postreq_busy = False
         return
 
@@ -602,7 +604,8 @@ def daemon_http_post(self) -> None:
                             self.server.cached_webfingers,
                             self.server.person_cache,
                             self.server.project_version,
-                            self.server.sites_unavailable)
+                            self.server.sites_unavailable,
+                            self.server.mitm_servers)
             self.server.postreq_busy = False
             return
 
@@ -733,7 +736,8 @@ def daemon_http_post(self) -> None:
                             self.server.auto_cw_cache,
                             self.server.default_post_language,
                             self.server.newswire,
-                            self.server.block_federated)
+                            self.server.block_federated,
+                            self.server.mitm_servers)
             self.server.postreq_busy = False
             return
 
@@ -903,7 +907,8 @@ def daemon_http_post(self) -> None:
                              self.server.max_shares_on_profile,
                              self.server.watermark_width_percent,
                              self.server.watermark_position,
-                             self.server.watermark_opacity)
+                             self.server.watermark_opacity,
+                             self.server.mitm_servers)
         if page_number:
             print(curr_post_type + ' post received')
             nickname = self.path.split('/users/')[1]

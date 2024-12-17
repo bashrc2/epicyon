@@ -183,7 +183,8 @@ def send_skill_via_server(base_dir: str, session, nickname: str, password: str,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
                           signing_priv_key_pem: str,
-                          system_language: str) -> {}:
+                          system_language: str,
+                          mitm_servers: []) -> {}:
     """Sets a skill for a person via c2s
     """
     if not session:
@@ -216,7 +217,7 @@ def send_skill_via_server(base_dir: str, session, nickname: str, password: str,
         webfinger_handle(session, handle, http_prefix,
                          cached_webfingers,
                          domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: skill webfinger failed for ' + handle)
@@ -237,7 +238,7 @@ def send_skill_via_server(base_dir: str, session, nickname: str, password: str,
                             person_cache, project_version,
                             http_prefix, nickname, domain,
                             post_to_box, 76121,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:

@@ -107,7 +107,7 @@ from reaction import valid_emoji_content
 from skills import send_skill_via_server
 from availability import set_availability
 from availability import send_availability_via_server
-from manualapprove import manual_deny_follow_request
+from manualapprove import manual_deny_follow_request2
 from manualapprove import manual_approve_follow_request
 from shares import send_share_via_server
 from shares import send_undo_share_via_server
@@ -996,10 +996,12 @@ def _command_options() -> None:
         if not argb.language:
             argb.language = 'en'
         signing_priv_key_pem = get_instance_actor_key(base_dir, origin_domain)
+        mitm_servers = []
         get_public_posts_of_person(base_dir, nickname, domain, False, True,
                                    proxy_type, argb.port, http_prefix, debug,
                                    __version__, argb.language,
-                                   signing_priv_key_pem, origin_domain)
+                                   signing_priv_key_pem, origin_domain,
+                                   mitm_servers)
         sys.exit()
 
     if argb.moved:
@@ -1084,6 +1086,7 @@ def _command_options() -> None:
         if argb.secure_mode:
             signing_priv_key_pem = \
                 get_instance_actor_key(base_dir, origin_domain)
+        mitm_servers = []
         domain_list = \
             get_public_post_domains(None,
                                     base_dir, nickname, domain,
@@ -1093,7 +1096,8 @@ def _command_options() -> None:
                                     __version__,
                                     word_frequency, domain_list,
                                     argb.language,
-                                    signing_priv_key_pem)
+                                    signing_priv_key_pem,
+                                    mitm_servers)
         for post_domain in domain_list:
             print(post_domain)
         sys.exit()
@@ -1137,6 +1141,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        mitm_servers = []
         domain_list = \
             get_public_post_domains_blocked(None,
                                             base_dir, nickname, domain,
@@ -1145,7 +1150,8 @@ def _command_options() -> None:
                                             __version__,
                                             word_frequency, domain_list,
                                             argb.language,
-                                            signing_priv_key_pem)
+                                            signing_priv_key_pem,
+                                            mitm_servers)
         for post_domain in domain_list:
             print(post_domain)
         sys.exit()
@@ -1186,13 +1192,14 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        mitm_servers = []
         check_domains(None,
                       base_dir, nickname, domain,
                       proxy_type, argb.port,
                       http_prefix, debug,
                       __version__,
                       max_blocked_domains, False, argb.language,
-                      signing_priv_key_pem)
+                      signing_priv_key_pem, mitm_servers)
         sys.exit()
 
     if argb.socnet:
@@ -1214,11 +1221,12 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        mitm_servers = []
         dot_graph = instances_graph(base_dir, argb.socnet,
                                     proxy_type, argb.port,
                                     http_prefix, debug,
                                     __version__, argb.language,
-                                    signing_priv_key_pem)
+                                    signing_priv_key_pem, mitm_servers)
         try:
             with open('socnet.dot', 'w+', encoding='utf-8') as fp_soc:
                 fp_soc.write(dot_graph)
@@ -1272,10 +1280,12 @@ def _command_options() -> None:
         if not argb.language:
             argb.language = 'en'
         signing_priv_key_pem = get_instance_actor_key(base_dir, origin_domain)
+        mitm_servers = []
         get_public_posts_of_person(base_dir, nickname, domain, False, False,
                                    proxy_type, argb.port, http_prefix, debug,
                                    __version__, argb.language,
-                                   signing_priv_key_pem, origin_domain)
+                                   signing_priv_key_pem, origin_domain,
+                                   mitm_servers)
         sys.exit()
 
     if argb.json:
@@ -1301,9 +1311,10 @@ def _command_options() -> None:
                 print('Obtained instance actor signing key')
             else:
                 print('Did not obtain instance actor key for ' + domain)
+        mitm_servers = []
         test_json = get_json(signing_priv_key_pem, session, argb.json,
-                             as_header, None, debug, __version__,
-                             http_prefix, domain)
+                             as_header, None, debug, mitm_servers,
+                             __version__, http_prefix, domain)
         if get_json_valid(test_json):
             pprint(test_json)
         session.close()
@@ -1334,9 +1345,11 @@ def _command_options() -> None:
         if not nickname:
             print('Please specify a nickname with the --nickname option')
             sys.exit()
+        mitm_servers = []
         conv_json = download_conversation_posts(True, session, http_prefix,
                                                 base_dir, nickname, domain,
-                                                post_id, argb.debug)
+                                                post_id, argb.debug,
+                                                mitm_servers)
         if conv_json:
             pprint(conv_json)
         session.close()
@@ -1360,9 +1373,10 @@ def _command_options() -> None:
                 print('Obtained instance actor signing key')
             else:
                 print('Did not obtain instance actor key for ' + domain)
+        mitm_servers = []
         test_ssml = download_ssml(signing_priv_key_pem, session, argb.ssml,
                                   as_header, None, debug, __version__,
-                                  http_prefix, domain)
+                                  http_prefix, domain, mitm_servers)
         if test_ssml:
             print(str(test_ssml))
         session.close()
@@ -1414,9 +1428,10 @@ def _command_options() -> None:
                 print('Obtained instance actor signing key')
             else:
                 print('Did not obtain instance actor key for ' + domain)
+        mitm_servers = []
         test_html = download_html(signing_priv_key_pem, session, argb.htmlpost,
                                   as_header, None, debug, __version__,
-                                  http_prefix, domain)
+                                  http_prefix, domain, mitm_servers)
         if test_html:
             print(test_html)
         session.close()
@@ -1443,9 +1458,11 @@ def _command_options() -> None:
                   '--domain option')
             sys.exit()
         session = create_session(None)
+        mitm_servers = []
         verified = \
             verify_html(session, argb.verifyurl, debug, __version__,
-                        http_prefix, argb.nickname, domain)
+                        http_prefix, argb.nickname, domain,
+                        mitm_servers)
         session.close()
         if verified:
             print('Verified')
@@ -1711,6 +1728,7 @@ def _command_options() -> None:
         followers_sync_cache = {}
         sites_unavailable = []
         system_language = argb.language
+        mitm_servers = []
         manual_approve_follow_request(session, session_onion, session_i2p,
                                       onion_domain, i2p_domain,
                                       base_dir, http_prefix,
@@ -1722,7 +1740,8 @@ def _command_options() -> None:
                                       debug, __version__,
                                       signing_priv_key_pem, proxy_type,
                                       followers_sync_cache,
-                                      sites_unavailable, system_language)
+                                      sites_unavailable, system_language,
+                                      mitm_servers)
         session.close()
         sys.exit()
 
@@ -1757,20 +1776,21 @@ def _command_options() -> None:
             session_i2p = create_session('i2p')
         followers_sync_cache = {}
         sites_unavailable = []
+        mitm_servers = []
         system_language = argb.language
-        manual_deny_follow_request(session, session_onion, session_i2p,
-                                   onion_domain, i2p_domain,
-                                   base_dir, http_prefix,
-                                   argb.nickname, domain, port,
-                                   argb.deny,
-                                   federation_list,
-                                   send_threads, post_log,
-                                   cached_webfingers, person_cache,
-                                   debug, __version__,
-                                   signing_priv_key_pem,
-                                   followers_sync_cache,
-                                   sites_unavailable,
-                                   system_language)
+        manual_deny_follow_request2(session, session_onion, session_i2p,
+                                    onion_domain, i2p_domain,
+                                    base_dir, http_prefix,
+                                    argb.nickname, domain, port,
+                                    argb.deny,
+                                    federation_list,
+                                    send_threads, post_log,
+                                    cached_webfingers, person_cache,
+                                    debug, __version__,
+                                    signing_priv_key_pem,
+                                    followers_sync_cache,
+                                    sites_unavailable,
+                                    system_language, mitm_servers)
         session.close()
         sys.exit()
 
@@ -1882,6 +1902,7 @@ def _command_options() -> None:
         auto_cw_cache = {}
         # TODO searchable status
         searchable_by = []
+        mitm_servers = []
 
         print('Sending post to ' + argb.sendto)
         send_post_via_server(signing_priv_key_pem, __version__,
@@ -1901,7 +1922,8 @@ def _command_options() -> None:
                              argb.eventLocation, translate, argb.buyUrl,
                              argb.chatUrl, auto_cw_cache, argb.debug,
                              reply_to, reply_to, argb.conversationId,
-                             argb.convthreadId, subject, searchable_by)
+                             argb.convthreadId, subject, searchable_by,
+                             mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -1988,13 +2010,14 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending announce/repeat of ' + argb.announce)
 
+        mitm_servers = []
         send_announce_via_server(base_dir, session,
                                  argb.nickname, argb.password,
                                  domain, port,
                                  http_prefix, argb.announce,
                                  cached_webfingers, person_cache,
                                  True, __version__, signing_priv_key_pem,
-                                 system_language)
+                                 system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2035,10 +2058,12 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         session = create_session(proxy_type)
+        mitm_servers = []
         box_json = c2s_box_json(session, argb.nickname, argb.password,
                                 domain, port, http_prefix,
                                 argb.box, argb.pageNumber,
-                                argb.debug, signing_priv_key_pem)
+                                argb.debug, signing_priv_key_pem,
+                                mitm_servers)
         if box_json:
             pprint(box_json)
         else:
@@ -2098,6 +2123,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending shared item: ' + argb.itemName)
 
+        mitm_servers = []
         send_share_via_server(base_dir, session,
                               argb.nickname, argb.password,
                               domain, port,
@@ -2114,7 +2140,7 @@ def _command_options() -> None:
                               debug, __version__,
                               argb.itemPrice, argb.itemCurrency,
                               signing_priv_key_pem,
-                              system_language)
+                              system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2144,6 +2170,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo of shared item: ' + argb.undoItemName)
 
+        mitm_servers = []
         send_undo_share_via_server(base_dir, session,
                                    argb.nickname, argb.password,
                                    domain, port,
@@ -2151,7 +2178,7 @@ def _command_options() -> None:
                                    argb.undoItemName,
                                    cached_webfingers, person_cache,
                                    debug, __version__, signing_priv_key_pem,
-                                   system_language)
+                                   system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2210,6 +2237,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending wanted item: ' + argb.wantedItemName)
 
+        mitm_servers = []
         send_wanted_via_server(base_dir, session,
                                argb.nickname, argb.password,
                                domain, port,
@@ -2226,7 +2254,7 @@ def _command_options() -> None:
                                debug, __version__,
                                argb.itemPrice, argb.itemCurrency,
                                signing_priv_key_pem,
-                               system_language)
+                               system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2256,6 +2284,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo of wanted item: ' + argb.undoWantedItemName)
 
+        mitm_servers = []
         send_undo_wanted_via_server(base_dir, session,
                                     argb.nickname, argb.password,
                                     domain, port,
@@ -2263,7 +2292,7 @@ def _command_options() -> None:
                                     argb.undoWantedItemName,
                                     cached_webfingers, person_cache,
                                     debug, __version__, signing_priv_key_pem,
-                                    system_language)
+                                    system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2293,13 +2322,14 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending like of ' + argb.like)
 
+        mitm_servers = []
         send_like_via_server(base_dir, session,
                              argb.nickname, argb.password,
                              domain, port,
                              http_prefix, argb.like,
                              cached_webfingers, person_cache,
                              True, __version__, signing_priv_key_pem,
-                             system_language)
+                             system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2335,13 +2365,14 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending emoji reaction ' + argb.emoji + ' to ' + argb.react)
 
+        mitm_servers = []
         send_reaction_via_server(base_dir, session,
                                  argb.nickname, argb.password,
                                  domain, port,
                                  http_prefix, argb.react, argb.emoji,
                                  cached_webfingers, person_cache,
                                  True, __version__, signing_priv_key_pem,
-                                 system_language)
+                                 system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2371,6 +2402,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo like of ' + argb.undolike)
 
+        mitm_servers = []
         send_undo_like_via_server(base_dir, session,
                                   argb.nickname, argb.password,
                                   domain, port,
@@ -2378,7 +2410,7 @@ def _command_options() -> None:
                                   cached_webfingers, person_cache,
                                   True, __version__,
                                   signing_priv_key_pem,
-                                  system_language)
+                                  system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2415,6 +2447,7 @@ def _command_options() -> None:
         print('Sending undo emoji reaction ' +
               argb.emoji + ' to ' + argb.react)
 
+        mitm_servers = []
         send_undo_reaction_via_server(base_dir, session,
                                       argb.nickname, argb.password,
                                       domain, port,
@@ -2422,7 +2455,7 @@ def _command_options() -> None:
                                       cached_webfingers, person_cache,
                                       True, __version__,
                                       signing_priv_key_pem,
-                                      system_language)
+                                      system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2452,6 +2485,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending bookmark of ' + argb.bookmark)
 
+        mitm_servers = []
         send_bookmark_via_server(base_dir, session,
                                  argb.nickname, argb.password,
                                  domain, port,
@@ -2459,7 +2493,7 @@ def _command_options() -> None:
                                  cached_webfingers, person_cache,
                                  True, __version__,
                                  signing_priv_key_pem,
-                                 system_language)
+                                 system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2489,13 +2523,14 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo bookmark of ' + argb.unbookmark)
 
+        mitm_servers = []
         send_undo_bookmark_via_server(base_dir, session,
                                       argb.nickname, argb.password,
                                       domain, port,
                                       http_prefix, argb.unbookmark,
                                       cached_webfingers, person_cache,
                                       True, __version__, signing_priv_key_pem,
-                                      system_language)
+                                      system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2525,13 +2560,14 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending delete request of ' + argb.delete)
 
+        mitm_servers = []
         send_delete_via_server(base_dir, session,
                                argb.nickname, argb.password,
                                domain, port,
                                http_prefix, argb.delete,
                                cached_webfingers, person_cache,
                                True, __version__, signing_priv_key_pem,
-                               system_language)
+                               system_language, mitm_servers)
         for _ in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -2575,6 +2611,7 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
         system_language = argb.language
 
+        mitm_servers = []
         send_follow_request_via_server(base_dir, session,
                                        argb.nickname, argb.password,
                                        domain, port,
@@ -2583,7 +2620,7 @@ def _command_options() -> None:
                                        cached_webfingers, person_cache,
                                        debug, __version__,
                                        signing_priv_key_pem,
-                                       system_language)
+                                       system_language, mitm_servers)
         for _ in range(20):
             time.sleep(1)
             # TODO some method to know if it worked
@@ -2628,6 +2665,7 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
         system_language = argb.language
 
+        mitm_servers = []
         send_unfollow_request_via_server(base_dir, session,
                                          argb.nickname, argb.password,
                                          domain, port,
@@ -2636,7 +2674,7 @@ def _command_options() -> None:
                                          cached_webfingers, person_cache,
                                          debug, __version__,
                                          signing_priv_key_pem,
-                                         system_language)
+                                         system_language, mitm_servers)
         for _ in range(20):
             time.sleep(1)
             # TODO some method to know if it worked
@@ -2667,12 +2705,14 @@ def _command_options() -> None:
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
+        mitm_servers = []
         following_json = \
             get_following_via_server(session,
                                      argb.nickname, argb.password,
                                      domain, port,
                                      follow_http_prefix, argb.pageNumber,
-                                     debug, __version__, signing_priv_key_pem)
+                                     debug, __version__, signing_priv_key_pem,
+                                     mitm_servers)
         if following_json:
             pprint(following_json)
         session.close()
@@ -2701,13 +2741,15 @@ def _command_options() -> None:
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
+        mitm_servers = []
         blocked_json = \
             get_blocks_via_server(session,
                                   argb.nickname, argb.password,
                                   domain, port,
                                   blocked_http_prefix, argb.pageNumber,
                                   debug, __version__,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem,
+                                  mitm_servers)
         if blocked_json:
             pprint(blocked_json)
         session.close()
@@ -2735,14 +2777,14 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-
+        mitm_servers = []
         followers_json = \
             get_followers_via_server(session,
                                      argb.nickname, argb.password,
                                      domain, port,
                                      follow_http_prefix, argb.pageNumber,
                                      debug, __version__,
-                                     signing_priv_key_pem)
+                                     signing_priv_key_pem, mitm_servers)
         if followers_json:
             pprint(followers_json)
         session.close()
@@ -2771,13 +2813,15 @@ def _command_options() -> None:
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
+        mitm_servers = []
         follow_requests_json = \
             get_follow_requests_via_server(session,
                                            argb.nickname, argb.password,
                                            domain, port,
                                            follow_http_prefix, argb.pageNumber,
                                            debug, __version__,
-                                           signing_priv_key_pem)
+                                           signing_priv_key_pem,
+                                           mitm_servers)
         if follow_requests_json:
             pprint(follow_requests_json)
         session.close()
@@ -2836,10 +2880,11 @@ def _command_options() -> None:
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
         block_federated = []
+        mitm_servers = []
         ctr = migrate_accounts(base_dir, session,
                                http_prefix, cached_webfingers,
                                True, signing_priv_key_pem,
-                               block_federated)
+                               block_federated, mitm_servers)
         if ctr == 0:
             print('No followed accounts have moved')
         else:
@@ -2859,9 +2904,11 @@ def _command_options() -> None:
                 print('Did not obtain instance actor key for ' + domain)
         if argb.actor.startswith('@'):
             argb.actor = argb.actor[1:]
+        mitm_servers = []
         get_actor_json(domain, argb.actor, argb.http, argb.gnunet,
                        argb.ipfs, argb.ipns,
-                       debug, False, signing_priv_key_pem, None)
+                       debug, False, signing_priv_key_pem, None,
+                       mitm_servers)
         sys.exit()
 
     if argb.followers:
@@ -2964,10 +3011,11 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        mitm_servers = []
         wf_request = webfinger_handle(session, handle,
                                       http_prefix, cached_webfingers,
                                       host_domain, __version__, debug, False,
-                                      signing_priv_key_pem)
+                                      signing_priv_key_pem, mitm_servers)
         if not wf_request:
             print('Unable to webfinger ' + handle)
             session.close()
@@ -3023,11 +3071,12 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        mitm_servers = []
         followers_list = \
             download_follow_collection(signing_priv_key_pem,
                                        'followers', session,
                                        http_prefix, person_url, 1, 3,
-                                       argb.debug)
+                                       argb.debug, mitm_servers)
         if followers_list:
             for actor in followers_list:
                 print(actor)
@@ -3317,6 +3366,7 @@ def _command_options() -> None:
         print('Sending ' + argb.skill + ' skill level ' +
               str(argb.skillLevelPercent) + ' for ' + nickname)
 
+        mitm_servers = []
         send_skill_via_server(base_dir, session,
                               nickname, argb.password,
                               domain, port,
@@ -3324,7 +3374,7 @@ def _command_options() -> None:
                               argb.skill, argb.skillLevelPercent,
                               cached_webfingers, person_cache,
                               True, __version__, signing_priv_key_pem,
-                              system_language)
+                              system_language, mitm_servers)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3355,13 +3405,14 @@ def _command_options() -> None:
         print('Sending availability status of ' + nickname +
               ' as ' + argb.availability)
 
+        mitm_servers = []
         send_availability_via_server(base_dir, session,
                                      nickname, argb.password,
                                      domain, port, http_prefix,
                                      argb.availability,
                                      cached_webfingers, person_cache,
                                      True, __version__, signing_priv_key_pem,
-                                     system_language)
+                                     system_language, mitm_servers)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3472,12 +3523,13 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending block of ' + argb.block)
 
+        mitm_servers = []
         send_block_via_server(base_dir, session, nickname, argb.password,
                               domain, port,
                               http_prefix, argb.block,
                               cached_webfingers, person_cache,
                               True, __version__, signing_priv_key_pem,
-                              system_language)
+                              system_language, mitm_servers)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3507,12 +3559,13 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending mute of ' + argb.mute)
 
+        mitm_servers = []
         send_mute_via_server(base_dir, session, nickname, argb.password,
                              domain, port,
                              http_prefix, argb.mute,
                              cached_webfingers, person_cache,
                              True, __version__, signing_priv_key_pem,
-                             system_language)
+                             system_language, mitm_servers)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3542,12 +3595,13 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo mute of ' + argb.unmute)
 
+        mitm_servers = []
         send_undo_mute_via_server(base_dir, session, nickname, argb.password,
                                   domain, port,
                                   http_prefix, argb.unmute,
                                   cached_webfingers, person_cache,
                                   True, __version__, signing_priv_key_pem,
-                                  system_language)
+                                  system_language, mitm_servers)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)
@@ -3589,12 +3643,13 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo block of ' + argb.unblock)
 
+        mitm_servers = []
         send_undo_block_via_server(base_dir, session, nickname, argb.password,
                                    domain, port,
                                    http_prefix, argb.unblock,
                                    cached_webfingers, person_cache,
                                    True, __version__, signing_priv_key_pem,
-                                   system_language)
+                                   system_language, mitm_servers)
         for i in range(10):
             # TODO detect send success/fail
             time.sleep(1)

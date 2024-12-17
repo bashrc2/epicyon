@@ -521,7 +521,8 @@ def _desktop_reply_to_post(session, post_id: str,
                            content_license_url: str,
                            media_license_url: str, media_creator: str,
                            signing_priv_key_pem: str,
-                           translate: {}) -> None:
+                           translate: {},
+                           mitm_servers: []) -> None:
     """Use the desktop client to send a reply to the most recent post
     """
     if '://' not in post_id:
@@ -595,7 +596,7 @@ def _desktop_reply_to_post(session, post_id: str,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, post_id, post_id,
                             conversation_id, convthread_id, subject,
-                            searchable_by) == 0:
+                            searchable_by, mitm_servers) == 0:
         say_str = translate['Sent']
     else:
         say_str = translate['Post failed']
@@ -613,7 +614,8 @@ def _desktop_new_post(session,
                       content_license_url: str,
                       media_license_url: str, media_creator: str,
                       signing_priv_key_pem: str,
-                      translate: {}) -> None:
+                      translate: {},
+                      mitm_servers: []) -> None:
     """Use the desktop client to create a new post
     """
     conversation_id = None
@@ -680,7 +682,7 @@ def _desktop_new_post(session,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
                             conversation_id, convthread_id, subject,
-                            searchable_by) == 0:
+                            searchable_by, mitm_servers) == 0:
         say_str = translate['Sent']
     else:
         say_str = translate['Post failed']
@@ -816,7 +818,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
                          domain_full: str, person_cache: {},
                          signing_priv_key_pem: str,
                          blocked_cache: {}, block_federated: [],
-                         bold_reading: bool) -> {}:
+                         bold_reading: bool,
+                         mitm_servers: []) -> {}:
     """Reads a post from the given timeline
     Returns the post json
     """
@@ -868,7 +871,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
                               signing_priv_key_pem,
                               blocked_cache, block_federated, bold_reading,
                               show_vote_posts,
-                              languages_understood)
+                              languages_understood,
+                              mitm_servers)
         if post_json_object2:
             if has_object_dict(post_json_object2):
                 if post_json_object2['object'].get('attributedTo') and \
@@ -930,7 +934,8 @@ def _read_local_box_post(session, nickname: str, domain: str,
     if is_pgp_encrypted(content):
         say_str = translate['Encrypted message. Please enter your passphrase.']
         _say_command(say_str, say_str, screenreader, system_language, espeak)
-        content = pgp_decrypt(domain, content, actor, signing_priv_key_pem)
+        content = pgp_decrypt(domain, content, actor, signing_priv_key_pem,
+                              mitm_servers)
         if is_pgp_encrypted(content):
             say_str = translate['Message could not be decrypted']
             _say_command(say_str, say_str,
@@ -1023,7 +1028,8 @@ def _desktop_show_profile(session, nickname: str,
                           screenreader: str, espeak,
                           translate: {}, post_json_object: {},
                           signing_priv_key_pem: str,
-                          http_prefix: str) -> {}:
+                          http_prefix: str,
+                          mitm_servers: []) -> {}:
     """Shows the profile of the actor for the given post
     Returns the actor json
     """
@@ -1058,7 +1064,8 @@ def _desktop_show_profile(session, nickname: str,
     is_ipns = False
     actor_json, _ = \
         get_actor_json(domain, actor, is_http, is_gnunet, is_ipfs, is_ipns,
-                       False, True, signing_priv_key_pem, session)
+                       False, True, signing_priv_key_pem, session,
+                       mitm_servers)
 
     _desktop_show_actor(http_prefix,
                         nickname, domain, domain_full,
@@ -1074,14 +1081,15 @@ def _desktop_show_profile_from_handle(session, nickname: str, domain: str,
                                       screenreader: str, espeak,
                                       translate: {},
                                       signing_priv_key_pem: str,
-                                      http_prefix: str) -> {}:
+                                      http_prefix: str,
+                                      mitm_servers: []) -> {}:
     """Shows the profile for a handle
     Returns the actor json
     """
     actor_json, _ = \
         get_actor_json(domain, handle, False, False, False, False,
                        False, True,
-                       signing_priv_key_pem, session)
+                       signing_priv_key_pem, session, mitm_servers)
 
     _desktop_show_actor(http_prefix, nickname, domain, domain_full,
                         base_dir, actor_json, translate,
@@ -1342,7 +1350,8 @@ def _desktop_new_dm(session, to_handle: str,
                     content_license_url: str,
                     media_license_url: str, media_creator: str,
                     signing_priv_key_pem: str,
-                    translate: {}) -> None:
+                    translate: {},
+                    mitm_servers: []) -> None:
     """Use the desktop client to create a new direct message
     which can include multiple destination handles
     """
@@ -1367,7 +1376,8 @@ def _desktop_new_dm(session, to_handle: str,
                              espeak, low_bandwidth,
                              content_license_url,
                              media_license_url, media_creator,
-                             signing_priv_key_pem, translate)
+                             signing_priv_key_pem, translate,
+                             mitm_servers)
 
 
 def _desktop_new_dm_base(session, to_handle: str,
@@ -1381,7 +1391,8 @@ def _desktop_new_dm_base(session, to_handle: str,
                          content_license_url: str,
                          media_license_url: str, media_creator: str,
                          signing_priv_key_pem: str,
-                         translate: {}) -> None:
+                         translate: {},
+                         mitm_servers: []) -> None:
     """Use the desktop client to create a new direct message
     """
     conversation_id = None
@@ -1451,7 +1462,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                 padded_message += ' '
         cipher_text = \
             pgp_encrypt_to_actor(domain, padded_message, to_handle,
-                                 signing_priv_key_pem)
+                                 signing_priv_key_pem, mitm_servers)
         if not cipher_text:
             say_str = \
                 to_handle + ' has no PGP public key. ' + \
@@ -1500,7 +1511,7 @@ def _desktop_new_dm_base(session, to_handle: str,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
                             conversation_id, convthread_id, subject,
-                            searchable_by) == 0:
+                            searchable_by, mitm_servers) == 0:
         say_str = translate['Sent']
     else:
         say_str = translate['Post failed']
@@ -1590,6 +1601,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     blocked_cache = {}
     block_federated = []
     languages_understood = []
+    mitm_servers = []
 
     indent = '   '
     if show_new_posts:
@@ -1690,7 +1702,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       cached_webfingers, person_cache,
                                       debug, False,
                                       signing_priv_key_pem,
-                                      system_language)
+                                      system_language, mitm_servers)
                 say_str = indent + translate['PGP Public Key'] + ' uploaded'
                 _say_command(say_str, say_str, screenreader,
                              system_language, espeak)
@@ -1699,7 +1711,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
         box_json = c2s_box_json(session, nickname, password,
                                 domain, port, http_prefix,
                                 curr_timeline, page_number,
-                                debug, signing_priv_key_pem)
+                                debug, signing_priv_key_pem,
+                                mitm_servers)
 
         follow_requests_json = \
             get_follow_requests_via_server(session,
@@ -1707,14 +1720,16 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                            domain, port,
                                            http_prefix, 1,
                                            debug, __version__,
-                                           signing_priv_key_pem)
+                                           signing_priv_key_pem,
+                                           mitm_servers)
 
         if not (curr_timeline == 'inbox' and page_number == 1):
             # monitor the inbox to generate notifications
             inbox_json = c2s_box_json(session, nickname, password,
                                       domain, port, http_prefix,
                                       'inbox', 1, debug,
-                                      signing_priv_key_pem)
+                                      signing_priv_key_pem,
+                                      mitm_servers)
         else:
             inbox_json = box_json
         if inbox_json:
@@ -1783,7 +1798,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
-                                        debug, signing_priv_key_pem)
+                                        debug, signing_priv_key_pem,
+                                        mitm_servers)
                 if box_json:
                     _desktop_show_box(indent, follow_requests_json,
                                       your_actor, curr_timeline, box_json,
@@ -1797,7 +1813,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
-                                        debug, signing_priv_key_pem)
+                                        debug, signing_priv_key_pem,
+                                        mitm_servers)
                 if box_json:
                     _desktop_show_box(indent, follow_requests_json,
                                       your_actor, curr_timeline, box_json,
@@ -1811,7 +1828,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
-                                        debug, signing_priv_key_pem)
+                                        debug, signing_priv_key_pem,
+                                        mitm_servers)
                 if box_json:
                     _desktop_show_box(indent, follow_requests_json,
                                       your_actor, curr_timeline, box_json,
@@ -1826,7 +1844,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
-                                        debug, signing_priv_key_pem)
+                                        debug, signing_priv_key_pem,
+                                        mitm_servers)
                 if box_json:
                     _desktop_show_box(indent, follow_requests_json,
                                       your_actor, curr_timeline, box_json,
@@ -1850,7 +1869,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
-                                        debug, signing_priv_key_pem)
+                                        debug, signing_priv_key_pem,
+                                        mitm_servers)
                 if box_json:
                     _desktop_show_box(indent, follow_requests_json,
                                       your_actor, curr_timeline, box_json,
@@ -1886,7 +1906,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                              domain_full, person_cache,
                                              signing_priv_key_pem,
                                              blocked_cache, block_federated,
-                                             bold_reading)
+                                             bold_reading, mitm_servers)
                     print('')
                     say_str = translate['Press Enter to continue'] + '...'
                     say_str2 = _highlight_text(say_str)
@@ -1911,7 +1931,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                   espeak, translate,
                                                   post_json_object,
                                                   signing_priv_key_pem,
-                                                  http_prefix)
+                                                  http_prefix,
+                                                  mitm_servers)
                     else:
                         post_index_str = '1'
                 else:
@@ -1929,7 +1950,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                       screenreader,
                                                       espeak, translate,
                                                       signing_priv_key_pem,
-                                                      http_prefix)
+                                                      http_prefix,
+                                                      mitm_servers)
                     say_str = translate['Press Enter to continue'] + '...'
                     say_str2 = _highlight_text(say_str)
                     _say_command(say_str2, say_str,
@@ -1951,7 +1973,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               system_language, screenreader,
                                               espeak, translate,
                                               None, signing_priv_key_pem,
-                                              http_prefix)
+                                              http_prefix, mitm_servers)
                     say_str = translate['Press Enter to continue'] + '...'
                     say_str2 = _highlight_text(say_str)
                     _say_command(say_str2, say_str,
@@ -2006,7 +2028,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                    media_license_url,
                                                    media_creator,
                                                    signing_priv_key_pem,
-                                                   translate)
+                                                   translate,
+                                                   mitm_servers)
                 refresh_timeline = True
                 print('')
             elif (command_str == 'post' or command_str == 'p' or
@@ -2047,7 +2070,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                         espeak, low_bandwidth,
                                         content_license_url,
                                         media_license_url, media_creator,
-                                        signing_priv_key_pem, translate)
+                                        signing_priv_key_pem, translate,
+                                        mitm_servers)
                         refresh_timeline = True
                 else:
                     # public post
@@ -2061,7 +2085,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       espeak, low_bandwidth,
                                       content_license_url,
                                       media_license_url, media_creator,
-                                      signing_priv_key_pem, translate)
+                                      signing_priv_key_pem, translate,
+                                      mitm_servers)
                     refresh_timeline = True
                 print('')
             elif command_str == 'like' or command_str.startswith('like '):
@@ -2095,7 +2120,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                  person_cache,
                                                  False, __version__,
                                                  signing_priv_key_pem,
-                                                 system_language)
+                                                 system_language,
+                                                 mitm_servers)
                             refresh_timeline = True
                 print('')
             elif (command_str == 'undo mute' or
@@ -2142,7 +2168,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                       person_cache,
                                                       False, __version__,
                                                       signing_priv_key_pem,
-                                                      system_language)
+                                                      system_language,
+                                                      mitm_servers)
                             refresh_timeline = True
                 print('')
             elif (command_str == 'mute' or
@@ -2180,7 +2207,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                  person_cache,
                                                  False, __version__,
                                                  signing_priv_key_pem,
-                                                 system_language)
+                                                 system_language,
+                                                 mitm_servers)
                             refresh_timeline = True
                 print('')
             elif (command_str == 'undo bookmark' or
@@ -2230,7 +2258,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                           person_cache,
                                                           False, __version__,
                                                           signing_priv_key_pem,
-                                                          system_language)
+                                                          system_language,
+                                                          mitm_servers)
                             refresh_timeline = True
                 print('')
             elif (command_str == 'bookmark' or
@@ -2267,7 +2296,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                      person_cache,
                                                      False, __version__,
                                                      signing_priv_key_pem,
-                                                     system_language)
+                                                     system_language,
+                                                     mitm_servers)
                             refresh_timeline = True
                 print('')
             elif (command_str.startswith('undo block ') or
@@ -2313,7 +2343,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                                False,
                                                                __version__,
                                                                sign_key_pem,
-                                                               system_language)
+                                                               system_language,
+                                                               mitm_servers)
                 refresh_timeline = True
                 print('')
             elif command_str.startswith('block '):
@@ -2365,7 +2396,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               person_cache,
                                               False, __version__,
                                               signing_priv_key_pem,
-                                              system_language)
+                                              system_language,
+                                              mitm_servers)
                 refresh_timeline = True
                 print('')
             elif command_str in ('unlike', 'undo like'):
@@ -2402,7 +2434,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                       person_cache,
                                                       False, __version__,
                                                       signing_priv_key_pem,
-                                                      system_language)
+                                                      system_language,
+                                                      mitm_servers)
                             refresh_timeline = True
                 print('')
             elif (command_str.startswith('announce') or
@@ -2454,7 +2487,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                          person_cache,
                                                          True, __version__,
                                                          signing_priv_key_pem,
-                                                         system_language)
+                                                         system_language,
+                                                         mitm_servers)
                     refresh_timeline = True
                 print('')
             elif (command_str.startswith('unannounce') or
@@ -2495,7 +2529,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                           person_cache,
                                                           True, __version__,
                                                           signing_priv_key_pem,
-                                                          system_language)
+                                                          system_language,
+                                                          mitm_servers)
                             refresh_timeline = True
                 print('')
             elif (command_str == 'follow requests' or
@@ -2513,7 +2548,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                    domain, port,
                                                    http_prefix, curr_page,
                                                    debug, __version__,
-                                                   signing_priv_key_pem)
+                                                   signing_priv_key_pem,
+                                                   mitm_servers)
                 if follow_requests_json:
                     if isinstance(follow_requests_json, dict):
                         _desktop_show_follow_requests(follow_requests_json,
@@ -2534,7 +2570,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                              domain, port,
                                              http_prefix, curr_page,
                                              debug, __version__,
-                                             signing_priv_key_pem)
+                                             signing_priv_key_pem,
+                                             mitm_servers)
                 if following_json:
                     if isinstance(following_json, dict):
                         _desktop_show_following(following_json, translate,
@@ -2556,7 +2593,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                              domain, port,
                                              http_prefix, curr_page,
                                              debug, __version__,
-                                             signing_priv_key_pem)
+                                             signing_priv_key_pem,
+                                             mitm_servers)
                 if followers_json:
                     if isinstance(followers_json, dict):
                         _desktop_show_following(followers_json, translate,
@@ -2597,7 +2635,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                        person_cache,
                                                        debug, __version__,
                                                        signing_priv_key_pem,
-                                                       system_language)
+                                                       system_language,
+                                                       mitm_servers)
                     else:
                         if follow_handle:
                             say_str = follow_handle + ' is not valid'
@@ -2634,7 +2673,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                          person_cache,
                                                          debug, __version__,
                                                          signing_priv_key_pem,
-                                                         system_language)
+                                                         system_language,
+                                                         mitm_servers)
                     else:
                         say_str = follow_handle + ' is not valid'
                         _say_command(say_str, say_str,
@@ -2662,7 +2702,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                           approve_handle,
                                                           debug,
                                                           __version__,
-                                                          signing_priv_key_pem)
+                                                          signing_priv_key_pem,
+                                                          mitm_servers)
                     else:
                         if approve_handle:
                             say_str = approve_handle + ' is not valid'
@@ -2693,7 +2734,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                        deny_handle,
                                                        debug,
                                                        __version__,
-                                                       signing_priv_key_pem)
+                                                       signing_priv_key_pem,
+                                                       mitm_servers)
                     else:
                         if deny_handle:
                             say_str = deny_handle + ' is not valid'
@@ -2790,7 +2832,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               block_federated,
                                               bold_reading,
                                               show_vote_posts,
-                                              languages_understood)
+                                              languages_understood,
+                                              mitm_servers)
                         if post_json_object2:
                             post_json_object = post_json_object2
                 if post_json_object:
@@ -2883,7 +2926,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                        person_cache,
                                                        False, __version__,
                                                        signing_priv_key_pem,
-                                                       system_language)
+                                                       system_language,
+                                                       mitm_servers)
                                 refresh_timeline = True
                 print('')
 

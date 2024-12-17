@@ -1724,7 +1724,8 @@ def _profile_post_website(curr_session, base_dir: str, http_prefix: str,
                           nickname: str, domain: str,
                           actor_json: {}, fields: {},
                           actor_changed: bool,
-                          translate: {}, debug: bool) -> bool:
+                          translate: {}, debug: bool,
+                          mitm_servers: []) -> bool:
     """ HTTP POST change website
     """
     current_website = get_website(actor_json, translate)
@@ -1739,7 +1740,8 @@ def _profile_post_website(curr_session, base_dir: str, http_prefix: str,
                          http_prefix,
                          nickname, domain,
                          fields['websiteUrl'],
-                         True, debug)
+                         True, debug,
+                         mitm_servers)
     else:
         if current_website:
             set_website(actor_json, '', translate)
@@ -1991,7 +1993,8 @@ def _profile_post_blog_address(curr_session,
                                nickname: str, domain: str,
                                actor_json: {}, fields: {},
                                actor_changed: bool,
-                               debug: bool) -> bool:
+                               debug: bool,
+                               mitm_servers: []) -> bool:
     """ HTTP POST change blog address
     """
     current_blog_address = get_blog_address(actor_json)
@@ -2004,7 +2007,7 @@ def _profile_post_blog_address(curr_session,
                          base_dir, http_prefix,
                          nickname, domain,
                          fields['blogAddress'],
-                         True, debug)
+                         True, debug, mitm_servers)
     else:
         if current_blog_address:
             set_blog_address(actor_json, '')
@@ -2698,7 +2701,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                  person_cache: {}, project_version: str,
                  translate: {}, theme_name: str,
                  dyslexic_font: bool,
-                 peertube_instances: []) -> None:
+                 peertube_instances: [],
+                 mitm_servers: []) -> None:
     """Updates your user profile after editing via the Edit button
     on the profile screen
     """
@@ -3075,7 +3079,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                                nickname, domain,
                                                actor_json, fields,
                                                actor_changed,
-                                               debug)
+                                               debug, mitm_servers)
 
                 actor_changed = \
                     _profile_post_show_languages(actor_json, fields,
@@ -3134,7 +3138,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                           actor_json, fields,
                                           actor_changed,
                                           translate,
-                                          debug)
+                                          debug, mitm_servers)
 
                 actor_changed = \
                     _profile_post_gemini_link(actor_json, fields,

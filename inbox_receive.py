@@ -374,7 +374,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                          buy_sites: {},
                          auto_cw_cache: {},
                          onion_domain: str,
-                         i2p_domain: str) -> bool:
+                         i2p_domain: str,
+                         mitm_servers: []) -> bool:
     """A post was edited
     """
     if not has_object_dict(message_json):
@@ -515,7 +516,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles,
                             minimize_all_images, None,
-                            buy_sites, auto_cw_cache)
+                            buy_sites, auto_cw_cache,
+                            mitm_servers)
     return True
 
 
@@ -533,7 +535,8 @@ def receive_move_activity(session, base_dir: str,
                           sites_unavailable: [],
                           blocked_cache: [],
                           block_federated: [],
-                          system_language: str) -> bool:
+                          system_language: str,
+                          mitm_servers: []) -> bool:
     """Receives a move activity within the POST section of HTTPServer
     https://codeberg.org/fediverse/fep/src/branch/main/fep/7628/fep-7628.md
     """
@@ -623,7 +626,8 @@ def receive_move_activity(session, base_dir: str,
                         onion_domain,
                         i2p_domain,
                         sites_unavailable,
-                        system_language)
+                        system_language,
+                        mitm_servers)
     return True
 
 
@@ -649,7 +653,8 @@ def receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                             buy_sites: {},
                             auto_cw_cache: {},
                             onion_domain: str,
-                            i2p_domain: str) -> bool:
+                            i2p_domain: str,
+                            mitm_servers: []) -> bool:
     """Receives an Update activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Update':
@@ -695,7 +700,8 @@ def receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                                     min_images_for_accounts,
                                     max_hashtags, buy_sites,
                                     auto_cw_cache,
-                                    onion_domain, i2p_domain):
+                                    onion_domain, i2p_domain,
+                                    mitm_servers):
                 print('EDITPOST: received ' + message_json['object']['id'])
                 return True
         else:
@@ -951,7 +957,8 @@ def receive_like(recent_posts_cache: {},
                  bold_reading: bool, dogwhistles: {},
                  min_images_for_accounts: [],
                  buy_sites: {},
-                 auto_cw_cache: {}) -> bool:
+                 auto_cw_cache: {},
+                 mitm_servers: []) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Like':
@@ -1067,7 +1074,7 @@ def receive_like(recent_posts_cache: {},
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None, buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache, mitm_servers)
     return True
 
 
@@ -1091,7 +1098,8 @@ def receive_reaction(recent_posts_cache: {},
                      dogwhistles: {},
                      min_images_for_accounts: [],
                      buy_sites: {},
-                     auto_cw_cache: {}) -> bool:
+                     auto_cw_cache: {},
+                     mitm_servers: []) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'EmojiReact':
@@ -1228,7 +1236,7 @@ def receive_reaction(recent_posts_cache: {},
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None, buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache, mitm_servers)
     return True
 
 
@@ -1252,7 +1260,8 @@ def receive_zot_reaction(recent_posts_cache: {},
                          dogwhistles: {},
                          min_images_for_accounts: [],
                          buy_sites: {},
-                         auto_cw_cache: {}) -> bool:
+                         auto_cw_cache: {},
+                         mitm_servers: []) -> bool:
     """Receives an zot-style emoji reaction within the POST section of
     HTTPServer A zot style emoji reaction is an ordinary reply Note whose
     content is exactly one emoji
@@ -1414,7 +1423,8 @@ def receive_zot_reaction(recent_posts_cache: {},
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None,
-                                    buy_sites, auto_cw_cache)
+                                    buy_sites, auto_cw_cache,
+                                    mitm_servers)
     return True
 
 
@@ -1436,7 +1446,8 @@ def receive_bookmark(recent_posts_cache: {},
                      dogwhistles: {},
                      min_images_for_accounts: [],
                      buy_sites: {},
-                     auto_cw_cache: {}) -> bool:
+                     auto_cw_cache: {},
+                     mitm_servers: []) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -1540,7 +1551,8 @@ def receive_bookmark(recent_posts_cache: {},
                                 lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None,
-                                buy_sites, auto_cw_cache)
+                                buy_sites, auto_cw_cache,
+                                mitm_servers)
     return True
 
 
@@ -1643,7 +1655,8 @@ def receive_announce(recent_posts_cache: {},
                      buy_sites: {},
                      languages_understood: [],
                      auto_cw_cache: {},
-                     block_federated: []) -> bool:
+                     block_federated: [],
+                     mitm_servers: []) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -1811,7 +1824,8 @@ def receive_announce(recent_posts_cache: {},
                                 lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None,
-                                buy_sites, auto_cw_cache)
+                                buy_sites, auto_cw_cache,
+                                mitm_servers)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -1835,7 +1849,8 @@ def receive_announce(recent_posts_cache: {},
                                          blocked_cache, block_federated,
                                          bold_reading,
                                          show_vote_posts,
-                                         languages_understood)
+                                         languages_understood,
+                                         mitm_servers)
     # are annouced/boosted replies allowed?
     announce_denied = False
     if post_json_object:
@@ -1920,7 +1935,8 @@ def receive_announce(recent_posts_cache: {},
                                            __version__, http_prefix,
                                            domain, onion_domain,
                                            i2p_domain,
-                                           signing_priv_key_pem)
+                                           signing_priv_key_pem,
+                                           mitm_servers)
                     if pub_key:
                         if not isinstance(pub_key, dict):
                             if debug:
@@ -1964,7 +1980,8 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                           min_images_for_accounts: [],
                           buy_sites: {},
                           sites_unavailable: [],
-                          auto_cw_cache: {}) -> None:
+                          auto_cw_cache: {},
+                          mitm_servers: []) -> None:
     """Updates the votes on a Question/poll
     """
     # if this is a reply to a question then update the votes
@@ -2023,7 +2040,8 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                             lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles,
                             minimize_all_images, None,
-                            buy_sites, auto_cw_cache)
+                            buy_sites, auto_cw_cache,
+                            mitm_servers)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,
@@ -2048,4 +2066,5 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                              shared_items_federated_domains,
                              shared_item_federation_tokens,
                              signing_priv_key_pem,
-                             sites_unavailable, system_language)
+                             sites_unavailable, system_language,
+                             mitm_servers)

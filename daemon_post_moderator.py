@@ -48,7 +48,8 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                       theme_name: str,
                       access_keys: {}, person_cache: {},
                       recent_posts_cache: {},
-                      blocked_cache: {}) -> None:
+                      blocked_cache: {},
+                      mitm_servers: []) -> None:
     """Actions on the moderator screen
     """
     users_path = path.replace('/moderationaction', '')
@@ -165,7 +166,8 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                                           system_language,
                                           signing_priv_key_pem,
                                           None,
-                                          block_federated)
+                                          block_federated,
+                                          mitm_servers)
                 else:
                     msg = \
                         html_moderation_info(translate,

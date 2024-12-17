@@ -78,7 +78,8 @@ def show_person_profile(self, authorized: bool,
                         content_license_url: str,
                         buy_sites: [],
                         no_of_books: int,
-                        auto_cw_cache: {}) -> bool:
+                        auto_cw_cache: {},
+                        mitm_servers: []) -> bool:
     """Shows the profile for a person
     """
     # look up a person
@@ -150,7 +151,8 @@ def show_person_profile(self, authorized: bool,
                          sites_unavailable,
                          no_of_books,
                          auto_cw_cache,
-                         known_epicyon_instances).encode('utf-8')
+                         known_epicyon_instances,
+                         mitm_servers).encode('utf-8')
         msglen = len(msg)
         set_headers(self, 'text/html', msglen,
                     cookie, calling_domain, False)
@@ -233,7 +235,8 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                auto_cw_cache: {},
                fitness: {},
                onion_domain: str,
-               i2p_domain: str) -> bool:
+               i2p_domain: str,
+               mitm_servers: []) -> bool:
     """Show roles within profile screen
     """
     named_status = path.split('/users/')[1]
@@ -308,7 +311,8 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                                  sites_unavailable,
                                  no_of_books,
                                  auto_cw_cache,
-                                 known_epicyon_instances)
+                                 known_epicyon_instances,
+                                 mitm_servers)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -383,7 +387,8 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                 fitness: {},
                 domain_full: str,
                 onion_domain: str,
-                i2p_domain: str) -> bool:
+                i2p_domain: str,
+                mitm_servers: []) -> bool:
     """Show skills on the profile screen
     """
     named_status = path.split('/users/')[1]
@@ -460,7 +465,8 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                                              sites_unavailable,
                                              no_of_books,
                                              auto_cw_cache,
-                                             known_epicyon_instances)
+                                             known_epicyon_instances,
+                                             mitm_servers)
                             msg = msg.encode('utf-8')
                             msglen = len(msg)
                             set_headers(self, 'text/html', msglen,

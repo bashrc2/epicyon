@@ -246,7 +246,8 @@ def _person_options_view(self, options_confirm_params: str,
                          auto_cw_cache: {},
                          cookie: str,
                          calling_domain: str,
-                         curr_session, access_keys: {}) -> bool:
+                         curr_session, access_keys: {},
+                         mitm_servers: []) -> bool:
     """Person options screen, view button
     See html_person_options
     """
@@ -326,7 +327,8 @@ def _person_options_view(self, options_confirm_params: str,
                                       buy_sites,
                                       max_shares_on_profile,
                                       no_of_books,
-                                      auto_cw_cache)
+                                      auto_cw_cache,
+                                      mitm_servers)
         if profile_str:
             msg = profile_str.encode('utf-8')
             msglen = len(msg)
@@ -914,7 +916,8 @@ def _person_options_dm(self, options_confirm_params: str,
                        buy_sites: [],
                        auto_cw_cache: {},
                        cookie: str, calling_domain: str,
-                       access_keys: {}) -> bool:
+                       access_keys: {},
+                       mitm_servers: []) -> bool:
     """Person options screen, DM button
     See html_person_options
     """
@@ -995,7 +998,8 @@ def _person_options_dm(self, options_confirm_params: str,
                           buy_sites,
                           default_buy_site,
                           auto_cw_cache,
-                          searchable_by_default)
+                          searchable_by_default,
+                          mitm_servers)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -1014,7 +1018,8 @@ def _person_options_info(self, options_confirm_params: str,
                          domain: str, system_language: str,
                          signing_priv_key_pem: str,
                          block_federated: [],
-                         cookie: str, calling_domain: str) -> bool:
+                         cookie: str, calling_domain: str,
+                         mitm_servers: []) -> bool:
     """Person options screen, Info button
     See html_person_options
     """
@@ -1033,7 +1038,8 @@ def _person_options_info(self, options_confirm_params: str,
                                   system_language,
                                   signing_priv_key_pem,
                                   None,
-                                  block_federated)
+                                  block_federated,
+                                  mitm_servers)
             if msg:
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
@@ -1149,7 +1155,8 @@ def _person_options_report(self, options_confirm_params: str,
                            buy_sites: [],
                            auto_cw_cache: {},
                            cookie: str, calling_domain: str,
-                           access_keys: {}) -> bool:
+                           access_keys: {},
+                           mitm_servers: []) -> bool:
     """Person options screen, report button
     See html_person_options
     """
@@ -1230,7 +1237,8 @@ def _person_options_report(self, options_confirm_params: str,
                           buy_sites,
                           default_buy_site,
                           auto_cw_cache,
-                          searchable_by_default)
+                          searchable_by_default,
+                          mitm_servers)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -1280,7 +1288,8 @@ def person_options2(self, path: str,
                     auto_cw_cache: {},
                     default_post_language: str,
                     newswire: {},
-                    block_federated: []) -> None:
+                    block_federated: [],
+                    mitm_servers: []) -> None:
     """Receive POST from person options screen
     """
     page_number = 1
@@ -1408,7 +1417,8 @@ def person_options2(self, path: str,
                             auto_cw_cache,
                             cookie,
                             calling_domain,
-                            curr_session, access_keys):
+                            curr_session, access_keys,
+                            mitm_servers):
         return
 
     if _person_option_receive_petname(self, options_confirm_params,
@@ -1617,7 +1627,8 @@ def person_options2(self, path: str,
                           buy_sites,
                           auto_cw_cache,
                           cookie, calling_domain,
-                          access_keys):
+                          access_keys,
+                          mitm_servers):
         return
 
     if _person_options_info(self, options_confirm_params,
@@ -1627,7 +1638,8 @@ def person_options2(self, path: str,
                             domain, system_language,
                             signing_priv_key_pem,
                             block_federated,
-                            cookie, calling_domain):
+                            cookie, calling_domain,
+                            mitm_servers):
         return
 
     if _person_options_snooze(self, options_confirm_params,
@@ -1684,7 +1696,8 @@ def person_options2(self, path: str,
                               buy_sites,
                               auto_cw_cache,
                               cookie, calling_domain,
-                              access_keys):
+                              access_keys,
+                              mitm_servers):
         return
 
     # redirect back from person options screen

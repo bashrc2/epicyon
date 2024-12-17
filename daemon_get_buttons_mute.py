@@ -15,6 +15,7 @@ from utils import get_cached_post_filename
 from utils import load_json
 from utils import locate_post
 from utils import get_nickname_from_actor
+from utils import detect_mitm
 from httpcodes import http_404
 from httpheaders import redirect_headers
 from blocking import unmute_post
@@ -22,7 +23,6 @@ from blocking import mute_post
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
 from fitnessFunctions import fitness_performance
-from daemon_utils import detect_mitm
 
 
 def mute_button(self, calling_domain: str, path: str,
@@ -56,7 +56,8 @@ def mute_button(self, calling_domain: str, path: str,
                 account_timezone: {},
                 bold_reading_nicknames: {},
                 min_images_for_accounts: [],
-                default_timeline: str) -> None:
+                default_timeline: str,
+                mitm_servers: []) -> None:
     """Mute button is pressed
     """
     mute_url = path.split('?mute=')[1]
@@ -177,7 +178,8 @@ def mute_button(self, calling_domain: str, path: str,
                                     dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache,
+                                    mitm_servers)
         else:
             print('WARN: Muted post not found: ' + mute_filename)
 
@@ -230,7 +232,8 @@ def mute_button_undo(self, calling_domain: str, path: str,
                      account_timezone: {},
                      bold_reading_nicknames: {},
                      min_images_for_accounts: [],
-                     default_timeline: str) -> None:
+                     default_timeline: str,
+                     mitm_servers: []) -> None:
     """Undo mute button is pressed
     """
     mute_url = path.split('?unmute=')[1]
@@ -351,7 +354,8 @@ def mute_button_undo(self, calling_domain: str, path: str,
                                     dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites,
-                                    auto_cw_cache)
+                                    auto_cw_cache,
+                                    mitm_servers)
         else:
             print('WARN: Unmuted post not found: ' + mute_filename)
     if calling_domain.endswith('.onion') and onion_domain:

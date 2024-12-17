@@ -1867,7 +1867,8 @@ def get_blocks_via_server(session, nickname: str, password: str,
                           domain: str, port: int,
                           http_prefix: str, page_number: int, debug: bool,
                           version: str,
-                          signing_priv_key_pem: str) -> {}:
+                          signing_priv_key_pem: str,
+                          mitm_servers: []) -> {}:
     """Returns the blocked collection for shared items via c2s
     https://codeberg.org/fediverse/fep/src/branch/main/fep/c648/fep-c648.md
     """
@@ -1889,7 +1890,7 @@ def get_blocks_via_server(session, nickname: str, password: str,
     if debug:
         print('Blocked collection request to: ' + url)
     blocked_json = get_json(signing_priv_key_pem, session, url, headers, None,
-                            debug, version, http_prefix, None)
+                            debug, mitm_servers, version, http_prefix, None)
     if not get_json_valid(blocked_json):
         if debug:
             print('DEBUG: GET blocked collection failed for c2s to ' + url)
@@ -2115,7 +2116,8 @@ def _update_federated_blocks(session, base_dir: str,
                              domain: str,
                              debug: bool, version: str,
                              signing_priv_key_pem: str,
-                             max_api_blocks: int) -> []:
+                             max_api_blocks: int,
+                             mitm_servers: []) -> []:
     """Creates block_api.txt
     """
     block_federated = []
@@ -2144,7 +2146,8 @@ def _update_federated_blocks(session, base_dir: str,
         if debug:
             print('federated blocklist Block API endpoint: ' + url)
         blocked_json = get_json(signing_priv_key_pem, session, url, headers,
-                                None, debug, version, http_prefix, domain)
+                                None, debug, mitm_servers,
+                                version, http_prefix, domain)
         if not get_json_valid(blocked_json):
             print('DEBUG: federated blocklist ' +
                   'GET blocked json failed ' + url)
@@ -2277,5 +2280,6 @@ def run_federated_blocks_daemon(base_dir: str, httpd, debug: bool) -> None:
                                          httpd.domain,
                                          debug, httpd.project_version,
                                          httpd.signing_priv_key_pem,
-                                         httpd.max_api_blocks)
+                                         httpd.max_api_blocks,
+                                         httpd.mitm_servers)
         time.sleep(seconds_per_hour * 6)

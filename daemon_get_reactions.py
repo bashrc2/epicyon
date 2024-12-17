@@ -47,7 +47,8 @@ def reaction_picker2(self, calling_domain: str, path: str,
                      auto_cw_cache: {},
                      account_timezone: {},
                      bold_reading_nicknames: {},
-                     fitness: {}) -> None:
+                     fitness: {},
+                     mitm_servers: []) -> None:
     """Press the emoji reaction picker icon at the bottom of the post
     """
     page_number = 1
@@ -149,7 +150,8 @@ def reaction_picker2(self, calling_domain: str, path: str,
                                    dogwhistles,
                                    min_images_for_accounts,
                                    buy_sites,
-                                   auto_cw_cache)
+                                   auto_cw_cache,
+                                   mitm_servers)
     msg = msg.encode('utf-8')
     msglen = len(msg)
     set_headers(self, 'text/html', msglen,

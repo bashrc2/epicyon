@@ -25,20 +25,21 @@ from threads import begin_thread
 from session import create_session
 
 
-def manual_deny_follow_request(session, session_onion, session_i2p,
-                               onion_domain: str, i2p_domain: str,
-                               base_dir: str, http_prefix: str,
-                               nickname: str, domain: str, port: int,
-                               deny_handle: str,
-                               federation_list: [],
-                               send_threads: [], post_log: [],
-                               cached_webfingers: {}, person_cache: {},
-                               debug: bool,
-                               project_version: str,
-                               signing_priv_key_pem: str,
-                               followers_sync_cache: {},
-                               sites_unavailable: [],
-                               system_language: str) -> None:
+def manual_deny_follow_request2(session, session_onion, session_i2p,
+                                onion_domain: str, i2p_domain: str,
+                                base_dir: str, http_prefix: str,
+                                nickname: str, domain: str, port: int,
+                                deny_handle: str,
+                                federation_list: [],
+                                send_threads: [], post_log: [],
+                                cached_webfingers: {}, person_cache: {},
+                                debug: bool,
+                                project_version: str,
+                                signing_priv_key_pem: str,
+                                followers_sync_cache: {},
+                                sites_unavailable: [],
+                                system_language: str,
+                                mitm_servers: []) -> None:
     """Manually deny a follow request
     """
     accounts_dir = acct_dir(base_dir, nickname, domain)
@@ -61,7 +62,7 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
                   encoding='utf-8') as fp_rejects:
             fp_rejects.write(deny_handle + '\n')
     except OSError:
-        print('EX: manual_deny_follow_request unable to append ' +
+        print('EX: manual_deny_follow_request2 unable to append ' +
               rejected_follows_filename)
 
     deny_nickname = deny_handle.split('@')[0]
@@ -82,7 +83,7 @@ def manual_deny_follow_request(session, session_onion, session_i2p,
                              signing_priv_key_pem,
                              followers_sync_cache,
                              sites_unavailable,
-                             system_language)
+                             system_language, mitm_servers)
 
     print('Follow request from ' + deny_handle + ' was denied.')
 
@@ -100,13 +101,14 @@ def manual_deny_follow_request_thread(session, session_onion, session_i2p,
                                       signing_priv_key_pem: str,
                                       followers_sync_cache: {},
                                       sites_unavailable: [],
-                                      system_language: str) -> None:
+                                      system_language: str,
+                                      mitm_servers: []) -> None:
     """Manually deny a follow request, within a thread so that the
     user interface doesn't lag
     """
-    print('THREAD: manual_deny_follow_request')
+    print('THREAD: manual_deny_follow_request2')
     thr = \
-        thread_with_trace(target=manual_deny_follow_request,
+        thread_with_trace(target=manual_deny_follow_request2,
                           args=(session, session_onion, session_i2p,
                                 onion_domain, i2p_domain,
                                 base_dir, http_prefix,
@@ -120,7 +122,8 @@ def manual_deny_follow_request_thread(session, session_onion, session_i2p,
                                 signing_priv_key_pem,
                                 followers_sync_cache,
                                 sites_unavailable,
-                                system_language), daemon=True)
+                                system_language,
+                                mitm_servers), daemon=True)
     begin_thread(thr, 'manual_deny_follow_request_thread')
     send_threads.append(thr)
 
@@ -164,7 +167,8 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                   proxy_type: str,
                                   followers_sync_cache: {},
                                   sites_unavailable: [],
-                                  system_language: str) -> None:
+                                  system_language: str,
+                                  mitm_servers: []) -> None:
     """Manually approve a follow request
     """
     handle = nickname + '@' + domain
@@ -315,7 +319,8 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                              i2p_domain,
                                              followers_sync_cache,
                                              sites_unavailable,
-                                             system_language)
+                                             system_language,
+                                             mitm_servers)
                     update_approved_followers = True
     except OSError as exc:
         print('EX: manual_approve_follow_request unable to write ' +
@@ -390,7 +395,8 @@ def manual_approve_follow_request_thread(session, session_onion, session_i2p,
                                          proxy_type: str,
                                          followers_sync_cache: {},
                                          sites_unavailable: [],
-                                         system_language: str) -> None:
+                                         system_language: str,
+                                         mitm_servers: []) -> None:
     """Manually approve a follow request, in a thread so as not to cause
     the UI to lag
     """
@@ -411,6 +417,7 @@ def manual_approve_follow_request_thread(session, session_onion, session_i2p,
                                 proxy_type,
                                 followers_sync_cache,
                                 sites_unavailable,
-                                system_language), daemon=True)
+                                system_language,
+                                mitm_servers), daemon=True)
     begin_thread(thr, 'manual_approve_follow_request_thread')
     send_threads.append(thr)

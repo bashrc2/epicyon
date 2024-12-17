@@ -261,7 +261,8 @@ def get_user_url(wf_request: {}, source_id: int, debug: bool) -> str:
 def parse_user_feed(signing_priv_key_pem: str,
                     session, feed_url: str, as_header: {},
                     project_version: str, http_prefix: str,
-                    origin_domain: str, debug: bool, depth: int) -> []:
+                    origin_domain: str, debug: bool, depth: int,
+                    mitm_servers: []) -> []:
     """Returns a feed of posts for an account url
     """
     if depth > 10:
@@ -277,7 +278,8 @@ def parse_user_feed(signing_priv_key_pem: str,
 
     feed_json = \
         get_json(signing_priv_key_pem, session, feed_url, as_header, None,
-                 debug, project_version, http_prefix, origin_domain)
+                 debug, mitm_servers, project_version, http_prefix,
+                 origin_domain)
     if not get_json_valid(feed_json):
         profile_str = 'https://www.w3.org/ns/activitystreams'
         accept_str = 'application/ld+json; profile="' + profile_str + '"'
@@ -286,8 +288,8 @@ def parse_user_feed(signing_priv_key_pem: str,
                 'Accept': accept_str
             }
             feed_json = get_json(signing_priv_key_pem, session, feed_url,
-                                 as_header, None, debug, project_version,
-                                 http_prefix, origin_domain)
+                                 as_header, None, debug, mitm_servers,
+                                 project_version, http_prefix, origin_domain)
     if not get_json_valid(feed_json):
         if debug:
             print('No user feed was returned')
@@ -318,7 +320,8 @@ def parse_user_feed(signing_priv_key_pem: str,
                     parse_user_feed(signing_priv_key_pem,
                                     session, next_url, as_header,
                                     project_version, http_prefix,
-                                    origin_domain, debug, depth + 1)
+                                    origin_domain, debug, depth + 1,
+                                    mitm_servers)
                 if user_feed:
                     return user_feed
         elif isinstance(next_url, dict):
@@ -336,7 +339,8 @@ def _get_person_box_actor(session, base_dir: str, actor: str,
                           http_prefix: str, origin_domain: str,
                           person_cache: {},
                           signing_priv_key_pem: str,
-                          source_id: int) -> {}:
+                          source_id: int,
+                          mitm_servers: []) -> {}:
     """Returns the actor json for the given actor url
     """
     person_json = \
@@ -350,7 +354,8 @@ def _get_person_box_actor(session, base_dir: str, actor: str,
         }
     person_json = \
         get_json(signing_priv_key_pem, session, actor, as_header, None,
-                 debug, project_version, http_prefix, origin_domain)
+                 debug, mitm_servers, project_version, http_prefix,
+                 origin_domain)
     if get_json_valid(person_json):
         return person_json
     as_header = {
@@ -358,7 +363,8 @@ def _get_person_box_actor(session, base_dir: str, actor: str,
     }
     person_json = \
         get_json(signing_priv_key_pem, session, actor, as_header, None,
-                 debug, project_version, http_prefix, origin_domain)
+                 debug, mitm_servers, project_version, http_prefix,
+                 origin_domain)
     if get_json_valid(person_json):
         return person_json
     print('Unable to get actor for ' + actor + ' ' + str(source_id))
@@ -372,8 +378,9 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
                    project_version: str, http_prefix: str,
                    nickname: str, domain: str,
                    box_name: str, source_id: int,
-                   system_language: str) -> (str, str, str, str, str,
-                                             str, str, bool):
+                   system_language: str,
+                   mitm_servers: []) -> (str, str, str, str, str,
+                                         str, str, bool):
     debug = False
     profile_str = 'https://www.w3.org/ns/activitystreams'
     as_header = {
@@ -408,7 +415,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
                               debug, project_version,
                               http_prefix, origin_domain,
                               person_cache, signing_priv_key_pem,
-                              source_id)
+                              source_id, mitm_servers)
     if not person_json:
         return None, None, None, None, None, None, None, None
 
@@ -597,7 +604,8 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                simple: bool, debug: bool,
                project_version: str, http_prefix: str,
                origin_domain: str, system_language: str,
-               signing_priv_key_pem: str) -> {}:
+               signing_priv_key_pem: str,
+               mitm_servers: []) -> {}:
     """Gets public posts from an outbox
     """
     if debug:
@@ -627,7 +635,8 @@ def _get_posts(session, outbox_url: str, max_posts: int,
         user_feed = parse_user_feed(signing_priv_key_pem,
                                     session, outbox_url, as_header,
                                     project_version, http_prefix,
-                                    origin_domain, debug, 0)
+                                    origin_domain, debug, 0,
+                                    mitm_servers)
         if user_feed:
             for item in user_feed:
                 result.append(item)
@@ -642,7 +651,8 @@ def _get_posts(session, outbox_url: str, max_posts: int,
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
                                 project_version, http_prefix,
-                                origin_domain, debug, 0)
+                                origin_domain, debug, 0,
+                                mitm_servers)
     if not user_feed:
         return person_posts
 
@@ -668,8 +678,8 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                     }
                     this_item = \
                         get_json(signing_priv_key_pem, session, this_item,
-                                 as_header2, None, debug, __version__,
-                                 http_prefix, origin_domain)
+                                 as_header2, None, debug, mitm_servers,
+                                 __version__, http_prefix, origin_domain)
                     if not get_json_valid(this_item):
                         continue
 
@@ -834,7 +844,8 @@ def _update_word_frequency(content: str, word_frequency: {}) -> None:
 def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
                      project_version: str, http_prefix: str, domain: str,
                      word_frequency: {}, domain_list: [],
-                     system_language: str, signing_priv_key_pem: str) -> []:
+                     system_language: str, signing_priv_key_pem: str,
+                     mitm_servers: []) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outbox_url:
@@ -860,7 +871,7 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
                                 project_version, http_prefix, domain,
-                                debug, 0)
+                                debug, 0, mitm_servers)
     if not user_feed:
         return post_domains
 
@@ -906,7 +917,8 @@ def _get_posts_for_blocked_domains(base_dir: str,
                                    debug: bool,
                                    project_version: str, http_prefix: str,
                                    domain: str,
-                                   signing_priv_key_pem: str) -> {}:
+                                   signing_priv_key_pem: str,
+                                   mitm_servers: []) -> {}:
     """Returns a dictionary of posts for blocked domains
     """
     if not outbox_url:
@@ -932,7 +944,7 @@ def _get_posts_for_blocked_domains(base_dir: str,
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
                                 project_version, http_prefix, domain,
-                                debug, 0)
+                                debug, 0, mitm_servers)
     if not user_feed:
         return blocked_posts
 
@@ -3090,7 +3102,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
               auto_cw_cache: {},
               debug: bool, in_reply_to: str,
               in_reply_to_atom_uri: str, subject: str,
-              searchable_by: []) -> int:
+              searchable_by: [],
+              mitm_servers: []) -> int:
     """Post to another inbox. Used by unit tests.
     """
     with_digest = True
@@ -3109,7 +3122,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
                                   domain, project_version, debug, False,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem, mitm_servers)
     if not wf_request:
         return 1
     if not isinstance(wf_request, dict):
@@ -3133,7 +3146,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, post_to_box,
-                            72533, system_language)
+                            72533, system_language,
+                            mitm_servers)
 
     if not inbox_url:
         return 3
@@ -3299,7 +3313,8 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                          debug: bool, in_reply_to: str,
                          in_reply_to_atom_uri: str,
                          conversation_id: str, convthread_id: str,
-                         subject: str, searchable_by: []) -> int:
+                         subject: str, searchable_by: [],
+                         mitm_servers: []) -> int:
     """Send a post via a proxy (c2s)
     """
     if not session:
@@ -3314,7 +3329,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          from_domain_full, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: post webfinger failed for ' + handle)
@@ -3338,7 +3353,8 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain_full, post_to_box,
-                            82796, system_language)
+                            82796, system_language,
+                            mitm_servers)
     if not inbox_url:
         if debug:
             print('DEBUG: post no ' + post_to_box +
@@ -3519,7 +3535,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                      source_id: int, curr_domain: str,
                      onion_domain: str, i2p_domain: str,
                      extra_headers: {}, sites_unavailable: [],
-                     system_language: str) -> int:
+                     system_language: str,
+                     mitm_servers: []) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -3565,7 +3582,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
                                   ua_domain, project_version, debug,
-                                  group_account, signing_priv_key_pem)
+                                  group_account, signing_priv_key_pem,
+                                  mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: send_signed_json webfinger for ' +
@@ -3595,7 +3613,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, post_to_box,
-                            source_id, system_language)
+                            source_id, system_language,
+                            mitm_servers)
 
     print("send_signed_json inbox_url: " + str(inbox_url))
     print("send_signed_json to_person_id: " + str(to_person_id))
@@ -3841,7 +3860,8 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                              proxy_type: str,
                              followers_sync_cache: {},
                              sites_unavailable: [],
-                             system_language: str) -> None:
+                             system_language: str,
+                             mitm_servers: []) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -4039,7 +4059,7 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                          signing_priv_key_pem, 34436782,
                          domain, onion_domain, i2p_domain,
                          extra_headers, sites_unavailable,
-                         system_language)
+                         system_language, mitm_servers)
 
 
 def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
@@ -4057,7 +4077,8 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                    proxy_type: str,
                                    followers_sync_cache: {},
                                    sites_unavailable: [],
-                                   system_language: str):
+                                   system_language: str,
+                                   mitm_servers: []):
     """Returns a thread used to send a post to named addresses
     """
     print('THREAD: _send_to_named_addresses')
@@ -4077,7 +4098,8 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
                                 proxy_type,
                                 followers_sync_cache,
                                 sites_unavailable,
-                                system_language), daemon=True)
+                                system_language,
+                                mitm_servers), daemon=True)
     if not begin_thread(send_thread, 'send_to_named_addresses_thread'):
         print('WARN: socket error while starting ' +
               'thread to send to named addresses.')
@@ -4087,7 +4109,7 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
 
 def _has_shared_inbox(session, http_prefix: str, domain: str,
                       debug: bool, signing_priv_key_pem: str,
-                      ua_domain: str) -> bool:
+                      ua_domain: str, mitm_servers: []) -> bool:
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
@@ -4098,7 +4120,7 @@ def _has_shared_inbox(session, http_prefix: str, domain: str,
     for handle in try_handles:
         wf_request = webfinger_handle(session, handle, http_prefix, {},
                                       ua_domain, __version__, debug, False,
-                                      signing_priv_key_pem)
+                                      signing_priv_key_pem, mitm_servers)
         if wf_request:
             if isinstance(wf_request, dict):
                 if not wf_request.get('errors'):
@@ -4131,7 +4153,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
                       shared_item_federation_tokens: {},
                       signing_priv_key_pem: str,
                       sites_unavailable: [],
-                      system_language: str) -> None:
+                      system_language: str,
+                      mitm_servers: []) -> None:
     """sends a post to the followers of the given nickname
     """
     print('send_to_followers')
@@ -4223,7 +4246,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
 
         with_shared_inbox = \
             _has_shared_inbox(curr_session, curr_http_prefix, follower_domain,
-                              debug, signing_priv_key_pem, ua_domain)
+                              debug, signing_priv_key_pem, ua_domain,
+                              mitm_servers)
         if debug:
             if with_shared_inbox:
                 print(follower_domain + ' has shared inbox')
@@ -4304,7 +4328,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                              signing_priv_key_pem, 639342,
                              domain, onion_domain, i2p_domain,
                              extra_headers, sites_unavailable,
-                             system_language)
+                             system_language, mitm_servers)
         else:
             # randomize the order of handles, so that we are not
             # favoring any particular account in terms of its delivery time
@@ -4339,7 +4363,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                                  signing_priv_key_pem, 634219,
                                  domain, onion_domain, i2p_domain,
                                  extra_headers, sites_unavailable,
-                                 system_language)
+                                 system_language, mitm_servers)
 
         time.sleep(4)
 
@@ -4364,7 +4388,8 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
                              shared_item_federation_tokens: {},
                              signing_priv_key_pem: str,
                              sites_unavailable: [],
-                             system_language: str):
+                             system_language: str,
+                             mitm_servers: []):
     """Returns a thread used to send a post to followers
     """
     print('THREAD: send_to_followers')
@@ -4382,7 +4407,8 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
                                 shared_item_federation_tokens,
                                 signing_priv_key_pem,
                                 sites_unavailable,
-                                system_language), daemon=True)
+                                system_language,
+                                mitm_servers), daemon=True)
     if not begin_thread(send_thread, 'send_to_followers_thread'):
         print('WARN: error while starting ' +
               'thread to send to followers.')
@@ -4577,7 +4603,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                    signing_priv_key_pem: str,
                    bold_reading: bool,
                    show_vote_posts: bool,
-                   languages_understood: []) -> bool:
+                   languages_understood: [],
+                   mitm_servers: []) -> bool:
     """Returns true if the given post has attached image media
     """
     if post_json_object['type'] == 'Announce':
@@ -4597,7 +4624,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                               blocked_cache, block_federated,
                               bold_reading,
                               show_vote_posts,
-                              languages_understood)
+                              languages_understood,
+                              mitm_servers)
         if post_json_announce:
             post_json_object = post_json_announce
     if post_json_object['type'] != 'Create':
@@ -5721,7 +5749,8 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
                                debug: bool, project_version: str,
                                system_language: str,
                                signing_priv_key_pem: str,
-                               origin_domain: str) -> None:
+                               origin_domain: str,
+                               mitm_servers: []) -> None:
     """ This is really just for test purposes
     """
     if debug:
@@ -5750,7 +5779,7 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          origin_domain, project_version, debug, group_account,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('No webfinger result was returned for ' + handle)
@@ -5769,7 +5798,8 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, 'outbox',
-                            62524, system_language)
+                            62524, system_language,
+                            mitm_servers)
     if debug:
         print('Actor url: ' + str(person_id))
     if not person_id:
@@ -5781,7 +5811,7 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
     _get_posts(session, person_url, 30, max_mentions, max_emoji,
                max_attachments, federation_list, raw, simple, debug,
                project_version, http_prefix, origin_domain, system_language,
-               signing_priv_key_pem)
+               signing_priv_key_pem, mitm_servers)
 
 
 def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
@@ -5790,7 +5820,8 @@ def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
                             debug: bool, project_version: str,
                             word_frequency: {}, domain_list: [],
                             system_language: str,
-                            signing_priv_key_pem: str) -> []:
+                            signing_priv_key_pem: str,
+                            mitm_servers: []) -> []:
     """ Returns a list of domains referenced within public posts
     """
     if not session:
@@ -5805,7 +5836,7 @@ def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         return domain_list
     if not isinstance(wf_request, dict):
@@ -5820,12 +5851,13 @@ def get_public_post_domains(session, base_dir: str, nickname: str, domain: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, 'outbox',
-                            92522, system_language)
+                            92522, system_language,
+                            mitm_servers)
     post_domains = \
         get_post_domains(session, person_url, 64, debug,
                          project_version, http_prefix, domain,
                          word_frequency, domain_list, system_language,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     post_domains.sort()
     return post_domains
 
@@ -5834,7 +5866,8 @@ def download_follow_collection(signing_priv_key_pem: str,
                                follow_type: str,
                                session, http_prefix: str,
                                actor: str, page_number: int,
-                               no_of_pages: int, debug: bool) -> []:
+                               no_of_pages: int, debug: bool,
+                               mitm_servers: []) -> []:
     """Returns a list of following/followers for the given actor
     by downloading the json for their following/followers collection
     """
@@ -5859,7 +5892,7 @@ def download_follow_collection(signing_priv_key_pem: str,
             actor + '/' + follow_type + '?page=' + str(page_number + page_ctr)
         followers_json = \
             get_json(signing_priv_key_pem, session, url, session_headers, None,
-                     debug, __version__, http_prefix, None)
+                     debug, mitm_servers, __version__, http_prefix, None)
         if get_json_valid(followers_json):
             if followers_json.get('orderedItems'):
                 for follower_actor in followers_json['orderedItems']:
@@ -5881,7 +5914,8 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
                          proxy_type: str, port: int, http_prefix: str,
                          debug: bool, project_version: str,
                          word_frequency: {}, system_language: str,
-                         signing_priv_key_pem: str) -> []:
+                         signing_priv_key_pem: str,
+                         mitm_servers: []) -> []:
     """ Returns a dict of domains referenced within public posts
     """
     if not session:
@@ -5896,7 +5930,7 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
     wf_request = \
         webfinger_handle(session, handle, http_prefix, cached_webfingers,
                          domain, project_version, debug, False,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     if not wf_request:
         return {}
     if not isinstance(wf_request, dict):
@@ -5911,13 +5945,14 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
                             person_cache,
                             project_version, http_prefix,
                             nickname, domain, 'outbox',
-                            13863, system_language)
+                            13863, system_language,
+                            mitm_servers)
     max_posts = 64
     post_domains = \
         get_post_domains(session, person_url, max_posts, debug,
                          project_version, http_prefix, domain,
                          word_frequency, [], system_language,
-                         signing_priv_key_pem)
+                         signing_priv_key_pem, mitm_servers)
     post_domains.sort()
     domains_info = {}
     for pdomain in post_domains:
@@ -5929,7 +5964,8 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
                                        person_url, max_posts,
                                        debug,
                                        project_version, http_prefix,
-                                       domain, signing_priv_key_pem)
+                                       domain, signing_priv_key_pem,
+                                       mitm_servers)
     for blocked_domain, post_url_list in blocked_posts.items():
         domains_info[blocked_domain] += post_url_list
 
@@ -5943,7 +5979,8 @@ def get_public_post_domains_blocked(session, base_dir: str,
                                     debug: bool, project_version: str,
                                     word_frequency: {}, domain_list: [],
                                     system_language: str,
-                                    signing_priv_key_pem: str) -> []:
+                                    signing_priv_key_pem: str,
+                                    mitm_servers: []) -> []:
     """ Returns a list of domains referenced within public posts which
     are globally blocked on this instance
     """
@@ -5954,7 +5991,7 @@ def get_public_post_domains_blocked(session, base_dir: str,
                                 proxy_type, port, http_prefix,
                                 debug, project_version,
                                 word_frequency, domain_list, system_language,
-                                signing_priv_key_pem)
+                                signing_priv_key_pem, mitm_servers)
     if not post_domains:
         return []
 
@@ -6008,7 +6045,8 @@ def check_domains(session, base_dir: str,
                   debug: bool, project_version: str,
                   max_blocked_domains: int, single_check: bool,
                   system_language: str,
-                  signing_priv_key_pem: str) -> None:
+                  signing_priv_key_pem: str,
+                  mitm_servers: []) -> None:
     """Checks follower accounts for references to globally blocked domains
     """
     word_frequency = {}
@@ -6043,7 +6081,8 @@ def check_domains(session, base_dir: str,
                                                 debug, project_version,
                                                 word_frequency, [],
                                                 system_language,
-                                                signing_priv_key_pem)
+                                                signing_priv_key_pem,
+                                                mitm_servers)
             if blocked_domains:
                 if len(blocked_domains) > max_blocked_domains:
                     follower_warning_str += handle + '\n'
@@ -6065,7 +6104,8 @@ def check_domains(session, base_dir: str,
                                                 debug, project_version,
                                                 word_frequency, [],
                                                 system_language,
-                                                signing_priv_key_pem)
+                                                signing_priv_key_pem,
+                                                mitm_servers)
             if blocked_domains:
                 print(handle)
                 for bdomain in blocked_domains:
@@ -6187,7 +6227,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       blocked_cache: {}, block_federated: [],
                       bold_reading: bool,
                       show_vote_posts: bool,
-                      languages_understood: []) -> {}:
+                      languages_understood: [],
+                      mitm_servers: []) -> {}:
     """Download the post referenced by an announce
     """
     if not post_json_object.get('object'):
@@ -6277,8 +6318,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
         announced_json = \
             get_json(signing_priv_key_pem, session,
                      post_json_object['object'],
-                     as_header, None, debug, project_version,
-                     http_prefix, domain)
+                     as_header, None, debug, mitm_servers,
+                     project_version, http_prefix, domain)
 
         if not get_json_valid(announced_json):
             return None
@@ -6549,7 +6590,8 @@ def send_block_via_server(base_dir: str, session,
                           cached_webfingers: {}, person_cache: {},
                           debug: bool, project_version: str,
                           signing_priv_key_pem: str,
-                          system_language: str) -> {}:
+                          system_language: str,
+                          mitm_servers: []) -> {}:
     """Creates a block via c2s
     """
     if not session:
@@ -6580,7 +6622,7 @@ def send_block_via_server(base_dir: str, session,
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
                                   from_domain, project_version, debug, False,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: block webfinger failed for ' + handle)
@@ -6602,7 +6644,7 @@ def send_block_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain, post_to_box, 72652,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -6640,7 +6682,8 @@ def send_mute_via_server(base_dir: str, session,
                          cached_webfingers: {}, person_cache: {},
                          debug: bool, project_version: str,
                          signing_priv_key_pem: str,
-                         system_language: str) -> {}:
+                         system_language: str,
+                         mitm_servers: []) -> {}:
     """Creates a mute via c2s
     """
     if not session:
@@ -6667,7 +6710,7 @@ def send_mute_via_server(base_dir: str, session,
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
                                   from_domain, project_version, debug, False,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: mute webfinger failed for ' + handle)
@@ -6689,7 +6732,7 @@ def send_mute_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain, post_to_box, 72652,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -6726,7 +6769,8 @@ def send_undo_mute_via_server(base_dir: str, session,
                               cached_webfingers: {}, person_cache: {},
                               debug: bool, project_version: str,
                               signing_priv_key_pem: str,
-                              system_language: str) -> {}:
+                              system_language: str,
+                              mitm_servers: []) -> {}:
     """Undoes a mute via c2s
     """
     if not session:
@@ -6758,7 +6802,7 @@ def send_undo_mute_via_server(base_dir: str, session,
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
                                   from_domain, project_version, debug, False,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: undo mute webfinger failed for ' + handle)
@@ -6780,7 +6824,7 @@ def send_undo_mute_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain, post_to_box, 72652,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -6818,7 +6862,8 @@ def send_undo_block_via_server(base_dir: str, session,
                                cached_webfingers: {}, person_cache: {},
                                debug: bool, project_version: str,
                                signing_priv_key_pem: str,
-                               system_language: str) -> {}:
+                               system_language: str,
+                               mitm_servers: []) -> {}:
     """Creates a block via c2s
     """
     if not session:
@@ -6853,7 +6898,7 @@ def send_undo_block_via_server(base_dir: str, session,
     wf_request = webfinger_handle(session, handle, http_prefix,
                                   cached_webfingers,
                                   from_domain, project_version, debug, False,
-                                  signing_priv_key_pem)
+                                  signing_priv_key_pem, mitm_servers)
     if not wf_request:
         if debug:
             print('DEBUG: unblock webfinger failed for ' + handle)
@@ -6875,7 +6920,7 @@ def send_undo_block_via_server(base_dir: str, session,
                             project_version, http_prefix,
                             from_nickname,
                             from_domain, post_to_box, 53892,
-                            system_language)
+                            system_language, mitm_servers)
 
     if not inbox_url:
         if debug:
@@ -6941,7 +6986,8 @@ def c2s_box_json(session, nickname: str, password: str,
                  domain: str, port: int,
                  http_prefix: str,
                  box_name: str, page_number: int,
-                 debug: bool, signing_priv_key_pem: str) -> {}:
+                 debug: bool, signing_priv_key_pem: str,
+                 mitm_servers: []) -> {}:
     """C2S Authenticated GET of posts for a timeline
     """
     if not session:
@@ -6964,7 +7010,7 @@ def c2s_box_json(session, nickname: str, password: str,
     # GET json
     url = actor + '/' + box_name + '?page=' + str(page_number)
     box_json = get_json(signing_priv_key_pem, session, url, headers, None,
-                        debug, __version__, http_prefix, None)
+                        debug, mitm_servers, __version__, http_prefix, None)
 
     if get_json_valid(box_json) and debug:
         print('DEBUG: GET c2s_box_json success')

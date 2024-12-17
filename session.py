@@ -19,6 +19,8 @@ from utils import text_in_file
 from utils import acct_dir
 from utils import binary_is_image
 from utils import image_mime_types_dict
+from utils import detect_mitm
+from utils import get_domain_from_actor
 from httpsig import create_signed_header
 
 
@@ -126,13 +128,30 @@ def get_resolved_url(session, url: str, timeout_sec: int = 20) -> {}:
 def _get_json_request(session, url: str, session_headers: {},
                       session_params: {}, timeout_sec: int,
                       quiet: bool, debug: bool,
-                      return_json: bool) -> {}:
+                      return_json: bool,
+                      mitm_servers: []) -> {}:
     """http GET for json
     """
     try:
         result = session.get(url, headers=session_headers,
                              params=session_params, timeout=timeout_sec,
                              allow_redirects=True)
+        mitm = False
+        try:
+            mitm = detect_mitm(result)
+        except BaseException:
+            pass
+        url_domain, _ = get_domain_from_actor(url)
+        if mitm:
+            if url_domain:
+                if url_domain not in mitm_servers:
+                    mitm_servers.append(url_domain)
+            print('DEBUG: _get_json_request MITM ' +
+                  str(result.headers))
+        else:
+            if url_domain in mitm_servers:
+                mitm_servers.remove(url_domain)
+
         if result.status_code != 200:
             if result.status_code == 401:
                 print("WARN: get_json " + url + ' rejected by secure mode')
@@ -188,7 +207,7 @@ def _get_json_request(session, url: str, session_headers: {},
         if session_headers2.get('Authorization'):
             session_headers2['Authorization'] = 'REDACTED'
         if debug and not quiet:
-            print('EX: get_json failed, url: ' + str(url) + ', ' +
+            print('EX: get_json failed2, url: ' + str(url) + ', ' +
                   'headers: ' + str(session_headers2) + ', ' +
                   'params: ' + str(session_params) + ', ' + str(exc))
     except SocketError as exc:
@@ -202,7 +221,7 @@ def _get_json_request(session, url: str, session_headers: {},
 def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
                      session_params: {}, timeout_sec: int,
                      signing_priv_key_pem: str, quiet: bool,
-                     debug: bool) -> {}:
+                     debug: bool, mitm_servers: []) -> {}:
     """Authorized fetch - a signed version of GET
     """
     if not domain_full:
@@ -271,7 +290,7 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
         return_json = False
     return _get_json_request(session, url, session_headers,
                              session_params, timeout_sec, quiet,
-                             debug, return_json)
+                             debug, return_json, mitm_servers)
 
 
 def get_json_valid(test_json: {}) -> bool:
@@ -286,6 +305,7 @@ def get_json_valid(test_json: {}) -> bool:
 
 def get_json(signing_priv_key_pem: str,
              session, url: str, headers: {}, params: {}, debug: bool,
+             mitm_servers: [],
              version: str = __version__, http_prefix: str = 'https',
              domain: str = 'testdomain',
              timeout_sec: int = 20, quiet: bool = False) -> {}:
@@ -318,10 +338,10 @@ def get_json(signing_priv_key_pem: str,
         return _get_json_signed(session, url, domain,
                                 session_headers, session_params,
                                 timeout_sec, signing_priv_key_pem,
-                                quiet, debug)
+                                quiet, debug, mitm_servers)
     return _get_json_request(session, url, session_headers,
                              session_params, timeout_sec,
-                             quiet, debug, True)
+                             quiet, debug, True, mitm_servers)
 
 
 def get_vcard(xml_format: bool,
@@ -407,6 +427,7 @@ def get_vcard(xml_format: bool,
 def download_html(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
                   version: str, http_prefix: str, domain: str,
+                  mitm_servers: [],
                   timeout_sec: int = 20, quiet: bool = False) -> {}:
     """Download a html document
     """
@@ -439,14 +460,15 @@ def download_html(signing_priv_key_pem: str,
         return _get_json_signed(session, url, domain,
                                 session_headers, session_params,
                                 timeout_sec, signing_priv_key_pem,
-                                quiet, debug)
+                                quiet, debug, mitm_servers)
     return _get_json_request(session, url, session_headers,
                              session_params, timeout_sec,
-                             quiet, debug, False)
+                             quiet, debug, False, mitm_servers)
 
 
 def verify_html(session, url: str, debug: bool,
                 version: str, http_prefix: str, nickname: str, domain: str,
+                mitm_servers: [],
                 timeout_sec: int = 20, quiet: bool = False) -> bool:
     """Verify that the handle for nickname@domain exists within the
     given url
@@ -464,7 +486,8 @@ def verify_html(session, url: str, debug: bool,
     verification_site_html = \
         download_html(None, session, url,
                       as_header, None, debug, version,
-                      http_prefix, domain, timeout_sec, quiet)
+                      http_prefix, domain, mitm_servers,
+                      timeout_sec, quiet)
     if not verification_site_html:
         if debug:
             print('Verification site could not be contacted ' +
@@ -512,7 +535,8 @@ def verify_html(session, url: str, debug: bool,
 
 def site_is_verified(session, base_dir: str, http_prefix: str,
                      nickname: str, domain: str,
-                     url: str, update: bool, debug: bool) -> bool:
+                     url: str, update: bool, debug: bool,
+                     mitm_servers: []) -> bool:
     """Is the given website verified?
     """
     verified_sites_filename = \
@@ -527,7 +551,8 @@ def site_is_verified(session, base_dir: str, http_prefix: str,
 
     verified = \
         verify_html(session, url, debug,
-                    __version__, http_prefix, nickname, domain)
+                    __version__, http_prefix, nickname, domain,
+                    mitm_servers)
     if verified:
         write_type = 'a+'
         if not verified_file_exists:
@@ -545,6 +570,7 @@ def site_is_verified(session, base_dir: str, http_prefix: str,
 def download_ssml(signing_priv_key_pem: str,
                   session, url: str, headers: {}, params: {}, debug: bool,
                   version: str, http_prefix: str, domain: str,
+                  mitm_servers: [],
                   timeout_sec: int = 20, quiet: bool = False) -> {}:
     """Download a ssml document
     """
@@ -576,10 +602,10 @@ def download_ssml(signing_priv_key_pem: str,
         return _get_json_signed(session, url, domain,
                                 session_headers, session_params,
                                 timeout_sec, signing_priv_key_pem,
-                                quiet, debug)
+                                quiet, debug, mitm_servers)
     return _get_json_request(session, url, session_headers,
                              session_params, timeout_sec,
-                             quiet, debug, False)
+                             quiet, debug, False, mitm_servers)
 
 
 def _set_user_agent(session, http_prefix: str, domain_full: str) -> None:

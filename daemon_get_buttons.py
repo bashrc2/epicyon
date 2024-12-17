@@ -44,7 +44,7 @@ def follow_approve_button(self, calling_domain: str, path: str,
                           signing_priv_key_pem: str,
                           followers_sync_cache: {},
                           session_onion, session_i2p,
-                          session) -> None:
+                          session, mitm_servers: []) -> None:
     """Follow approve button was pressed
     """
     origin_path_str = path.split('/followapprove=')[0]
@@ -101,7 +101,8 @@ def follow_approve_button(self, calling_domain: str, path: str,
                                              proxy_type,
                                              followers_sync_cache,
                                              sites_unavailable,
-                                             system_language)
+                                             system_language,
+                                             mitm_servers)
     origin_path_str_absolute = \
         http_prefix + '://' + domain_full + origin_path_str
     if calling_domain.endswith('.onion') and onion_domain:
@@ -133,7 +134,8 @@ def follow_deny_button(self, calling_domain: str, path: str,
                        sites_unavailable: [],
                        system_language: str,
                        fitness: {},
-                       session, session_onion, session_i2p) -> None:
+                       session, session_onion, session_i2p,
+                       mitm_servers: []) -> None:
     """Follow deny button was pressed
     """
     origin_path_str = path.split('/followdeny=')[0]
@@ -169,7 +171,8 @@ def follow_deny_button(self, calling_domain: str, path: str,
                                           signing_priv_key_pem,
                                           followers_sync_cache,
                                           sites_unavailable,
-                                          system_language)
+                                          system_language,
+                                          mitm_servers)
     origin_path_str_absolute = \
         http_prefix + '://' + domain_full + origin_path_str
     if calling_domain.endswith('.onion') and onion_domain:
@@ -217,7 +220,8 @@ def delete_button(self, calling_domain: str, path: str,
                   allow_deletion: bool,
                   session_onion,
                   session_i2p,
-                  default_timeline: str) -> None:
+                  default_timeline: str,
+                  mitm_servers: []) -> None:
     """Delete button is pressed on a post
     """
     if not cookie:
@@ -311,7 +315,8 @@ def delete_button(self, calling_domain: str, path: str,
                                 dogwhistles,
                                 min_images_for_accounts,
                                 buy_sites,
-                                auto_cw_cache)
+                                auto_cw_cache,
+                                mitm_servers)
         if delete_str:
             delete_str_len = len(delete_str)
             set_headers(self, 'text/html', delete_str_len,

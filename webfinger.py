@@ -72,7 +72,8 @@ def webfinger_handle(session, handle: str, http_prefix: str,
                      cached_webfingers: {},
                      from_domain: str, project_version: str,
                      debug: bool, group_account: bool,
-                     signing_priv_key_pem: str) -> {}:
+                     signing_priv_key_pem: str,
+                     mitm_servers: []) -> {}:
     """Gets webfinger result for the given ActivityPub handle
     NOTE: in earlier implementations group_account modified the acct prefix.
     This has been left in, because currently there is still no consensus
@@ -106,7 +107,8 @@ def webfinger_handle(session, handle: str, http_prefix: str,
     try:
         result = \
             get_json(signing_priv_key_pem, session, url, hdr, par,
-                     debug, project_version, http_prefix, from_domain)
+                     debug, mitm_servers,
+                     project_version, http_prefix, from_domain)
     except BaseException as ex:
         print('ERROR: webfinger_handle ' + wf_handle + ' ' + str(ex))
         return None
@@ -126,7 +128,8 @@ def webfinger_handle(session, handle: str, http_prefix: str,
         try:
             result = \
                 get_json(signing_priv_key_pem, session, url, hdr, par,
-                         debug, project_version, http_prefix, from_domain)
+                         debug, mitm_servers,
+                         project_version, http_prefix, from_domain)
         except BaseException as ex:
             print('ERROR: webfinger_handle ' + wf_handle + ' ' + str(ex))
             return None
