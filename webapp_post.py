@@ -1822,7 +1822,8 @@ def _get_post_title_html(base_dir: str,
                                              page_number,
                                              message_id_str,
                                              container_class_icons,
-                                             container_class, mitm)
+                                             container_class, mitm,
+                                             mitm_servers)
 
     return _get_post_title_reply_html(base_dir,
                                       http_prefix,
