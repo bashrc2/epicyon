@@ -946,9 +946,11 @@ def html_timeline(default_timeline: str,
                                   'shares')
 
         # if using a text mode browser then don't show SHOW MORE because there
-        # is no way to hide/expand sections
+        # is no way to hide/expand sections.
+        # Also replace MITM text with an eye icon
         if is_text_browser:
             tl_str = tl_str.replace(translate['SHOW MORE'], '')
+            tl_str = tl_str.replace(translate['mitm'], '👁 ')
 
         tl_str += \
             _html_timeline_end(base_dir, nickname, domain_full,
@@ -975,9 +977,11 @@ def html_timeline(default_timeline: str,
                                   'wanted')
 
         # if using a text mode browser then don't show SHOW MORE because there
-        # is no way to hide/expand sections
+        # is no way to hide/expand sections.
+        # Also replace MITM text with an eye icon
         if is_text_browser:
             tl_str = tl_str.replace(translate['SHOW MORE'], '')
+            tl_str = tl_str.replace(translate['mitm'], '👁 ')
 
         tl_str += \
             _html_timeline_end(base_dir, nickname, domain_full,
@@ -1207,9 +1211,11 @@ def html_timeline(default_timeline: str,
         tl_str += _get_help_for_timeline(base_dir, box_name)
 
     # if using a text mode browser then don't show SHOW MORE because there
-    # is no way to hide/expand sections
+    # is no way to hide/expand sections.
+    # Also replace MITM text with an eye icon
     if is_text_browser:
         tl_str = tl_str.replace(translate['SHOW MORE'], '')
+        tl_str = tl_str.replace(translate['mitm'], '👁 ')
 
     tl_str += \
         _html_timeline_end(base_dir, nickname, domain_full,
@@ -1222,6 +1228,7 @@ def html_timeline(default_timeline: str,
                            default_timeline, access_keys,
                            box_name,
                            enable_timing_log, timeline_start_time, ua_str)
+
     tl_str += html_footer()
     return tl_str
 

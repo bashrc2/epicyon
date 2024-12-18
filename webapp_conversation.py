@@ -171,9 +171,11 @@ def html_conversation_view(authorized: bool, post_id: str,
                     current_reading_str = '<br><hr><br>\n'
 
     # if using a text mode browser then don't show SHOW MORE because there
-    # is no way to hide/expand sections
+    # is no way to hide/expand sections.
+    # Also replace MITM text with an eye icon
     if text_mode_browser(ua_str):
         conv_str = conv_str.replace(translate['SHOW MORE'], '')
+        conv_str = conv_str.replace(translate['mitm'], '👁 ')
 
     conv_str += text_mode_separator + html_footer()
     return conv_str
