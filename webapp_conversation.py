@@ -16,6 +16,7 @@ from utils import get_config_param
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_attributed_to
+from utils import text_mode_removals
 from blocking import is_blocked
 from webapp_utils import text_mode_browser
 from webapp_utils import html_header_with_external_style
@@ -174,8 +175,7 @@ def html_conversation_view(authorized: bool, post_id: str,
     # is no way to hide/expand sections.
     # Also replace MITM text with an eye icon
     if text_mode_browser(ua_str):
-        conv_str = conv_str.replace(translate['SHOW MORE'], '')
-        conv_str = conv_str.replace(translate['mitm'], '👁 ')
+        conv_str = text_mode_removals(conv_str, translate)
 
     conv_str += text_mode_separator + html_footer()
     return conv_str

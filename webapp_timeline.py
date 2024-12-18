@@ -22,6 +22,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import remove_eol
 from utils import get_actor_from_post
+from utils import text_mode_removals
 from follow import follower_approval_active
 from person import is_person_snoozed
 from markdown import markdown_to_html
@@ -949,8 +950,7 @@ def html_timeline(default_timeline: str,
         # is no way to hide/expand sections.
         # Also replace MITM text with an eye icon
         if is_text_browser:
-            tl_str = tl_str.replace(translate['SHOW MORE'], '')
-            tl_str = tl_str.replace(translate['mitm'], '👁 ')
+            tl_str = text_mode_removals(tl_str, translate)
 
         tl_str += \
             _html_timeline_end(base_dir, nickname, domain_full,
@@ -980,8 +980,7 @@ def html_timeline(default_timeline: str,
         # is no way to hide/expand sections.
         # Also replace MITM text with an eye icon
         if is_text_browser:
-            tl_str = tl_str.replace(translate['SHOW MORE'], '')
-            tl_str = tl_str.replace(translate['mitm'], '👁 ')
+            tl_str = text_mode_removals(tl_str, translate)
 
         tl_str += \
             _html_timeline_end(base_dir, nickname, domain_full,
@@ -1214,8 +1213,7 @@ def html_timeline(default_timeline: str,
     # is no way to hide/expand sections.
     # Also replace MITM text with an eye icon
     if is_text_browser:
-        tl_str = tl_str.replace(translate['SHOW MORE'], '')
-        tl_str = tl_str.replace(translate['mitm'], '👁 ')
+        tl_str = text_mode_removals(tl_str, translate)
 
     tl_str += \
         _html_timeline_end(base_dir, nickname, domain_full,

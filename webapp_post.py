@@ -35,6 +35,7 @@ from flags import is_news_post
 from flags import is_recent_post
 from flags import is_chat_message
 from flags import is_pgp_encrypted
+from utils import text_mode_removals
 from utils import remove_header_tags
 from utils import get_actor_from_post_id
 from utils import contains_statuses
@@ -406,7 +407,7 @@ def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
                                                             translate,
                                                             'audio')
         # replace MITM text with an eye icon
-        post_html = post_html.replace(translate['mitm'], '👁 ')
+        post_html = text_mode_removals(post_html, translate)
 
     # if on the bookmarks timeline then remain there
     if box_name in ('tlbookmarks', 'bookmarks'):
