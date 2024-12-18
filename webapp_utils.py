@@ -1213,15 +1213,20 @@ def _is_audio_mime_type(mime_type: str) -> bool:
     return False
 
 
-def _is_attached_image(attachment_filename: str) -> bool:
-    """Is the given attachment filename an image?
+def _is_attached_image(attachment_url: str) -> bool:
+    """Is the given attachment url an image?
     """
-    if '.' not in attachment_filename:
+    if '.' not in attachment_url:
         return False
     image_ext = get_image_extensions()
-    ext = attachment_filename.split('.')[-1]
+    ext = attachment_url.split('.')[-1]
     if ext in image_ext:
         return True
+    if '/' in attachment_url:
+        # this might still be an image, but without a file extension
+        last_part = attachment_url.split('/')[-1]
+        if '.' not in last_part:
+            return True
     return False
 
 
