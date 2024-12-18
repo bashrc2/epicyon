@@ -1554,15 +1554,19 @@ def _reply_to_unknown_html(translate: {},
 def _reply_with_unknown_path_html(translate: {},
                                   post_json_object: {},
                                   post_domain: str,
-                                  nickname: str) -> str:
+                                  nickname: str,
+                                  mitm_servers: []) -> str:
     """Returns html title for a reply with an unknown path
-    eg. does not contain /statuses/
+    eg. does not contain /statuses/ or an equivalent separator
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_id = get_reply_to(post_json_object['object'])
     post_bookmark = '#' + bookmark_from_id(post_id)
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
+    mitm_str = ''
+    if post_domain in mitm_servers:
+        mitm_str = ' ' + mitm_warning_html(translate)
     return '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + \
         '" alt="' + replying_to_str + \
@@ -1570,7 +1574,7 @@ def _reply_with_unknown_path_html(translate: {},
         'class="announceOrReply"/>\n' + \
         '        <a href="' + post_link + \
         '" class="announceOrReply" tabindex="10">' + \
-        post_domain + '</a>\n'
+        post_domain + mitm_str + '</a>\n'
 
 
 def _get_reply_html(translate: {},
@@ -1681,7 +1685,7 @@ def _get_post_title_reply_html(base_dir: str,
             title_str += \
                 _reply_with_unknown_path_html(translate,
                                               post_json_object, post_domain,
-                                              nickname)
+                                              nickname, mitm_servers)
             return (title_str, reply_avatar_image_in_post,
                     container_class_icons, container_class)
 
