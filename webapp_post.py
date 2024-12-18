@@ -405,6 +405,8 @@ def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
             post_html = _prepare_media_post_from_html_cache(post_html,
                                                             translate,
                                                             'audio')
+        # replace MITM text with an eye icon
+        post_html = post_html.replace(translate['mitm'], '👁')
 
     # if on the bookmarks timeline then remain there
     if box_name in ('tlbookmarks', 'bookmarks'):
