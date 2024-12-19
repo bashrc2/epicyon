@@ -1674,6 +1674,9 @@ def _get_post_title_reply_html(base_dir: str,
                     if attrib:
                         reply_actor = attrib
                         in_reply_to = reply_actor
+                        if obj_json.get('id'):
+                            if isinstance(obj_json['id'], str):
+                                in_reply_to = obj_json['id']
                 elif obj_json != reply_post_json:
                     obj_json = reply_post_json
                     if obj_json.get('attributedTo'):
@@ -1681,6 +1684,9 @@ def _get_post_title_reply_html(base_dir: str,
                         if attrib:
                             reply_actor = attrib
                             in_reply_to = reply_actor
+                            if obj_json.get('id'):
+                                if isinstance(obj_json['id'], str):
+                                    in_reply_to = obj_json['id']
 
         if post_domain and not reply_actor:
             title_str += \
