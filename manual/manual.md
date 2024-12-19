@@ -829,6 +829,8 @@ Timelines will look something like the following.
 
 ![Inbox viewed within a shell browser](manual-lynx-inbox.png)
 
+The typical way of refreshing the timeline is to go to the top, select **Inbox** from the menu, then use **CTRL-R** to reload.
+
 # Content licenses
 
 ActivityPub posts are really just content on a website and so are subject to copyright rules. Historically, the copyright status of posts was always left as ambiguous but in Epicyon for the avoidance of disputes it is made explicit. Setting the scope of a post, such as being to followers only, is not sufficient to indicate how that post is intended to be used.
