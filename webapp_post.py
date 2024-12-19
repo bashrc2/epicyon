@@ -1587,8 +1587,6 @@ def _get_reply_html(translate: {},
                     reply_handle: str) -> str:
     """Returns html title for a reply
     """
-    if not in_reply_to:
-        return ''
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_bookmark = '#' + bookmark_from_id(in_reply_to)
     post_link = '/users/' + nickname + '?convthread=' + \
