@@ -5330,8 +5330,10 @@ def browser_supports_download_filename(ua_str: str) -> bool:
 def detect_mitm(self) -> bool:
     """Detect if a request contains a MiTM
     """
-    mitm_domains = ('cloudflare', 'radware', 'imperva', 'akamai',
-                    'azure', 'fastly', 'google')
+    mitm_domains = (
+        'cloudflare', 'radware', 'imperva', 'akamai', 'azure',
+        'fastly', 'google'
+    )
     # look for domains within these headers
     check_headers = (
         'Server', 'Report-To', 'Report-to', 'report-to',
