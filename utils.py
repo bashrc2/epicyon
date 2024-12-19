@@ -5330,7 +5330,8 @@ def browser_supports_download_filename(ua_str: str) -> bool:
 def detect_mitm(self) -> bool:
     """Detect if a request contains a MiTM
     """
-    mitm_domains = ['cloudflare']
+    mitm_domains = ('cloudflare', 'radware', 'imperva', 'akamai',
+                    'azure', 'fastly', 'google')
     # look for domains within these headers
     check_headers = (
         'Server', 'Report-To', 'Report-to', 'report-to',
@@ -5340,7 +5341,7 @@ def detect_mitm(self) -> bool:
         for header_name in check_headers:
             if not self.headers.get(header_name):
                 continue
-            if interloper in str(self.headers[header_name]):
+            if interloper in str(self.headers[header_name]).lower():
                 print('MITM: ' + header_name + ' = ' +
                       str(self.headers[header_name]))
                 return True
