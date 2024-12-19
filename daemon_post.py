@@ -737,7 +737,8 @@ def daemon_http_post(self) -> None:
                             self.server.default_post_language,
                             self.server.newswire,
                             self.server.block_federated,
-                            self.server.mitm_servers)
+                            self.server.mitm_servers,
+                            ua_str)
             self.server.postreq_busy = False
             return
 

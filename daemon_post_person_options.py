@@ -247,7 +247,8 @@ def _person_options_view(self, options_confirm_params: str,
                          cookie: str,
                          calling_domain: str,
                          curr_session, access_keys: {},
-                         mitm_servers: []) -> bool:
+                         mitm_servers: [],
+                         ua_str: str) -> bool:
     """Person options screen, view button
     See html_person_options
     """
@@ -328,7 +329,8 @@ def _person_options_view(self, options_confirm_params: str,
                                       max_shares_on_profile,
                                       no_of_books,
                                       auto_cw_cache,
-                                      mitm_servers)
+                                      mitm_servers,
+                                      ua_str)
         if profile_str:
             msg = profile_str.encode('utf-8')
             msglen = len(msg)
@@ -1289,7 +1291,8 @@ def person_options2(self, path: str,
                     default_post_language: str,
                     newswire: {},
                     block_federated: [],
-                    mitm_servers: []) -> None:
+                    mitm_servers: [],
+                    ua_str: str) -> None:
     """Receive POST from person options screen
     """
     page_number = 1
@@ -1418,7 +1421,8 @@ def person_options2(self, path: str,
                             cookie,
                             calling_domain,
                             curr_session, access_keys,
-                            mitm_servers):
+                            mitm_servers,
+                            ua_str):
         return
 
     if _person_option_receive_petname(self, options_confirm_params,

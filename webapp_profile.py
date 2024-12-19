@@ -16,6 +16,7 @@ from flags import is_system_account
 from flags import is_group_account
 from flags import is_valid_date
 from flags import is_premium_account
+from utils import text_mode_removals
 from utils import replace_strings
 from utils import data_dir
 from utils import time_days_ago
@@ -88,6 +89,7 @@ from follow import is_follower_of_person
 from follow import get_follower_domains
 from follow import is_following_actor
 from webapp_frontscreen import html_front_screen
+from webapp_utils import text_mode_browser
 from webapp_utils import html_following_dropdown
 from webapp_utils import edit_number_field
 from webapp_utils import html_keyboard_navigation
@@ -249,7 +251,8 @@ def html_profile_after_search(authorized: bool,
                               max_shares_on_profile: int,
                               no_of_books: int,
                               auto_cw_cache: {},
-                              mitm_servers: []) -> str:
+                              mitm_servers: [],
+                              ua_str: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -624,6 +627,9 @@ def html_profile_after_search(authorized: bool,
             i += 1
             if i >= 8:
                 break
+
+    if text_mode_browser(ua_str):
+        profile_str = text_mode_removals(profile_str, translate)
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     preload_images = []
