@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### Míreanna ag teastáil
+Is gnách gur rudaí fisiceacha nó seirbhísí áitiúla iad seo ar mhaith leat a bheith acu.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+Mar shampla, b’fhéidir gur mhaith leat uirlis garraíodóireachta ar leith nó uirlis ceoil nó cabhair le rud éigin a dhéanamh.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+Chun turscar a sheachaint, ní dhéantar earraí atá uait a chónascadh trí ActivityPub agus tá siad áitiúil do bhaill ar an ásc céanna.

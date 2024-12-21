@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### 원하는 항목
+이는 일반적으로 여러분이 원하는 물리적 사물이나 지역 서비스입니다.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+예를 들어, 특정한 정원 가꾸기 도구나 악기가 필요하거나, 어떤 일을 하는 데 도움이 필요할 수도 있습니다.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+스팸을 피하기 위해 원하는 항목은 ActivityPub를 통해 연합되지 않으며 동일한 인스턴스의 멤버에게만 로컬로 저장됩니다.

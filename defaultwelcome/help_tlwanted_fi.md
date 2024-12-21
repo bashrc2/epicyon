@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### Haluttuja kohteita
+Nämä ovat tyypillisesti fyysisiä esineitä tai paikallisia palveluita, joita haluat saada.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+Saatat esimerkiksi tarvita tietyn puutarhatyökalun tai musiikki-instrumentin tai apua jonkin tekemisessä.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+Roskapostin välttämiseksi haluttuja kohteita ei liitetä ActivityPubin kautta, ja ne ovat paikallisia saman esiintymän jäsenille.

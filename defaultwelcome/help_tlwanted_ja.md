@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### 欲しい物
+これらは通常、あなたが利用したい物理的なオブジェクトまたはローカル サービスです。
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+たとえば、特定の園芸用具や楽器、あるいは何かをするのに助けが必要な場合もあります。
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+スパムを避けるため、必要なアイテムは ActivityPub 経由で統合されず、同じインスタンスのメンバーに対してローカルになります。

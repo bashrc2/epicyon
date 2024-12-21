@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### Artículos buscados
+Por lo general, se trata de objetos físicos o servicios locales que le gustaría tener.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+Por ejemplo, es posible que desee una herramienta de jardinería o un instrumento musical en particular, o ayuda para hacer algo.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+Para evitar el spam, los elementos deseados no están federados a través de ActivityPub y son locales para los miembros en la misma instancia.

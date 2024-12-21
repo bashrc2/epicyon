@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### Требуемые предметы
+Обычно это физические объекты или местные услуги, которыми вы хотели бы пользоваться.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+Например, вам может понадобиться определенный садовый инструмент или музыкальный инструмент или помощь в каком-либо деле.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+Во избежание спама требуемые элементы не объединяются через ActivityPub и являются локальными для участников одного и того же экземпляра.

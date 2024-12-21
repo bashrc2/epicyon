@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### Vitu vinavyotakiwa
+Hivi kwa kawaida ni vitu halisi au huduma za ndani ambazo ungependa kuwa nazo.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+Kwa mfano, unaweza kutaka zana fulani ya bustani au ala ya muziki au usaidizi wa kufanya jambo fulani.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+Ili kuepuka barua taka, vitu vinavyohitajika havishirikishwi kupitia ActivityPub na vinapatikana kwa wanachama kwa wakati mmoja.

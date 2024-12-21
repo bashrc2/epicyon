@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### פריטים מבוקשים
+אלו בדרך כלל חפצים פיזיים או שירותים מקומיים שהיית רוצה לקבל.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+לדוגמה, ייתכן שתרצה כלי גינון מסוים או כלי נגינה או עזרה בעשיית משהו.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+כדי למנוע דואר זבל, פריטים מבוקשים אינם מאוגדים באמצעות ActivityPub והם מקומיים לחברים באותו מופע.

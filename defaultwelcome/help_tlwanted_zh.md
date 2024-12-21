@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### 求购物品
+这些通常是您想要拥有的实物或本地服务。
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+例如，您可能想要某种特定的园艺工具或乐器，或者需要做某事的帮助。
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+为了避免垃圾邮件，所需物品不会通过 ActivityPub 联合，并且对于同一实例上的成员而言是本地的。

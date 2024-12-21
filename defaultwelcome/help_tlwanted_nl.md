@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### Gezochte artikelen
+Meestal zijn dit fysieke objecten of lokale diensten die u graag zou willen hebben.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+U wilt bijvoorbeeld een bepaald tuingereedschap, een muziekinstrument of hulp bij iets anders.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+Om spam te voorkomen, worden gewenste items niet via ActivityPub gefedereerd en zijn ze lokaal voor leden op dezelfde instantie.

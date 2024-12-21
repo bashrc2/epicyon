@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### موارد مورد نظر
+اینها معمولاً اشیاء فیزیکی یا خدمات محلی هستند که شما دوست دارید داشته باشید.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+به عنوان مثال، ممکن است یک ابزار باغبانی یا آلات موسیقی خاص یا کمک برای انجام کاری بخواهید.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+برای جلوگیری از هرزنامه، موارد مورد نظر از طریق ActivityPub فدرال نمی‌شوند و برای اعضای همان نمونه محلی هستند.

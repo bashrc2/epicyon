@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### געוואלט זאכן
+דאָס זענען טיפּיקלי גשמיות אַבדזשעקץ אָדער היגע באַדינונגס וואָס איר וואָלט ווי צו האָבן.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+פֿאַר בייַשפּיל, איר קען וועלן אַ באַזונדער גאָרטנצוכט געצייַג אָדער מוזיקאַליש קיילע אָדער הילף מיט טאן עפּעס.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+צו ויסמיידן ספּאַם, געוואלט זאכן זענען נישט פעדערייטיד דורך ActivityPub און זענען היגע פֿאַר מיטגלידער אין דער זעלביקער בייַשפּיל.

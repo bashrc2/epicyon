@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### İstenilen ürünler
+Bunlar genellikle sahip olmak isteyeceğiniz fiziksel nesneler veya yerel hizmetlerdir.
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+Örneğin, belirli bir bahçe aleti, müzik aleti veya bir konuda yardım isteyebilirsiniz.
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+Spam'ı önlemek için, istenen öğeler ActivityPub üzerinden birleştirilmez ve aynı örnekteki üyelere yereldir.

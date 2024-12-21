@@ -1,6 +1,6 @@
-### Wanted items
-These are typically physical objects or local services that you would like to have.
+### वांछित वस्तुएँ
+ये आमतौर पर भौतिक वस्तुएं या स्थानीय सेवाएं होती हैं जिन्हें आप चाहते हैं।
 
-For example, you may want a particular gardening tool or musical instrument or help with doing something.
+उदाहरण के लिए, हो सकता है कि आपको कोई विशेष बागवानी उपकरण या संगीत वाद्य यंत्र चाहिए हो या किसी काम में मदद चाहिए हो।
 
-To avoid spam, wanted items are not federated via ActivityPub and are local to members on the same instance.
+स्पैम से बचने के लिए, वांछित आइटमों को एक्टिविटीपब के माध्यम से संघीकृत नहीं किया जाता है, तथा वे उसी इंस्टैंस पर सदस्यों के लिए स्थानीय होते हैं।
