@@ -1,7 +1,7 @@
 __filename__ = "daemon_get.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.5.0"
+__version__ = "1.6.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
@@ -466,7 +466,7 @@ def daemon_http_get(self) -> None:
                         self.server.debug)
 
     # followers synchronization request
-    # See https://github.com/mastodon/mastodon/pull/14510
+    # See https://github.com/mastodon/mastodon/pull/1.6.0
     # https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
     if self.path.startswith('/users/') and \
        self.path.endswith('/followers_synchronization'):
