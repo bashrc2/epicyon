@@ -466,7 +466,7 @@ def daemon_http_get(self) -> None:
                         self.server.debug)
 
     # followers synchronization request
-    # See https://github.com/mastodon/mastodon/pull/1.6.0
+    # See
     # https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
     if self.path.startswith('/users/') and \
        self.path.endswith('/followers_synchronization'):

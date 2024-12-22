@@ -88,7 +88,7 @@ def _get_followers_sync_json(base_dir: str,
                              http_prefix: str, domain_full: str,
                              search_domain: str) -> {}:
     """Returns a response for followers synchronization
-    See https://github.com/mastodon/mastodon/pull/1.6.0
+    See
     https://codeberg.org/fediverse/fep/src/branch/main/fep/8fcf/fep-8fcf.md
     """
     sync_list = \
@@ -111,7 +111,7 @@ def _get_followers_sync_json(base_dir: str,
 
 def get_followers_sync_hash(sync_json: {}) -> str:
     """Returns a hash used within the Collection-Synchronization http header
-    See https://github.com/mastodon/mastodon/pull/1.6.0
+    See
     https://codeberg.org/fediverse/fep/src/branch/main/fep/8fcf/fep-8fcf.md
     """
     if not sync_json:
@@ -139,7 +139,6 @@ def update_followers_sync_cache(base_dir: str,
                                 calling_domain: str,
                                 sync_cache: {}) -> ({}, str):
     """Updates the followers synchronization cache
-    See https://github.com/mastodon/mastodon/pull/1.6.0
     https://codeberg.org/fediverse/fep/src/branch/main/fep/8fcf/fep-8fcf.md
     """
     foll_sync_key = nickname + ':' + calling_domain

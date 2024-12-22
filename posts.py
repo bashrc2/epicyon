@@ -4002,7 +4002,6 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
 
         extra_headers = {}
         # followers synchronization header
-        # See https://github.com/mastodon/mastodon/pull/1.6.0
         # https://codeberg.org/fediverse/fep/src/branch/main/feps/fep-8fcf.md
         sending_actor = \
             from_http_prefix + '://' + from_domain_full + '/users/' + nickname
