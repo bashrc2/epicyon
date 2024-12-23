@@ -81,7 +81,7 @@ def set_art_site_url(actor_json: {}, art_site_url: str) -> None:
         return
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

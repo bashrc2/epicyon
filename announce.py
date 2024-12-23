@@ -51,7 +51,7 @@ def no_of_announces(post_json_object: {}) -> int:
     if not isinstance(obj['shares'], dict):
         return 0
     if not obj['shares'].get('items'):
-        obj['shares']['items'] = []
+        obj['shares']['items']: list[dict] = []
         obj['shares']['totalItems'] = 0
     return len(obj['shares']['items'])
 

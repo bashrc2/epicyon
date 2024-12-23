@@ -168,7 +168,7 @@ def parse_nogo_string(nogo_line: str) -> []:
         pts = polygon_str.split(',')
     if len(pts) <= 4:
         return []
-    polygon = []
+    polygon: list[list] = []
     for index in range(int(len(pts)/2)):
         if index*2 + 1 >= len(pts):
             break
@@ -224,7 +224,7 @@ def spoof_geolocation(base_dir: str,
             return (default_latitude, default_longitude,
                     default_latdirection, default_longdirection,
                     "", "", 0)
-        cities = []
+        cities: list[str] = []
         try:
             with open(locations_filename, 'r', encoding='utf-8') as fp_loc:
                 cities = fp_loc.readlines()
@@ -236,7 +236,7 @@ def spoof_geolocation(base_dir: str,
         nogo = nogo_list
     else:
         if os.path.isfile(nogo_filename):
-            nogo_list = []
+            nogo_list: list[str] = []
             try:
                 with open(nogo_filename, 'r', encoding='utf-8') as fp_nogo:
                     nogo_list = fp_nogo.readlines()

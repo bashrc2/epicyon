@@ -124,7 +124,7 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
     if not content:
         return
 
-    post_tags = []
+    post_tags: list[dict] = []
     if post_json_object['object'].get('tag'):
         if isinstance(post_json_object['object']['tag'], list):
             post_tags = post_json_object['object']['tag']

@@ -123,7 +123,7 @@ def blocked_timeline_json(actor: str, page_number: int, items_per_page: int,
     """
     blocked_accounts_textarea = \
         get_account_blocks(base_dir, nickname, domain)
-    blocked_list = []
+    blocked_list: list[str] = []
     if blocked_accounts_textarea:
         blocked_list = blocked_accounts_textarea.split('\n')
     start_index = (page_number - 1) * items_per_page
@@ -846,7 +846,7 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                 federated_blocks_filename = \
                     data_dir(base_dir) + '/block_api.txt'
                 if os.path.isfile(federated_blocks_filename):
-                    block_federated = []
+                    block_federated: list[str] = []
                     try:
                         with open(federated_blocks_filename, 'r',
                                   encoding='utf-8') as fp_fed:
@@ -1268,7 +1268,7 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
         post_json_obj['ignores'] = ignores_json
     else:
         if not post_json_obj['ignores'].get('items'):
-            post_json_obj['ignores']['items'] = []
+            post_json_obj['ignores']['items']: list[dict] = []
         items_list = post_json_obj['ignores']['items']
         for ignores_item in items_list:
             if ignores_item.get('actor'):
@@ -1737,7 +1737,7 @@ def import_blocking_file(base_dir: str, nickname: str, domain: str,
     blocking_reasons_filename = \
         account_directory + '/blocking_reasons.txt'
 
-    existing_lines = []
+    existing_lines: list[str] = []
     if os.path.isfile(blocking_filename):
         try:
             with open(blocking_filename, 'r', encoding='utf-8') as fp_blocks:
@@ -1746,7 +1746,7 @@ def import_blocking_file(base_dir: str, nickname: str, domain: str,
             print('EX: ' +
                   'unable to import existing blocked instances from file ' +
                   blocking_filename)
-    existing_reasons = []
+    existing_reasons: list[str] = []
     if os.path.isfile(blocking_reasons_filename):
         try:
             with open(blocking_reasons_filename,
@@ -1758,8 +1758,8 @@ def import_blocking_file(base_dir: str, nickname: str, domain: str,
                   'blocked instance reasons from file ' +
                   blocking_reasons_filename)
 
-    append_blocks = []
-    append_reasons = []
+    append_blocks: list[str] = []
+    append_reasons: list[str] = []
     for line_str in lines:
         if line_str.startswith('#'):
             continue
@@ -1829,7 +1829,7 @@ def export_blocking_file(base_dir: str, nickname: str, domain: str) -> str:
     if not os.path.isfile(blocking_filename):
         return blocks_header
 
-    blocking_lines = []
+    blocking_lines: list[str] = []
     if os.path.isfile(blocking_filename):
         try:
             with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
@@ -1837,7 +1837,7 @@ def export_blocking_file(base_dir: str, nickname: str, domain: str) -> str:
         except OSError:
             print('EX: export_blocks failed to read ' + blocking_filename)
 
-    blocking_reasons = []
+    blocking_reasons: list[str] = []
     if os.path.isfile(blocking_reasons_filename):
         try:
             with open(blocking_reasons_filename, 'r',
@@ -1906,7 +1906,7 @@ def load_blocked_military(base_dir: str) -> {}:
     """Loads a list of nicknames for accounts which block military instances
     """
     block_military_filename = data_dir(base_dir) + '/block_military.txt'
-    nicknames_list = []
+    nicknames_list: list[str] = []
     if os.path.isfile(block_military_filename):
         try:
             with open(block_military_filename, 'r',
@@ -1927,7 +1927,7 @@ def load_blocked_government(base_dir: str) -> {}:
     """Loads a list of nicknames for accounts which block government instances
     """
     block_government_filename = data_dir(base_dir) + '/block_government.txt'
-    nicknames_list = []
+    nicknames_list: list[str] = []
     if os.path.isfile(block_government_filename):
         try:
             with open(block_government_filename, 'r',
@@ -1948,7 +1948,7 @@ def load_blocked_bluesky(base_dir: str) -> {}:
     """Loads a list of nicknames for accounts which block bluesky bridges
     """
     block_bluesky_filename = data_dir(base_dir) + '/block_bluesky.txt'
-    nicknames_list = []
+    nicknames_list: list[str] = []
     if os.path.isfile(block_bluesky_filename):
         try:
             with open(block_bluesky_filename, 'r',
@@ -2076,11 +2076,11 @@ def contains_bluesky_domain(message_str: str) -> bool:
 def load_federated_blocks_endpoints(base_dir: str) -> []:
     """Loads endpoint urls for federated blocklists
     """
-    block_federated_endpoints = []
+    block_federated_endpoints: list[str] = []
     block_api_endpoints_filename = \
         data_dir(base_dir) + '/block_api_endpoints.txt'
     if os.path.isfile(block_api_endpoints_filename):
-        new_block_federated_endpoints = []
+        new_block_federated_endpoints: list[str] = []
         try:
             with open(block_api_endpoints_filename, 'r',
                       encoding='utf-8') as fp_ep:
@@ -2120,7 +2120,7 @@ def _update_federated_blocks(session, base_dir: str,
                              mitm_servers: []) -> []:
     """Creates block_api.txt
     """
-    block_federated = []
+    block_federated: list[str] = []
     debug = True
 
     if not session:
@@ -2217,7 +2217,7 @@ def save_block_federated_endpoints(base_dir: str,
     """
     block_api_endpoints_filename = \
         data_dir(base_dir) + '/block_api_endpoints.txt'
-    result = []
+    result: list[str] = []
     block_federated_endpoints_str = ''
     for endpoint in block_federated_endpoints:
         if not endpoint:

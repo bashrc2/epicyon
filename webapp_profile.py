@@ -3680,7 +3680,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                debug: bool,
                                system_language: str,
                                mitm_servers: [],
-                               buttons: list = []) -> str:
+                               buttons: list[str] = []) -> str:
     """An individual follow entry on the profile screen
     """
     follow_url_nickname = get_nickname_from_actor(follow_url)

@@ -45,7 +45,7 @@ def update_known_crawlers(ua_str: str,
 
     if curr_time - last_known_crawler >= 30:
         # remove any old observations
-        remove_crawlers = []
+        remove_crawlers: list[str] = []
         for uagent, item in known_crawlers.items():
             if curr_time - item['lastseen'] >= 60 * 60 * 24 * 30:
                 remove_crawlers.append(uagent)
@@ -72,7 +72,7 @@ def load_known_web_bots(base_dir: str) -> []:
               known_bots_filename)
     if not crawlers_str:
         return []
-    known_bots = []
+    known_bots: list[str] = []
     crawlers_list = crawlers_str.split('\n')
     for crawler in crawlers_list:
         if not crawler:

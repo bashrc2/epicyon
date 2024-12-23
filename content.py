@@ -295,7 +295,7 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
 
 
 def switch_words(base_dir: str, nickname: str, domain: str, content: str,
-                 rules: [] = []) -> str:
+                 rules: list[str] = []) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
@@ -409,7 +409,7 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
         except OSError:
             print('EX: unable to load common emoji file')
     if common_emoji:
-        new_common_emoji = []
+        new_common_emoji: list[str] = []
         emoji_found = False
         for line in common_emoji:
             if ' ' + emoji_content in line:
@@ -1115,7 +1115,7 @@ def remove_long_words(content: str, max_word_length: int,
     content = content.replace('<p></p>', '<p> </p>')
     words = content.split(' ')
     if not long_words_list:
-        long_words_list = []
+        long_words_list: list[str] = []
         for word_str in words:
             if len(word_str) > max_word_length:
                 if word_str not in long_words_list:
@@ -1341,7 +1341,7 @@ def load_dogwhistles(filename: str) -> {}:
     """
     if not os.path.isfile(filename):
         return {}
-    dogwhistle_lines = []
+    dogwhistle_lines: list[str] = []
     try:
         with open(filename, 'r', encoding='utf-8') as fp_dogwhistles:
             dogwhistle_lines = fp_dogwhistles.readlines()
@@ -1398,7 +1398,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     words = _get_simplified_content(content).split(' ')
 
     # remove . for words which are not mentions
-    new_words = []
+    new_words: list[str] = []
     for _, word_str in enumerate(words):
         if word_str.endswith('.'):
             if not word_str.startswith('@'):
@@ -1423,7 +1423,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     petnames = None
     if '@' in words:
         if os.path.isfile(following_filename):
-            following = []
+            following: list[str] = []
             try:
                 with open(following_filename, 'r',
                           encoding='utf-8') as fp_foll:
@@ -1437,7 +1437,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
                     petnames.append(pet + '\n')
 
     # extract mentions and tags from words
-    long_words_list = []
+    long_words_list: list[str] = []
     prev_word_str = ''
     auto_tags_list = _load_auto_tags(base_dir, nickname, domain)
     append_tags = []
@@ -1539,7 +1539,7 @@ def _string_starts_with_url_prefix(text: str) -> bool:
 def get_mentions_from_html(html_text: str, match_str: str) -> []:
     """Extracts mentioned actors from the given html content string
     """
-    mentions = []
+    mentions: list[str] = []
     if match_str not in html_text:
         return mentions
     mentions_list = html_text.split(match_str)
@@ -2080,14 +2080,14 @@ def content_diff(content: str, prev_content: str) -> str:
     """
     cdiff = difflib.Differ()
     text1_lines = content.splitlines()
-    text1_sentences = []
+    text1_sentences: list[str] = []
     for line in text1_lines:
         sentences = line.split('.')
         for sentence in sentences:
             text1_sentences.append(sentence.strip())
 
     text2_lines = prev_content.splitlines()
-    text2_sentences = []
+    text2_sentences: list[str] = []
     for line in text2_lines:
         sentences = line.split('.')
         for sentence in sentences:
@@ -2128,7 +2128,7 @@ def create_edits_html(edits_json: {}, post_json_object: {},
     if 'content' not in post_json_object['object']:
         if 'contentMap' not in post_json_object['object']:
             return ''
-    edit_dates_list = []
+    edit_dates_list: list[str] = []
     for modified, _ in edits_json.items():
         edit_dates_list.append(modified)
     edit_dates_list.sort(reverse=True)
@@ -2243,7 +2243,7 @@ def add_name_emojis_to_tags(base_dir: str, http_prefix: str,
 
     # get emojis from the actor name
     words = name.split(' ')
-    emojis = []
+    emojis: list[str] = []
     for wrd in words:
         if wrd.startswith(':') and wrd.endswith(':'):
             if wrd not in emojis:
@@ -2251,7 +2251,7 @@ def add_name_emojis_to_tags(base_dir: str, http_prefix: str,
     if not emojis:
         return
 
-    actor_tags = []
+    actor_tags: list[dict] = []
     if actor_json.get('tag'):
         actor_tags = actor_json['tag']
 

@@ -66,7 +66,7 @@ def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
         not_cwtch_address = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

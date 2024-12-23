@@ -321,7 +321,7 @@ class EpicyonServer(ThreadingHTTPServer):
     clacks = None
     public_replies_unlisted = False
     dogwhistles = {}
-    preferred_podcast_formats = []
+    preferred_podcast_formats: list[str] = []
     bold_reading = {}
     hide_follows = {}
     account_timezone = None
@@ -404,8 +404,8 @@ class EpicyonServer(ThreadingHTTPServer):
     domain_full = ''
     http_prefix = 'https'
     debug = False
-    federation_list = []
-    shared_items_federated_domains = []
+    federation_list: list[str] = []
+    shared_items_federated_domains: list[str] = []
     base_dir = ''
     instance_id = ''
     person_cache = {}
@@ -420,7 +420,7 @@ class EpicyonServer(ThreadingHTTPServer):
     getreq_busy = False
     postreq_busy = False
     received_message = False
-    inbox_queue = []
+    inbox_queue: list[dict] = []
     send_threads = None
     postLog = []
     max_queue_length = 64

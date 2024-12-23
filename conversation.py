@@ -135,7 +135,7 @@ def _get_replies_to_post(post_json_object: {},
                          mitm_servers: []) -> []:
     """Returns a list of reply posts to the given post as json
     """
-    result = []
+    result: list[dict] = []
     post_obj = post_json_object
     if has_object_dict(post_json_object):
         post_obj = post_json_object['object']
@@ -174,7 +174,7 @@ def _get_replies_to_post(post_json_object: {},
             if not replies_collection['first'].get('next'):
                 return result
 
-        items_list = []
+        items_list: list[dict] = []
         if replies_collection['first'].get('items'):
             items_list = replies_collection['first']['items']
         if not items_list:
@@ -303,7 +303,7 @@ def download_conversation_posts(authorized: bool, session,
     as_header = {
         'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
-    conversation_view = []
+    conversation_view: list[dict] = []
     signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
     post_id = remove_id_ending(post_id)
     post_filename = \
@@ -326,7 +326,7 @@ def download_conversation_posts(authorized: bool, session,
                             post_json_object)
 
     # get any replies
-    replies_to_post = []
+    replies_to_post: list[dict] = []
     if get_json_valid(post_json_object):
         replies_to_post = \
             _get_replies_to_post(post_json_object,
@@ -335,7 +335,7 @@ def download_conversation_posts(authorized: bool, session,
                                  http_prefix, base_dir, nickname,
                                  domain, 0, [], mitm_servers)
 
-    ids = []
+    ids: list[str] = []
     while get_json_valid(post_json_object):
         if not isinstance(post_json_object, dict):
             break

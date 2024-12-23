@@ -159,7 +159,7 @@ def _no_of_bookmarks(post_json_object: {}) -> int:
     if not isinstance(post_json_object['object']['bookmarks'], dict):
         return 0
     if not post_json_object['object']['bookmarks'].get('items'):
-        post_json_object['object']['bookmarks']['items'] = []
+        post_json_object['object']['bookmarks']['items']: list[dict] = []
         post_json_object['object']['bookmarks']['totalItems'] = 0
     return len(post_json_object['object']['bookmarks']['items'])
 
@@ -220,7 +220,7 @@ def update_bookmarks_collection(recent_posts_cache: {},
         post_json_object['object']['bookmarks'] = bookmarks_json
     else:
         if not post_json_object['object']['bookmarks'].get('items'):
-            post_json_object['object']['bookmarks']['items'] = []
+            post_json_object['object']['bookmarks']['items']: list[dict] = []
         bm_items = post_json_object['object']['bookmarks']['items']
         for bookmark_item in bm_items:
             if bookmark_item.get('actor'):

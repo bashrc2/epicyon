@@ -77,9 +77,9 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
                 return 1
         return 0
 
-    removals = []
+    removals: list[str] = []
     replies = 0
-    lines = []
+    lines: list[str] = []
     try:
         with open(post_filename, 'r', encoding='utf-8') as fp_post:
             lines = fp_post.readlines()
@@ -154,7 +154,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                         print('EX: unable to read blog 3 ' + post_filename)
         return ''
 
-    lines = []
+    lines: list[str] = []
     try:
         with open(post_filename, 'r', encoding='utf-8') as fp_post:
             lines = fp_post.readlines()
@@ -275,7 +275,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
         get_person_from_cache(base_dir, person_url, person_cache)
-    languages_understood = []
+    languages_understood: list[str] = []
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)
     json_content = get_content_from_post(post_json_object, system_language,

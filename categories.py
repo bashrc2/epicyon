@@ -67,7 +67,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
             cities_filename = base_dir + '/data/cities/' + cities_file
             if not os.path.isfile(cities_filename):
                 continue
-            cities = []
+            cities: list[str] = []
             try:
                 with open(cities_filename, 'r', encoding='utf-8') as fp_cities:
                     cities = fp_cities.read().split('\n')
@@ -202,7 +202,7 @@ def update_hashtag_categories(base_dir: str) -> None:
                       category_list_filename)
         return
 
-    category_list = []
+    category_list: list[str] = []
     for category_str, _ in hashtag_categories.items():
         category_list.append(category_str)
     category_list.sort()

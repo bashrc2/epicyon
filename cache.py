@@ -147,7 +147,7 @@ def expire_person_cache(person_cache: {}):
     """Expires old entries from the cache in memory
     """
     curr_time = date_utcnow()
-    removals = []
+    removals: list[str] = []
     for person_url, cache_json in person_cache.items():
         cache_time = date_from_string_format(cache_json['timestamp'],
                                              ["%Y-%m-%dT%H:%M:%S%z"])
