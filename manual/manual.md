@@ -448,7 +448,7 @@ Attachments should be as small as possible in terms of file size. Videos should 
 
 ![Image watermarking](manual-watermark-ai.png)
 
-When attaching an image it is possible to overlay a watermark image in order to mess with generative AI scrapers trying to grift upon your photos. Epicyon will do it's best to bounce AI scraper bots, but since those systems are fundamentally unethical they cannot be relied upon to follow user agent conventions. A watermark image can be uploaded from the **Edit Profile** screen under the **Background Images** section. You may need to experiment with the watermark image width, position and opacity, which can be set as command options on the daemon. See [README_commandline.md](https://gitlab.com/bashrc2/epicyon/-/blob/main/README_commandline.md) for details.
+When attaching an image it is possible to overlay a watermark image in order to mess with generative AI scrapers trying to grift upon your photos. Epicyon will do it's best to bounce AI scraper bots, or pollute them by giving random responses to pollute their training sets, but since those systems are fundamentally unethical they cannot be relied upon to follow user agent conventions. A watermark image can be uploaded from the **Edit Profile** screen under the **Background Images** section. You may need to experiment with the watermark image width, position and opacity, which can be set as command options on the daemon. See [README_commandline.md](https://gitlab.com/bashrc2/epicyon/-/blob/main/README_commandline.md) for details.
 
 Even if the scraper bot tries to remove your watermark from the image by filling in from the surrounding pixels, the removal itself may leave a detectable trace indicative of improper use.
 
