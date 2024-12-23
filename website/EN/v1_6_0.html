@@ -1219,7 +1219,7 @@
         <div class="flex-container">
 	          <ul>
 	              <li>Hashtags within content warning lists</li>
-	              <li>Separated more functions out into their own modules</li>
+	              <li>Separated more functions out into their own modules, for better maintainability</li>
 	              <li>Option for premium accounts, which changes "followers" to "fans"</li>
 	              <li>Additional default content warning lists</li>
 	              <li>Limit on maximum redirects</li>
@@ -1229,7 +1229,7 @@
 	              <li>Option to enable quote toots</li>
 	              <li>Validation on post summary</li>
 	              <li>Remove link tracking gloop from post urls</li>
-	              <li>Potential for account directories to be outside the application directory</li>
+	              <li>Account directories can be outside of the application directory</li>
 	              <li>Button to hide announces</li>
 	              <li>Option to reverse timeline order</li>
 	              <li>Improved support for Wordpress</li>
@@ -1245,15 +1245,16 @@
 	              <li>Anti-AI: Content warning list for AI generated content</li>
 	              <li>ActivityPub discovery link in header of individual posts</li>
 	              <li>Option to block government instances</li>
-	              <li>"Man in the middle" warnings for insecure transport encryption</li>
+	              <li>"Man in the middle" warnings for insecure transport encryption between instances</li>
 	          </ul>
             <center>
                 <img src="v1_6_0.webp" alt="Epicyon logo of a running dog with paw prints in the background" />
             </center>
         </div>
-        <p class="intro">It appears that the ActivityPub fediverse has been eclipsed in popularity by the shiny and drowning-in-cash BlueSky project. But ActivityPub is like the tortoise in the race, and the centralized architecture of BlueSky will create unavoidable problems which collapse its advantage in the long run. Standardized protocols are the only sure thing, resistant to the transient whims and scandals of any one particular company.</p>
+        <p class="intro">Over the last year the ActivityPub fediverse has been eclipsed in popularity by the shiny and drowning-in-cash BlueSky project. But ActivityPub is like the tortoise in the race, and the centralized architecture of BlueSky will create unavoidable problems which collapse its advantage in the long run. Standardized protocols are the only sure thing, resistant to the transient whims and scandals of any one particular company.</p>
+        <p class="intro">Epicyon is designed for the expected long term future of the ActivityPub protocol. Written in the most boring trend-avoiding way possible, with few dependencies, no database to get corrupted, and suitable for running on old hardware at minimum cost. In tough environments, it can also run from an onion or i2p address and use text mode browsers with no risk from javascript exploits.</p>
         <center><img src="img/screenshot-timeline.webp" alt="Screenshot of the main timeline showing posts and left and right columns" /></center>
-        <p class="intro">Epicyon can be downloaded as <a href="epicyon.tar.gz">a gzipped file</a>, or you can get the latest version from the <a href="https://gitlab.com/bashrc2/epicyon">git repo</a>. For installation instructions see <a href="index.html">the main page</a>. To upgrade an existing instance, make sure that you have the <i>python3-cryptography</i> package installed then do a git pull, chown and restart the daemon.</p>
+        <p class="intro">It can be downloaded as <a href="epicyon.tar.gz">a gzipped file</a>, or you can get the latest version from the <a href="https://gitlab.com/bashrc2/epicyon">git repo</a>. For installation instructions see <a href="index.html">the main page</a>. To upgrade an existing instance, make sure that you have the <i>python3-cryptography</i> package installed then do a git pull, chown and restart the daemon.</p>
     </body>
     <footer>
         <p>By: Bob Mottram <a href="mailto:bob@libreserver.org">bob@libreserver.org</a></p>
