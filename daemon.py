@@ -422,7 +422,7 @@ class EpicyonServer(ThreadingHTTPServer):
     received_message = False
     inbox_queue: list[dict] = []
     send_threads = None
-    postLog = []
+    post_log = []
     max_queue_length = 64
     allow_deletion = True
     last_login_time = 0
@@ -1140,7 +1140,7 @@ def run_daemon(accounts_data_dir: str,
     httpd.received_message = False
     httpd.inbox_queue = []
     httpd.send_threads = send_threads
-    httpd.postLog = []
+    httpd.post_log = []
     httpd.max_queue_length = 64
     httpd.allow_deletion = allow_deletion
     httpd.last_login_time = 0
@@ -1323,7 +1323,7 @@ def run_daemon(accounts_data_dir: str,
                                 httpd.max_recent_posts,
                                 project_version,
                                 base_dir, http_prefix, httpd.send_threads,
-                                httpd.postLog, httpd.cached_webfingers,
+                                httpd.post_log, httpd.cached_webfingers,
                                 httpd.person_cache, httpd.inbox_queue,
                                 domain, onion_domain, i2p_domain,
                                 port, proxy_type,

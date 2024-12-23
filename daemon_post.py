@@ -600,7 +600,7 @@ def daemon_http_post(self) -> None:
                             self.server.block_federated,
                             self.server.federation_list,
                             self.server.send_threads,
-                            self.server.postLog,
+                            self.server.post_log,
                             self.server.cached_webfingers,
                             self.server.person_cache,
                             self.server.project_version,
