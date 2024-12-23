@@ -316,7 +316,7 @@ In a browser if you navigate to the URL of your instance and enter the username 
 
 # Account Profiles
 ## Initial setup
-When you first register an account on the instance the first thing that you may want to do is to add more profile details and change your preferences. From the main timeline screen select the top banner to move to your profile and then select the edit button, which usually looks like a pen and is adjacent to the logout icon.
+When you register an account on the instance the first thing that you may want to do is to add more profile details and change your preferences. From the main timeline screen select the top banner to move to your profile and then select the edit button, which usually looks like a pen and is adjacent to the logout icon.
 
 ![Profile edit button](manual-edit-button.png)
 
