@@ -29,7 +29,7 @@ def set_skills_from_dict(actor_json: {}, skills_dict: {}) -> []:
     """Converts a dict containing skills to a list
     Returns the string version of the dictionary
     """
-    skills_list = []
+    skills_list: list[str] = []
     for name, value in skills_dict.items():
         skills_list.append(name + ':' + str(value))
     set_occupation_skills_list(actor_json, skills_list)

@@ -103,7 +103,7 @@ def show_media_timeline(self, authorized: bool,
                                 0, positive_voting,
                                 voting_time_mins)
             if not inbox_media_feed:
-                inbox_media_feed = []
+                inbox_media_feed: list[dict] = []
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlmedia', '')
@@ -319,7 +319,7 @@ def show_blogs_timeline(self, authorized: bool,
                                 0, positive_voting,
                                 voting_time_mins)
             if not inbox_blogs_feed:
-                inbox_blogs_feed = []
+                inbox_blogs_feed: list[dict] = []
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlblogs', '')
@@ -531,7 +531,7 @@ def show_news_timeline(self, authorized: bool,
                                 positive_voting,
                                 voting_time_mins)
             if not inbox_news_feed:
-                inbox_news_feed = []
+                inbox_news_feed: list[dict] = []
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlnews', '')
@@ -745,7 +745,7 @@ def show_features_timeline(self, authorized: bool,
                                 positive_voting,
                                 voting_time_mins)
             if not inbox_features_feed:
-                inbox_features_feed = []
+                inbox_features_feed: list[dict] = []
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlfeatures', '')
@@ -2069,7 +2069,7 @@ def show_replies(self, authorized: bool,
                                 0, positive_voting,
                                 voting_time_mins)
             if not inbox_replies_feed:
-                inbox_replies_feed = []
+                inbox_replies_feed: list[dict] = []
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlreplies', '')

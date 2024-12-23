@@ -71,7 +71,7 @@ def set_matrix_address(actor_json: {}, matrix_address: str) -> None:
     """Sets an matrix address for the given actor
     """
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

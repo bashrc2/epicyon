@@ -901,7 +901,7 @@ def daemon_http_get(self) -> None:
                     print('Authorization token refused for ' +
                           'offers collection federation')
         # show offers collection for federation
-        offers_json = []
+        offers_json: list[dict] = []
         if has_accept(self, calling_domain) and \
            offers_collection_authorized:
             if self.server.debug:
@@ -1102,7 +1102,7 @@ def daemon_http_get(self) -> None:
                     print('Authorization token refused for ' +
                           'wanted collection federation')
         # show wanted collection for federation
-        wanted_json = []
+        wanted_json: list[dict] = []
         if has_accept(self, calling_domain) and \
            wanted_collection_authorized:
             if self.server.debug:
@@ -4114,7 +4114,7 @@ def daemon_http_get(self) -> None:
 
     # reply from the web interface icon
     in_reply_to_url = None
-    reply_to_list = []
+    reply_to_list: list[str] = []
     reply_page_number = 1
     reply_category = ''
     share_description = None
@@ -6380,7 +6380,7 @@ def _show_known_crawlers(self, calling_domain: str, path: str,
         return False
     if not is_moderator(base_dir, nickname):
         return False
-    crawlers_list = []
+    crawlers_list: list[str] = []
     curr_time = int(time.time())
     recent_crawlers = 60 * 60 * 24 * 30
     for ua_str, item in known_crawlers.items():

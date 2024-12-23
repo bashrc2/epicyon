@@ -14,7 +14,7 @@ def _markdown_get_sections(markdown: str) -> []:
     if '<code>' not in markdown:
         return [markdown]
     lines = markdown.split('\n')
-    sections = []
+    sections: list[str] = []
     section_text = ''
     section_active = False
     ctr = 0

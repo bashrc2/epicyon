@@ -1978,7 +1978,7 @@ def load_dictionary(base_dir: str) -> []:
     if not os.path.isfile(filename):
         return []
 
-    words = []
+    words: list[str] = []
     try:
         with open(filename, 'r', encoding='utf-8') as fp_dict:
             words = fp_dict.read().split('\n')
@@ -1997,7 +1997,7 @@ def load_2grams(base_dir: str) -> {}:
         return {}
 
     twograms = {}
-    lines = []
+    lines: list[str] = []
     try:
         with open(filename, 'r', encoding='utf-8') as fp_dict:
             lines = fp_dict.read().split('\n')

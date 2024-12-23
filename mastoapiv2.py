@@ -49,10 +49,10 @@ def _meta_data_instance_v2(show_accounts: bool,
         print('WARN: json load exception _meta_data_instance_v1')
         return {}
 
-    rules_list = []
+    rules_list: list[str] = []
     rules_filename = data_dir(base_dir) + '/tos.md'
     if os.path.isfile(rules_filename):
-        rules_lines = []
+        rules_lines: list[str] = []
         try:
             with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
                 rules_lines = fp_rules.readlines()
@@ -126,7 +126,7 @@ def _meta_data_instance_v2(show_accounts: bool,
                   published_filename)
 
     # get all supported mime types
-    supported_mime_types = []
+    supported_mime_types: list[str] = []
     image_ext = get_image_extensions()
     for ext in image_ext:
         mime_str = get_image_mime_type('x.' + ext)
@@ -139,7 +139,7 @@ def _meta_data_instance_v2(show_accounts: bool,
     for ext in audio_ext:
         supported_mime_types.append('audio/' + ext)
 
-    fields = []
+    fields: list[dict] = []
     # get account fields from attachments
     if admin_actor.get('attachment'):
         if isinstance(admin_actor['attachment'], list):

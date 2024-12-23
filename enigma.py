@@ -49,7 +49,7 @@ def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
         remove_key = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

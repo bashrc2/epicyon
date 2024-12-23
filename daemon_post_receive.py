@@ -399,9 +399,9 @@ def _receive_new_post_process_editblog(self, fields: {},
             post_json_object['object']['summary'] = \
                 fields['subject']
             # format message
-            tags = []
+            tags: list[dict] = []
             hashtags_dict = {}
-            mentioned_recipients = []
+            mentioned_recipients: list[str] = []
             fields['message'] = \
                 add_html_tags(base_dir, http_prefix,
                               nickname, domain,
@@ -410,7 +410,7 @@ def _receive_new_post_process_editblog(self, fields: {},
                               hashtags_dict,
                               translate, True)
             # replace emoji with unicode
-            tags = []
+            tags: list[dict] = []
             for _, tag in hashtags_dict.items():
                 tags.append(tag)
             # get list of tags
@@ -1222,7 +1222,7 @@ def _receive_new_post_process_newquestion(self, fields: {},
         return NEW_POST_FAILED
     if not fields.get('message'):
         return NEW_POST_FAILED
-    q_options = []
+    q_options: list[str] = []
     for question_ctr in range(8):
         if fields.get('questionOption' + str(question_ctr)):
             q_options.append(fields['questionOption' +
@@ -1830,7 +1830,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
     self.server.default_post_language[nickname] = \
         fields['languagesDropdown']
     if 'searchableByDropdown' not in fields:
-        fields['searchableByDropdown'] = []
+        fields['searchableByDropdown']: list[str] = []
 
     if not citations_button_press:
         # Store a file which contains the time in seconds

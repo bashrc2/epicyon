@@ -220,7 +220,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
     if actor_json.get('memorial'):
         memorial = True
     indexable = account_is_indexable(actor_json)
-    searchable_by = []
+    searchable_by: list[str] = []
     if actor_json.get('searchableBy'):
         if isinstance(actor_json['searchableBy'], list):
             searchable_by = actor_json['searchableBy']
@@ -901,7 +901,7 @@ def person_upgrade_actor(base_dir: str, person_json: {},
         update_actor = True
 
     if 'searchableBy' not in person_json:
-        person_json['searchableBy'] = []
+        person_json['searchableBy']: list[str] = []
         update_actor = True
 
     # add a speaker endpoint
@@ -1058,7 +1058,7 @@ def add_alternate_domains(actor_json: {}, domain: str,
     if not nickname:
         return
     if 'alsoKnownAs' not in actor_json:
-        actor_json['alsoKnownAs'] = []
+        actor_json['alsoKnownAs']: list[str] = []
     if onion_domain:
         onion_actor = 'http://' + onion_domain + '/users/' + nickname
         if onion_actor not in actor_json['alsoKnownAs']:
@@ -1274,7 +1274,7 @@ def reenable_account(base_dir: str, nickname: str) -> None:
     """
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        lines = []
+        lines: list[str] = []
         try:
             with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
                 lines = fp_sus.readlines()
@@ -1367,7 +1367,7 @@ def can_remove_post(base_dir: str,
     # is the post by a moderator?
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        lines = []
+        lines: list[str] = []
         try:
             with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
                 lines = fp_mod.readlines()
@@ -1403,7 +1403,7 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
             continue
         if not text_in_file(match_str, tag_filename):
             continue
-        lines = []
+        lines: list[str] = []
         try:
             with open(tag_filename, 'r', encoding='utf-8') as fp_tag:
                 lines = fp_tag.readlines()
@@ -1434,7 +1434,7 @@ def remove_account(base_dir: str, nickname: str,
     # Don't remove moderators
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        lines = []
+        lines: list[str] = []
         try:
             with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
                 lines = fp_mod.readlines()
@@ -2258,8 +2258,8 @@ def set_featured_hashtags(actor_json: {}, hashtags: str,
         if separator_str in hashtags:
             break
     tag_list = hashtags.split(separator_str)
-    result = []
-    tags_used = []
+    result: list[str] = []
+    tags_used: list[str] = []
     actor_id = actor_json['id']
     actor_domain = actor_id.split('://')[1]
     if '/' in actor_domain:

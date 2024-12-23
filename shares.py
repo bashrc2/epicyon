@@ -487,7 +487,7 @@ def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
     if not shares_json:
         return 0
     curr_time = int(time.time())
-    delete_item_id = []
+    delete_item_id: list[str] = []
     for item_id, item in shares_json.items():
         if curr_time > item['expire']:
             delete_item_id.append(item_id)
@@ -1611,7 +1611,7 @@ def merge_shared_item_tokens(base_dir: str, domain_full: str,
     """When the shared item federation domains list has changed, update
     the tokens dict accordingly
     """
-    removals = []
+    removals: list[str] = []
     changed = False
     for token_domain_full, _ in tokens_json.items():
         if domain_full:
@@ -1905,7 +1905,7 @@ def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
     min_days = 7
     max_days = 14
     _generate_next_shares_token_update(base_dir, min_days, max_days)
-    sites_unavailable = []
+    sites_unavailable: list[str] = []
     while True:
         shared_items_federated_domains_str = \
             get_config_param(base_dir, 'sharedItemsFederatedDomains')
@@ -1919,7 +1919,7 @@ def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
                                  min_days, max_days, httpd)
 
         # get a list of the domains within the shared items federation
-        shared_items_federated_domains = []
+        shared_items_federated_domains: list[str] = []
         fed_domains_list = \
             shared_items_federated_domains_str.split(',')
         for shared_fed_domain in fed_domains_list:
@@ -2327,7 +2327,7 @@ def actor_attached_shares(actor_json: {}) -> []:
     if not isinstance(actor_json['attachment'], list):
         return []
 
-    attached_shares = []
+    attached_shares: list[str] = []
     for attach_item in actor_json['attachment']:
         if _is_valueflows_attachment(attach_item):
             attached_shares.append(attach_item['href'])
@@ -2369,11 +2369,11 @@ def add_shares_to_actor(base_dir: str,
     https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
     """
     if 'attachment' not in actor_json:
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
     changed = False
 
     # remove any existing ValueFlows items from attachment list
-    new_attachment = []
+    new_attachment: list[dict] = []
     for attach_item in actor_json['attachment']:
         is_proposal = False
         if _is_valueflows_attachment(attach_item):

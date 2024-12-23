@@ -425,7 +425,7 @@ def _deduplicate_recent_books_list(base_dir: str,
         return
 
     # load recent books as a list
-    recent_lines = []
+    recent_lines: list[str] = []
     try:
         with open(recent_books_filename, 'r',
                   encoding='utf-8') as fp_recent:
@@ -435,7 +435,7 @@ def _deduplicate_recent_books_list(base_dir: str,
               recent_books_filename + ' ' + str(ex))
 
     # deduplicate the list
-    new_recent_lines = []
+    new_recent_lines: list[str] = []
     for line in recent_lines:
         if line not in new_recent_lines:
             new_recent_lines.append(line)
@@ -525,7 +525,7 @@ def store_book_events(base_dir: str,
         # update the cache for this reader
         books_cache['readers'][actor] = reader_books_json
         if 'reader_list' not in books_cache:
-            books_cache['reader_list'] = []
+            books_cache['reader_list']: list[str] = []
         if actor in books_cache['reader_list']:
             books_cache['reader_list'].remove(actor)
         books_cache['reader_list'].append(actor)

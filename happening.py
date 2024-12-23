@@ -269,7 +269,7 @@ def _sort_todays_events(post_events_list: []) -> []:
             break
 
     # sort the dict
-    new_post_events_list = []
+    new_post_events_list: list[list] = []
     sorted_events_dict = dict(sorted(post_events_dict.items()))
     for _, post_event in sorted_events_dict.items():
         new_post_events_list.append(post_event)
@@ -304,7 +304,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(calendar_filename):
         return events
 
-    calendar_post_ids = []
+    calendar_post_ids: list[str] = []
     recreate_events_file = False
     try:
         with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
@@ -338,7 +338,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
 
                 public_event = is_public_post(post_json_object)
 
-                post_event = []
+                post_event: list[dict] = []
                 day_of_month = None
                 for tag in post_json_object['object']['tag']:
                     if not _is_happening_event(tag):
@@ -382,7 +382,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
                     continue
                 calendar_post_ids.append(post_id)
                 if not events.get(day_of_month):
-                    events[day_of_month] = []
+                    events[day_of_month]: list[dict] = []
                 events[day_of_month].append(post_event)
                 events[day_of_month] = \
                     _sort_todays_events(events[day_of_month])
@@ -686,7 +686,7 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
     if not os.path.isfile(calendar_filename):
         return events
 
-    calendar_post_ids = []
+    calendar_post_ids: list[str] = []
     recreate_events_file = False
     try:
         with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
@@ -702,7 +702,7 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
                 if not _is_happening_post(post_json_object):
                     continue
 
-                post_event = []
+                post_event: list[dict] = []
                 week_day_index = None
                 for tag in post_json_object['object']['tag']:
                     if not _is_happening_event(tag):
@@ -728,7 +728,7 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
                     continue
                 calendar_post_ids.append(post_id)
                 if not events.get(week_day_index):
-                    events[week_day_index] = []
+                    events[week_day_index]: list[dict] = []
                 events[week_day_index].append(post_event)
     except OSError:
         print('EX: get_this_weeks_events failed to read ' + calendar_filename)
@@ -763,7 +763,7 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(calendar_filename):
         return events
 
-    calendar_post_ids = []
+    calendar_post_ids: list[str] = []
     recreate_events_file = False
     try:
         with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
@@ -790,7 +790,7 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
                         if not _event_text_match(content, text_match):
                             continue
 
-                post_event = []
+                post_event: list[dict] = []
                 day_of_month = None
                 for tag in post_json_object['object']['tag']:
                     if not _is_happening_event(tag):
@@ -829,7 +829,7 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
                     continue
                 calendar_post_ids.append(post_id)
                 if not events.get(day_of_month):
-                    events[day_of_month] = []
+                    events[day_of_month]: list[dict] = []
                 events[day_of_month].append(post_event)
     except OSError:
         print('EX: get_calendar_events failed to read ' + calendar_filename)
@@ -1122,13 +1122,13 @@ def dav_put_response(base_dir: str, nickname: str, domain: str,
     stored_count = 0
     reading_event = False
     lines_list = xml_str.split('\n')
-    event_list = []
+    event_list: list[dict] = []
     for line in lines_list:
         line = line.strip()
         if not reading_event:
             if line == 'BEGIN:VEVENT':
                 reading_event = True
-                event_list = []
+                event_list: list[dict] = []
         else:
             if line == 'END:VEVENT':
                 if event_list:

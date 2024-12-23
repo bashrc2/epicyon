@@ -578,7 +578,7 @@ def _desktop_reply_to_post(session, post_id: str,
     video_transcript = None
     auto_cw_cache = {}
     # TODO searchable status
-    searchable_by = []
+    searchable_by: list[str] = []
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -665,7 +665,7 @@ def _desktop_new_post(session,
     video_transcript = None
     auto_cw_cache = {}
     # TODO searchable status
-    searchable_by = []
+    searchable_by: list[str] = []
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -850,7 +850,7 @@ def _read_local_box_post(session, nickname: str, domain: str,
         yt_replace_domain = None
         twitter_replacement_domain = None
         show_vote_posts = False
-        languages_understood = []
+        languages_understood: list[str] = []
         person_url = local_actor_url(http_prefix, nickname, domain_full)
         actor_json = \
             get_person_from_cache(base_dir, person_url, person_cache)
@@ -1494,7 +1494,7 @@ def _desktop_new_dm_base(session, to_handle: str,
     say_str = 'Sending'
     auto_cw_cache = {}
     # TODO searchable status
-    searchable_by = []
+    searchable_by: list[str] = []
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     if send_post_via_server(signing_priv_key_pem, __version__,
                             base_dir, session, nickname, password,
@@ -1599,9 +1599,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     media_creator = ''
 
     blocked_cache = {}
-    block_federated = []
-    languages_understood = []
-    mitm_servers = []
+    block_federated: list[str] = []
+    languages_understood: list[str] = []
+    mitm_servers: list[str] = []
 
     indent = '   '
     if show_new_posts:

@@ -577,7 +577,7 @@ def get_map_links_from_post_content(content: str, session) -> []:
     """
     osm_domain = 'openstreetmap.org'
     sections = content.split('://')
-    map_links = []
+    map_links: list[str] = []
     ctr = 0
     for link_str in sections:
         if ctr == 0:
@@ -647,7 +647,7 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
     post_url = post_url.replace('#', '/')
 
     # read the existing map links
-    existing_map_links = []
+    existing_map_links: list[str] = []
     if os.path.isfile(tag_map_filename):
         try:
             with open(tag_map_filename, 'r', encoding='utf-8') as fp_tag:
@@ -739,7 +739,7 @@ def _hashtag_map_to_format(base_dir: str, tag_name: str,
         map_str += '<Document>\n'
 
     if os.path.isfile(tag_map_filename):
-        map_links = []
+        map_links: list[str] = []
         try:
             with open(tag_map_filename, 'r', encoding='utf-8') as fp_tag:
                 map_links = fp_tag.read().split('\n')

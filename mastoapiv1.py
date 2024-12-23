@@ -42,7 +42,7 @@ def _meta_data_instance_v1(show_accounts: bool,
         print('WARN: json load exception _meta_data_instance_v1')
         return {}
 
-    rules_list = []
+    rules_list: list[str] = []
     rules_filename = data_dir(base_dir) + '/tos.md'
     if os.path.isfile(rules_filename):
         try:
@@ -235,7 +235,7 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     no_of_statuses = 0
     no_of_followers = 0
     no_of_following = 0
-    fields = []
+    fields: list[dict] = []
     published = None
     if show_accounts and not broch_mode:
         no_of_followers = lines_in_file(account_dir + '/followers.txt')
@@ -361,27 +361,27 @@ def masto_api_v1_response(path: str, calling_domain: str,
                 }
                 send_json_str = 'masto API streaming response'
             if path.endswith('/followers'):
-                send_json = []
+                send_json: list[dict] = []
                 send_json_str = \
                     'masto API followers sent for ' + nickname + \
                     calling_info
             elif path.endswith('/following'):
-                send_json = []
+                send_json: list[dict] = []
                 send_json_str = \
                     'masto API following sent for ' + nickname + \
                     calling_info
             elif path.endswith('/statuses'):
-                send_json = []
+                send_json: list[dict] = []
                 send_json_str = \
                     'masto API statuses sent for ' + nickname + \
                     calling_info
             elif path.endswith('/search'):
-                send_json = []
+                send_json: list[dict] = []
                 send_json_str = \
                     'masto API search sent ' + original_path + \
                     calling_info
             elif path.endswith('/relationships'):
-                send_json = []
+                send_json: list[dict] = []
                 send_json_str = \
                     'masto API relationships sent ' + original_path + \
                     calling_info
@@ -398,29 +398,29 @@ def masto_api_v1_response(path: str, calling_domain: str,
     # federation problems, so avoid implementing that
 
     if path.startswith('/api/v1/blocks'):
-        send_json = []
+        send_json: list[dict] = []
         send_json_str = \
             'masto API instance blocks sent ' + path + calling_info
     elif path.startswith('/api/v1/favorites'):
-        send_json = []
+        send_json: list[dict] = []
         send_json_str = 'masto API favorites sent ' + path + calling_info
     elif path.startswith('/api/v1/follow_requests'):
-        send_json = []
+        send_json: list[dict] = []
         send_json_str = \
             'masto API follow requests sent ' + path + calling_info
     elif path.startswith('/api/v1/mutes'):
-        send_json = []
+        send_json: list[dict] = []
         send_json_str = \
             'masto API mutes sent ' + path + calling_info
     elif path.startswith('/api/v1/notifications'):
-        send_json = []
+        send_json: list[dict] = []
         send_json_str = \
             'masto API notifications sent ' + path + calling_info
     elif path.startswith('/api/v1/reports'):
-        send_json = []
+        send_json: list[dict] = []
         send_json_str = 'masto API reports sent ' + path + calling_info
     elif path.startswith('/api/v1/statuses'):
-        send_json = []
+        send_json: list[dict] = []
         send_json_str = 'masto API statuses sent ' + path + calling_info
     elif path.startswith('/api/v1/timelines'):
         send_json = {
@@ -476,6 +476,6 @@ def masto_api_v1_response(path: str, calling_domain: str,
         send_json = ['mastodon.social', domain_full]
         send_json_str = 'masto API peers metadata sent ' + ua_str
     elif path.startswith('/api/v1/instance/activity'):
-        send_json = []
+        send_json: list[dict] = []
         send_json_str = 'masto API activity metadata sent ' + ua_str
     return send_json, send_json_str

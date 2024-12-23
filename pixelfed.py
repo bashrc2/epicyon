@@ -86,7 +86,7 @@ def set_pixelfed(actor_json: {}, pixelfed: str) -> None:
     """Sets pixelfed for the given actor
     """
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

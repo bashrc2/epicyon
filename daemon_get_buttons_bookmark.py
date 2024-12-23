@@ -139,7 +139,7 @@ def bookmark_button(self, calling_domain: str, path: str,
         return
     bookmark_actor = \
         local_actor_url(http_prefix, self.post_to_nickname, domain_full)
-    cc_list = []
+    cc_list: list[str] = []
     bookmark_post(recent_posts_cache,
                   base_dir, federation_list,
                   self.post_to_nickname, domain, port,
@@ -348,7 +348,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
         return
     undo_actor = \
         local_actor_url(http_prefix, self.post_to_nickname, domain_full)
-    cc_list = []
+    cc_list: list[str] = []
     undo_bookmark_post(recent_posts_cache,
                        base_dir, federation_list,
                        self.post_to_nickname,

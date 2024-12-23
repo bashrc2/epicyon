@@ -58,7 +58,7 @@ def sorted_watch_points(fitness: {}, fitness_id: str) -> []:
         return []
     if not fitness['performance'].get(fitness_id):
         return []
-    result = []
+    result: list[str] = []
     for watch_point, item in fitness['performance'][fitness_id].items():
         if not item.get('total'):
             continue
@@ -81,7 +81,7 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

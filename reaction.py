@@ -490,7 +490,7 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
             print('EX: unable to load common reactions file' +
                   common_reactions_filename)
     if common_reactions:
-        new_common_reactions = []
+        new_common_reactions: list[str] = []
         reaction_found = False
         for line in common_reactions:
             if ' ' + emoji_content in line:
@@ -581,7 +581,7 @@ def update_reaction_collection(recent_posts_cache: {},
         obj['reactions'] = reactions_json
     else:
         if not obj['reactions'].get('items'):
-            obj['reactions']['items'] = []
+            obj['reactions']['items']: list[dict] = []
         # upper limit for the number of reactions on a post
         if len(obj['reactions']['items']) >= MAX_ACTOR_REACTIONS_PER_POST:
             return
@@ -623,7 +623,7 @@ def html_emoji_reactions(post_json_object: {}, interactive: bool,
     if not post_json_object['object']['reactions'].get('items'):
         return ''
     reactions = {}
-    reacted_to_by_this_actor = []
+    reacted_to_by_this_actor: list[str] = []
     for item in post_json_object['object']['reactions']['items']:
         emoji_content = item['content']
         emoji_actor = item['actor']

@@ -104,7 +104,7 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     ipns = False
     if http_prefix == 'ipns':
         ipns = True
-    mitm_servers = []
+    mitm_servers: list[str] = []
     person_json = \
         get_actor_json(domain, person_url, http_prefix, gnunet, ipfs, ipns,
                        debug, False,
@@ -142,7 +142,7 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(following_filename):
-        following_handles = []
+        following_handles: list[str] = []
         try:
             with open(following_filename, 'r', encoding='utf-8') as fp_foll1:
                 following_handles = fp_foll1.readlines()
@@ -195,7 +195,7 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followers_filename):
-        follower_handles = []
+        follower_handles: list[str] = []
         try:
             with open(followers_filename, 'r', encoding='utf-8') as fp_foll3:
                 follower_handles = fp_foll3.readlines()

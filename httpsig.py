@@ -389,7 +389,7 @@ def verify_post_headers(http_prefix: str,
 
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
-    signed_header_list = []
+    signed_header_list: list[str] = []
     algorithm = 'rsa-sha256'
     digest_algorithm = 'rsa-sha256'
     for signed_header in signature_dict[request_target_key].split(field_sep2):

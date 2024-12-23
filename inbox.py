@@ -1112,7 +1112,7 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
         print(handle + ' sending to group members')
 
     shared_item_federation_tokens = {}
-    shared_items_federated_domains = []
+    shared_items_federated_domains: list[str] = []
     shared_items_federated_domains_str = \
         get_config_param(base_dir, 'shared_items_federated_domains')
     if shared_items_federated_domains_str:
@@ -3228,7 +3228,7 @@ def run_inbox_queue(server,
 
     heart_beat_ctr = 0
     queue_restore_ctr = 0
-    curr_mitm_servers = []
+    curr_mitm_servers: list[str] = []
 
     # time when the last DM bounce message was sent
     # This is in a list so that it can be changed by reference
@@ -3775,7 +3775,7 @@ def run_inbox_queue(server,
         for handle, _ in recipients_dict.items():
             destination = \
                 queue_json['destination'].replace(inbox_handle, handle)
-            languages_understood = []
+            languages_understood: list[str] = []
             mitm = False
             if queue_json.get('mitm'):
                 mitm = True

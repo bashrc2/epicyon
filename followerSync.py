@@ -36,7 +36,7 @@ def _get_followers_for_domain(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followers_filename):
         return []
-    lines = []
+    lines: list[str] = []
     foll_text = ''
     try:
         with open(followers_filename, 'r', encoding='utf-8') as fp_foll:
@@ -47,7 +47,7 @@ def _get_followers_for_domain(base_dir: str,
     if search_domain not in foll_text:
         return []
     lines = foll_text.splitlines()
-    result = []
+    result: list[str] = []
     for line_str in lines:
         if search_domain not in line_str:
             continue

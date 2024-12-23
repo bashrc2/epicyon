@@ -394,7 +394,7 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
     rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
     if not os.path.isfile(rules_filename):
         return True
-    rules = []
+    rules: list[str] = []
     try:
         with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
             rules = fp_rules.readlines()
@@ -424,7 +424,7 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
             continue
         conditions_str = rule_str.split('if ', 1)[1]
         conditions_str = conditions_str.split(' then ')[0]
-        tags_in_conditions = []
+        tags_in_conditions: list[str] = []
         tree = hashtag_rule_tree(operators, conditions_str,
                                  tags_in_conditions, moderated)
         if not hashtag_rule_resolve(tree, hashtags, moderated, content, url):
@@ -471,7 +471,7 @@ def _create_news_mirror(base_dir: str, domain: str,
         if not os.path.isfile(mirror_index_filename):
             # no index for mirrors found
             return True
-        removals = []
+        removals: list[str] = []
         try:
             with open(mirror_index_filename, 'r',
                       encoding='utf-8') as fp_index:
@@ -726,7 +726,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         if save_post:
             # ensure that all hashtags are stored in the json
             # and appended to the content
-            blog['object']['tag'] = []
+            blog['object']['tag']: list[dict] = []
             for tag_name in hashtags:
                 ht_id = tag_name.replace('#', '')
                 hashtag_url = \

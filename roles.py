@@ -54,7 +54,7 @@ def _add_role(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(role_file):
         # is this nickname already in the file?
 
-        lines = []
+        lines: list[str] = []
         try:
             with open(role_file, 'r', encoding='utf-8') as fp_role:
                 lines = fp_role.readlines()
@@ -179,7 +179,7 @@ def actor_roles_from_list(actor_json: {}, roles_list: []) -> None:
     """Sets roles from a list
     """
     # clear Roles from the occupation list
-    empty_roles_list = []
+    empty_roles_list: list[dict] = []
     for occupation_item in actor_json['hasOccupation']:
         if not isinstance(occupation_item, dict):
             continue
@@ -202,7 +202,7 @@ def get_actor_roles_list(actor_json: {}) -> []:
         return []
     if not isinstance(actor_json['hasOccupation'], list):
         return []
-    roles_list = []
+    roles_list: list[str] = []
     for occupation_item in actor_json['hasOccupation']:
         if not isinstance(occupation_item, dict):
             continue

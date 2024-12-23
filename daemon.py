@@ -1138,9 +1138,9 @@ def run_daemon(accounts_data_dir: str,
     httpd.getreq_busy = False
     httpd.postreq_busy = False
     httpd.received_message = False
-    httpd.inbox_queue = []
+    httpd.inbox_queue: list[dict] = []
     httpd.send_threads = send_threads
-    httpd.post_log = []
+    httpd.post_log: list[str] = []
     httpd.max_queue_length = 64
     httpd.allow_deletion = allow_deletion
     httpd.last_login_time = 0
@@ -1157,7 +1157,7 @@ def run_daemon(accounts_data_dir: str,
 
     # create a cache of blocked domains in memory.
     # This limits the amount of slow disk reads which need to be done
-    httpd.blocked_cache = []
+    httpd.blocked_cache: list[str] = []
     httpd.blocked_cache_last_updated = 0
     httpd.blocked_cache_update_secs = 120
     httpd.blocked_cache_last_updated = \
@@ -1307,7 +1307,7 @@ def run_daemon(accounts_data_dir: str,
                                             si_federation_tokens)
 
     # load peertube instances from file into a list
-    httpd.peertube_instances = []
+    httpd.peertube_instances: list[str] = []
     load_peertube_instances(base_dir, httpd.peertube_instances)
 
     create_initial_last_seen(base_dir, http_prefix)

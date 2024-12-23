@@ -236,7 +236,7 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
         print('No cached actors found')
 
     # get the handles to be checked for movedTo attribute
-    handles_to_check = []
+    handles_to_check: list[str] = []
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
@@ -332,7 +332,7 @@ def _get_inactive_accounts(base_dir: str, nickname: str, domain: str,
               followers_filename)
     followers_list = followers_str.split('\n')
 
-    result = []
+    result: list[str] = []
     users_list = get_user_paths()
     for handle in followers_list:
         if handle in result:

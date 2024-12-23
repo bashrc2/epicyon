@@ -996,7 +996,7 @@ def _command_options() -> None:
         if not argb.language:
             argb.language = 'en'
         signing_priv_key_pem = get_instance_actor_key(base_dir, origin_domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         get_public_posts_of_person(base_dir, nickname, domain, False, True,
                                    proxy_type, argb.port, http_prefix, debug,
                                    __version__, argb.language,
@@ -1075,7 +1075,7 @@ def _command_options() -> None:
         elif argb.gnunet:
             proxy_type = 'gnunet'
         word_frequency = {}
-        domain_list = []
+        domain_list: list[str] = []
         if not argb.language:
             argb.language = 'en'
         signing_priv_key_pem = None
@@ -1086,7 +1086,7 @@ def _command_options() -> None:
         if argb.secure_mode:
             signing_priv_key_pem = \
                 get_instance_actor_key(base_dir, origin_domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         domain_list = \
             get_public_post_domains(None,
                                     base_dir, nickname, domain,
@@ -1135,13 +1135,13 @@ def _command_options() -> None:
         elif argb.gnunet:
             proxy_type = 'gnunet'
         word_frequency = {}
-        domain_list = []
+        domain_list: list[str] = []
         if not argb.language:
             argb.language = 'en'
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         domain_list = \
             get_public_post_domains_blocked(None,
                                             base_dir, nickname, domain,
@@ -1192,7 +1192,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         check_domains(None,
                       base_dir, nickname, domain,
                       proxy_type, argb.port,
@@ -1221,7 +1221,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         dot_graph = instances_graph(base_dir, argb.socnet,
                                     proxy_type, argb.port,
                                     http_prefix, debug,
@@ -1280,7 +1280,7 @@ def _command_options() -> None:
         if not argb.language:
             argb.language = 'en'
         signing_priv_key_pem = get_instance_actor_key(base_dir, origin_domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         get_public_posts_of_person(base_dir, nickname, domain, False, False,
                                    proxy_type, argb.port, http_prefix, debug,
                                    __version__, argb.language,
@@ -1311,7 +1311,7 @@ def _command_options() -> None:
                 print('Obtained instance actor signing key')
             else:
                 print('Did not obtain instance actor key for ' + domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         test_json = get_json(signing_priv_key_pem, session, argb.json,
                              as_header, None, debug, mitm_servers,
                              __version__, http_prefix, domain)
@@ -1345,7 +1345,7 @@ def _command_options() -> None:
         if not nickname:
             print('Please specify a nickname with the --nickname option')
             sys.exit()
-        mitm_servers = []
+        mitm_servers: list[str] = []
         conv_json = download_conversation_posts(True, session, http_prefix,
                                                 base_dir, nickname, domain,
                                                 post_id, argb.debug,
@@ -1373,7 +1373,7 @@ def _command_options() -> None:
                 print('Obtained instance actor signing key')
             else:
                 print('Did not obtain instance actor key for ' + domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         test_ssml = download_ssml(signing_priv_key_pem, session, argb.ssml,
                                   as_header, None, debug, __version__,
                                   http_prefix, domain, mitm_servers)
@@ -1428,7 +1428,7 @@ def _command_options() -> None:
                 print('Obtained instance actor signing key')
             else:
                 print('Did not obtain instance actor key for ' + domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         test_html = download_html(signing_priv_key_pem, session, argb.htmlpost,
                                   as_header, None, debug, __version__,
                                   http_prefix, domain, mitm_servers)
@@ -1458,7 +1458,7 @@ def _command_options() -> None:
                   '--domain option')
             sys.exit()
         session = create_session(None)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         verified = \
             verify_html(session, argb.verifyurl, debug, __version__,
                         http_prefix, argb.nickname, domain,
@@ -1541,7 +1541,7 @@ def _command_options() -> None:
             get_config_param(base_dir, 'preferredPodcastFormats')
     if podcast_formats_str:
         podcast_formats = podcast_formats_str.split(',')
-        preferred_podcast_formats = []
+        preferred_podcast_formats: list[str] = []
         for pod_format in podcast_formats:
             pod_format = pod_format.lower().strip()
             if '/' not in pod_format:
@@ -1669,7 +1669,7 @@ def _command_options() -> None:
     if argb.nickname:
         nickname = argb.nickname
 
-    federation_list = []
+    federation_list: list[str] = []
     if argb.federation_list:
         if len(argb.federation_list) == 1:
             if not (argb.federation_list[0].lower() == 'any' or
@@ -1726,9 +1726,9 @@ def _command_options() -> None:
         if i2p_domain:
             session_i2p = create_session('i2p')
         followers_sync_cache = {}
-        sites_unavailable = []
+        sites_unavailable: list[str] = []
         system_language = argb.language
-        mitm_servers = []
+        mitm_servers: list[str] = []
         manual_approve_follow_request(session, session_onion, session_i2p,
                                       onion_domain, i2p_domain,
                                       base_dir, http_prefix,
@@ -1775,8 +1775,8 @@ def _command_options() -> None:
         if i2p_domain:
             session_i2p = create_session('i2p')
         followers_sync_cache = {}
-        sites_unavailable = []
-        mitm_servers = []
+        sites_unavailable: list[str] = []
+        mitm_servers: list[str] = []
         system_language = argb.language
         manual_deny_follow_request2(session, session_onion, session_i2p,
                                     onion_domain, i2p_domain,
@@ -1901,8 +1901,8 @@ def _command_options() -> None:
         video_transcript = None
         auto_cw_cache = {}
         # TODO searchable status
-        searchable_by = []
-        mitm_servers = []
+        searchable_by: list[str] = []
+        mitm_servers: list[str] = []
 
         print('Sending post to ' + argb.sendto)
         send_post_via_server(signing_priv_key_pem, __version__,
@@ -2010,7 +2010,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending announce/repeat of ' + argb.announce)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_announce_via_server(base_dir, session,
                                  argb.nickname, argb.password,
                                  domain, port,
@@ -2058,7 +2058,7 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
         session = create_session(proxy_type)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         box_json = c2s_box_json(session, argb.nickname, argb.password,
                                 domain, port, http_prefix,
                                 argb.box, argb.pageNumber,
@@ -2123,7 +2123,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending shared item: ' + argb.itemName)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_share_via_server(base_dir, session,
                               argb.nickname, argb.password,
                               domain, port,
@@ -2170,7 +2170,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo of shared item: ' + argb.undoItemName)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_undo_share_via_server(base_dir, session,
                                    argb.nickname, argb.password,
                                    domain, port,
@@ -2237,7 +2237,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending wanted item: ' + argb.wantedItemName)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_wanted_via_server(base_dir, session,
                                argb.nickname, argb.password,
                                domain, port,
@@ -2284,7 +2284,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo of wanted item: ' + argb.undoWantedItemName)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_undo_wanted_via_server(base_dir, session,
                                     argb.nickname, argb.password,
                                     domain, port,
@@ -2322,7 +2322,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending like of ' + argb.like)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_like_via_server(base_dir, session,
                              argb.nickname, argb.password,
                              domain, port,
@@ -2365,7 +2365,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending emoji reaction ' + argb.emoji + ' to ' + argb.react)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_reaction_via_server(base_dir, session,
                                  argb.nickname, argb.password,
                                  domain, port,
@@ -2402,7 +2402,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo like of ' + argb.undolike)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_undo_like_via_server(base_dir, session,
                                   argb.nickname, argb.password,
                                   domain, port,
@@ -2447,7 +2447,7 @@ def _command_options() -> None:
         print('Sending undo emoji reaction ' +
               argb.emoji + ' to ' + argb.react)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_undo_reaction_via_server(base_dir, session,
                                       argb.nickname, argb.password,
                                       domain, port,
@@ -2485,7 +2485,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending bookmark of ' + argb.bookmark)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_bookmark_via_server(base_dir, session,
                                  argb.nickname, argb.password,
                                  domain, port,
@@ -2523,7 +2523,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo bookmark of ' + argb.unbookmark)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_undo_bookmark_via_server(base_dir, session,
                                       argb.nickname, argb.password,
                                       domain, port,
@@ -2560,7 +2560,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending delete request of ' + argb.delete)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_delete_via_server(base_dir, session,
                                argb.nickname, argb.password,
                                domain, port,
@@ -2611,7 +2611,7 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
         system_language = argb.language
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_follow_request_via_server(base_dir, session,
                                        argb.nickname, argb.password,
                                        domain, port,
@@ -2665,7 +2665,7 @@ def _command_options() -> None:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
         system_language = argb.language
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_unfollow_request_via_server(base_dir, session,
                                          argb.nickname, argb.password,
                                          domain, port,
@@ -2705,7 +2705,7 @@ def _command_options() -> None:
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         following_json = \
             get_following_via_server(session,
                                      argb.nickname, argb.password,
@@ -2741,7 +2741,7 @@ def _command_options() -> None:
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         blocked_json = \
             get_blocks_via_server(session,
                                   argb.nickname, argb.password,
@@ -2777,7 +2777,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         followers_json = \
             get_followers_via_server(session,
                                      argb.nickname, argb.password,
@@ -2813,7 +2813,7 @@ def _command_options() -> None:
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         follow_requests_json = \
             get_follow_requests_via_server(session,
                                            argb.nickname, argb.password,
@@ -2879,8 +2879,8 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-        block_federated = []
-        mitm_servers = []
+        block_federated: list[str] = []
+        mitm_servers: list[str] = []
         ctr = migrate_accounts(base_dir, session,
                                http_prefix, cached_webfingers,
                                True, signing_priv_key_pem,
@@ -2904,7 +2904,7 @@ def _command_options() -> None:
                 print('Did not obtain instance actor key for ' + domain)
         if argb.actor.startswith('@'):
             argb.actor = argb.actor[1:]
-        mitm_servers = []
+        mitm_servers: list[str] = []
         get_actor_json(domain, argb.actor, argb.http, argb.gnunet,
                        argb.ipfs, argb.ipns,
                        debug, False, signing_priv_key_pem, None,
@@ -3011,7 +3011,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         wf_request = webfinger_handle(session, handle,
                                       http_prefix, cached_webfingers,
                                       host_domain, __version__, debug, False,
@@ -3071,7 +3071,7 @@ def _command_options() -> None:
         signing_priv_key_pem = None
         if argb.secure_mode:
             signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
-        mitm_servers = []
+        mitm_servers: list[str] = []
         followers_list = \
             download_follow_collection(signing_priv_key_pem,
                                        'followers', session,
@@ -3366,7 +3366,7 @@ def _command_options() -> None:
         print('Sending ' + argb.skill + ' skill level ' +
               str(argb.skillLevelPercent) + ' for ' + nickname)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_skill_via_server(base_dir, session,
                               nickname, argb.password,
                               domain, port,
@@ -3405,7 +3405,7 @@ def _command_options() -> None:
         print('Sending availability status of ' + nickname +
               ' as ' + argb.availability)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_availability_via_server(base_dir, session,
                                      nickname, argb.password,
                                      domain, port, http_prefix,
@@ -3474,7 +3474,7 @@ def _command_options() -> None:
         print('Federating shared items with: ' +
               argb.shared_items_federated_domains)
 
-    shared_items_federated_domains = []
+    shared_items_federated_domains: list[str] = []
     if argb.shared_items_federated_domains:
         fed_domains_str = argb.shared_items_federated_domains
         set_config_param(base_dir, 'sharedItemsFederatedDomains',
@@ -3523,7 +3523,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending block of ' + argb.block)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_block_via_server(base_dir, session, nickname, argb.password,
                               domain, port,
                               http_prefix, argb.block,
@@ -3559,7 +3559,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending mute of ' + argb.mute)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_mute_via_server(base_dir, session, nickname, argb.password,
                              domain, port,
                              http_prefix, argb.mute,
@@ -3595,7 +3595,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo mute of ' + argb.unmute)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_undo_mute_via_server(base_dir, session, nickname, argb.password,
                                   domain, port,
                                   http_prefix, argb.unmute,
@@ -3643,7 +3643,7 @@ def _command_options() -> None:
         system_language = argb.language
         print('Sending undo block of ' + argb.unblock)
 
-        mitm_servers = []
+        mitm_servers: list[str] = []
         send_undo_block_via_server(base_dir, session, nickname, argb.password,
                                    domain, port,
                                    http_prefix, argb.unblock,
@@ -3713,7 +3713,7 @@ def _command_options() -> None:
         set_role(base_dir, nickname, domain, 'admin')
         set_availability(base_dir, nickname, domain, 'busy')
 
-        block_federated = []
+        block_federated: list[str] = []
         add_share(base_dir,
                   http_prefix, nickname, domain, port,
                   "spanner",
@@ -3765,7 +3765,7 @@ def _command_options() -> None:
         chat_url = ''
         auto_cw_cache = {}
         test_video_transcript = ''
-        searchable_by = []
+        searchable_by: list[str] = []
         curr_session = None
 
         create_public_post(base_dir, nickname, domain, port, http_prefix,
@@ -4113,7 +4113,7 @@ def _command_options() -> None:
     if low_bandwidth is not None:
         argb.low_bandwidth = bool(low_bandwidth)
 
-    user_agents_blocked = []
+    user_agents_blocked: list[str] = []
     if argb.userAgentBlocks:
         user_agents_blocked_str = argb.userAgentBlocks
         set_config_param(base_dir, 'userAgentsBlocked',
@@ -4126,7 +4126,7 @@ def _command_options() -> None:
         for user_agents_blocked_str2 in agent_blocks_list:
             user_agents_blocked.append(user_agents_blocked_str2.strip())
 
-    crawlers_allowed = []
+    crawlers_allowed: list[str] = []
     if argb.crawlersAllowed:
         crawlers_allowed_str = argb.crawlersAllowed
         set_config_param(base_dir, 'crawlersAllowed', crawlers_allowed_str)

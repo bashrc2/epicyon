@@ -61,7 +61,7 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
             last_seen_dir = account_dir + '/lastseen'
             if not os.path.isdir(last_seen_dir):
                 os.mkdir(last_seen_dir)
-            following_handles = []
+            following_handles: list[str] = []
             try:
                 with open(following_filename, 'r',
                           encoding='utf-8') as fp_foll:
@@ -232,14 +232,14 @@ def get_follower_domains(base_dir: str, nickname: str, domain: str) -> []:
     if not os.path.isfile(followers_file):
         return []
 
-    lines = []
+    lines: list[str] = []
     try:
         with open(followers_file, 'r', encoding='utf-8') as fp_foll:
             lines = fp_foll.readlines()
     except OSError:
         print('EX: get_follower_domains ' + followers_file)
 
-    domains_list = []
+    domains_list: list[str] = []
     for handle in lines:
         handle = remove_eol(handle)
         follower_domain, _ = get_domain_from_actor(handle)
@@ -323,7 +323,7 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
             print('DEBUG: handle to unfollow ' + handle_to_unfollow +
                   ' is not in ' + filename)
         return False
-    lines = []
+    lines: list[str] = []
     try:
         with open(filename, 'r', encoding='utf-8') as fp_unfoll:
             lines = fp_unfoll.readlines()
@@ -413,7 +413,7 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(filename):
         return 0
     ctr = 0
-    lines = []
+    lines: list[str] = []
     try:
         with open(filename, 'r', encoding='utf-8') as fp_foll:
             lines = fp_foll.readlines()
@@ -538,7 +538,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     curr_page = 1
     page_ctr = 0
     total_ctr = 0
-    lines = []
+    lines: list[str] = []
     try:
         with open(filename, 'r', encoding='utf-8') as fp_foll:
             lines = fp_foll.readlines()
@@ -626,7 +626,7 @@ def no_of_follow_requests(base_dir: str,
     if not os.path.isfile(approve_follows_filename):
         return 0
     ctr = 0
-    lines = []
+    lines: list[str] = []
     try:
         with open(approve_follows_filename, 'r',
                   encoding='utf-8') as fp_approve:

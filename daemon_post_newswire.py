@@ -298,7 +298,7 @@ def citations_update(self, calling_domain: str, cookie: str,
         fields = \
             extract_text_fields_in_post(post_bytes, boundary, debug, None)
         print('citationstest: ' + str(fields))
-        citations = []
+        citations: list[str] = []
         for ctr in range(0, 128):
             field_name = 'newswire' + str(ctr)
             if not fields.get(field_name):

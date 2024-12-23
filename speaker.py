@@ -150,7 +150,7 @@ def _speaker_pronounce(base_dir: str, say_text: str, translate: {}) -> str:
             ")": ","
         }
     if os.path.isfile(pronounce_filename):
-        pronounce_list = []
+        pronounce_list: list[str] = []
         try:
             with open(pronounce_filename, 'r', encoding='utf-8') as fp_pro:
                 pronounce_list = fp_pro.readlines()
@@ -419,7 +419,7 @@ def speakable_text(http_prefix: str,
     if ' <3' in content:
         content = content.replace(' <3', ' ' + translate['heart'])
     content = remove_html(html_replace_quote_marks(content))
-    detected_links = []
+    detected_links: list[str] = []
     content = speaker_replace_links(http_prefix,
                                     nickname, domain, domain_full,
                                     content, translate, detected_links)
@@ -451,7 +451,7 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
         return {}
     if not isinstance(post_json_object['object']['content'], str):
         return {}
-    detected_links = []
+    detected_links: list[str] = []
     content = urllib.parse.unquote_plus(post_json_object['object']['content'])
     content = html.unescape(content)
     content = content.replace('<p>', '').replace('</p>', ' ')
@@ -532,11 +532,11 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
         post_id = remove_id_ending(post_json_object['object']['id'])
 
     follow_requests_exist = False
-    follow_requests_list = []
+    follow_requests_list: list[str] = []
     accounts_dir = acct_dir(base_dir, nickname, domain_full)
     approve_follows_filename = accounts_dir + '/followrequests.txt'
     if os.path.isfile(approve_follows_filename):
-        follows = []
+        follows: list[str] = []
         try:
             with open(approve_follows_filename, 'r',
                       encoding='utf-8') as fp_foll:

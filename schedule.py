@@ -41,7 +41,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
     days_since_epoch = (curr_time - date_epoch()).days
 
     schedule_dir = acct_handle_dir(base_dir, handle) + '/scheduled/'
-    index_lines = []
+    index_lines: list[str] = []
     delete_schedule_post = False
     nickname = handle.split('@')[0]
     shared_items_federated_domains = httpd.shared_items_federated_domains

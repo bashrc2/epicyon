@@ -109,7 +109,7 @@ def metadata_custom_emoji(base_dir: str,
     Endpoint /api/v1/custom_emojis
     See https://docs.joinmastodon.org/methods/instance/custom_emojis
     """
-    result = []
+    result: list[dict] = []
     emojis_url = http_prefix + '://' + domain_full + '/emoji'
     for _, _, files in os.walk(base_dir + '/emoji'):
         for fname in files:

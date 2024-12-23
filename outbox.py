@@ -606,7 +606,7 @@ def post_message_to_outbox(session, translate: {},
                     acct_dir(base_dir, post_to_nickname, domain) + '/.noVotes'
                 if os.path.isfile(show_vote_file):
                     show_vote_posts = False
-                languages_understood = []
+                languages_understood: list[str] = []
                 if is_image_media(session, base_dir, http_prefix,
                                   post_to_nickname, domain,
                                   message_json,

@@ -63,7 +63,7 @@ def set_peertube(actor_json: {}, peertube: str) -> None:
     """Sets peertube for the given actor
     """
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

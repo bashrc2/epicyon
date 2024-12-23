@@ -155,7 +155,7 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
         not_email_address = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None
@@ -220,7 +220,7 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
             remove_key = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None
@@ -283,7 +283,7 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
             remove_fingerprint = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

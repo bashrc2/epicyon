@@ -47,7 +47,7 @@ def no_of_likes(post_json_object: {}) -> int:
     if not isinstance(obj['likes'], dict):
         return 0
     if not obj['likes'].get('items'):
-        obj['likes']['items'] = []
+        obj['likes']['items']: list[dict] = []
         obj['likes']['totalItems'] = 0
     return len(obj['likes']['items'])
 
@@ -500,7 +500,7 @@ def update_likes_collection(recent_posts_cache: {},
         obj['likes'] = likes_json
     else:
         if not obj['likes'].get('items'):
-            obj['likes']['items'] = []
+            obj['likes']['items']: list[dict] = []
         for like_item in obj['likes']['items']:
             if like_item.get('actor'):
                 if like_item['actor'] == actor:

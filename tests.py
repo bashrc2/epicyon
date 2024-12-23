@@ -753,7 +753,7 @@ def create_server_alice(path: str, domain: str, port: int,
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
-    shared_items_federated_domains = []
+    shared_items_federated_domains: list[str] = []
     system_language = 'en'
     languages_understood = [system_language]
     nickname = 'alice'
@@ -808,7 +808,7 @@ def create_server_alice(path: str, domain: str, port: int,
         chat_url = ''
         auto_cw_cache = {}
         test_video_transcript = ''
-        searchable_by = []
+        searchable_by: list[str] = []
         session = None
         create_public_post(path, nickname, domain, port, http_prefix,
                            "No wise fish would go anywhere without a porpoise",
@@ -886,13 +886,13 @@ def create_server_alice(path: str, domain: str, port: int,
     show_node_info_version = True
     city = 'London, England'
     log_login_failures = False
-    user_agents_blocked = []
+    user_agents_blocked: list[str] = []
     max_like_count = 10
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     dyslexic_font = False
-    crawlers_allowed = []
+    crawlers_allowed: list[str] = []
     check_actor_timeout = 2
     preferred_podcast_formats = None
     clacks = None
@@ -950,7 +950,7 @@ def create_server_bob(path: str, domain: str, port: int,
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
-    shared_items_federated_domains = []
+    shared_items_federated_domains: list[str] = []
     system_language = 'en'
     languages_understood = [system_language]
     nickname = 'bob'
@@ -1005,7 +1005,7 @@ def create_server_bob(path: str, domain: str, port: int,
         chat_url = ''
         auto_cw_cache = {}
         test_video_transcript = ''
-        searchable_by = []
+        searchable_by: list[str] = []
         session = None
         create_public_post(path, nickname, domain, port, http_prefix,
                            "It's your life, live it your way.",
@@ -1083,7 +1083,7 @@ def create_server_bob(path: str, domain: str, port: int,
     show_node_info_version = True
     city = 'London, England'
     log_login_failures = False
-    user_agents_blocked = []
+    user_agents_blocked: list[str] = []
     max_like_count = 10
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''

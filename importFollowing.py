@@ -191,7 +191,7 @@ def run_import_following(base_dir: str, httpd):
         time.sleep(20)
 
         # get a list of accounts on the instance, in random sequence
-        accounts_list = []
+        accounts_list: list[str] = []
         for _, dirs, _ in os.walk(dir_str):
             for account in dirs:
                 if '@' not in account:

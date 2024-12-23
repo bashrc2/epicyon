@@ -83,7 +83,7 @@ def set_donation_url(actor_json: {}, donate_url: str) -> None:
         not_url = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     donation_type = _get_donation_types()
     donate_name = None

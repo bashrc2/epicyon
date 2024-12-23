@@ -174,7 +174,7 @@ def load_unavailable_sites(base_dir: str) -> []:
     """load a list of unavailable sites
     """
     unavailable_sites_filename = data_dir(base_dir) + '/unavailable_sites.txt'
-    sites_unavailable = []
+    sites_unavailable: list[str] = []
     try:
         with open(unavailable_sites_filename, 'r',
                   encoding='utf-8') as fp_sites:

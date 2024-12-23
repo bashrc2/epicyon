@@ -82,7 +82,7 @@ def is_editor(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    lines = []
+    lines: list[str] = []
     try:
         with open(editors_file, 'r', encoding='utf-8') as fp_editors:
             lines = fp_editors.readlines()
@@ -113,7 +113,7 @@ def is_artist(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    lines = []
+    lines: list[str] = []
     try:
         with open(artists_file, 'r', encoding='utf-8') as fp_artists:
             lines = fp_artists.readlines()
@@ -155,7 +155,7 @@ def is_memorial_account(base_dir: str, nickname: str) -> bool:
     memorial_file = data_dir(base_dir) + '/memorial'
     if not os.path.isfile(memorial_file):
         return False
-    memorial_list = []
+    memorial_list: list[str] = []
     try:
         with open(memorial_file, 'r', encoding='utf-8') as fp_memorial:
             memorial_list = fp_memorial.read().split('\n')
@@ -177,7 +177,7 @@ def is_suspended(base_dir: str, nickname: str) -> bool:
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        lines = []
+        lines: list[str] = []
         try:
             with open(suspended_filename, 'r', encoding='utf-8') as fp_susp:
                 lines = fp_susp.readlines()

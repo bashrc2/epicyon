@@ -177,7 +177,7 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
             return True
         return False
 
-    lines = []
+    lines: list[str] = []
     try:
         with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
             lines = fp_mod.readlines()
@@ -630,7 +630,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
     if raw:
         if debug:
             print('Returning the raw feed')
-        result = []
+        result: list[dict] = []
         i = 0
         user_feed = parse_user_feed(signing_priv_key_pem,
                                     session, outbox_url, as_header,
@@ -688,11 +688,11 @@ def _get_posts(session, outbox_url: str, max_posts: int,
             continue
         content = content.replace('&apos;', "'")
 
-        mentions = []
+        mentions: list[str] = []
         emoji = {}
         summary = ''
         in_reply_to = ''
-        attachment = []
+        attachment: list[list] = []
         sensitive = False
         if isinstance(this_item, dict):
             if this_item.get('tag'):
@@ -1241,7 +1241,7 @@ def _attach_buy_link(post_json_object: {},
     if translate.get(buy_str):
         buy_str = translate[buy_str]
     if 'attachment' not in post_json_object:
-        post_json_object['attachment'] = []
+        post_json_object['attachment']: list[dict] = []
     post_json_object['attachment'].append({
         "type": "Link",
         "name": buy_str,
@@ -1262,7 +1262,7 @@ def _attach_chat_link(post_json_object: {},
     if ' ' in chat_url or '<' in chat_url:
         return
     if 'attachment' not in post_json_object:
-        post_json_object['attachment'] = []
+        post_json_object['attachment']: list[dict] = []
     post_json_object['attachment'].append({
         "type": "Link",
         "name": "Chat",
@@ -1622,7 +1622,7 @@ def _consolidate_actors_list(actors_list: []) -> None:
     """ consolidate duplicated actors
     https://domain/@nick gets merged with https://domain/users/nick
     """
-    possible_duplicate_actors = []
+    possible_duplicate_actors: list[str] = []
     for cc_actor in actors_list:
         if '/@' in cc_actor:
             if '/@/' not in cc_actor:
@@ -1631,7 +1631,7 @@ def _consolidate_actors_list(actors_list: []) -> None:
     if not possible_duplicate_actors:
         return
     u_paths = get_user_paths()
-    remove_actors = []
+    remove_actors: list[str] = []
     for cc_actor in possible_duplicate_actors:
         for usr_path in u_paths:
             if '/@/' not in cc_actor:
@@ -1796,7 +1796,7 @@ def _create_post_base(base_dir: str,
                     if not is_blocked_hashtag(base_dir, audio_value):
                         content += ' #' + audio_value
 
-    tags = []
+    tags: list[dict] = []
     hashtags_dict = {}
 
     domain = get_full_domain(domain, port)
@@ -1810,7 +1810,7 @@ def _create_post_base(base_dir: str,
                           hashtags_dict, translate, True)
 
     # replace emoji with unicode
-    tags = []
+    tags: list[dict] = []
     for tag_name, tag in hashtags_dict.items():
         tags.append(tag)
 
@@ -1838,8 +1838,8 @@ def _create_post_base(base_dir: str,
         summary = remove_invalid_chars(valid_content_warning(subject))
         sensitive = True
 
-    to_recipients = []
-    to_cc = []
+    to_recipients: list[str] = []
+    to_cc: list[str] = []
     if to_url:
         if not isinstance(to_url, str):
             print('ERROR: to_url is not a string')
@@ -1888,7 +1888,7 @@ def _create_post_base(base_dir: str,
         # make sure that CC doesn't also contain a To address
         # eg. To: [ "https://mydomain/users/foo/followers" ]
         #     CC: [ "X", "Y", "https://mydomain/users/foo", "Z" ]
-        remove_from_cc = []
+        remove_from_cc: list[str] = []
         for cc_recipient in to_cc:
             for send_to_actor in to_recipients:
                 if cc_recipient in send_to_actor and \
@@ -1912,7 +1912,7 @@ def _create_post_base(base_dir: str,
         post_object_type = 'Article'
 
     # convert the searchable_by state into a url
-    searchable_by_list = []
+    searchable_by_list: list[str] = []
     if searchable_by == 'public':
         searchable_by_list = ["https://www.w3.org/ns/activitystreams#Public"]
     elif searchable_by == 'yourself':
@@ -2002,7 +2002,7 @@ def outbox_message_create_wrap(http_prefix: str,
     new_post_id = \
         local_actor_url(http_prefix, nickname, domain) + \
         '/statuses/' + status_number
-    cc_list = []
+    cc_list: list[str] = []
     if message_json.get('cc'):
         cc_list = message_json['cc']
     new_post = {
@@ -2036,8 +2036,8 @@ def _post_is_addressed_to_followers(nickname: str, domain: str, port: int,
 
     if not post_json_object.get('object'):
         return False
-    to_list = []
-    cc_list = []
+    to_list: list[str] = []
+    cc_list: list[str] = []
     if post_json_object['type'] != 'Update' and \
        has_object_dict(post_json_object):
         if post_json_object['object'].get('to'):
@@ -2155,7 +2155,7 @@ def json_pin_post(base_dir: str, http_prefix: str,
                                 domain_full, system_language)
     items_list = []
     if pinned_post_json:
-        items_list = [pinned_post_json]
+        items_list: list[dict] = [pinned_post_json]
 
     actor = local_actor_url(http_prefix, nickname, domain_full)
     post_context = get_individual_post_context()
@@ -2182,7 +2182,7 @@ def regenerate_index_for_box(base_dir: str,
     if os.path.isfile(box_index_filename):
         return
 
-    index_lines = []
+    index_lines: list[str] = []
     for _, _, files in os.walk(box_dir):
         for fname in files:
             if ':##' not in fname:
@@ -2343,7 +2343,7 @@ def _append_citations_to_blog_post(base_dir: str,
     if not os.path.isfile(citations_filename):
         return
     citations_separator = '#####'
-    citations = []
+    citations: list[str] = []
     try:
         with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
             citations = fp_cit.readlines()
@@ -2480,7 +2480,7 @@ def create_question_post(base_dir: str,
     anonymous_participation_enabled = event_status = ticket_url = None
     conversation_id = None
     convthread_id = None
-    searchable_by = []
+    searchable_by: list[str] = []
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
                           'https://www.w3.org/ns/activitystreams#Public',
@@ -2505,7 +2505,7 @@ def create_question_post(base_dir: str,
                           chat_url, auto_cw_cache, searchable_by,
                           session)
     message_json['object']['type'] = 'Question'
-    message_json['object']['oneOf'] = []
+    message_json['object']['oneOf']: list[dict] = []
     message_json['object']['votersCount'] = 0
     curr_time = date_utcnow()
     days_since_epoch = \
@@ -2555,7 +2555,7 @@ def create_unlisted_post(base_dir: str,
     anonymous_participation_enabled = None
     event_status = None
     ticket_url = None
-    searchable_by = []
+    searchable_by: list[str] = []
     return _create_post_base(base_dir, nickname, domain, port,
                              local_actor + '/followers',
                              'https://www.w3.org/ns/activitystreams#Public',
@@ -2644,7 +2644,7 @@ def get_mentioned_people(base_dir: str, http_prefix: str,
     """
     if '@' not in content:
         return None
-    mentions = []
+    mentions: list[str] = []
     words = content.split(' ')
     for wrd in words:
         if not wrd.startswith('@'):
@@ -2715,7 +2715,7 @@ def create_direct_message_post(base_dir: str,
     anonymous_participation_enabled = None
     event_status = None
     ticket_url = None
-    searchable_by = []
+    searchable_by: list[str] = []
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
                           post_to, post_cc,
@@ -2742,8 +2742,8 @@ def create_direct_message_post(base_dir: str,
     if not isinstance(message_json['to'], list):
         message_json['to'] = [message_json['to']]
     message_json['object']['to'] = message_json['to']
-    message_json['cc'] = []
-    message_json['object']['cc'] = []
+    message_json['cc']: list[str] = []
+    message_json['object']['cc']: list[str] = []
     if dm_is_chat:
         message_json['object']['type'] = 'ChatMessage'
     if schedule_post:
@@ -2778,7 +2778,7 @@ def create_report_post(base_dir: str,
             subject = report_title + ': ' + subject
 
     # create the list of moderators from the moderators file
-    moderators_list = []
+    moderators_list: list[str] = []
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
         try:
@@ -2850,7 +2850,7 @@ def create_report_post(base_dir: str,
     ticket_url = None
     conversation_id = None
     convthread_id = None
-    searchable_by = []
+    searchable_by: list[str] = []
     for to_url in post_to:
         # who is this report going to?
         to_nickname = to_url.split('/users/')[1]
@@ -3906,7 +3906,7 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
             return
         recipients_object = post_json_object
 
-    recipients = []
+    recipients: list[str] = []
     recipient_type = ('to', 'cc')
     for rtype in recipient_type:
         if not recipients_object.get(rtype):
@@ -4112,7 +4112,7 @@ def _has_shared_inbox(session, http_prefix: str, domain: str,
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
-    try_handles = []
+    try_handles: list[str] = []
     if ':' not in domain:
         try_handles.append(domain + '@' + domain)
     try_handles.append('inbox@' + domain)
@@ -4189,7 +4189,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
     sending_ctr = 0
 
     # randomize the order of sending to instances
-    randomized_instances = []
+    randomized_instances: list[str] = []
     for follower_domain, follower_handles in grouped.items():
         randomized_instances.append([follower_domain, follower_handles])
     random.shuffle(randomized_instances)
@@ -4551,7 +4551,7 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
     if is_moderator(base_dir, nickname):
         moderation_index_file = data_dir(base_dir) + '/moderation.txt'
         if os.path.isfile(moderation_index_file):
-            lines = []
+            lines: list[str] = []
             try:
                 with open(moderation_index_file, 'r',
                           encoding='utf-8') as fp_index:
@@ -4563,7 +4563,7 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
             if header_only:
                 return box_header
 
-            page_lines = []
+            page_lines: list[str] = []
             if len(lines) > 0:
                 end_line_number = \
                     len(lines) - 1 - int(items_per_page * page_number)
@@ -4608,7 +4608,7 @@ def is_image_media(session, base_dir: str, http_prefix: str,
     """
     if post_json_object['type'] == 'Announce':
         blocked_cache = {}
-        block_federated = []
+        block_federated: list[str] = []
         post_json_announce = \
             download_announce(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
@@ -5034,7 +5034,7 @@ def _create_box_indexed(recent_posts_cache: {},
     }
 
     posts_in_box = []
-    post_urls_in_box = []
+    post_urls_in_box: list[str] = []
 
     if not unauthorized_premium:
         total_posts_count, posts_added_to_timeline = \
@@ -5262,7 +5262,7 @@ def _novel_fields_for_person(nickname: str, domain: str,
     posts_in_box = os.scandir(box_dir)
 
     posts_ctr = 0
-    fields = []
+    fields: list[str] = []
     expected_fields = (
         'alsoKnownAs',
         'attachment',
@@ -5767,7 +5767,7 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
         return
     person_cache = {}
     cached_webfingers = {}
-    federation_list = []
+    federation_list: list[str] = []
     group_account = False
     if nickname.startswith('!'):
         nickname = nickname[1:]
@@ -5885,7 +5885,7 @@ def download_follow_collection(signing_priv_key_pem: str,
         session_headers = {
             'Accept': accept_str
         }
-    result = []
+    result: list[str] = []
     for page_ctr in range(no_of_pages):
         url = \
             actor + '/' + follow_type + '?page=' + str(page_number + page_ctr)
@@ -5956,7 +5956,7 @@ def get_public_post_info(session, base_dir: str, nickname: str, domain: str,
     domains_info = {}
     for pdomain in post_domains:
         if not domains_info.get(pdomain):
-            domains_info[pdomain] = []
+            domains_info[pdomain]: list[str] = []
 
     blocked_posts = \
         _get_posts_for_blocked_domains(base_dir, session,
@@ -6007,7 +6007,7 @@ def get_public_post_domains_blocked(session, base_dir: str,
         print('EX: get_public_post_domains_blocked unable to read ' +
               blocking_filename)
 
-    blocked_domains = []
+    blocked_domains: list[str] = []
     for domain_name in post_domains:
         if '@' not in domain_name:
             continue
@@ -6031,7 +6031,7 @@ def _get_non_mutuals_of_person(base_dir: str,
         get_followers_list(base_dir, nickname, domain, 'followers.txt')
     following = \
         get_followers_list(base_dir, nickname, domain, 'following.txt')
-    non_mutuals = []
+    non_mutuals: list[str] = []
     for handle in followers:
         if handle not in following:
             non_mutuals.append(handle)
@@ -7465,7 +7465,7 @@ def valid_post_content(base_dir: str, nickname: str, domain: str,
     # check number of tags
     if message_json['object'].get('tag'):
         if not isinstance(message_json['object']['tag'], list):
-            message_json['object']['tag'] = []
+            message_json['object']['tag']: list[dict] = []
         else:
             if len(message_json['object']['tag']) > int(max_mentions * 2):
                 if message_json['object'].get('id'):

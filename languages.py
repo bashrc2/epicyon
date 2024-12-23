@@ -182,7 +182,7 @@ def libretranslate_languages(url: str, api_key: str) -> []:
     if not isinstance(result, list):
         return []
 
-    lang_list = []
+    lang_list: list[str] = []
     for lang in result:
         if not isinstance(lang, dict):
             continue

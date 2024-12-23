@@ -145,7 +145,7 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
                 print('EX: unable to append to voters file ' + voters_filename)
         else:
             # change an entry in the voters file
-            lines = []
+            lines: list[str] = []
             try:
                 with open(voters_filename, 'r',
                           encoding='utf-8') as fp_voters:
@@ -154,7 +154,7 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
                 print('EX: question_update_votes unable to read ' +
                       voters_filename)
 
-            newlines = []
+            newlines: list[str] = []
             save_voters_file = False
             for vote_line in lines:
                 if vote_line.startswith(actor_url +
@@ -185,7 +185,7 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
         if not possible_answer.get('name'):
             continue
         total_items = 0
-        lines = []
+        lines: list[str] = []
         try:
             with open(voters_filename, 'r', encoding='utf-8') as fp_voters:
                 lines = fp_voters.readlines()

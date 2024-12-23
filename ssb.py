@@ -71,7 +71,7 @@ def set_ssb_address(actor_json: {}, ssb_address: str) -> None:
         not_ssb_address = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

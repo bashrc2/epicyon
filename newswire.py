@@ -115,7 +115,7 @@ def get_newswire_tags(text: str, max_tags: int) -> []:
     if text_simplified.endswith('.'):
         text_simplified = text_simplified[:len(text_simplified)-1]
     words = text_simplified.split(' ')
-    tags = []
+    tags: list[str] = []
     for wrd in words:
         if not wrd.startswith('#'):
             continue
@@ -232,7 +232,7 @@ def _add_newswire_dict_entry(base_dir: str,
     title = limit_word_lengths(title, 13)
 
     if tags is None:
-        tags = []
+        tags: list[str] = []
 
     # extract hashtags from the text of the feed post
     post_tags = get_newswire_tags(all_text, max_tags)
@@ -442,7 +442,7 @@ def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
     """ get podcast categories if they exist. These can be turned into hashtags
     See https://podcast-standard.org/itunes_tags
     """
-    podcast_categories = []
+    podcast_categories: list[str] = []
 
     # convert keywords to hashtags
     if '<itunes:keywords' in xml_item:
@@ -876,13 +876,13 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
         if not _valid_feed_date(pub_date_str):
             continue
         post_filename = ''
-        votes_status = []
+        votes_status: list[str] = []
         podcast_properties = \
             xml_podcast_to_dict(base_dir, rss_item, xml_str)
         if podcast_properties:
             podcast_properties['linkMimeType'] = link_mime_type
         fediverse_handle = ''
-        extra_links = []
+        extra_links: list[str] = []
         _add_newswire_dict_entry(base_dir,
                                  result, pub_date_str,
                                  title, link,
@@ -995,13 +995,13 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
         if not _valid_feed_date(pub_date_str):
             continue
         post_filename = ''
-        votes_status = []
+        votes_status: list[str] = []
         podcast_properties = \
             xml_podcast_to_dict(base_dir, rss_item, xml_str)
         if podcast_properties:
             podcast_properties['linkMimeType'] = link_mime_type
         fediverse_handle = ''
-        extra_links = []
+        extra_links: list[str] = []
         _add_newswire_dict_entry(base_dir,
                                  result, pub_date_str,
                                  title, link,
@@ -1099,7 +1099,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                         fediverse_handle = actor_uri
 
         # are there any extra links?
-        extra_links = []
+        extra_links: list[str] = []
         if '<activity:object>' in atom_item and \
            '</activity:object>' in atom_item:
             obj_str = atom_item.split('<activity:object>')[1]
@@ -1153,7 +1153,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
         if not _valid_feed_date(pub_date_str):
             continue
         post_filename = ''
-        votes_status = []
+        votes_status: list[str] = []
         podcast_properties = \
             xml_podcast_to_dict(base_dir, atom_item, xml_str)
         if podcast_properties:
@@ -1275,9 +1275,9 @@ def _json_feed_v1to_dict(base_dir: str, xml_str: str,
         if not _valid_feed_date(pub_date_str):
             continue
         post_filename = ''
-        votes_status = []
+        votes_status: list[str] = []
         fediverse_handle = ''
-        extra_links = []
+        extra_links: list[str] = []
         _add_newswire_dict_entry(base_dir,
                                  result, pub_date_str,
                                  title, link,
@@ -1379,13 +1379,13 @@ def _atom_feed_yt_to_dict(base_dir: str, xml_str: str,
         if not _valid_feed_date(pub_date_str):
             continue
         post_filename = ''
-        votes_status = []
+        votes_status: list[str] = []
         podcast_properties = \
             xml_podcast_to_dict(base_dir, atom_item, xml_str)
         if podcast_properties:
             podcast_properties['linkMimeType'] = 'video/youtube'
         fediverse_handle = ''
-        extra_links = []
+        extra_links: list[str] = []
         _add_newswire_dict_entry(base_dir,
                                  result, pub_date_str,
                                  title, link,
@@ -1600,7 +1600,7 @@ def _get_hashtags_from_post(post_json_object: {}) -> []:
         return []
     if not isinstance(post_json_object['object']['tag'], list):
         return []
-    tags = []
+    tags: list[str] = []
     for tgname in post_json_object['object']['tag']:
         if not isinstance(tgname, dict):
             continue
@@ -1674,7 +1674,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                     published = post_json_object['object']['published']
                     published = published.replace('T', ' ')
                     published = published.replace('Z', '+00:00')
-                    votes = []
+                    votes: list[str] = []
                     if os.path.isfile(full_post_filename + '.votes'):
                         votes = load_json(full_post_filename + '.votes')
                     content = \
@@ -1689,7 +1689,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
                     url_str = get_url_from_post(url2)
                     url3 = remove_html(url_str)
                     fediverse_handle = ''
-                    extra_links = []
+                    extra_links: list[str] = []
                     _add_newswire_dict_entry(base_dir,
                                              newswire, published,
                                              summary, url3,
@@ -1780,7 +1780,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
     max_posts_per_source = 5
 
     # add rss feeds
-    rss_feed = []
+    rss_feed: list[str] = []
     try:
         with open(subscriptions_filename, 'r', encoding='utf-8') as fp_sub:
             rss_feed = fp_sub.readlines()
@@ -1835,7 +1835,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
     no_of_posts = len(sorted_result.items())
     if no_of_posts > max_newswire_posts:
         ctr = 0
-        removals = []
+        removals: list[str] = []
         for date_str, item in sorted_result.items():
             ctr += 1
             if ctr > max_newswire_posts:

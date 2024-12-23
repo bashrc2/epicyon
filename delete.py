@@ -192,7 +192,7 @@ def remove_old_hashtags(base_dir: str, max_months: int) -> str:
     max_months = min(max_months, 11)
     prev_date = date_from_numbers(1970, 1 + max_months, 1, 0, 0)
     max_days_since_epoch = (date_utcnow() - prev_date).days
-    remove_hashtags = []
+    remove_hashtags: list[str] = []
 
     for _, _, files in os.walk(base_dir + '/tags'):
         for fname in files:

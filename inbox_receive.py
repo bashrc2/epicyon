@@ -2054,7 +2054,7 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
     # if the votes on a question have changed then
     # send out an update
     question_json['type'] = 'Update'
-    shared_items_federated_domains = []
+    shared_items_federated_domains: list[str] = []
     shared_item_federation_tokens = {}
     send_to_followers_thread(server, session, session_onion, session_i2p,
                              base_dir, nickname, domain,
