@@ -1319,8 +1319,7 @@ def get_status_number(published_str: str = None) -> (str, str):
 def evil_incarnate() -> []:
     """Hardcoded blocked domains
     """
-    return ('fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz',
-            'kiwifarms.cc')
+    return ('fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz')
 
 
 def contains_invalid_chars(json_str: str) -> bool:
