@@ -79,7 +79,7 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
     # create header
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     emoji_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -281,7 +281,7 @@ def html_search_shared_items(translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     shared_items_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -409,7 +409,7 @@ def html_search_emoji_text_entry(translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     emoji_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -560,7 +560,7 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
 
     skillsearch = skillsearch.lower().strip('\n').strip('\r')
 
-    results = []
+    results: list[str] = []
     # search instance accounts
     dir_str = data_dir(base_dir)
     for subdir, _, files in os.walk(dir_str + '/'):
@@ -650,7 +650,7 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     skill_search_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -757,7 +757,7 @@ def html_history_search(translate: {}, base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     history_search_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -909,7 +909,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             nickname = None
 
     # read the index
-    lines = []
+    lines: list[str] = []
     try:
         with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
             lines = fp_hash.readlines()
@@ -936,7 +936,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     hashtag_search_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -1145,7 +1145,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         get_json(signing_priv_key_pem,
                  session, hashtag_url_with_page, as_header, None, debug,
                  mitm_servers, __version__, http_prefix, domain)
-    lines = []
+    lines: list[str] = []
     if get_json_valid(hashtag_json):
         if 'orderedItems' in hashtag_json:
             lines = hashtag_json['orderedItems']
@@ -1177,7 +1177,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     hashtag_search_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -1343,7 +1343,7 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
             nickname = None
 
     # read the index
-    lines = []
+    lines: list[str] = []
     try:
         with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
             lines = fp_hash.readlines()
@@ -1457,7 +1457,7 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
             nickname = None
 
     # read the index
-    lines = []
+    lines: list[str] = []
     try:
         with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
             lines = fp_hash.readlines()

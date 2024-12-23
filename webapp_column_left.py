@@ -54,7 +54,7 @@ def _get_left_column_shares(base_dir: str,
     if not shares_json:
         return []
 
-    links_list = []
+    links_list: list[str] = []
     ctr = 0
     for _, item in shares_json.items():
         sharedesc = item['displayName']
@@ -97,7 +97,7 @@ def _get_left_column_wanted(base_dir: str,
     if not shares_json:
         return []
 
-    links_list = []
+    links_list: list[str] = []
     ctr = 0
     for _, item in shares_json.items():
         sharedesc = item['displayName']
@@ -404,7 +404,7 @@ def html_links_mobile(base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -478,7 +478,7 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     edit_links_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

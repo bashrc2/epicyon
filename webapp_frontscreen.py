@@ -236,7 +236,7 @@ def html_front_screen(signing_priv_key_pem: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     profile_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images) + \

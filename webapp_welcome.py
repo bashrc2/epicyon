@@ -96,7 +96,7 @@ def html_welcome_screen(base_dir: str, nickname: str,
     if os.path.isfile(base_dir + '/welcome.css'):
         css_filename = base_dir + '/welcome.css'
 
-    preload_images = []
+    preload_images: list[str] = []
     welcome_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

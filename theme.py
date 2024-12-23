@@ -141,7 +141,7 @@ def get_themes_list(base_dir: str) -> []:
     also used to create the web interface dropdown list
     and to lookup function names
     """
-    themes = []
+    themes: list[str] = []
     for _, dirs, _ in os.walk(base_dir + '/theme'):
         for theme_name in dirs:
             if '~' not in theme_name and \

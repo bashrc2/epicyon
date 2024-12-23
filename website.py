@@ -117,7 +117,7 @@ def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
         not_url = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     match_strings = _get_website_strings()
     match_strings.append(translate['Website'].lower())
@@ -161,7 +161,7 @@ def set_gemini_link(actor_json: {}, gemini_link: str) -> None:
         not_link = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     match_strings = _get_gemini_strings()
 

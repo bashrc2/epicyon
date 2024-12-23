@@ -93,9 +93,9 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     days_since_epoch_str = str(days_since_epoch) + ' '
     days_since_epoch_str2 = str(days_since_epoch - 1) + ' '
     recently = days_since_epoch - 1
-    tag_swarm = []
-    category_swarm = []
-    swarm_map = []
+    tag_swarm: list[str] = []
+    category_swarm: list[str] = []
+    swarm_map: list[str] = []
     domain_histogram = {}
 
     # Load the blocked hashtags into memory.
@@ -269,7 +269,7 @@ def html_search_hashtag_category(translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -385,7 +385,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
 
     # obtain any map links and these can be associated with hashtags
     # get geolocations from content
-    map_links = []
+    map_links: list[str] = []
     published = None
     if 'content' in post_json_object['object']:
         published = post_json_object['object']['published']

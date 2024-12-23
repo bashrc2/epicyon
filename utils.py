@@ -385,7 +385,7 @@ def get_actor_languages_list(actor_json: {}) -> []:
             return lang_list
         if isinstance(property_value[prop_value_name], str):
             lang_str = property_value[prop_value_name]
-            lang_list_temp = []
+            lang_list_temp: list[str] = []
             if ',' in lang_str:
                 lang_list_temp = lang_str.split(',')
             elif ';' in lang_str:
@@ -398,7 +398,7 @@ def get_actor_languages_list(actor_json: {}) -> []:
                 lang_list_temp = lang_str.split(' ')
             else:
                 return [lang_str]
-            lang_list = []
+            lang_list: list[str] = []
             for lang in lang_list_temp:
                 lang = lang.strip()
                 if lang not in lang_list:
@@ -1083,7 +1083,7 @@ def get_followers_list(base_dir: str,
     if not os.path.isfile(filename):
         return []
 
-    lines = []
+    lines: list[str] = []
     try:
         with open(filename, 'r', encoding='utf-8') as fp_foll:
             lines = fp_foll.readlines()
@@ -1103,7 +1103,7 @@ def get_followers_of_person(base_dir: str,
     """Returns a list containing the followers of the given person
     Used by the shared inbox to know who to send incoming mail to
     """
-    followers = []
+    followers: list[str] = []
     domain = remove_domain_port(domain)
     handle = nickname + '@' + domain
     handle_dir = acct_handle_dir(base_dir, handle)
@@ -2249,7 +2249,7 @@ def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
         except OSError:
             print('EX: _remove_attachment unable to delete etag file ' +
                   str(etag_filename))
-    post_json['attachment'] = []
+    post_json['attachment']: list[dict] = []
 
 
 def remove_post_from_index(post_url: str, debug: bool,
@@ -2261,7 +2261,7 @@ def remove_post_from_index(post_url: str, debug: bool,
     post_id = remove_id_ending(post_url)
     if not text_in_file(post_id, index_file):
         return
-    lines = []
+    lines: list[str] = []
     try:
         with open(index_file, 'r', encoding='utf-8') as fp_mod1:
             lines = fp_mod1.readlines()
@@ -3009,7 +3009,7 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
     else:
         search_words = [search_str]
 
-    res = []
+    res: list[str] = []
     try:
         with open(index_filename, 'r', encoding='utf-8') as fp_index:
             post_filename = 'start'
@@ -3051,7 +3051,7 @@ def _get_mutuals_of_person(base_dir: str,
         get_followers_list(base_dir, nickname, domain, 'followers.txt')
     following = \
         get_followers_list(base_dir, nickname, domain, 'following.txt')
-    mutuals = []
+    mutuals: list[str] = []
     for handle in following:
         if handle in followers:
             mutuals.append(handle)
@@ -3101,8 +3101,8 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     else:
         search_words = [search_str]
 
-    following_list = []
-    mutuals_list = []
+    following_list: list[str] = []
+    mutuals_list: list[str] = []
     check_searchable_by = False
     if box_name == 'inbox':
         check_searchable_by = True
@@ -3114,7 +3114,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
         # create a list containing all of the mutuals
         mutuals_list = _get_mutuals_of_person(base_dir, nickname, domain)
 
-    res = []
+    res: list[str] = []
     for root, _, fnames in os.walk(path):
         for fname in fnames:
             file_path = os.path.join(root, fname)
@@ -3979,7 +3979,7 @@ def get_supported_languages(base_dir: str) -> []:
     """Returns a list of supported languages
     """
     translations_dir = base_dir + '/translations'
-    languages_str = []
+    languages_str: list[str] = []
     for _, _, files in os.walk(translations_dir):
         for fname in files:
             if not fname.endswith('.json'):
@@ -3995,7 +3995,7 @@ def get_category_types(base_dir: str) -> []:
     """Returns the list of ontologies
     """
     ontology_dir = base_dir + '/ontology'
-    categories = []
+    categories: list[str] = []
     for _, _, files in os.walk(ontology_dir):
         for fname in files:
             if not fname.endswith('.json'):
@@ -4511,7 +4511,7 @@ def load_min_images_for_accounts(base_dir: str) -> []:
     """Loads a list of nicknames for accounts where all images should
     be minimized by default
     """
-    min_images_for_accounts = []
+    min_images_for_accounts: list[str] = []
     dir_str = data_dir(base_dir)
     for subdir, dirs, _ in os.walk(dir_str):
         for account in dirs:
@@ -4556,7 +4556,7 @@ def load_reverse_timeline(base_dir: str) -> []:
     """Loads flags for each user indicating whether they prefer to
     see reversed timelines
     """
-    reverse_sequence = []
+    reverse_sequence: list[str] = []
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:
@@ -5368,7 +5368,7 @@ def load_mitm_servers(base_dir: str) -> []:
     """Loads a list of servers implementing insecure transport security
     """
     mitm_servers_filename = data_dir(base_dir) + '/mitm_servers.txt'
-    mitm_servers = []
+    mitm_servers: list[str] = []
     if os.path.isfile(mitm_servers_filename):
         try:
             with open(mitm_servers_filename, 'r',

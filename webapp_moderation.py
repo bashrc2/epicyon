@@ -123,7 +123,7 @@ def html_account_info(translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     info_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -173,7 +173,7 @@ def html_account_info(translate: {},
                                    'followers', session,
                                    http_prefix, search_actor, 1, 5, debug,
                                    mitm_servers)
-    blocked_followers = []
+    blocked_followers: list[str] = []
     for follower_actor in followers_list:
         follower_nickname = get_nickname_from_actor(follower_actor)
         if not follower_nickname:
@@ -193,7 +193,7 @@ def html_account_info(translate: {},
                                    'following', session,
                                    http_prefix, search_actor, 1, 5, debug,
                                    mitm_servers)
-    blocked_following = []
+    blocked_following: list[str] = []
     for following_actor in following_list:
         following_nickname = get_nickname_from_actor(following_actor)
         if not following_nickname:
@@ -346,7 +346,7 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     info_form = html_header_with_external_style(css_filename,
                                                 instance_title, None,
                                                 preload_images)
@@ -373,7 +373,7 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     info_shown = False
 
-    accounts = []
+    accounts: list[str] = []
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:

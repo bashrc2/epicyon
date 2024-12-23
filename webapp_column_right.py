@@ -380,10 +380,10 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     # these can then be used to re-select checkboxes later
     citations_filename = \
         acct_dir(base_dir, nickname, domain) + '/.citations.txt'
-    citations_selected = []
+    citations_selected: list[str] = []
     if os.path.isfile(citations_filename):
         citations_separator = '#####'
-        citations = []
+        citations: list[str] = []
         try:
             with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
                 citations = fp_cit.readlines()
@@ -406,7 +406,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -527,7 +527,7 @@ def html_newswire_mobile(base_dir: str, nickname: str,
     metadata = None
     if text_mode_browser(ua_str):
         metadata = '<meta http-equiv="refresh" content="1800" >\n'
-    preload_images = []
+    preload_images: list[str] = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title, metadata,
                                         preload_images)
@@ -603,7 +603,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     edit_newswire_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -761,7 +761,7 @@ def html_edit_news_post(translate: {}, base_dir: str, path: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     edit_news_post_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

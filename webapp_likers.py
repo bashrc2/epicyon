@@ -54,7 +54,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

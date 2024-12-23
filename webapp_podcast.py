@@ -325,7 +325,7 @@ def html_podcast_episode(translate: {},
                      dir_str + '/podcast-background.jpg')
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     podcast_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -472,7 +472,7 @@ def html_podcast_episode(translate: {},
                 '<p><a href="' + fediverse_handle + '">@' + \
                 podcast_nickname + '@' + podcast_domain + '</a></p>\n'
 
-    extra_links = []
+    extra_links: list[str] = []
     if len(newswire_item) > 10:
         extra_links = newswire_item[10]
         if extra_links:

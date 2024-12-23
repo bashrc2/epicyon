@@ -74,7 +74,7 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(base_dir + '/welcome.css'):
         css_filename = base_dir + '/welcome.css'
 
-    preload_images = []
+    preload_images: list[str] = []
     profile_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

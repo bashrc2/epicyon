@@ -791,7 +791,7 @@ def html_new_post(edit_post_params: {},
         currencies = get_currencies()
         extra_fields += '  <select id="themeDropdown" ' + \
             'name="itemCurrency" class="theme">\n'
-        currency_list = []
+        currency_list: list[str] = []
         for symbol, curr_name in currencies.items():
             currency_list.append(curr_name + ' ' + symbol)
         currency_list.sort()
@@ -858,7 +858,7 @@ def html_new_post(edit_post_params: {},
         currencies = get_currencies()
         extra_fields += '  <select id="themeDropdown" ' + \
             'name="itemCurrency" class="theme">\n'
-        currency_list = []
+        currency_list: list[str] = []
         for symbol, curr_name in currencies.items():
             currency_list.append(curr_name + ' ' + symbol)
         currency_list.sort()
@@ -922,7 +922,7 @@ def html_new_post(edit_post_params: {},
                 translate['Citations'] + ':</label></p>\n'
             citations_str += '  <ul>\n'
             citations_separator = '#####'
-            citations = []
+            citations: list[str] = []
             try:
                 with open(citations_filename, 'r',
                           encoding='utf-8') as fp_cit:

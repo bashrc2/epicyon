@@ -75,7 +75,7 @@ def html_conversation_view(authorized: bool, post_id: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
 
     metadata_str = ''
     if post_id:

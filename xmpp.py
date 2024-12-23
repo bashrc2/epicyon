@@ -71,7 +71,7 @@ def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
         not_xmpp_address = True
 
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

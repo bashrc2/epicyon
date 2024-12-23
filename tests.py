@@ -1089,7 +1089,7 @@ def create_server_bob(path: str, domain: str, port: int,
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     dyslexic_font = False
-    crawlers_allowed = []
+    crawlers_allowed: list[str] = []
     check_actor_timeout = 2
     preferred_podcast_formats = None
     clacks = None
@@ -1146,7 +1146,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
-    shared_items_federated_domains = []
+    shared_items_federated_domains: list[str] = []
     nickname = 'eve'
     http_prefix = 'http'
     proxy_type = None
@@ -1179,14 +1179,14 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     show_node_info_version = True
     city = 'London, England'
     log_login_failures = False
-    user_agents_blocked = []
+    user_agents_blocked: list[str] = []
     max_like_count = 10
     low_bandwidth = True
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     dyslexic_font = False
-    crawlers_allowed = []
+    crawlers_allowed: list[str] = []
     check_actor_timeout = 2
     preferred_podcast_formats = None
     clacks = None
@@ -1268,7 +1268,7 @@ def create_server_group(path: str, domain: str, port: int,
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
-    shared_items_federated_domains = []
+    shared_items_federated_domains: list[str] = []
     # system_language = 'en'
     nickname = 'testgroup'
     http_prefix = 'http'
@@ -1304,14 +1304,14 @@ def create_server_group(path: str, domain: str, port: int,
     show_node_info_version = True
     city = 'London, England'
     log_login_failures = False
-    user_agents_blocked = []
+    user_agents_blocked: list[str] = []
     max_like_count = 10
     low_bandwidth = True
     default_reply_interval_hrs = 9999999999
     lists_enabled = ''
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     dyslexic_font = False
-    crawlers_allowed = []
+    crawlers_allowed: list[str] = []
     check_actor_timeout = 2
     preferred_podcast_formats = None
     clacks = None
@@ -1446,7 +1446,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     cc_url = None
     alice_person_cache = {}
     alice_cached_webfingers = {}
-    alice_shared_items_federated_domains = []
+    alice_shared_items_federated_domains: list[str] = []
     alice_shared_item_federation_tokens = {}
     attached_image_filename = base_dir + '/img/logo.png'
     test_image_width, test_image_height = \
@@ -1471,8 +1471,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
     buy_url = ''
     chat_url = ''
     auto_cw_cache = {}
-    searchable_by = []
-    mitm_servers = []
+    searchable_by: list[str] = []
+    mitm_servers: list[str] = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -1592,7 +1592,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     bob_post_log = []
     bob_person_cache = {}
     bob_cached_webfingers = {}
-    sites_unavailable = []
+    sites_unavailable: list[str] = []
     status_number = None
     outbox_post_filename = None
     outbox_path = data_dir(alice_dir) + '/alice@' + alice_domain + '/outbox'
@@ -1603,7 +1603,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
             outbox_post_filename = outbox_path + '/' + name
     assert status_number > 0
     assert outbox_post_filename
-    mitm_servers = []
+    mitm_servers: list[str] = []
     assert like_post({}, session_bob, bob_dir, federation_list,
                      'bob', bob_domain, bob_port, http_prefix,
                      'alice', alice_domain, alice_port, [],
@@ -1627,8 +1627,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
     print('\n\n*******************************************************')
     print("Bob reacts to Alice's post")
 
-    sites_unavailable = []
-    mitm_servers = []
+    sites_unavailable: list[str] = []
+    mitm_servers: list[str] = []
     assert reaction_post({}, session_bob, bob_dir, federation_list,
                          'bob', bob_domain, bob_port, http_prefix,
                          'alice', alice_domain, alice_port, [],
@@ -1669,8 +1669,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
     print('outbox items before announce: ' + str(outbox_before_announce_count))
     assert outbox_before_announce_count == 0
     assert before_announce_count == 0
-    sites_unavailable = []
-    mitm_servers = []
+    sites_unavailable: list[str] = []
+    mitm_servers: list[str] = []
     announce_public(session_bob, bob_dir, federation_list,
                     'bob', bob_domain, bob_port, http_prefix,
                     object_url,
@@ -1731,7 +1731,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     languages_understood = [system_language]
     http_prefix = 'http'
     proxy_type = None
-    federation_list = []
+    federation_list: list[str] = []
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator = 'Penfold'
@@ -1814,10 +1814,10 @@ def test_follow_between_servers(base_dir: str) -> None:
     alice_person_cache = {}
     alice_cached_webfingers = {}
     alice_post_log = []
-    sites_unavailable = []
+    sites_unavailable: list[str] = []
     bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     signing_priv_key_pem = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_result = \
         send_follow_request(session_alice, alice_dir,
                             'alice', alice_domain,
@@ -1863,7 +1863,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     alice_post_log = []
     alice_person_cache = {}
     alice_cached_webfingers = {}
-    alice_shared_items_federated_domains = []
+    alice_shared_items_federated_domains: list[str] = []
     alice_shared_item_federation_tokens = {}
     alice_post_log = []
     is_article = False
@@ -1875,8 +1875,8 @@ def test_follow_between_servers(base_dir: str) -> None:
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
-    searchable_by = []
-    mitm_servers = []
+    searchable_by: list[str] = []
+    mitm_servers: list[str] = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -1940,7 +1940,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     languages_understood = [system_language]
     http_prefix = 'http'
     proxy_type = None
-    federation_list = []
+    federation_list: list[str] = []
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator = 'Dr Drokk'
@@ -2021,7 +2021,7 @@ def test_shared_items_federation(base_dir: str) -> None:
         'host': bob_address,
         'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
-    mitm_servers = []
+    mitm_servers: list[str] = []
     bob_instance_actor_json = \
         get_json(signing_priv_key_pem, session_client,
                  'http://' + bob_address + '/@actor', test_headers, {}, True,
@@ -2056,8 +2056,8 @@ def test_shared_items_federation(base_dir: str) -> None:
     alice_person_cache = {}
     alice_cached_webfingers = {}
     alice_post_log = []
-    sites_unavailable = []
-    mitm_servers = []
+    sites_unavailable: list[str] = []
+    mitm_servers: list[str] = []
     bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     send_result = \
         send_follow_request(session_alice, alice_dir,
@@ -2133,7 +2133,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     shared_item_price = "1.30"
     shared_item_currency = "EUR"
     signing_priv_key_pem = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     session_bob = create_session(proxy_type)
     share_json = \
         send_share_via_server(bob_dir, session_bob,
@@ -2226,7 +2226,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     print('\n\n*********************************************************')
     print('Bob can read the shared items catalog on his own instance')
     signing_priv_key_pem = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     catalog_json = \
         get_shared_items_catalog_via_server(session_bob,
                                             'bob', bob_password,
@@ -2239,7 +2239,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     assert 'DFC:supplies' in catalog_json
     assert len(catalog_json.get('DFC:supplies')) == 3
 
-    mitm_servers = []
+    mitm_servers: list[str] = []
     offers_json = \
         get_offers_via_server(session_bob, 'bob', bob_password,
                               bob_domain, bob_port,
@@ -2252,7 +2252,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     assert isinstance(offers_json, dict)
     assert len(offers_json['orderedItems']) >= 1
 
-    mitm_servers = []
+    mitm_servers: list[str] = []
     wanted_json = \
         get_wanted_via_server(session_bob, 'bob', bob_password,
                               bob_domain, bob_port,
@@ -2290,8 +2290,8 @@ def test_shared_items_federation(base_dir: str) -> None:
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
-    searchable_by = []
-    mitm_servers = []
+    searchable_by: list[str] = []
+    mitm_servers: list[str] = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -2412,7 +2412,7 @@ def test_group_follow(base_dir: str) -> None:
     # system_language = 'en'
     http_prefix = 'http'
     proxy_type = None
-    federation_list = []
+    federation_list: list[str] = []
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator = 'Bumble'
@@ -2514,7 +2514,7 @@ def test_group_follow(base_dir: str) -> None:
         'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
     signing_priv_key_pem = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     outbox_json = get_json(signing_priv_key_pem, session, alice_outbox,
                            as_header, None, True, mitm_servers,
                            __version__, 'http', None)
@@ -2527,7 +2527,7 @@ def test_group_follow(base_dir: str) -> None:
     print('Alice outbox totalItems: ' + str(outbox_json['totalItems']))
     assert outbox_json['totalItems'] == 3
 
-    mitm_servers = []
+    mitm_servers: list[str] = []
     outbox_json = get_json(signing_priv_key_pem, session,
                            first_page, as_header,
                            None, True, mitm_servers, __version__, 'http', None)
@@ -2558,12 +2558,12 @@ def test_group_follow(base_dir: str) -> None:
     alice_person_cache = {}
     alice_cached_webfingers = {}
     alice_post_log = []
-    sites_unavailable = []
+    sites_unavailable: list[str] = []
     # aliceActor = http_prefix + '://' + alice_address + '/users/alice'
     testgroup_actor = \
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signing_priv_key_pem = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_result = \
         send_follow_request(session_alice, alice_dir,
                             'alice', alice_domain,
@@ -2639,12 +2639,12 @@ def test_group_follow(base_dir: str) -> None:
     bob_person_cache = {}
     bob_cached_webfingers = {}
     bob_post_log = []
-    sites_unavailable = []
+    sites_unavailable: list[str] = []
     # bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     testgroup_actor = \
         http_prefix + '://' + testgroupAddress + '/users/testgroup'
     signing_priv_key_pem = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_result = \
         send_follow_request(session_bob, bob_dir,
                             'bob', bob_domain,
@@ -2713,7 +2713,7 @@ def test_group_follow(base_dir: str) -> None:
     alice_post_log = []
     alice_person_cache = {}
     alice_cached_webfingers = {}
-    alice_shared_items_federated_domains = []
+    alice_shared_items_federated_domains: list[str] = []
     alice_shared_item_federation_tokens = {}
     alice_post_log = []
     is_article = False
@@ -2740,8 +2740,8 @@ def test_group_follow(base_dir: str) -> None:
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
-    searchable_by = []
-    mitm_servers = []
+    searchable_by: list[str] = []
+    mitm_servers: list[str] = []
     send_result = \
         send_post(signing_priv_key_pem, __version__,
                   session_alice, alice_dir, 'alice', alice_domain, alice_port,
@@ -2844,7 +2844,7 @@ def _test_followers_of_person(base_dir: str) -> None:
     password = 'birb'
     port = 80
     http_prefix = 'https'
-    federation_list = []
+    federation_list: list[str] = []
     base_dir = curr_dir + '/.tests_followersofperson'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
@@ -2894,7 +2894,7 @@ def _test_followers_on_domain(base_dir: str) -> None:
     password = 'birb'
     port = 80
     http_prefix = 'https'
-    federation_list = []
+    federation_list: list[str] = []
     base_dir = curr_dir + '/.tests_nooffollowersOndomain'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
@@ -2961,7 +2961,7 @@ def _test_group_followers(base_dir: str) -> None:
     password = 'somepass'
     port = 80
     http_prefix = 'https'
-    federation_list = []
+    federation_list: list[str] = []
     base_dir = curr_dir + '/.tests_testgroupfollowers'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
@@ -3141,7 +3141,7 @@ def _test_create_person_account(base_dir: str):
     buy_url = ''
     chat_url = ''
     auto_cw_cache = {}
-    searchable_by = []
+    searchable_by: list[str] = []
     session = None
     test_post_json = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
@@ -3276,7 +3276,7 @@ def test_client_to_server(base_dir: str):
     languages_understood = [system_language]
     http_prefix = 'http'
     proxy_type = None
-    federation_list = []
+    federation_list: list[str] = []
     low_bandwidth = False
 
     if os.path.isdir(base_dir + '/.tests'):
@@ -3396,8 +3396,8 @@ def test_client_to_server(base_dir: str):
     chat_url = ''
     video_transcript = None
     auto_cw_cache = {}
-    searchable_by = []
-    mitm_servers = []
+    searchable_by: list[str] = []
+    mitm_servers: list[str] = []
     send_result = \
         send_post_via_server(signing_priv_key_pem, __version__,
                              alice_dir, session_alice, 'alice', password,
@@ -3483,7 +3483,7 @@ def test_client_to_server(base_dir: str):
 
     print('\n\nAlice follows Bob')
     signing_priv_key_pem = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_follow_request_via_server(alice_dir, session_alice,
                                    'alice', password,
                                    alice_domain, alice_port,
@@ -3526,7 +3526,7 @@ def test_client_to_server(base_dir: str):
                                  alice_domain, alice_port)
 
     print('\n\nEVENT: Bob follows Alice')
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_follow_request_via_server(alice_dir, session_alice,
                                    'bob', 'bobpass',
                                    bob_domain, bob_port,
@@ -3620,7 +3620,7 @@ def test_client_to_server(base_dir: str):
     assert 'VEVENT' not in str(result)
 
     print('\n\nEVENT: Bob likes the post')
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_like_via_server(bob_dir, session_bob,
                          'bob', 'bobpass',
                          bob_domain, bob_port,
@@ -3652,7 +3652,7 @@ def test_client_to_server(base_dir: str):
     print('EVENT: Post liked')
 
     print('\n\nEVENT: Bob reacts to the post')
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_reaction_via_server(bob_dir, session_bob,
                              'bob', 'bobpass',
                              bob_domain, bob_port,
@@ -3701,7 +3701,7 @@ def test_client_to_server(base_dir: str):
     show_test_boxes('bob', bob_inbox_path, bob_outbox_path)
     print('\n\nEVENT: Bob repeats the post')
     signing_priv_key_pem = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_announce_via_server(bob_dir, session_bob, 'bob', password,
                              bob_domain, bob_port,
                              http_prefix, outbox_post_id,
@@ -3744,7 +3744,7 @@ def test_client_to_server(base_dir: str):
     print('\n\nEVENT: Alice deletes her post: ' + outbox_post_id + ' ' +
           str(alice_posts_before))
     password = 'alicepass'
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_delete_via_server(alice_dir, session_alice, 'alice', password,
                            alice_domain, alice_port,
                            http_prefix, outbox_post_id,
@@ -3775,7 +3775,7 @@ def test_client_to_server(base_dir: str):
 
     print('\n\nEVENT: Alice unfollows Bob')
     password = 'alicepass'
-    mitm_servers = []
+    mitm_servers: list[str] = []
     send_unfollow_request_via_server(base_dir, session_alice,
                                      'alice', password,
                                      alice_domain, alice_port,
@@ -4048,7 +4048,7 @@ def _test_addemoji(base_dir: str):
     nickname = 'testuser'
     domain = 'testdomain.net'
     port = 3682
-    recipients = []
+    recipients: list[str] = []
     translate = {}
     hashtags = {}
     base_dir_original = base_dir
@@ -4080,7 +4080,7 @@ def _test_addemoji(base_dir: str):
     assert ':lemon:' in content_modified
     assert content_modified.startswith('<p>')
     assert content_modified.endswith('</p>')
-    tags = []
+    tags: list[dict] = []
     for _, tag in hashtags.items():
         tags.append(tag)
     content = content_modified
@@ -4307,7 +4307,7 @@ def _test_jsonld():
 def _test_site_active():
     print('test_site_is_active')
     timeout = 10
-    sites_unavailable = []
+    sites_unavailable: list[str] = []
     # at least one site should resolve
     if not site_is_active('https://archive.org', timeout, sites_unavailable):
         if not site_is_active('https://wikipedia.org', timeout,
@@ -4393,7 +4393,7 @@ def _test_danger_svg(base_dir: str) -> None:
     domain_full = domain
     onion_domain = None
     i2p_domain = None
-    federation_list = []
+    federation_list: list[str] = []
     debug = True
     svg_image_filename = base_dir + '/.unit_test_safe.svg'
     post_json_object = {
@@ -4801,7 +4801,7 @@ def _test_hashtag_rules():
     conditions_str = \
         'contains "Cat" or contains "Corvid" or ' + \
         'contains "Dormouse" or contains "Buzzard"'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert str(tree) == str(['or', ['contains', ['"Cat"']],
@@ -4812,7 +4812,7 @@ def _test_hashtag_rules():
     content = 'This is a test'
     moderated = True
     conditions_str = '#foo or #bar'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert str(tree) == str(['or', ['#foo'], ['#bar']])
@@ -4826,7 +4826,7 @@ def _test_hashtag_rules():
     url = 'https://testsite.com/something'
     moderated = True
     conditions_str = '#foo and from "testsite.com"'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert str(tree) == str(['and', ['#foo'], ['from', ['"testsite.com"']]])
@@ -4839,7 +4839,7 @@ def _test_hashtag_rules():
     content = 'This is a test'
     moderated = True
     conditions_str = 'contains "is a" and #foo or #bar'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert str(tree) == \
@@ -4853,7 +4853,7 @@ def _test_hashtag_rules():
 
     moderated = False
     conditions_str = 'not moderated and #foo or #bar'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert str(tree) == \
@@ -4866,7 +4866,7 @@ def _test_hashtag_rules():
 
     moderated = True
     conditions_str = 'moderated and #foo or #bar'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert str(tree) == \
@@ -4878,7 +4878,7 @@ def _test_hashtag_rules():
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     conditions_str = 'x'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert tree is None
@@ -4887,7 +4887,7 @@ def _test_hashtag_rules():
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     conditions_str = '#x'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert str(tree) == str(['#x'])
@@ -4898,7 +4898,7 @@ def _test_hashtag_rules():
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     conditions_str = 'not #b'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert str(tree) == str(['not', ['#b']])
@@ -4909,7 +4909,7 @@ def _test_hashtag_rules():
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
     conditions_str = '#foo or #bar and #a'
-    tags_in_conditions = []
+    tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
                              tags_in_conditions, moderated)
     assert str(tree) == str(['and', ['or', ['#foo'], ['#bar']], ['#a']])
@@ -5062,7 +5062,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     chat_url = ''
     auto_cw_cache = {}
     video_transcript = ''
-    searchable_by = []
+    searchable_by: list[str] = []
     session = None
     reply = \
         create_public_post(base_dir, nickname, domain, port, http_prefix,
@@ -5139,7 +5139,7 @@ def get_function_calls(name: str, lines: [], start_line_ctr: int,
     """Returns the functions called by the given one,
     Starting with the given source code at the given line
     """
-    calls_functions = []
+    calls_functions: list[str] = []
     function_content_str = ''
     for line_ctr in range(start_line_ctr + 1, len(lines)):
         line_str = lines[line_ctr].strip()
@@ -5423,7 +5423,7 @@ def _test_checkbox_names():
 def _test_post_field_names(source_file: str, fieldnames: []):
     print('test_post_field_Names')
 
-    fnames = []
+    fnames: list[str] = []
     for field in fieldnames:
         fnames.append(field + '.get')
 
@@ -5459,7 +5459,7 @@ def _test_post_field_names(source_file: str, fieldnames: []):
                       ' should be camel case')
                 assert False
 
-    fnames = []
+    fnames: list[str] = []
     for field in fieldnames:
         fnames.append(field + '[')
     for fname in fnames:
@@ -5492,7 +5492,7 @@ def _test_post_field_names(source_file: str, fieldnames: []):
 def _test_thread_functions():
     print('test_thread_functions')
     modules = {}
-    threads_called_in_modules = []
+    threads_called_in_modules: list[str] = []
 
     # get the source for each module
     # Allow recursive walk
@@ -5565,7 +5565,7 @@ def _test_thread_functions():
                 ctr += 1
                 continue
             arg_ctr = 0
-            calling_function_args_list = []
+            calling_function_args_list: list[str] = []
             for func_arg in thread_function_args:
                 if arg_ctr == 0:
                     arg_ctr += 1
@@ -5607,7 +5607,7 @@ def _check_self_variables(mod_name: str, method_name: str,
     self_vars = line.split('self.server.')
     ctr = 0
     terminators = (' ', '.', ',', ')', '[', ' ', ':')
-    func_args = []
+    func_args: list[str] = []
     for arg_str in method_args:
         arg_str = arg_str.strip().split(':')[0]
         func_args.append(arg_str)
@@ -5631,7 +5631,7 @@ def _test_functions():
     function_properties = {}
     modules = {}
     mod_groups = {}
-    method_loc = []
+    method_loc: list[str] = []
 
     for _, _, files in os.walk('.'):
         for source_file in files:
@@ -5659,7 +5659,7 @@ def _test_functions():
                 line_count = 0
                 prev_line = 'start'
                 method_name = ''
-                method_args = []
+                method_args: list[str] = []
                 module_line = 0
                 curr_return_types = ''
                 is_comment = False
@@ -5761,7 +5761,7 @@ def _test_functions():
                            not return_types.endswith(')'):
                             return_types += ')'
                     else:
-                        return_types = []
+                        return_types: list[str] = []
                     curr_return_types = return_types
                     method_args = method_args.split(')', 1)[0]
                     method_args = method_args.replace(' ', '').split(',')
@@ -5807,7 +5807,7 @@ def _test_functions():
         'get'
     ]
 
-    bad_function_names = []
+    bad_function_names: list[str] = []
     for name, properties in function_properties.items():
         if '_' not in name:
             if name.lower() != name:
@@ -6109,7 +6109,7 @@ def _test_links_within_post(base_dir: str) -> None:
     chat_url = ''
     auto_cw_cache = {}
     video_transcript = ''
-    searchable_by = []
+    searchable_by: list[str] = []
     session = None
 
     post_json_object = \
@@ -6464,7 +6464,7 @@ def _test_speaker_replace_link():
         'not run more than one snowflake in the same ' + \
         'network.https://support.torproject.org/censorship/' + \
         'how-to-help-running-snowflake/'
-    detected_links = []
+    detected_links: list[str] = []
     result = \
         speaker_replace_links(http_prefix, nickname, domain, domain_full,
                               text, {'Linked': 'Web link'}, detected_links)
@@ -6476,7 +6476,7 @@ def _test_speaker_replace_link():
 
     remote_link = 'https://somedomain/tags/sometag'
     text = 'Test with a hashtag ' + remote_link + ' link'
-    detected_links = []
+    detected_links: list[str] = []
     result = \
         speaker_replace_links(http_prefix, nickname, domain, domain_full,
                               text, {'Linked': 'Web link'}, detected_links)
@@ -6550,7 +6550,7 @@ def test_update_actor(base_dir: str):
 
     http_prefix = 'http'
     proxy_type = None
-    federation_list = []
+    federation_list: list[str] = []
     system_language = 'en'
 
     if os.path.isdir(base_dir + '/.tests'):
@@ -6627,7 +6627,7 @@ def test_update_actor(base_dir: str):
         '=gv5G\n' + \
         '-----END PGP PUBLIC KEY BLOCK-----'
     signing_priv_key_pem = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     actor_update = \
         pgp_public_key_upload(alice_dir, session_alice,
                               'alice', password,
@@ -6734,7 +6734,7 @@ def _test_spoofed_geolocation() -> None:
     assert not point_in_nogo(test_square, 5, 11)
     assert not point_in_nogo(test_square, -5, -5)
     assert not point_in_nogo(test_square, -5, 5)
-    nogo_list = []
+    nogo_list: list[str] = []
     curr_time = date_utcnow()
     decoy_seed = 7634681
     city_radius = 0.1
@@ -6749,7 +6749,7 @@ def _test_spoofed_geolocation() -> None:
     assert len(coords[4]) > 4
     assert len(coords[5]) > 4
     assert coords[6] > 0
-    nogo_list = []
+    nogo_list: list[str] = []
     coords = spoof_geolocation('', 'unknown', curr_time,
                                decoy_seed, cities_list, nogo_list)
     assert coords[0] >= 51.8744 - city_radius
@@ -7232,7 +7232,7 @@ def _translate_ontology(base_dir: str) -> None:
             if "rdfs:label" not in item:
                 continue
             english_str = None
-            languages_found = []
+            languages_found: list[str] = []
             for label in item["rdfs:label"]:
                 if '@language' not in label:
                     continue
@@ -7302,7 +7302,7 @@ def _test_can_replyto(base_dir: str) -> None:
     chat_url = ''
     auto_cw_cache = {}
     video_transcript = ''
-    searchable_by = []
+    searchable_by: list[str] = []
     session = None
 
     post_json_object = \
@@ -8642,7 +8642,7 @@ def _test_book_link(base_dir: str):
                  'type': 'Edition'}],
         'to': ['https://www.w3.org/ns/activitystreams#Public'],
         'type': 'Note'}
-    languages_understood = []
+    languages_understood: list[str] = []
     translate = {}
 
     book_dict = get_book_from_post(post_json_object, True)

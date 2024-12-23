@@ -64,7 +64,7 @@ def set_youtube(actor_json: {}, youtube: str) -> None:
     """Sets youtube for the given actor
     """
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     # remove any existing value
     property_found = None

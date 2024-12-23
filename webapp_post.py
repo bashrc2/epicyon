@@ -1938,7 +1938,7 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
 
     onion_domains_filename = data_dir(base_dir) + '/onion_domains.txt'
     if os.path.isfile(onion_domains_filename):
-        onion_domains_list = []
+        onion_domains_list: list[str] = []
         try:
             with open(onion_domains_filename, 'r',
                       encoding='utf-8') as fp_onions:
@@ -2300,7 +2300,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
         get_person_from_cache(base_dir, person_url, person_cache)
-    languages_understood = []
+    languages_understood: list[str] = []
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)
 
@@ -2311,7 +2311,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if post_json_object['type'] == 'Announce':
         announce_json_object = post_json_object.copy()
         blocked_cache = {}
-        block_federated = []
+        block_federated: list[str] = []
         show_vote_posts = True
         show_vote_file = acct_dir(base_dir, nickname, domain) + '/.noVotes'
         if os.path.isfile(show_vote_file):
@@ -2841,7 +2841,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     buy_str = ''
     post_attachments = get_post_attachments(post_json_object['object'])
     if not post_attachments:
-        post_json_object['object']['attachment'] = []
+        post_json_object['object']['attachment']: list[dict] = []
     if not is_patch:
         buy_links = get_buy_links(post_json_object, translate, buy_sites)
         buy_str = _get_buy_footer(buy_links, translate)
@@ -3325,7 +3325,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                     '    <link rel="author" ' + \
                     'type="application/activity+json" ' + \
                     'href="' + actor + '" />\n'
-    preload_images = []
+    preload_images: list[str] = []
     header_str = html_header_with_external_style(css_filename,
                                                  instance_title, metadata_str,
                                                  preload_images)
@@ -3393,7 +3393,7 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     metadata = ''
-    preload_images = []
+    preload_images: list[str] = []
     header_str = \
         html_header_with_external_style(css_filename, instance_title, metadata,
                                         preload_images)
@@ -3486,7 +3486,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     metadata = ''
-    preload_images = []
+    preload_images: list[str] = []
     header_str = \
         html_header_with_external_style(css_filename, instance_title, metadata,
                                         preload_images)

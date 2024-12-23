@@ -74,7 +74,7 @@ def html_confirm_delete(server,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     delete_post_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -171,7 +171,7 @@ def html_confirm_remove_shared_item(translate: {},
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     shares_str = html_header_with_external_style(css_filename,
                                                  instance_title, None,
                                                  preload_images)
@@ -229,7 +229,7 @@ def html_confirm_follow(translate: {}, base_dir: str,
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     follow_str = html_header_with_external_style(css_filename,
                                                  instance_title, None,
                                                  preload_images)
@@ -290,7 +290,7 @@ def html_confirm_unfollow(translate: {}, base_dir: str,
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     follow_str = html_header_with_external_style(css_filename,
                                                  instance_title, None,
                                                  preload_images)
@@ -339,7 +339,7 @@ def html_confirm_unblock(translate: {}, base_dir: str,
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     block_str = html_header_with_external_style(css_filename,
                                                 instance_title, None,
                                                 preload_images)
@@ -388,7 +388,7 @@ def html_confirm_block(translate: {}, base_dir: str,
         css_filename = base_dir + '/follow.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     block_str = html_header_with_external_style(css_filename,
                                                 instance_title, None,
                                                 preload_images)

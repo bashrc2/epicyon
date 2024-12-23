@@ -187,7 +187,7 @@ def _valid_profile_preview_post(post_json_object: {},
         if not post_json_object.get('id'):
             return False, None
         # wrap in create
-        cc_list = []
+        cc_list: list[str] = []
         if post_json_object.get('cc'):
             cc_list = post_json_object['cc']
         new_post_json_object = {
@@ -632,7 +632,7 @@ def html_profile_after_search(authorized: bool,
         profile_str = text_mode_removals(profile_str, translate)
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     return html_header_with_external_style(css_filename,
                                            instance_title, None,
                                            preload_images) + \
@@ -1056,7 +1056,7 @@ def html_profile(signing_priv_key_pem: str,
     if not nickname:
         return ""
     if is_system_account(nickname):
-        min_images_for_accounts = []
+        min_images_for_accounts: list[str] = []
         return html_front_screen(signing_priv_key_pem,
                                  rss_icon_at_top,
                                  icons_as_buttons,
@@ -1630,7 +1630,7 @@ def html_profile(signing_priv_key_pem: str,
     if selected == 'posts' and not premium:
         max_profile_posts = \
             get_max_profile_posts(base_dir, nickname, domain, 20)
-        min_images_for_accounts = []
+        min_images_for_accounts: list[str] = []
         profile_str += \
             _html_profile_posts(recent_posts_cache, max_profile_posts,
                                 translate,
@@ -1791,7 +1791,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
             break
         if len(outbox_feed['orderedItems']) == 0:
             break
-        shown_items = []
+        shown_items: list[str] = []
         for item in outbox_feed['orderedItems']:
             if item['type'] == 'Create':
                 if not item['object'].get('id'):
@@ -2545,7 +2545,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     locations_filename = base_dir + '/custom_locations.txt'
     if not os.path.isfile(locations_filename):
         locations_filename = base_dir + '/locations.txt'
-    cities = []
+    cities: list[str] = []
     try:
         with open(locations_filename, 'r', encoding='utf-8') as fp_loc:
             cities = fp_loc.readlines()
@@ -3474,7 +3474,7 @@ def html_edit_profile(server, translate: {},
         system_monitor_str = _html_system_monitor(nickname, translate)
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     edit_profile_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

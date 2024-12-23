@@ -23,7 +23,7 @@ def html_suspended(base_dir: str) -> str:
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     suspended_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

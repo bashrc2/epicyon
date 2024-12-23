@@ -528,7 +528,7 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
         "tox": "toxId"
     }
 
-    aliases_not_found = []
+    aliases_not_found: list[str] = []
     for name, alias in webfinger_property_name.items():
         aliases_not_found.append(alias)
 
@@ -580,7 +580,7 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
             changed = True
 
     # remove any aliases which are no longer in the actor profile
-    remove_alias = []
+    remove_alias: list[str] = []
     for alias in aliases_not_found:
         for full_alias in wf_json['aliases']:
             if full_alias.startswith(alias + ':'):

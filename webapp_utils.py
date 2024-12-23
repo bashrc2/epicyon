@@ -112,7 +112,7 @@ def html_following_list(base_dir: str, following_filename: str) -> str:
 
             instance_title = \
                 get_config_param(base_dir, 'instanceTitle')
-            preload_images = []
+            preload_images: list[str] = []
             following_list_html = \
                 html_header_with_external_style(css_filename,
                                                 instance_title, None,
@@ -194,7 +194,7 @@ def html_hashtag_blocked(base_dir: str, translate: {}) -> str:
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     blocked_hashtag_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -302,7 +302,7 @@ def _set_actor_property_url(actor_json: {},
     """Sets a url for the given actor property
     """
     if not actor_json.get('attachment'):
-        actor_json['attachment'] = []
+        actor_json['attachment']: list[dict] = []
 
     property_name_lower = property_name.lower()
 
@@ -607,7 +607,7 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
     """Returns an ActivityStreams collection of ValueFlows Proposal objects
     https://codeberg.org/fediverse/fep/src/branch/main/fep/0837/fep-0837.md
     """
-    shares_collection = []
+    shares_collection: list[dict] = []
     shares_json, _ = \
         shares_timeline_json(actor, page_number, items_per_page,
                              base_dir, domain, nickname,
@@ -770,7 +770,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
     https://schema.org/Person
     """
     if not actor_json:
-        preload_images = []
+        preload_images: list[str] = []
         html_str = \
             html_header_with_external_style(css_filename,
                                             instance_title, None,
@@ -954,7 +954,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
                     "    <meta content=\"" + value + \
                     "\" property=\"og:" + og_tag + "\" />\n"
 
-    preload_images = []
+    preload_images: list[str] = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title,
                                         og_metadata + profile_markup,
@@ -1013,7 +1013,7 @@ def html_header_with_website_markup(css_filename: str, instance_title: str,
         '" property="og:locale" />\n' + \
         '    <meta content="summary_large_image" property="twitter:card" />\n'
 
-    preload_images = []
+    preload_images: list[str] = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title,
                                         og_metadata + website_markup,
@@ -1072,7 +1072,7 @@ def html_header_with_blog_markup(css_filename: str, instance_title: str,
         '    <meta property="article:modified_time" content="' + \
         modified + '" />\n'
 
-    preload_images = []
+    preload_images: list[str] = []
     html_str = \
         html_header_with_external_style(css_filename, instance_title,
                                         og_metadata + blog_markup,
@@ -1142,7 +1142,7 @@ def add_emoji_to_display_name(session, base_dir: str, http_prefix: str,
     display_name = replace_strings(display_name, replacements)
 #    print('TAG: display_name after tags: ' + display_name)
     # convert the emoji dictionary to a list
-    emoji_tags_list = []
+    emoji_tags_list: list[str] = []
     for _, tag in emoji_tags.items():
         emoji_tags_list.append(tag)
 #    print('TAG: emoji tags list: ' + str(emoji_tags_list))
@@ -1276,7 +1276,7 @@ def get_post_attachments_as_html(base_dir: str,
     attachment_str = ''
     attachment_ctr = 0
     gallery_str = ''
-    attachment_dict = []
+    attachment_dict: list[dict] = []
 
     # handle peertube-style video posts, where the media links
     # are stored in the url field
@@ -1312,7 +1312,7 @@ def get_post_attachments_as_html(base_dir: str,
 
     # chat links
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/1970/fep-1970.md
-    attached_urls = []
+    attached_urls: list[str] = []
     for attach in attachment_dict:
         if not attach.get('type') or \
            not attach.get('name') or \
@@ -2126,7 +2126,7 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
 
-    preload_images = []
+    preload_images: list[str] = []
     return html_header_with_external_style(css_filename,
                                            instance_title, None,
                                            preload_images) + \
@@ -2260,7 +2260,7 @@ def html_following_data_list(base_dir: str, nickname: str,
         petnames_filename = \
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
         if use_petnames and os.path.isfile(petnames_filename):
-            following_list = []
+            following_list: list[str] = []
             try:
                 with open(petnames_filename, 'r',
                           encoding='utf-8') as fp_petnames:
@@ -2316,7 +2316,7 @@ def html_following_dropdown(base_dir: str, nickname: str,
         petnames_filename = \
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
         if use_petnames and os.path.isfile(petnames_filename):
-            following_list = []
+            following_list: list[str] = []
             try:
                 with open(petnames_filename, 'r',
                           encoding='utf-8') as fp_petnames:
@@ -2335,7 +2335,7 @@ def html_following_dropdown(base_dir: str, nickname: str,
             following_list = msg.split('\n')
         list_str += '<option value="" selected></option>\n'
         if following_list:
-            domain_sorted_list = []
+            domain_sorted_list: list[str] = []
             for following_address in following_list:
                 if '@' not in following_address and \
                    '://' not in following_address:
@@ -2368,7 +2368,7 @@ def get_buy_links(post_json_object: str, translate: {}, buy_sites: {}) -> {}:
     if not post_attachments:
         return {}
     links = {}
-    buy_strings = []
+    buy_strings: list[str] = []
     for buy_str in ('Buy', 'Purchase', 'Subscribe'):
         if translate.get(buy_str):
             buy_str = translate[buy_str]
