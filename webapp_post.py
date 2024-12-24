@@ -35,6 +35,7 @@ from flags import is_news_post
 from flags import is_recent_post
 from flags import is_chat_message
 from flags import is_pgp_encrypted
+from utils import text_in_file
 from utils import text_mode_removals
 from utils import remove_header_tags
 from utils import get_actor_from_post_id
@@ -643,6 +644,25 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
                     reply_to_link += '?mention=' + actor_url
                     if len(reply_to_link) > 500:
                         break
+
+    # Is this domain or account blocking you?
+    reply_to_domain, _ = get_domain_from_actor(reply_to_link)
+    reply_to_actor = get_actor_from_post(post_json_object)
+    if reply_to_domain:
+        send_block_filename = \
+            acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
+        if os.path.isfile(send_block_filename):
+            reply_blocked = False
+            if text_in_file(reply_to_actor, send_block_filename, False):
+                reply_blocked = True
+            elif text_in_file('://' + reply_to_domain + '\n',
+                              send_block_filename, False):
+                reply_blocked = True
+            if reply_blocked:
+                # You are blocked. Replies are unlikely to be received
+                # so don't show the reply icon
+                return ''
+
     reply_to_link += page_number_param
 
     reply_str = ''
@@ -657,19 +677,17 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
         if isinstance(convthread_id, str):
             conversation_str = '?convthreadId=' + convthread_id
     if is_public_reply:
-        actor_url = get_actor_from_post(post_json_object)
         reply_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?replyto=' + reply_to_link + \
-            '?actor=' + actor_url + \
+            '?actor=' + reply_to_actor + \
             conversation_str + \
             '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
     elif is_unlisted_reply:
-        actor_url = get_actor_from_post(post_json_object)
         reply_str += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?replyunlisted=' + reply_to_link + \
-            '?actor=' + actor_url + \
+            '?actor=' + reply_to_actor + \
             conversation_str + \
             '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
     else:
@@ -677,21 +695,19 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
             reply_type = 'replydm'
             if is_chat_message(post_json_object):
                 reply_type = 'replychat'
-            actor_url = get_actor_from_post(post_json_object)
             reply_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?' + reply_type + '=' + reply_to_link + \
-                '?actor=' + actor_url + \
+                '?actor=' + reply_to_actor + \
                 conversation_str + \
                 '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
         else:
-            actor_url = get_actor_from_post(post_json_object)
             reply_str += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?replyfollowers=' + reply_to_link + \
-                '?actor=' + actor_url + \
+                '?actor=' + reply_to_actor + \
                 conversation_str + \
                 '" title="' + reply_to_this_post_str + '" tabindex="10">\n'
 
