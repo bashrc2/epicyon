@@ -35,7 +35,6 @@ from flags import is_news_post
 from flags import is_recent_post
 from flags import is_chat_message
 from flags import is_pgp_encrypted
-from utils import text_in_file
 from utils import text_mode_removals
 from utils import remove_header_tags
 from utils import get_actor_from_post_id
@@ -123,6 +122,7 @@ from speaker import update_speaker
 from languages import auto_translate_post
 from cwlists import add_cw_from_lists
 from blocking import is_blocked
+from blocking import sending_is_blocked2
 from reaction import html_emoji_reactions
 from maps import html_open_street_map
 from maps import set_map_preferences_coords
@@ -648,20 +648,11 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
     # Is this domain or account blocking you?
     reply_to_domain, _ = get_domain_from_actor(reply_to_link)
     reply_to_actor = get_actor_from_post(post_json_object)
-    if reply_to_domain:
-        send_block_filename = \
-            acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
-        if os.path.isfile(send_block_filename):
-            reply_blocked = False
-            if text_in_file(reply_to_actor, send_block_filename, False):
-                reply_blocked = True
-            elif text_in_file('://' + reply_to_domain + '\n',
-                              send_block_filename, False):
-                reply_blocked = True
-            if reply_blocked:
-                # You are blocked. Replies are unlikely to be received
-                # so don't show the reply icon
-                return ''
+    if sending_is_blocked2(base_dir, nickname, domain,
+                           reply_to_domain, reply_to_actor):
+        # You are blocked. Replies are unlikely to be received
+        # so don't show the reply icon
+        return ''
 
     reply_to_link += page_number_param
 

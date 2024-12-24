@@ -27,9 +27,9 @@ from utils import get_currencies
 from utils import get_category_types
 from utils import get_account_timezone
 from utils import get_supported_languages
-from utils import text_in_file
 from utils import get_attributed_to
 from utils import get_full_domain
+from blocking import sending_is_blocked2
 from webapp_utils import open_content_warning
 from webapp_utils import edit_check_box
 from webapp_utils import get_buy_links
@@ -409,30 +409,19 @@ def html_new_post(edit_post_params: {},
                         translate['this post'] + '</a></p>\n'
 
                     # is sending posts to this account blocked?
-                    send_block_filename = \
-                        acct_dir(base_dir, nickname, domain) + \
-                        '/send_blocks.txt'
-                    if os.path.isfile(send_block_filename):
-                        reply_actor = in_reply_to
-                        reply_nickname = get_nickname_from_actor(in_reply_to)
-                        if reply_nickname:
-                            reply_actor = \
-                                in_reply_to.split('/' + reply_nickname)[0] + \
-                                '/' + reply_nickname
-                        if text_in_file(reply_actor,
-                                        send_block_filename, False):
-                            new_post_text += \
-                                '  <p class="new-post-text"><b>' + \
-                                translate['FollowAccountWarning'] + \
-                                '</b></p>\n'
-                        else:
-                            reply_domain, _ = \
-                                get_domain_from_actor(reply_actor)
-                            if text_in_file('://' + reply_domain + '\n',
-                                            send_block_filename, False):
-                                new_post_text += \
-                                    '  <p class="new-post-text"><b>' + \
-                                    translate['FollowWarning'] + '</b></p>\n'
+                    reply_actor = in_reply_to
+                    reply_nickname = get_nickname_from_actor(in_reply_to)
+                    if reply_nickname:
+                        reply_actor = \
+                            in_reply_to.split('/' + reply_nickname)[0] + \
+                            '/' + reply_nickname
+                    reply_domain, _ = get_domain_from_actor(reply_actor)
+                    if sending_is_blocked2(base_dir, nickname, domain,
+                                           reply_domain, reply_actor):
+                        new_post_text += \
+                            '  <p class="new-post-text"><b>' + \
+                            translate['FollowAccountWarning'] + \
+                            '</b></p>\n'
 
                     if post_json_object:
                         timezone = \

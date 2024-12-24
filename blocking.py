@@ -2283,3 +2283,24 @@ def run_federated_blocks_daemon(base_dir: str, httpd, debug: bool) -> None:
                                          httpd.max_api_blocks,
                                          httpd.mitm_servers)
         time.sleep(seconds_per_hour * 6)
+
+
+def sending_is_blocked2(base_dir: str, nickname: str, domain: str,
+                        to_domain: str, to_actor: str) -> bool:
+    """is sending to the given actor blocked?
+    """
+    if not to_domain:
+        return False
+
+    send_block_filename = \
+        acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
+    if not os.path.isfile(send_block_filename):
+        return False
+
+    send_blocked = False
+    if text_in_file(to_actor, send_block_filename, False):
+        send_blocked = True
+    elif text_in_file('://' + to_domain + '\n', send_block_filename, False):
+        send_blocked = True
+
+    return send_blocked

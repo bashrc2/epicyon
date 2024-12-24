@@ -114,6 +114,7 @@ from webapp_timeline import page_number_buttons
 from cwlists import get_cw_list_variable
 from blocking import get_account_blocks
 from blocking import is_blocked
+from blocking import sending_is_blocked2
 from content import remove_link_trackers_from_content
 from content import bold_reading_string
 from roles import is_devops
@@ -432,10 +433,11 @@ def html_profile_after_search(authorized: bool,
     repo_url = get_repo_url(profile_json)
 
     # is sending posts to this account blocked?
-    send_block_filename = \
-        acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
     send_blocks_str = ''
-    if os.path.isfile(send_block_filename):
+    if sending_is_blocked2(base_dir, nickname, domain,
+                           search_domain_full, person_url):
+        send_block_filename = \
+            acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
         if text_in_file(person_url,
                         send_block_filename, False):
             send_blocks_str = translate['FollowAccountWarning']

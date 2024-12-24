@@ -25,6 +25,7 @@ from utils import acct_dir
 from utils import text_in_file
 from utils import remove_domain_port
 from blocking import is_blocked
+from blocking import sending_is_blocked2
 from follow import is_follower_of_person
 from follow import is_following_actor
 from followingCalendar import receiving_calendar_events
@@ -323,19 +324,11 @@ def html_person_options(default_timeline: str,
         ' @' + handle_shown + mitm_str + '</p>\n'
 
     # is sending posts to this account blocked?
-    send_block_filename = \
-        acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
-    if os.path.isfile(send_block_filename):
-        if text_in_file(options_actor,
-                        send_block_filename, False):
-            options_str += \
-                '  <p class="optionsText"><b>' + \
-                translate['FollowAccountWarning'] + '</b></p>\n'
-        elif text_in_file('://' + options_domain + '\n',
-                          send_block_filename, False):
-            options_str += \
-                '  <p class="optionsText"><b>' + \
-                translate['FollowWarning'] + '</b></p>\n'
+    if sending_is_blocked2(base_dir, nickname, domain,
+                           options_domain, options_actor):
+        options_str += \
+            '  <p class="optionsText"><b>' + \
+            translate['FollowAccountWarning'] + '</b></p>\n'
 
     if follows_you and authorized:
         if follow_str != 'Unfollow':

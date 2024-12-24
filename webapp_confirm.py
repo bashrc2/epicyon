@@ -19,7 +19,7 @@ from utils import get_config_param
 from utils import get_alt_path
 from utils import acct_dir
 from utils import get_account_timezone
-from utils import text_in_file
+from blocking import sending_is_blocked2
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
@@ -242,14 +242,11 @@ def html_confirm_follow(translate: {}, base_dir: str,
         'src="' + follow_profile_url + '"/></a>\n'
     follow_actor_nick = get_nickname_from_actor(follow_actor)
     if follow_actor_nick and follow_domain:
-        send_block_filename = \
-            acct_dir(base_dir, nickname, domain) + '/send_blocks.txt'
-        if os.path.isfile(send_block_filename):
-            if text_in_file('://' + follow_domain + '\n',
-                            send_block_filename, False):
-                follow_str += \
-                    '  <p class="followText"><b>' + \
-                    translate['FollowWarning'] + '</b></p>\n'
+        if sending_is_blocked2(base_dir, nickname, domain,
+                               follow_domain, follow_actor):
+            follow_str += \
+                '  <p class="followText"><b>' + \
+                translate['FollowWarning'] + '</b></p>\n'
         follow_str += \
             '  <p class="followText">' + translate['Follow'] + ' ' + \
             follow_actor_nick + '@' + follow_domain + ' ?</p>\n'
