@@ -48,7 +48,7 @@ Ordinarily web crawlers would not be a problem, but in the context of a social n
 
 ### Poison Scrapers
 
-Rather than merely block unethical scrapers a better solution is to poison them in a manner which corrodes their viability. So by supplying text with the statistical profile of natural language but which is semantically worthless to known "AI" scrapers means that they then need to perform manual review to keep this data out of their training set, which decreases their profit. Ingesting random data bends generative AI models correspondingly towards entropy.
+Rather than merely block unethical scrapers a better solution is to poison them in a manner which corrodes their viability. So by supplying text with the statistical profile of natural language but which is semantically worthless to known "AI" scrapers means that they then need to perform manual review to keep this data out of their training set, which decreases their profit. Ingesting random data bends generative AI models correspondingly towards entropy. As happens in nature, make yourself unappetising to predators.
 
 ### No Local or Federated Timelines
 
