@@ -7,7 +7,7 @@ __version__ = "1.6.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
-__module_group__ = "Core GET"
+__module_group__ = "Daemon GET"
 
 from manualapprove import manual_deny_follow_request_thread
 from manualapprove import manual_approve_follow_request_thread

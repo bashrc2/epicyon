@@ -7,7 +7,7 @@ __version__ = "1.6.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@libreserver.org"
 __status__ = "Production"
-__module_group__ = "Core GET"
+__module_group__ = "Daemon GET"
 
 import os
 import urllib.parse

@@ -46,6 +46,10 @@ This is so that the system can be accessed and used normally with javascript in 
 
 Ordinarily web crawlers would not be a problem, but in the context of a social network even having crawlers index public posts can create ethical dilemmas in some circumstances. News and blogging instances may allow crawlers, but other types of instances should block them.
 
+### Poison Scrapers
+
+Rather than merely block unethical scrapers a better solution is to poison them in a manner which corrodes their viability. So by supplying text with the statistical profile of natural language but which is semantically worthless to known "AI" scrapers means that they then need to perform manual review to keep this data out of their training set, which decreases their profit. Ingesting random data bends generative AI models correspondingly towards entropy.
+
 ### No Local or Federated Timelines
 
 The local and federated timelines of other ActivityPub servers don't add much value (especially the federated one), and tend to pollute the default timeline with irrelevant posts from people that you don't follow.
@@ -76,13 +80,13 @@ In general avoid using web frameworks and instead use local modules which are pr
 
 The main modules are *epicyon.py* and *daemon.py*. *epicyon.py* is the commandline interface and *daemon.py* is the http server. The daemon has submodules for HTTP GET and HTTP POST.
 
-![commandline and core modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Commandline-Interface_Core.png)
+![commandline and daemon modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Commandline-Interface_Daemon.png)
 
 The daemon runs the inbox queue in a separate thread (see *inbox.py*) and the inbox queue processes incoming ActivityPub posts one at a time in a strictly serial fashion. Doing it this way means minimum potential for any parallelism/locking issues. It also means that the inbox queue is not highly scalable, but that's ok for a system which is only intended to have a few users per instance.
 
 All ActivityPub posts are stored as text files, and there is no database as such other than the filesystem itself. Think of it as being like an email server. Each post is a json file stored in *accounts/nick@domain/inbox* or *accounts/nick@domain/outbox*. To avoid parsing problems slashes are replaced by hashes within the ActivityPub post filename. The filename for each post is the same as its ActivityPub id.
 
-![timeline and core modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Timeline_Core.png)
+![timeline and daemon modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Timeline_Daemon.png)
 
 
 ## Security
@@ -103,6 +107,8 @@ This currently uses basic auth, which is simple to implement. Oauth2 is conventi
 
 The *inbox* queue makes calls to check http and linked data signatures. Various modules call *auth* typically because they're implementing the basic auth of the C2S interface.
 
+![timeline and daemon modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Timeline_Daemon-Timeline_Daemon.png)
+
 ## Accessibility
 
 Trying to keep up with web accessibility standards. There should be configurable keyboard shortcuts for all of the main navigation actions. High contrast themes should be available. The desktop client should support text-to-speech. There should be the ability to run in a shell browser such as Lynx, without any significant loss of functionality.
@@ -115,4 +121,4 @@ The *webapp_post* module generates html for each post from its ActivityPub json 
 
 The *daemon* module (http server) also calls *webapp_accesskeys* to display the key shortcuts screen.
 
-![core and accessibility modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Core_Accessibility.png)
+![daemon and accessibility modules](https://gitlab.com/bashrc2/epicyon/-/raw/main/architecture/epicyon_groups_Daemon_Accessibility.png)

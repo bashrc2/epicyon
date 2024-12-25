@@ -6045,30 +6045,34 @@ def _test_functions():
 
     _diagram_groups(['Commandline Interface', 'ActivityPub'], ['utils'],
                     modules, mod_groups, max_module_calls)
-    _diagram_groups(['Commandline Interface', 'Core'], ['utils'],
-                    modules, mod_groups, max_module_calls)
-    _diagram_groups(['Timeline', 'Core'], ['utils'],
-                    modules, mod_groups, max_module_calls)
-    _diagram_groups(['Web Interface', 'Core'], ['utils'],
-                    modules, mod_groups, max_module_calls)
-    _diagram_groups(['Web Interface Columns', 'Core'], ['utils'],
-                    modules, mod_groups, max_module_calls)
-    _diagram_groups(['Core'], [],
-                    modules, mod_groups, max_module_calls)
-    _diagram_groups(['ActivityPub'], [],
-                    modules, mod_groups, max_module_calls)
-    _diagram_groups(['ActivityPub', 'Core'], ['utils'],
-                    modules, mod_groups, max_module_calls)
-    _diagram_groups(['ActivityPub', 'Security'], ['utils'],
-                    modules, mod_groups, max_module_calls)
-    _diagram_groups(['Core', 'Security'], ['utils'],
+    _diagram_groups(['Commandline Interface', 'Daemon'], ['utils'],
                     modules, mod_groups, max_module_calls)
     _diagram_groups(['Timeline', 'Security'], ['utils'],
                     modules, mod_groups, max_module_calls)
     _diagram_groups(['Web Interface', 'Accessibility'],
                     ['utils', 'webapp_utils'],
                     modules, mod_groups, max_module_calls)
-    _diagram_groups(['Core', 'Accessibility'], ['utils'],
+    _diagram_groups(['Daemon', 'Accessibility'], ['utils'],
+                    modules, mod_groups, max_module_calls)
+    _diagram_groups(['Timeline', 'Daemon Timeline', 'Daemon'],
+                    ['utils'], modules, mod_groups, max_module_calls)
+    _diagram_groups(['Web Interface', 'Core', 'Daemon'], ['utils'],
+                    modules, mod_groups, max_module_calls)
+    _diagram_groups(['Web Interface Columns', 'Core', 'Daemon'], ['utils'],
+                    modules, mod_groups, max_module_calls)
+    _diagram_groups(['Daemon'], ['utils'],
+                    modules, mod_groups, max_module_calls)
+    _diagram_groups(['Core', 'Daemon', 'Daemon Login', 'Security'],
+                    ['daemon_utils', 'utils', 'daemon_post',
+                     'daemon_head', 'flags'],
+                    modules, mod_groups, max_module_calls)
+    _diagram_groups(['ActivityPub'], ['utils'],
+                    modules, mod_groups, max_module_calls)
+    _diagram_groups(['ActivityPub', 'Daemon'], ['utils'],
+                    modules, mod_groups, max_module_calls)
+    _diagram_groups(['ActivityPub', 'Security'], ['utils'],
+                    modules, mod_groups, max_module_calls)
+    _diagram_groups(['Core', 'Security'], ['utils'],
                     modules, mod_groups, max_module_calls)
 
 
