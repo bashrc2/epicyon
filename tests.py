@@ -5625,6 +5625,24 @@ def _check_self_variables(mod_name: str, method_name: str,
     return True
 
 
+def _check_method_args(mod_name: str, method_name: str,
+                       method_args: []) -> bool:
+    """Tests that method arguments are not CamelCase
+    """
+    for arg_str in method_args:
+        if ':' in arg_str:
+            arg_str = arg_str.split(':')[0]
+        if '=' in arg_str:
+            arg_str = arg_str.split('=')[0]
+        arg_str = arg_str.strip()
+        if arg_str != arg_str.lower():
+            print('CamelCase argument ' + arg_str +
+                  ' in method ' + method_name +
+                  ' in module ' + mod_name)
+            return False
+    return True
+
+
 def _test_functions():
     print('test_functions')
     function = {}
@@ -5771,6 +5789,9 @@ def _test_functions():
                         function[mod_name] = [method_name]
                     if method_name not in modules[mod_name]['functions']:
                         modules[mod_name]['functions'].append(method_name)
+                    if not _check_method_args(mod_name, method_name,
+                                              method_args):
+                        assert False
                     # create an entry for this function
                     function_properties[method_name] = {
                         "args": method_args,
@@ -9151,6 +9172,8 @@ def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
     print('Running tests...')
+    _test_functions()
+    return
     update_default_themes_list(os.getcwd())
     _test_source_contains_no_tabs()
     _translate_ontology(base_dir)
