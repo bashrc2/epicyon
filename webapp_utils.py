@@ -13,6 +13,7 @@ from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
 from flags import is_float
+from utils import media_file_mime_type
 from utils import replace_strings
 from utils import get_image_file
 from utils import data_dir
@@ -1314,38 +1315,44 @@ def get_post_attachments_as_html(base_dir: str,
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/1970/fep-1970.md
     attached_urls: list[str] = []
     for attach in attachment_dict:
+        url = None
+        if attach.get('url'):
+            url = get_url_from_post(attach['url'])
+        elif attach.get('href'):
+            url = attach['href']
+
         if not attach.get('type') or \
            not attach.get('name') or \
-           not attach.get('href') or \
+           not url or \
            not attach.get('rel'):
             continue
         if not isinstance(attach['type'], str) or \
            not isinstance(attach['name'], str) or \
-           not isinstance(attach['href'], str) or \
+           not isinstance(url, str) or \
            not isinstance(attach['rel'], str):
             continue
         if attach['type'] != 'Link' or \
            attach['name'] != 'Chat' or \
            attach['rel'] != 'discussion' or \
            '://' not in attach['href'] or \
-           '.' not in attach['href']:
+           '.' not in url:
             continue
         # get the domain for the chat link
         chat_domain_str = ''
-        attach_url = remove_html(attach['href'])
+        attach_url = remove_html(url)
         if attach_url in attached_urls:
             continue
         attached_urls.append(attach_url)
         chat_domain, _ = get_domain_from_actor(attach_url)
         if chat_domain:
             if local_network_host(chat_domain):
-                print('REJECT: local network chat link ' + attach['href'])
+                print('REJECT: local network chat link ' + url)
                 continue
             chat_domain_str = ' (' + chat_domain + ')'
             # avoid displaying very long domains
             if len(chat_domain_str) > 50:
                 chat_domain_str = ''
-        chat_url = remove_html(attach['href'])
+        chat_url = remove_html(url)
         attachment_str += \
             '<p><a href="' + chat_url + \
             '" target="_blank" rel="nofollow noopener noreferrer">' + \
@@ -1378,8 +1385,45 @@ def get_post_attachments_as_html(base_dir: str,
             transcripts[name] = remove_html(url)
 
     for attach in attachment_dict:
-        if not (attach.get('mediaType') and attach.get('url')):
+        # get the image/video/audio url
+        url = None
+        if attach.get('url'):
+            url = get_url_from_post(attach['url'])
+        elif attach.get('href'):
+            url = attach['href']
+
+        if not url:
+            # this is not an image/video/audio attachment
             continue
+        if not isinstance(url, str):
+            continue
+
+        # get the media type
+        media_type = None
+        if attach.get('mediaType'):
+            media_type = attach['mediaType']
+        else:
+            # See https://data.funfedi.dev/0.1.12/mastodon__v4.3.2/
+            # image_attachments/#example-13
+            if url and attach.get('type'):
+                if attach['type'] == 'Image':
+                    if attach.get('url'):
+                        if isinstance(attach['url'], dict):
+                            if attach['url'].get('mediaType'):
+                                media_type = attach['url']['mediaType']
+                    if not media_type:
+                        url_ending = url
+                        if '/' in url:
+                            url_ending = url.split('/')[-1]
+                        if '.' in url_ending:
+                            media_type = media_file_mime_type(url)
+
+        if not media_type:
+            # this is not an image/video/audio attachment
+            continue
+        if not isinstance(media_type, str):
+            continue
+
         media_license = ''
         if attach.get('schema:license'):
             if not dangerous_markup(attach['schema:license'], False, []):
@@ -1418,14 +1462,12 @@ def get_post_attachments_as_html(base_dir: str,
                                            attrib_str, system_language):
                             media_creator = attrib_str
 
-        media_type = attach['mediaType']
         image_description = ''
         if attach.get('name'):
             image_description = attach['name'].replace('"', "'")
             image_description = remove_html(image_description)
         if _is_image_mime_type(media_type):
-            url_str = get_url_from_post(attach['url'])
-            image_url = remove_html(url_str)
+            image_url = remove_html(url)
             if image_url in attached_urls:
                 continue
             attached_urls.append(image_url)
@@ -1572,7 +1614,7 @@ def get_post_attachments_as_html(base_dir: str,
 
                 attachment_ctr += 1
         elif _is_video_mime_type(media_type):
-            video_url = remove_html(attach['url'])
+            video_url = remove_html(url)
             if video_url in attached_urls:
                 continue
             attached_urls.append(video_url)
@@ -1659,8 +1701,7 @@ def get_post_attachments_as_html(base_dir: str,
                 attachment_ctr += 1
         elif _is_audio_mime_type(media_type):
             extension = '.mp3'
-            url_str = get_url_from_post(attach['url'])
-            audio_url = remove_html(url_str)
+            audio_url = remove_html(url)
             if audio_url in attached_urls:
                 continue
             attached_urls.append(audio_url)
