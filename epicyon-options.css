@@ -135,6 +135,7 @@ a:focus {
 .imText {
     font-size: var(--font-size4);
     color: var(--options-main-link-color);
+    overflow-wrap: break-word;
 }
 
 .pgp {
