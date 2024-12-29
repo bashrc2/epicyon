@@ -705,5 +705,6 @@
     "Yourself": "Kendin",
     "Epicyon Instances": "Epikyon Örnekleri",
     "Block BlueSky bridges": "BlueSky köprülerini engelle",
-    "Block government instances": "Hükümet örneklerini engelle"
+    "Block government instances": "Hükümet örneklerini engelle",
+    "Block Nostr bridges": "Nostr köprülerini engelle"
 }

@@ -34,6 +34,7 @@ from blocking import load_federated_blocks_endpoints
 from blocking import load_blocked_military
 from blocking import load_blocked_government
 from blocking import load_blocked_bluesky
+from blocking import load_blocked_nostr
 from blocking import update_blocked_cache
 from blocking import set_broch_mode
 from blocking import get_domain_blocklist
@@ -311,6 +312,7 @@ class EpicyonServer(ThreadingHTTPServer):
     block_military = {}
     block_government = {}
     block_bluesky = {}
+    block_nostr = {}
     followers_synchronization = False
     followers_sync_cache = {}
     buy_sites = None
@@ -797,6 +799,9 @@ def run_daemon(accounts_data_dir: str,
 
     # load a list of nicknames for accounts blocking bluesky bridges
     httpd.block_bluesky = load_blocked_bluesky(base_dir)
+
+    # load a list of nicknames for accounts blocking nostr bridges
+    httpd.block_nostr = load_blocked_nostr(base_dir)
 
     # scan the theme directory for any svg files containing scripts
     assert not scan_themes_for_scripts(base_dir)

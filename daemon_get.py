@@ -361,7 +361,8 @@ def daemon_http_get(self) -> None:
                                self.server.known_bots,
                                self.path, self.server.block_military,
                                self.server.block_government,
-                               self.server.block_bluesky)
+                               self.server.block_bluesky,
+                               self.server.block_nostr)
         if block:
             if llm:
                 # check if LLM is too frequent
@@ -4366,6 +4367,7 @@ def daemon_http_get(self) -> None:
                          self.server.block_military,
                          self.server.block_government,
                          self.server.block_bluesky,
+                         self.server.block_nostr,
                          self.server.block_federated_endpoints):
             self.server.getreq_busy = False
             return

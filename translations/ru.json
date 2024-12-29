@@ -705,5 +705,6 @@
     "Yourself": "Сам",
     "Epicyon Instances": "Эпиционные экземпляры",
     "Block BlueSky bridges": "Блокировать мосты BlueSky",
-    "Block government instances": "Блокировать правительственные инстанции"
+    "Block government instances": "Блокировать правительственные инстанции",
+    "Block Nostr bridges": "Блок Ностр мосты"
 }

@@ -705,5 +705,6 @@
     "Yourself": "עַצמְךָ",
     "Epicyon Instances": "מופעי Epicyon",
     "Block BlueSky bridges": "חסום גשרי BlueSky",
-    "Block government instances": "חסום מקרים ממשלתיים"
+    "Block government instances": "חסום מקרים ממשלתיים",
+    "Block Nostr bridges": "חסום גשרי Nostr"
 }

@@ -705,5 +705,6 @@
     "Yourself": "Σύ ο ίδιος",
     "Epicyon Instances": "Περιπτώσεις Epicyon",
     "Block BlueSky bridges": "Αποκλείστε τις γέφυρες BlueSky",
-    "Block government instances": "Αποκλεισμός κρατικών περιπτώσεων"
+    "Block government instances": "Αποκλεισμός κρατικών περιπτώσεων",
+    "Block Nostr bridges": "Αποκλείστε τις γέφυρες Nostr"
 }

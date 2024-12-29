@@ -705,5 +705,6 @@
     "Yourself": "itseäsi",
     "Epicyon Instances": "Epicyonin esiintymät",
     "Block BlueSky bridges": "Estä BlueSky-sillat",
-    "Block government instances": "Estä hallituksen esiintymät"
+    "Block government instances": "Estä hallituksen esiintymät",
+    "Block Nostr bridges": "Estä Nostrin sillat"
 }

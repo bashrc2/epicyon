@@ -25,6 +25,7 @@ from utils import detect_mitm
 from blocking import contains_military_domain
 from blocking import contains_government_domain
 from blocking import contains_bluesky_domain
+from blocking import contains_nostr_domain
 from crawlers import blocked_user_agent
 from session import get_session_for_domain
 from session import establish_session
@@ -190,7 +191,8 @@ def daemon_http_post(self) -> None:
                            self.server.known_bots,
                            self.path, self.server.block_military,
                            self.server.block_government,
-                           self.server.block_bluesky)
+                           self.server.block_bluesky,
+                           self.server.block_nostr)
     if block:
         http_400(self)
         self.server.postreq_busy = False
@@ -1144,6 +1146,12 @@ def daemon_http_post(self) -> None:
             if contains_bluesky_domain(decoded_message_bytes):
                 http_400(self)
                 print('BLOCK: blocked bluesky domain')
+                self.server.postreq_busy = False
+                return
+        if self.server.block_nostr.get(nickname):
+            if contains_nostr_domain(decoded_message_bytes):
+                http_400(self)
+                print('BLOCK: blocked nostr domain')
                 self.server.postreq_busy = False
                 return
 

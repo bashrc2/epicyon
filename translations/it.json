@@ -705,5 +705,6 @@
     "Yourself": "Te stesso",
     "Epicyon Instances": "Istanze di Epicyon",
     "Block BlueSky bridges": "Blocca i ponti BlueSky",
-    "Block government instances": "Bloccare le istanze governative"
+    "Block government instances": "Bloccare le istanze governative",
+    "Block Nostr bridges": "Ponti Block Nostr"
 }

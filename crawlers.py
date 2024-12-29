@@ -16,6 +16,7 @@ from utils import remove_eol
 from blocking import get_mil_domains_list
 from blocking import get_gov_domains_list
 from blocking import get_bsky_domains_list
+from blocking import get_nostr_domains_list
 from blocking import update_blocked_cache
 from blocking import is_blocked_domain
 
@@ -114,7 +115,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
                        known_bots: [], path: str,
                        block_military: {},
                        block_government: {},
-                       block_bluesky: {}):
+                       block_bluesky: {},
+                       block_nostr: {}):
     """Should a GET or POST be blocked based upon its user agent?
     """
     if not agent_str:
@@ -232,7 +234,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
     block_dicts = {
         "military": block_military,
         "government": block_government,
-        "bluesky": block_bluesky
+        "bluesky": block_bluesky,
+        "nostr": block_nostr
     }
     for block_type, block_dict in block_dicts.items():
         if blocked_ua or not block_dict:
@@ -250,6 +253,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             blk_domains = get_mil_domains_list()
         elif block_type == "government":
             blk_domains = get_gov_domains_list()
+        elif block_type == "nostr":
+            blk_domains = get_nostr_domains_list()
         else:
             blk_domains = get_bsky_domains_list()
         for domain_str in blk_domains:

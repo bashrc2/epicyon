@@ -705,5 +705,6 @@
     "Yourself": "あなた自身",
     "Epicyon Instances": "エピキオンインスタンス",
     "Block BlueSky bridges": "ブルースカイ橋をブロックする",
-    "Block government instances": "政府インスタンスをブロックする"
+    "Block government instances": "政府インスタンスをブロックする",
+    "Block Nostr bridges": "ノストル橋をブロック"
 }

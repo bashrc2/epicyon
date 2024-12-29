@@ -705,5 +705,6 @@
     "Yourself": "अपने आप को",
     "Epicyon Instances": "एपिक्योन इंस्टेंसेस",
     "Block BlueSky bridges": "ब्लूस्काई पुलों को ब्लॉक करें",
-    "Block government instances": "सरकारी इंस्टेंस ब्लॉक करें"
+    "Block government instances": "सरकारी इंस्टेंस ब्लॉक करें",
+    "Block Nostr bridges": "ब्लॉक नोस्ट्र पुल"
 }

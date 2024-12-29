@@ -542,6 +542,7 @@ def edit_profile2(self, calling_domain: str, path: str,
                   block_military: {},
                   block_government: {},
                   block_bluesky: {},
+                  block_nostr: {},
                   block_federated_endpoints: []) -> bool:
     """Show the edit profile screen
     """
@@ -572,6 +573,7 @@ def edit_profile2(self, calling_domain: str, path: str,
                                 block_military,
                                 block_government,
                                 block_bluesky,
+                                block_nostr,
                                 block_federated_endpoints)
         if msg:
             msg = msg.encode('utf-8')

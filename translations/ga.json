@@ -705,5 +705,6 @@
     "Yourself": "Tú féin",
     "Epicyon Instances": "Cásanna Epicyon",
     "Block BlueSky bridges": "Bloc droichid BlueSky",
-    "Block government instances": "Cuir bac ar chásanna rialtais"
+    "Block government instances": "Cuir bac ar chásanna rialtais",
+    "Block Nostr bridges": "Bloc droichid Nostr"
 }

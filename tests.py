@@ -9172,8 +9172,6 @@ def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
     print('Running tests...')
-    _test_functions()
-    return
     update_default_themes_list(os.getcwd())
     _test_source_contains_no_tabs()
     _translate_ontology(base_dir)

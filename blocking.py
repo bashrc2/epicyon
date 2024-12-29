@@ -1965,6 +1965,27 @@ def load_blocked_bluesky(base_dir: str) -> {}:
     return nicknames_dict
 
 
+def load_blocked_nostr(base_dir: str) -> {}:
+    """Loads a list of nicknames for accounts which block nostr bridges
+    """
+    block_nostr_filename = data_dir(base_dir) + '/block_nostr.txt'
+    nicknames_list: list[str] = []
+    if os.path.isfile(block_nostr_filename):
+        try:
+            with open(block_nostr_filename, 'r',
+                      encoding='utf-8') as fp_nostr:
+                nicknames_list = fp_nostr.read()
+        except OSError:
+            print('EX: error while reading block nostr file')
+    if not nicknames_list:
+        return {}
+    nicknames_list = nicknames_list.split('\n')
+    nicknames_dict = {}
+    for nickname in nicknames_list:
+        nicknames_dict[nickname] = True
+    return nicknames_dict
+
+
 def save_blocked_military(base_dir: str, block_military: {}) -> None:
     """Saves a list of nicknames for accounts which block military instances
     """
@@ -2013,6 +2034,22 @@ def save_blocked_bluesky(base_dir: str, block_bluesky: {}) -> None:
         print('EX: error while saving block bluesky file')
 
 
+def save_blocked_nostr(base_dir: str, block_nostr: {}) -> None:
+    """Saves a list of nicknames for accounts which block nostr bridges
+    """
+    nicknames_str = ''
+    for nickname, _ in block_nostr.items():
+        nicknames_str += nickname + '\n'
+
+    block_nostr_filename = data_dir(base_dir) + '/block_nostr.txt'
+    try:
+        with open(block_nostr_filename, 'w+',
+                  encoding='utf-8') as fp_nostr:
+            fp_nostr.write(nicknames_str)
+    except OSError:
+        print('EX: error while saving block nostr file')
+
+
 def get_mil_domains_list() -> []:
     """returns a list of military domains
     """
@@ -2030,6 +2067,12 @@ def get_bsky_domains_list() -> []:
     """returns a list of bluesky bridges
     """
     return ['brid.gy']
+
+
+def get_nostr_domains_list() -> []:
+    """returns a list of nostr bridges
+    """
+    return ['mostr.pub']
 
 
 def contains_military_domain(message_str: str) -> bool:
@@ -2067,6 +2110,20 @@ def contains_bluesky_domain(message_str: str) -> bool:
     """
     bsky_domains = get_bsky_domains_list()
     for domain_str in bsky_domains:
+        if domain_str + '"' in message_str or \
+           domain_str + '/' in message_str:
+            return True
+    return False
+
+
+def contains_nostr_domain(message_str: str) -> bool:
+    """Returns true if the given string contains a nostr bridge domain
+    """
+    if '.nostr.' in message_str or \
+       '/nostr.' in message_str:
+        return True
+    nostr_domains = get_nostr_domains_list()
+    for domain_str in nostr_domains:
         if domain_str + '"' in message_str or \
            domain_str + '/' in message_str:
             return True

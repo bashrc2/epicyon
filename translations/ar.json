@@ -705,5 +705,6 @@
     "Yourself": "نفسك",
     "Epicyon Instances": "حالات Epicyon",
     "Block BlueSky bridges": "حجب جسور بلو سكاي",
-    "Block government instances": "حظر حالات الحكومة"
+    "Block government instances": "حظر حالات الحكومة",
+    "Block Nostr bridges": "سد جسور نوستر"
 }

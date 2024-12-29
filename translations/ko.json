@@ -705,5 +705,6 @@
     "Yourself": "당신 자신",
     "Epicyon Instances": "에피시온 인스턴스",
     "Block BlueSky bridges": "블루스카이 다리 차단",
-    "Block government instances": "정부 인스턴스 차단"
+    "Block government instances": "정부 인스턴스 차단",
+    "Block Nostr bridges": "블록 노스트르 다리"
 }
