@@ -773,6 +773,7 @@ a:focus img{
     font-family: 'Arial, Helvetica, sans-serif';
     color: var(--main-link-color);
     background: var(--link-bg-color);
+    overflow-wrap: break-word;
 }
 
 .announceOrReply {
