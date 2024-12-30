@@ -1,7 +1,7 @@
 {
-    "name": "Paywalled websites",
-    "warning": "Paywalled websites",
-    "description": "Contains links to sites which are paywalled",
+    "name": "Paywalled or registration only",
+    "warning": "Paywalled or registration only",
+    "description": "Contains links to sites which are paywalled or require registration to read",
     "words": [],
     "domains": [
         "nytimes.com",
@@ -41,6 +41,7 @@
         "nzherald.co.nz",
         "startribune.com",
         "independent.co.uk",
-        "thesun.co.uk"
+        "thesun.co.uk",
+        "theintercept.com"
     ]
 }
