@@ -2740,7 +2740,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             edit_check_box(idx, 'blockNostr', blocknostr)
 
         cw_lists_str = ''
-        for name, _ in cw_lists.items():
+        for name, list_json in cw_lists.items():
             variablename = get_cw_list_variable(name)
             list_is_enabled = False
             if lists_enabled:
@@ -2748,6 +2748,11 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                     list_is_enabled = True
             if translate.get(name):
                 name = translate[name]
+            elif list_json.get('warning'):
+                if translate.get(list_json['warning']):
+                    warning_str = list_json['warning']
+                    name = translate[warning_str]
+
             cw_lists_str += \
                 edit_check_box(name, variablename, list_is_enabled)
         if cw_lists_str:
