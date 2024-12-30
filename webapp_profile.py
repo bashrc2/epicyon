@@ -2749,8 +2749,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             if translate.get(name):
                 name = translate[name]
             elif list_json.get('warning'):
-                if translate.get(list_json['warning']):
-                    warning_str = list_json['warning']
+                warning_str = list_json['warning']
+                if translate.get(warning_str):
                     name = translate[warning_str]
 
             cw_lists_str += \
