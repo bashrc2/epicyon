@@ -1195,8 +1195,10 @@ In September the [Social Web Foundation](https://socialwebfoundation.org) was la
 
 In November the website formerly known as Twitter changed it's terms of service such that any posts made by users, including attached images or videos, could be used worldwide and royalty-free to train its generative AI model and produce derivative grifter-oriented content. This resulted in another exodus and shutdowns of Twitter accounts in order to try to forestall such abuses of content.
 
-### 2025: Facebook fires fact checkers
-To kick off the start of the year Mark Zuckerberg, believed to be a major funder of the Social Web Foundation, announced that he would "get rid of fact checkers" and that there would consequently be "more bad stuff" on his platforms, including Threads.
+### 2025: Mastodon non-profit and Facebook fires fact checkers
+To kick off the start of the year Mark Zuckerberg, believed to be a major funder of the Social Web Foundation, announced that he would "get rid of fact checkers" and that there would consequently be "more bad stuff" on his platforms, including Threads. Less reported but perhaps more consequentially, Zuck also altered Meta's moderation policy to be more hostile towards women and the LGBTQ community, by removing protections which previously existed.
+
+The Mastodon project announced that it was setting up a non-profit and would transfer copyrights and assets to it. The intention was to avoid the project being controlled by a single individual. *"The people should own the town square"*.
 
 ### Fediverse culture shock
 This is what happens when someone has only had a presence within large corporate sites, such as the website formerly known as Twitter or Facebook, and then moves to a federated system on the open internet.
