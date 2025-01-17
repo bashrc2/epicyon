@@ -227,6 +227,7 @@ from reading import get_reading_status
 from reading import store_book_events
 from conversation import conversation_tag_to_convthread_id
 from conversation import convthread_id_to_conversation_tag
+from webapp_utils import add_emoji_to_display_name
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -4102,6 +4103,44 @@ def _test_addemoji(base_dir: str):
         print('expected_content: ' + expected_content)
         print('content_modified: ' + content_modified)
     assert content_modified == expected_content
+
+    profile_description = \
+        "<p>Software engineer developing federated and decentralized " + \
+        "systems for a more habitable, resillient and human-scale " + \
+        "internet, respecting people and the planet. Founder of the " + \
+        "<a href=\"https://epicyon.libreserver.org/tags/LibreServer\" " \
+        "class=\"mention hashtag\" rel=\"tag\" tabindex=\"10\">" + \
+        "<span aria-hidden=\"true\">#</span><span>LibreServer</span>" + \
+        "</a> and <a href=\"https://epicyon.libreserver.org/" + \
+        "tags/Epicyon\" class=\"mention hashtag\" rel=\"tag\" " + \
+        "tabindex=\"10\"><span aria-hidden=\"true\">#</span><span>" + \
+        "Epicyon</span></a> projects. Anarcho-gardener. " + \
+        ":cupofcoffee: <a href=\"https://epicyon.libreserver.org" + \
+        "/tags/fedi22\" class=\"mention hashtag\" rel=\"tag\" " + \
+        "tabindex=\"10\"><span aria-hidden=\"true\">#</span><span>" + \
+        "fedi22</span></a> <a href=\"https://epicyon.libreserver.org" + \
+        "/tags/debian\" class=\"mention hashtag\" rel=\"tag\" " + \
+        "tabindex=\"10\"><span aria-hidden=\"true\">#</span>" + \
+        "<span>debian</span></a> <a href=\"https://epicyon." + \
+        "libreserver.org/tags/python\" class=\"mention hashtag\" " + \
+        "rel=\"tag\" tabindex=\"10\"><span aria-hidden=\"true\">#" + \
+        "</span><span>python</span></a> <a href=\"https://epicyon." + \
+        "libreserver.org/tags/selfhosting\" class=\"mention hashtag\" " + \
+        "rel=\"tag\" tabindex=\"10\"><span aria-hidden=\"true\">#" + \
+        "</span><span>selfhosting</span></a> <a href=\"https://epicyon" + \
+        ".libreserver.org/tags/smalltech\" class=\"mention hashtag\" " + \
+        "rel=\"tag\" tabindex=\"10\"><span aria-hidden=\"true\">#" + \
+        "</span><span>smalltech</span></a> <a href=\"https://epicyon." + \
+        "libreserver.org/tags/nobridge\" class=\"mention hashtag\" " + \
+        "rel=\"tag\" tabindex=\"10\"><span aria-hidden=\"true\">#" + \
+        "</span><span>nobridge</span></a></p>"
+    session = None
+    profile_description2 = \
+        add_emoji_to_display_name(session, base_dir, http_prefix,
+                                  nickname, domain,
+                                  profile_description, False, translate)
+    assert ':cupofcoffee:' in profile_description
+    assert ':cupofcoffee:' not in profile_description2
 
     os.chdir(base_dir_original)
     shutil.rmtree(base_dir_original + '/.tests',

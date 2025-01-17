@@ -476,7 +476,7 @@ def replace_emoji_from_tags(session, base_dir: str,
         icon_name = tag_url.split('/')[-1]
         if len(icon_name) <= 1:
             continue
-        if not (icon_name[0].isdigit() and '.' in icon_name):
+        if '.' not in icon_name:
             continue
         icon_name = icon_name.split('.')[0]
         # see https://unicode.org/
