@@ -1095,14 +1095,18 @@ def html_profile(signing_priv_key_pem: str,
         profile_description = profile_json['summary']
     else:
         profile_description = remove_html(profile_json['summary'])
+    print('TEST profile description 1: ' + profile_description)
     profile_description = \
         remove_link_trackers_from_content(profile_description)
+    print('TEST profile description 2: ' + profile_description)
     profile_description = \
         add_emoji_to_display_name(session, base_dir, http_prefix,
                                   nickname, domain,
                                   profile_description, False, translate)
+    print('TEST profile description 3: ' + profile_description)
     if profile_description:
         profile_description = standardize_text(profile_description)
+    print('TEST profile description 4: ' + profile_description)
     featured_hashtags = \
         get_featured_hashtags_as_html(profile_json, profile_description)
     posts_button = 'button'
