@@ -149,7 +149,8 @@ def _get_instance_software(base_dir: str, session,
     instance domain eg. mastodon, epicyon, pixelfed
     """
     instance_domain, _ = get_domain_from_actor(instance_domain)
-    print('DEBUG get_instance_software: ' + instance_domain)
+    if debug:
+        print('DEBUG get_instance_software: ' + instance_domain)
     if instance_software.get(instance_domain):
         return instance_software[instance_domain]
     # get the initial nodeinfo url
@@ -167,7 +168,8 @@ def _get_instance_software(base_dir: str, session,
                  __version__, http_prefix, domain)
     if not get_json_valid(nodeinfo1_json):
         return ''
-    print('DEBUG get_instance_software: ' + str(nodeinfo1_json))
+    if debug:
+        print('DEBUG get_instance_software: ' + str(nodeinfo1_json))
     # get the nodeinfo data
     nodeinfo_url = None
     if nodeinfo1_json.get('links'):
@@ -186,7 +188,8 @@ def _get_instance_software(base_dir: str, session,
                  __version__, http_prefix, domain)
     if not get_json_valid(nodeinfo_json):
         return ''
-    print('DEBUG get_instance_software: ' + str(nodeinfo_json))
+    if debug:
+        print('DEBUG get_instance_software: ' + str(nodeinfo_json))
     if not nodeinfo_json.get('software'):
         return ''
     if not isinstance(nodeinfo_json['software'], dict):
