@@ -137,7 +137,7 @@ from session import get_json
 MAX_DISPLAY_NAME_LENGTH = 42
 
 
-def _get_instalce_software_html(title_str: str, software_name: str) -> str:
+def _get_instance_software_html(title_str: str, software_name: str) -> str:
     """Returns the html displaying the type of software
     such as mastodon, epicyon or pixelfed
     """
@@ -1566,7 +1566,7 @@ def _get_post_title_announce_html(base_dir: str,
     if mitm or announce_domain in mitm_servers:
         title_str += mitm_warning_html(translate)
 
-    title_str += _get_instalce_software_html(title_str, software_name)
+    title_str += _get_instance_software_html(title_str, software_name)
 
     # show avatar of person replied to
     announce_actor = attributed_to
@@ -1613,7 +1613,7 @@ def _reply_to_yourself_html(translate: {}, software_name: str) -> str:
         '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n'
 
-    title_str += _get_instalce_software_html(title_str, software_name)
+    title_str += _get_instance_software_html(title_str, software_name)
     return title_str
 
 
@@ -1652,7 +1652,7 @@ def _reply_to_unknown_html(translate: {},
         post_link + \
         '" class="announceOrReply" tabindex="10">@unknown</a>\n'
 
-    title_str += _get_instalce_software_html(title_str, software_name)
+    title_str += _get_instance_software_html(title_str, software_name)
     return title_str
 
 
@@ -1683,7 +1683,7 @@ def _reply_with_unknown_path_html(translate: {},
         '" class="announceOrReply" tabindex="10">' + \
         post_domain + mitm_str + '</a>\n'
 
-    title_str += _get_instalce_software_html(title_str, software_name)
+    title_str += _get_instance_software_html(title_str, software_name)
     return title_str
 
 
@@ -1711,7 +1711,7 @@ def _get_reply_html(translate: {},
         reply_handle + '">' + '<span itemprop="audience">' + \
         reply_display_name + '</span></a>\n'
 
-    title_str += _get_instalce_software_html(title_str, software_name)
+    title_str += _get_instance_software_html(title_str, software_name)
     return title_str
 
 
@@ -1744,7 +1744,7 @@ def _get_post_title_reply_html(base_dir: str,
     # not a reply
     reply_id = get_reply_to(obj_json)
     if not reply_id:
-        title_str += _get_instalce_software_html(title_str, software_name)
+        title_str += _get_instance_software_html(title_str, software_name)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
@@ -1868,7 +1868,7 @@ def _get_post_title_reply_html(base_dir: str,
     if mitm or reply_domain in mitm_servers:
         title_str += mitm_warning_html(translate)
 
-    title_str += _get_instalce_software_html(title_str, software_name)
+    title_str += _get_instance_software_html(title_str, software_name)
 
     _log_post_timing(enable_timing_log, post_start_time, '13.7')
 
