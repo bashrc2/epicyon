@@ -354,7 +354,7 @@ details {
 }
 
 .instanceSoftware {
-    background-color: var(--button-selected-highlighted);
+    background-color: var(--button-background-hover);
     color: var(--button-fg-highlighted);
     font-size: 75%;
 }
