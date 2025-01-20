@@ -1590,7 +1590,7 @@ def _get_post_title_announce_html(base_dir: str,
             container_class_icons, container_class)
 
 
-def _reply_to_yourself_html(translate: {}) -> str:
+def _reply_to_yourself_html(translate: {}, software_name: str) -> str:
     """Returns html for a title which is a reply to yourself
     """
     replying_to_themselves_str = 'replying to themselves'
@@ -1602,6 +1602,13 @@ def _reply_to_yourself_html(translate: {}) -> str:
         '" alt="' + replying_to_themselves_str + \
         '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n'
+
+    if software_name:
+        if '[' + software_name + ']' not in title_str:
+            title_str += \
+                '<br><label class="instanceSoftware">' + \
+                '<span itemprop="software">[' + \
+                software_name + ']</span></label>\n'
     return title_str
 
 
@@ -1750,6 +1757,13 @@ def _get_post_title_reply_html(base_dir: str,
     # not a reply
     reply_id = get_reply_to(obj_json)
     if not reply_id:
+        if software_name:
+            if software_name:
+                if '[' + software_name + ']' not in title_str:
+                    title_str += \
+                        '<br><label class="instanceSoftware">' + \
+                        '<span itemprop="software">[' + \
+                        software_name + ']</span></label>\n'
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
@@ -1758,7 +1772,7 @@ def _get_post_title_reply_html(base_dir: str,
 
     # reply to self
     if reply_id.startswith(post_actor):
-        title_str += _reply_to_yourself_html(translate)
+        title_str += _reply_to_yourself_html(translate, software_name)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
