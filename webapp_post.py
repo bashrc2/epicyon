@@ -1552,10 +1552,11 @@ def _get_post_title_announce_html(base_dir: str,
         title_str += mitm_warning_html(translate)
 
     if software_name:
-        title_str += \
-            '<br><label class="instanceSoftware">' + \
-            '<span itemprop="software">[' + \
-            software_name.title() + ']</span></label>\n'
+        if '[' + software_name + ']' not in title_str:
+            title_str += \
+                '<br><label class="instanceSoftware">' + \
+                '<span itemprop="software">[' + \
+                software_name.title() + ']</span></label>\n'
 
     # show avatar of person replied to
     announce_actor = attributed_to
@@ -1640,10 +1641,11 @@ def _reply_to_unknown_html(translate: {},
         '" class="announceOrReply" tabindex="10">@unknown</a>\n'
 
     if software_name:
-        title_str += \
-            '<br><label class="instanceSoftware">' + \
-            '<span itemprop="software">[' + \
-            software_name.title() + ']</span></label>\n'
+        if '[' + software_name + ']' not in title_str:
+            title_str += \
+                '<br><label class="instanceSoftware">' + \
+                '<span itemprop="software">[' + \
+                software_name.title() + ']</span></label>\n'
 
     return title_str
 
@@ -1676,10 +1678,11 @@ def _reply_with_unknown_path_html(translate: {},
         post_domain + mitm_str + '</a>\n'
 
     if software_name:
-        title_str += \
-            '<br><label class="instanceSoftware">' + \
-            '<span itemprop="software">[' + \
-            software_name.title() + ']</span></label>\n'
+        if '[' + software_name + ']' not in title_str:
+            title_str += \
+                '<br><label class="instanceSoftware">' + \
+                '<span itemprop="software">[' + \
+                software_name.title() + ']</span></label>\n'
 
     return title_str
 
@@ -1709,10 +1712,11 @@ def _get_reply_html(translate: {},
         reply_display_name + '</span></a>\n'
 
     if software_name:
-        title_str += \
-            '<br><label class="instanceSoftware">' + \
-            '<span itemprop="software">[' + \
-            software_name.title() + ']</span></label>\n'
+        if '[' + software_name + ']' not in title_str:
+            title_str += \
+                '<br><label class="instanceSoftware">' + \
+                '<span itemprop="software">[' + \
+                software_name.title() + ']</span></label>\n'
 
     return title_str
 
@@ -1870,10 +1874,11 @@ def _get_post_title_reply_html(base_dir: str,
         title_str += mitm_warning_html(translate)
 
     if software_name:
-        title_str += \
-            '<br><label class="instanceSoftware">' + \
-            '<span itemprop="software">[' + \
-            software_name.title() + ']</span></label>\n'
+        if '[' + software_name + ']' not in title_str:
+            title_str += \
+                '<br><label class="instanceSoftware">' + \
+                '<span itemprop="software">[' + \
+                software_name.title() + ']</span></label>\n'
 
     _log_post_timing(enable_timing_log, post_start_time, '13.7')
 
