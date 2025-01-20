@@ -148,6 +148,7 @@ def _get_instance_software(base_dir: str, session,
     """returns the type of instance software for the given
     instance domain eg. mastodon, epicyon, pixelfed
     """
+    instance_domain, _ = get_domain_from_actor(instance_domain)
     print('DEBUG get_instance_software: ' + instance_domain)
     if instance_software.get(instance_domain):
         return instance_software[instance_domain]
