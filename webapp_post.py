@@ -1552,7 +1552,7 @@ def _get_post_title_announce_html(base_dir: str,
         title_str += mitm_warning_html(translate)
 
     if software_name:
-        if '[' + software_name + ']' not in title_str:
+        if '[' + software_name.title() + ']' not in title_str:
             title_str += \
                 '<br><label class="instanceSoftware">' + \
                 '<span itemprop="software">[' + \
@@ -1641,7 +1641,7 @@ def _reply_to_unknown_html(translate: {},
         '" class="announceOrReply" tabindex="10">@unknown</a>\n'
 
     if software_name:
-        if '[' + software_name + ']' not in title_str:
+        if '[' + software_name.title() + ']' not in title_str:
             title_str += \
                 '<br><label class="instanceSoftware">' + \
                 '<span itemprop="software">[' + \
@@ -1678,7 +1678,7 @@ def _reply_with_unknown_path_html(translate: {},
         post_domain + mitm_str + '</a>\n'
 
     if software_name:
-        if '[' + software_name + ']' not in title_str:
+        if '[' + software_name.title() + ']' not in title_str:
             title_str += \
                 '<br><label class="instanceSoftware">' + \
                 '<span itemprop="software">[' + \
@@ -1712,7 +1712,7 @@ def _get_reply_html(translate: {},
         reply_display_name + '</span></a>\n'
 
     if software_name:
-        if '[' + software_name + ']' not in title_str:
+        if '[' + software_name.title() + ']' not in title_str:
             title_str += \
                 '<br><label class="instanceSoftware">' + \
                 '<span itemprop="software">[' + \
@@ -1874,7 +1874,7 @@ def _get_post_title_reply_html(base_dir: str,
         title_str += mitm_warning_html(translate)
 
     if software_name:
-        if '[' + software_name + ']' not in title_str:
+        if '[' + software_name.title() + ']' not in title_str:
             title_str += \
                 '<br><label class="instanceSoftware">' + \
                 '<span itemprop="software">[' + \
