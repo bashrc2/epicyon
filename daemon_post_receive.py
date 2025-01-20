@@ -112,7 +112,8 @@ def _receive_new_post_process_newpost(self, fields: {},
                                       max_replies: int,
                                       onion_domain: str,
                                       i2p_domain: str,
-                                      mitm_servers: []) -> int:
+                                      mitm_servers: [],
+                                      instance_software: {}) -> int:
     """ A new post has been received from the New Post screen and
     is then sent to the outbox
     """
@@ -220,7 +221,8 @@ def _receive_new_post_process_newpost(self, fields: {},
                                buy_sites,
                                auto_cw_cache,
                                onion_domain, i2p_domain,
-                               mitm_servers)
+                               mitm_servers,
+                               instance_software)
             print('DEBUG: sending edited public post ' +
                   str(message_json))
         if fields['schedulePost']:
@@ -527,7 +529,8 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                                           max_replies: int,
                                           onion_domain: str,
                                           i2p_domain: str,
-                                          mitm_servers: []) -> int:
+                                          mitm_servers: [],
+                                          instance_software: {}) -> int:
     """Unlisted post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -621,7 +624,8 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                                buy_sites,
                                auto_cw_cache,
                                onion_domain, i2p_domain,
-                               mitm_servers)
+                               mitm_servers,
+                               instance_software)
             print('DEBUG: sending edited unlisted post ' +
                   str(message_json))
 
@@ -683,7 +687,8 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                            max_replies: int,
                                            onion_domain: str,
                                            i2p_domain: str,
-                                           mitm_servers: []) -> int:
+                                           mitm_servers: [],
+                                           instance_software: {}) -> int:
     """Followers only post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -787,7 +792,8 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                buy_sites,
                                auto_cw_cache,
                                onion_domain, i2p_domain,
-                               mitm_servers)
+                               mitm_servers,
+                               instance_software)
             print('DEBUG: sending edited followers post ' +
                   str(message_json))
 
@@ -850,7 +856,8 @@ def _receive_new_post_process_newdm(self, fields: {},
                                     max_replies: int,
                                     onion_domain: str,
                                     i2p_domain: str,
-                                    mitm_servers: []) -> int:
+                                    mitm_servers: [],
+                                    instance_software: {}) -> int:
     """Direct message post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -961,7 +968,8 @@ def _receive_new_post_process_newdm(self, fields: {},
                                buy_sites,
                                auto_cw_cache,
                                onion_domain, i2p_domain,
-                               mitm_servers)
+                               mitm_servers,
+                               instance_software)
             print('DEBUG: sending edited dm post ' +
                   str(message_json))
 
@@ -1023,7 +1031,8 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                           proxy_type: str,
                                           onion_domain: str,
                                           i2p_domain: str,
-                                          mitm_servers: []) -> int:
+                                          mitm_servers: [],
+                                          instance_software: {}) -> int:
     """Reminder post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -1119,7 +1128,8 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                buy_sites,
                                auto_cw_cache,
                                onion_domain, i2p_domain,
-                               mitm_servers)
+                               mitm_servers,
+                               instance_software)
             print('DEBUG: sending edited reminder post ' +
                   str(message_json))
         if post_to_outbox(self, message_json,
@@ -1325,7 +1335,8 @@ def _receive_new_post_process_newreading(self, fields: {},
                                          max_replies: int,
                                          onion_domain: str,
                                          i2p_domain: str,
-                                         mitm_servers: []) -> int:
+                                         mitm_servers: [],
+                                         instance_software: {}) -> int:
     """Reading status post has been received from New Post screen
     and is then sent to the outbox
     """
@@ -1439,7 +1450,8 @@ def _receive_new_post_process_newreading(self, fields: {},
                                buy_sites,
                                auto_cw_cache,
                                onion_domain, i2p_domain,
-                               mitm_servers)
+                               mitm_servers,
+                               instance_software)
             print('DEBUG: sending edited reading status post ' +
                   str(message_json))
         if fields['schedulePost']:
@@ -1648,7 +1660,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                               watermark_width_percent: int,
                               watermark_position: str,
                               watermark_opacity: int,
-                              mitm_servers: []) -> int:
+                              mitm_servers: [],
+                              instance_software: {}) -> int:
     # Note: this needs to happen synchronously
     # 0=this is not a new post
     # 1=new post success
@@ -1908,7 +1921,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             max_replies,
             onion_domain,
             i2p_domain,
-            mitm_servers)
+            mitm_servers,
+            instance_software)
     if post_type == 'newblog':
         return _receive_new_post_process_newblog(
             self, fields,
@@ -2261,7 +2275,8 @@ def receive_new_post(self, post_type, path: str,
                      watermark_width_percent: int,
                      watermark_position: str,
                      watermark_opacity: int,
-                     mitm_servers: []) -> int:
+                     mitm_servers: [],
+                     instance_software: {}) -> int:
     """A new post has been created
     This creates a thread to send the new post
     """
@@ -2403,7 +2418,8 @@ def receive_new_post(self, post_type, path: str,
                                           watermark_width_percent,
                                           watermark_position,
                                           watermark_opacity,
-                                          mitm_servers)
+                                          mitm_servers,
+                                          instance_software)
             if debug:
                 print('DEBUG: _receive_new_post_process returned ' +
                       str(retval))

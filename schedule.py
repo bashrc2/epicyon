@@ -165,7 +165,8 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                                               httpd.max_cached_readers,
                                               httpd.auto_cw_cache,
                                               httpd.block_federated,
-                                              httpd.mitm_servers):
+                                              httpd.mitm_servers,
+                                              httpd.instance_software):
                     index_lines.remove(line)
                     try:
                         os.remove(post_filename)

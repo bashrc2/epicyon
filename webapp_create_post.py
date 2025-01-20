@@ -274,7 +274,8 @@ def html_new_post(edit_post_params: {},
                   default_buy_site: str,
                   auto_cw_cache: {},
                   searchable_by_default: str,
-                  mitm_servers: []) -> str:
+                  mitm_servers: [],
+                  instance_software: {}) -> str:
     """New post screen
     """
     # get the json if this is an edited post
@@ -457,7 +458,8 @@ def html_new_post(edit_post_params: {},
                                                     bold_reading, dogwhistles,
                                                     minimize_all_images, None,
                                                     buy_sites, auto_cw_cache,
-                                                    mitm_servers)
+                                                    mitm_servers,
+                                                    instance_software)
                         new_post_text += \
                             open_content_warning(replied_to_post, translate)
                         # about the author

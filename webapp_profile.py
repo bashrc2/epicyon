@@ -253,7 +253,8 @@ def html_profile_after_search(authorized: bool,
                               no_of_books: int,
                               auto_cw_cache: {},
                               mitm_servers: [],
-                              ua_str: str) -> str:
+                              ua_str: str,
+                              instance_software: {}) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -618,7 +619,8 @@ def html_profile_after_search(authorized: bool,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
                                         buy_sites, auto_cw_cache,
-                                        mitm_servers)
+                                        mitm_servers,
+                                        instance_software)
             if not profile_post_html:
                 if debug:
                     print('DEBUG: no html produced for profile post: ' +
@@ -1045,7 +1047,8 @@ def html_profile(signing_priv_key_pem: str,
                  no_of_books: int,
                  auto_cw_cache: {},
                  known_epicyon_instances: [],
-                 mitm_servers: []) -> str:
+                 mitm_servers: [],
+                 instance_software: {}) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -1079,7 +1082,7 @@ def html_profile(signing_priv_key_pem: str,
                                  min_images_for_accounts, buy_sites,
                                  auto_cw_cache,
                                  known_epicyon_instances,
-                                 mitm_servers)
+                                 mitm_servers, instance_software)
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
@@ -1654,7 +1657,8 @@ def html_profile(signing_priv_key_pem: str,
                                 max_profile_posts,
                                 buy_sites,
                                 auto_cw_cache,
-                                mitm_servers) + license_str
+                                mitm_servers,
+                                instance_software) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1765,7 +1769,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         max_profile_posts: int,
                         buy_sites: {},
                         auto_cw_cache: {},
-                        mitm_servers: []) -> str:
+                        mitm_servers: [],
+                        instance_software: {}) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1825,7 +1830,8 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             bold_reading, dogwhistles,
                                             minimize_all_images, None,
                                             buy_sites, auto_cw_cache,
-                                            mitm_servers)
+                                            mitm_servers,
+                                            instance_software)
                 if post_str and item_id not in shown_items:
                     profile_str += post_str + separator_str
                     shown_items.append(item_id)

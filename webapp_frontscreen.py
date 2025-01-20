@@ -43,7 +43,8 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                              min_images_for_accounts: [],
                              buy_sites: {},
                              auto_cw_cache: {},
-                             mitm_servers: []) -> str:
+                             mitm_servers: [],
+                             instance_software: {}) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -101,7 +102,8 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
                                         buy_sites, auto_cw_cache,
-                                        mitm_servers)
+                                        mitm_servers,
+                                        instance_software)
             if post_str:
                 profile_str += post_str + separator_str
                 ctr += 1
@@ -135,7 +137,8 @@ def html_front_screen(signing_priv_key_pem: str,
                       buy_sites: {},
                       auto_cw_cache: {},
                       known_epicyon_instances: [],
-                      mitm_servers: []) -> str:
+                      mitm_servers: [],
+                      instance_software: {}) -> str:
     """Show the news instance front screen
     """
     bold_reading = False
@@ -215,7 +218,8 @@ def html_front_screen(signing_priv_key_pem: str,
                                  min_images_for_accounts,
                                  buy_sites,
                                  auto_cw_cache,
-                                 mitm_servers) + license_str
+                                 mitm_servers,
+                                 instance_software) + license_str
 
     # Footer which is only used for system accounts
     profile_footer_str = '      </td>\n'

@@ -66,7 +66,8 @@ def reaction_button(self, calling_domain: str, path: str,
                     bold_reading_nicknames: {},
                     min_images_for_accounts: [],
                     session_onion, session_i2p,
-                    mitm_servers: []) -> None:
+                    mitm_servers: [],
+                    instance_software: {}) -> None:
     """Press an emoji reaction button
     Note that this is not the emoji reaction selection icon at the
     bottom of the post
@@ -292,7 +293,8 @@ def reaction_button(self, calling_domain: str, path: str,
                                     minimize_all_images, None,
                                     buy_sites,
                                     auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
         else:
             print('WARN: Emoji reaction post not found: ' +
                   reaction_post_filename)
@@ -355,7 +357,8 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                          min_images_for_accounts: [],
                          session_onion,
                          session_i2p,
-                         mitm_servers: []) -> None:
+                         mitm_servers: [],
+                         instance_software: {}) -> None:
     """A button is pressed to undo emoji reaction
     """
     page_number = 1
@@ -567,7 +570,8 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                                     minimize_all_images, None,
                                     buy_sites,
                                     auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
         else:
             print('WARN: Unreaction post not found: ' +
                   reaction_post_filename)

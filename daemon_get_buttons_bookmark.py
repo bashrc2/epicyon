@@ -65,7 +65,8 @@ def bookmark_button(self, calling_domain: str, path: str,
                     min_images_for_accounts: [],
                     session_onion,
                     session_i2p,
-                    mitm_servers: []) -> None:
+                    mitm_servers: [],
+                    instance_software: {}) -> None:
     """Bookmark button was pressed
     """
     page_number = 1
@@ -216,7 +217,8 @@ def bookmark_button(self, calling_domain: str, path: str,
                                     minimize_all_images, None,
                                     buy_sites,
                                     auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
         else:
             print('WARN: Bookmarked post not found: ' + bookmark_filename)
     actor_absolute = \
@@ -275,7 +277,8 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                          min_images_for_accounts: [],
                          session_onion,
                          session_i2p,
-                         mitm_servers: []) -> None:
+                         mitm_servers: [],
+                         instance_software: {}) -> None:
     """Button pressed to undo a bookmark
     """
     page_number = 1
@@ -425,7 +428,8 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                                     minimize_all_images, None,
                                     buy_sites,
                                     auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
         else:
             print('WARN: Unbookmarked post not found: ' +
                   bookmark_filename)

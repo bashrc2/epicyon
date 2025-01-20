@@ -375,7 +375,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                          auto_cw_cache: {},
                          onion_domain: str,
                          i2p_domain: str,
-                         mitm_servers: []) -> bool:
+                         mitm_servers: [],
+                         instance_software: {}) -> bool:
     """A post was edited
     """
     if not has_object_dict(message_json):
@@ -517,7 +518,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             bold_reading, dogwhistles,
                             minimize_all_images, None,
                             buy_sites, auto_cw_cache,
-                            mitm_servers)
+                            mitm_servers, instance_software)
     return True
 
 
@@ -654,7 +655,8 @@ def receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                             auto_cw_cache: {},
                             onion_domain: str,
                             i2p_domain: str,
-                            mitm_servers: []) -> bool:
+                            mitm_servers: [],
+                            instance_software: {}) -> bool:
     """Receives an Update activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Update':
@@ -701,7 +703,8 @@ def receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                                     max_hashtags, buy_sites,
                                     auto_cw_cache,
                                     onion_domain, i2p_domain,
-                                    mitm_servers):
+                                    mitm_servers,
+                                    instance_software):
                 print('EDITPOST: received ' + message_json['object']['id'])
                 return True
         else:
@@ -958,7 +961,8 @@ def receive_like(recent_posts_cache: {},
                  min_images_for_accounts: [],
                  buy_sites: {},
                  auto_cw_cache: {},
-                 mitm_servers: []) -> bool:
+                 mitm_servers: [],
+                 instance_software: {}) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Like':
@@ -1074,7 +1078,8 @@ def receive_like(recent_posts_cache: {},
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None, buy_sites,
-                                    auto_cw_cache, mitm_servers)
+                                    auto_cw_cache, mitm_servers,
+                                    instance_software)
     return True
 
 
@@ -1099,7 +1104,8 @@ def receive_reaction(recent_posts_cache: {},
                      min_images_for_accounts: [],
                      buy_sites: {},
                      auto_cw_cache: {},
-                     mitm_servers: []) -> bool:
+                     mitm_servers: [],
+                     instance_software: {}) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'EmojiReact':
@@ -1236,7 +1242,8 @@ def receive_reaction(recent_posts_cache: {},
                                     lists_enabled, timezone, mitm,
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None, buy_sites,
-                                    auto_cw_cache, mitm_servers)
+                                    auto_cw_cache, mitm_servers,
+                                    instance_software)
     return True
 
 
@@ -1261,7 +1268,8 @@ def receive_zot_reaction(recent_posts_cache: {},
                          min_images_for_accounts: [],
                          buy_sites: {},
                          auto_cw_cache: {},
-                         mitm_servers: []) -> bool:
+                         mitm_servers: [],
+                         instance_software: {}) -> bool:
     """Receives an zot-style emoji reaction within the POST section of
     HTTPServer A zot style emoji reaction is an ordinary reply Note whose
     content is exactly one emoji
@@ -1424,7 +1432,8 @@ def receive_zot_reaction(recent_posts_cache: {},
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
     return True
 
 
@@ -1447,7 +1456,8 @@ def receive_bookmark(recent_posts_cache: {},
                      min_images_for_accounts: [],
                      buy_sites: {},
                      auto_cw_cache: {},
-                     mitm_servers: []) -> bool:
+                     mitm_servers: [],
+                     instance_software: {}) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -1552,7 +1562,8 @@ def receive_bookmark(recent_posts_cache: {},
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None,
                                 buy_sites, auto_cw_cache,
-                                mitm_servers)
+                                mitm_servers,
+                                instance_software)
     return True
 
 
@@ -1656,7 +1667,8 @@ def receive_announce(recent_posts_cache: {},
                      languages_understood: [],
                      auto_cw_cache: {},
                      block_federated: [],
-                     mitm_servers: []) -> bool:
+                     mitm_servers: [],
+                     instance_software: {}) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -1825,7 +1837,8 @@ def receive_announce(recent_posts_cache: {},
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None,
                                 buy_sites, auto_cw_cache,
-                                mitm_servers)
+                                mitm_servers,
+                                instance_software)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -1981,7 +1994,8 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                           buy_sites: {},
                           sites_unavailable: [],
                           auto_cw_cache: {},
-                          mitm_servers: []) -> None:
+                          mitm_servers: [],
+                          instance_software: {}) -> None:
     """Updates the votes on a Question/poll
     """
     # if this is a reply to a question then update the votes
@@ -2041,7 +2055,8 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                             bold_reading, dogwhistles,
                             minimize_all_images, None,
                             buy_sites, auto_cw_cache,
-                            mitm_servers)
+                            mitm_servers,
+                            instance_software)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,

@@ -5375,6 +5375,18 @@ def load_mitm_servers(base_dir: str) -> []:
     return mitm_servers
 
 
+def load_instance_software(base_dir: str) -> []:
+    """For each domain encountered this stores the instance type
+    such as mastodon, epicyon, pixelfed, etc
+    """
+    instance_software_filename = data_dir(base_dir) + '/instance_software.json'
+    if os.path.isfile(instance_software_filename):
+        instance_software_json = load_json(instance_software_filename)
+        if instance_software_json:
+            return instance_software_json
+    return {}
+
+
 def save_mitm_servers(base_dir: str, mitm_servers: []) -> None:
     """Saves a list of servers implementing insecure transport security
     """

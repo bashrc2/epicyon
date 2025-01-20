@@ -67,7 +67,8 @@ def like_button(self, calling_domain: str, path: str,
                 min_images_for_accounts: [],
                 session_onion,
                 session_i2p,
-                mitm_servers: []) -> None:
+                mitm_servers: [],
+                instance_software: {}) -> None:
     """Press the like button
     """
     page_number = 1
@@ -263,7 +264,8 @@ def like_button(self, calling_domain: str, path: str,
                                     minimize_all_images, None,
                                     buy_sites,
                                     auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
         else:
             print('WARN: Liked post not found: ' + liked_post_filename)
         # clear the icon from the cache so that it gets updated
@@ -329,7 +331,8 @@ def like_button_undo(self, calling_domain: str, path: str,
                      icons_cache: {},
                      session_onion,
                      session_i2p,
-                     mitm_servers: []) -> None:
+                     mitm_servers: [],
+                     instance_software: {}) -> None:
     """A button is pressed to undo
     """
     page_number = 1
@@ -516,7 +519,8 @@ def like_button_undo(self, calling_domain: str, path: str,
                                     minimize_all_images, None,
                                     buy_sites,
                                     auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
         else:
             print('WARN: Unliked post not found: ' + liked_post_filename)
         # clear the icon from the cache so that it gets updated

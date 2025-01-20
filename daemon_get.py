@@ -755,7 +755,8 @@ def daemon_http_get(self) -> None:
                                 self.server.block_federated,
                                 self.server.auto_cw_cache,
                                 self.server.default_timeline,
-                                self.server.mitm_servers):
+                                self.server.mitm_servers,
+                                self.server.instance_software):
         fitness_performance(getreq_start_time, self.server.fitness,
                             '_GET', '_show_conversation_thread',
                             self.server.debug)
@@ -1679,7 +1680,8 @@ def daemon_http_get(self) -> None:
                                      self.server.session_i2p,
                                      self.server.http_prefix,
                                      self.server.debug,
-                                     self.server.mitm_servers)
+                                     self.server.mitm_servers,
+                                     self.server.instance_software)
             if html_str:
                 msg = html_str.encode('utf-8')
                 msglen = len(msg)
@@ -3061,7 +3063,8 @@ def daemon_http_get(self) -> None:
                                        self.server.debug,
                                        self.server.buy_sites,
                                        self.server.auto_cw_cache,
-                                       self.server.mitm_servers)
+                                       self.server.mitm_servers,
+                                       self.server.instance_software)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -3164,7 +3167,8 @@ def daemon_http_get(self) -> None:
                         self.server.min_images_for_accounts,
                         self.server.buy_sites,
                         self.server.auto_cw_cache,
-                        ua_str, self.server.mitm_servers)
+                        ua_str, self.server.mitm_servers,
+                        self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3475,7 +3479,8 @@ def daemon_http_get(self) -> None:
                         self.server.min_images_for_accounts,
                         self.server.session_onion,
                         self.server.session_i2p,
-                        self.server.mitm_servers)
+                        self.server.mitm_servers,
+                        self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3578,7 +3583,8 @@ def daemon_http_get(self) -> None:
                               self.server.session_onion,
                               self.server.session_i2p,
                               self.server.session,
-                              self.server.mitm_servers)
+                              self.server.mitm_servers,
+                              self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3614,7 +3620,8 @@ def daemon_http_get(self) -> None:
                            self.server.session,
                            self.server.session_onion,
                            self.server.session_i2p,
-                           self.server.mitm_servers)
+                           self.server.mitm_servers,
+                           self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3665,7 +3672,8 @@ def daemon_http_get(self) -> None:
                     self.server.min_images_for_accounts,
                     self.server.session_onion,
                     self.server.session_i2p,
-                    self.server.mitm_servers)
+                    self.server.mitm_servers,
+                    self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3715,7 +3723,8 @@ def daemon_http_get(self) -> None:
                          self.server.iconsCache,
                          self.server.session_onion,
                          self.server.session_i2p,
-                         self.server.mitm_servers)
+                         self.server.mitm_servers,
+                         self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3767,7 +3776,8 @@ def daemon_http_get(self) -> None:
                         self.server.min_images_for_accounts,
                         self.server.session_onion,
                         self.server.session_i2p,
-                        self.server.mitm_servers)
+                        self.server.mitm_servers,
+                        self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3818,7 +3828,8 @@ def daemon_http_get(self) -> None:
                              self.server.min_images_for_accounts,
                              self.server.session_onion,
                              self.server.session_i2p,
-                             self.server.mitm_servers)
+                             self.server.mitm_servers,
+                             self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3869,7 +3880,8 @@ def daemon_http_get(self) -> None:
                         self.server.min_images_for_accounts,
                         self.server.session_onion,
                         self.server.session_i2p,
-                        self.server.mitm_servers)
+                        self.server.mitm_servers,
+                        self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3914,7 +3926,8 @@ def daemon_http_get(self) -> None:
                          self.server.account_timezone,
                          self.server.bold_reading,
                          self.server.fitness,
-                         self.server.mitm_servers)
+                         self.server.mitm_servers,
+                         self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -3965,7 +3978,8 @@ def daemon_http_get(self) -> None:
                              self.server.min_images_for_accounts,
                              self.server.session_onion,
                              self.server.session_i2p,
-                             self.server.mitm_servers)
+                             self.server.mitm_servers,
+                             self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -4011,7 +4025,8 @@ def daemon_http_get(self) -> None:
                       self.server.session_onion,
                       self.server.session_i2p,
                       self.server.default_timeline,
-                      self.server.mitm_servers)
+                      self.server.mitm_servers,
+                      self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -4058,7 +4073,8 @@ def daemon_http_get(self) -> None:
                     self.server.bold_reading,
                     self.server.min_images_for_accounts,
                     self.server.default_timeline,
-                    self.server.mitm_servers)
+                    self.server.mitm_servers,
+                    self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -4105,7 +4121,8 @@ def daemon_http_get(self) -> None:
                          self.server.bold_reading,
                          self.server.min_images_for_accounts,
                          self.server.default_timeline,
-                         self.server.mitm_servers)
+                         self.server.mitm_servers,
+                         self.server.instance_software)
         self.server.getreq_busy = False
         return
 
@@ -4456,7 +4473,8 @@ def daemon_http_get(self) -> None:
                          self.server.buy_sites,
                          self.server.auto_cw_cache,
                          self.server.searchable_by_default,
-                         self.server.mitm_servers):
+                         self.server.mitm_servers,
+                         self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -4503,7 +4521,8 @@ def daemon_http_get(self) -> None:
                                self.server.onion_domain,
                                self.server.i2p_domain,
                                self.server.bold_reading,
-                               self.server.mitm_servers):
+                               self.server.mitm_servers,
+                               self.server.instance_software):
         self.server.getreq_busy = False
         return
 
@@ -4542,7 +4561,8 @@ def daemon_http_get(self) -> None:
                            self.server.buy_sites,
                            self.server.auto_cw_cache,
                            self.server.fitness,
-                           self.server.mitm_servers):
+                           self.server.mitm_servers,
+                           self.server.instance_software):
         self.server.getreq_busy = False
         return
 
@@ -4581,7 +4601,8 @@ def daemon_http_get(self) -> None:
                                self.server.buy_sites,
                                self.server.auto_cw_cache,
                                self.server.fitness,
-                               self.server.mitm_servers):
+                               self.server.mitm_servers,
+                               self.server.instance_software):
         self.server.getreq_busy = False
         return
 
@@ -4630,7 +4651,8 @@ def daemon_http_get(self) -> None:
                                 self.server.fitness,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
-                                self.server.mitm_servers):
+                                self.server.mitm_servers,
+                                self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -4687,7 +4709,8 @@ def daemon_http_get(self) -> None:
                       self.server.fitness,
                       self.server.onion_domain,
                       self.server.i2p_domain,
-                      self.server.mitm_servers):
+                      self.server.mitm_servers,
+                      self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -4745,7 +4768,8 @@ def daemon_http_get(self) -> None:
                        self.server.domain_full,
                        self.server.onion_domain,
                        self.server.i2p_domain,
-                       self.server.mitm_servers):
+                       self.server.mitm_servers,
+                       self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -4791,7 +4815,8 @@ def daemon_http_get(self) -> None:
                             self.server.onion_domain,
                             self.server.i2p_domain,
                             self.server.bold_reading,
-                            self.server.mitm_servers):
+                            self.server.mitm_servers,
+                            self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -4836,7 +4861,8 @@ def daemon_http_get(self) -> None:
                                 self.server.auto_cw_cache,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
-                                self.server.mitm_servers):
+                                self.server.mitm_servers,
+                                self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -4899,7 +4925,8 @@ def daemon_http_get(self) -> None:
                       self.server.onion_domain,
                       self.server.i2p_domain,
                       self.server.hide_announces,
-                      self.server.mitm_servers):
+                      self.server.mitm_servers,
+                      self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -4960,7 +4987,8 @@ def daemon_http_get(self) -> None:
                     self.server.fitness,
                     self.server.onion_domain,
                     self.server.i2p_domain,
-                    self.server.mitm_servers):
+                    self.server.mitm_servers,
+                    self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -5021,7 +5049,8 @@ def daemon_http_get(self) -> None:
                         self.server.fitness,
                         self.server.onion_domain,
                         self.server.i2p_domain,
-                        self.server.mitm_servers):
+                        self.server.mitm_servers,
+                        self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -5084,7 +5113,8 @@ def daemon_http_get(self) -> None:
                                self.server.onion_domain,
                                self.server.i2p_domain,
                                self.server.hide_announces,
-                               self.server.mitm_servers):
+                               self.server.mitm_servers,
+                               self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -5146,7 +5176,8 @@ def daemon_http_get(self) -> None:
                                self.server.fitness,
                                self.server.onion_domain,
                                self.server.i2p_domain,
-                               self.server.mitm_servers):
+                               self.server.mitm_servers,
+                               self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -5209,7 +5240,8 @@ def daemon_http_get(self) -> None:
                               self.server.fitness,
                               self.server.onion_domain,
                               self.server.i2p_domain,
-                              self.server.mitm_servers):
+                              self.server.mitm_servers,
+                              self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -5269,7 +5301,8 @@ def daemon_http_get(self) -> None:
                                   self.server.fitness,
                                   self.server.onion_domain,
                                   self.server.i2p_domain,
-                                  self.server.mitm_servers):
+                                  self.server.mitm_servers,
+                                  self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -5327,7 +5360,8 @@ def daemon_http_get(self) -> None:
                                 self.server.buy_sites,
                                 self.server.auto_cw_cache,
                                 self.server.fitness,
-                                self.server.mitm_servers):
+                                self.server.mitm_servers,
+                                self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -5381,7 +5415,8 @@ def daemon_http_get(self) -> None:
                                 self.server.buy_sites,
                                 self.server.auto_cw_cache,
                                 self.server.fitness,
-                                self.server.mitm_servers):
+                                self.server.mitm_servers,
+                                self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -5424,7 +5459,8 @@ def daemon_http_get(self) -> None:
                               self.server.signing_priv_key_pem,
                               None,
                               self.server.block_federated,
-                              self.server.mitm_servers)
+                              self.server.mitm_servers,
+                              self.server.instance_software)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -5467,7 +5503,8 @@ def daemon_http_get(self) -> None:
                               self.server.signing_priv_key_pem,
                               None,
                               self.server.block_federated,
-                              self.server.mitm_servers)
+                              self.server.mitm_servers,
+                              self.server.instance_software)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -5534,7 +5571,8 @@ def daemon_http_get(self) -> None:
                                    self.server.fitness,
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
-                                   self.server.mitm_servers):
+                                   self.server.mitm_servers,
+                                   self.server.instance_software):
             self.server.getreq_busy = False
             return
 
@@ -5661,7 +5699,8 @@ def daemon_http_get(self) -> None:
                              self.server.fitness,
                              self.server.onion_domain,
                              self.server.i2p_domain,
-                             self.server.mitm_servers):
+                             self.server.mitm_servers,
+                             self.server.instance_software):
             self.server.getreq_busy = False
             return
 

@@ -478,7 +478,8 @@ def daemon_http_post(self) -> None:
                              self.server.max_shares_on_profile,
                              self.server.no_of_books,
                              self.server.shared_items_federated_domains,
-                             ua_str, self.server.mitm_servers)
+                             ua_str, self.server.mitm_servers,
+                             self.server.instance_software)
         self.server.postreq_busy = False
         return
 
@@ -740,7 +741,8 @@ def daemon_http_post(self) -> None:
                             self.server.newswire,
                             self.server.block_federated,
                             self.server.mitm_servers,
-                            ua_str)
+                            ua_str,
+                            self.server.instance_software)
             self.server.postreq_busy = False
             return
 
@@ -911,7 +913,8 @@ def daemon_http_post(self) -> None:
                              self.server.watermark_width_percent,
                              self.server.watermark_position,
                              self.server.watermark_opacity,
-                             self.server.mitm_servers)
+                             self.server.mitm_servers,
+                             self.server.instance_software)
         if page_number:
             print(curr_post_type + ' post received')
             nickname = self.path.split('/users/')[1]

@@ -86,7 +86,8 @@ def _receive_search_hashtag(self, actor_str: str,
                             auto_cw_cache: {},
                             calling_domain: str,
                             ua_str: str,
-                            mitm_servers: []) -> bool:
+                            mitm_servers: [],
+                            instance_software: {}) -> bool:
     """Receive a search for a hashtag from the search screen
     """
     nickname = get_nickname_from_actor(actor_str)
@@ -135,7 +136,8 @@ def _receive_search_hashtag(self, actor_str: str,
                             min_images_for_accounts,
                             buy_sites,
                             auto_cw_cache, ua_str,
-                            mitm_servers)
+                            mitm_servers,
+                            instance_software)
     if hashtag_str:
         msg = hashtag_str.encode('utf-8')
         msglen = len(msg)
@@ -218,7 +220,8 @@ def _receive_search_my_posts(self, search_str: str,
                              buy_sites: [],
                              auto_cw_cache: {},
                              calling_domain: str,
-                             mitm_servers: []) -> bool:
+                             mitm_servers: [],
+                             instance_software: {}) -> bool:
     """Receive a search for your own posts from the search screen
     """
     # your post history search
@@ -285,7 +288,8 @@ def _receive_search_my_posts(self, search_str: str,
                             min_images_for_accounts,
                             buy_sites,
                             auto_cw_cache,
-                            mitm_servers)
+                            mitm_servers,
+                            instance_software)
     if history_str:
         msg = history_str.encode('utf-8')
         msglen = len(msg)
@@ -331,7 +335,8 @@ def _receive_search_bookmarks(self, search_str: str,
                               buy_sites: [],
                               auto_cw_cache: {},
                               calling_domain: str,
-                              mitm_servers: []) -> bool:
+                              mitm_servers: [],
+                              instance_software: {}) -> bool:
     """Receive a search for bookmarked posts from the search screen
     """
     # bookmark search
@@ -398,7 +403,8 @@ def _receive_search_bookmarks(self, search_str: str,
                             min_images_for_accounts,
                             buy_sites,
                             auto_cw_cache,
-                            mitm_servers)
+                            mitm_servers,
+                            instance_software)
     if bookmarks_str:
         msg = bookmarks_str.encode('utf-8')
         msglen = len(msg)
@@ -446,7 +452,8 @@ def _receive_search_handle(self, search_str: str,
                            actor_str: str,
                            curr_session, access_keys: {},
                            mitm_servers: [],
-                           ua_str: str) -> bool:
+                           ua_str: str,
+                           instance_software: {}) -> bool:
     """Receive a search for a fediverse handle or url from the search screen
     """
     remote_only = False
@@ -603,7 +610,8 @@ def _receive_search_handle(self, search_str: str,
                                   no_of_books,
                                   auto_cw_cache,
                                   mitm_servers,
-                                  ua_str)
+                                  ua_str,
+                                  instance_software)
     if profile_str:
         msg = profile_str.encode('utf-8')
         msglen = len(msg)
@@ -766,7 +774,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                          no_of_books: int,
                          shared_items_federated_domains: [],
                          ua_str: str,
-                         mitm_servers: []) -> None:
+                         mitm_servers: [],
+                         instance_software: {}) -> None:
     """Receive a search query
     """
     # get the page number
@@ -873,7 +882,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                    auto_cw_cache,
                                    calling_domain,
                                    ua_str,
-                                   mitm_servers):
+                                   mitm_servers,
+                                   instance_software):
             return
     elif (search_str.startswith('*') or
           search_str.endswith(' skill')):
@@ -922,7 +932,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                     buy_sites,
                                     auto_cw_cache,
                                     calling_domain,
-                                    mitm_servers):
+                                    mitm_servers,
+                                    instance_software):
             return
     elif (search_str.startswith('-') or
           string_ends_with(search_str, bookmark_endings)):
@@ -960,7 +971,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                      buy_sites,
                                      auto_cw_cache,
                                      calling_domain,
-                                     mitm_servers):
+                                     mitm_servers,
+                                     instance_software):
             return
     elif ('@' in search_str or
           ('://' in search_str and
@@ -1000,7 +1012,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                                   auto_cw_cache, actor_str,
                                   curr_session, access_keys,
                                   mitm_servers,
-                                  ua_str):
+                                  ua_str,
+                                  instance_software):
             return
     elif (search_str.startswith(':') or
           search_str.endswith(' emoji')):

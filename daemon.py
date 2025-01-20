@@ -65,6 +65,7 @@ from utils import set_config_param
 from utils import get_config_param
 from utils import load_json
 from utils import load_mitm_servers
+from utils import load_instance_software
 from content import load_auto_cw_cache
 from content import load_dogwhistles
 from theme import scan_themes_for_scripts
@@ -716,6 +717,10 @@ def run_daemon(accounts_data_dir: str,
 
     # servers with man-in-the-middle transport encryption
     httpd.mitm_servers = load_mitm_servers(base_dir)
+
+    # for each domain name this stores the instance type
+    # such as mastodon, epicyon, pixelfed, etc
+    httpd.instance_software = load_instance_software(base_dir)
 
     # default "searchable by" for new posts for each account
     httpd.searchable_by_default = load_searchable_by_default(base_dir)

@@ -113,6 +113,8 @@ def show_person_profile(self, authorized: bool,
             bold_reading = True
         known_epicyon_instances = \
             self.server.known_epicyon_instances
+        instance_software = \
+            self.server.instance_software
         msg = \
             html_profile(signing_priv_key_pem,
                          rss_icon_at_top,
@@ -152,7 +154,8 @@ def show_person_profile(self, authorized: bool,
                          no_of_books,
                          auto_cw_cache,
                          known_epicyon_instances,
-                         mitm_servers).encode('utf-8')
+                         mitm_servers,
+                         instance_software).encode('utf-8')
         msglen = len(msg)
         set_headers(self, 'text/html', msglen,
                     cookie, calling_domain, False)
@@ -273,6 +276,8 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                     bold_reading = True
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = \
+                    self.server.instance_software
                 msg = \
                     html_profile(signing_priv_key_pem,
                                  rss_icon_at_top,
@@ -312,7 +317,8 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                                  no_of_books,
                                  auto_cw_cache,
                                  known_epicyon_instances,
-                                 mitm_servers)
+                                 mitm_servers,
+                                 instance_software)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -425,6 +431,8 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                                 bold_reading = True
                             known_epicyon_instances = \
                                 self.server.known_epicyon_instances
+                            instance_software = \
+                                self.server.instance_software
                             msg = \
                                 html_profile(signing_priv_key_pem,
                                              rss_icon_at_top,
@@ -466,7 +474,8 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                                              no_of_books,
                                              auto_cw_cache,
                                              known_epicyon_instances,
-                                             mitm_servers)
+                                             mitm_servers,
+                                             instance_software)
                             msg = msg.encode('utf-8')
                             msglen = len(msg)
                             set_headers(self, 'text/html', msglen,

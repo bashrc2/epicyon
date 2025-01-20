@@ -70,7 +70,8 @@ def announce_button(self, calling_domain: str, path: str,
                     bold_reading_nicknames: {},
                     min_images_for_accounts: int,
                     session_onion, session_i2p,
-                    mitm_servers: []) -> None:
+                    mitm_servers: [],
+                    instance_software: {}) -> None:
     """The announce/repeat button was pressed on a post
     """
     page_number = 1
@@ -261,7 +262,8 @@ def announce_button(self, calling_domain: str, path: str,
                                 minimize_all_images, None,
                                 buy_sites,
                                 auto_cw_cache,
-                                mitm_servers)
+                                mitm_servers,
+                                instance_software)
 
     actor_absolute = \
         get_instance_url(calling_domain,

@@ -248,7 +248,8 @@ def _person_options_view(self, options_confirm_params: str,
                          calling_domain: str,
                          curr_session, access_keys: {},
                          mitm_servers: [],
-                         ua_str: str) -> bool:
+                         ua_str: str,
+                         instance_software: {}) -> bool:
     """Person options screen, view button
     See html_person_options
     """
@@ -330,7 +331,8 @@ def _person_options_view(self, options_confirm_params: str,
                                       no_of_books,
                                       auto_cw_cache,
                                       mitm_servers,
-                                      ua_str)
+                                      ua_str,
+                                      instance_software)
         if profile_str:
             msg = profile_str.encode('utf-8')
             msglen = len(msg)
@@ -919,7 +921,8 @@ def _person_options_dm(self, options_confirm_params: str,
                        auto_cw_cache: {},
                        cookie: str, calling_domain: str,
                        access_keys: {},
-                       mitm_servers: []) -> bool:
+                       mitm_servers: [],
+                       instance_software: {}) -> bool:
     """Person options screen, DM button
     See html_person_options
     """
@@ -1001,7 +1004,8 @@ def _person_options_dm(self, options_confirm_params: str,
                           default_buy_site,
                           auto_cw_cache,
                           searchable_by_default,
-                          mitm_servers)
+                          mitm_servers,
+                          instance_software)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -1158,7 +1162,8 @@ def _person_options_report(self, options_confirm_params: str,
                            auto_cw_cache: {},
                            cookie: str, calling_domain: str,
                            access_keys: {},
-                           mitm_servers: []) -> bool:
+                           mitm_servers: [],
+                           instance_software: {}) -> bool:
     """Person options screen, report button
     See html_person_options
     """
@@ -1240,7 +1245,8 @@ def _person_options_report(self, options_confirm_params: str,
                           default_buy_site,
                           auto_cw_cache,
                           searchable_by_default,
-                          mitm_servers)
+                          mitm_servers,
+                          instance_software)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -1292,7 +1298,8 @@ def person_options2(self, path: str,
                     newswire: {},
                     block_federated: [],
                     mitm_servers: [],
-                    ua_str: str) -> None:
+                    ua_str: str,
+                    instance_software: {}) -> None:
     """Receive POST from person options screen
     """
     page_number = 1
@@ -1422,7 +1429,8 @@ def person_options2(self, path: str,
                             calling_domain,
                             curr_session, access_keys,
                             mitm_servers,
-                            ua_str):
+                            ua_str,
+                            instance_software):
         return
 
     if _person_option_receive_petname(self, options_confirm_params,
@@ -1632,7 +1640,8 @@ def person_options2(self, path: str,
                           auto_cw_cache,
                           cookie, calling_domain,
                           access_keys,
-                          mitm_servers):
+                          mitm_servers,
+                          instance_software):
         return
 
     if _person_options_info(self, options_confirm_params,
@@ -1701,7 +1710,8 @@ def person_options2(self, path: str,
                               auto_cw_cache,
                               cookie, calling_domain,
                               access_keys,
-                              mitm_servers):
+                              mitm_servers,
+                              instance_software):
         return
 
     # redirect back from person options screen

@@ -143,7 +143,8 @@ def post_to_outbox(self, message_json: {}, version: str,
                                   self.server.max_cached_readers,
                                   self.server.auto_cw_cache,
                                   self.server.block_federated,
-                                  self.server.mitm_servers)
+                                  self.server.mitm_servers,
+                                  self.server.instance_software)
 
 
 def _get_outbox_thread_index(self, nickname: str,

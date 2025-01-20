@@ -35,6 +35,7 @@ from flags import is_news_post
 from flags import is_recent_post
 from flags import is_chat_message
 from flags import is_pgp_encrypted
+from utils import save_json
 from utils import text_mode_removals
 from utils import remove_header_tags
 from utils import get_actor_from_post_id
@@ -134,6 +135,68 @@ from session import get_json
 
 # maximum length for display name within html posts
 MAX_DISPLAY_NAME_LENGTH = 42
+
+
+def _get_instance_software(base_dir: str, session,
+                           instance_http_prefix: str,
+                           instance_domain: str,
+                           instance_software: {},
+                           signing_priv_key_pem: str,
+                           debug: bool,
+                           http_prefix: str, domain: str,
+                           mitm_servers: []) -> str:
+    """returns the type of instance software for the given
+    instance domain eg. mastodon, epicyon, pixelfed
+    """
+    if instance_software.get(instance_domain):
+        return instance_software[instance_domain]
+    # get the initial nodeinfo url
+    nodeinfo1_url = \
+        instance_http_prefix + '://' + instance_domain + \
+        '/.well-known/nodeinfo'
+    profile_str = 'https://www.w3.org/ns/activitystreams'
+    headers = {
+        'Accept': 'application/ld+json; profile="' + profile_str + '"'
+    }
+    nodeinfo1_json = \
+        get_json(signing_priv_key_pem,
+                 session, nodeinfo1_url,
+                 headers, None, debug, mitm_servers,
+                 __version__, http_prefix, domain)
+    if not get_json_valid(nodeinfo1_json):
+        return ''
+    # get the nodeinfo data
+    nodeinfo_url = None
+    if nodeinfo1_json.get('links'):
+        if isinstance(nodeinfo1_json['links'], list):
+            if len(nodeinfo1_json['links']) > 0:
+                if nodeinfo1_json['links'][0].get('href'):
+                    href = nodeinfo1_json['links'][0]['href']
+                    if isinstance(href, str):
+                        nodeinfo_url = href
+    if not nodeinfo_url:
+        return ''
+    nodeinfo_json = \
+        get_json(signing_priv_key_pem,
+                 session, nodeinfo_url,
+                 headers, None, debug, mitm_servers,
+                 __version__, http_prefix, domain)
+    if not get_json_valid(nodeinfo_json):
+        return ''
+    if not nodeinfo_json.get('software'):
+        return ''
+    if not isinstance(nodeinfo_json['software'], dict):
+        return ''
+    if not nodeinfo_json['software'].get('name'):
+        return ''
+    software_name = nodeinfo_json['software']['name']
+    if not isinstance(software_name, str):
+        return ''
+    software_name = remove_html(software_name)
+    instance_software[instance_domain] = software_name
+    instance_software_filename = data_dir(base_dir) + '/instance_software.json'
+    save_json(instance_software, instance_software_filename)
+    return software_name
 
 
 def _enforce_max_display_name_length(display_name: str) -> str:
@@ -1408,7 +1471,8 @@ def _get_post_title_announce_html(base_dir: str,
                                   container_class_icons: str,
                                   container_class: str,
                                   mitm: bool,
-                                  mitm_servers: []) -> (str, str, str, str):
+                                  mitm_servers: [],
+                                  software_name: str) -> (str, str, str, str):
     """Returns the announce title of a post containing names of participants
     x announces y
     """
@@ -1479,6 +1543,11 @@ def _get_post_title_announce_html(base_dir: str,
 
     if mitm or announce_domain in mitm_servers:
         title_str += mitm_warning_html(translate)
+
+    if software_name:
+        title_str += \
+            ' <span itemprop="software"><mark>[' + \
+            software_name.title() + ']</mark></span>'
 
     # show avatar of person replied to
     announce_actor = attributed_to
@@ -1627,7 +1696,8 @@ def _get_post_title_reply_html(base_dir: str,
                                mitm: bool,
                                signing_priv_key_pem: str,
                                session, debug: bool,
-                               mitm_servers: []) -> (str, str, str, str):
+                               mitm_servers: [],
+                               software_name: str) -> (str, str, str, str):
     """Returns the reply title of a post containing names of participants
     x replies to y
     """
@@ -1757,6 +1827,11 @@ def _get_post_title_reply_html(base_dir: str,
     if mitm or reply_domain in mitm_servers:
         title_str += mitm_warning_html(translate)
 
+    if software_name:
+        title_str += \
+            ' <span itemprop="software"><mark>[' + \
+            software_name.title() + ']</mark></span>'
+
     _log_post_timing(enable_timing_log, post_start_time, '13.7')
 
     # show avatar of person replied to
@@ -1805,7 +1880,8 @@ def _get_post_title_html(base_dir: str,
                          signing_priv_key_pem: str,
                          session,
                          debug: bool,
-                         mitm_servers: []) -> (str, str, str, str):
+                         mitm_servers: [],
+                         software_name: str) -> (str, str, str, str):
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
@@ -1832,7 +1908,8 @@ def _get_post_title_html(base_dir: str,
                                              message_id_str,
                                              container_class_icons,
                                              container_class, mitm,
-                                             mitm_servers)
+                                             mitm_servers,
+                                             software_name)
 
     return _get_post_title_reply_html(base_dir,
                                       http_prefix,
@@ -1850,7 +1927,8 @@ def _get_post_title_html(base_dir: str,
                                       container_class, mitm,
                                       signing_priv_key_pem,
                                       session, debug,
-                                      mitm_servers)
+                                      mitm_servers,
+                                      software_name)
 
 
 def _get_footer_with_icons(show_icons: bool,
@@ -2143,7 +2221,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             first_post_id: str,
                             buy_sites: {},
                             auto_cw_cache: {},
-                            mitm_servers: []) -> str:
+                            mitm_servers: [],
+                            instance_software: {}) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2659,6 +2738,20 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '13.1')
 
+    # get the software instance type, such as "mastodon"
+    instance_http_prefix = http_prefix
+    if '://' in post_actor:
+        instance_http_prefix = post_actor.split('://')[0]
+    software_name = \
+        _get_instance_software(base_dir, session,
+                               instance_http_prefix,
+                               post_actor,
+                               instance_software,
+                               signing_priv_key_pem,
+                               False,
+                               http_prefix, domain,
+                               mitm_servers)
+
     # get the title: x replies to y, x announces y, etc
     (title_str2,
      reply_avatar_image_in_post,
@@ -2681,7 +2774,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                              container_class, mitm,
                                              signing_priv_key_pem,
                                              session, False,
-                                             mitm_servers)
+                                             mitm_servers,
+                                             software_name)
     title_str += title_str2
 
     _log_post_timing(enable_timing_log, post_start_time, '14')
@@ -3124,7 +3218,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          bold_reading: bool, dogwhistles: {},
                          min_images_for_accounts: [],
                          buy_sites: {},
-                         auto_cw_cache: {}, mitm_servers: []) -> str:
+                         auto_cw_cache: {}, mitm_servers: [],
+                         instance_software: {}) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -3211,7 +3306,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 cw_lists, lists_enabled, timezone, mitm,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None, buy_sites,
-                                auto_cw_cache, mitm_servers)
+                                auto_cw_cache, mitm_servers,
+                                instance_software)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -3264,7 +3360,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             minimize_all_images,
                                             None, buy_sites,
                                             auto_cw_cache,
-                                            mitm_servers) + post_str
+                                            mitm_servers,
+                                            instance_software) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -3306,7 +3403,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             bold_reading, dogwhistles,
                                             minimize_all_images, None,
                                             buy_sites, auto_cw_cache,
-                                            mitm_servers)
+                                            mitm_servers, instance_software)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -3359,7 +3456,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       min_images_for_accounts: [],
                       buy_sites: {},
                       auto_cw_cache: {},
-                      mitm_servers: []) -> str:
+                      mitm_servers: [],
+                      instance_software: {}) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -3392,7 +3490,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         bold_reading, dogwhistles,
                                         minimize_all_images, None,
                                         buy_sites, auto_cw_cache,
-                                        mitm_servers)
+                                        mitm_servers,
+                                        instance_software)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -3428,7 +3527,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                min_images_for_accounts: [],
                                buy_sites: {},
                                auto_cw_cache: {},
-                               mitm_servers: []) -> str:
+                               mitm_servers: [],
+                               instance_software: {}) -> str:
     """Returns the emoji picker screen
     """
     minimize_all_images = False
@@ -3457,7 +3557,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 cw_lists, lists_enabled, timezone, False,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None, buy_sites,
-                                auto_cw_cache, mitm_servers)
+                                auto_cw_cache, mitm_servers,
+                                instance_software)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

@@ -191,7 +191,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                                     min_images_for_accounts: [],
                                     buy_sites: {},
                                     auto_cw_cache: {},
-                                    mitm_servers: []) -> None:
+                                    mitm_servers: [],
+                                    instance_software: {}) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -222,7 +223,7 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             cw_lists, lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles, minimize_all_images,
                             None, buy_sites, auto_cw_cache,
-                            mitm_servers)
+                            mitm_servers, instance_software)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -805,7 +806,8 @@ def update_edited_post(base_dir: str,
                        auto_cw_cache: {},
                        onion_domain: str,
                        i2p_domain: str,
-                       mitm_servers: []) -> None:
+                       mitm_servers: [],
+                       instance_software: {}) -> None:
     """ When an edited post is created this assigns
     a published and updated date to it, and uses
     the previous id
@@ -856,7 +858,8 @@ def update_edited_post(base_dir: str,
                          max_hashtags, buy_sites,
                          auto_cw_cache,
                          onion_domain, i2p_domain,
-                         mitm_servers)
+                         mitm_servers,
+                         instance_software)
 
     # update the index
     id_str = edited_postid.split('/')[-1]
@@ -1800,7 +1803,8 @@ def _inbox_after_initial(server, inbox_start_time,
                          dogwhistles: {},
                          max_hashtags: int, buy_sites: {},
                          sites_unavailable: [],
-                         mitm_servers: []) -> bool:
+                         mitm_servers: [],
+                         instance_software: {}) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -1865,7 +1869,7 @@ def _inbox_after_initial(server, inbox_start_time,
                     bold_reading, dogwhistles,
                     server.min_images_for_accounts,
                     buy_sites, server.auto_cw_cache,
-                    mitm_servers):
+                    mitm_servers, instance_software):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1893,7 +1897,7 @@ def _inbox_after_initial(server, inbox_start_time,
                          bold_reading, dogwhistles,
                          server.min_images_for_accounts,
                          buy_sites, server.auto_cw_cache,
-                         mitm_servers):
+                         mitm_servers, instance_software):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1922,7 +1926,7 @@ def _inbox_after_initial(server, inbox_start_time,
                         bold_reading, dogwhistles,
                         server.min_images_for_accounts,
                         buy_sites, server.auto_cw_cache,
-                        mitm_servers):
+                        mitm_servers, instance_software):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1951,7 +1955,7 @@ def _inbox_after_initial(server, inbox_start_time,
                             bold_reading, dogwhistles,
                             server.min_images_for_accounts,
                             buy_sites, server.auto_cw_cache,
-                            mitm_servers):
+                            mitm_servers, instance_software):
         if debug:
             print('DEBUG: Zot reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1979,7 +1983,7 @@ def _inbox_after_initial(server, inbox_start_time,
                              bold_reading, dogwhistles,
                              server.min_images_for_accounts,
                              buy_sites, server.auto_cw_cache,
-                             mitm_servers):
+                             mitm_servers, instance_software):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2008,7 +2012,7 @@ def _inbox_after_initial(server, inbox_start_time,
                         server.min_images_for_accounts,
                         server.buy_sites,
                         server.auto_cw_cache,
-                        mitm_servers):
+                        mitm_servers, instance_software):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2037,7 +2041,7 @@ def _inbox_after_initial(server, inbox_start_time,
                              server.min_images_for_accounts,
                              server.buy_sites,
                              server.auto_cw_cache,
-                             mitm_servers):
+                             mitm_servers, instance_software):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2086,7 +2090,7 @@ def _inbox_after_initial(server, inbox_start_time,
                         languages_understood,
                         server.auto_cw_cache,
                         server.block_federated,
-                        mitm_servers):
+                        mitm_servers, instance_software):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2156,7 +2160,7 @@ def _inbox_after_initial(server, inbox_start_time,
                               server.buy_sites,
                               server.sites_unavailable,
                               server.auto_cw_cache,
-                              mitm_servers)
+                              mitm_servers, instance_software)
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', '_receive_question_vote',
                             debug)
@@ -2487,6 +2491,7 @@ def _inbox_after_initial(server, inbox_start_time,
                         inbox_start_time = time.time()
                         min_img_for_accounts = \
                             server.min_images_for_accounts
+                        instance_software = server.instance_software
                         _inbox_store_post_to_html_cache(recent_posts_cache,
                                                         max_recent_posts,
                                                         translate, base_dir,
@@ -2514,7 +2519,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                                         min_img_for_accounts,
                                                         buy_sites,
                                                         server.auto_cw_cache,
-                                                        server.mitm_servers)
+                                                        server.mitm_servers,
+                                                        instance_software)
                         fitness_performance(inbox_start_time,
                                             server.fitness,
                                             'INBOX',
@@ -3686,7 +3692,8 @@ def run_inbox_queue(server,
                                    max_hashtags, server.buy_sites,
                                    server.auto_cw_cache,
                                    onion_domain,
-                                   i2p_domain, server.mitm_servers):
+                                   i2p_domain, server.mitm_servers,
+                                   server.instance_software):
             if debug:
                 print('Queue: Update accepted from ' + key_id)
             if os.path.isfile(queue_filename):
@@ -3817,7 +3824,8 @@ def run_inbox_queue(server,
                                  bold_reading, dogwhistles,
                                  max_hashtags, server.buy_sites,
                                  server.sites_unavailable,
-                                 server.mitm_servers)
+                                 server.mitm_servers,
+                                 server.instance_software)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'handle_after_initial',
                                 debug)

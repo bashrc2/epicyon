@@ -57,7 +57,8 @@ def mute_button(self, calling_domain: str, path: str,
                 bold_reading_nicknames: {},
                 min_images_for_accounts: [],
                 default_timeline: str,
-                mitm_servers: []) -> None:
+                mitm_servers: [],
+                instance_software: {}) -> None:
     """Mute button is pressed
     """
     mute_url = path.split('?mute=')[1]
@@ -179,7 +180,8 @@ def mute_button(self, calling_domain: str, path: str,
                                     minimize_all_images, None,
                                     buy_sites,
                                     auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
         else:
             print('WARN: Muted post not found: ' + mute_filename)
 
@@ -233,7 +235,8 @@ def mute_button_undo(self, calling_domain: str, path: str,
                      bold_reading_nicknames: {},
                      min_images_for_accounts: [],
                      default_timeline: str,
-                     mitm_servers: []) -> None:
+                     mitm_servers: [],
+                     instance_software: {}) -> None:
     """Undo mute button is pressed
     """
     mute_url = path.split('?unmute=')[1]
@@ -355,7 +358,8 @@ def mute_button_undo(self, calling_domain: str, path: str,
                                     minimize_all_images, None,
                                     buy_sites,
                                     auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
         else:
             print('WARN: Unmuted post not found: ' + mute_filename)
     if calling_domain.endswith('.onion') and onion_domain:

@@ -157,6 +157,7 @@ def show_media_timeline(self, authorized: bool,
                     show_announces = False
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = self.server.instance_software
                 msg = \
                     html_inbox_media(default_timeline,
                                      recent_posts_cache,
@@ -205,7 +206,8 @@ def show_media_timeline(self, authorized: bool,
                                      auto_cw_cache,
                                      show_announces,
                                      known_epicyon_instances,
-                                     mitm_servers)
+                                     mitm_servers,
+                                     instance_software)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -369,6 +371,8 @@ def show_blogs_timeline(self, authorized: bool,
                         last_post_id = last_post_id.split(';')[0]
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = \
+                    self.server.instance_software
                 msg = \
                     html_inbox_blogs(default_timeline,
                                      recent_posts_cache,
@@ -416,7 +420,8 @@ def show_blogs_timeline(self, authorized: bool,
                                      buy_sites,
                                      auto_cw_cache,
                                      known_epicyon_instances,
-                                     mitm_servers)
+                                     mitm_servers,
+                                     instance_software)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -584,6 +589,8 @@ def show_news_timeline(self, authorized: bool,
                     reverse_sequence = True
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = \
+                    self.server.instance_software
                 msg = \
                     html_inbox_news(default_timeline,
                                     recent_posts_cache,
@@ -632,7 +639,8 @@ def show_news_timeline(self, authorized: bool,
                                     buy_sites,
                                     auto_cw_cache,
                                     known_epicyon_instances,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -795,6 +803,7 @@ def show_features_timeline(self, authorized: bool,
                     reverse_sequence = True
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = self.server.instance_software
                 msg = \
                     html_inbox_features(default_timeline,
                                         recent_posts_cache,
@@ -843,7 +852,8 @@ def show_features_timeline(self, authorized: bool,
                                         buy_sites,
                                         auto_cw_cache,
                                         known_epicyon_instances,
-                                        mitm_servers)
+                                        mitm_servers,
+                                        instance_software)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -970,6 +980,7 @@ def show_shares_timeline(self, authorized: bool,
                     reverse_sequence = True
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = self.server.instance_software
                 msg = \
                     html_shares(default_timeline,
                                 recent_posts_cache,
@@ -1014,7 +1025,8 @@ def show_shares_timeline(self, authorized: bool,
                                 buy_sites,
                                 auto_cw_cache,
                                 known_epicyon_instances,
-                                mitm_servers)
+                                mitm_servers,
+                                instance_software)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -1117,6 +1129,7 @@ def show_wanted_timeline(self, authorized: bool,
                     reverse_sequence = True
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = self.server.instance_software
                 msg = \
                     html_wanted(default_timeline,
                                 recent_posts_cache,
@@ -1161,7 +1174,8 @@ def show_wanted_timeline(self, authorized: bool,
                                 buy_sites,
                                 auto_cw_cache,
                                 known_epicyon_instances,
-                                mitm_servers)
+                                mitm_servers,
+                                instance_software)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -1297,6 +1311,7 @@ def show_bookmarks_timeline(self, authorized: bool,
                         reverse_sequence = True
                     known_epicyon_instances = \
                         self.server.known_epicyon_instances
+                    instance_software = self.server.instance_software
                     msg = \
                         html_bookmarks(default_timeline,
                                        recent_posts_cache,
@@ -1344,7 +1359,8 @@ def show_bookmarks_timeline(self, authorized: bool,
                                        buy_sites,
                                        auto_cw_cache,
                                        known_epicyon_instances,
-                                       mitm_servers)
+                                       mitm_servers,
+                                       instance_software)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     set_headers(self, 'text/html', msglen,
@@ -1509,6 +1525,7 @@ def show_outbox_timeline(self, authorized: bool,
                 show_announces = False
             known_epicyon_instances = \
                 self.server.known_epicyon_instances
+            instance_software = self.server.instance_software
             msg = \
                 html_outbox(default_timeline,
                             recent_posts_cache,
@@ -1555,7 +1572,8 @@ def show_outbox_timeline(self, authorized: bool,
                             auto_cw_cache,
                             show_announces,
                             known_epicyon_instances,
-                            mitm_servers)
+                            mitm_servers,
+                            instance_software)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
@@ -1701,6 +1719,7 @@ def show_mod_timeline(self, authorized: bool,
                         reverse_sequence = True
                     known_epicyon_instances = \
                         self.server.known_epicyon_instances
+                    instance_software = self.server.instance_software
                     msg = \
                         html_moderation(default_timeline,
                                         recent_posts_cache,
@@ -1748,7 +1767,8 @@ def show_mod_timeline(self, authorized: bool,
                                         buy_sites,
                                         auto_cw_cache,
                                         known_epicyon_instances,
-                                        mitm_servers)
+                                        mitm_servers,
+                                        instance_software)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     set_headers(self, 'text/html', msglen,
@@ -1909,6 +1929,7 @@ def show_dms(self, authorized: bool,
                             last_post_id = last_post_id.split(';')[0]
                     known_epicyon_instances = \
                         self.server.known_epicyon_instances
+                    instance_software = self.server.instance_software
                     msg = \
                         html_inbox_dms(default_timeline,
                                        recent_posts_cache,
@@ -1955,7 +1976,8 @@ def show_dms(self, authorized: bool,
                                        buy_sites,
                                        auto_cw_cache,
                                        known_epicyon_instances,
-                                       mitm_servers)
+                                       mitm_servers,
+                                       instance_software)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     set_headers(self, 'text/html', msglen,
@@ -2119,6 +2141,7 @@ def show_replies(self, authorized: bool,
                         last_post_id = last_post_id.split(';')[0]
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = self.server.instance_software
                 msg = \
                     html_inbox_replies(default_timeline,
                                        recent_posts_cache,
@@ -2166,7 +2189,8 @@ def show_replies(self, authorized: bool,
                                        buy_sites,
                                        auto_cw_cache,
                                        known_epicyon_instances,
-                                       mitm_servers)
+                                       mitm_servers,
+                                       instance_software)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -2341,6 +2365,7 @@ def show_inbox(self, authorized: bool,
                         show_announces = False
                     known_epicyon_instances = \
                         self.server.known_epicyon_instances
+                    instance_software = self.server.instance_software
                     msg = \
                         html_inbox(default_timeline,
                                    recent_posts_cache,
@@ -2390,7 +2415,8 @@ def show_inbox(self, authorized: bool,
                                    auto_cw_cache,
                                    show_announces,
                                    known_epicyon_instances,
-                                   mitm_servers)
+                                   mitm_servers,
+                                   instance_software)
                     if getreq_start_time:
                         fitness_performance(getreq_start_time, fitness,
                                             '_GET', '_show_inbox3',

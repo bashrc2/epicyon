@@ -46,7 +46,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                         min_images_for_accounts: [],
                         buy_sites: {}, auto_cw_cache: {},
                         dict_name: str,
-                        mitm_servers: []) -> str:
+                        mitm_servers: [],
+                        instance_software: {}) -> str:
     """Returns html for a screen showing who liked a post
     """
     css_filename = base_dir + '/epicyon-profile.css'
@@ -120,7 +121,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                                 dogwhistles,
                                 minimize_all_images, None,
                                 buy_sites, auto_cw_cache,
-                                mitm_servers)
+                                mitm_servers,
+                                instance_software)
 
     # show likers beneath the post
     obj = post_json_object

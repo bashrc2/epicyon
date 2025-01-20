@@ -129,6 +129,8 @@ def show_shares_feed(self, authorized: bool,
                     bold_reading = True
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = \
+                    self.server.instance_software
                 msg = \
                     html_profile(signing_priv_key_pem,
                                  rss_icon_at_top,
@@ -171,7 +173,8 @@ def show_shares_feed(self, authorized: bool,
                                  no_of_books,
                                  auto_cw_cache,
                                  known_epicyon_instances,
-                                 mitm_servers)
+                                 mitm_servers,
+                                 instance_software)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -318,6 +321,8 @@ def show_following_feed(self, authorized: bool,
                     following = {}
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = \
+                    self.server.instance_software
 
                 msg = \
                     html_profile(signing_priv_key_pem,
@@ -362,7 +367,8 @@ def show_following_feed(self, authorized: bool,
                                  no_of_books,
                                  auto_cw_cache,
                                  known_epicyon_instances,
-                                 mitm_servers).encode('utf-8')
+                                 mitm_servers,
+                                 instance_software).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html',
                             msglen, cookie, calling_domain, False)
@@ -510,6 +516,8 @@ def show_moved_feed(self, authorized: bool,
 
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = \
+                    self.server.instance_software
 
                 msg = \
                     html_profile(signing_priv_key_pem,
@@ -554,7 +562,8 @@ def show_moved_feed(self, authorized: bool,
                                  no_of_books,
                                  auto_cw_cache,
                                  known_epicyon_instances,
-                                 mitm_servers).encode('utf-8')
+                                 mitm_servers,
+                                 instance_software).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html',
                             msglen, cookie, calling_domain, False)
@@ -696,6 +705,8 @@ def show_inactive_feed(self, authorized: bool,
                     bold_reading = True
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = \
+                    self.server.instance_software
                 msg = \
                     html_profile(signing_priv_key_pem,
                                  rss_icon_at_top,
@@ -739,7 +750,8 @@ def show_inactive_feed(self, authorized: bool,
                                  no_of_books,
                                  auto_cw_cache,
                                  known_epicyon_instances,
-                                 mitm_servers).encode('utf-8')
+                                 mitm_servers,
+                                 instance_software).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html',
                             msglen, cookie, calling_domain, False)
@@ -883,6 +895,8 @@ def show_followers_feed(self, authorized: bool,
                     bold_reading = True
                 known_epicyon_instances = \
                     self.server.known_epicyon_instances
+                instance_software = \
+                    self.server.instance_software
                 msg = \
                     html_profile(signing_priv_key_pem,
                                  rss_icon_at_top,
@@ -927,7 +941,8 @@ def show_followers_feed(self, authorized: bool,
                                  no_of_books,
                                  auto_cw_cache,
                                  known_epicyon_instances,
-                                 mitm_servers).encode('utf-8')
+                                 mitm_servers,
+                                 instance_software).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
                             cookie, calling_domain, False)

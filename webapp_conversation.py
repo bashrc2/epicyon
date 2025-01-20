@@ -57,7 +57,8 @@ def html_conversation_view(authorized: bool, post_id: str,
                            auto_cw_cache: {},
                            ua_str: str,
                            default_timeline: str,
-                           mitm_servers: []) -> str:
+                           mitm_servers: [],
+                           instance_software: {}) -> str:
     """Show a page containing a conversation thread
     """
     conv_posts = \
@@ -157,7 +158,8 @@ def html_conversation_view(authorized: bool, post_id: str,
                                     dogwhistles,
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache,
-                                    mitm_servers)
+                                    mitm_servers,
+                                    instance_software)
         if post_str:
             conv_str += \
                 current_reading_str + text_mode_separator + \

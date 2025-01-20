@@ -221,7 +221,8 @@ def delete_button(self, calling_domain: str, path: str,
                   session_onion,
                   session_i2p,
                   default_timeline: str,
-                  mitm_servers: []) -> None:
+                  mitm_servers: [],
+                  instance_software: {}) -> None:
     """Delete button is pressed on a post
     """
     if not cookie:
@@ -316,7 +317,8 @@ def delete_button(self, calling_domain: str, path: str,
                                 min_images_for_accounts,
                                 buy_sites,
                                 auto_cw_cache,
-                                mitm_servers)
+                                mitm_servers,
+                                instance_software)
         if delete_str:
             delete_str_len = len(delete_str)
             set_headers(self, 'text/html', delete_str_len,
