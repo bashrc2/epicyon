@@ -146,8 +146,9 @@ def _get_json_request(session, url: str, session_headers: {},
             if url_domain:
                 if url_domain not in mitm_servers:
                     mitm_servers.append(url_domain)
-            print('DEBUG: _get_json_request MITM ' +
-                  str(result.headers))
+            if debug:
+                print('DEBUG: _get_json_request MITM ' +
+                      str(result.headers))
         else:
             if url_domain in mitm_servers:
                 mitm_servers.remove(url_domain)
