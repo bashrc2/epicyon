@@ -2777,9 +2777,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '13.1')
 
     # get the software instance type, such as "mastodon"
+    if not is_announced:
+        instance_actor = post_actor
+    else:
+        instance_actor = get_actor_from_post(post_json_object)
     instance_http_prefix = http_prefix
-    if '://' in post_actor:
-        instance_http_prefix = post_actor.split('://')[0]
+    if '://' in instance_actor:
+        instance_http_prefix = instance_actor.split('://')[0]
     software_name = \
         _get_instance_software(base_dir, session,
                                instance_http_prefix,
