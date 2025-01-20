@@ -152,7 +152,7 @@ def _get_instance_software(base_dir: str, session,
     if debug:
         print('DEBUG get_instance_software: ' + instance_domain)
     if instance_software.get(instance_domain):
-        return instance_software[instance_domain]
+        return instance_domain + ' ' + instance_software[instance_domain]
     # get the initial nodeinfo url
     nodeinfo1_url = \
         instance_http_prefix + '://' + instance_domain + \
@@ -203,7 +203,7 @@ def _get_instance_software(base_dir: str, session,
     instance_software[instance_domain] = software_name
     instance_software_filename = data_dir(base_dir) + '/instance_software.json'
     save_json(instance_software, instance_software_filename)
-    return software_name
+    return instance_domain + ' ' + software_name
 
 
 def _enforce_max_display_name_length(display_name: str) -> str:
