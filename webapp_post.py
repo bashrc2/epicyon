@@ -2778,8 +2778,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     # get the software instance type, such as "mastodon"
     instance_actor = post_actor
-    if is_announced and announce_json_object:
-        instance_actor = get_actor_from_post(announce_json_object)
+    if is_announced and post_json_object:
+        instance_actor = get_actor_from_post(post_json_object)
+        announce_obj = post_json_object
+        if has_object_dict(post_json_object):
+            announce_obj = post_json_object['object']
+        if announce_obj.get('attributedTo'):
+            instance_actor = get_attributed_to(announce_obj['attributedTo'])
     instance_http_prefix = http_prefix
     if '://' in instance_actor:
         instance_http_prefix = instance_actor.split('://')[0]
