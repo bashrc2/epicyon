@@ -165,6 +165,7 @@ def _get_instance_software(base_dir: str, session,
                  __version__, http_prefix, domain)
     if not get_json_valid(nodeinfo1_json):
         return ''
+    print('DEBUG get_instance_software: ' + str(nodeinfo1_json))
     # get the nodeinfo data
     nodeinfo_url = None
     if nodeinfo1_json.get('links'):
@@ -183,6 +184,7 @@ def _get_instance_software(base_dir: str, session,
                  __version__, http_prefix, domain)
     if not get_json_valid(nodeinfo_json):
         return ''
+    print('DEBUG get_instance_software: ' + str(nodeinfo_json))
     if not nodeinfo_json.get('software'):
         return ''
     if not isinstance(nodeinfo_json['software'], dict):
