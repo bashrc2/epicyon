@@ -353,6 +353,12 @@ details {
     color: var(--cw-color);
 }
 
+.instanceSoftware {
+    background-color: var(--main-bg-color);
+    color: var(--main-fg-color);
+    font-size: 50%;
+}
+
 .leftColIcons {
     width: 100%;
     background-color: var(--column-left-color);

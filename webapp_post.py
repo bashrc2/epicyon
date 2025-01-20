@@ -1553,8 +1553,9 @@ def _get_post_title_announce_html(base_dir: str,
 
     if software_name:
         title_str += \
-            '<br><span itemprop="software"><mark>[' + \
-            software_name.title() + ']</mark></span>'
+            '<br><label class="instanceSoftware">' + \
+            '<span itemprop="software">[' + \
+            software_name.title() + ']</span></label>'
 
     # show avatar of person replied to
     announce_actor = attributed_to
@@ -1836,8 +1837,9 @@ def _get_post_title_reply_html(base_dir: str,
 
     if software_name:
         title_str += \
-            '<br><span itemprop="software"><mark>[' + \
-            software_name.title() + ']</mark></span>'
+            '<br><label class="instanceSoftware">' + \
+            '<span itemprop="software">[' + \
+            software_name.title() + ']</span></label>'
 
     _log_post_timing(enable_timing_log, post_start_time, '13.7')
 
