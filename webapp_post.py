@@ -2779,7 +2779,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
     # get the software instance type, such as "mastodon"
     instance_actor = post_actor
     if is_announced and post_json_object:
-        instance_actor = get_actor_from_post(post_json_object)
         announce_obj = post_json_object
         if has_object_dict(post_json_object):
             announce_obj = post_json_object['object']
@@ -2791,7 +2790,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     software_name = \
         _get_instance_software(base_dir, session,
                                instance_http_prefix,
-                               post_actor,
+                               instance_actor,
                                instance_software,
                                signing_priv_key_pem,
                                False,
