@@ -1555,7 +1555,7 @@ def _get_post_title_announce_html(base_dir: str,
         title_str += \
             '<br><label class="instanceSoftware">' + \
             '<span itemprop="software">[' + \
-            software_name.title() + ']</span></label>'
+            software_name.title() + ']</span></label>\n'
 
     # show avatar of person replied to
     announce_actor = attributed_to
@@ -1621,7 +1621,8 @@ def _replying_to_with_scope(post_json_object: {}, translate: {}) -> str:
 
 def _reply_to_unknown_html(translate: {},
                            post_json_object: {},
-                           nickname: str) -> str:
+                           nickname: str,
+                           software_name: str) -> str:
     """Returns the html title for a reply to an unknown handle
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
@@ -1629,7 +1630,8 @@ def _reply_to_unknown_html(translate: {},
     post_bookmark = '#' + bookmark_from_id(post_id)
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
-    return '        <img loading="lazy" decoding="async" title="' + \
+    title_str = \
+        '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
         replying_to_str + '" src="/icons' + \
         '/reply.png" class="announceOrReply"/>\n' + \
@@ -1637,12 +1639,21 @@ def _reply_to_unknown_html(translate: {},
         post_link + \
         '" class="announceOrReply" tabindex="10">@unknown</a>\n'
 
+    if software_name:
+        title_str += \
+            '<br><label class="instanceSoftware">' + \
+            '<span itemprop="software">[' + \
+            software_name.title() + ']</span></label>\n'
+
+    return title_str
+
 
 def _reply_with_unknown_path_html(translate: {},
                                   post_json_object: {},
                                   post_domain: str,
                                   nickname: str,
-                                  mitm_servers: []) -> str:
+                                  mitm_servers: [],
+                                  software_name: str) -> str:
     """Returns html title for a reply with an unknown path
     eg. does not contain /statuses/ or an equivalent separator
     """
@@ -1654,7 +1665,8 @@ def _reply_with_unknown_path_html(translate: {},
     mitm_str = ''
     if post_domain in mitm_servers:
         mitm_str = ' ' + mitm_warning_html(translate)
-    return '        <img loading="lazy" decoding="async" title="' + \
+    title_str = \
+        '        <img loading="lazy" decoding="async" title="' + \
         replying_to_str + \
         '" alt="' + replying_to_str + \
         '" src="/icons/reply.png" ' + \
@@ -1663,19 +1675,29 @@ def _reply_with_unknown_path_html(translate: {},
         '" class="announceOrReply" tabindex="10">' + \
         post_domain + mitm_str + '</a>\n'
 
+    if software_name:
+        title_str += \
+            '<br><label class="instanceSoftware">' + \
+            '<span itemprop="software">[' + \
+            software_name.title() + ']</span></label>\n'
+
+    return title_str
+
 
 def _get_reply_html(translate: {},
                     in_reply_to: str, reply_display_name: str,
                     nickname: str,
                     post_json_object: {},
-                    reply_handle: str) -> str:
+                    reply_handle: str,
+                    software_name: str) -> str:
     """Returns html title for a reply
     """
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_bookmark = '#' + bookmark_from_id(in_reply_to)
     post_link = '/users/' + nickname + '?convthread=' + \
         in_reply_to.replace('--', '/') + post_bookmark
-    return '        ' + \
+    title_str = \
+        '        ' + \
         '<img loading="lazy" decoding="async" title="' + \
         replying_to_str + '" alt="' + \
         replying_to_str + '" src="/' + \
@@ -1685,6 +1707,14 @@ def _get_reply_html(translate: {},
         '" class="announceOrReply" tabindex="10" title="' + \
         reply_handle + '">' + '<span itemprop="audience">' + \
         reply_display_name + '</span></a>\n'
+
+    if software_name:
+        title_str += \
+            '<br><label class="instanceSoftware">' + \
+            '<span itemprop="software">[' + \
+            software_name.title() + ']</span></label>\n'
+
+    return title_str
 
 
 def _get_post_title_reply_html(base_dir: str,
@@ -1777,7 +1807,8 @@ def _get_post_title_reply_html(base_dir: str,
             title_str += \
                 _reply_with_unknown_path_html(translate,
                                               post_json_object, post_domain,
-                                              nickname, mitm_servers)
+                                              nickname, mitm_servers,
+                                              software_name)
             return (title_str, reply_avatar_image_in_post,
                     container_class_icons, container_class)
 
@@ -1790,14 +1821,16 @@ def _get_post_title_reply_html(base_dir: str,
     reply_nickname = get_nickname_from_actor(reply_actor)
     if not reply_nickname or not in_reply_to:
         title_str += \
-            _reply_to_unknown_html(translate, post_json_object, nickname)
+            _reply_to_unknown_html(translate, post_json_object, nickname,
+                                   software_name)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
     reply_domain, _ = get_domain_from_actor(reply_actor)
     if not (reply_nickname and reply_domain):
         title_str += \
-            _reply_to_unknown_html(translate, post_json_object, nickname)
+            _reply_to_unknown_html(translate, post_json_object, nickname,
+                                   software_name)
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
@@ -1826,11 +1859,12 @@ def _get_post_title_reply_html(base_dir: str,
 
     if not in_reply_to:
         title_str += _reply_to_unknown_html(translate, post_json_object,
-                                            nickname)
+                                            nickname, software_name)
     else:
         title_str += \
             _get_reply_html(translate, in_reply_to, reply_display_name,
-                            nickname, post_json_object, reply_handle)
+                            nickname, post_json_object, reply_handle,
+                            software_name)
 
     if mitm or reply_domain in mitm_servers:
         title_str += mitm_warning_html(translate)
@@ -1839,7 +1873,7 @@ def _get_post_title_reply_html(base_dir: str,
         title_str += \
             '<br><label class="instanceSoftware">' + \
             '<span itemprop="software">[' + \
-            software_name.title() + ']</span></label>'
+            software_name.title() + ']</span></label>\n'
 
     _log_post_timing(enable_timing_log, post_start_time, '13.7')
 
