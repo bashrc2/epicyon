@@ -1553,7 +1553,7 @@ def _get_post_title_announce_html(base_dir: str,
 
     if software_name:
         title_str += \
-            ' <span itemprop="software"><mark>[' + \
+            '<br><span itemprop="software"><mark>[' + \
             software_name.title() + ']</mark></span>'
 
     # show avatar of person replied to
@@ -1836,7 +1836,7 @@ def _get_post_title_reply_html(base_dir: str,
 
     if software_name:
         title_str += \
-            ' <span itemprop="software"><mark>[' + \
+            '<br><span itemprop="software"><mark>[' + \
             software_name.title() + ']</mark></span>'
 
     _log_post_timing(enable_timing_log, post_start_time, '13.7')
