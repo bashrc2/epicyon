@@ -354,9 +354,9 @@ details {
 }
 
 .instanceSoftware {
-    background-color: var(--main-fg-color);
-    color: var(--main-bg-color);
-    font-size: 80%;
+    background-color: var(--button-selected-highlighted);
+    color: var(--button-fg-highlighted);
+    font-size: 75%;
 }
 
 .leftColIcons {
