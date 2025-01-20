@@ -145,11 +145,11 @@ def _get_instance_software_html(title_str: str, software_name: str) -> str:
         return ''
     if software_name in title_str:
         return ''
-    title_str += \
+    instance_str = \
         '<br><label class="instanceSoftware">' + \
         '<span itemprop="software">' + \
         software_name + '</span></label>\n'
-    return title_str
+    return instance_str
 
 
 def _get_instance_software(base_dir: str, session,
