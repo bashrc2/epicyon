@@ -355,7 +355,7 @@ details {
 
 .instanceSoftware {
     background-color: var(--column-left-header-background);
-    color: var(--main-link-color);
+    color: var(--main-link-color-hover);
     font-size: 75%;
 }
 
