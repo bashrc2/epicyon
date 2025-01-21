@@ -1680,8 +1680,7 @@ def daemon_http_get(self) -> None:
                                      self.server.session_i2p,
                                      self.server.http_prefix,
                                      self.server.debug,
-                                     self.server.mitm_servers,
-                                     self.server.instance_software)
+                                     self.server.mitm_servers)
             if html_str:
                 msg = html_str.encode('utf-8')
                 msglen = len(msg)
