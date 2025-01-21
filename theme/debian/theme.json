@@ -280,5 +280,7 @@
     "hashtag-vertical-spacing4": "150px",
     "hashtag-size1": "30px",
     "hashtag-size2": "40px",
-    "hashtag-margin": "2%"
+    "hashtag-margin": "2%",
+    "instance-software-fg-color": "#bbb",
+    "instance-software-bg-color": "#444"
 }

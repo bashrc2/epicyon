@@ -281,5 +281,7 @@
     "button-event-background-color": "green",
     "hashtag-background-color": "black",
     "diff-add": "#FFFFFF",
-    "diff-remove": "#aaa"
+    "diff-remove": "#aaa",
+    "instance-software-fg-color": "#bbb",
+    "instance-software-bg-color": "#444"
 }

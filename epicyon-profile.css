@@ -139,6 +139,8 @@
     --line-spacing-newswire: 120%;
     --newswire-item-moderated-color: white;
     --newswire-date-moderated-color: white;
+    --instance-software-fg-color: #bbb;
+    --instance-software-bg-color: #444;
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
@@ -354,8 +356,8 @@ details {
 }
 
 .instanceSoftware {
-    background-color: var(--column-left-header-background);
-    color: var(--main-link-color-hover);
+    background-color: var(--instance-software-bg-color);
+    color: var(--instance-software-fg-color);
     font-size: 75%;
 }
 
