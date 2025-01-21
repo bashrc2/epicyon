@@ -355,7 +355,7 @@ details {
 
 .instanceSoftware {
     background-color: var(--column-left-header-background);
-    color: var(--button-fg-highlighted);
+    color: var(--main-link-color);
     font-size: 75%;
 }
 
