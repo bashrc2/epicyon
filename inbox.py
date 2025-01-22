@@ -552,6 +552,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     curr_time = date_utcnow()
 
     post_id = None
+    published = ''
     if post_json_object.get('id'):
         post_id = remove_id_ending(post_json_object['id'])
         published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -563,6 +564,9 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
             post_id = \
                 local_actor_url(http_prefix, nickname, original_domain) + \
                 '/statuses/' + status_number
+
+    if not published:
+        return None
 
     # NOTE: don't change post_json_object['id'] before signature check
 
