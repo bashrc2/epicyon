@@ -1999,7 +1999,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             max_replies,
             onion_domain,
             i2p_domain,
-            mitm_servers)
+            mitm_servers,
+            instance_software)
     if post_type == 'newfollowers':
         return _receive_new_post_process_newfollowers(
             self, fields,
@@ -2045,7 +2046,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             proxy_type,
             max_replies,
             onion_domain, i2p_domain,
-            mitm_servers)
+            mitm_servers,
+            instance_software)
     if post_type == 'newdm':
         return _receive_new_post_process_newdm(
             self, fields,
@@ -2093,7 +2095,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             max_replies,
             onion_domain,
             i2p_domain,
-            mitm_servers)
+            mitm_servers,
+            instance_software)
     if post_type == 'newreminder':
         return _receive_new_post_process_newreminder(
             self, fields,
@@ -2138,7 +2141,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             project_version,
             proxy_type,
             onion_domain, i2p_domain,
-            mitm_servers)
+            mitm_servers,
+            instance_software)
     if post_type == 'newreport':
         return _receive_new_post_process_newreport(
             self, fields,
@@ -2212,7 +2216,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             proxy_type,
             max_replies,
             onion_domain, i2p_domain,
-            mitm_servers)
+            mitm_servers,
+            instance_software)
     if post_type in ('newshare', 'newwanted'):
         return _receive_new_post_process_newshare(
             self, fields,
