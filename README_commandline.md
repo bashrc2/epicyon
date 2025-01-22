@@ -447,6 +447,18 @@ The watermark position is a compass direction: north, south, east, west, or comb
 
 Even if the scraper bot tries to remove your watermark from the image by filling in from the surrounding pixels, the removal itself may leave a detectable trace indicative of improper use.
 
+
+## Instance software type
+
+You can find out what software an instance is running with:
+
+```bash
+--software [domain]
+```
+
+So for example **--software mastodon.social** returns **mastodon**.
+
+
 ## Maintenance
 
 You can check for any novel ActivityPub fields with:
