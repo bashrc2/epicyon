@@ -30,6 +30,8 @@ from media import attach_media
 from city import get_spoofed_city
 from flags import is_image_file
 from flags import is_float
+from utils import date_utcnow
+from utils import date_from_string_format
 from utils import set_searchable_by
 from utils import get_instance_url
 from utils import save_json
@@ -1227,9 +1229,32 @@ def _receive_new_post_process_newquestion(self, fields: {},
                                           proxy_type: str) -> int:
     """Question/poll post has been received from New Post screen
     and is then sent to the outbox
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/9967/fep-9967.md
     """
+    # get the duration of the poll
     if not fields.get('duration'):
-        return NEW_POST_FAILED
+        if not fields.get('endTime'):
+            return NEW_POST_FAILED
+    if fields.get('duration'):
+        duration_days = fields['duration']
+    else:
+        end_time_str = fields['endTime']
+        date_formats = (
+            "%Y-%m-%dT%H:%M:%S%z",
+            "%Y-%m-%dT%H:%M:%S%Z"
+        )
+        poll_end_time = None
+        try:
+            poll_end_time = \
+                date_from_string_format(end_time_str, date_formats)
+        except BaseException:
+            return NEW_POST_FAILED
+        curr_time = date_utcnow()
+        duration_days = (poll_end_time - curr_time).total_days()
+        # there should be a positive duration
+        if duration_days < 0:
+            return NEW_POST_FAILED
+
     if not fields.get('message'):
         return NEW_POST_FAILED
     q_options: list[str] = []
@@ -1240,10 +1265,10 @@ def _receive_new_post_process_newquestion(self, fields: {},
     if not q_options:
         return NEW_POST_FAILED
     city = get_spoofed_city(city, base_dir, nickname, domain)
-    if isinstance(fields['duration'], str):
-        if len(fields['duration']) > 5:
+    if isinstance(duration_days, str):
+        if len(duration_days) > 5:
             return NEW_POST_FAILED
-    int_duration_days = int(fields['duration'])
+    int_duration_days = int(duration_days)
     languages_understood = \
         get_understood_languages(base_dir, http_prefix,
                                  nickname, domain_full,
