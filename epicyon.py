@@ -1348,9 +1348,6 @@ def _command_options() -> None:
         instance_softw = {}
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
-        domain = ''
-        if argb.domain:
-            domain = argb.domain
         if not argb.domain:
             origin_domain = get_config_param(base_dir, 'domain')
         else:
@@ -1364,7 +1361,7 @@ def _command_options() -> None:
                                   instance_softw,
                                   signing_priv_key_pem,
                                   debug,
-                                  http_prefix, domain,
+                                  http_prefix, origin_domain,
                                   mitm_servers, False)
         if software_name:
             print(software_name.split(' ')[1])
