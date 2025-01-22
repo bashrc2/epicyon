@@ -127,6 +127,7 @@ from blocking import get_blocks_via_server
 from poison import html_poisoned
 from poison import load_dictionary
 from poison import load_2grams
+from webapp_post import get_instance_software
 
 
 def str2bool(value_str) -> bool:
@@ -1344,45 +1345,29 @@ def _command_options() -> None:
         if '/' in instance_domain_name:
             instance_domain_name = instance_domain_name.split('/')[0]
         session = create_session(proxy_type)
-        profile_str = 'https://www.w3.org/ns/activitystreams'
-        as_header = {
-            'Accept': 'application/ld+json; profile="' + profile_str + '"'
-        }
+        instance_softw = {}
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
         domain = ''
         if argb.domain:
             domain = argb.domain
-        signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
+        if not argb.domain:
+            origin_domain = get_config_param(base_dir, 'domain')
+        else:
+            origin_domain = argb.domain
+        signing_priv_key_pem = get_instance_actor_key(base_dir, origin_domain)
         mitm_servers: list[str] = []
-
-        nodeinfo1_url = \
-            http_prefix + '://' + instance_domain_name + \
-            '/.well-known/nodeinfo'
-        nodeinfo1_json = get_json(signing_priv_key_pem, session, nodeinfo1_url,
-                                  as_header, None, debug, mitm_servers,
-                                  __version__, http_prefix, domain)
-        nodeinfo_url = None
-        if get_json_valid(nodeinfo1_json):
-            if nodeinfo1_json.get('links'):
-                if isinstance(nodeinfo1_json['links'], list):
-                    if len(nodeinfo1_json['links']) > 0:
-                        if nodeinfo1_json['links'][0].get('href'):
-                            href = nodeinfo1_json['links'][0]['href']
-                            if isinstance(href, str):
-                                nodeinfo_url = href
-        if nodeinfo_url:
-            nodeinfo_json = \
-                get_json(signing_priv_key_pem, session, nodeinfo_url,
-                         as_header, None, debug, mitm_servers,
-                         __version__, http_prefix, domain)
-            if get_json_valid(nodeinfo_json):
-                if nodeinfo_json.get('software'):
-                    if isinstance(nodeinfo_json['software'], dict):
-                        if nodeinfo_json['software'].get('name'):
-                            if isinstance(nodeinfo_json['software']['name'],
-                                          str):
-                                print(nodeinfo_json['software']['name'])
+        software_name = \
+            get_instance_software(base_dir, session,
+                                  http_prefix,
+                                  instance_domain_name,
+                                  instance_softw,
+                                  signing_priv_key_pem,
+                                  debug,
+                                  http_prefix, domain,
+                                  mitm_servers, False)
+        if software_name:
+            print(software_name.split(' ')[1])
         session.close()
         sys.exit()
 

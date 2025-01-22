@@ -152,14 +152,15 @@ def _get_instance_software_html(title_str: str, software_name: str) -> str:
     return instance_str
 
 
-def _get_instance_software(base_dir: str, session,
-                           instance_http_prefix: str,
-                           instance_domain: str,
-                           instance_software: {},
-                           signing_priv_key_pem: str,
-                           debug: bool,
-                           http_prefix: str, domain: str,
-                           mitm_servers: []) -> str:
+def get_instance_software(base_dir: str, session,
+                          instance_http_prefix: str,
+                          instance_domain: str,
+                          instance_software: {},
+                          signing_priv_key_pem: str,
+                          debug: bool,
+                          http_prefix: str, domain: str,
+                          mitm_servers: [],
+                          store: bool) -> str:
     """returns the type of instance software for the given
     instance domain eg. mastodon, epicyon, pixelfed
     """
@@ -216,8 +217,10 @@ def _get_instance_software(base_dir: str, session,
         return ''
     software_name = remove_html(software_name)
     instance_software[instance_domain] = software_name
-    instance_software_filename = data_dir(base_dir) + '/instance_software.json'
-    save_json(instance_software, instance_software_filename)
+    if store:
+        instance_software_filename = \
+            data_dir(base_dir) + '/instance_software.json'
+        save_json(instance_software, instance_software_filename)
     return instance_domain + ' ' + software_name
 
 
@@ -2788,14 +2791,14 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if '://' in instance_actor:
         instance_http_prefix = instance_actor.split('://')[0]
     software_name = \
-        _get_instance_software(base_dir, session,
-                               instance_http_prefix,
-                               instance_actor,
-                               instance_software,
-                               signing_priv_key_pem,
-                               False,
-                               http_prefix, domain,
-                               mitm_servers)
+        get_instance_software(base_dir, session,
+                              instance_http_prefix,
+                              instance_actor,
+                              instance_software,
+                              signing_priv_key_pem,
+                              False,
+                              http_prefix, domain,
+                              mitm_servers, True)
 
     # get the title: x replies to y, x announces y, etc
     (title_str2,
