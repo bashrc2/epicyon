@@ -3582,8 +3582,7 @@ def daemon_http_get(self) -> None:
                               self.server.session_onion,
                               self.server.session_i2p,
                               self.server.session,
-                              self.server.mitm_servers,
-                              self.server.instance_software)
+                              self.server.mitm_servers)
         self.server.getreq_busy = False
         return
 
@@ -3619,8 +3618,7 @@ def daemon_http_get(self) -> None:
                            self.server.session,
                            self.server.session_onion,
                            self.server.session_i2p,
-                           self.server.mitm_servers,
-                           self.server.instance_software)
+                           self.server.mitm_servers)
         self.server.getreq_busy = False
         return
 
