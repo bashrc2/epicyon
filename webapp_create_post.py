@@ -1005,19 +1005,21 @@ def html_new_post(edit_post_params: {},
                         searchable_by_dropdown += \
                             '    <option value="' + srch + '" selected="">' + \
                             srch_text + '</option>\n'
-                replies_section += \
+                replies_section += '<br>\n' + \
                     '      <label class="labels">🔎 ' + \
                     translate['Searchable by'] + '</label>\n'
                 replies_section += \
-                    searchable_by_dropdown + '</select>\n<br>\n'
+                    searchable_by_dropdown + '</select>\n'
 
             # buy link
             buy_link_str = translate['Buy link']
-            replies_section += edit_text_field(buy_link_str, 'buyUrl',
-                                               default_buy_site, 'https://...')
-            chat_link_str = '<br>💬 ' + translate['Chat link']
-            replies_section += edit_text_field(chat_link_str, 'chatUrl',
-                                               '', 'https://...')
+            replies_section += \
+                '<br>\n' + edit_text_field(buy_link_str, 'buyUrl',
+                                           default_buy_site, 'https://...')
+            chat_link_str = '💬 ' + translate['Chat link']
+            replies_section += \
+                '<br>\n' + edit_text_field(chat_link_str, 'chatUrl',
+                                           '', 'https://...')
             replies_section += '</div>\n'
 
             date_and_location = \
