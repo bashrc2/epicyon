@@ -963,7 +963,7 @@ def html_new_post(edit_post_params: {},
 
             # Language used dropdown
             supported_languages = get_supported_languages(base_dir)
-            languages_dropdown = '<select id="themeDropdown" ' + \
+            languages_dropdown = '<br>\n<select id="themeDropdown" ' + \
                 'name="languagesDropdown" class="theme">'
             for lang_name in supported_languages:
                 translated_lang_name = lang_name
@@ -971,15 +971,15 @@ def html_new_post(edit_post_params: {},
                     translated_lang_name = translate['lang_' + lang_name]
                 languages_dropdown += '    <option value="' + \
                     lang_name.lower() + '">' + \
-                    translated_lang_name + '</option>'
-            languages_dropdown += '  </select><br>'
+                    translated_lang_name + '</option>\n'
+            languages_dropdown += '  </select>'
             languages_dropdown = \
                 languages_dropdown.replace('<option value="' +
                                            default_post_language + '">',
                                            '<option value="' +
                                            default_post_language +
                                            '" selected>')
-            replies_section += \
+            replies_section += '<br>\n' + \
                 '      <label class="labels">' + \
                 translate['Language used'] + '</label>\n'
             replies_section += languages_dropdown
