@@ -993,22 +993,22 @@ def html_new_post(edit_post_params: {},
                     'mutuals': translate['Mutuals']
                 }
                 searchable_by_dropdown = '<select id="themeDropdown" ' + \
-                    'name="searchableByDropdown" class="theme">'
+                    'name="searchableByDropdown" class="theme">\n'
                 if not searchable_by_default:
                     searchable_by_default = 'yourself'
                 for srch, srch_text in searchables.items():
                     if srch != searchable_by_default:
                         searchable_by_dropdown += \
                             '    <option value="' + srch + '">' + \
-                            srch_text + '</option>'
+                            srch_text + '</option>\n'
                     else:
                         searchable_by_dropdown += \
                             '    <option value="' + srch + '" selected="">' + \
-                            srch_text + '</option>'
+                            srch_text + '</option>\n'
                 replies_section += \
                     '      <label class="labels">🔎 ' + \
                     translate['Searchable by'] + '</label>\n'
-                replies_section += searchable_by_dropdown
+                replies_section += searchable_by_dropdown + '</select>\n'
 
             # buy link
             buy_link_str = translate['Buy link']
