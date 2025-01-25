@@ -1200,6 +1200,8 @@ To kick off the start of the year Mark Zuckerberg, believed to be a major funder
 
 The Mastodon project announced that it was setting up a non-profit and would transfer copyrights and assets to it. The intention was to avoid the project being controlled by a single individual. *"The people should own the town square"*.
 
+By the end of January, after Elon Musk was recorded unambiguously doing Hitler salutes and his association with far right scumbags became more widely understood the momentum for institutions - especially in Europe - to leave the website formerly known as Twitter accelerated. In terms of public relations, once certain images and videos are out there then there isn't any going back, and the reputational damage becomes permanent. Most of the movement away from Twitter was to BlueSky, but some also joined Mastodon.
+
 ### Fediverse culture shock
 This is what happens when someone has only had a presence within large corporate sites, such as the website formerly known as Twitter or Facebook, and then moves to a federated system on the open internet.
 
