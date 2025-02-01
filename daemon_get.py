@@ -6140,6 +6140,9 @@ def _get_referer_domain(self, ua_str: str) -> str:
                 referer_domain = referer_domain.split('#')[0]
             elif '"' in referer_domain:
                 referer_domain = referer_domain.split('"')[0]
+            if referer_domain == 'http:':
+                print('DEBUG _get_referer_domain ' +
+                      str(self.headers['Signature']))
     elif ua_str:
         referer_domain = user_agent_domain(ua_str, self.server.debug)
     return referer_domain
