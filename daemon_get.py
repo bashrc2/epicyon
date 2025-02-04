@@ -6134,10 +6134,8 @@ def _get_referer_domain(self, ua_str: str) -> str:
     elif self.headers.get('Signature'):
         if 'keyId="' in self.headers['Signature']:
             referer_domain = self.headers['Signature'].split('keyId="')[1]
-            if referer_domain.startswith('https://'):
-                referer_domain = referer_domain[8:]
-            elif referer_domain.startswith('http://'):
-                referer_domain = referer_domain[7:]
+            if '://' in referer_domain:
+                referer_domain = referer_domain.split('://')[1]
             if '/' in referer_domain:
                 referer_domain = referer_domain.split('/')[0]
             elif '#' in referer_domain:
