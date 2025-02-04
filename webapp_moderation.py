@@ -10,6 +10,7 @@ __module_group__ = "Moderation"
 import os
 from flags import is_editor
 from flags import is_artist
+from utils import get_person_icon
 from utils import data_dir
 from utils import get_url_from_post
 from utils import remove_html
@@ -409,8 +410,8 @@ def html_moderation_info(translate: {}, base_dir: str,
         avatar_url = ''
         ext = ''
         if actor_json.get('icon'):
-            if actor_json['icon'].get('url'):
-                url_str = get_url_from_post(actor_json['icon']['url'])
+            url_str = get_person_icon(actor_json)
+            if url_str:
                 avatar_url = remove_html(url_str)
                 if '.' in avatar_url:
                     ext = '.' + avatar_url.split('.')[-1]

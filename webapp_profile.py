@@ -16,6 +16,7 @@ from flags import is_system_account
 from flags import is_group_account
 from flags import is_valid_date
 from flags import is_premium_account
+from utils import get_person_icon
 from utils import text_mode_removals
 from utils import replace_strings
 from utils import data_dir
@@ -314,14 +315,9 @@ def html_profile_after_search(authorized: bool,
 
     avatar_url = ''
     if profile_json.get('icon'):
-        icon_dict = profile_json['icon']
-        if isinstance(icon_dict, list):
-            if len(icon_dict) > 0:
-                icon_dict = icon_dict[-1]
-        if isinstance(icon_dict, dict):
-            if icon_dict.get('url'):
-                url_str = get_url_from_post(icon_dict['url'])
-                avatar_url = remove_html(url_str)
+        url_str = get_person_icon(profile_json)
+        if url_str:
+            avatar_url = remove_html(url_str)
     if not avatar_url:
         avatar_url = get_person_avatar_url(base_dir, person_url, person_cache)
     display_name = search_nickname

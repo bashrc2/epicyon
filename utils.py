@@ -147,6 +147,26 @@ def get_url_from_post(url_field) -> str:
     return ''
 
 
+def get_person_icon(person_json: {}) -> str:
+    """Returns an icon url for an actor
+    """
+    if not person_json.get('icon'):
+        return ''
+    person_icon = person_json['icon']
+    if isinstance(person_icon, list):
+        # choose the first icon available
+        person_icon = person_json['icon'][0]
+    if isinstance(person_icon, dict):
+        if person_icon.get('url'):
+            url_str = get_url_from_post(person_icon['url'])
+            if '.svg' not in url_str.lower():
+                return remove_html(url_str)
+    else:
+        print('DEBUG: get_person_icon icon is not a dict ' +
+              str(person_icon))
+    return ''
+
+
 def get_attributed_to(field) -> str:
     """Returns the actor
     """

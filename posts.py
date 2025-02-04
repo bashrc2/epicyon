@@ -41,6 +41,7 @@ from flags import contains_private_key
 from flags import has_group_type
 from flags import is_premium_account
 from flags import url_permitted
+from utils import get_person_icon
 from utils import remove_post_from_index
 from utils import replace_strings
 from utils import valid_content_warning
@@ -448,14 +449,9 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
                 shared_inbox = person_json['endpoints']['sharedInbox']
     avatar_url = None
     if person_json.get('icon'):
-        icon_dict = person_json['icon']
-        if isinstance(icon_dict, list):
-            if len(icon_dict) > 0:
-                icon_dict = icon_dict[-1]
-        if isinstance(icon_dict, dict):
-            if icon_dict.get('url'):
-                url_str = get_url_from_post(icon_dict['url'])
-                avatar_url = remove_html(url_str)
+        url_str = get_person_icon(person_json)
+        if url_str:
+            avatar_url = remove_html(url_str)
     display_name = None
     possible_display_name = None
     if person_json.get('name'):

@@ -12,6 +12,7 @@ from shutil import copyfile
 import urllib.parse
 from flags import is_editor
 from flags import is_public_post
+from utils import get_person_icon
 from utils import data_dir
 from utils import get_post_attachments
 from utils import get_url_from_post
@@ -590,7 +591,7 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
                         skill_level_str = '0' + skill_level_str
                     if skill_level < 10:
                         skill_level_str = '0' + skill_level_str
-                    url_str = get_url_from_post(actor_json['icon']['url'])
+                    url_str = get_person_icon(actor_json)
                     icon_url = remove_html(url_str)
                     index_str = \
                         skill_level_str + ';' + actor + ';' + \
@@ -631,8 +632,7 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
                                 skill_level_str = '0' + skill_level_str
                             if skill_level < 10:
                                 skill_level_str = '0' + skill_level_str
-                            url_str = \
-                                get_url_from_post(actor_json['icon']['url'])
+                            url_str = get_person_icon(actor_json)
                             icon_url = remove_html(url_str)
                             index_str = \
                                 skill_level_str + ';' + actor + ';' + \

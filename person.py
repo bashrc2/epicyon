@@ -38,6 +38,7 @@ from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
 from flags import is_image_file
+from utils import get_person_icon
 from utils import account_is_indexable
 from utils import get_image_mime_type
 from utils import get_instance_url
@@ -1995,14 +1996,9 @@ def get_person_avatar_url(base_dir: str, person_url: str,
             return im_path
 
     if person_json.get('icon'):
-        if isinstance(person_json['icon'], dict):
-            if person_json['icon'].get('url'):
-                url_str = get_url_from_post(person_json['icon']['url'])
-                if '.svg' not in url_str.lower():
-                    return remove_html(url_str)
-        else:
-            print('DEBUG: get_person_avatar_url icon is not a dict ' +
-                  str(person_json['icon']))
+        person_icon_url = get_person_icon(person_json)
+        if person_icon_url:
+            return person_icon_url
     return None
 
 
