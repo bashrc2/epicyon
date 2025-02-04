@@ -1995,10 +1995,14 @@ def get_person_avatar_url(base_dir: str, person_url: str,
             return im_path
 
     if person_json.get('icon'):
-        if person_json['icon'].get('url'):
-            url_str = get_url_from_post(person_json['icon']['url'])
-            if '.svg' not in url_str.lower():
-                return remove_html(url_str)
+        if isinstance(person_json['icon'], dict):
+            if person_json['icon'].get('url'):
+                url_str = get_url_from_post(person_json['icon']['url'])
+                if '.svg' not in url_str.lower():
+                    return remove_html(url_str)
+        else:
+            print('DEBUG: get_person_avatar_url icon is not a dict ' +
+                  str(person_json['icon']))
     return None
 
 
