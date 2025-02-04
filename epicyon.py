@@ -272,7 +272,7 @@ def _command_options() -> None:
                         'images as a percentage of the attached image width')
     parser.add_argument('--watermarkOpacity',
                         dest='watermark_opacity', type=int,
-                        default=10,
+                        default=5,
                         help='Opacity of watermark applied to attached images')
     parser.add_argument('--watermarkPosition',
                         dest='watermark_position', type=str,

@@ -905,7 +905,7 @@ def create_server_alice(path: str, domain: str, port: int,
     accounts_data_dir = None
     watermark_width_percent = 30
     watermark_position = 'east'
-    watermark_opacity = 10
+    watermark_opacity = 5
     bind_to_ip_address = ''
     print('Server running: Alice')
     run_daemon(accounts_data_dir,
@@ -1102,7 +1102,7 @@ def create_server_bob(path: str, domain: str, port: int,
     accounts_data_dir = None
     watermark_width_percent = 30
     watermark_position = 'east'
-    watermark_opacity = 10
+    watermark_opacity = 5
     bind_to_ip_address = ''
     print('Server running: Bob')
     run_daemon(accounts_data_dir,
@@ -1201,7 +1201,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     accounts_data_dir = None
     watermark_width_percent = 30
     watermark_position = 'east'
-    watermark_opacity = 10
+    watermark_opacity = 5
     bind_to_ip_address = ''
     print('Server running: Eve')
     run_daemon(accounts_data_dir, no_of_books,
@@ -1324,7 +1324,7 @@ def create_server_group(path: str, domain: str, port: int,
     accounts_data_dir = None
     watermark_width_percent = 30
     watermark_position = 'east'
-    watermark_opacity = 10
+    watermark_opacity = 5
     bind_to_ip_address = ''
     print('Server running: Group')
     run_daemon(accounts_data_dir,
