@@ -80,6 +80,8 @@ from pgp import set_pgp_pub_key
 from pgp import get_pgp_pub_key
 from pgp import get_email_address
 from pgp import set_email_address
+from pgp import get_deltachat_invite
+from pgp import set_deltachat_invite
 from pgp import set_pgp_fingerprint
 from pgp import get_pgp_fingerprint
 from pronouns import get_pronouns
@@ -2221,6 +2223,23 @@ def _profile_post_email_address(actor_json: {}, fields: {},
     return actor_changed
 
 
+def _profile_post_deltachat_invite(actor_json: {}, fields: {},
+                                   actor_changed: bool,
+                                   translate: {}) -> bool:
+    """ HTTP POST change deltachat invite link
+    """
+    current_deltachat_invite = get_deltachat_invite(actor_json, translate)
+    if fields.get('deltachat'):
+        if fields['deltachat'] != current_deltachat_invite:
+            set_deltachat_invite(actor_json, fields['deltachat'], translate)
+            actor_changed = True
+    else:
+        if current_deltachat_invite:
+            set_deltachat_invite(actor_json, '', translate)
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_memorial_accounts(base_dir: str, domain: str,
                                     person_cache: {}, fields: {}) -> None:
     """ HTTP POST change memorial accounts
@@ -3051,6 +3070,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_email_address(actor_json, fields,
                                                 actor_changed)
+
+                actor_changed = \
+                    _profile_post_deltachat_invite(actor_json, fields,
+                                                   actor_changed, translate)
 
                 actor_changed = \
                     _profile_post_xmpp_address(actor_json, fields,

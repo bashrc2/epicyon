@@ -79,6 +79,7 @@ from xmpp import get_xmpp_address
 from matrix import get_matrix_address
 from ssb import get_ssb_address
 from pgp import get_email_address
+from pgp import get_deltachat_invite
 from pgp import get_pgp_fingerprint
 from pgp import get_pgp_pub_key
 from enigma import get_enigma_pub_key
@@ -1151,6 +1152,7 @@ def html_profile(signing_priv_key_pem: str,
     pgp_pub_key = get_pgp_pub_key(profile_json)
     pgp_fingerprint = get_pgp_fingerprint(profile_json)
     email_address = get_email_address(profile_json)
+    deltachat_invite = get_deltachat_invite(profile_json, translate)
     pronouns = get_pronouns(profile_json)
     pixelfed = get_pixelfed(profile_json)
     discord = get_discord(profile_json)
@@ -1170,7 +1172,8 @@ def html_profile(signing_priv_key_pem: str,
        art_site_url or music_site_url or youtube or peertube or pixelfed or \
        xmpp_address or matrix_address or \
        ssb_address or tox_address or briar_address or cwtch_address or \
-       pgp_pub_key or enigma_pub_key or pgp_fingerprint or email_address:
+       pgp_pub_key or enigma_pub_key or pgp_fingerprint or email_address or \
+       deltachat_invite:
         donate_section = '<div class="container">\n'
         donate_section += '  <center>\n'
         if donate_url and not is_system_account(nickname):
@@ -1213,6 +1216,11 @@ def html_profile(signing_priv_key_pem: str,
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
                 email_address + '" tabindex="1">' + \
                 email_address + '</a></p>\n'
+        if deltachat_invite:
+            donate_section += \
+                '<p>' + translate['DeltaChat'] + ': <a href="' + \
+                deltachat_invite + '" tabindex="1">' + \
+                deltachat_invite + '</a></p>\n'
         if blog_address:
             if site_is_verified(session, base_dir, http_prefix,
                                 nickname, domain,
@@ -2863,6 +2871,7 @@ def _html_edit_profile_background(news_instance: bool, translate: {}) -> str:
 
 
 def _html_edit_profile_contact_info(email_address: str,
+                                    deltachat_invite: str,
                                     xmpp_address: str,
                                     matrix_address: str,
                                     ssb_address: str,
@@ -2881,6 +2890,8 @@ def _html_edit_profile_contact_info(email_address: str,
     edit_profile_form = begin_edit_section(translate['Contact Details'])
     edit_profile_form += edit_text_field(translate['Email'],
                                          'email', email_address)
+    edit_profile_form += edit_text_field(translate['DeltaChat'],
+                                         'deltachat', deltachat_invite)
     edit_profile_form += edit_text_field(translate['XMPP'],
                                          'xmppAddress', xmpp_address)
     edit_profile_form += edit_text_field(translate['Matrix'],
@@ -3362,7 +3373,8 @@ def html_edit_profile(server, translate: {},
     hide_like_button = hide_reaction_button = media_instance_str = ''
     blogs_instance_str = news_instance_str = moved_to = twitter_str = ''
     bio_str = donate_url = website_url = gemini_link = ''
-    email_address = featured_hashtags = pgp_pub_key = enigma_pub_key = ''
+    email_address = deltachat_invite = featured_hashtags = ''
+    pgp_pub_key = enigma_pub_key = ''
     pgp_fingerprint = pronouns = peertube = youtube = pixelfed = ''
     ssb_address = blog_address = matrix_address = tox_address = ''
     cwtch_address = briar_address = xmpp_address = ''
@@ -3392,6 +3404,7 @@ def html_edit_profile(server, translate: {},
         briar_address = get_briar_address(actor_json)
         cwtch_address = get_cwtch_address(actor_json)
         email_address = get_email_address(actor_json)
+        deltachat_invite = get_deltachat_invite(actor_json, translate)
         enigma_pub_key = get_enigma_pub_key(actor_json)
         pgp_pub_key = get_pgp_pub_key(actor_json)
         pgp_fingerprint = get_pgp_fingerprint(actor_json)
@@ -3606,6 +3619,7 @@ def html_edit_profile(server, translate: {},
     # Contact information
     edit_profile_form += \
         _html_edit_profile_contact_info(email_address,
+                                        deltachat_invite,
                                         xmpp_address, matrix_address,
                                         ssb_address, tox_address,
                                         briar_address,

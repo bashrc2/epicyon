@@ -83,6 +83,48 @@ def get_email_address(actor_json: {}) -> str:
     return ''
 
 
+def _get_deltachat_strings() -> []:
+    return ['deltachat', 'delta chat', 'chatmail']
+
+
+def get_deltachat_invite(actor_json: {}, translate: {}) -> str:
+    """Returns the deltachat invite link for the given actor
+    """
+    if not actor_json.get('attachment'):
+        return ''
+    match_strings = _get_deltachat_strings()
+    match_strings.append(translate['DeltaChat'].lower())
+    for property_value in actor_json['attachment']:
+        name_value = None
+        if property_value.get('name'):
+            name_value = property_value['name']
+        elif property_value.get('schema:name'):
+            name_value = property_value['schema:name']
+        if not name_value:
+            continue
+        found = False
+        for possible_str in match_strings:
+            if possible_str in name_value.lower():
+                found = True
+                break
+        if not found:
+            continue
+        if not property_value.get('type'):
+            continue
+        prop_value_name, _ = \
+            get_attachment_property_value(property_value)
+        if not prop_value_name:
+            continue
+        if not property_value['type'].endswith('PropertyValue'):
+            continue
+        value_str = remove_html(property_value[prop_value_name])
+        if 'https://' not in value_str and \
+           'http://' not in value_str:
+            continue
+        return value_str
+    return ''
+
+
 def get_pgp_pub_key(actor_json: {}) -> str:
     """Returns PGP public key for the given actor
     """
@@ -205,6 +247,51 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
         "value": email_address
     }
     actor_json['attachment'].append(new_email_address)
+
+
+def set_deltachat_invite(actor_json: {}, invite_link: str,
+                         translate: {}) -> None:
+    """Sets the deltachat invite link for the given actor
+    """
+    invite_link = invite_link.strip()
+    not_url = False
+    if '.' not in invite_link:
+        not_url = True
+    if '://' not in invite_link:
+        not_url = True
+    if ' ' in invite_link:
+        not_url = True
+    if '<' in invite_link:
+        not_url = True
+
+    if not actor_json.get('attachment'):
+        actor_json['attachment']: list[dict] = []
+
+    match_strings = _get_deltachat_strings()
+    match_strings.append(translate['DeltaChat'].lower())
+
+    # remove any existing value
+    property_found = None
+    for property_value in actor_json['attachment']:
+        if not property_value.get('name'):
+            continue
+        if not property_value.get('type'):
+            continue
+        if property_value['name'].lower() not in match_strings:
+            continue
+        property_found = property_value
+        break
+    if property_found:
+        actor_json['attachment'].remove(property_found)
+    if not_url:
+        return
+
+    new_entry = {
+        "name": 'DeltaChat',
+        "type": "PropertyValue",
+        "value": invite_link
+    }
+    actor_json['attachment'].append(new_entry)
 
 
 def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
@@ -791,6 +878,9 @@ def actor_to_vcard(actor: {}, domain: str, translate: {}) -> str:
     website = get_website(actor, translate)
     if website:
         vcard_str += 'URL:' + website + '\n'
+    deltachat_invite = get_deltachat_invite(actor, translate)
+    if deltachat_invite:
+        vcard_str += 'IMPP:deltachat:' + deltachat_invite + '\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += 'IMPP:xmpp:' + xmpp_address + '\n'
@@ -902,6 +992,11 @@ def actor_to_vcard_xml(actor: {}, domain: str, translate: {}) -> str:
         vcard_str += '    <url>' + \
             '<parameters><type><text>peertube</text></type></parameters>' + \
             '<uri>' + peertube + '</uri></url>\n'
+    deltachat_invite = get_deltachat_invite(actor, translate)
+    if deltachat_invite:
+        vcard_str += '    <impp>' + \
+            '<parameters><type><text>deltachat</text></type></parameters>' + \
+            '<text>' + deltachat_invite + '</text></impp>\n'
     xmpp_address = get_xmpp_address(actor)
     if xmpp_address:
         vcard_str += '    <impp>' + \

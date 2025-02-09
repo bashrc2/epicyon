@@ -159,6 +159,7 @@ def html_person_options(default_timeline: str,
                         pgp_pub_key: str,
                         pgp_fingerprint: str,
                         email_address: str,
+                        deltachat_invite: str,
                         dormant_months: int,
                         back_to_path: str,
                         locked_account: bool,
@@ -404,6 +405,11 @@ def html_person_options(default_timeline: str,
             '  <p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
             email_address + '">' + remove_html(email_address) + '</a></p>\n'
+    if deltachat_invite:
+        options_str += \
+            '  <p class="imText">' + translate['DeltaChat'] + \
+            ': <a href="' + deltachat_invite + '">' + \
+            remove_html(deltachat_invite) + '</a></p>\n'
     if web_address:
         web_str = remove_html(web_address)
         if '://' not in web_str:

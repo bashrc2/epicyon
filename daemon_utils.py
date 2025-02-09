@@ -64,6 +64,7 @@ from briar import get_briar_address
 from cwtch import get_cwtch_address
 from pgp import get_pgp_fingerprint
 from pgp import get_email_address
+from pgp import get_deltachat_invite
 from pgp import get_pgp_pub_key
 from enigma import get_enigma_pub_key
 from git import get_repo_url
@@ -650,6 +651,7 @@ def show_person_options(self, calling_domain: str, path: str,
         cwtch_address = None
         ssb_address = None
         email_address = None
+        deltachat_invite = None
         locked_account = False
         also_known_as = None
         moved_to = ''
@@ -685,6 +687,8 @@ def show_person_options(self, calling_domain: str, path: str,
             briar_address = get_briar_address(actor_json)
             cwtch_address = get_cwtch_address(actor_json)
             email_address = get_email_address(actor_json)
+            deltachat_invite = \
+                get_deltachat_invite(actor_json, self.server.translate)
             enigma_pub_key = get_enigma_pub_key(actor_json)
             pgp_pub_key = get_pgp_pub_key(actor_json)
             pgp_fingerprint = get_pgp_fingerprint(actor_json)
@@ -737,7 +741,7 @@ def show_person_options(self, calling_domain: str, path: str,
                                 cwtch_address,
                                 enigma_pub_key,
                                 pgp_pub_key, pgp_fingerprint,
-                                email_address,
+                                email_address, deltachat_invite,
                                 self.server.dormant_months,
                                 back_to_path,
                                 locked_account,
