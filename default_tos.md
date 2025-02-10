@@ -23,7 +23,7 @@ Violent or abusive content will be subject to moderation and is likely to be rem
 
 Genocide denial or apologia are not permitted.
 
-Content of a sexual nature may be published providing that only consenting adults (aged 18 or over) are depicted and an appropriate content warning message is added. Posting sexual content without a content warning is a terms of service violation. Sexual content is defined both as photographs of real people and also artistic or fictional depictions, edited/generated photos or narratives.
+Due to lack of age verification, content of a pornographic nature in the form of text, photos or fictional depictions is not permitted. Non-pornographic discussions of sex or gender issues are permitted though.
 
 Moderators rely upon your reports. Don't assume that something of concern has already been reported. It's better for there to be duplicate reports than for something potentially damaging to go unreported.
 
