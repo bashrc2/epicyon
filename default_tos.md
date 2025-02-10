@@ -13,7 +13,7 @@ This instance will not host content containing sexism, racism, casteism, homopho
 
 Even if not conspicuously discriminatory, expressions of support for organizations with discrminatory agendas are not permitted on this instance. These include, but are not limited to, racial supremacist groups, the redpill/incel movement, anti-vaccination, anti-LGBT and anti-immigrant campaigns.
 
-Algorithmic content: i.e. text, images, audio or video which has been generated using "AI" or Large Language Models should be clearly marked, such as by using an appropriate hashtag. Algorithmic content not marked as such will be considered to be spam and removed. Accounts posting only unmarked algorithmic content will also be deleted.
+Algorithmic content: i.e. text, images, audio or video which has been generated using "AI" or Large Language Models should be clearly marked, such as by using an appropriate hashtag or content warning. Algorithmic content not marked as such will be considered to be spam and removed. Accounts posting only unmarked algorithmic content will also be deleted.
 
 Depictions of injury, death or medical procedures are not permitted.
 
