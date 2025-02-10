@@ -19,9 +19,11 @@ Depictions of injury, death or medical procedures are not permitted.
 
 Publication of private information (aka doxxing), such as home address, without the consent of the person to whom the information belongs is not permitted.
 
-Violent or abusive content will be subject to moderation and is likely to be removed. The main exception to this is journalists reporting from war zones or covering civil unrest or protests.
+Violent or abusive content will be subject to moderation and is likely to be removed. The main exception to this is journalists reporting from war zones, covering protests, or reporting on war crimes investigations in which distressing content may be an important public interest aspect of the story.
 
 Cruelty towards animals is not permitted.
+
+Encouraging or assisting suicide, or making death threats, is not permitted.
 
 Genocide denial or apologia are not permitted.
 
