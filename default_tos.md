@@ -6,7 +6,7 @@ There is a quota on the number of posts retained by this instance for each accou
 
 No IP addresses are logged.
 
-Posts can be removed on request if there is sufficient justification, but the nature of ActivityPub means that deletion of data federated to other instances cannot be guaranteed.
+Posts can be removed on request if there is sufficient justification, but the nature of ActivityPub means that deletion of posts federated to other instances cannot be guaranteed.
 
 ### Content Policy
 This instance will not host content containing sexism, racism, casteism, homophobia, transphobia, misogyny, antisemitism or other forms of bigotry or discrimination on the basis of nationality or immigration status. Claims that transgressions of this type were intended to be "ironic" will be treated as a terms of service violation.
