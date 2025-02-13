@@ -1459,9 +1459,19 @@ def show_outbox_timeline(self, authorized: bool,
                          onion_domain: str,
                          i2p_domain: str,
                          hide_announces: {},
-                         mitm_servers: []) -> bool:
+                         mitm_servers: [],
+                         hide_recent_posts: {}) -> bool:
     """Shows the outbox timeline
     """
+    nickname = \
+        path.replace('/users/', '').replace('/outbox', '')
+
+    # if recent posts are hidden then return 404
+    if nickname:
+        if not authorized and hide_recent_posts.get(nickname):
+            http_404(self, 77)
+            return True
+
     # get outbox feed for a person
     outbox_feed = \
         person_box_json(recent_posts_cache,
@@ -1472,8 +1482,6 @@ def show_outbox_timeline(self, authorized: bool,
                         positive_voting,
                         voting_time_mins)
     if outbox_feed:
-        nickname = \
-            path.replace('/users/', '').replace('/outbox', '')
         page_number = 0
         if '?page=' in nickname:
             page_number = nickname.split('?page=')[1]

@@ -1045,7 +1045,8 @@ def html_profile(signing_priv_key_pem: str,
                  auto_cw_cache: {},
                  known_epicyon_instances: [],
                  mitm_servers: [],
-                 instance_software: {}) -> str:
+                 instance_software: {},
+                 hide_recent_posts: {}) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -1637,8 +1638,11 @@ def html_profile(signing_priv_key_pem: str,
         translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
     if selected == 'posts' and not premium:
-        max_profile_posts = \
-            get_max_profile_posts(base_dir, nickname, domain, 20)
+        if hide_recent_posts.get(nickname):
+            max_profile_posts = 0
+        else:
+            max_profile_posts = \
+                get_max_profile_posts(base_dir, nickname, domain, 20)
         min_images_for_accounts: list[str] = []
         profile_str += \
             _html_profile_posts(recent_posts_cache, max_profile_posts,
@@ -3055,6 +3059,7 @@ def _html_edit_profile_options(is_admin: bool,
                                show_quote_toots: bool,
                                show_vote_posts: bool,
                                hide_follows: bool,
+                               hide_recent_posts: bool,
                                premium: bool,
                                no_seen_posts: bool,
                                watermark_enabled: bool) -> str:
@@ -3127,6 +3132,12 @@ def _html_edit_profile_options(is_admin: bool,
         hide_follows_str = translate['Do not show fans on your profile']
     edit_profile_form += \
         edit_check_box(hide_follows_str, 'hideFollows', hide_follows)
+
+    hide_recent_posts_str = \
+        translate["Don't show recent public posts on your profile"]
+    edit_profile_form += \
+        edit_check_box(hide_recent_posts_str, 'hideRecentPosts',
+                       hide_recent_posts)
 
     no_seen_posts_str = translate["Don't show already seen posts"]
     edit_profile_form += \
@@ -3574,6 +3585,11 @@ def html_edit_profile(server, translate: {},
     if os.path.isfile(account_dir + '/.hideFollows'):
         hide_follows = True
 
+    # don't show recent public posts on profile
+    hide_recent_posts = False
+    if os.path.isfile(account_dir + '/.hideRecentPosts'):
+        hide_recent_posts = True
+
     # is this a premium account?
     premium = is_premium_account(base_dir, nickname, domain)
 
@@ -3606,7 +3622,8 @@ def html_edit_profile(server, translate: {},
                                    min_images_for_accounts,
                                    reverse_sequence, show_quote_toots,
                                    show_vote_posts, hide_follows,
-                                   premium, no_seen_posts, watermark_enabled)
+                                   hide_recent_posts, premium,
+                                   no_seen_posts, watermark_enabled)
 
     # reply controls
     edit_profile_form += \

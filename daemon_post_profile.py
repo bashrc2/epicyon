@@ -1037,9 +1037,49 @@ def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
             try:
                 os.remove(hide_follows_filename)
             except OSError:
-                print('EX: _profile_edit ' +
+                print('EX: _profile_post_hide_follows ' +
                       'unable to delete ' +
                       hide_follows_filename)
+    return actor_changed
+
+
+def _profile_post_hide_recent_posts(base_dir: str, nickname: str, domain: str,
+                                    actor_json: {}, fields: {}, self,
+                                    actor_changed: bool,
+                                    premium: bool) -> bool:
+    """ HTTP POST hide recent public posts checkbox
+    This hides public posts from unauthorized viewers
+    """
+    hide_recent_posts_filename = \
+        acct_dir(base_dir, nickname, domain) + '/.hideRecentPosts'
+    hide_recent_posts = premium
+    if fields.get('hideRecentPosts'):
+        if fields['hideRecentPosts'] == 'on':
+            hide_recent_posts = True
+    if hide_recent_posts:
+        self.server.hide_recent_posts[nickname] = True
+        actor_json['hideRecentPosts'] = True
+        actor_changed = True
+        if not os.path.isfile(hide_recent_posts_filename):
+            try:
+                with open(hide_recent_posts_filename, 'w+',
+                          encoding='utf-8') as fp_hide:
+                    fp_hide.write('\n')
+            except OSError:
+                print('EX: unable to write hideRecentPosts ' +
+                      hide_recent_posts_filename)
+    if not hide_recent_posts:
+        actor_json['hideRecentPosts'] = False
+        if self.server.hide_recent_posts.get(nickname):
+            del self.server.hide_recent_posts[nickname]
+            actor_changed = True
+        if os.path.isfile(hide_recent_posts_filename):
+            try:
+                os.remove(hide_recent_posts_filename)
+            except OSError:
+                print('EX: _profile_post_hide_recent_posts ' +
+                      'unable to delete ' +
+                      hide_recent_posts_filename)
     return actor_changed
 
 
@@ -3325,6 +3365,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     _profile_post_hide_follows(base_dir, nickname, domain,
                                                actor_json, fields, self,
                                                actor_changed, premium)
+                actor_changed = \
+                    _profile_post_hide_recent_posts(base_dir, nickname, domain,
+                                                    actor_json, fields, self,
+                                                    actor_changed, premium)
                 _profile_post_block_military(nickname, fields, self)
                 _profile_post_block_government(nickname, fields, self)
                 _profile_post_block_bluesky(nickname, fields, self)

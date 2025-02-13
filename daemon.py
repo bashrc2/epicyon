@@ -60,6 +60,7 @@ from utils import load_account_timezones
 from utils import load_translations_from_file
 from utils import load_bold_reading
 from utils import load_hide_follows
+from utils import load_hide_recent_posts
 from utils import get_full_domain
 from utils import set_config_param
 from utils import get_config_param
@@ -327,6 +328,7 @@ class EpicyonServer(ThreadingHTTPServer):
     preferred_podcast_formats: list[str] = []
     bold_reading = {}
     hide_follows = {}
+    hide_recent_posts = {}
     account_timezone = None
     post_to_nickname = None
     nodeinfo_is_active = False
@@ -855,6 +857,9 @@ def run_daemon(accounts_data_dir: str,
 
     # whether to hide follows on profile screen for each account
     httpd.hide_follows = load_hide_follows(base_dir)
+
+    # whether to hide recent public posts on profile screen for each account
+    httpd.hide_recent_posts = load_hide_recent_posts(base_dir)
 
     httpd.account_timezone = load_account_timezones(base_dir)
 

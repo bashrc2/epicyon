@@ -70,7 +70,8 @@ def show_shares_feed(self, authorized: bool,
                      fitness: {},
                      onion_domain: str,
                      i2p_domain: str,
-                     mitm_servers: []) -> bool:
+                     mitm_servers: [],
+                     hide_recent_posts: {}) -> bool:
     """Shows the shares feed for a particular account/actor
     """
     shares = \
@@ -174,7 +175,8 @@ def show_shares_feed(self, authorized: bool,
                                  auto_cw_cache,
                                  known_epicyon_instances,
                                  mitm_servers,
-                                 instance_software)
+                                 instance_software,
+                                 hide_recent_posts)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -257,7 +259,8 @@ def show_following_feed(self, authorized: bool,
                         fitness: {},
                         onion_domain: str,
                         i2p_domain: str,
-                        mitm_servers: []) -> bool:
+                        mitm_servers: [],
+                        hide_recent_posts: {}) -> bool:
     """Shows the following feed for a particular account/actor
     """
     following = \
@@ -368,7 +371,8 @@ def show_following_feed(self, authorized: bool,
                                  auto_cw_cache,
                                  known_epicyon_instances,
                                  mitm_servers,
-                                 instance_software).encode('utf-8')
+                                 instance_software,
+                                 hide_recent_posts).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html',
                             msglen, cookie, calling_domain, False)
@@ -457,7 +461,8 @@ def show_moved_feed(self, authorized: bool,
                     fitness: {},
                     onion_domain: str,
                     i2p_domain: str,
-                    mitm_servers: []) -> bool:
+                    mitm_servers: [],
+                    hide_recent_posts: {}) -> bool:
     """Shows the moved feed for a particular account/actor
     """
     following = \
@@ -563,7 +568,8 @@ def show_moved_feed(self, authorized: bool,
                                  auto_cw_cache,
                                  known_epicyon_instances,
                                  mitm_servers,
-                                 instance_software).encode('utf-8')
+                                 instance_software,
+                                 hide_recent_posts).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html',
                             msglen, cookie, calling_domain, False)
@@ -644,7 +650,8 @@ def show_inactive_feed(self, authorized: bool,
                        fitness: {},
                        onion_domain: str,
                        i2p_domain: str,
-                       mitm_servers: []) -> bool:
+                       mitm_servers: [],
+                       hide_recent_posts: {}) -> bool:
     """Shows the inactive accounts feed for a particular account/actor
     """
     following = \
@@ -751,7 +758,8 @@ def show_inactive_feed(self, authorized: bool,
                                  auto_cw_cache,
                                  known_epicyon_instances,
                                  mitm_servers,
-                                 instance_software).encode('utf-8')
+                                 instance_software,
+                                 hide_recent_posts).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html',
                             msglen, cookie, calling_domain, False)
@@ -834,7 +842,8 @@ def show_followers_feed(self, authorized: bool,
                         fitness: {},
                         onion_domain: str,
                         i2p_domain: str,
-                        mitm_servers: []) -> bool:
+                        mitm_servers: [],
+                        hide_recent_posts: {}) -> bool:
     """Shows the followers feed for a particular account/actor
     """
     followers = \
@@ -942,7 +951,8 @@ def show_followers_feed(self, authorized: bool,
                                  auto_cw_cache,
                                  known_epicyon_instances,
                                  mitm_servers,
-                                 instance_software).encode('utf-8')
+                                 instance_software,
+                                 hide_recent_posts).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
                             cookie, calling_domain, False)

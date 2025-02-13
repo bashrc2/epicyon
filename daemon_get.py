@@ -4706,7 +4706,8 @@ def daemon_http_get(self) -> None:
                       self.server.fitness,
                       self.server.onion_domain,
                       self.server.i2p_domain,
-                      self.server.mitm_servers):
+                      self.server.mitm_servers,
+                      self.server.hide_recent_posts):
             self.server.getreq_busy = False
             return
 
@@ -4764,7 +4765,8 @@ def daemon_http_get(self) -> None:
                        self.server.domain_full,
                        self.server.onion_domain,
                        self.server.i2p_domain,
-                       self.server.mitm_servers):
+                       self.server.mitm_servers,
+                       self.server.hide_recent_posts):
             self.server.getreq_busy = False
             return
 
@@ -5622,7 +5624,8 @@ def daemon_http_get(self) -> None:
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
                                 self.server.hide_announces,
-                                self.server.mitm_servers):
+                                self.server.mitm_servers,
+                                self.server.hide_recent_posts):
             self.server.getreq_busy = False
             return
 
@@ -5741,7 +5744,8 @@ def daemon_http_get(self) -> None:
                         self.server.fitness,
                         self.server.onion_domain,
                         self.server.i2p_domain,
-                        self.server.mitm_servers):
+                        self.server.mitm_servers,
+                        self.server.hide_recent_posts):
         self.server.getreq_busy = False
         return
 
@@ -5799,7 +5803,8 @@ def daemon_http_get(self) -> None:
                            self.server.fitness,
                            self.server.onion_domain,
                            self.server.i2p_domain,
-                           self.server.mitm_servers):
+                           self.server.mitm_servers,
+                           self.server.hide_recent_posts):
         self.server.getreq_busy = False
         return
 
@@ -5856,7 +5861,8 @@ def daemon_http_get(self) -> None:
                        self.server.fitness,
                        self.server.onion_domain,
                        self.server.i2p_domain,
-                       self.server.mitm_servers):
+                       self.server.mitm_servers,
+                       self.server.hide_recent_posts):
         self.server.getreq_busy = False
         return
 
@@ -5914,7 +5920,8 @@ def daemon_http_get(self) -> None:
                           self.server.fitness,
                           self.server.onion_domain,
                           self.server.i2p_domain,
-                          self.server.mitm_servers):
+                          self.server.mitm_servers,
+                          self.server.hide_recent_posts):
         self.server.getreq_busy = False
         return
 
@@ -5972,7 +5979,8 @@ def daemon_http_get(self) -> None:
                            self.server.fitness,
                            self.server.onion_domain,
                            self.server.i2p_domain,
-                           self.server.mitm_servers):
+                           self.server.mitm_servers,
+                           self.server.hide_recent_posts):
         self.server.getreq_busy = False
         return
 
@@ -6029,7 +6037,8 @@ def daemon_http_get(self) -> None:
                            self.server.buy_sites,
                            self.server.no_of_books,
                            self.server.auto_cw_cache,
-                           self.server.mitm_servers):
+                           self.server.mitm_servers,
+                           self.server.hide_recent_posts):
         self.server.getreq_busy = False
         return
 

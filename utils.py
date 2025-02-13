@@ -4262,6 +4262,27 @@ def load_hide_follows(base_dir: str) -> {}:
     return hide_follows
 
 
+def load_hide_recent_posts(base_dir: str) -> {}:
+    """Returns a dictionary containing the hide recent posts status
+    for each account
+    """
+    hide_recent_posts = {}
+    dir_str = data_dir(base_dir)
+    for _, dirs, _ in os.walk(dir_str):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if acct.startswith('inbox@') or acct.startswith('Actor@'):
+                continue
+            hide_recent_posts_filename = \
+                dir_str + '/' + acct + '/.hideRecentPosts'
+            if os.path.isfile(hide_recent_posts_filename):
+                nickname = acct.split('@')[0]
+                hide_recent_posts[nickname] = True
+        break
+    return hide_recent_posts
+
+
 def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
     """Returns the timezone for the given account
     """
