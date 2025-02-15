@@ -2228,6 +2228,47 @@ def remove_incomplete_code_tags(content: str) -> str:
     return content
 
 
+def _mentions_to_person_options(html_str: str, nickname: str,
+                                session, base_dir: str, http_prefix: str,
+                                person_cache: {},
+                                allow_downloads: bool,
+                                signing_priv_key_pem: str,
+                                mitm_servers: []) -> str:
+    """Converts mentions within html into local person option links.
+    This enables following of mentions in browsers which don't
+    support javascript
+    """
+    if '"u-url mention"' not in html_str:
+        return html_str
+
+    sections = html_str.split('<')
+    for markup_str in sections:
+        if '>' not in markup_str:
+            continue
+        markup_str = markup_str.split('>')[0]
+        if 'href="' not in markup_str or \
+           '"u-url mention"' not in markup_str:
+            continue
+        link = markup_str.split('href="')[1]
+        if '"' not in link:
+            continue
+        post_actor = link.split('"')[0]
+        # look up the avatar image for the mention
+        avatar_url = \
+            get_avatar_image_url(session, base_dir, http_prefix,
+                                 post_actor, person_cache,
+                                 None, allow_downloads,
+                                 signing_priv_key_pem,
+                                 mitm_servers)
+
+        replace_link = \
+            "/users/" + nickname + "?options=" + post_actor + \
+            ";2;" + avatar_url
+        html_str = html_str.replace('href="' + post_actor + '"',
+                                    'href="' + replace_link + '"')
+    return html_str
+
+
 def individual_post_as_html(signing_priv_key_pem: str,
                             allow_downloads: bool,
                             recent_posts_cache: {}, max_recent_posts: int,
@@ -3227,6 +3268,17 @@ def individual_post_as_html(signing_priv_key_pem: str,
         post_html = gallery_str
 
     _log_post_timing(enable_timing_log, post_start_time, '18')
+
+    # convert mentions into local person options links
+    # This enables following of mentions in browsers which don't
+    # support javascript
+    post_html = \
+        _mentions_to_person_options(post_html, nickname,
+                                    session, base_dir, http_prefix,
+                                    person_cache,
+                                    allow_downloads,
+                                    signing_priv_key_pem,
+                                    mitm_servers)
 
     # save the created html to the recent posts cache
     if not show_public_only and store_to_cache and \
