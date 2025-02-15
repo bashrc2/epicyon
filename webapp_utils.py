@@ -1814,7 +1814,7 @@ def get_avatar_image_url(session, base_dir: str, http_prefix: str,
                          avatar_url: str, allow_downloads: bool,
                          signing_priv_key_pem: str,
                          mitm_servers: []) -> str:
-    """Returns the avatar image url
+    """Returns the avatar image url if it exists in the cache
     """
     # get the avatar image url for the post actor
     if not avatar_url:
