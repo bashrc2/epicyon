@@ -2069,7 +2069,7 @@ def _html_edit_profile_twitter(base_dir: str, translate: {},
     """Edit twitter settings within profile
     """
     # Twitter section
-    twitter_str = begin_edit_section(translate['Twitter'])
+    twitter_str = begin_edit_section(translate['Twitter'] + ' / x.com')
     twitter_str += \
         edit_check_box(translate['Remove Twitter posts'],
                        'removeTwitter', remove_twitter)
