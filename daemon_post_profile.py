@@ -2464,7 +2464,7 @@ def _profile_post_submit_button(base_dir: str, fields: {}) -> None:
 
 def _profile_post_twitter_alt_domain(base_dir: str, fields: {},
                                      self) -> None:
-    """ HTTP POST change twitter alternate domain
+    """ HTTP POST change twitter alternate domain, such as nitter.net
     """
     if fields.get('twitterdomain'):
         curr_twitter_domain = self.server.twitter_replacement_domain
