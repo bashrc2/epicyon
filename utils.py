@@ -487,7 +487,11 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     """
     this_post_json = post_json_object
     if has_object_dict(post_json_object):
-        this_post_json = post_json_object['object']
+        # handle quote posts FEP-dd4b, where there is no content within object
+        if (content_type != 'content' or
+            ('content' in this_post_json['object'] or
+             'contentMap' in this_post_json['object'])):
+            this_post_json = post_json_object['object']
     map_dict = content_type + 'Map'
     has_contentmap_dict = False
     if this_post_json.get(map_dict):
