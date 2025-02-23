@@ -13,6 +13,8 @@ import time
 from session import get_json_valid
 from session import create_session
 from flags import is_evil
+from flags import is_quote_toot
+from utils import get_quote_toot_url
 from utils import get_user_paths
 from utils import contains_statuses
 from utils import data_dir
@@ -1232,6 +1234,9 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
     else:
         if has_object_string(post_json_object, debug):
             also_update_post_id = remove_id_ending(post_json_object['object'])
+        elif is_quote_toot(post_json_object, ''):
+            also_update_post_id = get_quote_toot_url(post_json_object)
+            also_update_post_id = remove_id_ending(also_update_post_id)
 
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
@@ -1385,6 +1390,9 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
     else:
         if has_object_string(post_json_object, debug):
             also_update_post_id = remove_id_ending(post_json_object['object'])
+        elif is_quote_toot(post_json_object, ''):
+            also_update_post_id = get_quote_toot_url(post_json_object)
+            also_update_post_id = remove_id_ending(also_update_post_id)
 
     # Due to lack of AP specification maintenance, a conversation can also be
     # referred to as a thread or (confusingly) "context"

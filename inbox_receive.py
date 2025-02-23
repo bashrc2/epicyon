@@ -10,6 +10,8 @@ __module_group__ = "Timeline"
 import os
 import time
 from flags import is_recent_post
+from flags import is_quote_toot
+from utils import get_quote_toot_url
 from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
 from utils import get_attributed_to
@@ -1681,8 +1683,12 @@ def receive_announce(recent_posts_cache: {},
         return False
     if debug:
         print('DEBUG: receiving announce on ' + handle)
+    is_quote = False
     if not has_object_string(message_json, debug):
-        return False
+        if not is_quote_toot(message_json, ''):
+            return False
+        else:
+            is_quote = True
     if not message_json.get('to'):
         if debug:
             print('DEBUG: ' + message_json['type'] + ' has no "to" list')
@@ -1699,10 +1705,14 @@ def receive_announce(recent_posts_cache: {},
         if debug:
             print('DEBUG: self-boost rejected')
         return False
-    if not has_users_path(message_json['object']):
+    if not is_quote:
+        announce_url = str(message_json['object'])
+    else:
+        announce_url = get_quote_toot_url(message_json)
+    if not has_users_path(announce_url):
         # log any unrecognised statuses
-        if not contains_statuses(str(message_json['object'])):
-            print('WARN: unknown statuses path ' + str(message_json['object']))
+        if not contains_statuses(announce_url):
+            print('WARN: unknown statuses path ' + announce_url)
         if debug:
             print('DEBUG: ' +
                   '"users", "channel" or "profile" missing in ' +
@@ -1712,7 +1722,7 @@ def receive_announce(recent_posts_cache: {},
     blocked_cache = {}
     prefixes = get_protocol_prefixes()
     # is the domain of the announce actor blocked?
-    object_domain = message_json['object']
+    object_domain = announce_url
     for prefix in prefixes:
         object_domain = object_domain.replace(prefix, '')
     if '/' in object_domain:
@@ -1753,11 +1763,11 @@ def receive_announce(recent_posts_cache: {},
         return False
 
     # also check the actor for the url being announced
-    announced_actor_nickname = get_nickname_from_actor(message_json['object'])
+    announced_actor_nickname = get_nickname_from_actor(announce_url)
     if not announced_actor_nickname:
         print('WARN: _receive_announce no announced_actor_nickname')
         return False
-    announced_actor_domain, _ = get_domain_from_actor(message_json['object'])
+    announced_actor_domain, _ = get_domain_from_actor(announce_url)
     if not announced_actor_domain:
         print('WARN: _receive_announce no announced_actor_domain')
         return False
@@ -1769,12 +1779,11 @@ def receive_announce(recent_posts_cache: {},
         return False
 
     # is this post in the inbox or outbox of the account?
-    post_filename = locate_post(base_dir, nickname, domain,
-                                message_json['object'])
+    post_filename = locate_post(base_dir, nickname, domain, announce_url)
     if not post_filename:
         if debug:
             print('DEBUG: announce post not found in inbox or outbox')
-            print(message_json['object'])
+            print(announce_url)
         return True
     # add actor to the list of announcers for a post
     actor_url = get_actor_from_post(message_json)
@@ -1782,7 +1791,7 @@ def receive_announce(recent_posts_cache: {},
                                actor_url, nickname, domain, debug)
     if debug:
         print('DEBUG: Downloading announce post ' + actor_url +
-              ' -> ' + message_json['object'])
+              ' -> ' + announce_url)
     domain_full = get_full_domain(domain, port)
 
     # Generate html. This also downloads the announced post.
@@ -1880,12 +1889,12 @@ def receive_announce(recent_posts_cache: {},
             print('WARN: unable to download announce: ' + str(message_json))
         else:
             print('REJECT: Announce/Boost of reply denied ' +
-                  actor_url + ' 🔁 ' + message_json['object'])
+                  actor_url + ' 🔁 ' + announce_url)
         not_in_onion = True
         if onion_domain:
-            if onion_domain in message_json['object']:
+            if onion_domain in announce_url:
                 not_in_onion = False
-        if domain not in message_json['object'] and not_in_onion:
+        if domain not in announce_url and not_in_onion:
             if os.path.isfile(post_filename):
                 # if the announce can't be downloaded then remove it
                 try:
@@ -1897,7 +1906,7 @@ def receive_announce(recent_posts_cache: {},
         if debug:
             actor_url = get_actor_from_post(message_json)
             print('DEBUG: Announce post downloaded for ' +
-                  actor_url + ' -> ' + message_json['object'])
+                  actor_url + ' -> ' + announce_url)
 
         store_hash_tags(base_dir, nickname, domain,
                         http_prefix, domain_full,
