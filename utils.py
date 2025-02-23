@@ -625,7 +625,10 @@ def get_base_content_from_post(post_json_object: {},
     """
     this_post_json = post_json_object
     if has_object_dict(post_json_object):
-        this_post_json = post_json_object['object']
+        # handle quote posts FEP-dd4b, where there is no content within object
+        if 'content' in this_post_json['object'] or \
+           'contentMap' in this_post_json['object']:
+            this_post_json = post_json_object['object']
     if 'contentMap' in this_post_json:
         if isinstance(this_post_json['contentMap'], dict):
             if this_post_json['contentMap'].get(system_language):
@@ -4646,10 +4649,13 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
 
 def get_quote_toot_url(post_json_object: str) -> str:
     """ Returns the url for a quote toot
+    This suffers from a general lack of protocol consensus
     """
     # adhoc quote toot implementations
-    object_quote_url_fields = ('quoteUri', 'quoteUrl', 'quoteReply',
-                               'toot:quoteReply', '_misskey_quote')
+    object_quote_url_fields = (
+        'quoteUri', 'quoteUrl', 'quoteReply', 'toot:quoteReply',
+        '_misskey_quote'
+    )
     for fieldname in object_quote_url_fields:
         if not post_json_object['object'].get(fieldname):
             continue
@@ -4658,7 +4664,19 @@ def get_quote_toot_url(post_json_object: str) -> str:
             if resembles_url(quote_url):
                 return remove_html(quote_url)
 
-    # More correct ActivityPub implementation - adding a Link tag
+    # as defined by FEP-dd4b
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/dd4b/fep-dd4b.md
+    if ((post_json_object.get('content') or
+         post_json_object.get('contentMap')) and
+        (not post_json_object['object'].get('content') and
+         not post_json_object['object'].get('contentMap')) and
+       post_json_object['object'].get('id')):
+        quote_url = post_json_object['object']['id']
+        if isinstance(quote_url, str):
+            if resembles_url(quote_url):
+                return remove_html(quote_url)
+
+    # Other ActivityPub implementation - adding a Link tag
     if not post_json_object['object'].get('tag'):
         return ''
 
