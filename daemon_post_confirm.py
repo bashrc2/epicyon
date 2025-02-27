@@ -39,7 +39,8 @@ def unfollow_confirm(self, calling_domain: str, cookie: str,
                      debug: bool,
                      curr_session, proxy_type: str,
                      person_cache: {}) -> None:
-    """Confirm an unfollow request
+    """Confirm an unfollow request from profile after search or from
+    person options
     """
     users_path = path.split('/unfollowconfirm')[0]
     origin_path_str = http_prefix + '://' + domain_full + users_path
@@ -155,7 +156,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                     project_version: str,
                     sites_unavailable: [],
                     mitm_servers: []) -> None:
-    """Confirm a follow request
+    """Confirm a follow from profile after search or from person options
     """
     users_path = path.split('/followconfirm')[0]
     origin_path_str = http_prefix + '://' + domain_full + users_path
