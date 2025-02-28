@@ -91,6 +91,7 @@ def _accept_follow(base_dir: str, message_json: {},
                    curr_domain: str,
                    onion_domain: str, i2p_domain: str) -> None:
     """ Receiving an ActivityPub follow Accept activity
+    Your follow was accepted
     """
     if not has_object_string_type(message_json, debug):
         return
