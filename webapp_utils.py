@@ -392,6 +392,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
     # try different image types
     image_formats = image_mime_types_dict()
     avatar_image_filename = None
+    session_headers = None
     for im_format, mime_type in image_formats.items():
         if avatar_url.endswith('.' + im_format) or \
            '.' + im_format + '?' in avatar_url:
@@ -400,7 +401,7 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
             }
             avatar_image_filename = avatar_image_path + '.' + im_format
 
-    if not avatar_image_filename:
+    if not avatar_image_filename or not session_headers:
         return None
 
     if (not os.path.isfile(avatar_image_filename) or force) and \
