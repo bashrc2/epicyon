@@ -51,7 +51,6 @@
         "Texas Public Policy Foundation",
         "Heartland Institute",
         "Heritage Foundation",
-        "Independent Institute",
         "Fordham Institute"
     ],
     "domains": [
@@ -139,9 +138,6 @@
         ".heritage.org",
         "/heritage.org",
         ">heritage.org",
-        ".independent.org",
-        "/independent.org",
-        ">independent.org",
         "fordhaminstitute.org"
     ]
 }
