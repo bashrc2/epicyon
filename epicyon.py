@@ -128,6 +128,7 @@ from poison import html_poisoned
 from poison import load_dictionary
 from poison import load_2grams
 from webapp_post import get_instance_software
+from siteactive import site_is_active
 
 
 def str2bool(value_str) -> bool:
@@ -261,6 +262,9 @@ def _command_options() -> None:
     parser.add_argument('--bind', dest='bind_to_ip_address', type=str,
                         default='',
                         help='Bind the HTTP server to an IP address')
+    parser.add_argument('--active', dest='siteActive', type=str,
+                        default='',
+                        help='Is the given url an active website?')
     parser.add_argument('--expiryDays', dest='expiryDays', type=int,
                         default=None,
                         help='Number of days after which posts expire ' +
@@ -923,6 +927,23 @@ def _command_options() -> None:
         http_prefix = 'ipns'
     elif argb.gnunet:
         http_prefix = 'gnunet'
+
+    if argb.siteActive:
+        # is a url active?
+        url = argb.siteActive
+        if '@' in url and '://' not in url:
+            nickname = get_nickname_from_actor(url)
+            domain, _ = get_domain_from_actor(url)
+            url = http_prefix + '://' + domain + '/users/' + nickname
+        timeout = 15
+        sites_unavailable = []
+        active = site_is_active(url, timeout,
+                                sites_unavailable)
+        if active:
+            print(url + ' is active')
+        else:
+            print(url + ' not active')
+        sys.exit()
 
     base_dir = argb.base_dir
     if base_dir.endswith('/'):
