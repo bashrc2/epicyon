@@ -2217,7 +2217,11 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
     ctr = 0
     html_str = ''
     while ctr < no_of_emoji and line_ctr < len(common_emoji):
-        emoji_name1 = common_emoji[line_ctr].split(' ')[1]
+        name_initial = common_emoji[line_ctr].split(' ')
+        if len(name_initial) < 2:
+            line_ctr += 1
+            continue
+        emoji_name1 = name_initial[1]
         emoji_name = remove_eol(emoji_name1)
         emoji_icon_name = emoji_name
         emoji_filename = base_dir + '/emoji/' + emoji_name + '.png'
