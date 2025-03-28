@@ -2313,18 +2313,20 @@ def individual_post_as_html(signing_priv_key_pem: str,
     # maximum number of different emoji reactions which can be added to a post
     max_reaction_types = 5
 
+    # if downloads of avatar images aren't enabled then we can do more
+    # accurate timing of different parts of the code
+    enable_timing_log = not allow_downloads
+
     # benchmark
     post_start_time = time.time()
 
     post_actor = get_actor_from_post(post_json_object)
 
+    _log_post_timing(enable_timing_log, post_start_time, '0')
+
     # ZZZzzz
     if is_person_snoozed(base_dir, nickname, domain, post_actor):
         return ''
-
-    # if downloads of avatar images aren't enabled then we can do more
-    # accurate timing of different parts of the code
-    enable_timing_log = not allow_downloads
 
     _log_post_timing(enable_timing_log, post_start_time, '1')
 
