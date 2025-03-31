@@ -584,14 +584,14 @@ def get_shares_feed_for_person(base_dir: str,
 
     next_page_number = int(page_number + 1)
     id_str = local_actor_url(http_prefix, nickname, domain)
-    shares_collection_id = \
+    shared_items_collection_id = \
         id_str + '/' + shares_file_type + '?page=' + str(page_number)
     shares = {
         "@context": [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1'
         ],
-        'id': shares_collection_id,
+        'id': shared_items_collection_id,
         'orderedItems': [],
         'partOf': id_str + '/' + shares_file_type,
         'totalItems': 0,
