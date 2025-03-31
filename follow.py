@@ -512,19 +512,18 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
         page_number = 1
 
     next_page_number = int(page_number + 1)
-    id_str = \
-        local_actor_url(http_prefix, nickname, domain) + \
-        '/' + follow_file + '?page=' + str(page_number)
-    part_of_str = \
-        local_actor_url(http_prefix, nickname, domain) + '/' + follow_file
+    following_of_actor = local_actor_url(http_prefix, nickname, domain)
+    part_of_str = following_of_actor + '/' + follow_file
+    collection_id = part_of_str + '?page=' + str(page_number)
     following = {
         "@context": [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1'
         ],
-        'id': id_str,
+        'id': collection_id,
         'orderedItems': [],
         'partOf': part_of_str,
+        follow_file + 'Of': following_of_actor,
         'totalItems': 0,
         'type': 'OrderedCollectionPage'
     }
