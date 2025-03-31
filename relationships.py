@@ -120,12 +120,10 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
     lines = get_moved_accounts(base_dir, nickname, domain,
                                'following.txt')
 
+    actor = local_actor_url(http_prefix, nickname, domain)
     if header_only:
-        first_str = \
-            local_actor_url(http_prefix, nickname, domain) + \
-            '/moved?page=1'
-        id_str = \
-            local_actor_url(http_prefix, nickname, domain) + '/moved'
+        first_str = actor + '/moved?page=1'
+        id_str = actor + '/moved'
         total_str = str(len(lines.items()))
         following = {
             "@context": [
@@ -134,6 +132,7 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             ],
             'first': first_str,
             'id': id_str,
+            'followingOf': actor,
             'orderedItems': [],
             'totalItems': total_str,
             'type': 'OrderedCollection'
@@ -145,16 +144,15 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
 
     next_page_number = int(page_number + 1)
     id_str = \
-        local_actor_url(http_prefix, nickname, domain) + \
-        '/moved?page=' + str(page_number)
-    part_of_str = \
-        local_actor_url(http_prefix, nickname, domain) + '/moved'
+        actor + '/moved?page=' + str(page_number)
+    part_of_str = actor + '/moved'
     following = {
         "@context": [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1'
         ],
         'id': id_str,
+        'followingOf': actor,
         'orderedItems': [],
         'partOf': part_of_str,
         'totalItems': 0,
