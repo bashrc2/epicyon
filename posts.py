@@ -1285,9 +1285,6 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
     """Creates a new server-to-server post
     """
     actor_url = local_actor_url(http_prefix, nickname, domain)
-    id_str = \
-        local_actor_url(http_prefix, nickname, domain) + \
-        '/statuses/' + status_number + '/replies'
     new_post_url = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
     new_post_attributed_to = \
@@ -1305,6 +1302,11 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         new_convthread_id = conversation_tag_to_convthread_id(conversation_id)
         if new_convthread_id:
             convthread_id = new_convthread_id
+    replies_collection_id = \
+        local_actor_url(http_prefix, nickname, domain) + \
+        '/statuses/' + status_number + '/replies'
+    replies_next = \
+        replies_collection_id + '?only_other_accounts=true&page=true'
     # add opt-outs as in:
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/5e53/fep-5e53.md
     new_post = {
@@ -1344,12 +1346,13 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
             'attachment': [],
             'tag': tags,
             'replies': {
-                'id': id_str,
+                'id': replies_collection_id,
+                'repliesOf': new_post_id,
                 'type': 'Collection',
                 'first': {
                     'type': 'CollectionPage',
-                    'next': id_str + '?only_other_accounts=true&page=true',
-                    'partOf': id_str,
+                    'next': replies_next,
+                    'partOf': replies_collection_id,
                     'items': []
                 }
             },
@@ -1419,9 +1422,6 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
     """Creates a new client-to-server post
     """
     domain_full = get_full_domain(domain, port)
-    id_str = \
-        local_actor_url(http_prefix, nickname, domain_full) + \
-        '/statuses/' + status_number + '/replies'
     new_post_url = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
     conversation_root = ''
@@ -1437,6 +1437,11 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         new_convthread_id = conversation_tag_to_convthread_id(conversation_id)
         if new_convthread_id:
             convthread_id = new_convthread_id
+    replies_collection_id = \
+        local_actor_url(http_prefix, nickname, domain_full) + \
+        '/statuses/' + status_number + '/replies'
+    replies_next = \
+        replies_collection_id + '?only_other_accounts=true&page=true'
     # add opt-outs as in:
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/5e53/fep-5e53.md
     new_post = {
@@ -1468,12 +1473,13 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         'attachment': [],
         'tag': tags,
         'replies': {
-            'id': id_str,
+            'id': replies_collection_id,
+            'repliesOf': new_post_id,
             'type': 'Collection',
             'first': {
                 'type': 'CollectionPage',
-                'next': id_str + '?only_other_accounts=true&page=true',
-                'partOf': id_str,
+                'next': replies_next,
+                'partOf': replies_collection_id,
                 'items': []
             }
         },
