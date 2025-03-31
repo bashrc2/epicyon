@@ -140,6 +140,7 @@ def blocked_timeline_json(actor: str, page_number: int, items_per_page: int,
             "https://purl.archive.org/socialweb/blocked"
         ],
         "id": actor + '?page=' + str(page_number),
+        "blocksOf": actor,
         "first": actor + '?page=1',
         "last": actor + '?page=' + str(last_page_number),
         "type": "OrderedCollection",
