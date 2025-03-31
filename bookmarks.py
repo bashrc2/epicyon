@@ -198,8 +198,15 @@ def update_bookmarks_collection(recent_posts_cache: {},
             print('DEBUG: no object in bookmarked post ' +
                   str(post_json_object))
         return
-    if not object_url.endswith('/bookmarks'):
-        object_url = object_url + '/bookmarks'
+
+    bookmarks_ending = '/bookmarks'
+    if not object_url.endswith(bookmarks_ending):
+        collection_id = object_url + bookmarks_ending
+    else:
+        collection_id = object_url
+        object_url_len = len(object_url) - len(bookmarks_ending)
+        object_url = object_url[:object_url_len]
+
     # does this post have bookmarks on it from differenent actors?
     if not post_json_object['object'].get('bookmarks'):
         if debug:
@@ -209,7 +216,8 @@ def update_bookmarks_collection(recent_posts_cache: {},
                 'https://www.w3.org/ns/activitystreams',
                 'https://w3id.org/security/v1'
             ],
-            'id': object_url,
+            'id': collection_id,
+            'bookmarksOf': object_url,
             'type': 'Collection',
             "totalItems": 1,
             'items': [{
