@@ -488,7 +488,6 @@ def update_likes_collection(recent_posts_cache: {},
         collection_id = object_url
         likes_len = len(collection_id) - len(likes_ending)
         likes_of = collection_id[:likes_len]
-    collection_id = collection_id.replace('/statuses/', '/collection/')
 
     if not obj.get('likes'):
         if debug:
