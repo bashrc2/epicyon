@@ -428,12 +428,10 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
                                    dormant_months,
                                    sites_unavailable)
 
+    actor = local_actor_url(http_prefix, nickname, domain)
     if header_only:
-        first_str = \
-            local_actor_url(http_prefix, nickname, domain) + \
-            '/moved?page=1'
-        id_str = \
-            local_actor_url(http_prefix, nickname, domain) + '/inactive'
+        first_str = actor + '/moved?page=1'
+        id_str = actor + '/inactive'
         total_str = str(len(lines))
         following = {
             "@context": [
@@ -442,6 +440,7 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
             ],
             'first': first_str,
             'id': id_str,
+            'followingOf': actor,
             'orderedItems': [],
             'totalItems': total_str,
             'type': 'OrderedCollection'
@@ -452,11 +451,8 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
         page_number = 1
 
     next_page_number = int(page_number + 1)
-    id_str = \
-        local_actor_url(http_prefix, nickname, domain) + \
-        '/inactive?page=' + str(page_number)
-    part_of_str = \
-        local_actor_url(http_prefix, nickname, domain) + '/inactive'
+    id_str = actor + '/inactive?page=' + str(page_number)
+    part_of_str = actor + '/inactive'
     following = {
         "@context": [
             'https://www.w3.org/ns/activitystreams',
@@ -465,6 +461,7 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
         'id': id_str,
         'orderedItems': [],
         'partOf': part_of_str,
+        'followingOf': actor,
         'totalItems': 0,
         'type': 'OrderedCollectionPage'
     }
