@@ -1048,6 +1048,7 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
             ],
             'replies': {
                 'id': post_id + '/replies',
+                'repliesOf': post_id,
                 'type': 'Collection',
                 'first': {
                     'type': 'CollectionPage',

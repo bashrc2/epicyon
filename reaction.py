@@ -559,8 +559,14 @@ def update_reaction_collection(recent_posts_cache: {},
     if has_object_dict(post_json_object):
         obj = post_json_object['object']
 
-    if not object_url.endswith('/reactions'):
-        object_url = object_url + '/reactions'
+    reactions_ending = '/reactions'
+    if not object_url.endswith(reactions_ending):
+        collection_id = object_url + reactions_ending
+    else:
+        collection_id = object_url
+        reactions_ending_len = len(object_url) - len(reactions_ending)
+        object_url = object_url[:reactions_ending_len]
+
     if not obj.get('reactions'):
         if debug:
             print('DEBUG: Adding initial emoji reaction to ' + object_url)
@@ -569,7 +575,8 @@ def update_reaction_collection(recent_posts_cache: {},
                 'https://www.w3.org/ns/activitystreams',
                 'https://w3id.org/security/v1'
             ],
-            'id': object_url,
+            'id': collection_id,
+            'reactionsOf': object_url,
             'type': 'Collection',
             "totalItems": 1,
             'items': [{
