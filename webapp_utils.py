@@ -635,7 +635,8 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1'
         ],
-        "id": actor + '?page=' + str(page_number),
+        "id": actor + '/' + share_type + 's?page=' + str(page_number),
+        "sharedItemsOf": actor,
         "type": "OrderedCollection",
         "name": collection_name,
         "orderedItems": shares_collection
