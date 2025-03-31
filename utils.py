@@ -3453,7 +3453,8 @@ def update_announce_collection(recent_posts_cache: {},
             pprint(post_json_object)
             print('DEBUG: post ' + post_filename + ' has no object')
         return
-    post_url = remove_id_ending(post_json_object['id']) + '/shares'
+    post_url = remove_id_ending(post_json_object['id'])
+    collection_id = post_url + '/shares'
     if not post_json_object['object'].get('shares'):
         if debug:
             print('DEBUG: Adding initial shares (announcements) to ' +
@@ -3463,7 +3464,8 @@ def update_announce_collection(recent_posts_cache: {},
                 'https://www.w3.org/ns/activitystreams',
                 'https://w3id.org/security/v1'
             ],
-            'id': post_url,
+            'id': collection_id,
+            'sharesOf': post_url,
             'type': 'Collection',
             "totalItems": 1,
             'items': [{

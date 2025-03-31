@@ -594,6 +594,7 @@ def get_shares_feed_for_person(base_dir: str,
         'id': shared_items_collection_id,
         'orderedItems': [],
         'partOf': id_str + '/' + shares_file_type,
+        'sharedItemsOf': id_str,
         'totalItems': 0,
         'type': 'OrderedCollectionPage'
     }
