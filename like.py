@@ -479,8 +479,16 @@ def update_likes_collection(recent_posts_cache: {},
     if has_object_dict(post_json_object):
         obj = post_json_object['object']
 
-    if not object_url.endswith('/likes'):
-        object_url = object_url + '/likes'
+    # append 'likes' to the object url to create the collection_id
+    likes_ending = '/likes'
+    if not object_url.endswith(likes_ending):
+        likes_of = object_url
+        collection_id = object_url + likes_ending
+    else:
+        collection_id = object_url
+        likes_len = len(collection_id) - len(likes_ending)
+        likes_of = collection_id[:likes_len]
+
     if not obj.get('likes'):
         if debug:
             print('DEBUG: Adding initial like to ' + object_url)
@@ -489,7 +497,8 @@ def update_likes_collection(recent_posts_cache: {},
                 'https://www.w3.org/ns/activitystreams',
                 'https://w3id.org/security/v1'
             ],
-            'id': object_url,
+            'id': collection_id,
+            'likesOf': likes_of,
             'type': 'Collection',
             "totalItems": 1,
             'items': [{
