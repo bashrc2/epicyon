@@ -156,6 +156,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
             'tag': [],
             'replies': {
                 'id': new_post_id + '/replies',
+                'repliesOf': new_post_id,
                 'type': 'Collection',
                 'first': {
                     'type': 'CollectionPage',
