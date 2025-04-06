@@ -1281,10 +1281,12 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                      low_bandwidth: bool, content_license_url: str,
                      media_license_url: str, media_creator: str,
                      buy_url: str, chat_url: str, translate: {},
-                     searchable_by: []) -> {}:
+                     searchable_by: [],
+                     automatic_quote_approval: str) -> {}:
     """Creates a new server-to-server post
     """
-    actor_url = local_actor_url(http_prefix, nickname, domain)
+    domain_full = get_full_domain(domain, port)
+    actor_url = local_actor_url(http_prefix, nickname, domain_full)
     new_post_url = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
     new_post_attributed_to = \
@@ -1357,7 +1359,12 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                 }
             },
             "crawlable": False,
-            "searchableBy": searchable_by
+            "searchableBy": searchable_by,
+            "interactionPolicy": {
+                "canQuote": {
+                    "automaticApproval": automatic_quote_approval
+                }
+            }
         }
     }
 
@@ -1418,10 +1425,12 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                      low_bandwidth: str,
                      content_license_url: str, media_license_url: str,
                      media_creator: str, buy_url: str, chat_url: str,
-                     translate: {}, searchable_by: []) -> {}:
+                     translate: {}, searchable_by: [],
+                     automatic_quote_approval: str) -> {}:
     """Creates a new client-to-server post
     """
     domain_full = get_full_domain(domain, port)
+    actor_url = local_actor_url(http_prefix, nickname, domain)
     new_post_url = \
         http_prefix + '://' + domain + '/@' + nickname + '/' + status_number
     conversation_root = ''
@@ -1438,8 +1447,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         if new_convthread_id:
             convthread_id = new_convthread_id
     replies_collection_id = \
-        local_actor_url(http_prefix, nickname, domain_full) + \
-        '/statuses/' + status_number + '/replies'
+        actor_url + '/statuses/' + status_number + '/replies'
     replies_next = \
         replies_collection_id + '?only_other_accounts=true&page=true'
     # add opt-outs as in:
@@ -1484,7 +1492,12 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
             }
         },
         "crawlable": False,
-        "searchableBy": searchable_by
+        "searchableBy": searchable_by,
+        "interactionPolicy": {
+            "canQuote": {
+                "automaticApproval": automatic_quote_approval
+            }
+        }
     }
 
     # is this a root post of a conversation?
@@ -1763,7 +1776,8 @@ def _create_post_base(base_dir: str,
                       buy_url: str, chat_url: str,
                       auto_cw_cache: {},
                       searchable_by: [],
-                      session) -> {}:
+                      session,
+                      automatic_quote_approval: str) -> {}:
     """Creates a message
     """
     content = remove_invalid_chars(content)
@@ -1942,7 +1956,8 @@ def _create_post_base(base_dir: str,
                              conversation_id, convthread_id, low_bandwidth,
                              content_license_url, media_license_url,
                              media_creator, buy_url, chat_url,
-                             translate, searchable_by_list)
+                             translate, searchable_by_list,
+                             automatic_quote_approval)
     else:
         new_post = \
             _create_post_c2s(base_dir, nickname, domain, port,
@@ -1958,7 +1973,8 @@ def _create_post_base(base_dir: str,
                              conversation_id, convthread_id, low_bandwidth,
                              content_license_url, media_license_url,
                              media_creator, buy_url, chat_url,
-                             translate, searchable_by_list)
+                             translate, searchable_by_list,
+                             automatic_quote_approval)
 
     _create_post_mentions(cc_url, new_post, to_recipients, tags)
 
@@ -2239,6 +2255,8 @@ def create_public_post(base_dir: str,
     event_status = None
     ticket_url = None
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
+    automatic_quote_approval = "https://www.w3.org/ns/activitystreams#Public"
+
     return _create_post_base(base_dir, nickname, domain, port,
                              'https://www.w3.org/ns/activitystreams#Public',
                              local_actor + '/followers',
@@ -2260,7 +2278,7 @@ def create_public_post(base_dir: str,
                              media_license_url, media_creator,
                              languages_understood, translate, buy_url,
                              chat_url, auto_cw_cache, searchable_by,
-                             session)
+                             session, automatic_quote_approval)
 
 
 def create_reading_post(base_dir: str,
@@ -2483,6 +2501,7 @@ def create_question_post(base_dir: str,
     conversation_id = None
     convthread_id = None
     searchable_by: list[str] = []
+    automatic_quote_approval = local_actor
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
                           'https://www.w3.org/ns/activitystreams#Public',
@@ -2505,7 +2524,7 @@ def create_question_post(base_dir: str,
                           media_license_url, media_creator,
                           languages_understood, translate, buy_url,
                           chat_url, auto_cw_cache, searchable_by,
-                          session)
+                          session, automatic_quote_approval)
     message_json['object']['type'] = 'Question'
     message_json['object']['oneOf']: list[dict] = []
     message_json['object']['votersCount'] = 0
@@ -2558,6 +2577,7 @@ def create_unlisted_post(base_dir: str,
     event_status = None
     ticket_url = None
     searchable_by: list[str] = []
+    automatic_quote_approval = local_actor
     return _create_post_base(base_dir, nickname, domain, port,
                              local_actor + '/followers',
                              'https://www.w3.org/ns/activitystreams#Public',
@@ -2581,7 +2601,8 @@ def create_unlisted_post(base_dir: str,
                              media_license_url, media_creator,
                              languages_understood, translate,
                              buy_url, chat_url, auto_cw_cache,
-                             searchable_by, session)
+                             searchable_by, session,
+                             automatic_quote_approval)
 
 
 def create_followers_only_post(base_dir: str,
@@ -2617,6 +2638,7 @@ def create_followers_only_post(base_dir: str,
     anonymous_participation_enabled = None
     event_status = None
     ticket_url = None
+    automatic_quote_approval = local_actor + '/following'
     return _create_post_base(base_dir, nickname, domain, port,
                              local_actor + '/followers', None,
                              http_prefix, content, save_to_file,
@@ -2637,7 +2659,8 @@ def create_followers_only_post(base_dir: str,
                              media_license_url, media_creator,
                              languages_understood, translate,
                              buy_url, chat_url, auto_cw_cache,
-                             searchable_by, session)
+                             searchable_by, session,
+                             automatic_quote_approval)
 
 
 def get_mentioned_people(base_dir: str, http_prefix: str,
@@ -2700,6 +2723,8 @@ def create_direct_message_post(base_dir: str,
                                auto_cw_cache: {}, session) -> {}:
     """Direct Message post
     """
+    domain_full = get_full_domain(domain, port)
+    local_actor = local_actor_url(http_prefix, nickname, domain_full)
     content = resolve_petnames(base_dir, nickname, domain, content)
     mentioned_people = \
         get_mentioned_people(base_dir, http_prefix, content, domain, debug)
@@ -2718,6 +2743,7 @@ def create_direct_message_post(base_dir: str,
     event_status = None
     ticket_url = None
     searchable_by: list[str] = []
+    automatic_quote_approval = local_actor
     message_json = \
         _create_post_base(base_dir, nickname, domain, port,
                           post_to, post_cc,
@@ -2738,7 +2764,8 @@ def create_direct_message_post(base_dir: str,
                           content_license_url,
                           media_license_url, media_creator,
                           languages_understood, translate, buy_url, chat_url,
-                          auto_cw_cache, searchable_by, session)
+                          auto_cw_cache, searchable_by, session,
+                          automatic_quote_approval)
     # mentioned recipients go into To rather than Cc
     message_json['to'] = message_json['object']['cc']
     if not isinstance(message_json['to'], list):
@@ -2853,6 +2880,8 @@ def create_report_post(base_dir: str,
     conversation_id = None
     convthread_id = None
     searchable_by: list[str] = []
+    sending_actor = local_actor_url(http_prefix, nickname, domain_full)
+    automatic_quote_approval = sending_actor
     for to_url in post_to:
         # who is this report going to?
         to_nickname = to_url.split('/users/')[1]
@@ -2878,7 +2907,8 @@ def create_report_post(base_dir: str,
                               media_license_url, media_creator,
                               languages_understood, translate,
                               buy_url, chat_url, auto_cw_cache,
-                              searchable_by, session)
+                              searchable_by, session,
+                              automatic_quote_approval)
         if not post_json_object:
             continue
 
@@ -3170,6 +3200,9 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     replies_moderation_option = None
     anonymous_participation_enabled = None
     event_status = ticket_url = None
+    domain_full = get_full_domain(domain, port)
+    local_actor = local_actor_url(http_prefix, nickname, domain_full)
+    automatic_quote_approval = local_actor
     post_json_object = \
         _create_post_base(base_dir, nickname, domain, port,
                           to_person_id, cc_str, http_prefix, content,
@@ -3193,7 +3226,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                           media_license_url, media_creator,
                           languages_understood,
                           translate, buy_url, chat_url,
-                          auto_cw_cache, searchable_by, session)
+                          auto_cw_cache, searchable_by, session,
+                          automatic_quote_approval)
 
     # get the senders private key
     private_key_pem = get_person_key(nickname, domain, base_dir,
@@ -3376,17 +3410,22 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
         cc_str = \
             local_actor_url(http_prefix, from_nickname, from_domain_full) + \
             '/followers'
+        automatic_quote_approval = \
+            "https://www.w3.org/ns/activitystreams#Public"
     else:
         if to_domain.lower().endswith('followers') or \
            to_domain.lower().endswith('followersonly'):
-            to_person_id = \
-                local_actor_url(http_prefix,
-                                from_nickname, from_domain_full) + \
-                '/followers'
+            from_local_actor = \
+                local_actor_url(http_prefix, from_nickname, from_domain_full)
+            to_person_id = from_local_actor + '/followers'
+            automatic_quote_approval = from_local_actor + '/following'
         else:
             to_domain_full = get_full_domain(to_domain, to_port)
             to_person_id = \
                 local_actor_url(http_prefix, to_nickname, to_domain_full)
+            automatic_quote_approval = \
+                local_actor_url(http_prefix,
+                                from_nickname, from_domain_full)
 
     is_moderation_report = False
     schedule_post = False
@@ -3417,7 +3456,8 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                           media_license_url, media_creator,
                           languages_understood,
                           translate, buy_url, chat_url, auto_cw_cache,
-                          searchable_by, session)
+                          searchable_by, session,
+                          automatic_quote_approval)
 
     auth_header = create_basic_auth_header(from_nickname, password)
 
