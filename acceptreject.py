@@ -152,6 +152,7 @@ def _reject_quote_request(message_json: {}, domain_full: str,
                           system_language: str,
                           mitm_servers: []) -> bool:
     """ Rejects a QuoteRequest
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md
     """
     sending_actor = None
     receiving_actor = None
