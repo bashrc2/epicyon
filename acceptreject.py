@@ -10,6 +10,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+import time
 from posts import send_signed_json
 from flags import has_group_type
 from flags import url_permitted
@@ -429,11 +430,17 @@ def receive_quote_request(message_json: {}, federation_list: [],
                           extra_headers: {},
                           sites_unavailable: {},
                           system_language: str,
-                          mitm_servers: []) -> bool:
+                          mitm_servers: [],
+                          last_quote_request) -> bool:
     """Receives a QuoteRequest within the POST section of HTTPServer
     """
     if message_json['type'] != 'QuoteRequest':
         return False
+    curr_time = int(time.time())
+    seconds_since_last_quote_request = curr_time - last_quote_request
+    if seconds_since_last_quote_request < 30:
+        # don't handle quote requests too often
+        return True
     _reject_quote_request(message_json, domain_full,
                           federation_list, debug,
                           session, session_onion, session_i2p, base_dir,

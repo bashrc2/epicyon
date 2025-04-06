@@ -3253,6 +3253,8 @@ def run_inbox_queue(server,
     fitness_performance(inbox_start_time, server.fitness,
                         'INBOX', 'while_loop_start', debug)
     inbox_start_time = time.time()
+    # the last time that a quote request was last received
+    last_quote_request = 0
     while True:
         time.sleep(1)
         inbox_start_time = time.time()
@@ -3654,7 +3656,9 @@ def run_inbox_queue(server,
                                  i2p_domain, {},
                                  server.sites_unavailable,
                                  system_language,
-                                 server.mitm_servers):
+                                 server.mitm_servers,
+                                 last_quote_request):
+            last_quote_request = int(time.time())
             print('Queue: QuoteRequest received from ' + key_id)
             if os.path.isfile(queue_filename):
                 try:
