@@ -10,8 +10,10 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+from posts import send_signed_json
 from flags import has_group_type
 from flags import url_permitted
+from utils import get_status_number
 from utils import get_attributed_to
 from utils import get_user_paths
 from utils import text_in_file
@@ -27,6 +29,52 @@ from utils import local_actor_url
 from utils import has_actor
 from utils import has_object_string_type
 from utils import get_actor_from_post
+
+
+def _create_quote_accept_reject(receiving_actor: str,
+                                sending_actor: str,
+                                federation_list: [],
+                                debug: bool,
+                                quote_request_id: str,
+                                quote_request_object: str,
+                                quote_request_instrument: str,
+                                accept_type: str) -> {}:
+    """Creates an Accept or Reject response to QuoteRequest
+    """
+    if not receiving_actor or \
+       not sending_actor or \
+       not quote_request_id or \
+       not quote_request_object or \
+       not quote_request_instrument:
+        return None
+    if not url_permitted(sending_actor, federation_list):
+        return None
+
+    status_number, _ = get_status_number()
+
+    new_accept = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            {
+                "toot": "http://joinmastodon.org/ns#",
+                "Quote": "toot:QuoteRequest"
+            }
+        ],
+        "type": accept_type,
+        "to": [sending_actor],
+        "id": receiving_actor + "/statuses/" + status_number,
+        "actor": receiving_actor,
+        "object": {
+            "type": "QuoteRequest",
+            "id": quote_request_id,
+            "actor": sending_actor,
+            "object": "https://example.com/users/alice/statuses/1",
+            "instrument": "https://example.org/users/bob/statuses/1"
+        }
+    }
+    if debug:
+        print('REJECT: QuoteRequest ' + str(new_accept))
+    return new_accept
 
 
 def _create_accept_reject(federation_list: [],
@@ -87,21 +135,119 @@ def create_reject(federation_list: [],
                                  http_prefix, object_json, 'Reject')
 
 
-def _reject_quote_request(message_json: {}) -> None:
+def _reject_quote_request(message_json: {}, domain_full: str,
+                          federation_list: [],
+                          debug: bool,
+                          session, session_onion, session_i2p,
+                          base_dir: str,
+                          http_prefix: str,
+                          send_threads: [], post_log: [],
+                          cached_webfingers: {},
+                          person_cache: {}, project_version: str,
+                          signing_priv_key_pem: str,
+                          onion_domain: str, i2p_domain: str,
+                          extra_headers: {},
+                          sites_unavailable: {},
+                          system_language: str,
+                          mitm_servers: []) -> bool:
     """ Rejects a QuoteRequest
     """
-    actor = None
+    sending_actor = None
+    receiving_actor = None
+    quote_request_id = None
+    quote_request_object = None
+    quote_request_instrument = None
     if message_json.get('actor'):
-        actor = message_json['actor']
+        sending_actor = message_json['actor']
     elif message_json.get('instrument'):
         if isinstance(message_json['instrument'], dict):
-            if message_json['instrument'].get('attributedTo'):
-                instrument_dict = message_json['instrument']
-                actor = get_attributed_to(instrument_dict['attributedTo'])
-    if not actor:
-        return
-    # TODO send back a Reject
-    print('REJECT: QuoteRequest from ' + actor)
+            instrument_dict = message_json['instrument']
+            if instrument_dict.get('attributedTo'):
+                sending_actor = \
+                    get_attributed_to(instrument_dict['attributedTo'])
+            if instrument_dict.get('to'):
+                if isinstance(instrument_dict['to'], str):
+                    receiving_actor = instrument_dict['to']
+                elif isinstance(instrument_dict['to'], list):
+                    for receiver in instrument_dict['to']:
+                        if '#Public' not in receiver and \
+                           '://' + domain_full + '/' in receiver:
+                            receiving_actor = receiver
+                            break
+            if instrument_dict.get('id'):
+                quote_request_instrument = instrument_dict['id']
+            if instrument_dict.get('object'):
+                quote_request_object = instrument_dict['object']
+    if message_json.get('id'):
+        quote_request_id = message_json['id']
+    if not sending_actor:
+        return False
+    if receiving_actor:
+        quote_request_object = receiving_actor
+    reject_json = \
+        _create_quote_accept_reject(receiving_actor,
+                                    sending_actor,
+                                    federation_list,
+                                    debug,
+                                    quote_request_id,
+                                    quote_request_object,
+                                    quote_request_instrument,
+                                    'Reject')
+    if reject_json:
+        print('REJECT: QuoteRequest from ' + sending_actor)
+        nickname = get_nickname_from_actor(receiving_actor)
+        domain, from_port = get_domain_from_actor(receiving_actor)
+        nickname_to_follow = get_nickname_from_actor(sending_actor)
+        domain_to_follow, port = get_domain_from_actor(sending_actor)
+        group_account = \
+            has_group_type(base_dir, receiving_actor, person_cache)
+        if nickname and domain and \
+           nickname_to_follow and domain_to_follow:
+            if debug:
+                print('REJECT: QuoteRequest sending reject ' +
+                      str(reject_json))
+
+            curr_session = session
+            curr_domain = domain
+            curr_port = from_port
+            curr_http_prefix = http_prefix
+            if onion_domain and \
+               not curr_domain.endswith('.onion') and \
+               domain_to_follow.endswith('.onion'):
+                curr_session = session_onion
+                curr_http_prefix = 'http'
+                curr_domain = onion_domain
+                curr_port = 80
+                port = 80
+                if debug:
+                    print('Domain switched from ' + domain +
+                          ' to ' + curr_domain)
+            elif (i2p_domain and
+                  not curr_domain.endswith('.i2p') and
+                  domain_to_follow.endswith('.i2p')):
+                curr_session = session_i2p
+                curr_http_prefix = 'http'
+                curr_domain = i2p_domain
+                curr_port = 80
+                port = 80
+                if debug:
+                    print('Domain switched from ' + domain +
+                          ' to ' + curr_domain)
+
+            client_to_server = False
+            send_signed_json(reject_json, curr_session, base_dir,
+                             nickname_to_follow, domain_to_follow, port,
+                             nickname, domain, curr_port,
+                             curr_http_prefix, client_to_server,
+                             federation_list,
+                             send_threads, post_log, cached_webfingers,
+                             person_cache, debug, project_version, None,
+                             group_account, signing_priv_key_pem,
+                             726235284, curr_domain, onion_domain, i2p_domain,
+                             extra_headers, sites_unavailable,
+                             system_language, mitm_servers)
+        return True
+    return False
 
 
 def _accept_follow(base_dir: str, message_json: {},
@@ -268,10 +414,39 @@ def receive_accept_reject(base_dir: str, domain: str, message_json: {},
     return True
 
 
-def receive_quote_request(message_json: {}) -> bool:
+def receive_quote_request(message_json: {}, federation_list: [],
+                          debug: bool,
+                          domain_full: str,
+                          session, session_onion, session_i2p,
+                          base_dir: str,
+                          http_prefix: str,
+                          send_threads: [], post_log: [],
+                          cached_webfingers: {},
+                          person_cache: {}, project_version: str,
+                          signing_priv_key_pem: str,
+                          onion_domain: str,
+                          i2p_domain: str,
+                          extra_headers: {},
+                          sites_unavailable: {},
+                          system_language: str,
+                          mitm_servers: []) -> bool:
     """Receives a QuoteRequest within the POST section of HTTPServer
     """
     if message_json['type'] != 'QuoteRequest':
         return False
-    _reject_quote_request(message_json)
+    _reject_quote_request(message_json, domain_full,
+                          federation_list, debug,
+                          session, session_onion, session_i2p, base_dir,
+                          http_prefix,
+                          send_threads, post_log,
+                          cached_webfingers,
+                          person_cache, project_version,
+                          signing_priv_key_pem,
+                          onion_domain,
+                          i2p_domain,
+                          extra_headers,
+                          sites_unavailable,
+                          system_language,
+                          mitm_servers)
+
     return True

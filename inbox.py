@@ -3640,7 +3640,21 @@ def run_inbox_queue(server,
             inbox_start_time = time.time()
             continue
 
-        if receive_quote_request(queue_json['post']):
+        if receive_quote_request(queue_json['post'],
+                                 federation_list,
+                                 debug, domain,
+                                 session, session_onion, session_i2p,
+                                 base_dir,
+                                 http_prefix,
+                                 send_threads, post_log,
+                                 cached_webfingers,
+                                 person_cache, project_version,
+                                 signing_priv_key_pem,
+                                 onion_domain,
+                                 i2p_domain, {},
+                                 server.sites_unavailable,
+                                 system_language,
+                                 server.mitm_servers):
             print('Queue: QuoteRequest received from ' + key_id)
             if os.path.isfile(queue_filename):
                 try:
