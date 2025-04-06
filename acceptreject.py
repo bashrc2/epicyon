@@ -41,6 +41,7 @@ def _create_quote_accept_reject(receiving_actor: str,
                                 quote_request_instrument: str,
                                 accept_type: str) -> {}:
     """Creates an Accept or Reject response to QuoteRequest
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md
     """
     if not receiving_actor or \
        not sending_actor or \
