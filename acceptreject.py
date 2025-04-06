@@ -12,6 +12,7 @@ __module_group__ = "ActivityPub"
 import os
 from flags import has_group_type
 from flags import url_permitted
+from utils import get_attributed_to
 from utils import get_user_paths
 from utils import text_in_file
 from utils import has_object_string_object
@@ -84,6 +85,23 @@ def create_reject(federation_list: [],
                                  nickname, domain, port,
                                  to_url, cc_url,
                                  http_prefix, object_json, 'Reject')
+
+
+def _reject_quote_request(message_json: {}) -> None:
+    """ Rejects a QuoteRequest
+    """
+    actor = None
+    if message_json.get('actor'):
+        actor = message_json['actor']
+    elif message_json.get('instrument'):
+        if isinstance(message_json['instrument'], dict):
+            if message_json['instrument'].get('attributedTo'):
+                instrument_dict = message_json['instrument']
+                actor = get_attributed_to(instrument_dict['attributedTo'])
+    if not actor:
+        return
+    # TODO send back a Reject
+    print('REJECT: QuoteRequest from ' + actor)
 
 
 def _accept_follow(base_dir: str, message_json: {},
@@ -247,4 +265,13 @@ def receive_accept_reject(base_dir: str, domain: str, message_json: {},
                    curr_domain, onion_domain, i2p_domain)
     if debug:
         print('DEBUG: Uh, ' + message_json['type'] + ', I guess')
+    return True
+
+
+def receive_quote_request(message_json: {}) -> bool:
+    """Receives a QuoteRequest within the POST section of HTTPServer
+    """
+    if message_json['type'] != 'QuoteRequest':
+        return False
+    _reject_quote_request(message_json)
     return True

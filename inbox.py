@@ -78,6 +78,7 @@ from pprint import pprint
 from cache import cache_svg_images
 from cache import get_person_pub_key
 from acceptreject import receive_accept_reject
+from acceptreject import receive_quote_request
 from blocking import is_blocked
 from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
@@ -341,7 +342,8 @@ def inbox_permitted_message(domain: str, message_json: {},
         return False
 
     always_allowed_types = (
-        'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce', 'Move'
+        'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce', 'Move',
+        'QuoteRequest'
     )
     if message_json['type'] not in always_allowed_types:
         if not has_object_dict(message_json):
@@ -3634,6 +3636,22 @@ def run_inbox_queue(server,
                 queue.pop(0)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'receive_accept_reject',
+                                debug)
+            inbox_start_time = time.time()
+            continue
+
+        if receive_quote_request(queue_json['post']):
+            print('Queue: QuoteRequest received from ' + key_id)
+            if os.path.isfile(queue_filename):
+                try:
+                    os.remove(queue_filename)
+                except OSError:
+                    print('EX: run_inbox_queue 7 unable to delete ' +
+                          str(queue_filename))
+            if len(queue) > 0:
+                queue.pop(0)
+            fitness_performance(inbox_start_time, server.fitness,
+                                'INBOX', 'receive_quote_request',
                                 debug)
             inbox_start_time = time.time()
             continue
