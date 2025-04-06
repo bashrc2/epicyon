@@ -433,6 +433,7 @@ def receive_quote_request(message_json: {}, federation_list: [],
                           mitm_servers: [],
                           last_quote_request) -> bool:
     """Receives a QuoteRequest within the POST section of HTTPServer
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/044f/fep-044f.md
     """
     if message_json['type'] != 'QuoteRequest':
         return False
