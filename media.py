@@ -582,6 +582,36 @@ def _store_video_transcript(video_transcript: str,
     return False
 
 
+def _log_uploaded_media(base_dir: str, nickname: str, domain: str,
+                        media_filename: str) -> None:
+    """Creates a log of all media uploaded by an account
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    account_media_log_filename = account_dir + '/media_log.txt'
+    media_log = []
+    write_type = 'w+'
+    if os.path.isfile(account_media_log_filename):
+        try:
+            with open(account_media_log_filename, 'r',
+                      encoding='utf-8') as fp_log:
+                media_log = fp_log.read().split('\n')
+                write_type = 'a+'
+        except OSError:
+            print('EX: unable to read media log for ' + nickname)
+    # don't include the base directory, in case the installation is later
+    # moved around
+    if base_dir in media_filename:
+        media_filename = media_filename.split(base_dir)[1]
+    if media_filename in media_log:
+        return
+    try:
+        with open(account_media_log_filename, write_type,
+                  encoding='utf-8') as fp_log:
+            fp_log.write(media_filename + '\n')
+    except OSError:
+        print('EX: unable to write media log for ' + nickname)
+
+
 def attach_media(base_dir: str, http_prefix: str,
                  nickname: str, domain: str, port: int,
                  post_json: {}, image_filename: str,
@@ -622,6 +652,7 @@ def attach_media(base_dir: str, http_prefix: str,
 
     mpath = get_media_path()
     media_path = mpath + '/' + create_password(32) + '.' + file_extension
+    media_filename = None
     if base_dir:
         create_media_dirs(base_dir, mpath)
         media_filename = base_dir + '/' + media_path
@@ -676,6 +707,7 @@ def attach_media(base_dir: str, http_prefix: str,
                               content_license_url)
         else:
             copyfile(image_filename, media_filename)
+        _log_uploaded_media(base_dir, nickname, domain, media_filename)
         _update_etag(media_filename)
 
     return post_json
