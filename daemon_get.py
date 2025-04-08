@@ -6071,6 +6071,13 @@ def daemon_http_get(self) -> None:
 
     # check that the file exists
     filename = self.server.base_dir + self.path
+
+    # check that the file is not suspended
+    if filename.endswith('.suspended'):
+        http_404(self, 145)
+        self.server.getreq_busy = False
+        return
+
     if os.path.isfile(filename):
         content = None
         try:

@@ -1270,7 +1270,32 @@ def set_bio(base_dir: str, nickname: str, domain: str, bio: str) -> bool:
     return True
 
 
-def reenable_account(base_dir: str, nickname: str) -> None:
+def _unsuspend_media_for_account(base_dir: str, account_dir: str) -> None:
+    """Unsuspends all media for an account
+    """
+    account_media_log_filename = account_dir + '/media_log.txt'
+    if not os.path.isfile(account_media_log_filename):
+        return
+
+    media_log = []
+    try:
+        with open(account_media_log_filename, 'r',
+                  encoding='utf-8') as fp_log:
+            media_log = fp_log.read().split('\n')
+    except OSError:
+        print('EX: suspend unable to read media log for ' + account_dir)
+
+    for filename in media_log:
+        media_filename = base_dir + filename
+        if not os.path.isfile(media_filename + '.suspended'):
+            continue
+        try:
+            os.rename(media_filename + '.suspended', media_filename)
+        except OSError:
+            print('EX: unable to unsuspend media ' + media_filename)
+
+
+def reenable_account(base_dir: str, nickname: str, domain: str) -> None:
     """Removes an account suspension
     """
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
@@ -1289,6 +1314,33 @@ def reenable_account(base_dir: str, nickname: str) -> None:
         except OSError as ex:
             print('EX: reenable_account unable to save ' +
                   suspended_filename + ' ' + str(ex))
+        account_dir = acct_dir(base_dir, nickname, domain)
+        _unsuspend_media_for_account(base_dir, account_dir)
+
+
+def _suspend_media_for_account(base_dir: str, account_dir: str) -> None:
+    """Suspends all media for an account
+    """
+    account_media_log_filename = account_dir + '/media_log.txt'
+    if not os.path.isfile(account_media_log_filename):
+        return
+
+    media_log = []
+    try:
+        with open(account_media_log_filename, 'r',
+                  encoding='utf-8') as fp_log:
+            media_log = fp_log.read().split('\n')
+    except OSError:
+        print('EX: suspend unable to read media log for ' + account_dir)
+
+    for filename in media_log:
+        media_filename = base_dir + filename
+        if not os.path.isfile(media_filename):
+            continue
+        try:
+            os.rename(media_filename, media_filename + '.suspended')
+        except OSError:
+            print('EX: unable to suspend media ' + media_filename)
 
 
 def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
@@ -1313,7 +1365,8 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
             if moderator.strip('\n').strip('\r') == nickname:
                 return
 
-    salt_filename = acct_dir(base_dir, nickname, domain) + '/.salt'
+    account_dir = acct_dir(base_dir, nickname, domain)
+    salt_filename = account_dir + '/.salt'
     if os.path.isfile(salt_filename):
         try:
             os.remove(salt_filename)
@@ -1347,6 +1400,7 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
                 fp_sus.write(nickname + '\n')
         except OSError:
             print('EX: suspend_account unable to write ' + suspended_filename)
+    _suspend_media_for_account(base_dir, account_dir)
 
 
 def can_remove_post(base_dir: str,
@@ -1445,7 +1499,7 @@ def remove_account(base_dir: str, nickname: str,
             if moderator.strip('\n') == nickname:
                 return False
 
-    reenable_account(base_dir, nickname)
+    reenable_account(base_dir, nickname, domain)
     handle = nickname + '@' + domain
     remove_password(base_dir, nickname)
     _remove_tags_for_nickname(base_dir, nickname, domain, port)

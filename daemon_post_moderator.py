@@ -214,7 +214,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
             if moderation_button == 'suspend':
                 suspend_account(base_dir, nickname, domain)
             if moderation_button == 'unsuspend':
-                reenable_account(base_dir, nickname)
+                reenable_account(base_dir, nickname, domain)
             if moderation_button == 'filter':
                 add_global_filter(base_dir, moderation_text)
             if moderation_button == 'unfilter':
