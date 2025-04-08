@@ -1475,6 +1475,31 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
                   tag_filename)
 
 
+def _remove_account_media(base_dir: str, nickname: str, domain: str) -> None:
+    """Removes media for an account
+    """
+    account_dir = acct_dir(base_dir, nickname, domain)
+    account_media_log_filename = account_dir + '/media_log.txt'
+
+    media_log = []
+    if os.path.isfile(account_media_log_filename):
+        try:
+            with open(account_media_log_filename, 'r',
+                      encoding='utf-8') as fp_log:
+                media_log = fp_log.read().split('\n')
+        except OSError:
+            print('EX: remove unable to read media log for ' + nickname)
+
+    for filename in media_log:
+        media_filename = base_dir + filename
+        if not os.path.isfile(media_filename):
+            continue
+        try:
+            os.remove(media_filename)
+        except OSError:
+            print('EX: unable to remove media ' + media_filename)
+
+
 def remove_account(base_dir: str, nickname: str,
                    domain: str, port: int) -> bool:
     """Removes an account
@@ -1500,6 +1525,7 @@ def remove_account(base_dir: str, nickname: str,
                 return False
 
     reenable_account(base_dir, nickname, domain)
+    _remove_account_media(base_dir, nickname, domain)
     handle = nickname + '@' + domain
     remove_password(base_dir, nickname)
     _remove_tags_for_nickname(base_dir, nickname, domain, port)
