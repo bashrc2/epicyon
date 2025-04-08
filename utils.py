@@ -2241,8 +2241,8 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
-                       post_json: {}) -> None:
+def _remove_attachment(base_dir: str, http_prefix: str,
+                       nickname: str, domain: str, post_json: {}) -> None:
     """Removes media files for an attachment
     """
     post_attachments = get_post_attachments(post_json)
@@ -2254,6 +2254,8 @@ def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
     if not attachment_url:
         return
     attachment_url = remove_html(attachment_url)
+
+    # remove the media
     media_filename = base_dir + '/' + \
         attachment_url.replace(http_prefix + '://' + domain + '/', '')
     if os.path.isfile(media_filename):
@@ -2262,12 +2264,38 @@ def _remove_attachment(base_dir: str, http_prefix: str, domain: str,
         except OSError:
             print('EX: _remove_attachment unable to delete media file ' +
                   str(media_filename))
+
+    # remove from the log file
+    account_dir = acct_dir(base_dir, nickname, domain)
+    account_media_log_filename = account_dir + '/media_log.txt'
+    if os.path.isfile(account_media_log_filename):
+        search_filename = media_filename.replace(base_dir, '')
+        media_log_text = ''
+        try:
+            with open(account_media_log_filename, 'r',
+                      encoding='utf-8') as fp_log:
+                media_log_text = fp_log.read()
+        except OSError:
+            print('EX: _remove unable to read media log for ' + nickname)
+        if search_filename + '\n' in media_log_text:
+            media_log_text = media_log_text.replace(search_filename + '\n', '')
+            try:
+                with open(account_media_log_filename, 'w+',
+                          encoding='utf-8') as fp_log:
+                    fp_log.write(media_log_text)
+            except OSError:
+                print('EX: unable to write media log after removal for ' +
+                      nickname)
+
+    # remove the transcript
     if os.path.isfile(media_filename + '.vtt'):
         try:
             os.remove(media_filename + '.vtt')
         except OSError:
             print('EX: _remove_attachment unable to delete media transcript ' +
                   str(media_filename) + '.vtt')
+
+    # remove the etag
     etag_filename = media_filename + '.etag'
     if os.path.isfile(etag_filename):
         try:
@@ -2684,7 +2712,8 @@ def delete_post(base_dir: str, http_prefix: str,
     _delete_conversation_post(base_dir, nickname, domain, post_json_object)
 
     # remove any attachment
-    _remove_attachment(base_dir, http_prefix, domain, post_json_object)
+    _remove_attachment(base_dir, http_prefix, nickname, domain,
+                       post_json_object)
 
     extensions = (
         'votes', 'arrived', 'muted', 'tts', 'reject', 'mitm', 'edits', 'seen'
