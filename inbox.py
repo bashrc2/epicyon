@@ -3755,8 +3755,8 @@ def run_inbox_queue(server,
             _inbox_post_recipients(base_dir, queue_json['post'],
                                    domain, port, debug,
                                    onion_domain, i2p_domain)
-        if not recipients_dict.items() and \
-           not recipients_dict_followers.items():
+        if len(recipients_dict.items()) == 0 and \
+           len(recipients_dict_followers.items()) == 0:
             if debug:
                 print('Queue: no recipients were resolved ' +
                       'for post arriving in inbox')
