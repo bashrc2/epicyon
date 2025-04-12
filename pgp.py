@@ -917,7 +917,7 @@ def actor_to_vcard(actor: {}, domain: str, translate: {}) -> str:
             vcard_str += \
                 'EXPERTISE;LEVEL=' + level_str + ':' + skill_name + '\n'
     if actor.get('hasOccupation'):
-        if len(actor['hasOccupation']) > 0:
+        if actor['hasOccupation']:
             if actor['hasOccupation'][0].get('name'):
                 vcard_str += \
                     'ROLE:' + \
@@ -1048,7 +1048,7 @@ def actor_to_vcard_xml(actor: {}, domain: str, translate: {}) -> str:
             '</parameters>' + \
             '<text>' + pgp_key_encoded + '</text></key>\n'
     if actor.get('hasOccupation'):
-        if len(actor['hasOccupation']) > 0:
+        if actor['hasOccupation']:
             if actor['hasOccupation'][0].get('name'):
                 vcard_str += \
                     '    <role><text>' + \

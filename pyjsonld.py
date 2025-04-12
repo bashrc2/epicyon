@@ -567,7 +567,7 @@ def prepend_base(base, iri):
                 # directory from base
                 if rel.path != '':
                     path = path[0:path.rfind('/') + 1]
-                    if len(path) > 0 and not path.endswith('/'):
+                    if path and not path.endswith('/'):
                         path += '/'
                     path += rel.path
 
@@ -779,7 +779,7 @@ class JsonLdProcessor(object):
         tmp = ctx
         ctx = []
         for v in tmp:
-            if not _is_object(v) or len(v) > 0:
+            if not _is_object(v) or v:
                 ctx.append(v)
 
         # remove array if only one context
@@ -1265,7 +1265,7 @@ class JsonLdProcessor(object):
         """
         if property in subject:
             value = subject[property]
-            return not _is_array(value) or len(value) > 0
+            return not _is_array(value) or value
         return False
 
     @staticmethod

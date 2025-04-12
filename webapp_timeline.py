@@ -707,20 +707,21 @@ def html_timeline(default_timeline: str,
             with open(follow_requests_filename, 'r',
                       encoding='utf-8') as fp_foll:
                 for line in fp_foll:
-                    if len(line) > 0:
-                        # show follow approvals icon
-                        follow_approvals = \
-                            '<a href="' + users_path + \
-                            '/followers#buttonheader" ' + \
-                            'accesskey="' + \
-                            access_keys['followButton'] + '">' + \
-                            '<img loading="lazy" decoding="async" ' + \
-                            'class="timelineicon" alt="' + \
-                            translate['Approve follow requests'] + \
-                            '" title="' + \
-                            translate['Approve follow requests'] + \
-                            '" src="/icons/person.png"/></a>\n'
-                        break
+                    if not line:
+                        continue
+                    # show follow approvals icon
+                    follow_approvals = \
+                        '<a href="' + users_path + \
+                        '/followers#buttonheader" ' + \
+                        'accesskey="' + \
+                        access_keys['followButton'] + '">' + \
+                        '<img loading="lazy" decoding="async" ' + \
+                        'class="timelineicon" alt="' + \
+                        translate['Approve follow requests'] + \
+                        '" title="' + \
+                        translate['Approve follow requests'] + \
+                        '" src="/icons/person.png"/></a>\n'
+                    break
         except OSError:
             print('EX: html_timeline unable to read ' +
                   follow_requests_filename)

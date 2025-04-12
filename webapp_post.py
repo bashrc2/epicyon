@@ -190,7 +190,7 @@ def get_instance_software(base_dir: str, session,
     nodeinfo_url = None
     if nodeinfo1_json.get('links'):
         if isinstance(nodeinfo1_json['links'], list):
-            if len(nodeinfo1_json['links']) > 0:
+            if nodeinfo1_json['links']:
                 if nodeinfo1_json['links'][0].get('href'):
                     href = nodeinfo1_json['links'][0]['href']
                     if isinstance(href, str):

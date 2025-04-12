@@ -104,8 +104,7 @@ def _create_like(recent_posts_cache: {},
         'object': object_url
     }
     if cc_list:
-        if len(cc_list) > 0:
-            new_like_json['cc'] = cc_list
+        new_like_json['cc'] = cc_list
 
     # Extract the domain and nickname from a statuses link
     liked_post_nickname = None

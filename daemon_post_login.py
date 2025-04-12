@@ -234,7 +234,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                         login_str += login_prm + '='
                     else:
                         len_str = login_prm.split('&')[0]
-                        if len(len_str) > 0:
+                        if len_str:
                             login_str += login_prm + '*'
                         len_str = ''
                         if '&' in login_prm:

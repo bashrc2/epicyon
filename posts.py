@@ -5692,7 +5692,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             print('EX: archive_posts_for_person unable to read ' +
                   index_filename + ' ' + str(ex))
         # save the new index file
-        if len(new_index) > 0:
+        if new_index:
             try:
                 with open(index_filename, 'w+',
                           encoding='utf-8') as fp_index:

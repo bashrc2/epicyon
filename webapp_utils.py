@@ -1457,7 +1457,7 @@ def get_post_attachments_as_html(base_dir: str,
                         media_creator = attach['schema:creator']
         elif attach.get('attribution'):
             if isinstance(attach['attribution'], list):
-                if len(attach['attribution']) > 0:
+                if attach['attribution']:
                     attrib_str = attach['attribution'][0]
                     if not dangerous_markup(attrib_str, False, []):
                         if not is_filtered(base_dir, nickname, domain,

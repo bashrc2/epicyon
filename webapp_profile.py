@@ -1336,12 +1336,13 @@ def html_profile(signing_priv_key_pem: str,
                 with open(follow_requests_filename, 'r',
                           encoding='utf-8') as fp_foll:
                     for line in fp_foll:
-                        if len(line) > 0:
-                            follow_approvals = True
-                            followers_button = 'buttonhighlighted'
-                            if selected == 'followers':
-                                followers_button = 'buttonselectedhighlighted'
-                            break
+                        if not line:
+                            continue
+                        follow_approvals = True
+                        followers_button = 'buttonhighlighted'
+                        if selected == 'followers':
+                            followers_button = 'buttonselectedhighlighted'
+                        break
             except OSError as exc:
                 print('EX: html_profile unable to read ' +
                       follow_requests_filename + ' ' + str(exc))
@@ -1352,59 +1353,60 @@ def html_profile(signing_priv_key_pem: str,
                 with open(follow_requests_filename, 'r',
                           encoding='utf-8') as fp_req:
                     for follower_handle in fp_req:
-                        if len(follower_handle) > 0:
-                            follower_handle = \
-                                remove_eol(follower_handle)
-                            if '://' in follower_handle:
-                                follower_actor = follower_handle
-                            else:
-                                nick = follower_handle.split('@')[0]
-                                dom = follower_handle.split('@')[1]
-                                follower_actor = \
-                                    local_actor_url(http_prefix, nick, dom)
+                        if not follower_handle:
+                            continue
+                        follower_handle = \
+                            remove_eol(follower_handle)
+                        if '://' in follower_handle:
+                            follower_actor = follower_handle
+                        else:
+                            nick = follower_handle.split('@')[0]
+                            dom = follower_handle.split('@')[1]
+                            follower_actor = \
+                                local_actor_url(http_prefix, nick, dom)
 
-                            # is this a new domain?
-                            # if so then append a new instance indicator
-                            follower_domain, _ = \
-                                get_domain_from_actor(follower_actor)
-                            new_follower_domain = ''
-                            if follower_domain not in curr_follower_domains:
-                                new_follower_domain = ' ✨'
+                        # is this a new domain?
+                        # if so then append a new instance indicator
+                        follower_domain, _ = \
+                            get_domain_from_actor(follower_actor)
+                        new_follower_domain = ''
+                        if follower_domain not in curr_follower_domains:
+                            new_follower_domain = ' ✨'
 
-                            # Show the handle of the potential follower
-                            # being approved, linking to search on that handle
-                            base_path = '/users/' + nickname
-                            follow_approvals_section += \
-                                '<div class="container">\n' + \
-                                '  <form method="POST" action="' + \
-                                base_path + '/searchhandle?page=1">\n' + \
-                                '    <input type="hidden" ' + \
-                                'name="actor" value="' + actor + '">\n' + \
-                                '    <input type="hidden" ' + \
-                                'name="searchtext" value="' + \
-                                follower_actor + \
-                                '">\n    <button type="submit" ' + \
-                                'class="followApproveHandle" ' + \
-                                'name="submitSearch" tabindex="2">' + \
-                                follower_handle + new_follower_domain + \
-                                '</button>\n  </form>\n'
+                        # Show the handle of the potential follower
+                        # being approved, linking to search on that handle
+                        base_path = '/users/' + nickname
+                        follow_approvals_section += \
+                            '<div class="container">\n' + \
+                            '  <form method="POST" action="' + \
+                            base_path + '/searchhandle?page=1">\n' + \
+                            '    <input type="hidden" ' + \
+                            'name="actor" value="' + actor + '">\n' + \
+                            '    <input type="hidden" ' + \
+                            'name="searchtext" value="' + \
+                            follower_actor + \
+                            '">\n    <button type="submit" ' + \
+                            'class="followApproveHandle" ' + \
+                            'name="submitSearch" tabindex="2">' + \
+                            follower_handle + new_follower_domain + \
+                            '</button>\n  </form>\n'
 
-                            # show Approve and Deny buttons
-                            follow_approvals_section += \
-                                '<a href="' + base_path + \
-                                '/followapprove=' + follower_handle + \
-                                '" tabindex="2">'
-                            follow_approvals_section += \
-                                '<button class="followApprove">' + \
-                                translate['Approve'] + '</button></a><br><br>'
-                            follow_approvals_section += \
-                                '<a href="' + base_path + \
-                                '/followdeny=' + follower_handle + \
-                                '" tabindex="3">'
-                            follow_approvals_section += \
-                                '<button class="followDeny">' + \
-                                translate['Deny'] + '</button></a>'
-                            follow_approvals_section += '</div>'
+                        # show Approve and Deny buttons
+                        follow_approvals_section += \
+                            '<a href="' + base_path + \
+                            '/followapprove=' + follower_handle + \
+                            '" tabindex="2">'
+                        follow_approvals_section += \
+                            '<button class="followApprove">' + \
+                            translate['Approve'] + '</button></a><br><br>'
+                        follow_approvals_section += \
+                            '<a href="' + base_path + \
+                            '/followdeny=' + follower_handle + \
+                            '" tabindex="3">'
+                        follow_approvals_section += \
+                            '<button class="followDeny">' + \
+                            translate['Deny'] + '</button></a>'
+                        follow_approvals_section += '</div>'
 
     profile_description_short = \
         _get_profile_short_description(profile_description)
@@ -1950,7 +1952,7 @@ def _html_profile_roles(translate: {}, nickname: str, domain: str,
         else:
             profile_str += '<h3>' + role + '</h3>\n'
     profile_str += '</div></div>\n'
-    if len(profile_str) == 0:
+    if not profile_str:
         profile_str += \
             '<p>@' + nickname + '@' + domain + ' has no roles assigned</p>\n'
     else:
@@ -1967,7 +1969,7 @@ def _html_profile_skills(skills_json: {}) -> str:
             '<div>' + skill + \
             '<br><div id="myProgress"><div id="myBar" style="width:' + \
             str(level) + '%"></div></div></div>\n<br>\n'
-    if len(profile_str) > 0:
+    if profile_str:
         profile_str = '<center><div class="skill-title">' + \
             profile_str + '</div></center>\n'
     return profile_str
@@ -1984,7 +1986,7 @@ def _html_profile_shares(actor: str, translate: {},
                                              actor, item, translate,
                                              False, False,
                                              shares_file_type)
-    if len(profile_str) > 0:
+    if profile_str:
         profile_str = '<div class="share-title">' + profile_str + '</div>\n'
     return profile_str
 

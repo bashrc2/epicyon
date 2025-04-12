@@ -110,8 +110,7 @@ def _create_accept_reject(federation_list: [],
         'object': object_json
     }
     if cc_url:
-        if len(cc_url) > 0:
-            new_accept['cc'] = [cc_url]
+        new_accept['cc'] = [cc_url]
     return new_accept
 
 

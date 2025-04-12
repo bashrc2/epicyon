@@ -206,8 +206,7 @@ def create_announce(session, base_dir: str, federation_list: [],
         'type': 'Announce'
     }
     if cc_url:
-        if len(cc_url) > 0:
-            new_announce['cc'] = [cc_url]
+        new_announce['cc'] = [cc_url]
     if save_to_file:
         outbox_dir = create_outbox_dir(nickname, domain, base_dir)
         filename = \
