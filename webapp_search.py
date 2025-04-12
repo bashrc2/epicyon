@@ -678,7 +678,7 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
         skillsearch + \
         '</a></h1></center>'
 
-    if len(results) == 0:
+    if not results:
         skill_search_form += \
             '<center><h5>' + translate['No results'] + \
             '</h5></center>'
@@ -790,7 +790,7 @@ def html_history_search(translate: {}, base_dir: str,
         '<center><h1><a href="' + actor + '/search">' + \
         history_search_title + '</a></h1></center>'
 
-    if len(box_filenames) == 0:
+    if not box_filenames:
         history_search_form += \
             '<center><h5>' + translate['No results'] + \
             '</h5></center>'

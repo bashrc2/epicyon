@@ -89,7 +89,7 @@ def is_editor(base_dir: str, nickname: str) -> bool:
     except OSError:
         print('EX: is_editor unable to read ' + editors_file)
 
-    if len(lines) == 0:
+    if not lines:
         admin_name = get_config_param(base_dir, 'admin')
         if admin_name:
             if admin_name == nickname:
@@ -120,7 +120,7 @@ def is_artist(base_dir: str, nickname: str) -> bool:
     except OSError:
         print('EX: is_artist unable to read ' + artists_file)
 
-    if len(lines) == 0:
+    if not lines:
         admin_name = get_config_param(base_dir, 'admin')
         if admin_name:
             if admin_name == nickname:

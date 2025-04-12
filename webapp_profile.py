@@ -1804,7 +1804,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                             authorized, 0, False, 0)
         if not outbox_feed:
             break
-        if len(outbox_feed['orderedItems']) == 0:
+        if not outbox_feed['orderedItems']:
             break
         shown_items: list[str] = []
         for item in outbox_feed['orderedItems']:

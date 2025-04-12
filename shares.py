@@ -78,7 +78,7 @@ def _load_dfc_ids(base_dir: str, system_language: str,
     if not product_types.get('@graph'):
         print('No @graph list within ontology')
         return None
-    if len(product_types['@graph']) == 0:
+    if not product_types['@graph']:
         print('@graph list has no contents')
         return None
     if not product_types['@graph'][0].get('rdfs:label'):

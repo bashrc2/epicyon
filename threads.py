@@ -91,7 +91,7 @@ def remove_dormant_threads(base_dir: str, threads_list: [], debug: bool,
                            timeout_mins: int) -> None:
     """Removes threads whose execution has completed
     """
-    if len(threads_list) == 0:
+    if not threads_list:
         return
 
     timeout_secs = int(timeout_mins * 60)

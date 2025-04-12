@@ -185,7 +185,7 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
     except OSError:
         print('EX: is_moderator unable to read ' + moderators_file)
 
-    if len(lines) == 0:
+    if not lines:
         admin_name = get_config_param(base_dir, 'admin')
         if not admin_name:
             return False
@@ -2843,7 +2843,7 @@ def create_report_post(base_dir: str,
                                 moderators_list.append(moderator_actor)
         except OSError:
             print('EX: create_report_post unable to read ' + moderators_file)
-    if len(moderators_list) == 0:
+    if not moderators_list:
         # if there are no moderators then the admin becomes the moderator
         admin_nickname = get_config_param(base_dir, 'admin')
         if admin_nickname:
@@ -3535,9 +3535,9 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
     if isinstance(post_json_object['object'], str):
         if not post_json_object.get('to'):
             return
-        if len(post_json_object['to']) > 1:
+        if not post_json_object['to']:
             return
-        if len(post_json_object['to']) == 0:
+        if len(post_json_object['to']) > 1:
             return
         if not post_json_object['to'][0].endswith('#Public'):
             if not post_json_object['to'][0] == 'as:Public':
@@ -3550,9 +3550,9 @@ def _add_followers_to_public_post(post_json_object: {}) -> None:
     elif has_object_dict(post_json_object):
         if not post_json_object['object'].get('to'):
             return
-        if len(post_json_object['object']['to']) > 1:
+        if not post_json_object['object']['to']:
             return
-        if len(post_json_object['object']['to']) == 0:
+        if len(post_json_object['object']['to']) > 1:
             return
         if not post_json_object['object']['to'][0].endswith('#Public'):
             if not post_json_object['object']['to'][0] == 'as:Public':

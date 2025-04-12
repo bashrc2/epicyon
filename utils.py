@@ -1407,7 +1407,7 @@ def create_inbox_queue_dir(nickname: str, domain: str, base_dir: str) -> str:
 def domain_permitted(domain: str, federation_list: []) -> bool:
     """Is the given domain permitted according to the federation list?
     """
-    if len(federation_list) == 0:
+    if not federation_list:
         return True
     domain = remove_domain_port(domain)
     if domain in federation_list:

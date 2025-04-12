@@ -2663,7 +2663,7 @@ def _restore_queue_items(base_dir: str, queue: []) -> None:
                     queue.append(os.path.join(queue_dir, qfile))
                 break
         break
-    if len(queue) > 0:
+    if queue:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
 
 
@@ -2705,13 +2705,13 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                 print('Queue: Quota per day - Maximum posts for ' +
                       post_domain + ' reached (' +
                       str(domain_max_posts_per_day) + ')')
-                if len(queue) > 0:
+                if queue:
                     try:
                         os.remove(queue_filename)
                     except OSError:
                         print('EX: _inbox_quota_exceeded unable to delete 1 ' +
                               str(queue_filename))
-                    if len(queue) > 0:
+                    if queue:
                         queue.pop(0)
                 return True
             quotas_daily['domains'][post_domain] += 1
@@ -2728,13 +2728,13 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                 print('Queue: Quota per min - Maximum posts for ' +
                       post_domain + ' reached (' +
                       str(domain_max_posts_per_min) + ')')
-                if len(queue) > 0:
+                if queue:
                     try:
                         os.remove(queue_filename)
                     except OSError:
                         print('EX: _inbox_quota_exceeded unable to delete 2 ' +
                               str(queue_filename))
-                    if len(queue) > 0:
+                    if queue:
                         queue.pop(0)
                 return True
             quotas_per_min['domains'][post_domain] += 1
@@ -2750,13 +2750,13 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                       ' Maximum posts for ' +
                       post_handle + ' reached (' +
                       str(account_max_posts_per_day) + ')')
-                if len(queue) > 0:
+                if queue:
                     try:
                         os.remove(queue_filename)
                     except OSError:
                         print('EX: _inbox_quota_exceeded unable to delete 3 ' +
                               str(queue_filename))
-                    if len(queue) > 0:
+                    if queue:
                         queue.pop(0)
                 return True
             quotas_daily['accounts'][post_handle] += 1
@@ -2773,13 +2773,13 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                       ' Maximum posts for ' +
                       post_handle + ' reached (' +
                       str(account_max_posts_per_min) + ')')
-                if len(queue) > 0:
+                if queue:
                     try:
                         os.remove(queue_filename)
                     except OSError:
                         print('EX: _inbox_quota_exceeded unable to delete 4 ' +
                               str(queue_filename))
-                    if len(queue) > 0:
+                    if queue:
                         queue.pop(0)
                 return True
             quotas_per_min['accounts'][post_handle] += 1
@@ -3280,7 +3280,7 @@ def run_inbox_queue(server,
                 curr_mitm_servers = server.mitm_servers.copy()
                 save_mitm_servers(base_dir, curr_mitm_servers)
 
-        if len(queue) == 0:
+        if not queue:
             # restore any remaining queue items
             queue_restore_ctr += 1
             if queue_restore_ctr >= 30:
@@ -3297,7 +3297,7 @@ def run_inbox_queue(server,
         if not os.path.isfile(queue_filename):
             print("Queue: queue item rejected because it has no file: " +
                   queue_filename)
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             continue
 
@@ -3313,7 +3313,7 @@ def run_inbox_queue(server,
             print('Queue: run_inbox_queue failed to load inbox queue item ' +
                   queue_filename)
             # Assume that the file is probably corrupt/unreadable
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             # delete the queue file
             if os.path.isfile(queue_filename):
@@ -3461,7 +3461,7 @@ def run_inbox_queue(server,
                 except OSError:
                     print('EX: run_inbox_queue 2 unable to delete ' +
                           str(queue_filename))
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             continue
 
@@ -3521,7 +3521,7 @@ def run_inbox_queue(server,
                     except OSError:
                         print('EX: run_inbox_queue 3 unable to delete ' +
                               str(queue_filename))
-                if len(queue) > 0:
+                if queue:
                     queue.pop(0)
                 continue
         else:
@@ -3543,7 +3543,7 @@ def run_inbox_queue(server,
                         except OSError:
                             print('EX: run_inbox_queue 4 unable to delete ' +
                                   str(queue_filename))
-                    if len(queue) > 0:
+                    if queue:
                         queue.pop(0)
                     fitness_performance(inbox_start_time, server.fitness,
                                         'INBOX', 'not_verify_signature',
@@ -3580,7 +3580,7 @@ def run_inbox_queue(server,
                 except OSError:
                     print('EX: run_inbox_queue 5 unable to delete ' +
                           str(queue_filename))
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', '_receive_undo',
@@ -3611,7 +3611,7 @@ def run_inbox_queue(server,
                 except OSError:
                     print('EX: run_inbox_queue 6 unable to delete ' +
                           str(queue_filename))
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             print('Queue: Follow activity for ' + key_id +
                   ' removed from queue')
@@ -3634,7 +3634,7 @@ def run_inbox_queue(server,
                 except OSError:
                     print('EX: run_inbox_queue 7 unable to delete ' +
                           str(queue_filename))
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'receive_accept_reject',
@@ -3666,7 +3666,7 @@ def run_inbox_queue(server,
                 except OSError:
                     print('EX: run_inbox_queue 7 unable to delete ' +
                           str(queue_filename))
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'receive_quote_request',
@@ -3700,7 +3700,7 @@ def run_inbox_queue(server,
                 except OSError:
                     print('EX: run_inbox_queue 8 unable to receive move ' +
                           str(queue_filename))
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', '_receive_move_activity',
@@ -3742,7 +3742,7 @@ def run_inbox_queue(server,
                 except OSError:
                     print('EX: run_inbox_queue 8 unable to delete ' +
                           str(queue_filename))
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', '_receive_update_activity',
@@ -3755,8 +3755,8 @@ def run_inbox_queue(server,
             _inbox_post_recipients(base_dir, queue_json['post'],
                                    domain, port, debug,
                                    onion_domain, i2p_domain)
-        if len(recipients_dict.items()) == 0 and \
-           len(recipients_dict_followers.items()) == 0:
+        if not recipients_dict.items() and \
+           not recipients_dict_followers.items():
             if debug:
                 print('Queue: no recipients were resolved ' +
                       'for post arriving in inbox')
@@ -3766,7 +3766,7 @@ def run_inbox_queue(server,
                 except OSError:
                     print('EX: run_inbox_queue 9 unable to delete ' +
                           str(queue_filename))
-            if len(queue) > 0:
+            if queue:
                 queue.pop(0)
             continue
         fitness_performance(inbox_start_time, server.fitness,
@@ -3879,5 +3879,5 @@ def run_inbox_queue(server,
             except OSError:
                 print('EX: run_inbox_queue 10 unable to delete ' +
                       str(queue_filename))
-        if len(queue) > 0:
+        if queue:
             queue.pop(0)
