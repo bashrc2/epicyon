@@ -303,8 +303,7 @@ def bookmark_post(recent_posts_cache: {},
         'object': object_url
     }
     if cc_list:
-        if len(cc_list) > 0:
-            new_bookmark_json['cc'] = cc_list
+        new_bookmark_json['cc'] = cc_list
 
     # Extract the domain and nickname from a statuses link
     bookmarked_post_nickname = None
@@ -364,9 +363,8 @@ def undo_bookmark_post(recent_posts_cache: {},
         }
     }
     if cc_list:
-        if len(cc_list) > 0:
-            new_undo_bookmark_json['cc'] = cc_list
-            new_undo_bookmark_json['object']['cc'] = cc_list
+        new_undo_bookmark_json['cc'] = cc_list
+        new_undo_bookmark_json['object']['cc'] = cc_list
 
     # Extract the domain and nickname from a statuses link
     bookmarked_post_nickname = None

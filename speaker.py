@@ -545,11 +545,10 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
             print('EX: _post_to_speaker_json unable to read ' +
                   approve_follows_filename)
         if follows:
-            if len(follows) > 0:
-                follow_requests_exist = True
-                for i, _ in enumerate(follows):
-                    follows[i] = follows[i].strip()
-                follow_requests_list = follows
+            follow_requests_exist = True
+            for i, _ in enumerate(follows):
+                follows[i] = follows[i].strip()
+            follow_requests_list = follows
     post_dm = False
     dm_filename = accounts_dir + '/.newDM'
     if os.path.isfile(dm_filename):

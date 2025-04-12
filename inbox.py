@@ -3800,7 +3800,7 @@ def run_inbox_queue(server,
         # Copy any posts addressed to followers into the shared inbox
         # this avoid copying file multiple times to potentially many
         # individual inboxes
-        if len(recipients_dict_followers) > 0:
+        if len(recipients_dict_followers.items()) > 0:
             shared_inbox_post_filename = \
                 queue_json['destination'].replace(inbox_handle, inbox_handle)
             if not os.path.isfile(shared_inbox_post_filename):

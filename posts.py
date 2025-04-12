@@ -4606,7 +4606,7 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
                 return box_header
 
             page_lines: list[str] = []
-            if len(lines) > 0:
+            if lines:
                 end_line_number = \
                     len(lines) - 1 - int(items_per_page * page_number)
                 end_line_number = max(end_line_number, 0)

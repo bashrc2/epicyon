@@ -154,7 +154,7 @@ def expire_person_cache(person_cache: {}):
         days_since_cached = (curr_time - cache_time).days
         if days_since_cached > 2:
             removals.append(person_url)
-    if len(removals) > 0:
+    if removals:
         for person_url in removals:
             del person_cache[person_url]
         print(str(len(removals)) + ' actors were expired from the cache')

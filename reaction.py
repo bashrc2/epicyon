@@ -103,8 +103,7 @@ def _reactionpost(recent_posts_cache: {},
         'content': emoji_content
     }
     if cc_list:
-        if len(cc_list) > 0:
-            new_reaction_json['cc'] = cc_list
+        new_reaction_json['cc'] = cc_list
 
     # Extract the domain and nickname from a statuses link
     reaction_post_nickname = None
