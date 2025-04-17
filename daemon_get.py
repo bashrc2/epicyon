@@ -5447,8 +5447,7 @@ def daemon_http_get(self) -> None:
                               self.server.signing_priv_key_pem,
                               None,
                               self.server.block_federated,
-                              self.server.mitm_servers,
-                              self.server.instance_software)
+                              self.server.mitm_servers)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -5491,8 +5490,7 @@ def daemon_http_get(self) -> None:
                               self.server.signing_priv_key_pem,
                               None,
                               self.server.block_federated,
-                              self.server.mitm_servers,
-                              self.server.instance_software)
+                              self.server.mitm_servers)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
