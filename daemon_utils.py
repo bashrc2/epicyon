@@ -72,6 +72,7 @@ from webapp_person_options import html_person_options
 from httpheaders import redirect_headers
 from httpheaders import set_headers
 from fitnessFunctions import fitness_performance
+from siteactive import is_online
 
 
 def post_to_outbox(self, message_json: {}, version: str,
@@ -82,6 +83,11 @@ def post_to_outbox(self, message_json: {}, version: str,
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
     """
     if not curr_session:
+        return False
+
+    if not is_online():
+        print('WARN: ' + post_to_nickname +
+              ' cannot send post because not online')
         return False
 
     city = self.server.city
