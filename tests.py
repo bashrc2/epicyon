@@ -57,6 +57,7 @@ from follow import clear_followers
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
 from siteactive import site_is_active
+from siteactive import is_online
 from flags import contains_pgp_public_key
 from flags import is_group_actor
 from flags import is_group_account
@@ -4345,6 +4346,8 @@ def _test_jsonld():
 
 def _test_site_active():
     print('test_site_is_active')
+    if not is_online():
+        return
     timeout = 10
     sites_unavailable: list[str] = []
     # at least one site should resolve
