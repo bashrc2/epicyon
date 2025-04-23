@@ -129,6 +129,7 @@ from poison import load_dictionary
 from poison import load_2grams
 from webapp_post import get_instance_software
 from siteactive import site_is_active
+from siteactive import is_online
 
 
 def str2bool(value_str) -> bool:
@@ -457,6 +458,11 @@ def _command_options() -> None:
                         dest='shared_items_federated_domains',
                         help='Specify federation list for shared items, ' +
                         'separated by spaces')
+    parser.add_argument("--internet", "--online",
+                        dest='online',
+                        type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Checks if internet is available")
     parser.add_argument("--poisoned", "--poison",
                         dest='poisoned',
                         type=str2bool, nargs='?',
@@ -868,6 +874,14 @@ def _command_options() -> None:
                         help="Reset the number of remaining registrations")
 
     argb = parser.parse_args()
+
+    if argb.online:
+        # is the internet available?
+        if is_online():
+            print("True")
+        else:
+            print("False")
+        sys.exit()
 
     if argb.poisoned:
         # LLM poisoning example
