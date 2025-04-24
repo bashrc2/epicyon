@@ -49,6 +49,26 @@ def get_location_dict_from_tags(tags: []) -> str:
     return None
 
 
+def _location_address_from_dict(location: {}) -> str:
+    """returns location address as a string
+    """
+    location_str = ''
+    address_section_name = (
+        'streetAddress',
+        'addressLocality',
+        'addressRegion',
+        'postalCode',
+        'addressCountry'
+    )
+    for addr_section in address_section_name:
+        if location.get(addr_section):
+            if isinstance(addr_section, str):
+                if location_str:
+                    location_str += ', '
+                location_str += location[addr_section]
+    return location_str
+
+
 def _get_location_from_tags(tags: []) -> str:
     """Returns the location from the tags list
     """
@@ -70,6 +90,9 @@ def _get_location_from_tags(tags: []) -> str:
                 locn_address = remove_html(locn['address'])
                 locn_address = locn_address.replace(', ', '<br>')
                 location_str += '<br><address>' + locn_address + '</address>'
+            elif isinstance(locn['address'], dict):
+                locn_address = \
+                    _location_address_from_dict(locn['address'])
         return location_str
     return None
 
@@ -113,6 +136,9 @@ def get_location_from_post(post_json_object: {}) -> str:
                 if isinstance(locn2['address'], str):
                     locn_address = remove_html(locn2['address'])
                     locn_address = locn_address.replace(', ', '<br>')
+                elif isinstance(locn2['address'], dict):
+                    locn_address = \
+                        _location_address_from_dict(locn2['address'])
     if locn_exists:
         # location geocoordinate
         osm_domain = 'osm.org'
@@ -128,7 +154,7 @@ def get_location_from_post(post_json_object: {}) -> str:
                     'rel="nofollow noopener noreferrer">' + locn + '</a>'
             else:
                 locn = locn_url
-    elif locn_address:
+    if locn_address:
         # location name and address
         if locn:
             if '<address>' not in locn:
