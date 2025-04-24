@@ -3183,16 +3183,28 @@ def individual_post_as_html(signing_priv_key_pem: str,
             buy_links = get_buy_links(post_json_object, translate, buy_sites)
         # show embedded map if the location contains a map url
         location_str = get_location_from_post(post_json_object)
+        loc_str = location_str
         if location_str:
-            if resembles_url(location_str):
+            # if this is a location with an address then remove the address
+            if '<br><address>' in location_str:
+                loc_str = location_str.split('<br><address>')[0]
+            # does this look like a geolocation link?
+            if resembles_url(loc_str):
                 bounding_box_degrees = 0.001
                 map_str = \
-                    html_open_street_map(location_str,
+                    html_open_street_map(loc_str,
                                          bounding_box_degrees,
                                          translate, session,
                                          session, session)
                 if map_str:
-                    map_str = '<center>\n' + map_str + '</center>\n'
+                    map_addr_str = ''
+                    if '<br><address>' in location_str:
+                        # append the address after the map
+                        map_addr_str = \
+                            '<br><br><address>' + \
+                            location_str.split('<br><address>')[1] + '\n'
+                    map_str = '<center>\n' + map_str + \
+                        map_addr_str + '</center>\n'
         attrib = None
         if post_json_object['object'].get('attributedTo'):
             attrib = \
@@ -3200,13 +3212,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if map_str and attrib:
             # is this being sent by the author?
             if '://' + domain_full + '/users/' + nickname in attrib:
-                location_domain = location_str
-                if '://' in location_str:
-                    location_domain = location_str.split('://')[1]
+                location_domain = loc_str
+                if '://' in loc_str:
+                    location_domain = loc_str.split('://')[1]
                     if '/' in location_domain:
                         location_domain = location_domain.split('/')[0]
                     location_domain = \
-                        location_str.split('://')[0] + '://' + location_domain
+                        loc_str.split('://')[0] + '://' + location_domain
                 else:
                     if '/' in location_domain:
                         location_domain = location_domain.split('/')[0]
@@ -3216,7 +3228,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                         location_domain)
                 # remember the coordinates
                 map_zoom, map_latitude, map_longitude = \
-                    geocoords_from_map_link(location_str,
+                    geocoords_from_map_link(loc_str,
                                             'openstreetmap.org',
                                             session)
                 if map_zoom and map_latitude and map_longitude:
