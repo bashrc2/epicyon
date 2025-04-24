@@ -3223,6 +3223,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
                     set_map_preferences_coords(base_dir, nickname, domain,
                                                map_latitude, map_longitude,
                                                map_zoom)
+        if not map_str and location_str:
+            map_str = '<p>' + translate['Location'] + ': ' + \
+                location_str + '</p>\n'
 
     if is_muted:
         content_str = ''

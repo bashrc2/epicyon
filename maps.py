@@ -57,12 +57,19 @@ def _get_location_from_tags(tags: []) -> str:
         location_str = locn['name'].replace('\n', ' ')
         location_str = remove_html(location_str)
         if locn.get('url'):
+            # location name and link
             if isinstance(locn['url'], str):
                 if resembles_url(locn['url']):
                     location_str = \
                         '<a href="' + locn['url'] + '" target="_blank" ' + \
                         'rel="nofollow noopener noreferrer">' + \
                         location_str + '</a>'
+        if locn.get('address'):
+            # location name and address
+            if isinstance(locn['address'], str):
+                locn_address = remove_html(locn['address'])
+                locn_address = locn_address.replace(', ', '<br>')
+                location_str += '<br><address>' + locn_address + '</address>'
         return location_str
     return None
 
@@ -72,6 +79,7 @@ def get_location_from_post(post_json_object: {}) -> str:
     """
     locn = None
     locn_url = None
+    locn_address = None
 
     # location represented via a tag
     post_obj = post_json_object
@@ -101,18 +109,32 @@ def get_location_from_post(post_json_object: {}) -> str:
             if locn2.get('url'):
                 if isinstance(locn2['url'], str):
                     locn_url = locn2['url']
+            if locn2.get('address'):
+                if isinstance(locn2['address'], str):
+                    locn_address = remove_html(locn2['address'])
+                    locn_address = locn_address.replace(', ', '<br>')
     if locn_exists:
+        # location geocoordinate
         osm_domain = 'osm.org'
         zoom = 17
         locn = _geocoords_to_osm_link(osm_domain, zoom,
                                       locn2['latitude'],
                                       locn2['longitude'])
     elif locn_url:
+        # location name and link
         if locn:
-            locn = '<a href="' + locn_url + '" target="_blank" ' + \
-                'rel="nofollow noopener noreferrer">' + locn + '</a>'
+            if '<a href=' not in locn:
+                locn = '<a href="' + locn_url + '" target="_blank" ' + \
+                    'rel="nofollow noopener noreferrer">' + locn + '</a>'
+            else:
+                locn = locn_url
+    elif locn_address:
+        # location name and address
+        if locn:
+            if '<address>' not in locn:
+                locn += '<br><address>' + locn_address + '</address>'
         else:
-            locn = locn_url
+            locn = '<address>' + locn_address + '</address>'
 
     return locn
 
