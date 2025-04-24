@@ -41,6 +41,7 @@ from flags import contains_private_key
 from flags import has_group_type
 from flags import is_premium_account
 from flags import url_permitted
+from utils import resembles_url
 from utils import get_person_icon
 from utils import remove_post_from_index
 from utils import replace_strings
@@ -1397,7 +1398,10 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                 'type': 'Place',
                 'name': location['name']
             }
-
+            if location.get('url'):
+                if isinstance(location['url'], str):
+                    if resembles_url(location['url']):
+                        new_post['object']['location']['url'] = location['url']
     if attach_image_filename:
         new_post['object'] = \
             attach_media(base_dir, http_prefix, nickname, domain, port,
@@ -1529,6 +1533,10 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                 'type': 'Place',
                 'name': location['name']
             }
+            if location.get('url'):
+                if isinstance(location['url'], str):
+                    if resembles_url(location['url']):
+                        new_post['object']['location']['url'] = location['url']
 
     if attach_image_filename:
         new_post = \

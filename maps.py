@@ -10,6 +10,7 @@ __module_group__ = "Core"
 
 import os
 from flags import is_float
+from utils import resembles_url
 from utils import browser_supports_download_filename
 from utils import get_url_from_post
 from utils import acct_dir
@@ -54,7 +55,15 @@ def _get_location_from_tags(tags: []) -> str:
     locn = get_location_dict_from_tags(tags)
     if locn:
         location_str = locn['name'].replace('\n', ' ')
-        return remove_html(location_str)
+        location_str = remove_html(location_str)
+        if locn.get('url'):
+            if isinstance(locn['url'], str):
+                if resembles_url(locn['url']):
+                    location_str = \
+                        '<a href="' + locn['url'] + '" target="_blank" ' + \
+                        'rel="nofollow noopener noreferrer">' + \
+                        location_str + '</a>'
+        return location_str
     return None
 
 
@@ -62,6 +71,7 @@ def get_location_from_post(post_json_object: {}) -> str:
     """Returns the location for the given post
     """
     locn = None
+    locn_url = None
 
     # location represented via a tag
     post_obj = post_json_object
@@ -88,12 +98,21 @@ def get_location_from_post(post_json_object: {}) -> str:
                 if locn2.get('name'):
                     if isinstance(locn2['name'], str):
                         locn = locn2['name']
+            if locn2.get('url'):
+                if isinstance(locn2['url'], str):
+                    locn_url = locn2['url']
     if locn_exists:
         osm_domain = 'osm.org'
         zoom = 17
         locn = _geocoords_to_osm_link(osm_domain, zoom,
                                       locn2['latitude'],
                                       locn2['longitude'])
+    elif locn_url:
+        if locn:
+            locn = '<a href="' + locn_url + '" target="_blank" ' + \
+                'rel="nofollow noopener noreferrer">' + locn + '</a>'
+        else:
+            locn = locn_url
 
     return locn
 

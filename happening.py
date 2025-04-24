@@ -14,6 +14,7 @@ from datetime import datetime
 from datetime import timedelta
 from flags import is_reminder
 from flags import is_public_post
+from utils import resembles_url
 from utils import replace_strings
 from utils import date_from_numbers
 from utils import date_from_string_format
@@ -944,6 +945,7 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
     start_time = None
     end_time = None
     description = None
+    location = None
     for line in event_list:
         if line.startswith('DTSTAMP:'):
             timestamp = line.split(':', 1)[1]
@@ -1060,18 +1062,37 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
         }
     }
     if location:
-        event_json['object']['tag'].append({
+        # get the location link
+        location_url = ''
+        if '://' in location:
+            location_words = location.split(' ')
+            for loc_wrd in location_words:
+                if '://' in loc_wrd:
+                    if resembles_url(loc_wrd):
+                        location_url = loc_wrd
+                        # remove link from the location name
+                        location = location.replace(location_url, '')
+                        location = location.replace('  ', ' ')
+                        break
+        # add a tag
+        location_tag = {
             '@context': [
                 'https://www.w3.org/ns/activitystreams',
                 'https://w3id.org/security/v1'
             ],
             'type': 'Place',
             'name': location
-        })
+        }
+        event_json['object']['tag'].append(location_tag)
+        # add a location to the object
         event_json['object']['location'] = {
             'type': 'Place',
             'name': location
         }
+        if location_url:
+            # add the url to the location
+            event_json['object']['location']['url'] = location_url
+            location_tag['url'] = location_url
     handle = nickname + '@' + domain
     handle_dir = acct_handle_dir(base_dir, handle)
     outbox_dir = handle_dir + '/outbox'
