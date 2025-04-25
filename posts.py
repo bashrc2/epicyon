@@ -1613,13 +1613,20 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                 "endTime": end_date_str
             })
     if location and not event_uuid:
+        location_address = None
+        if '<address>' in location:
+            # separate out the address from the location
+            location_address = location.split('<address>')[1]
+            location_address = location_address.split('</address>')[0]
+            location = location.split('<address>')[0].strip()
         latitude = longitude = None
         if '://' in location:
             _, latitude, longitude = \
                 geocoords_from_map_link(location, 'openstreetmap.org',
                                         session)
+        location_tag_json = {}
         if latitude and longitude:
-            tags.append({
+            location_tag_json = {
                 "@context": [
                     'https://www.w3.org/ns/activitystreams',
                     'https://w3id.org/security/v1'
@@ -1628,16 +1635,20 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                 "name": location,
                 "latitude": latitude,
                 "longitude": longitude
-            })
+            }
         else:
-            tags.append({
+            location_tag_json = {
                 "@context": [
                     'https://www.w3.org/ns/activitystreams',
                     'https://w3id.org/security/v1'
                 ],
                 "type": "Place",
                 "name": location
-            })
+            }
+        # add the address if it is available
+        if location_address:
+            location_tag_json['address'] = remove_html(location_address)
+        tags.append(location_tag_json)
     return event_date_str
 
 

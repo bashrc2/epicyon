@@ -1079,6 +1079,9 @@ def html_new_post(edit_post_params: {},
             edit_text_field(location_label_with_link, 'location',
                             default_location,
                             'https://www.openstreetmap.org/#map=') + '</p>\n'
+        address_str = translate['Address']
+        date_and_location += '<p>\n' + \
+            edit_text_field(address_str, 'locationAddress', '', '') + '</p>\n'
         date_and_location += end_edit_section()
 
     instance_title = get_config_param(base_dir, 'instanceTitle')

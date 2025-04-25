@@ -159,6 +159,10 @@ def _receive_new_post_process_newpost(self, fields: {},
     if fields.get('searchableByDropdown'):
         set_searchable_by(base_dir, nickname, domain,
                           fields['searchableByDropdown'])
+    location_str = fields['location']
+    # Append the address to the location if needed
+    if fields.get('locationAddress'):
+        location_str += ' <address>' + fields['locationAddress'] + '</address>'
     message_json = \
         create_public_post(base_dir, nickname, domain,
                            port,
@@ -175,7 +179,7 @@ def _receive_new_post_process_newpost(self, fields: {},
                            fields['eventDate'],
                            fields['eventTime'],
                            fields['eventEndTime'],
-                           fields['location'], False,
+                           location_str, False,
                            fields['languagesDropdown'],
                            conversation_id, convthread_id,
                            low_bandwidth,
@@ -324,6 +328,10 @@ def _receive_new_post_process_newblog(self, fields: {},
     if fields.get('searchableByDropdown'):
         set_searchable_by(base_dir, nickname, domain,
                           fields['searchableByDropdown'])
+    location_str = fields['location']
+    # Append the address to the location if needed
+    if fields.get('locationAddress'):
+        location_str += ' <address>' + fields['locationAddress'] + '</address>'
     message_json = \
         create_blog_post(base_dir, nickname,
                          domain, port, http_prefix,
@@ -338,7 +346,7 @@ def _receive_new_post_process_newblog(self, fields: {},
                          fields['eventDate'],
                          fields['eventTime'],
                          fields['eventEndTime'],
-                         fields['location'],
+                         location_str,
                          fields['languagesDropdown'],
                          conversation_id, convthread_id,
                          low_bandwidth,
@@ -563,6 +571,10 @@ def _receive_new_post_process_newunlisted(self, fields: {},
     video_transcript = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
+    location_str = fields['location']
+    # Append the address to the location if needed
+    if fields.get('locationAddress'):
+        location_str += ' <address>' + fields['locationAddress'] + '</address>'
     message_json = \
         create_unlisted_post(base_dir, nickname, domain, port,
                              http_prefix,
@@ -580,7 +592,7 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                              fields['eventDate'],
                              fields['eventTime'],
                              fields['eventEndTime'],
-                             fields['location'],
+                             location_str,
                              fields['languagesDropdown'],
                              conversation_id, convthread_id,
                              low_bandwidth,
@@ -726,6 +738,10 @@ def _receive_new_post_process_newfollowers(self, fields: {},
     if fields.get('searchableByDropdown'):
         set_searchable_by(base_dir, nickname, domain,
                           fields['searchableByDropdown'])
+    location_str = fields['location']
+    # Append the address to the location if needed
+    if fields.get('locationAddress'):
+        location_str += ' <address>' + fields['locationAddress'] + '</address>'
     message_json = \
         create_followers_only_post(base_dir, nickname, domain,
                                    port, http_prefix,
@@ -744,7 +760,7 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                    fields['eventDate'],
                                    fields['eventTime'],
                                    fields['eventEndTime'],
-                                   fields['location'],
+                                   location_str,
                                    fields['languagesDropdown'],
                                    conversation_id, convthread_id,
                                    low_bandwidth,
@@ -899,6 +915,11 @@ def _receive_new_post_process_newdm(self, fields: {},
         video_transcript = ''
         if fields.get('videoTranscript'):
             video_transcript = fields['videoTranscript']
+        location_str = fields['location']
+        # Append the address to the location if needed
+        if fields.get('locationAddress'):
+            location_str += \
+                ' <address>' + fields['locationAddress'] + '</address>'
         message_json = \
             create_direct_message_post(base_dir, nickname, domain,
                                        port, http_prefix,
@@ -920,7 +941,7 @@ def _receive_new_post_process_newdm(self, fields: {},
                                        fields['eventDate'],
                                        fields['eventTime'],
                                        fields['eventEndTime'],
-                                       fields['location'],
+                                       location_str,
                                        fields['languagesDropdown'],
                                        conversation_id, convthread_id,
                                        low_bandwidth,
@@ -1061,6 +1082,11 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
     video_transcript = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
+    location_str = fields['location']
+    # Append the address to the location if needed
+    if fields.get('locationAddress'):
+        location_str += \
+            ' <address>' + fields['locationAddress'] + '</address>'
     message_json = \
         create_direct_message_post(base_dir, nickname, domain,
                                    port, http_prefix,
@@ -1078,7 +1104,7 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                    fields['eventDate'],
                                    fields['eventTime'],
                                    fields['eventEndTime'],
-                                   fields['location'],
+                                   location_str,
                                    fields['languagesDropdown'],
                                    conversation_id, convthread_id,
                                    low_bandwidth,
@@ -1409,6 +1435,11 @@ def _receive_new_post_process_newreading(self, fields: {},
     if fields.get('searchableByDropdown'):
         set_searchable_by(base_dir, nickname, domain,
                           fields['searchableByDropdown'])
+    location_str = fields['location']
+    # Append the address to the location if needed
+    if fields.get('locationAddress'):
+        location_str += \
+            ' <address>' + fields['locationAddress'] + '</address>'
     # reading status
     message_json = \
         create_reading_post(base_dir, nickname, domain,
@@ -1427,7 +1458,7 @@ def _receive_new_post_process_newreading(self, fields: {},
                             fields['eventDate'],
                             fields['eventTime'],
                             fields['eventEndTime'],
-                            fields['location'], False,
+                            location_str, False,
                             fields['languagesDropdown'],
                             conversation_id, convthread_id,
                             low_bandwidth,
@@ -1576,13 +1607,18 @@ def _receive_new_post_process_newshare(self, fields: {},
     if fields.get('shareOnProfile'):
         if fields['shareOnProfile'] == 'on':
             share_on_profile = True
+    location_str = fields['location']
+    # Append the address to the location if needed
+    if fields.get('locationAddress'):
+        location_str += \
+            ' <address>' + fields['locationAddress'] + '</address>'
     add_share(base_dir, http_prefix, nickname, domain, port,
               fields['subject'],
               fields['message'],
               filename,
               item_qty, fields['itemType'],
               fields['category'],
-              fields['location'],
+              location_str,
               duration_str,
               debug,
               city, item_price, item_currency,
@@ -1861,6 +1897,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         fields['eventEndTime'] = None
     if not fields.get('location'):
         fields['location'] = None
+    if not fields.get('locationAddress'):
+        fields['locationAddress'] = None
     if not fields.get('languagesDropdown'):
         fields['languagesDropdown'] = system_language
     set_default_post_language(base_dir, nickname, domain,
