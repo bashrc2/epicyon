@@ -1075,7 +1075,7 @@ def html_new_post(edit_post_params: {},
             '<a href="' + maps_url + '" ' + \
             'rel="nofollow noopener noreferrer" target="_blank">🗺️ ' + \
             translate['Location'] + '</a>'
-        date_and_location += '<br><p>\n' + \
+        date_and_location += '<br><p><br>\n' + \
             edit_text_field(location_label_with_link, 'location',
                             default_location,
                             'https://www.openstreetmap.org/#map=') + '</p>\n'
