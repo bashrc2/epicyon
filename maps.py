@@ -332,26 +332,34 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
     if '/maps/' not in url:
         return None, None, None
     coords_str = url.split('/maps', 1)[1]
-    if '/@' not in coords_str:
+    if '/@' not in coords_str and '/maps/place/' not in url:
         return None, None, None
 
-    coords_str = coords_str.split('/@', 1)[1]
-    if 'z' not in coords_str:
-        return None, None, None
-    coords_str = coords_str.split('z', 1)[0]
+    if '/@' in coords_str:
+        coords_str = coords_str.split('/@', 1)[1]
+    else:
+        coords_str = coords_str.split('/maps/place/', 1)[1]
+
+    # NOTE: zoom may have been replaced by metres elevation
+    zoom_exists = False
+    if 'z' in coords_str:
+        coords_str = coords_str.split('z', 1)[0]
+        zoom_exists = True
 
     if ',' not in coords_str:
         return None, None, None
 
     coords = coords_str.split(',')
-    if len(coords) != 3:
+    if len(coords) not in (2, 3):
         return None, None, None
-    zoom = coords[2]
-    if not zoom.isdigit():
-        if is_float(str(zoom)):
-            zoom = int(float(str(zoom)))
-        else:
-            return None, None, None
+    zoom = '100'
+    if zoom_exists:
+        zoom = coords[2]
+        if not zoom.isdigit():
+            if is_float(str(zoom)):
+                zoom = int(float(str(zoom)))
+            else:
+                return None, None, None
     latitude = coords[0]
     if not is_float(latitude):
         return None, None, None
