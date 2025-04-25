@@ -8228,7 +8228,8 @@ def _test_hashtag_maps():
         "www.openstreetmap.org/#map=19/52.90860/-3.59917\" " + \
         "tabindex=\"10\" rel=\"nofollow noopener noreferrer\" " + \
         "target=\"_blank\"><span class=\"invisible\">https://" + \
-        "</span><span class=\"ellipsis\">" + \
+        "</span>" + \
+        "<span class=\"ellipsis\">" + \
         "www.openstreetmap.org/#map=19/52.90860/-</span><span " + \
         "class=\"invisible\">3.59917</span></a><br><br>" + \
         "<a href=\"https://" + \
@@ -8237,6 +8238,12 @@ def _test_hashtag_maps():
         "target=\"_blank\"><span class=\"invisible\">" + \
         "https://</span><span class=\"ellipsis\">" + \
         "www.google.com/maps/@52.217291,-3.081186</span>" + \
+        "<a href=\"https://" + \
+        "www.google.com/maps/place/52.216491,-3.0812692,300m\" " + \
+        "tabindex=\"10\" rel=\"nofollow noopener noreferrer\" " + \
+        "target=\"_blank\"><span class=\"invisible\">" + \
+        "https://</span><span class=\"ellipsis\">" + \
+        "www.google.com/maps/@52.2176491,-3.0812692</span>" + \
         "<span class=\"invisible\">5,20.04z</span></a><br><br>" + \
         "<a href=\"https://" + \
         "epicyon.libreserver.org/tags/AnotherHashtag\" " + \
@@ -8245,7 +8252,10 @@ def _test_hashtag_maps():
     map_links = get_map_links_from_post_content(content, session)
     link = "https://www.google.com/maps/@52.217291,-3.0811865,20.04z"
     assert link in map_links
+    link = "https://www.google.com/maps/place/52.216491,-3.0812692,300m"
+    assert link in map_links
     session = None
+    link = "https://www.google.com/maps/@52.217291,-3.0811865,20.04z"
     zoom, latitude, longitude = \
         geocoords_from_map_link(link, 'openstreetmap.org', session)
     assert zoom == 20
@@ -8262,7 +8272,7 @@ def _test_hashtag_maps():
     assert int(latitude * 1000) == 52908
     assert longitude
     assert int(longitude * 1000) == -3599
-    assert len(map_links) == 2
+    assert len(map_links) == 3
 
 
 def _test_uninvert():

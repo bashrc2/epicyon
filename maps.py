@@ -332,13 +332,13 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
     if '/maps/' not in url:
         return None, None, None
     coords_str = url.split('/maps', 1)[1]
-    if '/@' not in coords_str and '/maps/place/' not in url:
+    if '/@' not in coords_str and '/place/' not in coords_str:
         return None, None, None
 
     if '/@' in coords_str:
         coords_str = coords_str.split('/@', 1)[1]
     else:
-        coords_str = coords_str.split('/maps/place/', 1)[1]
+        coords_str = coords_str.split('/place/', 1)[1]
 
     # NOTE: zoom may have been replaced by metres elevation
     zoom_exists = False
