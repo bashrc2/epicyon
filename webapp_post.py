@@ -2674,7 +2674,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if post_is_dm:
         title_str = \
             title_str + ' <img loading="lazy" decoding="async" src="/' + \
-            'icons/dm.png" class="DMicon"/>\n'
+            'icons/dm.png" alt="(' + translate['DM'] + ')" class="DMicon"/>\n'
 
     # check if replying is permitted
     comments_enabled = True
