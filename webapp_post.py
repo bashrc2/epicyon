@@ -3238,7 +3238,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not map_str and location_str:
             if '<br><address>' in location_str:
                 address_prefix = \
-                    '<br>' + translate['Address'] + ':<br><address>'
+                    '<br>' + translate['Address'] + ':<address>'
                 location_str = \
                     location_str.replace('<br><address>', address_prefix)
             map_str = '<p>' + translate['Location'] + ': ' + \
