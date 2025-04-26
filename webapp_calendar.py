@@ -191,6 +191,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
             event_description = None
             event_language = system_language
             event_place = None
+            event_address = None
             post_id = None
             sender_name = ''
             sender_actor = None
@@ -234,6 +235,8 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     if evnt.get('name'):
                         event_description = evnt['name'].strip()
                 elif evnt['type'] == 'Place':
+                    if evnt.get('address'):
+                        event_address = remove_html(evnt['address'])
                     if evnt.get('name'):
                         event_place = remove_html(evnt['name'])
                         if '://' in event_place:
@@ -304,6 +307,10 @@ def _html_calendar_day(person_cache: {}, translate: {},
                                 event_time_markup + '</time> - ' + \
                                 '<time datetime="' + end_time_str + '">' + \
                                 event_end_time + '</time>'
+            # if an address is given then append it to the description
+            if event_address and event_description:
+                event_description += \
+                    '<p><address>' + event_address + '</address></p>'
             if event_time and event_description and event_place:
                 calendar_str += \
                     '<tr class="' + cal_item_class + '">' + \
