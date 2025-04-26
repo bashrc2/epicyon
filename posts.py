@@ -1398,10 +1398,13 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                 'type': 'Place',
                 'name': location['name']
             }
-            if location.get('url'):
-                if isinstance(location['url'], str):
-                    if resembles_url(location['url']):
-                        new_post['object']['location']['url'] = location['url']
+        if location.get('address'):
+            if isinstance(location['address'], str):
+                new_post['object']['location']['address'] = location['address']
+        if location.get('url'):
+            if isinstance(location['url'], str):
+                if resembles_url(location['url']):
+                    new_post['object']['location']['url'] = location['url']
     if attach_image_filename:
         new_post['object'] = \
             attach_media(base_dir, http_prefix, nickname, domain, port,
@@ -1533,10 +1536,13 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                 'type': 'Place',
                 'name': location['name']
             }
-            if location.get('url'):
-                if isinstance(location['url'], str):
-                    if resembles_url(location['url']):
-                        new_post['object']['location']['url'] = location['url']
+        if location.get('address'):
+            if isinstance(location['address'], str):
+                new_post['object']['location']['address'] = location['address']
+        if location.get('url'):
+            if isinstance(location['url'], str):
+                if resembles_url(location['url']):
+                    new_post['object']['location']['url'] = location['url']
 
     if attach_image_filename:
         new_post = \
