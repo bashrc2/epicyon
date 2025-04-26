@@ -3236,6 +3236,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                                map_latitude, map_longitude,
                                                map_zoom)
         if not map_str and location_str:
+            if '<br><address>' in location_str:
+                address_prefix = \
+                    '<br>' + translate['Address'] + ':<br><address>'
+                location_str = \
+                    location_str.replace('<br><address>', address_prefix)
             map_str = '<p>' + translate['Location'] + ': ' + \
                 location_str + '</p>\n'
 
