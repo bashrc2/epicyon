@@ -2,6 +2,7 @@
     "block-reason-color": "lightgreen",
     "verified-site-color": "lightgreen",
     "code-color": "blue",
+    "address-color": "blue",
     "diff-add": "#111",
     "diff-remove": "#333",
     "pwa-theme-color": "apple-mobile-web-app-status-bar-style",

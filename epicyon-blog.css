@@ -4,6 +4,7 @@
     --avatar-rounding: 10%;
     --main-bg-color: #282c37;
     --link-bg-color: #282c37;
+    --address-color: lightblue;
     --title-color: #999;
     --dropdown-bg-color: #111;
     --dropdown-bg-color-hover: #333;
@@ -84,6 +85,12 @@ body, html {
     font-size: var(--font-size);
     line-height: var(--line-spacing);
     image-rendering: var(--rendering);
+}
+
+address {
+    color: var(--address-color);
+    background-color: var(--main-bg-color);
+    font-style: italic;
 }
 
 a, u {

@@ -2,6 +2,7 @@
     "block-reason-color": "lightgreen",
     "verified-site-color": "lightgreen",
     "code-color": "blue",
+    "address-color": "blue",
     "font-size-header": "18px",
     "font-size-header-mobile": "32px",
     "font-size-header-tiny": "16px",

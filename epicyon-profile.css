@@ -37,6 +37,7 @@
     --pageslist-color: #dddddd;
     --pageslist-selected-color: white;
     --main-fg-color: #dddddd;
+    --address-color: lightblue;
     --block-reason-color: lightgreen;
     --verified-site-color: lightgreen;
     --cw-color: #dddddd;
@@ -1228,6 +1229,12 @@ h3 {
 h1, h2, h3, h4, h5, h6 {
     break-after: avoid;
     break-inside: avoid;
+}
+
+address {
+    color: var(--address-color);
+    background-color: var(--main-bg-color);
+    font-style: italic;
 }
 
 @media screen and (min-width: 400px) {
