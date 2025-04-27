@@ -97,6 +97,32 @@ def _get_location_from_tags(tags: []) -> str:
     return None
 
 
+def html_address_book_list(base_dir: str, nickname: str, domain: str) -> str:
+    """Creates a list of potential addresses when creating a new post
+    with a location
+    """
+    list_str = '<datalist id="addressbook">\n'
+    address_book_filename = \
+        acct_dir(base_dir, nickname, domain) + '/addresses.json'
+    address_book_dict = {}
+    if os.path.isfile(address_book_filename):
+        address_book_dict2 = load_json(address_book_filename)
+        if address_book_dict2:
+            address_book_dict = address_book_dict2
+
+    addresses_list = []
+    for _, address in address_book_dict.items():
+        addresses_list.append(address)
+    addresses_list.sort()
+    if addresses_list:
+        for addr in addresses_list:
+            if not addr:
+                continue
+            list_str += '<option>' + addr + '</option>\n'
+    list_str += '</datalist>\n'
+    return list_str
+
+
 def update_address_book(base_dir: str, nickname: str, domain: str,
                         location: str, address: str) -> None:
     """Adds an address to the address book for the given account

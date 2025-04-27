@@ -44,6 +44,7 @@ from webapp_utils import edit_text_field
 from webapp_utils import edit_number_field
 from webapp_utils import edit_currency_field
 from webapp_post import individual_post_as_html
+from maps import html_address_book_list
 from maps import get_map_preferences_url
 from maps import get_map_preferences_coords
 from maps import get_location_from_post
@@ -1079,9 +1080,16 @@ def html_new_post(edit_post_params: {},
             edit_text_field(location_label_with_link, 'location',
                             default_location,
                             'https://www.openstreetmap.org/#map=') + '</p>\n'
-        address_str = translate['Address']
-        date_and_location += '<p>\n' + \
-            edit_text_field(address_str, 'locationAddress', '', '') + '</p>\n'
+
+        date_and_location += \
+            '<br><label class="labels">' + translate['Address'] + ':' + \
+            '</label><br>\n'
+        date_and_location += \
+            '<input type="text" name="locationAddress" ' + \
+            'list="addressbook">\n'
+        date_and_location += \
+            html_address_book_list(base_dir, nickname, domain)
+
         date_and_location += end_edit_section()
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
