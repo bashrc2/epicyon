@@ -1082,7 +1082,7 @@ def html_new_post(edit_post_params: {},
                             'https://www.openstreetmap.org/#map=') + '</p>\n'
 
         date_and_location += \
-            '<br><label class="labels">' + translate['Address'] + ':' + \
+            '<label class="labels">' + translate['Address'] + ':' + \
             '</label><br>\n'
         date_and_location += \
             '<input type="text" name="locationAddress" ' + \
