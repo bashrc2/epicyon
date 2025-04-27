@@ -97,6 +97,26 @@ def _get_location_from_tags(tags: []) -> str:
     return None
 
 
+def update_address_book(base_dir: str, nickname: str, domain: str,
+                        location: str, address: str) -> None:
+    """Adds an address to the address book for the given account
+    """
+    address_book_filename = \
+        acct_dir(base_dir, nickname, domain) + '/addresses.json'
+    address_book_dict = {}
+    if os.path.isfile(address_book_filename):
+        address_book_dict2 = load_json(address_book_filename)
+        if address_book_dict2:
+            address_book_dict = address_book_dict2
+    address = remove_html(address)
+    if address_book_dict.get(location):
+        if address_book_dict[location] == address:
+            # already exists so we don't need to update
+            return
+    address_book_dict[location] = address
+    save_json(address_book_dict, address_book_filename)
+
+
 def get_location_from_post(post_json_object: {}) -> str:
     """Returns the location for the given post
     """

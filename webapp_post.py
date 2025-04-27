@@ -125,6 +125,7 @@ from cwlists import add_cw_from_lists
 from blocking import is_blocked
 from blocking import sending_is_blocked2
 from reaction import html_emoji_reactions
+from maps import update_address_book
 from maps import html_open_street_map
 from maps import set_map_preferences_coords
 from maps import set_map_preferences_url
@@ -3188,6 +3189,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
             # if this is a location with an address then remove the address
             if '<br><address>' in location_str:
                 loc_str = location_str.split('<br><address>')[0]
+                loc_address = location_str.split('<br><address>')[1]
+                if '</address>' in loc_address:
+                    loc_address = loc_address.split('</address>')[0]
+                update_address_book(base_dir, nickname, domain,
+                                    loc_str, loc_address)
             # does this look like a geolocation link?
             if resembles_url(loc_str):
                 bounding_box_degrees = 0.001
