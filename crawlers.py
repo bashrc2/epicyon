@@ -141,14 +141,15 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'anthropic', 'mlbot', 'claude-web', 'claudebot', 'ccbot',
             'facebookbot', 'google-extended', 'piplbot', 'oai-search',
             'applebot', 'meta-external', 'diffbot', 'perplexitybot',
+            'perplexity‑', 'novaact', 'operator',
             'omgili', 'imagesiftbot', 'bytespider', 'amazonbot', 'youbot',
             'petalbot', 'ai2bot', 'allenai', 'firecrawl', 'friendlycrawler',
             'googleother', 'icc-crawler', 'scrapy', 'timpibot',
             'velenpublic', 'webzio-extended', 'cohere-ai',
             'cohere-train', 'crawlspace', 'facebookexternal',
-            'img2dataset', 'isscyberriskcrawler', 'sidetrade', 'kangaroo.ai',
-            'kangaroo bot', 'iaskspider', 'duckassistbot', 'pangubot',
-            'semrush'
+            'img2dataset', 'imgproxy', 'isscyberriskcrawler', 'sidetrade',
+            'kangaroo.ai', 'kangaroo bot', 'iaskspider', 'duckassistbot',
+            'pangubot', 'semrush'
         )
         for bot_str in llm_bot_strings:
             if bot_str in agent_str_lower:
