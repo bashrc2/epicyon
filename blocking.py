@@ -825,12 +825,17 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
             for blocked_str in blocked_cache:
                 if block_nickname:
                     if block_nickname + '@*' in blocked_str:
+                        print('BLOCK: pattern ' +
+                              block_nickname + '@* ' + blocked_str)
                         return True
                 if block_domain:
                     if '*@' + block_domain in blocked_str:
+                        print('BLOCK: pattern ' +
+                              '*@' + block_domain + ' ' + blocked_str)
                         return True
                 if block_handle:
                     if blocked_str == block_handle:
+                        print('BLOCK: pattern ' + block_handle)
                         return True
         else:
             global_blocks_filename = data_dir(base_dir) + '/blocking.txt'
@@ -838,12 +843,15 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                 if block_nickname:
                     if text_in_file(block_nickname + '@*\n',
                                     global_blocks_filename):
+                        print('BLOCK: global pattern ' + block_nickname + '@*')
                         return True
                 if text_in_file('*@' + block_domain, global_blocks_filename):
+                    print('BLOCK: global pattern *@' + block_domain)
                     return True
                 if block_handle:
                     block_str = block_handle + '\n'
                     if text_in_file(block_str, global_blocks_filename):
+                        print('BLOCK: global pattern ' + block_str)
                         return True
             if not block_federated:
                 federated_blocks_filename = \
@@ -885,12 +893,15 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(blocking_filename):
         if block_nickname:
             if text_in_file(block_nickname + '@*\n', blocking_filename):
+                print('BLOCK: account pattern ' + block_nickname + '@*')
                 return True
         if block_domain:
             if text_in_file('*@' + block_domain + '\n', blocking_filename):
+                print('BLOCK: account pattern *@' + block_domain)
                 return True
         if block_handle:
             if text_in_file(block_handle + '\n', blocking_filename):
+                print('BLOCK: account pattern ' + block_handle)
                 return True
     return False
 
