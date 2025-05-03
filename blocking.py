@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 import json
 import time
+import fnmatch
 from session import get_json_valid
 from session import create_session
 from flags import is_evil
@@ -774,25 +775,38 @@ def is_blocked_nickname(base_dir: str, nickname: str,
                         blocked_cache: [] = None) -> bool:
     """Is the given nickname blocked?
     """
-    search_str = nickname + '@*'
-    if blocked_cache:
-        for blocked_str in blocked_cache:
-            if blocked_str == search_str:
-                return True
-    else:
+    if not blocked_cache:
         # instance-wide block list
+        blocked_cache = []
         global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
         if os.path.isfile(global_blocking_filename):
-            search_str += '\n'
             try:
                 with open(global_blocking_filename, 'r',
                           encoding='utf-8') as fp_blocked:
-                    blocked_str = fp_blocked.read()
-                    if search_str in blocked_str:
-                        return True
+                    blocked_cache = fp_blocked.read().split('\n')
             except OSError as ex:
                 print('EX: is_blocked_nickname unable to read ' +
                       global_blocking_filename + ' ' + str(ex))
+
+    if blocked_cache:
+        search_str = nickname + '@*'
+        for blocked_str in blocked_cache:
+            blocked_str = blocked_str.strip()
+            if not blocked_str:
+                continue
+            if blocked_str.startswith('#'):
+                # skip over commented out blocklist entries
+                continue
+            if not blocked_str.endswith('@*'):
+                continue
+            blocked_nick = blocked_str.split('@*')[0]
+            if '?' not in blocked_nick and '*' not in blocked_nick:
+                if blocked_str == search_str:
+                    return True
+            else:
+                # allow wildcards within nickname blocks
+                if fnmatch.fnmatchcase(nickname, blocked_nick):
+                    return True
 
     return False
 

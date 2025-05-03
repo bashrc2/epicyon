@@ -229,6 +229,7 @@ from reading import store_book_events
 from conversation import conversation_tag_to_convthread_id
 from conversation import convthread_id_to_conversation_tag
 from webapp_utils import add_emoji_to_display_name
+from blocking import is_blocked_nickname
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -9220,6 +9221,15 @@ def _test_conversation_to_convthread() -> None:
     assert conversation_id2 == conversation_id
 
 
+def _test_blocking_nick(base_dir: str) -> None:
+    print('blocking nickname')
+    blocked_cache = ['weasel@*', 'badger@*', 'chud*@*']
+    assert not is_blocked_nickname(base_dir, 'cessil', blocked_cache)
+    assert is_blocked_nickname(base_dir, 'weasel', blocked_cache)
+    assert is_blocked_nickname(base_dir, 'chud', blocked_cache)
+    assert is_blocked_nickname(base_dir, 'chud674', blocked_cache)
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -9238,6 +9248,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_blocking_nick(base_dir)
     _test_conversation_to_convthread()
     _test_bridgy()
     _test_link_tracking()
