@@ -230,6 +230,7 @@ from conversation import conversation_tag_to_convthread_id
 from conversation import convthread_id_to_conversation_tag
 from webapp_utils import add_emoji_to_display_name
 from blocking import is_blocked_nickname
+from blocking import is_blocked_domain
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -9230,6 +9231,26 @@ def _test_blocking_nick(base_dir: str) -> None:
     assert is_blocked_nickname(base_dir, 'chud674', blocked_cache)
 
 
+def _test_blocking_domain(base_dir: str) -> None:
+    print('blocking domain')
+    block_federated = ['*@hate*.domain']
+    blocked_cache = ['*@weasel.social', '*@chud*.city']
+    assert not is_blocked_domain(base_dir, 'fedi.instance', blocked_cache,
+                                 block_federated)
+    assert is_blocked_domain(base_dir, 'weasel.social', blocked_cache,
+                             block_federated)
+    assert is_blocked_domain(base_dir, 'chud.city', blocked_cache,
+                             block_federated)
+    assert is_blocked_domain(base_dir, 'chud78.city', blocked_cache,
+                             block_federated)
+    assert not is_blocked_domain(base_dir, '78chud.city', blocked_cache,
+                                 block_federated)
+    assert is_blocked_domain(base_dir, 'hate623.domain', blocked_cache,
+                             block_federated)
+    assert is_blocked_domain(base_dir, 'hate.domain', blocked_cache,
+                             block_federated)
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -9248,6 +9269,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_blocking_domain(base_dir)
     _test_blocking_nick(base_dir)
     _test_conversation_to_convthread()
     _test_bridgy()
