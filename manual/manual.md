@@ -1214,6 +1214,8 @@ The Mastodon project announced that it was setting up a non-profit and would tra
 
 By the end of January, after Elon Musk was recorded unambiguously doing antisemitic Hitler salutes and his association with hitlerite scumbags became more widely understood the momentum for institutions - especially in Europe - to leave the website formerly known as Twitter accelerated. In terms of public relations, once certain images and videos are out there then there isn't any going back, and the reputational damage becomes permanent. Most of the movement away from Twitter was to BlueSky, but some also joined Mastodon.
 
+In April the fosstodon.org instance melted down after it was discovered that one of its moderators had been doing fascistic crap elsewhere on the internet, but had been operating perfectly within the code of conduct of the instance. This just goes to show that you need to consider the *overall character and conduct of the person* when assigning instance moderators, and not just narrowly look at what they do on the instance. It is possible for people to be doing stuff which threatens other instance members, but indirectly from outside of the instance itself which then throws the reliability of their judgement into question.
+
 ### Fediverse culture shock
 This is what happens when someone has only had a presence within large corporate sites, such as the website formerly known as Twitter or Facebook, and then moves to a federated system on the open internet.
 
