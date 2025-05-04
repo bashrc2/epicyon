@@ -628,6 +628,18 @@ When creating a block you can also add a space followed by any text describing t
 annoyingdomain.com A spam instance
 ```
 
+You can also use wildcards when blocking nicknames or domains. To block a nickname, regardless of what instance it comes from:
+
+``` text
+trollnickname@* Some comment about the reason for the block
+```
+
+Or if a troll is using the same nickname followed by some random number then you can add an extra wildcard:
+
+``` text
+trollnickname*@* Some comment about the reason for the block
+```
+
 If you want to see what is being blocked at the instance level then select the **Info** button.
 
 ### Web crawlers and search bots

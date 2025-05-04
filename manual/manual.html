@@ -880,6 +880,12 @@ enter the thing that you wish to block and then select the
 <p>When creating a block you can also add a space followed by any text
 describing the reason for the block. Such as:</p>
 <pre class="text"><code>annoyingdomain.com A spam instance</code></pre>
+<p>You can also use wildcards when blocking nicknames or domains. To
+block a nickname, regardless of what instance it comes from:</p>
+<pre class="text"><code>trollnickname@* Some comment about the reason for the block</code></pre>
+<p>Or if a troll is using the same nickname followed by some random
+number then you can add an extra wildcard:</p>
+<pre class="text"><code>trollnickname*@* Some comment about the reason for the block</code></pre>
 <p>If you want to see what is being blocked at the instance level then
 select the <strong>Info</strong> button.</p>
 <h3 id="web-crawlers-and-search-bots">Web crawlers and search bots</h3>
