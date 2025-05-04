@@ -231,6 +231,7 @@ from conversation import convthread_id_to_conversation_tag
 from webapp_utils import add_emoji_to_display_name
 from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
+from filters import filtered_match
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -9251,6 +9252,15 @@ def _test_blocking_domain(base_dir: str) -> None:
                              block_federated)
 
 
+def _test_filter_match() -> None:
+    print('filter match')
+    assert not filtered_match('cycle', 'Some text.')
+    assert filtered_match('text', 'Some text.')
+    assert filtered_match('* text.', 'Some text.')
+    assert not filtered_match('* text', 'Some text.')
+    assert filtered_match('* text*', 'Some text.')
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -9269,6 +9279,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_filter_match()
     _test_blocking_domain(base_dir)
     _test_blocking_nick(base_dir)
     _test_conversation_to_convthread()

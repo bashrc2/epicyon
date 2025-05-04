@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Moderation"
 
 import os
+import fnmatch
 from utils import data_dir
 from utils import acct_dir
 from utils import text_in_file
@@ -123,6 +124,18 @@ def _is_twitter_post(content: str) -> bool:
     return False
 
 
+def filtered_match(filter_str: str, content: str) -> bool:
+    """Does the given filter match the content?
+    """
+    if '*' not in filter_str:
+        if filter_str in content:
+            return True
+    elif fnmatch.fnmatchcase(content, filter_str):
+        return True
+
+    return False
+
+
 def _is_filtered_base(filename: str, content: str,
                       system_language: str) -> bool:
     """Uses the given file containing filtered words to check
@@ -146,12 +159,12 @@ def _is_filtered_base(filename: str, content: str,
                 if len(filter_str) < 2:
                     continue
                 if '+' not in filter_str:
-                    if filter_str in content:
+                    if filtered_match(filter_str, content):
                         return True
                 else:
                     filter_words = filter_str.replace('"', '').split('+')
-                    for word in filter_words:
-                        if word not in content:
+                    for filter_wrd in filter_words:
+                        if not filtered_match(filter_wrd, content):
                             return False
                     return True
     except OSError as ex:
