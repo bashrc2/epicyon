@@ -25,7 +25,8 @@ VALID_CONTEXTS = (
     "*/vc-data-integrity/contexts/multikey/v1.jsonld",
     "https://w3id.org/security/data-integrity/v1",
     "*/contexts/data-integrity/v1.jsonld",
-    "*/ns/privacyHeaders"
+    "*/ns/privacyHeaders",
+    "https://w3id.org/fep/*"
 )
 
 
@@ -69,8 +70,19 @@ def _has_valid_context_list(post_json_object: {}) -> bool:
         wildcard_found = False
         for cont in VALID_CONTEXTS:
             if cont.startswith('*'):
+                cont = cont.replace('*', '', 1)
+                if not cont.endswith('*'):
+                    if url.endswith(cont):
+                        wildcard_found = True
+                        break
+                else:
+                    cont = cont.replace('*', '')
+                    if cont in url:
+                        wildcard_found = True
+                        break
+            elif cont.endswith('*'):
                 cont = cont.replace('*', '')
-                if url.endswith(cont):
+                if cont in url:
                     wildcard_found = True
                     break
         if not wildcard_found:
@@ -87,8 +99,18 @@ def _has_valid_context_str(post_json_object: {}) -> bool:
         wildcard_found = False
         for cont in VALID_CONTEXTS:
             if cont.startswith('*'):
-                cont = cont.replace('*', '')
+                cont = cont.replace('*', '', 1)
                 if url.endswith(cont):
+                    wildcard_found = True
+                    break
+                if cont.endswith('*'):
+                    cont = cont.replace('*', '')
+                    if cont in url:
+                        wildcard_found = True
+                        break
+            elif cont.endswith('*'):
+                cont = cont.replace('*', '')
+                if cont in url:
                     wildcard_found = True
                     break
         if not wildcard_found:
