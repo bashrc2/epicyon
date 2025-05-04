@@ -58,43 +58,9 @@ def get_individual_post_context() -> []:
     ]
 
 
-def _has_valid_context_list(post_json_object: {}) -> bool:
-    """Are the links within the @context of a post recognised?
+def _has_valid_context_str(url: str) -> bool:
+    """is the @context string of a post recognised?
     """
-    for url in post_json_object['@context']:
-        if not isinstance(url, str):
-            continue
-        if url in VALID_CONTEXTS:
-            continue
-        # is this a wildcard context?
-        wildcard_found = False
-        for cont in VALID_CONTEXTS:
-            if cont.startswith('*'):
-                cont = cont.replace('*', '', 1)
-                if not cont.endswith('*'):
-                    if url.endswith(cont):
-                        wildcard_found = True
-                        break
-                else:
-                    cont = cont.replace('*', '')
-                    if cont in url:
-                        wildcard_found = True
-                        break
-            elif cont.endswith('*'):
-                cont = cont.replace('*', '')
-                if cont in url:
-                    wildcard_found = True
-                    break
-        if not wildcard_found:
-            print('Unrecognized @context 1: ' + url)
-            return False
-    return True
-
-
-def _has_valid_context_str(post_json_object: {}) -> bool:
-    """Are the links within the @context of a post recognised?
-    """
-    url = post_json_object['@context']
     if url not in VALID_CONTEXTS:
         wildcard_found = False
         for cont in VALID_CONTEXTS:
@@ -114,8 +80,23 @@ def _has_valid_context_str(post_json_object: {}) -> bool:
                     wildcard_found = True
                     break
         if not wildcard_found:
-            print('Unrecognized @context 2: ' + url)
+            print('Unrecognized @context: ' + url)
             return False
+    return True
+
+
+def _has_valid_context_list(post_json_object: {}) -> bool:
+    """Are the links within the @context of a post recognised?
+    """
+    context_urls = post_json_object['@context']
+    for url in context_urls:
+        # only examine strings
+        if not isinstance(url, str):
+            continue
+        # wildcard match
+        if _has_valid_context_str(url):
+            continue
+        return False
     return True
 
 
@@ -127,7 +108,7 @@ def has_valid_context(post_json_object: {}) -> bool:
     if isinstance(post_json_object['@context'], list):
         return _has_valid_context_list(post_json_object)
     if isinstance(post_json_object['@context'], str):
-        return _has_valid_context_str(post_json_object)
+        return _has_valid_context_str(post_json_object['@context'])
     # not a list or string
     return False
 
