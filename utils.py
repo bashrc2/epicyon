@@ -1102,7 +1102,7 @@ def get_config_param(base_dir: str, variable_name: str) -> str:
 
 def get_followers_list(base_dir: str,
                        nickname: str, domain: str,
-                       follow_file='following.txt') -> []:
+                       follow_file: str = 'following.txt') -> []:
     """Returns a list of followers for the given account
     """
     filename = acct_dir(base_dir, nickname, domain) + '/' + follow_file
@@ -1126,7 +1126,7 @@ def get_followers_list(base_dir: str,
 
 def get_followers_of_person(base_dir: str,
                             nickname: str, domain: str,
-                            follow_file='following.txt') -> []:
+                            follow_file: str = 'following.txt') -> []:
     """Returns a list containing the followers of the given person
     Used by the shared inbox to know who to send incoming mail to
     """
@@ -3135,7 +3135,7 @@ def _actor_in_searchable_by(searchable_by: str, following_list: []) -> bool:
 
 def search_box_posts(base_dir: str, nickname: str, domain: str,
                      search_str: str, max_results: int,
-                     box_name='outbox') -> []:
+                     box_name: str = 'outbox') -> []:
     """Search your posts and return a list of the filenames
     containing matching strings
     """

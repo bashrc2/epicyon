@@ -5673,11 +5673,19 @@ def _check_self_variables(mod_name: str, method_name: str,
 def _check_method_args(mod_name: str, method_name: str,
                        method_args: []) -> bool:
     """Tests that method arguments are not CamelCase
+    and that arguments with default values have types
     """
+    exclude_modules = ['pyjsonld']
     for arg_str in method_args:
         if ':' in arg_str:
             arg_str = arg_str.split(':')[0]
         if '=' in arg_str:
+            # is a type given?
+            if mod_name not in exclude_modules and \
+               ':' not in arg_str and '=None' not in arg_str:
+                print(mod_name + ', ' + method_name + ', ' + arg_str +
+                      ', = in function argument without type')
+                return False
             arg_str = arg_str.split('=')[0]
         arg_str = arg_str.strip()
         if arg_str != arg_str.lower():

@@ -48,7 +48,7 @@ def welcome_screen_is_complete(base_dir: str,
 def html_welcome_screen(base_dir: str, nickname: str,
                         language: str, translate: {},
                         theme_name: str,
-                        curr_screen='welcome') -> str:
+                        curr_screen: str = 'welcome') -> str:
     """Returns the welcome screen
     """
     # set a custom background for the welcome screen

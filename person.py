@@ -696,7 +696,7 @@ def clear_person_qrcodes(base_dir: str) -> None:
 
 def save_person_qrcode(base_dir: str,
                        nickname: str, domain: str, qrcode_domain: str,
-                       port: int, scale=6) -> None:
+                       port: int, scale: int = 6) -> None:
     """Saves a qrcode image for the handle of the person
     This helps to transfer onion or i2p handles to a mobile device
     """

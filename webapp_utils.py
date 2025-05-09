@@ -723,7 +723,7 @@ def get_right_image_file(base_dir: str,
 
 def html_header_with_external_style(css_filename: str, instance_title: str,
                                     metadata: str, preload_images: [],
-                                    lang='en') -> str:
+                                    lang: str = 'en') -> str:
     if metadata is None:
         metadata = ''
     css_file = '/' + css_filename.split('/')[-1]
@@ -768,7 +768,7 @@ def html_header_with_external_style(css_filename: str, instance_title: str,
 def html_header_with_person_markup(css_filename: str, instance_title: str,
                                    actor_json: {}, city: str,
                                    content_license_url: str,
-                                   lang='en') -> str:
+                                   lang: str = 'en') -> str:
     """html header which includes person markup
     https://schema.org/Person
     """

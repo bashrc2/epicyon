@@ -401,7 +401,7 @@ def clear_followers(base_dir: str, nickname: str, domain: str) -> None:
 
 
 def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
-                       follow_file='following.txt') -> int:
+                       follow_file: str = 'following.txt') -> int:
     """Returns the number of follows or followers
     """
     # only show number of followers to authenticated
@@ -444,8 +444,8 @@ def get_no_of_followers(base_dir: str, nickname: str, domain: str) -> int:
 
 def get_following_feed(base_dir: str, domain: str, port: int, path: str,
                        http_prefix: str, authorized: bool,
-                       follows_per_page=12,
-                       follow_file='following') -> {}:
+                       follows_per_page: int = 12,
+                       follow_file: str = 'following') -> {}:
     """Returns the following and followers feeds from GET requests.
     This accesses the following.txt or followers.txt and builds a collection.
     """
