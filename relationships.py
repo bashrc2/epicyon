@@ -72,7 +72,7 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
 
 def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
                    http_prefix: str, authorized: bool,
-                   follows_per_page=12) -> {}:
+                   follows_per_page: int = 12) -> {}:
     """Returns the moved accounts feed from GET requests.
     """
     # Don't show moved accounts to non-authorized viewers
@@ -190,7 +190,9 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             page_ctr = 0
             curr_page += 1
     following['totalItems'] = total_ctr
-    last_page = int(total_ctr / follows_per_page)
+    last_page = 1
+    if follows_per_page > 0:
+        last_page = int(total_ctr / follows_per_page)
     last_page = max(last_page, 1)
     if next_page_number > last_page:
         following['next'] = \
@@ -497,7 +499,9 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
             page_ctr = 0
             curr_page += 1
     following['totalItems'] = total_ctr
-    last_page = int(total_ctr / follows_per_page)
+    last_page = 1
+    if follows_per_page > 0:
+        last_page = int(total_ctr / follows_per_page)
     last_page = max(last_page, 1)
     if next_page_number > last_page:
         following['next'] = \
