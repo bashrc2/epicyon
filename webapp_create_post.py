@@ -1038,9 +1038,10 @@ def html_new_post(edit_post_params: {},
         # event category
         # https://codeberg.org/fediverse
         # /fep/src/branch/main/fep/8a8e/fep-8a8e.md
-        date_and_location += '  <label class="labels">' + \
-            translate['Category'] + '</label><br>\n'
         date_and_location += '<br><p><br>\n' + \
+            '  <label class="labels">' + \
+            translate['Category'] + '</label><br>\n'
+        date_and_location += \
             '  <select id="eventCategory" ' + \
             'name="eventCategory" class="theme">\n'
         date_and_location += \
