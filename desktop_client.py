@@ -572,6 +572,7 @@ def _desktop_reply_to_post(session, post_id: str,
     event_date = None
     event_time = None
     event_end_time = None
+    event_category = ''
     location = None
     buy_url = ''
     chat_url = ''
@@ -592,7 +593,8 @@ def _desktop_reply_to_post(session, post_id: str,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             media_license_url, media_creator,
-                            event_date, event_time, event_end_time, location,
+                            event_date, event_time, event_end_time,
+                            event_category, location,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, post_id, post_id,
                             conversation_id, convthread_id, subject,
@@ -659,6 +661,7 @@ def _desktop_new_post(session,
     event_date = None
     event_time = None
     event_end_time = None
+    event_category = ''
     location = None
     buy_url = ''
     chat_url = ''
@@ -678,7 +681,8 @@ def _desktop_new_post(session,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             media_license_url, media_creator,
-                            event_date, event_time, event_end_time, location,
+                            event_date, event_time, event_end_time,
+                            event_category, location,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
                             conversation_id, convthread_id, subject,
@@ -1486,6 +1490,7 @@ def _desktop_new_dm_base(session, to_handle: str,
     event_date = None
     event_time = None
     event_end_time = None
+    event_category = ''
     location = None
     buy_url = ''
     chat_url = ''
@@ -1507,7 +1512,8 @@ def _desktop_new_dm_base(session, to_handle: str,
                             system_language, languages_understood,
                             low_bandwidth, content_license_url,
                             media_license_url, media_creator,
-                            event_date, event_time, event_end_time, location,
+                            event_date, event_time, event_end_time,
+                            event_category, location,
                             translate, buy_url, chat_url, auto_cw_cache,
                             debug, None, None,
                             conversation_id, convthread_id, subject,

@@ -218,6 +218,7 @@ def _send_reply_to_question(self, base_dir: str,
     event_date = None
     event_time = None
     event_end_time = None
+    event_category = ''
     location = None
     conversation_id = None
     convthread_id = None
@@ -250,6 +251,7 @@ def _send_reply_to_question(self, base_dir: str,
                                        schedule_post,
                                        event_date, event_time,
                                        event_end_time,
+                                       event_category,
                                        location,
                                        system_language,
                                        conversation_id, convthread_id,

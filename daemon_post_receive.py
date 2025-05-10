@@ -163,6 +163,9 @@ def _receive_new_post_process_newpost(self, fields: {},
     # Append the address to the location if needed
     if fields.get('locationAddress'):
         location_str += ' <address>' + fields['locationAddress'] + '</address>'
+    event_category = ''
+    if fields.get('eventCategory'):
+        event_category = fields['eventCategory']
     message_json = \
         create_public_post(base_dir, nickname, domain,
                            port,
@@ -179,6 +182,7 @@ def _receive_new_post_process_newpost(self, fields: {},
                            fields['eventDate'],
                            fields['eventTime'],
                            fields['eventEndTime'],
+                           event_category,
                            location_str, False,
                            fields['languagesDropdown'],
                            conversation_id, convthread_id,
@@ -332,6 +336,9 @@ def _receive_new_post_process_newblog(self, fields: {},
     # Append the address to the location if needed
     if fields.get('locationAddress'):
         location_str += ' <address>' + fields['locationAddress'] + '</address>'
+    event_category = ''
+    if fields.get('eventCategory'):
+        event_category = fields['eventCategory']
     message_json = \
         create_blog_post(base_dir, nickname,
                          domain, port, http_prefix,
@@ -346,6 +353,7 @@ def _receive_new_post_process_newblog(self, fields: {},
                          fields['eventDate'],
                          fields['eventTime'],
                          fields['eventEndTime'],
+                         event_category,
                          location_str,
                          fields['languagesDropdown'],
                          conversation_id, convthread_id,
@@ -575,6 +583,9 @@ def _receive_new_post_process_newunlisted(self, fields: {},
     # Append the address to the location if needed
     if fields.get('locationAddress'):
         location_str += ' <address>' + fields['locationAddress'] + '</address>'
+    event_category = ''
+    if fields.get('eventCategory'):
+        event_category = fields['eventCategory']
     message_json = \
         create_unlisted_post(base_dir, nickname, domain, port,
                              http_prefix,
@@ -592,6 +603,7 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                              fields['eventDate'],
                              fields['eventTime'],
                              fields['eventEndTime'],
+                             event_category,
                              location_str,
                              fields['languagesDropdown'],
                              conversation_id, convthread_id,
@@ -742,6 +754,9 @@ def _receive_new_post_process_newfollowers(self, fields: {},
     # Append the address to the location if needed
     if fields.get('locationAddress'):
         location_str += ' <address>' + fields['locationAddress'] + '</address>'
+    event_category = ''
+    if fields.get('eventCategory'):
+        event_category = fields['eventCategory']
     message_json = \
         create_followers_only_post(base_dir, nickname, domain,
                                    port, http_prefix,
@@ -760,6 +775,7 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                    fields['eventDate'],
                                    fields['eventTime'],
                                    fields['eventEndTime'],
+                                   event_category,
                                    location_str,
                                    fields['languagesDropdown'],
                                    conversation_id, convthread_id,
@@ -920,6 +936,9 @@ def _receive_new_post_process_newdm(self, fields: {},
         if fields.get('locationAddress'):
             location_str += \
                 ' <address>' + fields['locationAddress'] + '</address>'
+        event_category = ''
+        if fields.get('eventCategory'):
+            event_category = fields['eventCategory']
         message_json = \
             create_direct_message_post(base_dir, nickname, domain,
                                        port, http_prefix,
@@ -941,6 +960,7 @@ def _receive_new_post_process_newdm(self, fields: {},
                                        fields['eventDate'],
                                        fields['eventTime'],
                                        fields['eventEndTime'],
+                                       event_category,
                                        location_str,
                                        fields['languagesDropdown'],
                                        conversation_id, convthread_id,
@@ -1087,6 +1107,9 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
     if fields.get('locationAddress'):
         location_str += \
             ' <address>' + fields['locationAddress'] + '</address>'
+    event_category = ''
+    if fields.get('eventCategory'):
+        event_category = fields['eventCategory']
     message_json = \
         create_direct_message_post(base_dir, nickname, domain,
                                    port, http_prefix,
@@ -1104,6 +1127,7 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                    fields['eventDate'],
                                    fields['eventTime'],
                                    fields['eventEndTime'],
+                                   event_category,
                                    location_str,
                                    fields['languagesDropdown'],
                                    conversation_id, convthread_id,
@@ -1440,6 +1464,9 @@ def _receive_new_post_process_newreading(self, fields: {},
     if fields.get('locationAddress'):
         location_str += \
             ' <address>' + fields['locationAddress'] + '</address>'
+    event_category = ''
+    if fields.get('eventCategory'):
+        event_category = fields['eventCategory']
     # reading status
     message_json = \
         create_reading_post(base_dir, nickname, domain,
@@ -1458,6 +1485,7 @@ def _receive_new_post_process_newreading(self, fields: {},
                             fields['eventDate'],
                             fields['eventTime'],
                             fields['eventEndTime'],
+                            event_category,
                             location_str, False,
                             fields['languagesDropdown'],
                             conversation_id, convthread_id,

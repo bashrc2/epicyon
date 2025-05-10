@@ -801,6 +801,7 @@ def create_server_alice(path: str, domain: str, port: int,
         test_event_date = None
         test_event_time = None
         test_event_end_time = None
+        test_event_category = ''
         test_location = None
         test_is_article = False
         conversation_id = None
@@ -827,7 +828,8 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -846,7 +848,8 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -866,7 +869,8 @@ def create_server_alice(path: str, domain: str, port: int,
                            test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -998,6 +1002,7 @@ def create_server_bob(path: str, domain: str, port: int,
         test_event_date = None
         test_event_time = None
         test_event_end_time = None
+        test_event_category = ''
         test_location = None
         test_is_article = False
         conversation_id = None
@@ -1024,7 +1029,8 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -1044,7 +1050,8 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -1063,7 +1070,8 @@ def create_server_bob(path: str, domain: str, port: int,
                            test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -3125,6 +3133,7 @@ def _test_create_person_account(base_dir: str):
     test_event_date = None
     test_event_time = None
     test_event_end_time = None
+    test_event_category = ''
     test_location = None
     test_is_article = False
     save_to_file = True
@@ -3157,7 +3166,8 @@ def _test_create_person_account(base_dir: str):
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -3186,7 +3196,8 @@ def _test_create_person_account(base_dir: str):
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -3395,6 +3406,7 @@ def test_client_to_server(base_dir: str):
         str(test_date.day)
     event_time = '11:45'
     event_end_time = '12:30'
+    event_category = ''
     location = "Kinshasa"
     translate = {}
     buy_url = ''
@@ -3416,7 +3428,8 @@ def test_client_to_server(base_dir: str):
                              system_language, languages_understood,
                              low_bandwidth, content_license_url,
                              media_license_url, media_creator,
-                             event_date, event_time, event_end_time, location,
+                             event_date, event_time, event_end_time,
+                             event_category, location,
                              translate, buy_url, chat_url, auto_cw_cache,
                              True, None, None, conversation_id, convthread_id,
                              None, searchable_by, mitm_servers)
@@ -5094,6 +5107,7 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     test_event_date = None
     test_event_time = None
     test_event_end_time = None
+    test_event_category = ''
     test_location = None
     test_is_article = False
     conversation_id = None
@@ -5119,7 +5133,8 @@ def _test_reply_to_public_post(base_dir: str) -> None:
                            test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -6174,6 +6189,7 @@ def _test_links_within_post(base_dir: str) -> None:
     test_event_date = None
     test_event_time = None
     test_event_end_time = None
+    test_event_category = ''
     test_location = None
     test_is_article = False
     conversation_id = None
@@ -6199,7 +6215,8 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -6246,7 +6263,8 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -6271,7 +6289,8 @@ def _test_links_within_post(base_dir: str) -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,
@@ -7367,6 +7386,7 @@ def _test_can_replyto(base_dir: str) -> None:
     test_event_date = None
     test_event_time = None
     test_event_end_time = None
+    test_event_category = ''
     test_location = None
     test_is_article = False
     conversation_id = None
@@ -7392,7 +7412,8 @@ def _test_can_replyto(base_dir: str) -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, system_language, conversation_id,
                            convthread_id,
                            low_bandwidth, content_license_url,

@@ -75,6 +75,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import get_event_categories
 from utils import replace_strings
 from utils import set_accounts_data_dir
 from utils import data_dir
@@ -165,6 +166,9 @@ def _command_options() -> None:
                         default=None,
                         help='Time when an event ends when sending a ' +
                         'c2s post HH:MM')
+    parser.add_argument('--eventCategory', type=str,
+                        default='',
+                        help='Category for an event')
     parser.add_argument('--eventLocation', type=str,
                         default=None,
                         help='Location for an event when sending a c2s post')
@@ -1986,6 +1990,13 @@ def _command_options() -> None:
         # TODO searchable status
         searchable_by: list[str] = []
         mitm_servers: list[str] = []
+        if argb.eventCategory:
+            event_categories = get_event_categories()
+            if argb.eventCategory not in event_categories:
+                print('WARN: ' + argb.eventCategory +
+                      ' is not an event category ' +
+                      str(event_categories))
+                argb.eventCategory = ''
 
         print('Sending post to ' + argb.sendto)
         send_post_via_server(signing_priv_key_pem, __version__,
@@ -2002,6 +2013,7 @@ def _command_options() -> None:
                              argb.content_license_url,
                              argb.media_license_url, argb.media_creator,
                              argb.eventDate, argb.eventTime, argb.eventEndTime,
+                             argb.eventCategory,
                              argb.eventLocation, translate, argb.buyUrl,
                              argb.chatUrl, auto_cw_cache, argb.debug,
                              reply_to, reply_to, argb.conversationId,
@@ -3837,6 +3849,7 @@ def _command_options() -> None:
         test_event_date = None
         test_event_time = None
         test_event_end_time = None
+        test_event_category = ''
         test_location = None
         test_is_article = False
         conversation_id = None
@@ -3862,7 +3875,8 @@ def _command_options() -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, argb.language, conversation_id,
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
@@ -3880,7 +3894,8 @@ def _command_options() -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, argb.language, conversation_id,
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
@@ -3898,7 +3913,8 @@ def _command_options() -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, argb.language, conversation_id,
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
@@ -3916,7 +3932,8 @@ def _command_options() -> None:
                            'someone', test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, argb.language, conversation_id,
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
@@ -3935,7 +3952,8 @@ def _command_options() -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, argb.language, conversation_id,
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
@@ -3953,7 +3971,8 @@ def _command_options() -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, argb.language, conversation_id,
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
@@ -3971,7 +3990,8 @@ def _command_options() -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, argb.language, conversation_id,
                            convthread_id,
                            low_bandwidth, argb.content_license_url,
@@ -3989,7 +4009,8 @@ def _command_options() -> None:
                            test_in_reply_to, test_in_reply_to_atom_uri,
                            test_subject, test_schedule_post,
                            test_event_date, test_event_time,
-                           test_event_end_time, test_location,
+                           test_event_end_time, test_event_category,
+                           test_location,
                            test_is_article, argb.language, conversation_id,
                            convthread_id,
                            low_bandwidth, argb.content_license_url,

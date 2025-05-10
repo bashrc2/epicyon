@@ -1565,7 +1565,8 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                                 schedule_post: bool,
                                 event_uuid: str,
                                 location: str,
-                                tags: [], session) -> str:
+                                tags: [], session,
+                                event_category) -> str:
     """Adds a place and time to the tags on a new post
     """
     end_date_str = None
@@ -1609,7 +1610,7 @@ def _create_post_place_and_time(event_date: str, end_date: str,
         if not end_date_str:
             end_date_str = event_date_str
         if not schedule_post and not event_uuid:
-            tags.append({
+            event_json = {
                 "@context": [
                     'https://www.w3.org/ns/activitystreams',
                     'https://w3id.org/security/v1'
@@ -1618,7 +1619,10 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                 "name": event_name,
                 "startTime": event_date_str,
                 "endTime": end_date_str
-            })
+            }
+            if event_category:
+                event_json['category'] = event_category
+            tags.append(event_json)
     if location and not event_uuid:
         location_address = None
         if '<address>' in location:
@@ -1790,6 +1794,7 @@ def _create_post_base(base_dir: str,
                       event_uuid: str, category: str,
                       join_mode: str,
                       end_date: str, end_time: str,
+                      event_category: str,
                       maximum_attendee_capacity: int,
                       replies_moderation_option: str,
                       anonymous_participation_enabled: bool,
@@ -1922,7 +1927,7 @@ def _create_post_base(base_dir: str,
                                     event_time, end_time,
                                     summary, content, schedule_post,
                                     event_uuid, location, tags,
-                                    session)
+                                    session, event_category)
 
     post_context = get_individual_post_context()
 
@@ -2257,6 +2262,7 @@ def create_public_post(base_dir: str,
                        in_reply_to_atom_uri: str, subject: str,
                        schedule_post: bool,
                        event_date: str, event_time: str, event_end_time: str,
+                       event_category: str,
                        location: str, is_article: bool, system_language: str,
                        conversation_id: str, convthread_id: str,
                        low_bandwidth: bool, content_license_url: str,
@@ -2294,7 +2300,7 @@ def create_public_post(base_dir: str,
                              in_reply_to, in_reply_to_atom_uri, subject,
                              schedule_post, event_date, event_time, location,
                              event_uuid, category, join_mode,
-                             end_date, end_time,
+                             end_date, end_time, event_category,
                              maximum_attendee_capacity,
                              replies_moderation_option,
                              anonymous_participation_enabled,
@@ -2320,6 +2326,7 @@ def create_reading_post(base_dir: str,
                         in_reply_to_atom_uri: str, subject: str,
                         schedule_post: bool,
                         event_date: str, event_time: str, event_end_time: str,
+                        event_category: str,
                         location: str, is_article: bool, system_language: str,
                         conversation_id: str, convthread_id: str,
                         low_bandwidth: bool, content_license_url: str,
@@ -2362,6 +2369,7 @@ def create_reading_post(base_dir: str,
                            in_reply_to_atom_uri, subject,
                            schedule_post,
                            event_date, event_time, event_end_time,
+                           event_category,
                            location, is_article, system_language,
                            conversation_id, convthread_id, low_bandwidth,
                            content_license_url,
@@ -2422,6 +2430,7 @@ def create_blog_post(base_dir: str,
                      city: str, in_reply_to: str, in_reply_to_atom_uri: str,
                      subject: str, schedule_post: bool,
                      event_date: str, event_time: str, event_end_time: str,
+                     event_category: str,
                      location: str, system_language: str,
                      conversation_id: str, convthread_id: str,
                      low_bandwidth: bool, content_license_url: str,
@@ -2439,7 +2448,8 @@ def create_blog_post(base_dir: str,
                            image_description, video_transcript, city,
                            in_reply_to, in_reply_to_atom_uri, subject,
                            schedule_post,
-                           event_date, event_time, event_end_time, location,
+                           event_date, event_time, event_end_time,
+                           event_category, location,
                            True, system_language,
                            conversation_id, convthread_id,
                            low_bandwidth, content_license_url,
@@ -2474,6 +2484,7 @@ def create_news_post(base_dir: str,
     event_date = None
     event_time = None
     event_end_time = None
+    event_category = ''
     location = None
     searchable_by = "https://www.w3.org/ns/activitystreams#Public"
     blog = \
@@ -2485,7 +2496,8 @@ def create_news_post(base_dir: str,
                            image_description, video_transcript, city,
                            in_reply_to, in_reply_to_atom_uri, subject,
                            schedule_post,
-                           event_date, event_time, event_end_time, location,
+                           event_date, event_time, event_end_time,
+                           event_category, location,
                            True, system_language,
                            conversation_id, convthread_id,
                            low_bandwidth, content_license_url,
@@ -2521,7 +2533,7 @@ def create_question_post(base_dir: str,
     in_reply_to = in_reply_to_atom_uri = None
     schedule_post = False
     event_date = event_time = location = event_uuid = category = None
-    join_mode = end_date = end_time = None
+    join_mode = end_date = end_time = event_category = None
     maximum_attendee_capacity = replies_moderation_option = None
     anonymous_participation_enabled = event_status = ticket_url = None
     conversation_id = None
@@ -2540,7 +2552,7 @@ def create_question_post(base_dir: str,
                           in_reply_to, in_reply_to_atom_uri, subject,
                           schedule_post, event_date, event_time,
                           location, event_uuid, category,
-                          join_mode, end_date, end_time,
+                          join_mode, end_date, end_time, event_category,
                           maximum_attendee_capacity,
                           replies_moderation_option,
                           anonymous_participation_enabled, event_status,
@@ -2583,6 +2595,7 @@ def create_unlisted_post(base_dir: str,
                          in_reply_to_atom_uri: str,
                          subject: str, schedule_post: bool,
                          event_date: str, event_time: str, event_end_time: str,
+                         event_category: str,
                          location: str, system_language: str,
                          conversation_id: str, convthread_id: str,
                          low_bandwidth: bool, content_license_url: str,
@@ -2617,6 +2630,7 @@ def create_unlisted_post(base_dir: str,
                              event_time, location,
                              event_uuid, category, join_mode,
                              event_date, event_end_time,
+                             event_category,
                              maximum_attendee_capacity,
                              replies_moderation_option,
                              anonymous_participation_enabled,
@@ -2643,6 +2657,7 @@ def create_followers_only_post(base_dir: str,
                                subject: str, schedule_post: bool,
                                event_date: str,
                                event_time: str,  event_end_time: str,
+                               event_category: str,
                                location: str, system_language: str,
                                conversation_id: str, convthread_id: str,
                                low_bandwidth: bool, content_license_url: str,
@@ -2675,7 +2690,7 @@ def create_followers_only_post(base_dir: str,
                              in_reply_to, in_reply_to_atom_uri, subject,
                              schedule_post, event_date, event_time, location,
                              event_uuid, category, join_mode,
-                             event_date, event_end_time,
+                             event_date, event_end_time, event_category,
                              maximum_attendee_capacity,
                              replies_moderation_option,
                              anonymous_participation_enabled,
@@ -2738,7 +2753,7 @@ def create_direct_message_post(base_dir: str,
                                subject: str, debug: bool,
                                schedule_post: bool,
                                event_date: str, event_time: str,
-                               event_end_time: str,
+                               event_end_time: str, event_category: str,
                                location: str, system_language: str,
                                conversation_id: str, convthread_id: str,
                                low_bandwidth: bool, content_license_url: str,
@@ -2781,7 +2796,7 @@ def create_direct_message_post(base_dir: str,
                           in_reply_to, in_reply_to_atom_uri, subject,
                           schedule_post, event_date, event_time, location,
                           event_uuid, category, join_mode,
-                          event_date, event_end_time,
+                          event_date, event_end_time, event_category,
                           maximum_attendee_capacity,
                           replies_moderation_option,
                           anonymous_participation_enabled,
@@ -2898,6 +2913,7 @@ def create_report_post(base_dir: str,
     join_mode = None
     end_date = None
     end_time = None
+    event_category = ''
     maximum_attendee_capacity = None
     replies_moderation_option = None
     anonymous_participation_enabled = None
@@ -2924,6 +2940,7 @@ def create_report_post(base_dir: str,
                               schedule_post, event_date, event_time,
                               location, event_uuid, category,
                               join_mode, end_date, end_time,
+                              event_category,
                               maximum_attendee_capacity,
                               replies_moderation_option,
                               anonymous_participation_enabled,
@@ -3222,6 +3239,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     join_mode = None
     end_date = None
     end_time = None
+    event_category = ''
     maximum_attendee_capacity = None
     replies_moderation_option = None
     anonymous_participation_enabled = None
@@ -3242,7 +3260,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
                           event_date, event_time, location,
                           event_uuid, category,
                           join_mode,
-                          end_date, end_time,
+                          end_date, end_time, event_category,
                           maximum_attendee_capacity,
                           replies_moderation_option,
                           anonymous_participation_enabled,
@@ -3370,6 +3388,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                          content_license_url: str,
                          media_license_url: str, media_creator: str,
                          event_date: str, event_time: str, event_end_time: str,
+                         event_category: str,
                          location: str, translate: {},
                          buy_url: str, chat_url: str, auto_cw_cache: {},
                          debug: bool, in_reply_to: str,
@@ -3473,6 +3492,7 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                           event_date, event_time, location,
                           event_uuid, category, join_mode,
                           event_date, event_end_time,
+                          event_category,
                           maximum_attendee_capacity,
                           replies_moderation_option,
                           anonymous_participation_enabled,

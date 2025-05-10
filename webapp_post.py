@@ -2673,9 +2673,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     # Show a DM icon for DMs in the inbox timeline
     if post_is_dm:
+        dm_str = 'DM'
+        if translate.get('DM'):
+            dm_str = translate['DM']
         title_str = \
             title_str + ' <img loading="lazy" decoding="async" src="/' + \
-            'icons/dm.png" alt="(' + translate['DM'] + ')" class="DMicon"/>\n'
+            'icons/dm.png" alt="(' + dm_str + ')" class="DMicon"/>\n'
 
     # check if replying is permitted
     comments_enabled = True
@@ -3247,7 +3250,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
                     '<br>' + translate['Address'] + ':<address>'
                 location_str = \
                     location_str.replace('<br><address>', address_prefix)
-            map_str = '<p>' + translate['Location'] + ': ' + \
+            locn_text = 'Location'
+            if translate.get('Location'):
+                locn_text = translate['Location']
+            map_str = '<p>' + locn_text + ': ' + \
                 location_str + '</p>\n'
 
     if is_muted:

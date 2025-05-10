@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from flags import is_public_post_from_url
 from flags import is_premium_account
+from utils import get_event_categories
 from utils import data_dir
 from utils import dangerous_markup
 from utils import remove_html
@@ -1034,6 +1035,27 @@ def html_new_post(edit_post_params: {},
 
             date_and_location += date_and_time_str
 
+        # event category
+        # https://codeberg.org/fediverse
+        # /fep/src/branch/main/fep/8a8e/fep-8a8e.md
+        date_and_location += '  <label class="labels">' + \
+            translate['Category'] + '</label><br>\n'
+        date_and_location += '<br><p><br>\n' + \
+            '  <select id="eventCategory" ' + \
+            'name="eventCategory" class="theme">\n'
+        date_and_location += \
+            '    <option value="None" selected></option>\n'
+        for category_label in get_event_categories():
+            category_str = category_label
+            if category_label:
+                if translate.get(category_label):
+                    category_str = translate[category_label]
+            date_and_location += \
+                '    <option value="' + category_label + \
+                '">' + category_str.title() + '</option>\n'
+        date_and_location += '  </select><br>\n'
+
+        # event location
         maps_url = get_map_preferences_url(base_dir, nickname, domain)
         if not maps_url:
             maps_url = 'https://www.openstreetmap.org'
@@ -1076,11 +1098,12 @@ def html_new_post(edit_post_params: {},
             '<a href="' + maps_url + '" ' + \
             'rel="nofollow noopener noreferrer" target="_blank">🗺️ ' + \
             translate['Location'] + '</a>'
-        date_and_location += '<br><p><br>\n' + \
+        date_and_location += \
             edit_text_field(location_label_with_link, 'location',
                             default_location,
                             'https://www.openstreetmap.org/#map=') + '</p>\n'
 
+        # event address
         date_and_location += \
             '<label class="labels">' + translate['Address'] + ':' + \
             '</label><br>\n'

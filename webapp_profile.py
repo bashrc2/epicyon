@@ -2586,8 +2586,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                 city_selected = ' selected'
         edit_profile_form += \
             '    <option value="' + city_name + \
-            '"' + city_selected.title() + '>' + \
-            city_name + '</option>\n'
+            '"' + city_selected + '>' + \
+            city_name.title() + '</option>\n'
     edit_profile_form += '  </select><br>\n'
 
     edit_profile_form += \

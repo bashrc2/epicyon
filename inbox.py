@@ -1365,6 +1365,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     event_date = None
     event_time = None
     event_end_time = None
+    event_category = ''
     location = None
     conversation_id = None
     convthread_id = None
@@ -1382,6 +1383,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                                    in_reply_to, in_reply_to_atom_uri,
                                    subject, debug, schedule_post,
                                    event_date, event_time, event_end_time,
+                                   event_category,
                                    location, system_language, conversation_id,
                                    convthread_id,
                                    low_bandwidth, dm_license_url,

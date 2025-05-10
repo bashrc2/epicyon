@@ -5504,3 +5504,47 @@ def text_mode_removals(text: str, translate: {}) -> str:
     text = text.replace(translate['SHOW MORE'], '')
     text = text.replace(translate['mitm'], '👁 ')
     return text
+
+
+def get_event_categories() -> []:
+    """Returns event categories
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/8a8e/fep-8a8e.md
+    """
+    return (
+        'ARTS',
+        'AUTO_BOAT_AIR',
+        'BOOK_CLUBS',
+        'BUSINESS',
+        'CAUSES',
+        'CLIMATE_ENVIRONMENT',
+        'COMMUNITY',
+        'COMEDY',
+        'CRAFTS',
+        'CREATIVE_JAM',
+        'DIY_MAKER_SPACES',
+        'FAMILY_EDUCATION',
+        'FASHION_BEAUTY',
+        'FESTIVALS',
+        'FILM_MEDIA',
+        'FOOD_DRINK',
+        'GAMES',
+        'INCLUSIVE_SPACES',
+        'LANGUAGE_CULTURE',
+        'LEARNING',
+        'LGBTQ',
+        'MEETING',
+        'MEDITATION_WELLBEING',
+        'MOVEMENTS_POLITICS',
+        'MUSIC',
+        'NETWORKING',
+        'OUTDOORS_ADVENTURE',
+        'PARTY',
+        'PERFORMING_VISUAL_ARTS',
+        'PETS',
+        'PHOTOGRAPHY',
+        'SCIENCE_TECH',
+        'SPIRITUALITY_RELIGION_BELIEFS',
+        'SPORTS',
+        'THEATRE',
+        'WORKSHOPS_SKILL_SHARING'
+    )
