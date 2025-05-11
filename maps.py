@@ -320,15 +320,12 @@ def get_event_time_span_from_post(post_json_object: {}) -> str:
         if isinstance(locn2, dict):
             if locn2.get('startTime'):
                 if not isinstance(locn2['startTime'], str):
-                    return start_date_str, start_time_str, \
-                        end_date_str, end_time_str
+                    return ''
                 start_time = remove_html(locn2['startTime'])
             if not start_time:
-                return start_date_str, start_time_str, \
-                    end_date_str, end_time_str
+                return ''
             if 'T' not in start_time:
-                return start_date_str, start_time_str, \
-                    end_date_str, end_time_str
+                return ''
             start_date_str = start_time.split('T')[0]
             start_time_str = start_time.split('T')[1]
             if '+' in start_time_str:
