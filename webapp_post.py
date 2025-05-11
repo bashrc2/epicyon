@@ -3215,8 +3215,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
                     if '<br><address>' in location_str:
                         # append the address after the map
                         addrstr = location_str.split('<br><address>')[1]
-                        if '</address>' in addrstr:
-                            addrstr = addrstr.split('</address>')[0]
                         map_addr_str = \
                             '<br><br><address>' + addrstr + '\n'
                     map_str = '<center>\n' + map_str + \
