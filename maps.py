@@ -103,8 +103,18 @@ def _get_category_from_tags(tags: []) -> str:
     locn = get_location_dict_from_tags(tags)
     if locn:
         if locn.get('category'):
-            location_str = remove_html(locn['category'])
-            return location_str
+            if isinstance(locn['category'], str):
+                category_str = remove_html(locn['category'])
+                return category_str
+            if isinstance(locn['category'], list):
+                category_str = ''
+                for category_item in locn['category']:
+                    if not isinstance(category_item, str):
+                        continue
+                    if category_item:
+                        category_str += ', '
+                    category_str += category_item
+                return category_str
     return None
 
 
@@ -259,7 +269,7 @@ def get_location_from_post(post_json_object: {}) -> str:
 def get_category_from_post(post_json_object: {}) -> str:
     """Returns the location category for the given post
     """
-    locn = None
+    catstr = ''
 
     # location represented via a tag
     post_obj = post_json_object
@@ -267,17 +277,25 @@ def get_category_from_post(post_json_object: {}) -> str:
         post_obj = post_json_object['object']
     if post_obj.get('tag'):
         if isinstance(post_obj['tag'], list):
-            locn = _get_category_from_tags(post_obj['tag'])
+            catstr = _get_category_from_tags(post_obj['tag'])
 
     # location representation used by pixelfed
-    locn2 = None
     if post_obj.get('location'):
         locn2 = post_obj['location']
         if isinstance(locn2, dict):
             if locn2.get('category'):
-                locn = remove_html(locn2['category'])
+                if isinstance(locn2['category'], str):
+                    catstr = remove_html(locn2['category'])
+                elif isinstance(locn2['category'], list):
+                    catstr = ''
+                    for category_item in locn2['category']:
+                        if not isinstance(category_item, str):
+                            continue
+                        if category_item:
+                            catstr += ', '
+                        catstr += category_item
 
-    return locn
+    return catstr
 
 
 def get_event_time_span_from_post(post_json_object: {}) -> str:
