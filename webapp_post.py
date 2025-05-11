@@ -3214,9 +3214,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
                     map_addr_str = ''
                     if '<br><address>' in location_str:
                         # append the address after the map
+                        addrstr = location_str.split('<br><address>')[1]
+                        if '</address>' in addrstr:
+                            addrstr = addrstr.split('</address>')[0]
                         map_addr_str = \
-                            '<br><br><address>' + \
-                            location_str.split('<br><address>')[1] + '\n'
+                            '<br><br><address>' + addrstr + '\n'
                     map_str = '<center>\n' + map_str + \
                         map_addr_str + '</center>\n'
         attrib = None
@@ -3259,12 +3261,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 category_text = 'Category'
                 if translate.get('Category'):
                     category_text = translate['Category']
-                map_str = '<p>' + category_text + ': ' + \
+                map_str += '<p>' + category_text + ': ' + \
                     category_str + '</p>\n'
             locn_text = 'Location'
             if translate.get('Location'):
                 locn_text = translate['Location']
-            map_str = '<p>' + locn_text + ': ' + \
+            map_str += '<p>' + locn_text + ': ' + \
                 location_str + '</p>\n'
 
     if is_muted:
