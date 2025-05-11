@@ -346,6 +346,44 @@ def get_event_time_span_from_post(post_json_object: {}) -> str:
             start_date_str, start_time_str, end_date_str, end_time_str = \
                 _get_event_time_span_from_tags(post_obj['tag'])
 
+    # check for time span within the post object
+    if not start_date_str and post_obj.get('startTime'):
+        if not isinstance(post_obj['startTime'], str):
+            return None, None, None, None
+        start_time = remove_html(post_obj['startTime'])
+        if 'T' not in start_time:
+            return None, None, None, None
+        start_date_str = start_time.split('T')[0]
+        start_time_str = start_time.split('T')[1]
+        if ':' not in start_time_str:
+            return None, None, None, None
+        if '+' in start_time_str:
+            start_time_str = start_time_str.split('+')[0]
+        if '-' in start_time_str:
+            start_time_str = start_time_str.split('-')[0]
+        start_time_sections = start_time_str.split(':')
+        if len(start_time_sections) < 2:
+            return None, None, None, None
+        start_time_str = \
+            start_time_sections[0] + ':' + start_time_sections[1]
+        end_date_str = end_time_str = ''
+        if post_obj.get('endTime'):
+            if isinstance(post_obj['endTime'], str):
+                end_time = remove_html(post_obj['endTime'])
+                if 'T' in end_time:
+                    end_date_str = end_time.split('T')[0]
+                    end_time_str = end_time.split('T')[1]
+                    if '+' in end_time_str:
+                        end_time_str = end_time_str.split('+')[0]
+                    if '-' in end_time_str:
+                        end_time_str = end_time_str.split('-')[0]
+                    if ':' in end_time_str:
+                        end_time_sections = end_time_str.split(':')
+                        if len(end_time_sections) >= 2:
+                            end_time_str = \
+                                end_time_sections[0] + ':' + \
+                                end_time_sections[1]
+
     if start_date_str:
         if not end_date_str:
             return '<time datetime="' + start_time + '">' + \
