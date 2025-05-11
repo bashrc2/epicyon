@@ -312,6 +312,22 @@ def get_category_from_post(post_json_object: {}, translate: {}) -> str:
         if isinstance(post_obj['tag'], list):
             catstr = _get_category_from_tags(post_obj['tag'], translate)
 
+    if not catstr:
+        if post_obj.get('category'):
+            text = post_obj['category']
+            if isinstance(text, str):
+                if translate.get(text):
+                    catstr = translate[text]
+            elif isinstance(text, list):
+                catstr = ''
+                for cat_text in text:
+                    if not isinstance(cat_text, str):
+                        continue
+                    if not translate.get(cat_text):
+                        continue
+                    if catstr:
+                        catstr += ', '
+                    catstr += translate[cat_text]
     return catstr
 
 
