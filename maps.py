@@ -97,6 +97,17 @@ def _get_location_from_tags(tags: []) -> str:
     return None
 
 
+def _get_category_from_tags(tags: []) -> str:
+    """Returns the location category from the tags list
+    """
+    locn = get_location_dict_from_tags(tags)
+    if locn:
+        if locn.get('category'):
+            location_str = remove_html(locn['category'])
+            return location_str
+    return None
+
+
 def html_address_book_list(base_dir: str, nickname: str, domain: str) -> str:
     """Creates a list of potential addresses when creating a new post
     with a location
@@ -207,6 +218,30 @@ def get_location_from_post(post_json_object: {}) -> str:
                 locn += '<br><address>' + locn_address + '</address>'
         else:
             locn = '<address>' + locn_address + '</address>'
+
+    return locn
+
+
+def get_category_from_post(post_json_object: {}) -> str:
+    """Returns the location category for the given post
+    """
+    locn = None
+
+    # location represented via a tag
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+    if post_obj.get('tag'):
+        if isinstance(post_obj['tag'], list):
+            locn = _get_category_from_tags(post_obj['tag'])
+
+    # location representation used by pixelfed
+    locn2 = None
+    if post_obj.get('location'):
+        locn2 = post_obj['location']
+        if isinstance(locn2, dict):
+            if locn2.get('category'):
+                locn = remove_html(locn2['category'])
 
     return locn
 

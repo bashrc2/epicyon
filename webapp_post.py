@@ -131,6 +131,7 @@ from maps import set_map_preferences_coords
 from maps import set_map_preferences_url
 from maps import geocoords_from_map_link
 from maps import get_location_from_post
+from maps import get_category_from_post
 from session import get_json_valid
 from session import get_json
 
@@ -3187,6 +3188,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
             buy_links = get_buy_links(post_json_object, translate, buy_sites)
         # show embedded map if the location contains a map url
         location_str = get_location_from_post(post_json_object)
+        category_str = ''
+        if location_str:
+            category_str = get_category_from_post(post_json_object)
+
         loc_str = location_str
         if location_str:
             # if this is a location with an address then remove the address
@@ -3250,6 +3255,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
                     '<br>' + translate['Address'] + ':<address>'
                 location_str = \
                     location_str.replace('<br><address>', address_prefix)
+            if category_str:
+                category_text = 'Category'
+                if translate.get('Category'):
+                    category_text = translate['Category']
+                map_str = '<p>' + category_text + ': ' + \
+                    category_str + '</p>\n'
             locn_text = 'Location'
             if translate.get('Location'):
                 locn_text = translate['Location']
