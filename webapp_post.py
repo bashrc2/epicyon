@@ -3279,6 +3279,16 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if time_span_str:
                 map_str += '<p>' + time_span_str + '</p>\n'
 
+        if not map_str and not location_str:
+            if category_str:
+                category_text = 'Category'
+                if translate.get('Category'):
+                    category_text = translate['Category']
+                map_str += '<p>' + category_text + ': ' + \
+                    category_str + '</p>\n'
+            if time_span_str:
+                map_str += '<p>' + time_span_str + '</p>\n'
+
     if is_muted:
         content_str = ''
     else:
