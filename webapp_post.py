@@ -3219,7 +3219,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
                         event_category = '<br>' + category_text + ': ' + \
                             category_str + '\n'
                     if time_span_str:
-                        time_span_str = '<br>' + time_span_str
+                        time_text = 'Time'
+                        if translate.get('Time'):
+                            time_text = translate['Time']
+                        time_span_str = \
+                            '<br>' + time_text + ': ' + time_span_str
                     map_addr_str = ''
                     if '<br><address>' in location_str:
                         # append the address after the map
@@ -3277,7 +3281,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
             map_str += '<p>' + locn_text + ': ' + \
                 location_str + '</p>\n'
             if time_span_str:
-                map_str += '<p>' + time_span_str + '</p>\n'
+                time_text = 'Time'
+                if translate.get('Time'):
+                    time_text = translate['Time']
+                map_str += '<p>' + time_text + ': ' + time_span_str + '</p>\n'
 
         if not map_str and not location_str:
             if category_str:
@@ -3287,7 +3294,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 map_str += '<p>' + category_text + ': ' + \
                     category_str + '</p>\n'
             if time_span_str:
-                map_str += '<p>' + time_span_str + '</p>\n'
+                time_text = 'Time'
+                if translate.get('Time'):
+                    time_text = translate['Time']
+                map_str += '<p>' + time_text + ': ' + time_span_str + '</p>\n'
 
     if is_muted:
         content_str = ''
