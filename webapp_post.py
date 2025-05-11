@@ -3211,6 +3211,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                          translate, session,
                                          session, session)
                 if map_str:
+                    event_category = ''
+                    if category_str:
+                        category_text = 'Category'
+                        if translate.get('Category'):
+                            category_text = translate['Category']
+                        event_category = '<br>' + category_text + ': ' + \
+                            category_str + '\n'
                     map_addr_str = ''
                     if '<br><address>' in location_str:
                         # append the address after the map
@@ -3218,7 +3225,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                         map_addr_str = \
                             '<br><br><address>' + addrstr + '\n'
                     map_str = '<center>\n' + map_str + \
-                        map_addr_str + '</center>\n'
+                        map_addr_str + event_category + '</center>\n'
         attrib = None
         if post_json_object['object'].get('attributedTo'):
             attrib = \
