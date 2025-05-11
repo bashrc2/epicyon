@@ -49,6 +49,22 @@ def get_location_dict_from_tags(tags: []) -> str:
     return None
 
 
+def _get_event_dict_from_tags(tags: []) -> str:
+    """Returns the event from the tags list
+    """
+    for tag_item in tags:
+        if not tag_item.get('type'):
+            continue
+        if tag_item['type'] != 'Event':
+            continue
+        if not tag_item.get('startTime'):
+            continue
+        if not isinstance(tag_item['startTime'], str):
+            continue
+        return tag_item
+    return None
+
+
 def _location_address_from_dict(location: {}) -> str:
     """returns location address as a string
     """
@@ -100,15 +116,15 @@ def _get_location_from_tags(tags: []) -> str:
 def _get_category_from_tags(tags: []) -> str:
     """Returns the location category from the tags list
     """
-    locn = get_location_dict_from_tags(tags)
-    if locn:
-        if locn.get('category'):
-            if isinstance(locn['category'], str):
-                category_str = remove_html(locn['category'])
+    evnt = _get_event_dict_from_tags(tags)
+    if evnt:
+        if evnt.get('category'):
+            if isinstance(evnt['category'], str):
+                category_str = remove_html(evnt['category'])
                 return category_str
-            if isinstance(locn['category'], list):
+            if isinstance(evnt['category'], list):
                 category_str = ''
-                for category_item in locn['category']:
+                for category_item in evnt['category']:
                     if not isinstance(category_item, str):
                         continue
                     if category_item:
@@ -121,13 +137,13 @@ def _get_category_from_tags(tags: []) -> str:
 def _get_event_time_span_from_tags(tags: []) -> (str, str, str, str):
     """Returns the event time span from the tags list
     """
-    locn = get_location_dict_from_tags(tags)
-    if locn:
+    evnt = _get_event_dict_from_tags(tags)
+    if evnt:
         start_time = end_time = ''
-        if locn.get('startTime'):
-            if not isinstance(locn['startTime'], str):
+        if evnt.get('startTime'):
+            if not isinstance(evnt['startTime'], str):
                 return None, None, None, None
-            start_time = remove_html(locn['startTime'])
+            start_time = remove_html(evnt['startTime'])
             if 'T' not in start_time:
                 return None, None, None, None
             start_date_str = start_time.split('T')[0]
@@ -137,9 +153,9 @@ def _get_event_time_span_from_tags(tags: []) -> (str, str, str, str):
             if '-' in start_time_str:
                 start_time_str = start_time_str.split('-')[0]
             end_date_str = end_time_str = ''
-            if locn.get('endTime'):
-                if isinstance(locn['endTime'], str):
-                    end_time = remove_html(locn['endTime'])
+            if evnt.get('endTime'):
+                if isinstance(evnt['endTime'], str):
+                    end_time = remove_html(evnt['endTime'])
                     if 'T' in end_time:
                         end_date_str = end_time.split('T')[0]
                         end_time_str = end_time.split('T')[1]
@@ -279,22 +295,6 @@ def get_category_from_post(post_json_object: {}) -> str:
         if isinstance(post_obj['tag'], list):
             catstr = _get_category_from_tags(post_obj['tag'])
 
-    # location representation used by pixelfed
-    if post_obj.get('location'):
-        locn2 = post_obj['location']
-        if isinstance(locn2, dict):
-            if locn2.get('category'):
-                if isinstance(locn2['category'], str):
-                    catstr = remove_html(locn2['category'])
-                elif isinstance(locn2['category'], list):
-                    catstr = ''
-                    for category_item in locn2['category']:
-                        if not isinstance(category_item, str):
-                            continue
-                        if category_item:
-                            catstr += ', '
-                        catstr += category_item
-
     return catstr
 
 
@@ -313,35 +313,6 @@ def get_event_time_span_from_post(post_json_object: {}) -> str:
             start_date_str, start_time_str, end_date_str, end_time_str = \
                 _get_event_time_span_from_tags(post_obj['tag'])
 
-    # location representation used by pixelfed
-    locn2 = None
-    if post_obj.get('location'):
-        locn2 = post_obj['location']
-        if isinstance(locn2, dict):
-            if locn2.get('startTime'):
-                if not isinstance(locn2['startTime'], str):
-                    return ''
-                start_time = remove_html(locn2['startTime'])
-            if not start_time:
-                return ''
-            if 'T' not in start_time:
-                return ''
-            start_date_str = start_time.split('T')[0]
-            start_time_str = start_time.split('T')[1]
-            if '+' in start_time_str:
-                start_time_str = start_time_str.split('+')[0]
-            if '-' in start_time_str:
-                start_time_str = start_time_str.split('-')[0]
-            if locn2.get('endTime'):
-                if isinstance(locn2['endTime'], str):
-                    end_time = remove_html(locn2['endTime'])
-                    if 'T' not in end_time:
-                        end_date_str = end_time.split('T')[0]
-                        end_time_str = end_time.split('T')[1]
-                        if '+' in end_time_str:
-                            end_time_str = end_time_str.split('+')[0]
-                        if '-' in end_time_str:
-                            end_time_str = end_time_str.split('-')[0]
     if start_date_str:
         if not end_date_str:
             return '<time datetime="' + start_time + '">' + \

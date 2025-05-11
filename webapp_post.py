@@ -3189,11 +3189,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             buy_links = get_buy_links(post_json_object, translate, buy_sites)
         # show embedded map if the location contains a map url
         location_str = get_location_from_post(post_json_object)
-        category_str = ''
-        time_span_str = ''
-        if location_str:
-            category_str = get_category_from_post(post_json_object)
-            time_span_str = get_event_time_span_from_post(post_json_object)
+        category_str = get_category_from_post(post_json_object)
+        time_span_str = get_event_time_span_from_post(post_json_object)
 
         loc_str = location_str
         if location_str:
