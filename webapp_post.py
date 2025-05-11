@@ -132,6 +132,7 @@ from maps import set_map_preferences_url
 from maps import geocoords_from_map_link
 from maps import get_location_from_post
 from maps import get_category_from_post
+from maps import get_event_time_span_from_post
 from session import get_json_valid
 from session import get_json
 
@@ -3189,8 +3190,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
         # show embedded map if the location contains a map url
         location_str = get_location_from_post(post_json_object)
         category_str = ''
+        time_span_str = ''
         if location_str:
             category_str = get_category_from_post(post_json_object)
+            time_span_str = get_event_time_span_from_post(post_json_object)
 
         loc_str = location_str
         if location_str:
@@ -3218,6 +3221,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             category_text = translate['Category']
                         event_category = '<br>' + category_text + ': ' + \
                             category_str + '\n'
+                    if time_span_str:
+                        time_span_str = '<br>' + time_span_str
                     map_addr_str = ''
                     if '<br><address>' in location_str:
                         # append the address after the map
@@ -3225,7 +3230,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                         map_addr_str = \
                             '<br><br><address>' + addrstr + '\n'
                     map_str = '<center>\n' + map_str + \
-                        map_addr_str + event_category + '</center>\n'
+                        map_addr_str + time_span_str + event_category + \
+                        '</center>\n'
         attrib = None
         if post_json_object['object'].get('attributedTo'):
             attrib = \
@@ -3273,6 +3279,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 locn_text = translate['Location']
             map_str += '<p>' + locn_text + ': ' + \
                 location_str + '</p>\n'
+            if time_span_str:
+                map_str += '<p>' + time_span_str + '</p>\n'
 
     if is_muted:
         content_str = ''

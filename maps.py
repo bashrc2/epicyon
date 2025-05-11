@@ -108,6 +108,40 @@ def _get_category_from_tags(tags: []) -> str:
     return None
 
 
+def _get_event_time_span_from_tags(tags: []) -> (str, str, str, str):
+    """Returns the event time span from the tags list
+    """
+    locn = get_location_dict_from_tags(tags)
+    if locn:
+        start_time = end_time = ''
+        if locn.get('startTime'):
+            if not isinstance(locn['startTime'], str):
+                return None, None, None, None
+            start_time = remove_html(locn['startTime'])
+            if 'T' not in start_time:
+                return None, None, None, None
+            start_date_str = start_time.split('T')[0]
+            start_time_str = start_time.split('T')[1]
+            if '+' in start_time_str:
+                start_time_str = start_time_str.split('+')[0]
+            if '-' in start_time_str:
+                start_time_str = start_time_str.split('-')[0]
+            end_date_str = end_time_str = ''
+            if locn.get('endTime'):
+                if isinstance(locn['endTime'], str):
+                    end_time = remove_html(locn['endTime'])
+                    if 'T' in end_time:
+                        end_date_str = end_time.split('T')[0]
+                        end_time_str = end_time.split('T')[1]
+                        if '+' in end_time_str:
+                            end_time_str = end_time_str.split('+')[0]
+                        if '-' in end_time_str:
+                            end_time_str = end_time_str.split('-')[0]
+            return start_date_str, start_time_str, \
+                end_date_str, end_time_str
+    return None, None, None, None
+
+
 def html_address_book_list(base_dir: str, nickname: str, domain: str) -> str:
     """Creates a list of potential addresses when creating a new post
     with a location
@@ -244,6 +278,69 @@ def get_category_from_post(post_json_object: {}) -> str:
                 locn = remove_html(locn2['category'])
 
     return locn
+
+
+def get_event_time_span_from_post(post_json_object: {}) -> str:
+    """Returns the event start and end time for the given post
+    """
+    start_time = end_time = ''
+    start_date_str = start_time_str = end_date_str = end_time_str = ''
+
+    # location represented via a tag
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+    if post_obj.get('tag'):
+        if isinstance(post_obj['tag'], list):
+            start_date_str, start_time_str, end_date_str, end_time_str = \
+                _get_event_time_span_from_tags(post_obj['tag'])
+
+    # location representation used by pixelfed
+    locn2 = None
+    if post_obj.get('location'):
+        locn2 = post_obj['location']
+        if isinstance(locn2, dict):
+            if locn2.get('startTime'):
+                if not isinstance(locn2['startTime'], str):
+                    return start_date_str, start_time_str, \
+                        end_date_str, end_time_str
+                start_time = remove_html(locn2['startTime'])
+            if not start_time:
+                return start_date_str, start_time_str, \
+                    end_date_str, end_time_str
+            if 'T' not in start_time:
+                return start_date_str, start_time_str, \
+                    end_date_str, end_time_str
+            start_date_str = start_time.split('T')[0]
+            start_time_str = start_time.split('T')[1]
+            if '+' in start_time_str:
+                start_time_str = start_time_str.split('+')[0]
+            if '-' in start_time_str:
+                start_time_str = start_time_str.split('-')[0]
+            if locn2.get('endTime'):
+                if isinstance(locn2['endTime'], str):
+                    end_time = remove_html(locn2['endTime'])
+                    if 'T' not in end_time:
+                        end_date_str = end_time.split('T')[0]
+                        end_time_str = end_time.split('T')[1]
+                        if '+' in end_time_str:
+                            end_time_str = end_time_str.split('+')[0]
+                        if '-' in end_time_str:
+                            end_time_str = end_time_str.split('-')[0]
+    if start_date_str:
+        if not end_date_str:
+            return '<time datetime="' + start_time + '">' + \
+                start_date_str + ' ' + start_time_str + '</time>'
+        if start_date_str == end_date_str:
+            return '<time datetime="' + start_time + '">' + \
+                start_date_str + ' ' + start_time_str + '</time> - ' + \
+                '<time datetime="' + end_time + '">' + end_time_str + '</time>'
+        return '<time datetime="' + start_time + '">' + \
+            start_date_str + ' ' + start_time_str + '</time> - ' + \
+            '<time datetime="' + end_time + '">' + \
+            end_date_str + ' ' + end_time_str + '</time>'
+
+    return ''
 
 
 def _geocoords_from_osm_link(url: str, osm_domain: str) -> (int, float, float):
