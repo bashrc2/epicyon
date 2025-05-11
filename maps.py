@@ -113,7 +113,7 @@ def _get_location_from_tags(tags: []) -> str:
     return None
 
 
-def _get_category_from_tags(tags: []) -> str:
+def _get_category_from_tags(tags: [], translate: {}) -> str:
     """Returns the location category from the tags list
     """
     evnt = _get_event_dict_from_tags(tags)
@@ -121,15 +121,18 @@ def _get_category_from_tags(tags: []) -> str:
         if evnt.get('category'):
             if isinstance(evnt['category'], str):
                 category_str = remove_html(evnt['category'])
-                return category_str
+                if translate.get(category_str):
+                    return translate[category_str]
             if isinstance(evnt['category'], list):
                 category_str = ''
                 for category_item in evnt['category']:
                     if not isinstance(category_item, str):
                         continue
+                    if not translate.get(category_item):
+                        continue
                     if category_item:
                         category_str += ', '
-                    category_str += category_item
+                    category_str += translate[category_item]
                 return category_str
     return None
 
@@ -296,7 +299,7 @@ def get_location_from_post(post_json_object: {}) -> str:
     return locn
 
 
-def get_category_from_post(post_json_object: {}) -> str:
+def get_category_from_post(post_json_object: {}, translate: {}) -> str:
     """Returns the location category for the given post
     """
     catstr = ''
@@ -307,7 +310,7 @@ def get_category_from_post(post_json_object: {}) -> str:
         post_obj = post_json_object['object']
     if post_obj.get('tag'):
         if isinstance(post_obj['tag'], list):
-            catstr = _get_category_from_tags(post_obj['tag'])
+            catstr = _get_category_from_tags(post_obj['tag'], translate)
 
     return catstr
 
