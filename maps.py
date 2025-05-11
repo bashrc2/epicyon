@@ -148,10 +148,17 @@ def _get_event_time_span_from_tags(tags: []) -> (str, str, str, str):
                 return None, None, None, None
             start_date_str = start_time.split('T')[0]
             start_time_str = start_time.split('T')[1]
+            if ':' not in start_time_str:
+                return None, None, None, None
             if '+' in start_time_str:
                 start_time_str = start_time_str.split('+')[0]
             if '-' in start_time_str:
                 start_time_str = start_time_str.split('-')[0]
+            start_time_sections = start_time_str.split(':')
+            if len(start_time_sections) < 2:
+                return None, None, None, None
+            start_time_str = \
+                start_time_sections[0] + ':' + start_time_sections[1]
             end_date_str = end_time_str = ''
             if evnt.get('endTime'):
                 if isinstance(evnt['endTime'], str):
@@ -163,8 +170,15 @@ def _get_event_time_span_from_tags(tags: []) -> (str, str, str, str):
                             end_time_str = end_time_str.split('+')[0]
                         if '-' in end_time_str:
                             end_time_str = end_time_str.split('-')[0]
-            return start_date_str, start_time_str, \
-                end_date_str, end_time_str
+                        if ':' in end_time_str:
+                            end_time_sections = end_time_str.split(':')
+                            if len(end_time_sections) >= 2:
+                                end_time_str = \
+                                    end_time_sections[0] + ':' + \
+                                    end_time_sections[1]
+                        return start_date_str, start_time_str, \
+                            end_date_str, end_time_str
+            return start_date_str, start_time_str, None, None
     return None, None, None, None
 
 
