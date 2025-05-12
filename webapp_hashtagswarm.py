@@ -360,6 +360,64 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
     return False
 
 
+def _store_tag_name(base_dir: str, nickname: str,
+                    tag_name: str, tags_dir: str, post_url: str,
+                    map_links: [], published: str,
+                    tag_maps_dir: str) -> bool:
+    """stores an individual hashtag
+    """
+    if not valid_hash_tag(tag_name):
+        return False
+    tags_filename = tags_dir + '/' + tag_name + '.txt'
+    days_diff = date_utcnow() - date_epoch()
+    days_since_epoch = days_diff.days
+    tag_line = \
+        str(days_since_epoch) + '  ' + nickname + '  ' + post_url + '\n'
+    if map_links and published:
+        add_tag_map_links(tag_maps_dir, tag_name, map_links,
+                          published, post_url)
+    hashtag_added = False
+    if not os.path.isfile(tags_filename):
+        try:
+            with open(tags_filename, 'w+', encoding='utf-8') as fp_tags:
+                fp_tags.write(tag_line)
+                hashtag_added = True
+        except OSError:
+            print('EX: store_hash_tags unable to write ' + tags_filename)
+    else:
+        content = ''
+        try:
+            with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
+                content = fp_tags.read()
+        except OSError:
+            print('EX: store_hash_tags failed to read ' + tags_filename)
+        if post_url not in content:
+            content = tag_line + content
+            try:
+                with open(tags_filename, 'w+',
+                          encoding='utf-8') as fp_tags2:
+                    fp_tags2.write(content)
+                    hashtag_added = True
+            except OSError as ex:
+                print('EX: Failed to write entry to tags file ' +
+                      tags_filename + ' ' + str(ex))
+
+    if not hashtag_added:
+        return False
+
+    # automatically assign a category to the tag if possible
+    category_filename = tags_dir + '/' + tag_name + '.category'
+    if not os.path.isfile(category_filename):
+        hashtag_categories = \
+            get_hashtag_categories(base_dir, False, None)
+        category_str = \
+            guess_hashtag_category(tag_name, hashtag_categories, 6)
+        if category_str:
+            set_hashtag_category(base_dir, tag_name,
+                                 category_str, False, False)
+    return True
+
+
 def store_hash_tags(base_dir: str, nickname: str, domain: str,
                     http_prefix: str, domain_full: str,
                     post_json_object: {}, translate: {},
@@ -426,55 +484,11 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         if not tag.get('name'):
             continue
         tag_name = tag['name'].replace('#', '').strip()
-        if not valid_hash_tag(tag_name):
-            continue
-        tags_filename = tags_dir + '/' + tag_name + '.txt'
-        days_diff = date_utcnow() - date_epoch()
-        days_since_epoch = days_diff.days
-        tag_line = \
-            str(days_since_epoch) + '  ' + nickname + '  ' + post_url + '\n'
-        if map_links and published:
-            add_tag_map_links(tag_maps_dir, tag_name, map_links,
-                              published, post_url)
-        hashtag_added = False
-        if not os.path.isfile(tags_filename):
-            try:
-                with open(tags_filename, 'w+', encoding='utf-8') as fp_tags:
-                    fp_tags.write(tag_line)
-                    hashtag_added = True
-            except OSError:
-                print('EX: store_hash_tags unable to write ' + tags_filename)
-        else:
-            content = ''
-            try:
-                with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
-                    content = fp_tags.read()
-            except OSError:
-                print('EX: store_hash_tags failed to read ' + tags_filename)
-            if post_url not in content:
-                content = tag_line + content
-                try:
-                    with open(tags_filename, 'w+',
-                              encoding='utf-8') as fp_tags2:
-                        fp_tags2.write(content)
-                        hashtag_added = True
-                except OSError as ex:
-                    print('EX: Failed to write entry to tags file ' +
-                          tags_filename + ' ' + str(ex))
-
-        if hashtag_added:
+        if _store_tag_name(base_dir, nickname,
+                           tag_name, tags_dir, post_url,
+                           map_links, published,
+                           tag_maps_dir):
             hashtags_ctr += 1
-
-            # automatically assign a category to the tag if possible
-            category_filename = tags_dir + '/' + tag_name + '.category'
-            if not os.path.isfile(category_filename):
-                hashtag_categories = \
-                    get_hashtag_categories(base_dir, False, None)
-                category_str = \
-                    guess_hashtag_category(tag_name, hashtag_categories, 6)
-                if category_str:
-                    set_hashtag_category(base_dir, tag_name,
-                                         category_str, False, False)
 
     # treat event categories as hashtags
     event_category_str = get_category_from_post(post_json_object, translate)
@@ -490,61 +504,11 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
                 tag_names_list = [tag_name_text]
             for tag_name in tag_names_list:
                 tag_name = tag_name.strip().title().replace(' ', '')
-                if not valid_hash_tag(tag_name):
-                    continue
-                tags_filename = tags_dir + '/' + tag_name + '.txt'
-                days_diff = date_utcnow() - date_epoch()
-                days_since_epoch = days_diff.days
-                tag_line = \
-                    str(days_since_epoch) + '  ' + nickname + '  ' + \
-                    post_url + '\n'
-                if map_links and published:
-                    add_tag_map_links(tag_maps_dir, tag_name, map_links,
-                                      published, post_url)
-                hashtag_added = False
-                if not os.path.isfile(tags_filename):
-                    try:
-                        with open(tags_filename, 'w+',
-                                  encoding='utf-8') as fp_tags:
-                            fp_tags.write(tag_line)
-                            hashtag_added = True
-                    except OSError:
-                        print('EX: store_hash_tags 2 unable to write ' +
-                              tags_filename)
-                else:
-                    content = ''
-                    try:
-                        with open(tags_filename, 'r',
-                                  encoding='utf-8') as fp_tags:
-                            content = fp_tags.read()
-                    except OSError:
-                        print('EX: store_hash_tags 2 failed to read ' +
-                              tags_filename)
-                    if post_url not in content:
-                        content = tag_line + content
-                        try:
-                            with open(tags_filename, 'w+',
-                                      encoding='utf-8') as fp_tags2:
-                                fp_tags2.write(content)
-                                hashtag_added = True
-                        except OSError as ex:
-                            print('EX: Failed to write entry to tags file 2 ' +
-                                  tags_filename + ' ' + str(ex))
-
-                if hashtag_added:
+                if _store_tag_name(base_dir, nickname,
+                                   tag_name, tags_dir, post_url,
+                                   map_links, published,
+                                   tag_maps_dir):
                     hashtags_ctr += 1
-
-                    # automatically assign a category to the tag if possible
-                    category_filename = tags_dir + '/' + tag_name + '.category'
-                    if not os.path.isfile(category_filename):
-                        hashtag_categories = \
-                            get_hashtag_categories(base_dir, False, None)
-                        category_str = \
-                            guess_hashtag_category(tag_name,
-                                                   hashtag_categories, 6)
-                        if category_str:
-                            set_hashtag_category(base_dir, tag_name,
-                                                 category_str, False, False)
 
     # if some hashtags were found then recalculate the swarm
     # ready for later display
