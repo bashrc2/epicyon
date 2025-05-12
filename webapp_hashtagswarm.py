@@ -396,6 +396,9 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
     # get geolocation from tags
     location_str = get_location_from_post(post_json_object)
     if location_str:
+        # remove address if needed
+        if '<br><address>' in location_str:
+            location_str = location_str.split('<br><address>')[0].strip()
         if resembles_url(location_str):
             zoom, latitude, longitude = \
                 geocoords_from_map_link(location_str,
