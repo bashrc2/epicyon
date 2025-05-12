@@ -491,6 +491,8 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
             hashtags_ctr += 1
 
     # treat event categories as hashtags
+    # See https://codeberg.org/fediverse/
+    # fep/src/branch/main/fep/8a8e/fep-8a8e.md
     event_category_str = get_category_from_post(post_json_object, translate)
     if event_category_str:
         if ', ' in event_category_str:
