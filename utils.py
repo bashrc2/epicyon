@@ -5548,3 +5548,18 @@ def get_event_categories() -> []:
         'THEATRE',
         'WORKSHOPS_SKILL_SHARING'
     )
+
+
+def get_actor_status(profile_json: {}) -> str:
+    """returns the actor status if it exists
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/82f6/fep-82f6.md
+    """
+    if not profile_json.get('sm:status'):
+        return ''
+    if isinstance(profile_json['sm:status'], str):
+        return profile_json['sm:status']
+    if isinstance(profile_json['sm:status'], dict):
+        if profile_json['sm:status'].get('content'):
+            if isinstance(profile_json['sm:status']['content'], str):
+                return profile_json['sm:status']['content']
+    return ''

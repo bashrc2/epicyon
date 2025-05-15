@@ -26,6 +26,7 @@ from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from content import valid_url_lengths
 from posts import add_to_field
+from utils import get_actor_status
 from utils import detect_mitm
 from utils import data_dir
 from utils import load_json
@@ -702,11 +703,7 @@ def show_person_options(self, calling_domain: str, path: str,
             if actor_json.get('alsoKnownAs'):
                 also_known_as = remove_html(actor_json['alsoKnownAs'])
             repo_url = get_repo_url(actor_json)
-            # https://codeberg.org/fediverse/fep/src/branch/main/
-            # fep/82f6/fep-82f6.md
-            if actor_json.get('sm:status'):
-                if isinstance(actor_json['sm:status'], str):
-                    status = actor_json['sm:status']
+            status = get_actor_status(actor_json)
 
         access_keys = self.server.access_keys
         nickname = 'instance'
