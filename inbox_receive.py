@@ -1094,7 +1094,7 @@ def receive_actor_status(base_dir: str, person_cache: {}, message_json: {},
     """
     if message_json['type'] not in ('sm:ActorStatus', 'ActorStatus'):
         return False
-    if 'content' in message_json:
+    if 'content' not in message_json:
         print('DEBUG: receive_actor_status no content ' + str(message_json))
         return True
     if not isinstance(message_json['content'], str):
