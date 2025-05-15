@@ -5421,7 +5421,9 @@ def _novel_fields_for_person(nickname: str, domain: str,
         'searchableBy',
         'interactionPolicy',
         'canQuote',
-        'automaticApproval'
+        'automaticApproval',
+        'reactions',
+        'webfinger'
     )
     for post_filename in posts_in_box:
         post_filename = post_filename.name
