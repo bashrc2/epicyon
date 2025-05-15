@@ -52,6 +52,7 @@ from utils import get_url_from_post
 from utils import remove_html
 from utils import get_full_domain
 from utils import get_user_paths
+from cache import get_person_from_cache
 from cache import get_actor_public_key_from_id
 from cache import store_person_in_cache
 from cache import get_person_pub_key
@@ -1082,6 +1083,39 @@ def receive_like(recent_posts_cache: {},
                                     minimize_all_images, None, buy_sites,
                                     auto_cw_cache, mitm_servers,
                                     instance_software)
+    return True
+
+
+def receive_actor_status(base_dir: str, person_cache: {}, message_json: {},
+                         debug: bool) -> bool:
+    """Receives an sm:ActorStatus activity within the POST section
+    of HTTPServer
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/82f6/fep-82f6.md
+    """
+    if message_json['type'] not in ('sm:ActorStatus', 'ActorStatus'):
+        return False
+    if 'content' in message_json:
+        return False
+    if not isinstance(message_json['content'], str):
+        return False
+    if not has_actor(message_json, debug):
+        return False
+    actor_url = get_actor_from_post(message_json)
+    if not actor_url:
+        return False
+    if not has_users_path(actor_url):
+        if debug:
+            print('DEBUG: "users" or "profile" missing from actor status in ' +
+                  str(message_json))
+        return False
+    actor_json = get_person_from_cache(base_dir, actor_url, person_cache)
+    if not actor_json:
+        return False
+    actor_json['sm:status'] = message_json
+    allow_write_to_file = True
+    store_person_in_cache(base_dir, actor_url,
+                          actor_json, person_cache,
+                          allow_write_to_file)
     return True
 
 

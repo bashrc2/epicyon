@@ -118,6 +118,7 @@ from threads import begin_thread
 from reading import store_book_events
 from inbox_receive import inbox_update_index
 from inbox_receive import receive_edit_to_post
+from inbox_receive import receive_actor_status
 from inbox_receive import receive_like
 from inbox_receive import receive_reaction
 from inbox_receive import receive_zot_reaction
@@ -320,7 +321,7 @@ def inbox_message_has_params(message_json: {}) -> bool:
         allowed_without_to_param = ['Like', 'EmojiReact',
                                     'Follow', 'Join', 'Request',
                                     'Accept', 'Capability', 'Undo',
-                                    'Move']
+                                    'Move', 'sm:ActorStatus', 'ActorStatus']
         if message_json['type'] not in allowed_without_to_param:
             return False
     return True
@@ -343,7 +344,7 @@ def inbox_permitted_message(domain: str, message_json: {},
 
     always_allowed_types = (
         'Follow', 'Join', 'Like', 'EmojiReact', 'Delete', 'Announce', 'Move',
-        'QuoteRequest'
+        'QuoteRequest', 'sm:ActorStatus', 'ActorStatus'
     )
     if message_json['type'] not in always_allowed_types:
         if not has_object_dict(message_json):
@@ -1856,6 +1857,16 @@ def _inbox_after_initial(server, inbox_start_time,
     inbox_start_time = time.time()
 
     handle_name = handle.split('@')[0]
+
+    if receive_actor_status(base_dir, person_cache, message_json,
+                            debug):
+        if debug:
+            print('DEBUG: ActorStatus from ' + actor)
+        fitness_performance(inbox_start_time, server.fitness,
+                            'INBOX', '_receive_actor_status',
+                            debug)
+        inbox_start_time = time.time()
+        return False
 
     if receive_like(recent_posts_cache,
                     session, handle,
