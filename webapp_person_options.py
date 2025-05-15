@@ -401,12 +401,12 @@ def html_person_options(default_timeline: str,
             options_str += other_accounts_html
 
     if status:
+        # https://codeberg.org/fediverse/fep/src/branch/main/
+        # fep/82f6/fep-82f6.md
         if len(status) < 100:
             status = standardize_text(status)
             if is_filtered(base_dir, nickname, domain, status,
                            system_language):
-                # https://codeberg.org/fediverse/fep/src/branch/main/
-                # fep/82f6/fep-82f6.md
                 options_str += \
                     '  <p class="imText">' + remove_html(status) + '</p>\n'
     if pronouns:
