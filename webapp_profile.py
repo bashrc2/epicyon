@@ -666,6 +666,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         domain: str, domain_full: str, translate: {},
                         default_timeline: str,
                         display_name: str, pronouns: str,
+                        profile_status: str,
                         profile_description_short: str,
                         featured_hashtags: str,
                         login_button: str, avatar_url: str,
@@ -803,7 +804,12 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '" tabindex="1">' + \
         '<img class="qrcode" alt="' + translate['QR Code'] + \
-        '" src="/icons/qrcode.png" /></a></p>\n' + \
+        '" src="/icons/qrcode.png" /></a></p>\n'
+    if profile_status:
+        # https://codeberg.org/fediverse/fep/src/branch/main/
+        # fep/82f6/fep-82f6.md
+        html_str += '        <p>' + profile_status + '</p>\n'
+    html_str += \
         '        <p>' + profile_description_short + '</p>\n' + \
         featured_hashtags + login_button
     if pinned_content:
@@ -1108,6 +1114,18 @@ def html_profile(signing_priv_key_pem: str,
                                   nickname, domain,
                                   display_name, False, translate)
     domain_full = get_full_domain(domain, port)
+    profile_status = ''
+    if profile_json.get('sm:status'):
+        if isinstance(profile_json['sm:status'], str):
+            profile_status = remove_html(profile_json['sm:status'])
+            if len(profile_status) < 100:
+                profile_status = standardize_text(profile_status)
+                profile_status = \
+                    remove_link_trackers_from_content(profile_status)
+                profile_status = \
+                    add_emoji_to_display_name(session, base_dir, http_prefix,
+                                              nickname, domain,
+                                              profile_status, False, translate)
     if not dangerous_markup(profile_json['summary'], False, []):
         profile_description = profile_json['summary']
     else:
@@ -1488,7 +1506,8 @@ def html_profile(signing_priv_key_pem: str,
                             nickname,
                             domain, domain_full, translate,
                             default_timeline, display_name,
-                            pronouns, profile_description_short,
+                            pronouns, profile_status,
+                            profile_description_short,
                             featured_hashtags,
                             login_button, avatar_url, theme,
                             moved_to, also_known_as,
