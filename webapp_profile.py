@@ -361,6 +361,18 @@ def html_profile_after_search(authorized: bool,
                               search_nickname,
                               search_domain_full)
 
+    profile_status = ''
+    if profile_json.get('sm:status'):
+        if isinstance(profile_json['sm:status'], str):
+            profile_status = remove_html(profile_json['sm:status'])
+            if len(profile_status) < 100:
+                profile_status = standardize_text(profile_status)
+                profile_status = \
+                    remove_link_trackers_from_content(profile_status)
+                profile_status = \
+                    add_emoji_to_display_name(session, base_dir, http_prefix,
+                                              nickname, domain,
+                                              profile_status, False, translate)
     profile_description = ''
     if profile_json.get('summary'):
         if not dangerous_markup(profile_json['summary'],
@@ -455,6 +467,7 @@ def html_profile_after_search(authorized: bool,
                                          translate,
                                          display_name, pronouns,
                                          you_follow, follows_you,
+                                         profile_status,
                                          profile_description_short,
                                          featured_hashtags,
                                          avatar_url, image_url,
@@ -830,6 +843,7 @@ def _get_profile_header_after_search(base_dir: str,
                                      pronouns: str,
                                      you_follow: bool,
                                      follows_you: bool,
+                                     profile_status: str,
                                      profile_description_short: str,
                                      featured_hashtags: str,
                                      avatar_url: str, image_url: str,
@@ -985,6 +999,8 @@ def _get_profile_header_after_search(base_dir: str,
     if repo_url:
         html_str += '  <p>💻 <a href="' + repo_url + '">' + \
             repo_url + '</a></p>\n'
+    if profile_status:
+        html_str += '        <p>' + profile_status + '</p>\n'
     html_str += \
         '        <p>' + profile_description_short + '</p>\n' + \
         featured_hashtags
