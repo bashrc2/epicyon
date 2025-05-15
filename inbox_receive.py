@@ -1095,22 +1095,30 @@ def receive_actor_status(base_dir: str, person_cache: {}, message_json: {},
     if message_json['type'] not in ('sm:ActorStatus', 'ActorStatus'):
         return False
     if 'content' in message_json:
-        return False
+        print('DEBUG: receive_actor_status no content ' + str(message_json))
+        return True
     if not isinstance(message_json['content'], str):
-        return False
+        print('DEBUG: receive_actor_status content not string ' +
+              str(message_json))
+        return True
     if not has_actor(message_json, debug):
-        return False
+        print('DEBUG: receive_actor_status no actor ' +
+              str(message_json))
+        return True
     actor_url = get_actor_from_post(message_json)
     if not actor_url:
-        return False
+        print('DEBUG: receive_actor_status no actor url ' +
+              str(message_json))
+        return True
     if not has_users_path(actor_url):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor status in ' +
                   str(message_json))
-        return False
+        return True
     actor_json = get_person_from_cache(base_dir, actor_url, person_cache)
     if not actor_json:
-        return False
+        print('DEBUG: receive_actor_status actor not found ' + actor_url)
+        return True
     actor_json['sm:status'] = message_json
     allow_write_to_file = True
     store_person_in_cache(base_dir, actor_url,
