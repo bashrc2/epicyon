@@ -1094,12 +1094,26 @@ def receive_actor_status(base_dir: str, person_cache: {}, message_json: {},
     """
     if message_json['type'] not in ('sm:ActorStatus', 'ActorStatus'):
         return False
+    if 'id' not in message_json:
+        print('DEBUG: receive_actor_status no id ' + str(message_json))
+        return True
+    if not message_json.get('published'):
+        print('DEBUG: receive_actor_status no published ' + str(message_json))
+        return True
     if 'content' not in message_json:
         print('DEBUG: receive_actor_status no content ' + str(message_json))
+        return True
+    if not isinstance(message_json['published'], str):
+        print('DEBUG: receive_actor_status published not string ' +
+              str(message_json))
         return True
     if not isinstance(message_json['content'], str):
         print('DEBUG: receive_actor_status content not string ' +
               str(message_json))
+        return True
+    if len(message_json['content']) > 100:
+        print('DEBUG: receive_actor_status content too long ' +
+              str(len(message_json['content'])))
         return True
     if not has_actor(message_json, debug):
         print('DEBUG: receive_actor_status no actor ' +
