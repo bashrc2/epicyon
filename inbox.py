@@ -1858,15 +1858,15 @@ def _inbox_after_initial(server, inbox_start_time,
 
     handle_name = handle.split('@')[0]
 
-    if receive_actor_status(base_dir, person_cache, message_json,
-                            debug):
-        if debug:
-            print('DEBUG: ActorStatus from ' + actor)
-        fitness_performance(inbox_start_time, server.fitness,
-                            'INBOX', '_receive_actor_status',
-                            debug)
-        inbox_start_time = time.time()
-        return False
+    #if receive_actor_status(base_dir, person_cache, message_json,
+    #                        debug):
+    #    if debug:
+    #        print('DEBUG: ActorStatus from ' + actor)
+    #    fitness_performance(inbox_start_time, server.fitness,
+    #                        'INBOX', '_receive_actor_status',
+    #                        debug)
+    #    inbox_start_time = time.time()
+    #    return False
 
     if receive_like(recent_posts_cache,
                     session, handle,
