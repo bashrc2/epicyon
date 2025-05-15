@@ -662,6 +662,7 @@ def show_person_options(self, calling_domain: str, path: str,
         also_known_as = None
         moved_to = ''
         repo_url = None
+        status = None
         actor_json = \
             get_person_from_cache(base_dir,
                                   options_actor,
@@ -701,6 +702,11 @@ def show_person_options(self, calling_domain: str, path: str,
             if actor_json.get('alsoKnownAs'):
                 also_known_as = remove_html(actor_json['alsoKnownAs'])
             repo_url = get_repo_url(actor_json)
+            # https://codeberg.org/fediverse/fep/src/branch/main/
+            # fep/82f6/fep-82f6.md
+            if actor_json.get('sm:status'):
+                if isinstance(actor_json['sm:status'], str):
+                    status = actor_json['sm:status']
 
         access_keys = self.server.access_keys
         nickname = 'instance'
@@ -763,7 +769,9 @@ def show_person_options(self, calling_domain: str, path: str,
                                 youtube, peertube, pixelfed,
                                 discord, music_site_url,
                                 art_site_url,
-                                self.server.mitm_servers)
+                                self.server.mitm_servers,
+                                status,
+                                self.server.system_language)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

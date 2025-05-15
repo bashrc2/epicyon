@@ -40,6 +40,7 @@ from webapp_utils import get_banner_file
 from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import minimizing_attached_images
 from blocking import allowed_announce
+from filters import is_filtered
 
 
 def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
@@ -179,7 +180,9 @@ def html_person_options(default_timeline: str,
                         discord: str,
                         music_site_url: str,
                         art_site_url: str,
-                        mitm_servers: []) -> str:
+                        mitm_servers: [],
+                        status: str,
+                        system_language: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     options_link_str = ''
@@ -396,6 +399,14 @@ def html_person_options(default_timeline: str,
         if ctr > 0:
             options_str += other_accounts_html
 
+    if status:
+        if len(status) < 100 and \
+           not is_filtered(base_dir, nickname, domain, status,
+                           system_language):
+            # https://codeberg.org/fediverse/fep/src/branch/main/
+            # fep/82f6/fep-82f6.md
+            options_str += \
+                '  <p class="imText">' + remove_html(status) + '</p>\n'
     if pronouns:
         options_str += \
             '  <p class="imText">' + translate['Pronouns'] + \
