@@ -343,6 +343,7 @@ def html_profile_after_search(authorized: bool,
     youtube = get_youtube(profile_json)
     peertube = get_peertube(profile_json)
     pixelfed = get_pixelfed(profile_json)
+    donate_url = get_donation_url(profile_json)
 
     moved_to = ''
     if profile_json.get('movedTo'):
@@ -479,7 +480,8 @@ def html_profile_after_search(authorized: bool,
                                          birth_date,
                                          youtube, peertube, pixelfed,
                                          discord, music_site_url,
-                                         art_site_url)
+                                         art_site_url,
+                                         donate_url)
 
     domain_full = get_full_domain(domain, port)
 
@@ -872,7 +874,8 @@ def _get_profile_header_after_search(base_dir: str,
                                      pixelfed: str,
                                      discord: str,
                                      music_site_url: str,
-                                     art_site_url: str) -> str:
+                                     art_site_url: str,
+                                     donate_url: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -997,6 +1000,12 @@ def _get_profile_header_after_search(base_dir: str,
     if discord:
         html_str += '  <p>Discord: <a href="' + discord + '">' + \
             discord + '</a></p>\n'
+    if donate_url:
+        donate_str = 'Donate'
+        if translate.get('Donate'):
+            donate_str = translate['Donate']
+        html_str += '  <p>' + donate_str + ': <a href="' + \
+            donate_url + '">' + donate_url + '</a></p>\n'
     if art_site_url:
         html_str += '  <p>' + translate['Art'] + ': <a href="' + \
             art_site_url + '">' + art_site_url + '</a></p>\n'
