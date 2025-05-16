@@ -3867,7 +3867,9 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
             name_value = property_value['schema:name']
         if not name_value:
             continue
-        if not name_value.lower().startswith(property_name):
+        name_value_lower = name_value.lower()
+        if not name_value_lower.startswith(property_name) and \
+           not name_value_lower.endswith(property_name):
             continue
         if not property_value.get('type'):
             continue
