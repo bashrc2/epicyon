@@ -407,8 +407,12 @@ def html_person_options(default_timeline: str,
             status = standardize_text(status)
             if is_filtered(base_dir, nickname, domain, status,
                            system_language):
+                status_str = 'Status'
+                if translate.get('Status'):
+                    status_str = translate['Status']
                 options_str += \
-                    '  <p class="imText">' + remove_html(status) + '</p>\n'
+                    '  <p class="imText">' + status_str + ': ' + \
+                    remove_html(status) + '</p>\n'
     if pronouns:
         options_str += \
             '  <p class="imText">' + translate['Pronouns'] + \

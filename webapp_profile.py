@@ -808,7 +808,11 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
     if profile_status:
         # https://codeberg.org/fediverse/fep/src/branch/main/
         # fep/82f6/fep-82f6.md
-        html_str += '        <p>' + profile_status + '</p>\n'
+        status_str = 'Status'
+        if translate.get('Status'):
+            status_str = translate['Status']
+        html_str += \
+            '        <p>' + status_str + ': ' + profile_status + '</p>\n'
     html_str += \
         '        <p>' + profile_description_short + '</p>\n' + \
         featured_hashtags + login_button
@@ -1006,7 +1010,11 @@ def _get_profile_header_after_search(base_dir: str,
         html_str += '  <p>💻 <a href="' + repo_url + '">' + \
             repo_url + '</a></p>\n'
     if profile_status:
-        html_str += '        <p>' + profile_status + '</p>\n'
+        status_str = 'Status'
+        if translate.get('Status'):
+            status_str = translate['Status']
+        html_str += \
+            '        <p>' + status_str + ': ' + profile_status + '</p>\n'
     html_str += \
         '        <p>' + profile_description_short + '</p>\n' + \
         featured_hashtags
