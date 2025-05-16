@@ -43,6 +43,7 @@ def get_donation_url(actor_json: {}) -> str:
         name_value_lower = name_value.lower()
         if name_value_lower not in donation_type:
             if 'support' not in name_value_lower and \
+               'help me ' not in name_value_lower and \
                'buy me ' not in name_value_lower and \
                'fund' not in name_value_lower:
                 continue
