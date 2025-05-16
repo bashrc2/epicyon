@@ -31,7 +31,7 @@ def get_donation_url(actor_json: {}) -> str:
         return ''
     if not isinstance(actor_json['attachment'], list):
         return ''
-    donation_type = _get_donation_types()
+    donation_type_list = _get_donation_types()
     for property_value in actor_json['attachment']:
         name_value = None
         if property_value.get('name'):
@@ -42,8 +42,8 @@ def get_donation_url(actor_json: {}) -> str:
             continue
         name_value_lower = name_value.lower()
         found = False
-        for donation_type_str in donation_type:
-            if name_value_lower in donation_type_str:
+        for donation_type_str in donation_type_list:
+            if donation_type_str in name_value_lower:
                 found = True
                 break
         if not found:
