@@ -26,8 +26,9 @@ def get_website(actor_json: {}, translate: {}) -> str:
     """
     if not actor_json.get('attachment'):
         return ''
+    website_str = translate['Website'].lower()
     match_strings = _get_website_strings()
-    match_strings.append(translate['Website'].lower())
+    match_strings.append(website_str)
     for property_value in actor_json['attachment']:
         name_value = None
         if property_value.get('name'):
@@ -37,10 +38,15 @@ def get_website(actor_json: {}, translate: {}) -> str:
         if not name_value:
             continue
         found = False
-        for possible_str in match_strings:
-            if possible_str in name_value.lower():
-                found = True
-                break
+        name_value_lower = name_value.lower()
+        if name_value_lower.endswith(' ' + website_str) or \
+           name_value_lower.endswith(' homepage'):
+            found = True
+        else:
+            for possible_str in match_strings:
+                if possible_str in name_value_lower:
+                    found = True
+                    break
         if not found:
             continue
         if not property_value.get('type'):
