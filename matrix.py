@@ -42,7 +42,7 @@ def get_matrix_address(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        address_text = property_value[prop_value_name]
+        address_text = remove_html(property_value[prop_value_name])
         if 'xmpp' in address_text.lower():
             continue
         if 'jabber' in address_text.lower():
@@ -63,7 +63,7 @@ def get_matrix_address(actor_json: {}) -> str:
             continue
         if '"' in address_text:
             continue
-        return remove_html(address_text)
+        return address_text
     return ''
 
 
