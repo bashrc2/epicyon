@@ -344,6 +344,7 @@ def html_profile_after_search(authorized: bool,
     peertube = get_peertube(profile_json)
     pixelfed = get_pixelfed(profile_json)
     donate_url = get_donation_url(profile_json)
+    blog_url = get_blog_address(profile_json)
 
     moved_to = ''
     if profile_json.get('movedTo'):
@@ -473,8 +474,8 @@ def html_profile_after_search(authorized: bool,
                                          also_known_as, access_keys,
                                          joined_date, actor_proxied,
                                          attached_shared_items,
-                                         website_url, repo_url,
-                                         send_blocks_str,
+                                         website_url, blog_url,
+                                         repo_url, send_blocks_str,
                                          authorized,
                                          person_url, no_of_books,
                                          birth_date,
@@ -863,6 +864,7 @@ def _get_profile_header_after_search(base_dir: str,
                                      actor_proxied: str,
                                      attached_shared_items: str,
                                      website_url: str,
+                                     blog_url: str,
                                      repo_url: str,
                                      send_blocks_str: str,
                                      authorized: bool,
@@ -988,6 +990,12 @@ def _get_profile_header_after_search(base_dir: str,
     if website_url:
         html_str += '  <p>🌐 <a href="' + website_url + '">' + \
             website_url + '</a></p>\n'
+    if blog_url:
+        blog_str = 'Blog'
+        if translate.get('Blog'):
+            blog_str = translate['Blog']
+        html_str += '  <p>' + blog_str + ': <a href="' + blog_url + '">' + \
+            blog_url + '</a></p>\n'
     if youtube:
         html_str += '  <p>YouTube: <a href="' + youtube + '">' + \
             youtube + '</a></p>\n'
