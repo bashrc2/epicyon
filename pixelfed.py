@@ -16,7 +16,7 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_full_domain
 
-pixelfed_fieldnames = ['pixelfed']
+pixelfed_fieldnames = ('pixelfed', 'fotos', 'photos')
 
 
 def get_pixelfed(actor_json: {}) -> str:
