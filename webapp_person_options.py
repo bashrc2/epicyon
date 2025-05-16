@@ -14,7 +14,6 @@ from person import is_person_snoozed
 from posts import is_moderator
 from flags import is_featured_writer
 from flags import is_dormant
-from utils import standardize_text
 from utils import data_dir
 from utils import quote_toots_allowed
 from utils import get_full_domain
@@ -403,16 +402,14 @@ def html_person_options(default_timeline: str,
     if status:
         # https://codeberg.org/fediverse/fep/src/branch/main/
         # fep/82f6/fep-82f6.md
-        if len(status) < 100:
-            status = standardize_text(status)
-            if is_filtered(base_dir, nickname, domain, status,
-                           system_language):
-                status_str = 'Status'
-                if translate.get('Status'):
-                    status_str = translate['Status']
-                options_str += \
-                    '  <p class="imText">' + status_str + ': ' + \
-                    remove_html(status) + '</p>\n'
+        if is_filtered(base_dir, nickname, domain, status,
+                       system_language):
+            status_str = 'Status'
+            if translate.get('Status'):
+                status_str = translate['Status']
+            options_str += \
+                '  <p class="imText">' + status_str + ': ' + \
+                remove_html(status) + '</p>\n'
     if pronouns:
         options_str += \
             '  <p class="imText">' + translate['Pronouns'] + \

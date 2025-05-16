@@ -23,6 +23,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from followingCalendar import add_person_to_calendar
 
+MAX_STATUS_LENGTH = 100
+
 VALID_HASHTAG_CHARS = \
     set('_0123456789' +
         'abcdefghijklmnopqrstuvwxyz' +
@@ -5556,10 +5558,17 @@ def get_actor_status(profile_json: {}) -> str:
     """
     if not profile_json.get('sm:status'):
         return ''
+    status = ''
     if isinstance(profile_json['sm:status'], str):
-        return profile_json['sm:status']
-    if isinstance(profile_json['sm:status'], dict):
+        status = profile_json['sm:status']
+    elif isinstance(profile_json['sm:status'], dict):
         if profile_json['sm:status'].get('content'):
-            if isinstance(profile_json['sm:status']['content'], str):
-                return profile_json['sm:status']['content']
-    return ''
+            possible_status = profile_json['sm:status']['content']
+            if isinstance(status, str):
+                status = possible_status
+    if status:
+        status = remove_html(status)
+        if len(status) > MAX_STATUS_LENGTH:
+            status = status[:MAX_STATUS_LENGTH]
+        status = standardize_text(status)
+    return status

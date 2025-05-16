@@ -364,15 +364,12 @@ def html_profile_after_search(authorized: bool,
 
     profile_status = get_actor_status(profile_json)
     if profile_status:
-        profile_status = remove_html(profile_status)
-        if len(profile_status) < 100:
-            profile_status = standardize_text(profile_status)
-            profile_status = \
-                remove_link_trackers_from_content(profile_status)
-            profile_status = \
-                add_emoji_to_display_name(session, base_dir, http_prefix,
-                                          nickname, domain,
-                                          profile_status, False, translate)
+        profile_status = \
+            remove_link_trackers_from_content(profile_status)
+        profile_status = \
+            add_emoji_to_display_name(session, base_dir, http_prefix,
+                                      nickname, domain,
+                                      profile_status, False, translate)
     profile_description = ''
     if profile_json.get('summary'):
         if not dangerous_markup(profile_json['summary'],
@@ -1124,15 +1121,12 @@ def html_profile(signing_priv_key_pem: str,
     domain_full = get_full_domain(domain, port)
     profile_status = get_actor_status(profile_json)
     if profile_status:
-        profile_status = remove_html(profile_status)
-        if len(profile_status) < 100:
-            profile_status = standardize_text(profile_status)
-            profile_status = \
-                remove_link_trackers_from_content(profile_status)
-            profile_status = \
-                add_emoji_to_display_name(session, base_dir, http_prefix,
-                                          nickname, domain,
-                                          profile_status, False, translate)
+        profile_status = \
+            remove_link_trackers_from_content(profile_status)
+        profile_status = \
+            add_emoji_to_display_name(session, base_dir, http_prefix,
+                                      nickname, domain,
+                                      profile_status, False, translate)
     if not dangerous_markup(profile_json['summary'], False, []):
         profile_description = profile_json['summary']
     else:
