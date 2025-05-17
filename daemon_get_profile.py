@@ -12,6 +12,8 @@ import json
 from roles import get_actor_roles_list
 from skills import no_of_actor_skills
 from skills import get_skills_from_list
+from utils import get_actor_status
+from utils import actor_status_expired
 from utils import get_nickname_from_actor
 from utils import load_json
 from utils import get_json_content_from_accept
@@ -171,6 +173,11 @@ def show_person_profile(self, authorized: bool,
         if secure_mode(curr_session, proxy_type, False,
                        self.server, self.headers, self.path):
             accept_str = self.headers['Accept']
+            # has the actor status expired?
+            if get_actor_status(actor_json):
+                if actor_status_expired(actor_json['sm:status']):
+                    # remove actor status
+                    del actor_json['sm:status']
             msg_str = json.dumps(actor_json, ensure_ascii=False)
             msg_str = convert_domains(calling_domain,
                                       referer_domain,

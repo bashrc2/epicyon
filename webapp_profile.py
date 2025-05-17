@@ -16,6 +16,7 @@ from flags import is_system_account
 from flags import is_group_account
 from flags import is_valid_date
 from flags import is_premium_account
+from utils import actor_status_expired
 from utils import get_actor_status
 from utils import get_person_icon
 from utils import text_mode_removals
@@ -365,6 +366,9 @@ def html_profile_after_search(authorized: bool,
                               search_domain_full)
 
     profile_status = get_actor_status(profile_json)
+    if profile_status:
+        if actor_status_expired(profile_json['sm:status']):
+            profile_status = ''
     if profile_status:
         profile_status = \
             remove_link_trackers_from_content(profile_status)
@@ -1137,6 +1141,9 @@ def html_profile(signing_priv_key_pem: str,
                                   display_name, False, translate)
     domain_full = get_full_domain(domain, port)
     profile_status = get_actor_status(profile_json)
+    if profile_status:
+        if actor_status_expired(profile_json['sm:status']):
+            profile_status = ''
     if profile_status:
         profile_status = \
             remove_link_trackers_from_content(profile_status)

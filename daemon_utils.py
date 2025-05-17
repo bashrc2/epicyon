@@ -26,6 +26,7 @@ from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from content import valid_url_lengths
 from posts import add_to_field
+from utils import actor_status_expired
 from utils import get_actor_status
 from utils import detect_mitm
 from utils import data_dir
@@ -704,6 +705,9 @@ def show_person_options(self, calling_domain: str, path: str,
                 also_known_as = remove_html(actor_json['alsoKnownAs'])
             repo_url = get_repo_url(actor_json)
             status = get_actor_status(actor_json)
+            if status:
+                if actor_status_expired(actor_json['sm:status']):
+                    status = ''
 
         access_keys = self.server.access_keys
         nickname = 'instance'

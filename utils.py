@@ -5574,3 +5574,32 @@ def get_actor_status(profile_json: {}) -> str:
             status = status[:MAX_STATUS_LENGTH]
         status = standardize_text(status)
     return status
+
+
+def actor_status_expired(actor_status_json: {}) -> bool:
+    """Has the given actor status expired?
+    """
+    if not actor_status_json.get('endTime'):
+        return False
+    if not isinstance(actor_status_json['endTime'], str):
+        return False
+    if 'T' not in actor_status_json['endTime'] or \
+       ':' not in actor_status_json['endTime']:
+        return False
+    date_formats = (
+        "%Y-%m-%dT%H:%M:%S%z",
+        "%Y-%m-%dT%H:%M:%S%Z"
+    )
+    status_end_time = None
+    try:
+        status_end_time = \
+            date_from_string_format(actor_status_json['endTime'],
+                                    date_formats)
+    except BaseException:
+        return False
+    if not status_end_time:
+        return False
+    curr_time = date_utcnow()
+    if status_end_time < curr_time:
+        return True
+    return False

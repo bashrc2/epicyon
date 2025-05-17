@@ -11,6 +11,7 @@ import os
 import time
 from flags import is_recent_post
 from flags import is_quote_toot
+from utils import actor_status_expired
 from utils import get_quote_toot_url
 from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
@@ -1135,6 +1136,9 @@ def receive_actor_status(base_dir: str, person_cache: {}, message_json: {},
     actor_json = get_person_from_cache(base_dir, actor_url, person_cache)
     if not actor_json:
         print('DEBUG: receive_actor_status actor not found ' + actor_url)
+        return True
+    if actor_status_expired(message_json):
+        print('DEBUG: receive_actor_status expired ' + str(message_json))
         return True
     actor_json['sm:status'] = message_json
     allow_write_to_file = True
