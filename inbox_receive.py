@@ -1115,11 +1115,14 @@ def receive_actor_status(base_dir: str, person_cache: {}, message_json: {},
         print('DEBUG: receive_actor_status content too long ' +
               str(len(message_json['content'])))
         return True
-    if not has_actor(message_json, debug):
-        print('DEBUG: receive_actor_status no actor ' +
-              str(message_json))
-        return True
-    actor_url = get_actor_from_post(message_json)
+    actor_url = None
+    # use attributedTo if available
+    if message_json.get('attributedTo'):
+        actor_url = get_attributed_to(message_json['attributedTo'])
+    if not actor_url:
+        # if not then try to find the actor
+        if has_actor(message_json, debug):
+            actor_url = get_actor_from_post(message_json)
     if not actor_url:
         print('DEBUG: receive_actor_status no actor url ' +
               str(message_json))
