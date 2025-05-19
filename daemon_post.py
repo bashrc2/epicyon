@@ -122,6 +122,14 @@ def daemon_http_post(self) -> None:
         http_404(self, 146)
         return
 
+    # accounts directory should not be accessible
+    if self.path.startswith('/accounts/'):
+        if not self.path.startswith('/accounts/avatars') and \
+           not self.path.startswith('/accounts/headers'):
+            print('POST HTTP Attempt to post accounts file ' + self.path)
+            http_404(self, 146)
+            return
+
     # php
     if self.path.endswith('.php'):
         print('POST HTTP Attempt to access PHP file ' + self.path)

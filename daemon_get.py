@@ -311,6 +311,14 @@ def daemon_http_get(self) -> None:
         http_404(self, 145)
         return
 
+    # accounts directory should not be accessible
+    if self.path.startswith('/accounts/'):
+        if not self.path.startswith('/accounts/avatars') and \
+           not self.path.startswith('/accounts/headers'):
+            print('GET HTTP Attempt to get accounts file ' + self.path)
+            http_404(self, 145)
+            return
+
     # php
     if self.path.endswith('.php'):
         print('GET HTTP Attempt to access PHP file ' + self.path)
