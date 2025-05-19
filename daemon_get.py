@@ -305,7 +305,7 @@ def daemon_http_get(self) -> None:
         return
 
     # php
-    if 'index.php' in self.path:
+    if self.path.endswith('.php'):
         print('GET HTTP Attempt to access PHP file ' + self.path)
         http_404(self, 145)
         return
