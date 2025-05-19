@@ -305,6 +305,12 @@ def daemon_http_get(self) -> None:
         http_403(self)
         return
 
+    # config.json should not be accessible
+    if self.path.startswith('/config.json'):
+        print('GET HTTP Attempt to get configuration file ' + self.path)
+        http_404(self, 145)
+        return
+
     # php
     if self.path.endswith('.php'):
         print('GET HTTP Attempt to access PHP file ' + self.path)
@@ -314,7 +320,7 @@ def daemon_http_get(self) -> None:
     # py
     if self.path.endswith('.py'):
         print('GET HTTP Attempt to access Python file ' + self.path)
-        http_404(self, 146)
+        http_404(self, 145)
         return
 
     if contains_invalid_chars(str(self.headers)):

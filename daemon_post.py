@@ -116,6 +116,12 @@ def daemon_http_post(self) -> None:
         http_403(self)
         return
 
+    # config.json should not be accessible
+    if self.path.startswith('/config.json'):
+        print('POST HTTP Attempt to post configuration file ' + self.path)
+        http_404(self, 146)
+        return
+
     # php
     if self.path.endswith('.php'):
         print('POST HTTP Attempt to access PHP file ' + self.path)
