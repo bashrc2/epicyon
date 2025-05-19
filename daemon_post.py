@@ -122,6 +122,12 @@ def daemon_http_post(self) -> None:
         http_404(self, 146)
         return
 
+    # py
+    if self.path.endswith('.py'):
+        print('POST HTTP Attempt to access Python file ' + self.path)
+        http_404(self, 146)
+        return
+
     calling_domain = self.server.domain_full
     if self.headers.get('Host'):
         calling_domain = decoded_host(self.headers['Host'])

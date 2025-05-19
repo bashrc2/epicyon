@@ -311,6 +311,12 @@ def daemon_http_get(self) -> None:
         http_404(self, 145)
         return
 
+    # py
+    if self.path.endswith('.py'):
+        print('GET HTTP Attempt to access Python file ' + self.path)
+        http_404(self, 146)
+        return
+
     if contains_invalid_chars(str(self.headers)):
         print('GET HTTP headers contain invalid characters ' +
               str(self.headers))
