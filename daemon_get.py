@@ -319,6 +319,12 @@ def daemon_http_get(self) -> None:
             http_404(self, 145)
             return
 
+    # keys directory should not be accessible
+    if self.path.startswith('/keys/'):
+        print('GET HTTP Attempt to get keys file ' + self.path)
+        http_404(self, 145)
+        return
+
     # php
     if self.path.endswith('.php'):
         print('GET HTTP Attempt to access PHP file ' + self.path)
