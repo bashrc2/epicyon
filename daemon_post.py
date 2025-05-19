@@ -117,7 +117,7 @@ def daemon_http_post(self) -> None:
         return
 
     # php
-    if 'index.php' in self.path:
+    if self.path.endswith('.php'):
         print('POST HTTP Attempt to access PHP file ' + self.path)
         http_404(self, 146)
         return
