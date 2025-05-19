@@ -626,7 +626,7 @@ def daemon_http_get(self) -> None:
         self.path = self.path.replace('?nodropdown', '')
 
     # redirect music to #nowplaying list
-    if self.path == '/music' or self.path == '/NowPlaying':
+    if self.path in ('/music', '/NowPlaying'):
         self.path = '/tags/NowPlaying'
 
     if self.server.debug:
