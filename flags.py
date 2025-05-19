@@ -623,3 +623,16 @@ def url_permitted(url: str, federation_list: []) -> bool:
         if domain in url:
             return True
     return False
+
+
+def is_corporate(server_name: str) -> bool:
+    """Is the given server name a corporate leech?
+    """
+    server_lower = server_name.lower()
+    if 'google' in server_lower or \
+       'cloudflare' in server_lower or \
+       'facebook' in server_lower or \
+       'microsoft' in server_lower or \
+       'github' in server_lower:
+        return True
+    return False

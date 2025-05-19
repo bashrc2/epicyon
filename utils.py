@@ -5018,13 +5018,6 @@ def lines_in_file(filename: str) -> int:
     return 0
 
 
-def corp_servers() -> ():
-    """Returns a list of despised corporate thieves
-    """
-    return ('GitHub.com', 'github.com', 'cloudflare', 'microsoft.com',
-            'google.com', 'google.co.')
-
-
 def get_media_url_from_video(post_json_object: {}) -> (str, str, str, str):
     """Within a Video post (eg peertube) return the media details
     """

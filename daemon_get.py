@@ -89,6 +89,7 @@ from httpcodes import http_304
 from httpcodes import http_400
 from httpcodes import http_503
 from httpcodes import write2
+from flags import is_corporate
 from flags import is_image_file
 from flags import is_artist
 from flags import is_blog_post
@@ -112,7 +113,6 @@ from utils import convert_domains
 from utils import get_nickname_from_actor
 from utils import get_json_content_from_accept
 from utils import check_bad_path
-from utils import corp_servers
 from utils import decoded_host
 from utils import detect_mitm
 from person import get_person_notes_endpoint
@@ -257,8 +257,9 @@ def daemon_http_get(self) -> None:
                            self.server.headers_catalog,
                            self.headers)
 
+    # bounce corporate servers
     if self.headers.get('Server'):
-        if self.headers['Server'] in corp_servers():
+        if is_corporate(self.headers['Server']):
             print('GET HTTP Corporate leech bounced: ' +
                   self.headers['Server'])
             http_402(self)

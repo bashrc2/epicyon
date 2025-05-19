@@ -11,8 +11,8 @@ import time
 import errno
 import json
 from socket import error as SocketError
+from flags import is_corporate
 from utils import replace_strings
-from utils import corp_servers
 from utils import string_ends_with
 from utils import get_config_param
 from utils import decoded_host
@@ -156,7 +156,7 @@ def daemon_http_post(self) -> None:
     self.server.last_postreq = curr_time_postreq
 
     if self.headers.get('Server'):
-        if self.headers['Server'] in corp_servers():
+        if is_corporate(self.headers['Server']):
             print('POST HTTP Corporate leech bounced: ' +
                   self.headers['Server'])
             http_402(self)
