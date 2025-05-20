@@ -23,8 +23,8 @@ def meta_data_node_info(base_dir: str,
                         instance_description: str) -> {}:
     """ /nodeinfo/2.2 endpoint
     Also see https://socialhub.activitypub.rocks/t/
-    https://github.com/jhass/nodeinfo/blob/main/schemas/2.2/example.json
     fep-f1d5-nodeinfo-in-fediverse-software/1190/4
+    https://github.com/jhass/nodeinfo/blob/main/schemas/2.2/example.json
 
     Note that there are security considerations with this. If an adversary
     sees a lot of accounts and "local" posts then the instance may be

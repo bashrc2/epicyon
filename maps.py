@@ -389,9 +389,13 @@ def get_event_time_span_from_post(post_json_object: {}) -> str:
             return '<time datetime="' + start_time + '">' + \
                 start_date_str + ' ' + start_time_str + '</time>'
         if start_date_str == end_date_str:
+            if end_time_str != start_time_str:
+                return '<time datetime="' + start_time + '">' + \
+                    start_date_str + ' ' + start_time_str + '</time> - ' + \
+                    '<time datetime="' + end_time + '">' + \
+                    end_time_str + '</time>'
             return '<time datetime="' + start_time + '">' + \
-                start_date_str + ' ' + start_time_str + '</time> - ' + \
-                '<time datetime="' + end_time + '">' + end_time_str + '</time>'
+                start_date_str + ' ' + start_time_str + '</time>'
         return '<time datetime="' + start_time + '">' + \
             start_date_str + ' ' + start_time_str + '</time> - ' + \
             '<time datetime="' + end_time + '">' + \
