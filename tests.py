@@ -8305,6 +8305,14 @@ def _test_hashtag_maps():
     assert longitude
     assert int(longitude * 1000) == -3599
     assert len(map_links) == 3
+    link = "https://www.osm.org/#map=17/34.693740/135.502180"
+    zoom, latitude, longitude = \
+        geocoords_from_map_link(link, 'openstreetmap.org', session)
+    assert zoom == 17
+    assert latitude
+    assert int(latitude * 1000) == 34693
+    assert longitude
+    assert int(longitude * 1000) == 135502
 
 
 def _test_uninvert():

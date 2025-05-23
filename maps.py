@@ -750,6 +750,10 @@ def geocoords_from_map_link(url: str, osm_domain: str,
         zoom, latitude, longitude = \
             _geocoords_from_osmorg_link(url)
         return zoom, latitude, longitude
+    if 'osm.org' in url:
+        zoom, latitude, longitude = \
+            _geocoords_from_osm_link(url, 'osm.org')
+        return zoom, latitude, longitude
     if 'osmand.net' in url and '/map' in url:
         zoom, latitude, longitude = \
             _geocoords_from_osmand_link(url)
