@@ -3278,8 +3278,19 @@ def individual_post_as_html(signing_priv_key_pem: str,
             locn_text = 'Location'
             if translate.get('Location'):
                 locn_text = translate['Location']
-            map_str += '<p>' + locn_text + ': ' + \
-                location_str + '</p>\n'
+            if not resembles_url(location_str):
+                # location is a description
+                map_str += '<p>' + locn_text + ': ' + \
+                    location_str + '</p>\n'
+            else:
+                # location is a link
+                location_domain, _ = get_domain_from_actor(location_str)
+                if not location_domain:
+                    location_domain = location_str
+                map_str += '<p>' + locn_text + ': <a href="' + \
+                    location_str + '" target="_blank" ' + \
+                    'rel="nofollow noopener noreferrer">' + \
+                    location_domain + '</a></p>\n'
             if time_span_str:
                 time_text = 'Time'
                 if translate.get('Time'):
