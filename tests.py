@@ -62,6 +62,8 @@ from flags import contains_pgp_public_key
 from flags import is_group_actor
 from flags import is_group_account
 from flags import is_right_to_left_text
+from utils import actor_status_expired
+from utils import get_actor_status
 from utils import replace_strings
 from utils import valid_content_warning
 from utils import data_dir
@@ -9298,6 +9300,42 @@ def _test_filter_match() -> None:
     assert filtered_match('* text*', 'Some text.')
 
 
+def _test_actor_status() -> None:
+    print('actor_status')
+    curr_time = date_utcnow()
+    curr_time_str = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    status_str = 'my status'
+    actor = {
+        'sm:status': status_str
+    }
+    result = get_actor_status(actor)
+    assert result == status_str
+
+    actor = {}
+    assert not get_actor_status(actor)
+
+    status_str = 'my status 2'
+    actor = {
+        'sm:status': {
+            'content': status_str,
+            'endTime': curr_time_str
+        }
+    }
+    result = get_actor_status(actor)
+    assert result == status_str
+    assert actor_status_expired(actor['sm:status'])
+
+    future_time = curr_time + datetime.timedelta(hours=1)
+    future_time_str = future_time.strftime("%Y-%m-%dT%H:%M:%SZ")
+    actor = {
+        'sm:status': {
+            'content': status_str,
+            'endTime': future_time_str
+        }
+    }
+    assert not actor_status_expired(actor['sm:status'])
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -9316,6 +9354,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_actor_status()
     _test_filter_match()
     _test_blocking_domain(base_dir)
     _test_blocking_nick(base_dir)
