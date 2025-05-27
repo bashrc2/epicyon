@@ -17,8 +17,8 @@ from posts import send_to_followers_thread
 from posts import send_to_named_addresses_thread
 from flags import is_featured_writer
 from flags import is_quote_toot
+from quote import quote_toots_allowed
 from utils import data_dir
-from utils import quote_toots_allowed
 from utils import get_post_attachments
 from utils import get_attributed_to
 from utils import contains_invalid_actor_url_chars

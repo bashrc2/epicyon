@@ -12,7 +12,7 @@ import time
 from flags import is_recent_post
 from flags import is_quote_toot
 from status import actor_status_expired
-from utils import get_quote_toot_url
+from quote import get_quote_toot_url
 from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
 from utils import get_attributed_to

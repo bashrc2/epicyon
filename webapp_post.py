@@ -36,12 +36,12 @@ from flags import is_recent_post
 from flags import is_chat_message
 from flags import is_pgp_encrypted
 from textmode import text_mode_removals
+from quote import get_quote_toot_url
 from utils import save_json
 from utils import remove_header_tags
 from utils import get_actor_from_post_id
 from utils import contains_statuses
 from utils import data_dir
-from utils import get_quote_toot_url
 from utils import get_post_attachments
 from utils import get_url_from_post
 from utils import date_from_string_format

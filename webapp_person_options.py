@@ -14,8 +14,8 @@ from person import is_person_snoozed
 from posts import is_moderator
 from flags import is_featured_writer
 from flags import is_dormant
+from quote import quote_toots_allowed
 from utils import data_dir
-from utils import quote_toots_allowed
 from utils import get_full_domain
 from utils import get_config_param
 from utils import remove_html

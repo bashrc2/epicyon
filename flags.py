@@ -27,7 +27,7 @@ from utils import date_from_string_format
 from utils import get_reply_to
 from utils import text_in_file
 from utils import get_group_paths
-from utils import get_quote_toot_url
+from quote import get_quote_toot_url
 
 
 def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:

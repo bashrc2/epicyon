@@ -22,9 +22,9 @@ from flags import is_group_account
 from flags import has_group_type
 from flags import is_quote_toot
 from flags import url_permitted
+from quote import quote_toots_allowed
 from utils import save_mitm_servers
 from utils import harmless_markup
-from utils import quote_toots_allowed
 from utils import lines_in_file
 from utils import date_epoch
 from utils import date_utcnow

@@ -15,7 +15,7 @@ from session import get_json_valid
 from session import create_session
 from flags import is_evil
 from flags import is_quote_toot
-from utils import get_quote_toot_url
+from quote import get_quote_toot_url
 from utils import get_user_paths
 from utils import contains_statuses
 from utils import data_dir
