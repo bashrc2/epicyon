@@ -12,7 +12,7 @@ __accounts_data_path_tests__ = False
 from utils import date_utcnow
 from utils import date_from_string_format
 from utils import remove_html
-from utils import standardize_text
+from unicodetext import standardize_text
 
 MAX_STATUS_LENGTH = 100
 

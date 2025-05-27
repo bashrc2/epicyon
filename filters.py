@@ -13,9 +13,9 @@ from utils import data_dir
 from utils import acct_dir
 from utils import text_in_file
 from utils import remove_eol
-from utils import standardize_text
-from utils import remove_inverted_text
-from utils import remove_square_capitals
+from unicodetext import standardize_text
+from unicodetext import remove_inverted_text
+from unicodetext import remove_square_capitals
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:

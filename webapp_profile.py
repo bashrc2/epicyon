@@ -19,11 +19,12 @@ from flags import is_premium_account
 from status import actor_status_expired
 from status import get_actor_status
 from textmode import text_mode_removals
+from unicodetext import uninvert_text
+from unicodetext import standardize_text
 from utils import get_person_icon
 from utils import replace_strings
 from utils import data_dir
 from utils import time_days_ago
-from utils import uninvert_text
 from utils import get_attributed_to
 from utils import get_url_from_post
 from utils import get_memorials
@@ -31,7 +32,6 @@ from utils import text_in_file
 from utils import dangerous_markup
 from utils import ap_proxy_type
 from utils import remove_id_ending
-from utils import standardize_text
 from utils import get_display_name
 from utils import has_object_dict
 from utils import get_occupation_name
