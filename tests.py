@@ -30,6 +30,7 @@ from httpsig import sign_post_headers
 from httpsig import sign_post_headers_new
 from httpsig import verify_post_headers
 from httpsig import message_content_digest
+from cache import update_recent_posts_cache
 from cache import cache_svg_images
 from cache import store_person_in_cache
 from cache import get_person_from_cache
@@ -100,7 +101,6 @@ from utils import get_full_domain
 from utils import valid_nickname
 from utils import first_paragraph_from_string
 from utils import remove_id_ending
-from utils import update_recent_posts_cache
 from utils import follow_person
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor

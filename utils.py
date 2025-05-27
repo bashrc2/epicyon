@@ -2830,39 +2830,6 @@ def get_cached_post_filename(base_dir: str, nickname: str, domain: str,
     return cached_post_filename + '.html'
 
 
-def update_recent_posts_cache(recent_posts_cache: {}, max_recent_posts: int,
-                              post_json_object: {}, html_str: str) -> None:
-    """Store recent posts in memory so that they can be quickly recalled
-    """
-    if not post_json_object.get('id'):
-        return
-    post_id = post_json_object['id']
-    if '#' in post_id:
-        post_id = post_id.split('#', 1)[0]
-    post_id = remove_id_ending(post_id).replace('/', '#')
-    if recent_posts_cache.get('index'):
-        if post_id in recent_posts_cache['index']:
-            return
-        recent_posts_cache['index'].append(post_id)
-        post_json_object['muted'] = False
-        recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
-        recent_posts_cache['html'][post_id] = html_str
-
-        while len(recent_posts_cache['html'].items()) > max_recent_posts:
-            post_id = recent_posts_cache['index'][0]
-            recent_posts_cache['index'].pop(0)
-            if recent_posts_cache['json'].get(post_id):
-                del recent_posts_cache['json'][post_id]
-            if recent_posts_cache['html'].get(post_id):
-                del recent_posts_cache['html'][post_id]
-    else:
-        recent_posts_cache['index'] = [post_id]
-        recent_posts_cache['json'] = {}
-        recent_posts_cache['html'] = {}
-        recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
-        recent_posts_cache['html'][post_id] = html_str
-
-
 def file_last_modified(filename: str) -> str:
     """Returns the date when a file was last modified
     """

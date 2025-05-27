@@ -14,6 +14,7 @@ from dateutil.parser import parse
 from auth import create_password
 from git import is_git_patch
 from cache import get_person_from_cache
+from cache import update_recent_posts_cache
 from bookmarks import bookmark_from_id
 from bookmarks import bookmarked_by_person
 from announce import announced_by_person
@@ -74,7 +75,6 @@ from utils import get_cached_post_filename
 from utils import get_protocol_prefixes
 from utils import get_display_name
 from utils import display_name_is_emoji
-from utils import update_recent_posts_cache
 from utils import remove_id_ending
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
