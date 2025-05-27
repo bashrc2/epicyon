@@ -10,6 +10,9 @@ __module_group__ = "Core"
 # some posts are proxied through a third party server which removes transport
 # layer security, breaking the end-to-end principle. Epicyon warns the
 # user when it knows that this is happening.
+# The proxy may not be able to alter the post in transit, due to http
+# signature, but they can conduct surveillance and gather posts for LLM
+# training (or sale for that purpose).
 
 import os
 from utils import data_dir
