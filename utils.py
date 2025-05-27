@@ -1899,40 +1899,6 @@ def locate_news_arrival(base_dir: str, domain: str,
     return None
 
 
-def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
-                           post_id: str) -> None:
-    """Clears cached html for the given post, so that edits
-    to news will appear
-    """
-    filename = '/postcache/' + post_id + '.html'
-    dir_str = data_dir(base_dir)
-    for _, dirs, _ in os.walk(dir_str):
-        for acct in dirs:
-            if '@' not in acct:
-                continue
-            if acct.startswith('inbox@') or acct.startswith('Actor@'):
-                continue
-            cache_dir = os.path.join(dir_str, acct)
-            post_filename = cache_dir + filename
-            if os.path.isfile(post_filename):
-                try:
-                    os.remove(post_filename)
-                except OSError:
-                    print('EX: clear_from_post_caches file not removed ' +
-                          str(post_filename))
-            # if the post is in the recent posts cache then remove it
-            if recent_posts_cache.get('index'):
-                if post_id in recent_posts_cache['index']:
-                    recent_posts_cache['index'].remove(post_id)
-            if recent_posts_cache.get('json'):
-                if recent_posts_cache['json'].get(post_id):
-                    del recent_posts_cache['json'][post_id]
-            if recent_posts_cache.get('html'):
-                if recent_posts_cache['html'].get(post_id):
-                    del recent_posts_cache['html'][post_id]
-        break
-
-
 def locate_post(base_dir: str, nickname: str, domain: str,
                 post_url: str, replies: bool = False) -> str:
     """Returns the filename for the given status post url

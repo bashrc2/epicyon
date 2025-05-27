@@ -32,7 +32,6 @@ from utils import get_full_domain
 from utils import load_json
 from utils import save_json
 from utils import get_status_number
-from utils import clear_from_post_caches
 from utils import dangerous_markup
 from utils import local_actor_url
 from utils import text_in_file
@@ -40,6 +39,7 @@ from utils import data_dir
 from session import create_session
 from threads import begin_thread
 from webapp_hashtagswarm import store_hash_tags
+from cache import clear_from_post_caches
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,

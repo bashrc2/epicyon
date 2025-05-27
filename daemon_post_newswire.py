@@ -11,8 +11,8 @@ import os
 import errno
 from socket import error as SocketError
 from flags import is_editor
+from cache import clear_from_post_caches
 from utils import data_dir
-from utils import clear_from_post_caches
 from utils import remove_id_ending
 from utils import save_json
 from utils import first_paragraph_from_string
