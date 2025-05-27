@@ -49,7 +49,7 @@ from shares import expire_shares
 from categories import load_city_hashtags
 from categories import update_hashtag_categories
 from languages import load_default_post_languages
-from utils import load_searchable_by_default
+from searchable import load_searchable_by_default
 from utils import set_accounts_data_dir
 from utils import data_dir
 from utils import check_bad_path
