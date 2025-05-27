@@ -3799,13 +3799,14 @@ def valid_hash_tag(hashtag: str) -> bool:
 def convert_published_to_local_timezone(published, timezone: str) -> str:
     """Converts a post published time into local time
     """
+    to_zone = None
     from_zone = tz.gettz('UTC')
     if timezone:
         try:
             to_zone = tz.gettz(timezone)
         except BaseException:
             pass
-    if not timezone:
+    if not timezone or not to_zone:
         return published
 
     utc = published.replace(tzinfo=from_zone)
