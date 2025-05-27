@@ -12,8 +12,8 @@ import json
 from roles import get_actor_roles_list
 from skills import no_of_actor_skills
 from skills import get_skills_from_list
-from utils import get_actor_status
-from utils import actor_status_expired
+from status import get_actor_status
+from status import actor_status_expired
 from utils import get_nickname_from_actor
 from utils import load_json
 from utils import get_json_content_from_accept

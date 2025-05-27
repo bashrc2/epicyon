@@ -26,8 +26,8 @@ from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from content import valid_url_lengths
 from posts import add_to_field
-from utils import actor_status_expired
-from utils import get_actor_status
+from status import actor_status_expired
+from status import get_actor_status
 from utils import detect_mitm
 from utils import data_dir
 from utils import load_json

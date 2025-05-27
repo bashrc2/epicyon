@@ -16,8 +16,8 @@ from flags import is_system_account
 from flags import is_group_account
 from flags import is_valid_date
 from flags import is_premium_account
-from utils import actor_status_expired
-from utils import get_actor_status
+from status import actor_status_expired
+from status import get_actor_status
 from utils import get_person_icon
 from utils import text_mode_removals
 from utils import replace_strings

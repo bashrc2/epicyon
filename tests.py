@@ -62,8 +62,8 @@ from flags import contains_pgp_public_key
 from flags import is_group_actor
 from flags import is_group_account
 from flags import is_right_to_left_text
-from utils import actor_status_expired
-from utils import get_actor_status
+from status import actor_status_expired
+from status import get_actor_status
 from utils import replace_strings
 from utils import valid_content_warning
 from utils import data_dir
