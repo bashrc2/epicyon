@@ -35,8 +35,8 @@ from flags import is_news_post
 from flags import is_recent_post
 from flags import is_chat_message
 from flags import is_pgp_encrypted
+from textmode import text_mode_removals
 from utils import save_json
-from utils import text_mode_removals
 from utils import remove_header_tags
 from utils import get_actor_from_post_id
 from utils import contains_statuses
@@ -102,8 +102,8 @@ from content import switch_words
 from content import add_auto_cw
 from person import is_person_snoozed
 from person import get_person_avatar_url
+from textmode import text_mode_browser
 from webapp_utils import mitm_warning_html
-from webapp_utils import text_mode_browser
 from webapp_utils import get_buy_links
 from webapp_utils import get_banner_file
 from webapp_utils import get_avatar_image_url

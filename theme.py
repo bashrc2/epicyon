@@ -27,6 +27,7 @@ from utils import text_in_file
 from utils import remove_eol
 from utils import language_right_to_left
 from content import dangerous_css
+from textmode import set_text_mode_theme
 
 
 def import_theme(base_dir: str, filename: str) -> bool:
@@ -695,72 +696,6 @@ def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
         break
 
 
-def get_text_mode_banner(base_dir: str) -> str:
-    """Returns the banner used for shell browsers, like Lynx
-    """
-    text_mode_banner_filename = data_dir(base_dir) + '/banner.txt'
-    if os.path.isfile(text_mode_banner_filename):
-        with open(text_mode_banner_filename, 'r',
-                  encoding='utf-8') as fp_text:
-            banner_str = fp_text.read()
-            if banner_str:
-                return banner_str.replace('\n', '<br>')
-    return None
-
-
-def get_text_mode_logo(base_dir: str) -> str:
-    """Returns the login screen logo used for shell browsers, like Lynx
-    """
-    text_mode_logo_filename = data_dir(base_dir) + '/logo.txt'
-    if not os.path.isfile(text_mode_logo_filename):
-        text_mode_logo_filename = base_dir + '/img/logo.txt'
-
-    with open(text_mode_logo_filename, 'r', encoding='utf-8') as fp_text:
-        logo_str = fp_text.read()
-        if logo_str:
-            return logo_str.replace('\n', '<br>')
-    return None
-
-
-def _set_text_mode_theme(base_dir: str, name: str) -> None:
-    # set the text mode logo which appears on the login screen
-    # in browsers such as Lynx
-    text_mode_logo_filename = \
-        base_dir + '/theme/' + name + '/logo.txt'
-    dir_str = data_dir(base_dir)
-    if os.path.isfile(text_mode_logo_filename):
-        try:
-            copyfile(text_mode_logo_filename, dir_str + '/logo.txt')
-        except OSError:
-            print('EX: _set_text_mode_theme unable to copy ' +
-                  text_mode_logo_filename + ' ' +
-                  dir_str + '/logo.txt')
-    else:
-        dir_str = data_dir(base_dir)
-        try:
-            copyfile(base_dir + '/img/logo.txt', dir_str + '/logo.txt')
-        except OSError:
-            print('EX: _set_text_mode_theme unable to copy ' +
-                  base_dir + '/img/logo.txt ' + dir_str + '/logo.txt')
-
-    # set the text mode banner which appears in browsers such as Lynx
-    text_mode_banner_filename = \
-        base_dir + '/theme/' + name + '/banner.txt'
-    if os.path.isfile(dir_str + '/banner.txt'):
-        try:
-            os.remove(dir_str + '/banner.txt')
-        except OSError:
-            print('EX: _set_text_mode_theme unable to delete ' +
-                  dir_str + '/banner.txt')
-    if os.path.isfile(text_mode_banner_filename):
-        try:
-            copyfile(text_mode_banner_filename, dir_str + '/banner.txt')
-        except OSError:
-            print('EX: _set_text_mode_theme unable to copy ' +
-                  text_mode_banner_filename + ' ' +
-                  dir_str + '/banner.txt')
-
-
 def _set_theme_images(base_dir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
@@ -778,7 +713,7 @@ def _set_theme_images(base_dir: str, name: str) -> None:
     right_col_image_filename = \
         base_dir + '/theme/' + theme_name_lower + '/right_col_image.png'
 
-    _set_text_mode_theme(base_dir, theme_name_lower)
+    set_text_mode_theme(base_dir, theme_name_lower)
 
     background_names = ('login', 'shares', 'delete', 'follow',
                         'options', 'block', 'search', 'calendar',

@@ -16,9 +16,9 @@ from utils import get_config_param
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_attributed_to
-from utils import text_mode_removals
+from textmode import text_mode_removals
 from blocking import is_blocked
-from webapp_utils import text_mode_browser
+from textmode import text_mode_browser
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_post_separator
 from webapp_utils import html_footer

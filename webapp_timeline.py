@@ -22,11 +22,11 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import remove_eol
 from utils import get_actor_from_post
-from utils import text_mode_removals
+from textmode import text_mode_removals
 from follow import follower_approval_active
 from person import is_person_snoozed
 from markdown import markdown_to_html
-from webapp_utils import text_mode_browser
+from textmode import text_mode_browser
 from webapp_utils import html_keyboard_navigation
 from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import html_post_separator

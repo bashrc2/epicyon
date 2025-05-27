@@ -20,8 +20,8 @@ from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
-from webapp_utils import text_mode_browser
-from theme import get_text_mode_logo
+from textmode import text_mode_browser
+from textmode import get_text_mode_logo
 
 
 def html_get_login_credentials(login_params: str,

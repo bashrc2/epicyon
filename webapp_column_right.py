@@ -34,7 +34,7 @@ from webapp_utils import get_banner_file
 from webapp_utils import html_post_separator
 from webapp_utils import header_buttons_front_screen
 from webapp_utils import edit_text_field
-from webapp_utils import text_mode_browser
+from textmode import text_mode_browser
 
 
 def _votes_indicator(total_votes: int, positive_voting: bool) -> str:

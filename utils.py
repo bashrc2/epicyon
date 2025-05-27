@@ -5493,14 +5493,6 @@ def save_mitm_servers(base_dir: str, mitm_servers: []) -> None:
         print('EX: error while saving mitm_servers.txt')
 
 
-def text_mode_removals(text: str, translate: {}) -> str:
-    """Removes some elements of a post when displaying in a text mode browser
-    """
-    text = text.replace(translate['SHOW MORE'], '')
-    text = text.replace(translate['mitm'], '👁 ')
-    return text
-
-
 def get_event_categories() -> []:
     """Returns event categories
     https://codeberg.org/fediverse/fep/src/branch/main/fep/8a8e/fep-8a8e.md

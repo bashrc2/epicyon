@@ -7,7 +7,7 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
-from webapp_utils import text_mode_browser
+from textmode import text_mode_browser
 
 
 def request_csv(headers: {}) -> bool:

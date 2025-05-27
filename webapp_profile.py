@@ -18,8 +18,8 @@ from flags import is_valid_date
 from flags import is_premium_account
 from status import actor_status_expired
 from status import get_actor_status
+from textmode import text_mode_removals
 from utils import get_person_icon
-from utils import text_mode_removals
 from utils import replace_strings
 from utils import data_dir
 from utils import time_days_ago
@@ -93,7 +93,7 @@ from follow import is_follower_of_person
 from follow import get_follower_domains
 from follow import is_following_actor
 from webapp_frontscreen import html_front_screen
-from webapp_utils import text_mode_browser
+from textmode import text_mode_browser
 from webapp_utils import html_following_dropdown
 from webapp_utils import edit_number_field
 from webapp_utils import html_keyboard_navigation

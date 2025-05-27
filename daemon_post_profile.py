@@ -51,12 +51,12 @@ from content import add_html_tags
 from content import extract_text_fields_in_post
 from content import extract_media_in_form_post
 from content import save_media_in_form_post
+from textmode import get_text_mode_banner
 from theme import enable_grayscale
 from theme import disable_grayscale
 from theme import get_theme
 from theme import is_news_theme_name
 from theme import set_news_avatar
-from theme import get_text_mode_banner
 from theme import set_theme
 from theme import export_theme
 from theme import import_theme

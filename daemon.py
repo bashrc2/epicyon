@@ -71,8 +71,8 @@ from content import load_auto_cw_cache
 from content import load_dogwhistles
 from theme import scan_themes_for_scripts
 from theme import is_news_theme_name
-from theme import get_text_mode_banner
 from theme import set_news_avatar
+from textmode import get_text_mode_banner
 from schedule import run_post_schedule
 from schedule import run_post_schedule_watchdog
 from happening import dav_propfind_response
