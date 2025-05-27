@@ -18,7 +18,7 @@ from utils import locate_post
 from utils import local_actor_url
 from utils import get_nickname_from_actor
 from utils import get_instance_url
-from utils import detect_mitm
+from mitm import detect_mitm
 from daemon_utils import post_to_outbox
 from follow import follower_approval_active
 from httpheaders import redirect_headers

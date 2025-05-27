@@ -15,7 +15,7 @@ from utils import get_cached_post_filename
 from utils import load_json
 from utils import locate_post
 from utils import get_nickname_from_actor
-from utils import detect_mitm
+from mitm import detect_mitm
 from httpcodes import http_404
 from httpheaders import redirect_headers
 from blocking import unmute_post

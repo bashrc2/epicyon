@@ -25,7 +25,7 @@ from utils import get_json_content_from_accept
 from utils import convert_domains
 from utils import has_object_dict
 from utils import load_json
-from utils import detect_mitm
+from mitm import detect_mitm
 from session import establish_session
 from languages import get_understood_languages
 from languages import get_reply_language

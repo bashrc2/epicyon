@@ -17,7 +17,7 @@ from utils import is_dm
 from utils import get_nickname_from_actor
 from utils import get_instance_url
 from utils import local_actor_url
-from utils import detect_mitm
+from mitm import detect_mitm
 from session import establish_session
 from httpheaders import redirect_headers
 from httpcodes import http_404

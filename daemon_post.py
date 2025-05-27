@@ -21,7 +21,7 @@ from utils import local_actor_url
 from utils import contains_invalid_chars
 from utils import remove_id_ending
 from utils import check_bad_path
-from utils import detect_mitm
+from mitm import detect_mitm
 from blocking import contains_military_domain
 from blocking import contains_government_domain
 from blocking import contains_bluesky_domain

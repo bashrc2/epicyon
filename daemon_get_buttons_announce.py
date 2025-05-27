@@ -18,7 +18,7 @@ from utils import remove_id_ending
 from utils import local_actor_url
 from utils import get_nickname_from_actor
 from utils import get_instance_url
-from utils import detect_mitm
+from mitm import detect_mitm
 from httpheaders import redirect_headers
 from session import establish_session
 from httpcodes import http_404

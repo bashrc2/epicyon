@@ -65,8 +65,8 @@ from utils import get_full_domain
 from utils import set_config_param
 from utils import get_config_param
 from utils import load_json
-from utils import load_mitm_servers
 from utils import load_instance_software
+from mitm import load_mitm_servers
 from content import load_auto_cw_cache
 from content import load_dogwhistles
 from theme import scan_themes_for_scripts

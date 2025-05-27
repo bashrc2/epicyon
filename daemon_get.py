@@ -114,7 +114,7 @@ from utils import get_nickname_from_actor
 from utils import get_json_content_from_accept
 from utils import check_bad_path
 from utils import decoded_host
-from utils import detect_mitm
+from mitm import detect_mitm
 from person import get_person_notes_endpoint
 from person import get_account_pub_key
 from shares import actor_attached_shares
