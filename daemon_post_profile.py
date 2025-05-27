@@ -22,7 +22,6 @@ from flags import is_memorial_account
 from flags import is_premium_account
 from utils import data_dir
 from utils import set_premium_account
-from utils import remove_avatar_from_cache
 from utils import save_json
 from utils import save_reverse_timeline
 from utils import set_minimize_all_images
@@ -141,6 +140,7 @@ from shares import merge_shared_item_tokens
 from roles import set_roles_from_list
 from schedule import remove_scheduled_posts
 from cwlists import get_cw_list_variable
+from cache import remove_avatar_from_cache
 from cache import store_person_in_cache
 from daemon_utils import post_to_outbox
 

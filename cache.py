@@ -28,6 +28,7 @@ from utils import get_file_case_insensitive
 from utils import get_user_paths
 from utils import date_utcnow
 from utils import date_from_string_format
+from utils import get_image_extensions
 from content import remove_script
 
 
@@ -391,3 +392,21 @@ def update_recent_posts_cache(recent_posts_cache: {}, max_recent_posts: int,
         recent_posts_cache['html'] = {}
         recent_posts_cache['json'][post_id] = json.dumps(post_json_object)
         recent_posts_cache['html'][post_id] = html_str
+
+
+def remove_avatar_from_cache(base_dir: str, actor_str: str) -> None:
+    """Removes any existing avatar entries from the cache
+    This avoids duplicate entries with differing extensions
+    """
+    avatar_filename_extensions = get_image_extensions()
+    for extension in avatar_filename_extensions:
+        avatar_filename = \
+            base_dir + '/cache/avatars/' + actor_str + '.' + extension
+        if not os.path.isfile(avatar_filename):
+            continue
+        try:
+            os.remove(avatar_filename)
+        except OSError:
+            print('EX: remove_avatar_from_cache ' +
+                  'unable to delete cached avatar ' +
+                  str(avatar_filename))

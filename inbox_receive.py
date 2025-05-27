@@ -41,7 +41,6 @@ from utils import get_actor_from_post
 from utils import locate_post
 from utils import remove_id_ending
 from utils import has_actor
-from utils import remove_avatar_from_cache
 from utils import text_in_file
 from utils import is_account_dir
 from utils import data_dir
@@ -53,6 +52,7 @@ from utils import get_url_from_post
 from utils import remove_html
 from utils import get_full_domain
 from utils import get_user_paths
+from cache import remove_avatar_from_cache
 from cache import get_person_from_cache
 from cache import get_actor_public_key_from_id
 from cache import store_person_in_cache
