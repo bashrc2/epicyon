@@ -13,6 +13,8 @@ from timeFunctions import date_utcnow
 from timeFunctions import get_published_date
 from timeFunctions import date_from_string_format
 from timeFunctions import date_epoch
+from utils import get_full_domain
+from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import data_dir
 from utils import get_config_param
@@ -679,4 +681,41 @@ def can_reply_to(base_dir: str, nickname: str, domain: str,
     if hours_since_publication < 0 or \
        hours_since_publication >= reply_interval_hours:
         return False
+    return True
+
+
+def local_only_is_local(message_json: {}, domain_full: str) -> bool:
+    """Returns True if the given json post is verified as local only
+    """
+    if message_json['object']['localOnly'] is not True:
+        return True
+
+    # check that the to addresses are local
+    if isinstance(message_json['object']['to'], list):
+        for to_actor in message_json['object']['to']:
+            to_domain, to_port = \
+                get_domain_from_actor(to_actor)
+            if not to_domain:
+                continue
+            to_domain_full = \
+                get_full_domain(to_domain, to_port)
+            if domain_full != to_domain_full:
+                print("REJECT: inbox " +
+                      "local only post isn't local " +
+                      str(message_json))
+                return False
+
+    # check that the sender is local
+    attrib_field = message_json['object']['attributedTo']
+    local_actor = get_attributed_to(attrib_field)
+    local_domain, local_port = \
+        get_domain_from_actor(local_actor)
+    if local_domain:
+        local_domain_full = \
+            get_full_domain(local_domain, local_port)
+        if domain_full != local_domain_full:
+            print("REJECT: " +
+                  "inbox local only post isn't local " +
+                  str(message_json))
+            return False
     return True

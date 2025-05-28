@@ -36,7 +36,6 @@ from utils import get_instance_url
 from utils import remove_html
 from utils import get_locked_account
 from utils import post_summary_contains_links
-from utils import local_only_is_local
 from utils import get_local_network_addresses
 from utils import has_object_dict
 from utils import get_nickname_from_actor
@@ -44,6 +43,7 @@ from utils import get_domain_from_actor
 from utils import get_actor_from_post
 from utils import has_actor
 from utils import resembles_url
+from flags import local_only_is_local
 from flags import is_system_account
 from cache import check_for_changed_actor
 from cache import get_person_from_cache
