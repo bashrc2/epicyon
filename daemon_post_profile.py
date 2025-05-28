@@ -42,7 +42,7 @@ from utils import acct_dir
 from utils import get_config_param
 from utils import get_instance_url
 from utils import get_nickname_from_actor
-from utils import get_occupation_name
+from occupation import get_occupation_name
 from auth import store_basic_credentials
 from filters import is_filtered
 from content import add_name_emojis_to_tags
@@ -103,7 +103,7 @@ from matrix import get_matrix_address
 from matrix import set_matrix_address
 from ssb import get_ssb_address
 from ssb import set_ssb_address
-from utils import set_occupation_name
+from occupation import set_occupation_name
 from blog import get_blog_address
 from webapp_utils import set_blog_address
 from session import site_is_verified

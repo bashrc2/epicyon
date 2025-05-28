@@ -17,10 +17,10 @@ from status import actor_status_expired
 from utils import get_nickname_from_actor
 from utils import load_json
 from utils import get_json_content_from_accept
-from utils import get_occupation_skills
 from utils import get_instance_url
 from utils import acct_dir
 from utils import convert_domains
+from occupation import get_occupation_skills
 from httpcodes import write2
 from httpcodes import http_404
 from person import person_lookup

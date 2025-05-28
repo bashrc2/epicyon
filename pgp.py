@@ -14,7 +14,7 @@ from pathlib import Path
 from person import get_actor_json
 from flags import is_pgp_encrypted
 from flags import contains_pgp_public_key
-from utils import get_occupation_skills
+from occupation import get_occupation_skills
 from utils import get_url_from_post
 from utils import safe_system_string
 from utils import get_full_domain

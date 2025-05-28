@@ -21,6 +21,7 @@ from status import get_actor_status
 from textmode import text_mode_removals
 from unicodetext import uninvert_text
 from unicodetext import standardize_text
+from occupation import get_occupation_name
 from utils import get_person_icon
 from utils import replace_strings
 from utils import data_dir
@@ -33,7 +34,6 @@ from utils import ap_proxy_type
 from utils import remove_id_ending
 from utils import get_display_name
 from utils import has_object_dict
-from utils import get_occupation_name
 from utils import get_locked_account
 from utils import get_full_domain
 from utils import get_nickname_from_actor

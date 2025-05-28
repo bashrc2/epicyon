@@ -12,13 +12,13 @@ from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from posts import get_person_box
 from session import post_json
+from occupation import get_occupation_skills
+from occupation import set_occupation_skills_list
 from utils import has_object_string
 from utils import get_full_domain
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import load_json
-from utils import get_occupation_skills
-from utils import set_occupation_skills_list
 from utils import acct_dir
 from utils import local_actor_url
 from utils import has_actor
