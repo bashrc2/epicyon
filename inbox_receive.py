@@ -18,7 +18,6 @@ from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
 from utils import get_attributed_to
 from utils import remove_eol
-from utils import update_announce_collection
 from utils import get_protocol_prefixes
 from utils import contains_statuses
 from utils import delete_post
@@ -76,6 +75,7 @@ from like import update_likes_collection
 from reaction import valid_emoji_content
 from reaction import update_reaction_collection
 from bookmarks import update_bookmarks_collection
+from announce import update_announce_collection
 from announce import is_self_announce
 from speaker import update_speaker
 from webapp_post import individual_post_as_html

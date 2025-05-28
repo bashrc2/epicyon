@@ -30,7 +30,6 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import save_json
-from utils import update_announce_collection
 from utils import local_actor_url
 from utils import replace_users_with_at
 from utils import has_actor
@@ -630,4 +629,85 @@ def undo_announce_collection_entry(recent_posts_cache: {},
         itlen = len(post_json_object['object']['shares']['items'])
         post_json_object['object']['shares']['totalItems'] = itlen
 
+    save_json(post_json_object, post_filename)
+
+
+def update_announce_collection(recent_posts_cache: {},
+                               base_dir: str, post_filename: str,
+                               actor: str, nickname: str, domain: str,
+                               debug: bool) -> None:
+    """Updates the announcements collection within a post
+    Confusingly this is known as "shares", but isn't the
+    same as shared items within shares.py
+    It's shares of posts, not shares of physical objects.
+    """
+    post_json_object = load_json(post_filename)
+    if not post_json_object:
+        return
+    # remove any cached version of this announce so that the announce
+    # icon is changed
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname, domain,
+                                 post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
+            print('update_announce_collection: removing ' +
+                  cached_post_filename)
+            try:
+                os.remove(cached_post_filename)
+            except OSError:
+                if debug:
+                    print('EX: update_announce_collection ' +
+                          'unable to delete cached post ' +
+                          str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
+
+    if not has_object_dict(post_json_object):
+        if debug:
+            pprint(post_json_object)
+            print('DEBUG: post ' + post_filename + ' has no object')
+        return
+    post_url = remove_id_ending(post_json_object['id'])
+    collection_id = post_url + '/shares'
+    if not post_json_object['object'].get('shares'):
+        if debug:
+            print('DEBUG: Adding initial shares (announcements) to ' +
+                  post_url)
+        announcements_json = {
+            "@context": [
+                'https://www.w3.org/ns/activitystreams',
+                'https://w3id.org/security/v1'
+            ],
+            'id': collection_id,
+            'sharesOf': post_url,
+            'type': 'Collection',
+            "totalItems": 1,
+            'items': [{
+                'type': 'Announce',
+                'actor': actor
+            }]
+        }
+        post_json_object['object']['shares'] = announcements_json
+    else:
+        if post_json_object['object']['shares'].get('items'):
+            shares_items = post_json_object['object']['shares']['items']
+            for announce_item in shares_items:
+                if announce_item.get('actor'):
+                    if announce_item['actor'] == actor:
+                        return
+            new_announce = {
+                'type': 'Announce',
+                'actor': actor
+            }
+            post_json_object['object']['shares']['items'].append(new_announce)
+            itlen = len(post_json_object['object']['shares']['items'])
+            post_json_object['object']['shares']['totalItems'] = itlen
+        else:
+            if debug:
+                print('DEBUG: shares (announcements) section of post ' +
+                      'has no items list')
+
+    if debug:
+        print('DEBUG: saving post with shares (announcements) added')
+        pprint(post_json_object)
     save_json(post_json_object, post_filename)

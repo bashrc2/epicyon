@@ -17,6 +17,7 @@ from cache import get_person_from_cache
 from cache import update_recent_posts_cache
 from bookmarks import bookmark_from_id
 from bookmarks import bookmarked_by_person
+from announce import update_announce_collection
 from announce import announced_by_person
 from announce import no_of_announces
 from like import liked_by_person
@@ -38,6 +39,8 @@ from flags import is_chat_message
 from flags import is_pgp_encrypted
 from textmode import text_mode_removals
 from quote import get_quote_toot_url
+from timeFunctions import date_from_string_format
+from timeFunctions import convert_published_to_local_timezone
 from utils import save_json
 from utils import remove_header_tags
 from utils import get_actor_from_post_id
@@ -53,8 +56,6 @@ from utils import dont_speak_hashtags
 from utils import remove_eol
 from utils import disallow_announce
 from utils import disallow_reply
-from timeFunctions import date_from_string_format
-from timeFunctions import convert_published_to_local_timezone
 from utils import remove_hash_from_post_id
 from utils import remove_html
 from utils import get_actor_languages_list
@@ -63,7 +64,6 @@ from utils import get_content_from_post
 from utils import get_language_from_post
 from utils import get_summary_from_post
 from utils import has_object_dict
-from utils import update_announce_collection
 from utils import is_dm
 from utils import reject_post_id
 from utils import get_config_param
