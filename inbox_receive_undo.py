@@ -20,7 +20,6 @@ from utils import remove_html
 from utils import is_dm
 from utils import get_cached_post_filename
 from utils import load_json
-from utils import undo_likes_collection_entry
 from utils import locate_post
 from utils import acct_handle_dir
 from utils import has_object_string_object
@@ -31,6 +30,7 @@ from utils import get_actor_from_post
 from utils import has_users_path
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
+from like import undo_likes_collection_entry
 from follow import unfollower_of_account
 from follow import follower_approval_active
 from bookmarks import undo_bookmarks_collection_entry

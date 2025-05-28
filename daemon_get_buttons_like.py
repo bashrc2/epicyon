@@ -10,7 +10,6 @@ __status__ = "Production"
 __module_group__ = "Daemon GET"
 
 import os
-from utils import undo_likes_collection_entry
 from utils import is_dm
 from utils import get_cached_post_filename
 from utils import load_json
@@ -27,6 +26,7 @@ from httpcodes import http_404
 from posts import get_original_post_from_announce_url
 from fitnessFunctions import fitness_performance
 from like import update_likes_collection
+from like import undo_likes_collection_entry
 from webapp_post import individual_post_as_html
 
 

@@ -22,7 +22,6 @@ from utils import remove_id_ending
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
-from utils import undo_likes_collection_entry
 from utils import local_actor_url
 from utils import load_json
 from utils import save_json
@@ -525,4 +524,72 @@ def update_likes_collection(recent_posts_cache: {},
     if debug:
         print('DEBUG: saving post with likes added')
         pprint(post_json_object)
+    save_json(post_json_object, post_filename)
+
+
+def undo_likes_collection_entry(recent_posts_cache: {},
+                                base_dir: str, post_filename: str,
+                                actor: str, domain: str, debug: bool,
+                                post_json_object: {}) -> None:
+    """Undoes a like for a particular actor
+    """
+    if not post_json_object:
+        post_json_object = load_json(post_filename)
+    if not post_json_object:
+        return
+    # remove any cached version of this post so that the
+    # like icon is changed
+    nickname = get_nickname_from_actor(actor)
+    if not nickname:
+        return
+    cached_post_filename = \
+        get_cached_post_filename(base_dir, nickname,
+                                 domain, post_json_object)
+    if cached_post_filename:
+        if os.path.isfile(cached_post_filename):
+            try:
+                os.remove(cached_post_filename)
+            except OSError:
+                print('EX: undo_likes_collection_entry ' +
+                      'unable to delete cached post ' +
+                      str(cached_post_filename))
+    remove_post_from_cache(post_json_object, recent_posts_cache)
+
+    if not post_json_object.get('type'):
+        return
+    if post_json_object['type'] != 'Create':
+        return
+    obj = post_json_object
+    if has_object_dict(post_json_object):
+        obj = post_json_object['object']
+    if not obj.get('likes'):
+        return
+    if not isinstance(obj['likes'], dict):
+        return
+    if not obj['likes'].get('items'):
+        return
+    total_items = 0
+    if obj['likes'].get('totalItems'):
+        total_items = obj['likes']['totalItems']
+    item_found = False
+    for like_item in obj['likes']['items']:
+        if not like_item.get('actor'):
+            continue
+        if like_item['actor'] != actor:
+            continue
+        if debug:
+            print('DEBUG: like was removed for ' + actor)
+        obj['likes']['items'].remove(like_item)
+        item_found = True
+        break
+    if not item_found:
+        return
+    if total_items == 1:
+        if debug:
+            print('DEBUG: likes was removed from post')
+        del obj['likes']
+    else:
+        itlen = len(obj['likes']['items'])
+        obj['likes']['totalItems'] = itlen
+
     save_json(post_json_object, post_filename)
