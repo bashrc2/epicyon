@@ -28,6 +28,7 @@ from mitm import save_mitm_servers
 from timeFunctions import date_utcnow
 from timeFunctions import date_epoch
 from timeFunctions import get_account_timezone
+from timeFunctions import get_current_time_int
 from utils import harmless_markup
 from utils import lines_in_file
 from utils import contains_statuses
@@ -1331,7 +1332,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     # Don't send out bounce messages too frequently.
     # Otherwise an adversary could try to DoS your instance
     # by continuously sending DMs to you
-    curr_time = int(time.time())
+    curr_time = get_current_time_int()
     if curr_time - last_bounce_message[0] < 60:
         return False
 
@@ -3337,7 +3338,7 @@ def run_inbox_queue(server,
                           str(queue_filename))
             continue
 
-        curr_time = int(time.time())
+        curr_time = get_current_time_int()
 
         # clear the daily quotas for maximum numbers of received posts
         if curr_time - quotas_last_update_daily > 60 * 60 * 24:

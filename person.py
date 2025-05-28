@@ -39,6 +39,7 @@ from roles import get_actor_roles_list
 from media import process_meta_data
 from flags import is_image_file
 from timeFunctions import date_utcnow
+from timeFunctions import get_current_time_int
 from utils import get_person_icon
 from utils import account_is_indexable
 from utils import get_image_mime_type
@@ -1656,7 +1657,7 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
                     # is there a time appended?
                     if snoozed_time_str.isdigit():
                         snoozed_time = int(snoozed_time_str)
-                        curr_time = int(time.time())
+                        curr_time = get_current_time_int()
                         # has the snooze timed out?
                         if int(curr_time - snoozed_time) > 60 * 60 * 24:
                             replace_str = line

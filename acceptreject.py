@@ -10,7 +10,6 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
-import time
 from posts import send_signed_json
 from flags import has_group_type
 from flags import url_permitted
@@ -30,6 +29,7 @@ from utils import local_actor_url
 from utils import has_actor
 from utils import has_object_string_type
 from utils import get_actor_from_post
+from timeFunctions import get_current_time_int
 
 
 def _create_quote_accept_reject(receiving_actor: str,
@@ -438,7 +438,7 @@ def receive_quote_request(message_json: {}, federation_list: [],
     """
     if message_json['type'] != 'QuoteRequest':
         return False
-    curr_time = int(time.time())
+    curr_time = get_current_time_int()
     seconds_since_last_quote_request = curr_time - last_quote_request
     if seconds_since_last_quote_request < 30:
         # don't handle quote requests too often

@@ -27,6 +27,7 @@ from flags import is_float
 from timeFunctions import date_utcnow
 from timeFunctions import date_string_to_seconds
 from timeFunctions import date_seconds_to_string
+from timeFunctions import get_current_time_int
 from utils import replace_strings
 from utils import data_dir
 from utils import resembles_url
@@ -486,7 +487,7 @@ def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
     shares_json = load_json(shares_filename)
     if not shares_json:
         return 0
-    curr_time = int(time.time())
+    curr_time = get_current_time_int()
     delete_item_id: list[str] = []
     for item_id, item in shares_json.items():
         if curr_time > item['expire']:
@@ -1829,7 +1830,7 @@ def _generate_next_shares_token_update(base_dir: str,
         except OSError:
             print('EX: _generate_next_shares_token_update unable to read ' +
                   token_update_filename)
-    curr_time = int(time.time())
+    curr_time = get_current_time_int()
     updated = False
     if next_update_sec:
         if curr_time > next_update_sec:
@@ -1883,7 +1884,7 @@ def _regenerate_shares_token(base_dir: str, domain_full: str,
               token_update_filename)
     if not next_update_sec:
         return
-    curr_time = int(time.time())
+    curr_time = get_current_time_int()
     if curr_time <= next_update_sec:
         return
     create_shared_item_federation_token(base_dir, domain_full, True, None)
@@ -1970,7 +1971,7 @@ def _dfc_to_shares_format(catalog_json: {},
             _load_dfc_ids(base_dir, system_language, product_type,
                           http_prefix, domain_full)
 
-    curr_time = int(time.time())
+    curr_time = get_current_time_int()
     for item in catalog_json['DFC:supplies']:
         if not item.get('@id') or \
            not item.get('@type') or \

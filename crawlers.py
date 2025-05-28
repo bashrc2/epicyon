@@ -8,11 +8,11 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 import os
-import time
 from utils import data_dir
 from utils import save_json
 from utils import user_agent_domain
 from utils import remove_eol
+from timeFunctions import get_current_time_int
 from blocking import get_mil_domains_list
 from blocking import get_gov_domains_list
 from blocking import get_bsky_domains_list
@@ -34,7 +34,7 @@ def update_known_crawlers(ua_str: str,
     if not ua_str:
         return None
 
-    curr_time = int(time.time())
+    curr_time = get_current_time_int()
     if known_crawlers.get(ua_str):
         known_crawlers[ua_str]['hits'] += 1
         known_crawlers[ua_str]['lastseen'] = curr_time

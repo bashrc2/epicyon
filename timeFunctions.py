@@ -240,3 +240,9 @@ def get_published_date(post_json_object: {}) -> str:
     if not isinstance(published, str):
         return None
     return published
+
+
+def get_current_time_int() -> int:
+    """Returns the current time as an integer
+    """
+    return int(time.time())

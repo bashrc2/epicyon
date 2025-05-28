@@ -94,6 +94,7 @@ from flags import is_image_file
 from flags import is_artist
 from flags import is_blog_post
 from timeFunctions import date_utcnow
+from timeFunctions import get_current_time_int
 from utils import replace_strings
 from utils import contains_invalid_chars
 from utils import save_json
@@ -6449,7 +6450,7 @@ def _show_known_crawlers(self, calling_domain: str, path: str,
     if not is_moderator(base_dir, nickname):
         return False
     crawlers_list: list[str] = []
-    curr_time = int(time.time())
+    curr_time = get_current_time_int()
     recent_crawlers = 60 * 60 * 24 * 30
     for ua_str, item in known_crawlers.items():
         if item['lastseen'] - curr_time < recent_crawlers:

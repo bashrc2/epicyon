@@ -18,6 +18,7 @@ from flags import is_quote_toot
 from quote import get_quote_toot_url
 from timeFunctions import date_utcnow
 from timeFunctions import date_from_string_format
+from timeFunctions import get_current_time_int
 from utils import get_user_paths
 from utils import contains_statuses
 from utils import data_dir
@@ -674,7 +675,7 @@ def update_blocked_cache(base_dir: str,
                          blocked_cache_update_secs: int) -> int:
     """Updates the cache of globally blocked domains held in memory
     """
-    curr_time = int(time.time())
+    curr_time = get_current_time_int()
     if blocked_cache_last_updated > curr_time:
         print('WARN: Cache updated in the future')
         blocked_cache_last_updated = 0
