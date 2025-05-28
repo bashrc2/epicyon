@@ -10,7 +10,7 @@ __module_group__ = "Timeline"
 import os
 from flags import has_group_type
 from timeFunctions import get_account_timezone
-from utils import undo_announce_collection_entry
+from announce import undo_announce_collection_entry
 from utils import has_object_dict
 from utils import remove_domain_port
 from utils import remove_id_ending
