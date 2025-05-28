@@ -19,9 +19,9 @@ from utils import save_json
 from utils import locate_post
 from utils import remove_html
 from utils import has_object_dict
-from utils import date_utcnow
-from utils import date_epoch
-from utils import date_from_string_format
+from timeFunctions import date_epoch
+from timeFunctions import date_from_string_format
+from timeFunctions import date_utcnow
 from session import get_resolved_url
 
 

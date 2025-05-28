@@ -31,8 +31,8 @@ from city import get_spoofed_city
 from flags import is_image_file
 from flags import is_float
 from searchable import set_searchable_by
-from utils import date_utcnow
-from utils import date_from_string_format
+from timeFunctions import date_utcnow
+from timeFunctions import date_from_string_format
 from utils import get_instance_url
 from utils import save_json
 from utils import remove_post_from_cache

@@ -23,19 +23,19 @@ from newswire import get_dict_from_newswire
 # from posts import send_signed_json
 from posts import create_news_post
 from posts import archive_posts_for_person
-from utils import date_from_string_format
-from utils import date_utcnow
+from timeFunctions import date_from_string_format
+from timeFunctions import date_utcnow
 from utils import valid_hash_tag
 from utils import get_base_content_from_post
 from utils import remove_html
 from utils import get_full_domain
 from utils import load_json
 from utils import save_json
-from utils import get_status_number
 from utils import dangerous_markup
 from utils import local_actor_url
 from utils import text_in_file
 from utils import data_dir
+from status import get_status_number
 from session import create_session
 from threads import begin_thread
 from webapp_hashtagswarm import store_hash_tags

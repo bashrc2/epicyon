@@ -21,10 +21,7 @@ from utils import valid_nickname
 from utils import domain_permitted
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
-from utils import get_status_number
 from utils import follow_person
-from posts import send_signed_json
-from posts import get_person_box
 from utils import load_json
 from utils import save_json
 from utils import is_account_dir
@@ -34,6 +31,9 @@ from utils import text_in_file
 from utils import remove_eol
 from utils import get_actor_from_post
 from utils import data_dir
+from status import get_status_number
+from posts import send_signed_json
+from posts import get_person_box
 from acceptreject import create_accept
 from acceptreject import create_reject
 from webfinger import webfinger_handle

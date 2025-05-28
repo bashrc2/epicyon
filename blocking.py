@@ -16,12 +16,12 @@ from session import create_session
 from flags import is_evil
 from flags import is_quote_toot
 from quote import get_quote_toot_url
+from timeFunctions import date_utcnow
+from timeFunctions import date_from_string_format
 from utils import get_user_paths
 from utils import contains_statuses
 from utils import data_dir
 from utils import string_contains
-from utils import date_from_string_format
-from utils import date_utcnow
 from utils import remove_eol
 from utils import has_object_string
 from utils import has_object_string_object

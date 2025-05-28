@@ -41,6 +41,10 @@ from flags import contains_private_key
 from flags import has_group_type
 from flags import is_premium_account
 from flags import url_permitted
+from timeFunctions import date_utcnow
+from timeFunctions import date_from_string_format
+from timeFunctions import date_epoch
+from timeFunctions import valid_post_date
 from utils import resembles_url
 from utils import get_person_icon
 from utils import remove_post_from_index
@@ -50,9 +54,6 @@ from utils import get_actor_from_post_id
 from utils import string_contains
 from utils import get_post_attachments
 from utils import get_url_from_post
-from utils import date_from_string_format
-from utils import date_epoch
-from utils import date_utcnow
 from utils import get_attributed_to
 from utils import contains_statuses
 from utils import contains_invalid_actor_url_chars
@@ -76,10 +77,8 @@ from utils import reject_post_id
 from utils import remove_invalid_chars
 from utils import file_last_modified
 from utils import has_users_path
-from utils import valid_post_date
 from utils import get_full_domain
 from utils import get_followers_list
-from utils import get_status_number
 from utils import create_person_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
@@ -90,7 +89,6 @@ from utils import load_json
 from utils import save_json
 from utils import get_config_param
 from utils import locate_news_votes
-from utils import locate_news_arrival
 from utils import votes_on_newswire_item
 from utils import remove_html
 from utils import dangerous_markup
@@ -99,6 +97,7 @@ from utils import local_actor_url
 from utils import get_reply_to
 from utils import get_actor_from_post
 from utils import data_dir
+from status import get_status_number
 from media import get_music_metadata
 from media import attach_media
 from media import replace_you_tube
@@ -4840,6 +4839,39 @@ def remove_post_interactions(post_json_object: {}, force: bool) -> bool:
     return True
 
 
+def _locate_news_arrival(base_dir: str, domain: str,
+                         post_url: str) -> str:
+    """Returns the arrival time for a news post
+    within the news user account
+    """
+    post_url1 = post_url.strip()
+    post_url = remove_eol(post_url1)
+
+    # if this post in the shared inbox?
+    post_url = remove_id_ending(post_url.strip()).replace('/', '#')
+
+    if post_url.endswith('.json'):
+        post_url = post_url + '.arrived'
+    else:
+        post_url = post_url + '.json.arrived'
+
+    account_dir = data_dir(base_dir) + '/news@' + domain + '/'
+    post_filename = account_dir + 'outbox/' + post_url
+    if os.path.isfile(post_filename):
+        try:
+            with open(post_filename, 'r', encoding='utf-8') as fp_arrival:
+                arrival = fp_arrival.read()
+                if arrival:
+                    arrival_date = \
+                        date_from_string_format(arrival,
+                                                ["%Y-%m-%dT%H:%M:%S%z"])
+                    return arrival_date
+        except OSError:
+            print('EX: _locate_news_arrival unable to read ' + post_filename)
+
+    return None
+
+
 def _passed_newswire_voting(newswire_votes_threshold: int,
                             base_dir: str, domain: str,
                             post_filename: str,
@@ -4853,7 +4885,7 @@ def _passed_newswire_voting(newswire_votes_threshold: int,
     # note that the presence of an arrival file also indicates
     # that this post is moderated
     arrival_date = \
-        locate_news_arrival(base_dir, domain, post_filename)
+        _locate_news_arrival(base_dir, domain, post_filename)
     if not arrival_date:
         return True
     # how long has elapsed since this post arrived?

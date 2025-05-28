@@ -20,13 +20,13 @@ from httpheaders import clear_login_details
 from flags import is_artist
 from flags import is_memorial_account
 from flags import is_premium_account
+from timeFunctions import get_account_timezone
+from timeFunctions import set_account_timezone
 from utils import data_dir
 from utils import set_premium_account
 from utils import save_json
 from utils import save_reverse_timeline
 from utils import set_minimize_all_images
-from utils import set_account_timezone
-from utils import get_account_timezone
 from utils import set_memorials
 from utils import get_memorials
 from utils import license_link_from_name

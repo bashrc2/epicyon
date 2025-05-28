@@ -16,11 +16,11 @@ from webapp_utils import html_footer
 from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
+from timeFunctions import date_from_string_format
 from utils import replace_strings
 from utils import data_dir
 from utils import remove_link_tracking
 from utils import get_url_from_post
-from utils import date_from_string_format
 from utils import get_attributed_to
 from utils import remove_eol
 from utils import text_in_file

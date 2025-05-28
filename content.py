@@ -15,6 +15,7 @@ import email.parser
 import urllib.parse
 from shutil import copyfile
 from dateutil.parser import parse
+from timeFunctions import convert_published_to_local_timezone
 from flags import is_pgp_encrypted
 from flags import contains_pgp_public_key
 from flags import is_float
@@ -31,7 +32,6 @@ from utils import binary_is_image
 from utils import get_content_from_post
 from utils import get_full_domain
 from utils import get_user_paths
-from utils import convert_published_to_local_timezone
 from utils import has_object_dict
 from utils import valid_hash_tag
 from utils import dangerous_svg

@@ -26,9 +26,9 @@ from utils import load_json
 from utils import save_json
 from utils import get_file_case_insensitive
 from utils import get_user_paths
-from utils import date_utcnow
-from utils import date_from_string_format
 from utils import get_image_extensions
+from timeFunctions import date_from_string_format
+from timeFunctions import date_utcnow
 from content import remove_script
 
 

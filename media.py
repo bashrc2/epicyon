@@ -15,8 +15,8 @@ import random
 from random import randint
 from hashlib import sha1
 from auth import create_password
-from utils import date_epoch
-from utils import date_utcnow
+from timeFunctions import date_utcnow
+from timeFunctions import date_epoch
 from utils import safe_system_string
 from utils import get_base_content_from_post
 from utils import get_full_domain

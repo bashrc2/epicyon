@@ -15,7 +15,7 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_full_domain
 from utils import local_actor_url
-from utils import get_status_number
+from status import get_status_number
 from follow import unfollow_account
 from follow import send_follow_request
 from follow import remove_follower

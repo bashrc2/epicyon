@@ -14,6 +14,7 @@ import time
 import random
 from shutil import copyfile
 from linked_data_sig import verify_json_signature
+from flags import can_reply_to
 from flags import is_system_account
 from flags import is_blog_post
 from flags import is_recent_post
@@ -24,20 +25,19 @@ from flags import is_quote_toot
 from flags import url_permitted
 from quote import quote_toots_allowed
 from mitm import save_mitm_servers
+from timeFunctions import date_utcnow
+from timeFunctions import date_epoch
+from timeFunctions import get_account_timezone
 from utils import harmless_markup
 from utils import lines_in_file
-from utils import date_epoch
-from utils import date_utcnow
 from utils import contains_statuses
 from utils import get_actor_from_post_id
 from utils import acct_handle_dir
 from utils import text_in_file
 from utils import get_media_descriptions_from_post
 from utils import get_summary_from_post
-from utils import get_account_timezone
 from utils import domain_permitted
 from utils import get_reply_interval_hours
-from utils import can_reply_to
 from utils import get_base_content_from_post
 from utils import acct_dir
 from utils import remove_domain_port
@@ -49,7 +49,6 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
 from utils import create_inbox_queue_dir
-from utils import get_status_number
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import locate_post
@@ -63,6 +62,7 @@ from utils import get_actor_from_post
 from utils import data_dir
 from utils import is_dm
 from utils import has_actor
+from status import get_status_number
 from httpsig import get_digest_algorithm_from_headers
 from httpsig import verify_post_headers
 from session import create_session

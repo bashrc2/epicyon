@@ -45,7 +45,6 @@ from utils import contains_statuses
 from utils import data_dir
 from utils import get_post_attachments
 from utils import get_url_from_post
-from utils import date_from_string_format
 from utils import remove_markup_tag
 from utils import ap_proxy_type
 from utils import remove_style_within_html
@@ -54,7 +53,8 @@ from utils import dont_speak_hashtags
 from utils import remove_eol
 from utils import disallow_announce
 from utils import disallow_reply
-from utils import convert_published_to_local_timezone
+from timeFunctions import date_from_string_format
+from timeFunctions import convert_published_to_local_timezone
 from utils import remove_hash_from_post_id
 from utils import remove_html
 from utils import get_actor_languages_list

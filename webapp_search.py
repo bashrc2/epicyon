@@ -13,11 +13,11 @@ import urllib.parse
 from flags import is_editor
 from flags import is_public_post
 from searchable import search_box_posts
+from timeFunctions import date_from_string_format
 from utils import get_person_icon
 from utils import data_dir
 from utils import get_post_attachments
 from utils import get_url_from_post
-from utils import date_from_string_format
 from utils import get_attributed_to
 from utils import get_actor_from_post_id
 from utils import remove_html

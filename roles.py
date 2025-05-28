@@ -11,11 +11,11 @@ import os
 from utils import data_dir
 from utils import load_json
 from utils import save_json
-from utils import get_status_number
 from utils import remove_domain_port
 from utils import acct_dir
 from utils import text_in_file
 from utils import get_config_param
+from status import get_status_number
 
 
 def _clear_role_status(base_dir: str, role: str) -> None:

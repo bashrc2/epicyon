@@ -18,14 +18,14 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
 from utils import load_json
-from utils import week_day_of_month_start
 from utils import get_alt_path
 from utils import remove_domain_port
 from utils import acct_dir
 from utils import local_actor_url
 from utils import replace_users_with_at
 from utils import language_right_to_left
-from utils import date_from_string_format
+from timeFunctions import week_day_of_month_start
+from timeFunctions import date_from_string_format
 from happening import get_todays_events
 from happening import get_calendar_events
 from happening import get_todays_events_icalendar

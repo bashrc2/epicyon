@@ -13,11 +13,11 @@ from webapp_conversation import html_conversation_view
 from flags import is_public_post_from_url
 from flags import is_public_post
 from flags import is_premium_account
+from flags import can_reply_to
 from utils import get_instance_url
 from utils import local_actor_url
 from utils import locate_post
 from utils import get_config_param
-from utils import can_reply_to
 from utils import get_nickname_from_actor
 from utils import get_new_post_endpoints
 from utils import acct_dir

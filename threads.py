@@ -11,7 +11,7 @@ import threading
 import sys
 import time
 from socket import error as SocketError
-from utils import date_utcnow
+from timeFunctions import date_utcnow
 
 
 class thread_with_trace(threading.Thread):

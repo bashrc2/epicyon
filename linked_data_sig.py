@@ -21,7 +21,7 @@ from cryptography.hazmat.primitives.asymmetric import utils as hazutils
 from pyjsonld import normalize
 from context import has_valid_context
 from utils import get_sha_256
-from utils import date_utcnow
+from timeFunctions import date_utcnow
 
 
 def _options_hash(doc: {}) -> str:

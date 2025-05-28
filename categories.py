@@ -9,9 +9,9 @@ __module_group__ = "RSS Feeds"
 
 import os
 import datetime
+from timeFunctions import date_utcnow
+from timeFunctions import date_epoch
 from utils import data_dir
-from utils import date_utcnow
-from utils import date_epoch
 from utils import replace_strings
 
 MAX_TAG_LENGTH = 42

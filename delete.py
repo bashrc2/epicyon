@@ -9,7 +9,6 @@ __module_group__ = "ActivityPub"
 
 import os
 from datetime import datetime, timezone
-from utils import date_from_numbers
 from utils import has_object_string
 from utils import remove_domain_port
 from utils import has_users_path
@@ -21,9 +20,10 @@ from utils import locate_post
 from utils import delete_post
 from utils import remove_moderation_post_from_index
 from utils import local_actor_url
-from utils import date_utcnow
-from utils import date_epoch
 from utils import get_actor_from_post
+from timeFunctions import date_epoch
+from timeFunctions import date_from_numbers
+from timeFunctions import date_utcnow
 from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header

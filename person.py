@@ -38,12 +38,12 @@ from roles import actor_roles_from_list
 from roles import get_actor_roles_list
 from media import process_meta_data
 from flags import is_image_file
+from timeFunctions import date_utcnow
 from utils import get_person_icon
 from utils import account_is_indexable
 from utils import get_image_mime_type
 from utils import get_instance_url
 from utils import get_url_from_post
-from utils import date_utcnow
 from utils import get_memorials
 from utils import is_account_dir
 from utils import valid_hash_tag
@@ -57,7 +57,6 @@ from utils import contains_invalid_actor_url_chars
 from utils import replace_users_with_at
 from utils import remove_eol
 from utils import remove_domain_port
-from utils import get_status_number
 from utils import get_full_domain
 from utils import valid_nickname
 from utils import load_json
@@ -77,6 +76,7 @@ from utils import text_in_file
 from utils import contains_statuses
 from utils import get_actor_from_post
 from utils import data_dir
+from status import get_status_number
 from session import get_json_valid
 from session import create_session
 from session import get_json

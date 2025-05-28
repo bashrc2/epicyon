@@ -11,7 +11,7 @@ import os
 from flags import is_system_account
 from utils import get_domain_from_actor
 from utils import get_config_param
-from utils import get_account_timezone
+from timeFunctions import get_account_timezone
 from person import person_box_json
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer

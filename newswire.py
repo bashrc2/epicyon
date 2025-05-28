@@ -17,7 +17,7 @@ import errno
 from datetime import timedelta
 from datetime import timezone
 from collections import OrderedDict
-from utils import valid_post_date
+from timeFunctions import valid_post_date
 from categories import set_hashtag_category
 from flags import is_suspended
 from flags import is_local_network_address
@@ -28,7 +28,6 @@ from utils import image_mime_types_dict
 from utils import resembles_url
 from utils import get_url_from_post
 from utils import remove_zero_length_strings
-from utils import date_from_string_format
 from utils import acct_handle_dir
 from utils import remove_eol
 from utils import get_domain_from_actor
@@ -48,6 +47,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import escape_text
 from utils import unescaped_text
+from timeFunctions import date_from_string_format
 from blocking import is_blocked_domain
 from blocking import is_blocked_hashtag
 from filters import is_filtered

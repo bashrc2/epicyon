@@ -20,8 +20,8 @@ from utils import load_json
 from utils import save_json
 from utils import remove_html
 from utils import get_image_extensions
-from utils import date_epoch
-from utils import date_from_string_format
+from timeFunctions import date_epoch
+from timeFunctions import date_from_string_format
 
 
 def get_book_link_from_content(content: str) -> str:

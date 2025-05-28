@@ -93,7 +93,7 @@ from flags import is_corporate
 from flags import is_image_file
 from flags import is_artist
 from flags import is_blog_post
-from utils import date_utcnow
+from timeFunctions import date_utcnow
 from utils import replace_strings
 from utils import contains_invalid_chars
 from utils import save_json

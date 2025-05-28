@@ -13,6 +13,7 @@ from flags import is_recent_post
 from flags import is_quote_toot
 from status import actor_status_expired
 from quote import get_quote_toot_url
+from timeFunctions import get_account_timezone
 from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
 from utils import get_attributed_to
@@ -30,7 +31,6 @@ from utils import has_users_path
 from utils import has_object_string_type
 from utils import get_config_param
 from utils import acct_dir
-from utils import get_account_timezone
 from utils import is_dm
 from utils import delete_cached_html
 from utils import harmless_markup

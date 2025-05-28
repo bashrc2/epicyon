@@ -18,7 +18,7 @@ from utils import load_json
 from utils import get_config_param
 from utils import get_alt_path
 from utils import acct_dir
-from utils import get_account_timezone
+from timeFunctions import get_account_timezone
 from blocking import sending_is_blocked2
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style

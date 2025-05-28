@@ -50,13 +50,13 @@ from categories import load_city_hashtags
 from categories import update_hashtag_categories
 from languages import load_default_post_languages
 from searchable import load_searchable_by_default
+from timeFunctions import load_account_timezones
 from utils import set_accounts_data_dir
 from utils import data_dir
 from utils import check_bad_path
 from utils import acct_handle_dir
 from utils import load_reverse_timeline
 from utils import load_min_images_for_accounts
-from utils import load_account_timezones
 from utils import load_translations_from_file
 from utils import load_bold_reading
 from utils import load_hide_follows

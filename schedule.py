@@ -10,16 +10,16 @@ __module_group__ = "Calendar"
 import os
 import time
 from utils import data_dir
-from utils import date_from_string_format
-from utils import date_epoch
+from timeFunctions import date_from_string_format
+from timeFunctions import date_epoch
 from utils import acct_handle_dir
 from utils import has_object_dict
-from utils import get_status_number
 from utils import load_json
 from utils import is_account_dir
 from utils import acct_dir
 from utils import remove_eol
-from utils import date_utcnow
+from status import get_status_number
+from timeFunctions import date_utcnow
 from outbox import post_message_to_outbox
 from session import create_session
 from threads import begin_thread

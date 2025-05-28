@@ -10,12 +10,12 @@ __module_group__ = "ActivityPub"
 import os
 from utils import locate_post
 from utils import get_config_param
-from utils import get_account_timezone
 from utils import get_display_name
 from utils import get_nickname_from_actor
 from utils import has_object_dict
 from utils import load_json
 from utils import get_actor_from_post
+from timeFunctions import get_account_timezone
 from person import get_person_avatar_url
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer

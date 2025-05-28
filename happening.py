@@ -16,8 +16,6 @@ from flags import is_reminder
 from flags import is_public_post
 from utils import resembles_url
 from utils import replace_strings
-from utils import date_from_numbers
-from utils import date_from_string_format
 from utils import acct_handle_dir
 from utils import load_json
 from utils import save_json
@@ -27,10 +25,12 @@ from utils import acct_dir
 from utils import remove_html
 from utils import get_display_name
 from utils import delete_post
-from utils import get_status_number
 from utils import get_full_domain
 from utils import text_in_file
 from utils import remove_eol
+from status import get_status_number
+from timeFunctions import date_from_string_format
+from timeFunctions import date_from_numbers
 from filters import is_filtered
 from context import get_individual_post_context
 from session import get_method

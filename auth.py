@@ -18,7 +18,7 @@ from utils import data_dir
 from utils import has_users_path
 from utils import text_in_file
 from utils import remove_eol
-from utils import date_utcnow
+from timeFunctions import date_utcnow
 
 
 def _hash_password(password: str) -> str:

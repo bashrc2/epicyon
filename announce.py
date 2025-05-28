@@ -12,6 +12,7 @@ __module_group__ = "ActivityPub"
 import os
 from flags import has_group_type
 from flags import url_permitted
+from status import get_status_number
 from utils import text_in_file
 from utils import get_user_paths
 from utils import has_object_string_object
@@ -20,7 +21,6 @@ from utils import remove_domain_port
 from utils import remove_id_ending
 from utils import has_users_path
 from utils import get_full_domain
-from utils import get_status_number
 from utils import create_outbox_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor

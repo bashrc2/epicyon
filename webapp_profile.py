@@ -24,7 +24,6 @@ from unicodetext import standardize_text
 from utils import get_person_icon
 from utils import replace_strings
 from utils import data_dir
-from utils import time_days_ago
 from utils import get_attributed_to
 from utils import get_url_from_post
 from utils import get_memorials
@@ -47,10 +46,11 @@ from utils import acct_dir
 from utils import get_supported_languages
 from utils import local_actor_url
 from utils import get_reply_interval_hours
-from utils import get_account_timezone
 from utils import remove_eol
 from utils import get_actor_from_post
 from utils import resembles_url
+from timeFunctions import time_days_ago
+from timeFunctions import get_account_timezone
 from languages import get_actor_languages
 from skills import get_skills
 from theme import get_themes_list

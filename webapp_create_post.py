@@ -26,10 +26,10 @@ from utils import get_config_param
 from utils import acct_dir
 from utils import get_currencies
 from utils import get_category_types
-from utils import get_account_timezone
 from utils import get_supported_languages
 from utils import get_attributed_to
 from utils import get_full_domain
+from timeFunctions import get_account_timezone
 from blocking import sending_is_blocked2
 from webapp_utils import open_content_warning
 from webapp_utils import edit_check_box

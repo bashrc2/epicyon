@@ -18,12 +18,12 @@ from posts import send_to_named_addresses_thread
 from flags import is_featured_writer
 from flags import is_quote_toot
 from quote import quote_toots_allowed
+from timeFunctions import get_account_timezone
 from utils import data_dir
 from utils import get_post_attachments
 from utils import get_attributed_to
 from utils import contains_invalid_actor_url_chars
 from utils import get_attachment_property_value
-from utils import get_account_timezone
 from utils import has_object_string_type
 from utils import get_base_content_from_post
 from utils import has_object_dict

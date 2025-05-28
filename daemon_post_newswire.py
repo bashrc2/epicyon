@@ -16,12 +16,12 @@ from utils import data_dir
 from utils import remove_id_ending
 from utils import save_json
 from utils import first_paragraph_from_string
-from utils import date_from_string_format
 from utils import load_json
 from utils import locate_post
 from utils import acct_dir
 from utils import get_instance_url
 from utils import get_nickname_from_actor
+from timeFunctions import date_from_string_format
 from httpheaders import redirect_headers
 from posts import is_moderator
 from content import extract_text_fields_in_post

@@ -14,7 +14,7 @@ import time
 from posts import send_signed_json
 from flags import has_group_type
 from flags import url_permitted
-from utils import get_status_number
+from status import get_status_number
 from utils import get_attributed_to
 from utils import get_user_paths
 from utils import text_in_file

@@ -10,20 +10,20 @@ __module_group__ = "Web Interface"
 import os
 from datetime import datetime, timezone
 from flags import is_public_post
+from timeFunctions import date_utcnow
+from timeFunctions import date_from_string_format
+from timeFunctions import date_epoch
 from utils import valid_hash_tag
 from utils import remove_id_ending
 from utils import resembles_url
 from utils import has_object_dict
 from utils import local_actor_url
-from utils import date_from_string_format
 from utils import file_last_modified
 from utils import acct_dir
 from utils import data_dir
 from utils import get_nickname_from_actor
 from utils import get_config_param
 from utils import escape_text
-from utils import date_utcnow
-from utils import date_epoch
 from utils import string_contains
 from delete import remove_old_hashtags
 from maps import get_category_from_post

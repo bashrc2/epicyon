@@ -9,9 +9,11 @@ __module_group__ = "Core"
 
 import os
 import re
+from timeFunctions import date_utcnow
+from timeFunctions import get_published_date
+from timeFunctions import date_from_string_format
+from timeFunctions import date_epoch
 from utils import acct_dir
-from utils import date_utcnow
-from utils import date_epoch
 from utils import data_dir
 from utils import get_config_param
 from utils import get_image_extensions
@@ -23,7 +25,6 @@ from utils import has_object_dict
 from utils import locate_post
 from utils import load_json
 from utils import has_object_string_type
-from utils import date_from_string_format
 from utils import get_reply_to
 from utils import text_in_file
 from utils import get_group_paths
@@ -636,3 +637,46 @@ def is_corporate(server_name: str) -> bool:
        'github' in server_lower:
         return True
     return False
+
+
+def can_reply_to(base_dir: str, nickname: str, domain: str,
+                 post_url: str, reply_interval_hours: int,
+                 curr_date_str: str = None,
+                 post_json_object: {} = None) -> bool:
+    """Is replying to the given local post permitted?
+    This is a spam mitigation feature, so that spammers can't
+    add a lot of replies to old post which you don't notice.
+    """
+    if '/statuses/' not in post_url:
+        return True
+    if not post_json_object:
+        post_filename = locate_post(base_dir, nickname, domain, post_url)
+        if not post_filename:
+            # the post is not stored locally
+            return True
+        post_json_object = load_json(post_filename)
+    if not post_json_object:
+        return False
+    published = get_published_date(post_json_object)
+    if not published:
+        return False
+
+    pub_date = date_from_string_format(published, ['%Y-%m-%dT%H:%M:%S%z'])
+    if not pub_date:
+        print('EX: can_reply_to unrecognized published date ' + str(published))
+        return False
+    if not curr_date_str:
+        curr_date = date_utcnow()
+    else:
+        curr_date = \
+            date_from_string_format(curr_date_str, ['%Y-%m-%dT%H:%M:%S%z'])
+        if not curr_date:
+            print('EX: can_reply_to unrecognized current date ' +
+                  str(curr_date_str))
+            return False
+    hours_since_publication = \
+        int((curr_date - pub_date).total_seconds() / 3600)
+    if hours_since_publication < 0 or \
+       hours_since_publication >= reply_interval_hours:
+        return False
+    return True

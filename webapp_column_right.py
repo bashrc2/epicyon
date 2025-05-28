@@ -24,7 +24,7 @@ from utils import get_nickname_from_actor
 from utils import get_config_param
 from utils import remove_domain_port
 from utils import acct_dir
-from utils import date_from_string_format
+from timeFunctions import date_from_string_format
 from posts import is_moderator
 from newswire import get_newswire_favicon_url
 from webapp_utils import get_right_image_file

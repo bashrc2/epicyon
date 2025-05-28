@@ -18,10 +18,10 @@ from utils import get_occupation_skills
 from utils import get_url_from_post
 from utils import safe_system_string
 from utils import get_full_domain
-from utils import get_status_number
 from utils import local_actor_url
 from utils import replace_users_with_at
 from utils import remove_html
+from status import get_status_number
 from webfinger import webfinger_handle
 from posts import get_person_box
 from auth import create_basic_auth_header

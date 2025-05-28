@@ -9,6 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 from flags import has_group_type
+from timeFunctions import get_account_timezone
 from utils import undo_announce_collection_entry
 from utils import has_object_dict
 from utils import remove_domain_port
@@ -16,7 +17,6 @@ from utils import remove_id_ending
 from utils import get_url_from_post
 from utils import undo_reaction_collection_entry
 from utils import remove_html
-from utils import get_account_timezone
 from utils import is_dm
 from utils import get_cached_post_filename
 from utils import load_json
