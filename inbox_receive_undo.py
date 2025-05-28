@@ -15,7 +15,6 @@ from utils import has_object_dict
 from utils import remove_domain_port
 from utils import remove_id_ending
 from utils import get_url_from_post
-from utils import undo_reaction_collection_entry
 from utils import remove_html
 from utils import is_dm
 from utils import get_cached_post_filename
@@ -35,6 +34,7 @@ from follow import unfollower_of_account
 from follow import follower_approval_active
 from bookmarks import undo_bookmarks_collection_entry
 from webapp_post import individual_post_as_html
+from reaction import undo_reaction_collection_entry
 
 
 def _receive_undo_follow(base_dir: str, message_json: {},

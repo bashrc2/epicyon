@@ -11,7 +11,6 @@ __module_group__ = "Daemon GET"
 
 import os
 import urllib.parse
-from utils import undo_reaction_collection_entry
 from utils import get_cached_post_filename
 from utils import load_json
 from utils import locate_post
@@ -26,6 +25,7 @@ from httpcodes import http_404
 from posts import get_original_post_from_announce_url
 from daemon_utils import post_to_outbox
 from fitnessFunctions import fitness_performance
+from reaction import undo_reaction_collection_entry
 from reaction import update_reaction_collection
 from follow import follower_approval_active
 from webapp_post import individual_post_as_html
