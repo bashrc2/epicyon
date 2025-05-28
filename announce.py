@@ -711,3 +711,64 @@ def update_announce_collection(recent_posts_cache: {},
         print('DEBUG: saving post with shares (announcements) added')
         pprint(post_json_object)
     save_json(post_json_object, post_filename)
+
+
+def disallow_announce(content: str, attachment: [], capabilities: {}) -> bool:
+    """Are announces/boosts not allowed for the given post?
+    """
+    # pixelfed style capabilities
+    if capabilities:
+        if 'announce' in capabilities:
+            if isinstance(capabilities['announce'], str):
+                if not capabilities['announce'].endswith('#Public'):
+                    # TODO handle non-public announce permissions
+                    print('CAPABILITIES: announce ' + capabilities['announce'])
+                    return True
+        else:
+            # capabilities exist but with no announce defined
+            return True
+
+    # emojis
+    disallow_strings = (
+        ':boost_no:',
+        ':noboost:',
+        ':noboosts:',
+        ':no_boost:',
+        ':no_boosts:',
+        ':boosts_no:',
+        'dont_repeat',
+        'dont_announce',
+        'dont_boost',
+        'do not boost',
+        "don't boost",
+        'boost_denied',
+        'boosts_denied',
+        'boostdenied',
+        'boostsdenied'
+    )
+    content_lower = content.lower()
+    for diss in disallow_strings:
+        if diss in content_lower:
+            return True
+
+    # check for attached images without descriptions
+    if isinstance(attachment, list):
+        for item in attachment:
+            if not isinstance(item, dict):
+                continue
+            if not item.get('mediaType'):
+                continue
+            if not item.get('url'):
+                continue
+            if not item['mediaType'].startswith('image/'):
+                continue
+            if not item.get('name'):
+                # no image description
+                return True
+            image_description = item['name']
+            if not isinstance(image_description, str):
+                continue
+            if len(image_description) < 5:
+                # not enough description
+                return True
+    return False

@@ -25,7 +25,6 @@ from utils import get_attributed_to
 from utils import remove_html
 from utils import safe_system_string
 from utils import text_in_file
-from utils import disallow_announce
 from utils import disallow_reply
 from utils import get_base_content_from_post
 from utils import has_object_dict
@@ -60,6 +59,7 @@ from posts import c2s_box_json
 from posts import download_announce
 from announce import send_announce_via_server
 from announce import send_undo_announce_via_server
+from announce import disallow_announce
 from pgp import pgp_local_public_key
 from pgp import pgp_decrypt
 from pgp import has_local_pg_pkey

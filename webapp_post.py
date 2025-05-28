@@ -20,6 +20,7 @@ from bookmarks import bookmarked_by_person
 from announce import update_announce_collection
 from announce import announced_by_person
 from announce import no_of_announces
+from announce import disallow_announce
 from like import liked_by_person
 from like import no_of_likes
 from follow import is_following_actor
@@ -54,7 +55,6 @@ from utils import remove_style_within_html
 from utils import license_link_from_name
 from utils import dont_speak_hashtags
 from utils import remove_eol
-from utils import disallow_announce
 from utils import disallow_reply
 from utils import remove_hash_from_post_id
 from utils import remove_html
