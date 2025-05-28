@@ -2042,33 +2042,34 @@ def delete_cached_html(base_dir: str, nickname: str, domain: str,
     """
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
-    if cached_post_filename:
-        if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
-            except OSError:
-                print('EX: delete_cached_html ' +
-                      'unable to delete cached post file ' +
-                      str(cached_post_filename))
+    if not cached_post_filename:
+        return
+    if os.path.isfile(cached_post_filename):
+        try:
+            os.remove(cached_post_filename)
+        except OSError:
+            print('EX: delete_cached_html ' +
+                  'unable to delete cached post file ' +
+                  str(cached_post_filename))
 
-        cached_post_filename = cached_post_filename.replace('.html', '.ssml')
-        if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
-            except OSError:
-                print('EX: delete_cached_html ' +
-                      'unable to delete cached ssml post file ' +
-                      str(cached_post_filename))
+    cached_post_filename = cached_post_filename.replace('.html', '.ssml')
+    if os.path.isfile(cached_post_filename):
+        try:
+            os.remove(cached_post_filename)
+        except OSError:
+            print('EX: delete_cached_html ' +
+                  'unable to delete cached ssml post file ' +
+                  str(cached_post_filename))
 
-        cached_post_filename = \
-            cached_post_filename.replace('/postcache/', '/outbox/')
-        if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
-            except OSError:
-                print('EX: delete_cached_html ' +
-                      'unable to delete cached outbox ssml post file ' +
-                      str(cached_post_filename))
+    cached_post_filename = \
+        cached_post_filename.replace('/postcache/', '/outbox/')
+    if os.path.isfile(cached_post_filename):
+        try:
+            os.remove(cached_post_filename)
+        except OSError:
+            print('EX: delete_cached_html ' +
+                  'unable to delete cached outbox ssml post file ' +
+                  str(cached_post_filename))
 
 
 def _remove_post_id_from_tag_index(tag_index_filename: str,
