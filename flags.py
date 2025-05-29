@@ -18,7 +18,6 @@ from utils import get_domain_from_actor
 from utils import acct_dir
 from utils import data_dir
 from utils import get_config_param
-from utils import get_image_extensions
 from utils import evil_incarnate
 from utils import get_local_network_addresses
 from utils import get_attributed_to
@@ -30,6 +29,7 @@ from utils import has_object_string_type
 from utils import get_reply_to
 from utils import text_in_file
 from utils import get_group_paths
+from formats import get_image_extensions
 from quote import get_quote_toot_url
 
 

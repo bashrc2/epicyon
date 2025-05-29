@@ -36,7 +36,6 @@ from utils import has_object_dict
 from utils import valid_hash_tag
 from utils import dangerous_svg
 from utils import remove_domain_port
-from utils import get_image_extensions
 from utils import load_json
 from utils import save_json
 from utils import file_last_modified
@@ -46,6 +45,7 @@ from utils import acct_dir
 from utils import get_currencies
 from utils import remove_html
 from utils import remove_eol
+from formats import get_image_extensions
 from petnames import get_pet_name
 from session import download_image
 

@@ -12,10 +12,10 @@ import time
 import filecmp
 from shutil import copyfile
 from utils import data_dir
-from utils import get_image_extensions
 from utils import get_config_param
 from utils import no_of_accounts
 from utils import get_nickname_validation_pattern
+from formats import get_image_extensions
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer

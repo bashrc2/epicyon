@@ -20,13 +20,13 @@ from timeFunctions import date_epoch
 from utils import safe_system_string
 from utils import get_base_content_from_post
 from utils import get_full_domain
-from utils import get_image_extensions
-from utils import get_video_extensions
-from utils import get_audio_extensions
-from utils import get_media_extensions
 from utils import has_object_dict
 from utils import acct_dir
 from utils import get_watermark_file
+from formats import get_media_extensions
+from formats import get_image_extensions
+from formats import get_audio_extensions
+from formats import get_video_extensions
 from shutil import copyfile
 from shutil import rmtree
 from shutil import move

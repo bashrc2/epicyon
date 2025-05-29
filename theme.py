@@ -17,7 +17,6 @@ from utils import string_ends_with
 from utils import is_account_dir
 from utils import load_json
 from utils import save_json
-from utils import get_image_extensions
 from utils import copytree
 from utils import acct_dir
 from utils import dangerous_svg
@@ -26,6 +25,7 @@ from utils import remove_html
 from utils import text_in_file
 from utils import remove_eol
 from utils import language_right_to_left
+from formats import get_image_extensions
 from content import dangerous_css
 from textmode import set_text_mode_theme
 

@@ -19,7 +19,6 @@ from utils import get_image_file
 from utils import data_dir
 from utils import string_contains
 from utils import get_post_attachments
-from utils import image_mime_types_dict
 from utils import get_url_from_post
 from utils import get_media_url_from_video
 from utils import get_attributed_to
@@ -37,14 +36,15 @@ from utils import get_config_param
 from utils import acct_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
-from utils import get_audio_extensions
-from utils import get_video_extensions
-from utils import get_image_extensions
 from utils import local_actor_url
 from utils import text_in_file
 from utils import remove_eol
 from utils import binary_is_image
 from utils import resembles_url
+from formats import image_mime_types_dict
+from formats import get_image_extensions
+from formats import get_audio_extensions
+from formats import get_video_extensions
 from filters import is_filtered
 from cache import get_actor_public_key_from_id
 from cache import store_person_in_cache

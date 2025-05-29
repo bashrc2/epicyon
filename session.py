@@ -18,8 +18,8 @@ from flags import url_permitted
 from utils import text_in_file
 from utils import acct_dir
 from utils import binary_is_image
-from utils import image_mime_types_dict
 from utils import get_domain_from_actor
+from formats import image_mime_types_dict
 from mitm import detect_mitm
 from httpsig import create_signed_header
 

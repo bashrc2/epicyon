@@ -32,7 +32,6 @@ from utils import is_account_dir
 from utils import remove_html
 from utils import get_config_param
 from utils import get_full_domain
-from utils import get_media_formats
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import locate_post
@@ -41,6 +40,7 @@ from utils import first_paragraph_from_string
 from utils import get_actor_property_url
 from utils import acct_dir
 from utils import escape_text
+from formats import get_media_formats
 from posts import create_blogs_timeline
 from newswire import rss2header
 from newswire import rss2footer

@@ -24,7 +24,6 @@ from flags import is_local_network_address
 from flags import is_public_post
 from utils import data_dir
 from utils import string_contains
-from utils import image_mime_types_dict
 from utils import resembles_url
 from utils import get_url_from_post
 from utils import remove_zero_length_strings
@@ -47,6 +46,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import escape_text
 from utils import unescaped_text
+from formats import image_mime_types_dict
 from timeFunctions import date_from_string_format
 from blocking import is_blocked_domain
 from blocking import is_blocked_hashtag

@@ -63,7 +63,6 @@ from utils import remove_eol
 from utils import text_in_file
 from utils import get_media_descriptions_from_post
 from utils import valid_hash_tag
-from utils import get_audio_extensions
 from utils import get_summary_from_post
 from utils import get_user_paths
 from utils import has_object_string_type
@@ -97,6 +96,7 @@ from utils import local_actor_url
 from utils import get_reply_to
 from utils import get_actor_from_post
 from utils import data_dir
+from formats import get_audio_extensions
 from status import get_status_number
 from media import get_music_metadata
 from media import attach_media

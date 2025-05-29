@@ -14,10 +14,10 @@ from utils import data_dir
 from utils import remove_html
 from utils import load_json
 from utils import get_config_param
-from utils import get_image_extensions
-from utils import get_image_formats
 from utils import acct_dir
 from utils import local_actor_url
+from formats import get_image_formats
+from formats import get_image_extensions
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import edit_text_field

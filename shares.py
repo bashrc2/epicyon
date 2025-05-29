@@ -33,7 +33,6 @@ from utils import data_dir
 from utils import resembles_url
 from utils import dangerous_markup
 from utils import remove_html
-from utils import get_media_extensions
 from utils import acct_handle_dir
 from utils import remove_eol
 from utils import has_object_string_type
@@ -42,7 +41,8 @@ from utils import get_full_domain
 from utils import valid_nickname
 from utils import load_json
 from utils import save_json
-from utils import get_image_extensions
+from formats import get_media_extensions
+from formats import get_image_extensions
 from utils import remove_domain_port
 from utils import is_account_dir
 from utils import acct_dir

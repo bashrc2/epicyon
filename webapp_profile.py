@@ -41,7 +41,6 @@ from utils import get_domain_from_actor
 from utils import remove_html
 from utils import load_json
 from utils import get_config_param
-from utils import get_image_formats
 from utils import acct_dir
 from utils import get_supported_languages
 from utils import local_actor_url
@@ -49,6 +48,7 @@ from utils import get_reply_interval_hours
 from utils import remove_eol
 from utils import get_actor_from_post
 from utils import resembles_url
+from formats import get_image_formats
 from timeFunctions import time_days_ago
 from timeFunctions import get_account_timezone
 from languages import get_actor_languages

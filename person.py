@@ -42,7 +42,6 @@ from timeFunctions import date_utcnow
 from timeFunctions import get_current_time_int
 from utils import get_person_icon
 from utils import account_is_indexable
-from utils import get_image_mime_type
 from utils import get_instance_url
 from utils import get_url_from_post
 from utils import get_memorials
@@ -67,7 +66,6 @@ from utils import get_config_param
 from utils import refresh_newswire
 from utils import get_protocol_prefixes
 from utils import has_users_path
-from utils import get_image_extensions
 from utils import acct_dir
 from utils import get_user_paths
 from utils import get_group_paths
@@ -77,6 +75,8 @@ from utils import text_in_file
 from utils import contains_statuses
 from utils import get_actor_from_post
 from utils import data_dir
+from formats import get_image_mime_type
+from formats import get_image_extensions
 from status import get_status_number
 from session import get_json_valid
 from session import create_session

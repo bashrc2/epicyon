@@ -12,8 +12,8 @@ import errno
 from socket import error as SocketError
 from httpcodes import http_404
 from utils import acct_dir
-from utils import get_image_extension_from_mime_type
 from utils import binary_is_image
+from formats import get_image_extension_from_mime_type
 
 
 def receive_image_attachment(self, length: int, path: str, base_dir: str,

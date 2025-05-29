@@ -15,13 +15,13 @@ from utils import acct_dir
 from utils import remove_html
 from utils import get_attachment_property_value
 from utils import no_of_accounts
-from utils import get_image_extensions
-from utils import get_video_extensions
-from utils import get_audio_extensions
-from utils import get_image_mime_type
 from utils import lines_in_file
 from utils import data_dir
 from utils import account_is_indexable
+from formats import get_image_mime_type
+from formats import get_image_extensions
+from formats import get_audio_extensions
+from formats import get_video_extensions
 
 
 def _get_masto_api_v2id_from_nickname(nickname: str) -> int:

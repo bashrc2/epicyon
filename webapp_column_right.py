@@ -13,7 +13,6 @@ from content import limit_repeated_words
 from flags import is_editor
 from utils import replace_strings
 from utils import data_dir
-from utils import get_image_extensions
 from utils import get_fav_filename_from_url
 from utils import get_base_content_from_post
 from utils import remove_html
@@ -24,6 +23,7 @@ from utils import get_nickname_from_actor
 from utils import get_config_param
 from utils import remove_domain_port
 from utils import acct_dir
+from formats import get_image_extensions
 from timeFunctions import date_from_string_format
 from posts import is_moderator
 from newswire import get_newswire_favicon_url
