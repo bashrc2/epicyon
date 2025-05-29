@@ -449,6 +449,13 @@ def daemon_http_get(self) -> None:
                             self.server.i2p_domain)
     if acct_pub_key_json:
         msg_str = json.dumps(acct_pub_key_json, ensure_ascii=False)
+        msg_str = convert_domains(calling_domain,
+                                  referer_domain,
+                                  msg_str,
+                                  self.server.http_prefix,
+                                  self.server.domain,
+                                  self.server.onion_domain,
+                                  self.server.i2p_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -540,6 +547,12 @@ def daemon_http_get(self) -> None:
                 "error": "Request not signed"
             }
             msg_str = json.dumps(result_json, ensure_ascii=False)
+            msg_str = convert_domains(calling_domain, referer_domain,
+                                      msg_str,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             accept_str = self.headers['Accept']
@@ -718,6 +731,12 @@ def daemon_http_get(self) -> None:
                                           self.server.http_prefix,
                                           self.server.domain_full)
             msg_str = json.dumps(notes_json)
+            msg_str = convert_domains(calling_domain, referer_domain,
+                                      msg_str,
+                                      self.server.http_prefix,
+                                      self.server.domain,
+                                      self.server.onion_domain,
+                                      self.server.i2p_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'application/json', msglen,
