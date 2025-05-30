@@ -20,8 +20,8 @@ from httpcodes import http_404
 from httpheaders import set_headers_etag
 from utils import data_dir
 from utils import get_nickname_from_actor
-from utils import media_file_mime_type
 from utils import acct_dir
+from formats import media_file_mime_type
 from formats import get_image_mime_type
 from formats import get_image_extensions
 from flags import is_image_file

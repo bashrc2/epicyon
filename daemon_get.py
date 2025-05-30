@@ -103,7 +103,6 @@ from utils import user_agent_domain
 from utils import local_network_host
 from utils import permitted_dir
 from utils import has_users_path
-from utils import media_file_mime_type
 from utils import replace_users_with_at
 from utils import remove_id_ending
 from utils import local_actor_url
@@ -115,6 +114,7 @@ from utils import get_nickname_from_actor
 from utils import get_json_content_from_accept
 from utils import check_bad_path
 from utils import decoded_host
+from formats import media_file_mime_type
 from mitm import detect_mitm
 from person import get_person_notes_endpoint
 from person import get_account_pub_key

@@ -13,7 +13,7 @@ from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
 from flags import is_float
-from utils import media_file_mime_type
+from formats import media_file_mime_type
 from utils import replace_strings
 from utils import get_image_file
 from utils import data_dir

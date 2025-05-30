@@ -17,8 +17,8 @@ from httpcodes import http_404
 from daemon_utils import has_accept
 from daemon_utils import etag_exists
 from utils import get_config_param
-from utils import media_file_mime_type
 from utils import binary_is_image
+from formats import media_file_mime_type
 
 
 def get_favicon(self, calling_domain: str,

@@ -11,7 +11,7 @@ import os
 import datetime
 from hashlib import md5
 from flags import is_image_file
-from utils import media_file_mime_type
+from formats import media_file_mime_type
 from utils import data_dir
 from utils import string_contains
 from utils import decoded_host

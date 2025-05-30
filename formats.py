@@ -107,3 +107,38 @@ def get_media_formats() -> str:
             media_formats += ', '
         media_formats += '.' + ext
     return media_formats
+
+
+def media_file_mime_type(filename: str) -> str:
+    """Given a media filename return its mime type
+    """
+    if '.' not in filename:
+        return 'image/png'
+    extensions = {
+        'json': 'application/json',
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'jxl': 'image/jxl',
+        'jpeg': 'image/jpeg',
+        'gif': 'image/gif',
+        'svg': 'image/svg+xml',
+        'webp': 'image/webp',
+        'avif': 'image/avif',
+        'heic': 'image/heic',
+        'ico': 'image/x-icon',
+        'mp3': 'audio/mpeg',
+        'ogg': 'audio/ogg',
+        'audio/wav': 'wav',
+        'audio/x-wav': 'wav',
+        'audio/x-pn-wave': 'wav',
+        'wav': 'audio/vnd.wave',
+        'opus': 'audio/opus',
+        'spx': 'audio/speex',
+        'flac': 'audio/flac',
+        'mp4': 'video/mp4',
+        'ogv': 'video/ogv'
+    }
+    file_ext = filename.split('.')[-1]
+    if not extensions.get(file_ext):
+        return 'image/png'
+    return extensions[file_ext]
