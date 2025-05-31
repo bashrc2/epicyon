@@ -1810,21 +1810,22 @@ def remove_post_from_index(post_url: str, debug: bool,
         print('EX: remove_post_from_index unable to read ' +
               index_file + ' ' + str(exc))
 
-    if lines:
-        try:
-            with open(index_file, 'w+',
-                      encoding='utf-8') as fp_mod2:
-                for line in lines:
-                    if line.strip("\n").strip("\r") != post_id:
-                        fp_mod2.write(line)
-                        continue
-                    if debug:
-                        print('DEBUG: removed ' + post_id +
-                              ' from index ' + index_file)
-        except OSError as exc:
-            print('EX: ' +
-                  'remove_post_from_index unable to write ' +
-                  index_file + ' ' + str(exc))
+    if not lines:
+        return
+    try:
+        with open(index_file, 'w+',
+                  encoding='utf-8') as fp_mod2:
+            for line in lines:
+                if line.strip("\n").strip("\r") != post_id:
+                    fp_mod2.write(line)
+                    continue
+                if debug:
+                    print('DEBUG: removed ' + post_id +
+                          ' from index ' + index_file)
+    except OSError as exc:
+        print('EX: ' +
+              'remove_post_from_index unable to write ' +
+              index_file + ' ' + str(exc))
 
 
 def remove_moderation_post_from_index(base_dir: str, post_url: str,
@@ -2433,7 +2434,7 @@ def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
     return account_ctr
 
 
-def copytree(src: str, dst: str, symlinks: str, ignore: bool):
+def copytree(src: str, dst: str, symlinks: str, ignore: bool) -> None:
     """Copy a directory
     """
     for item in os.listdir(src):
