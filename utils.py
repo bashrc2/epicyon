@@ -3267,7 +3267,7 @@ def load_reverse_timeline(base_dir: str) -> []:
     return reverse_sequence
 
 
-def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> []:
+def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> None:
     """Saves flags for each user indicating whether they prefer to
     see reversed timelines
     """
