@@ -3628,9 +3628,8 @@ def post_summary_contains_links(message_json: {}) -> bool:
             message_json['object'].get('summary')):
         return False
 
-    if message_json['object']['type'] != 'Person' and \
-       message_json['object']['type'] != 'Application' and \
-       message_json['object']['type'] != 'Group':
+    if message_json['object']['type'] not in ('Person',
+                                              'Application', 'Group'):
         if len(message_json['object']['summary']) > 1024:
             actor_url = get_actor_from_post(message_json)
             print('INBOX: summary is too long ' +
