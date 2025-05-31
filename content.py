@@ -1382,7 +1382,8 @@ def add_html_tags(base_dir: str, http_prefix: str,
     max_word_length = 40
     replacements = {
         '\r': '',
-        '\n': ' --linebreak-- '
+        '\n': ' --linebreak-- ',
+        '"': ' --quote-- '
     }
     content = replace_strings(content, replacements)
     now_playing_str = 'NowPlaying'
@@ -1521,6 +1522,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     if long_words_list:
         content = remove_long_words(content, max_word_length, long_words_list)
     content = limit_repeated_words(content, 6)
+    content = content.replace(' --quote-- ', '"')
     content = content.replace(' --linebreak-- ', '</p><p>')
     content = html_replace_email_quote(content)
     return '<p>' + html_replace_quote_marks(content) + '</p>'

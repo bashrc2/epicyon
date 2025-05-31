@@ -4123,6 +4123,22 @@ def _test_addemoji(base_dir: str):
         print('content_modified: ' + content_modified)
     assert content_modified == expected_content
 
+    content2 = '"This is a quote with a #hashtag".'
+    content_modified2 = \
+        add_html_tags(base_dir, http_prefix,
+                      nickname, domain, content2,
+                      recipients, hashtags, translate, True)
+    expected_content2 = \
+        '<p>"This is a quote with a ' + \
+        '<a href="http://testdomain.net/tags/hashtag" ' + \
+        'class="mention hashtag" rel="tag" tabindex="10">' + \
+        '<span aria-hidden="true">#</span>' + \
+        '<span>hashtag</span></a>".</p>'
+    if content_modified2 != expected_content2:
+        print('expected_content2: ' + expected_content2)
+        print('content_modified2: ' + content_modified2)
+    assert content_modified2 == expected_content2
+
     profile_description = \
         "<p>Software engineer developing federated and decentralized " + \
         "systems for a more habitable, resillient and human-scale " + \
