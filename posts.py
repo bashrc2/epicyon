@@ -7088,24 +7088,23 @@ def post_is_muted(base_dir: str, nickname: str, domain: str,
     if is_muted is True or is_muted is False:
         return is_muted
 
-    is_muted = False
     post_dir = acct_dir(base_dir, nickname, domain)
     mute_filename = \
         post_dir + '/inbox/' + message_id.replace('/', '#') + '.json.muted'
     if os.path.isfile(mute_filename):
+        return True
+    is_muted = False
+    mute_filename = \
+        post_dir + '/outbox/' + \
+        message_id.replace('/', '#') + '.json.muted'
+    if os.path.isfile(mute_filename):
         is_muted = True
     else:
         mute_filename = \
-            post_dir + '/outbox/' + \
-            message_id.replace('/', '#') + '.json.muted'
+            data_dir(base_dir) + '/cache/announce/' + nickname + \
+            '/' + message_id.replace('/', '#') + '.json.muted'
         if os.path.isfile(mute_filename):
             is_muted = True
-        else:
-            mute_filename = \
-                data_dir(base_dir) + '/cache/announce/' + nickname + \
-                '/' + message_id.replace('/', '#') + '.json.muted'
-            if os.path.isfile(mute_filename):
-                is_muted = True
     return is_muted
 
 
