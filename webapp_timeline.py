@@ -13,6 +13,7 @@ from shutil import copyfile
 from flags import is_editor
 from flags import is_artist
 from flags import is_float
+from flags import is_moderator
 from utils import data_dir
 from utils import dangerous_markup
 from utils import get_config_param
@@ -40,7 +41,6 @@ from webapp_post import individual_post_as_html
 from webapp_column_left import get_left_column_content
 from webapp_column_right import get_right_column_content
 from webapp_headerbuttons import header_buttons_timeline
-from posts import is_moderator
 from announce import mark_announce_as_seen
 from announce import announce_seen
 from announce import is_announce

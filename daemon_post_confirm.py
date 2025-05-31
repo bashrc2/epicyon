@@ -11,6 +11,7 @@ import errno
 import urllib.parse
 from socket import error as SocketError
 from flags import has_group_type
+from flags import is_moderator
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_full_domain
@@ -23,7 +24,6 @@ from daemon_utils import post_to_outbox_thread
 from httpcodes import write2
 from httpheaders import redirect_headers
 from httpheaders import login_headers
-from posts import is_moderator
 from webapp_moderation import html_account_info
 from session import establish_session
 from blocking import remove_block

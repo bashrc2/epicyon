@@ -46,7 +46,7 @@ from blocking import blocked_quote_toots_add
 from blocking import blocked_quote_toots_remove
 from notifyOnPost import add_notify_on_post
 from notifyOnPost import remove_notify_on_post
-from posts import is_moderator
+from flags import is_moderator
 
 
 def _person_options_page_number(options_confirm_params: str) -> int:

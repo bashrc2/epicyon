@@ -10,6 +10,7 @@ __module_group__ = "Moderation"
 import os
 from flags import is_editor
 from flags import is_artist
+from flags import is_moderator
 from utils import get_person_icon
 from utils import data_dir
 from utils import remove_html
@@ -23,7 +24,6 @@ from utils import local_actor_url
 from utils import remove_eol
 from posts import download_follow_collection
 from posts import get_public_post_info
-from posts import is_moderator
 from webapp_timeline import html_timeline
 # from webapp_utils import get_person_avatar_url
 from webapp_utils import get_banner_file

@@ -89,6 +89,7 @@ from httpcodes import http_304
 from httpcodes import http_400
 from httpcodes import http_503
 from httpcodes import write2
+from flags import is_moderator
 from flags import is_corporate
 from flags import is_image_file
 from flags import is_artist
@@ -125,7 +126,6 @@ from shares import authorize_shared_items
 from shares import shares_catalog_endpoint
 from shares import shares_catalog_account_endpoint
 from shares import shares_catalog_csv_endpoint
-from posts import is_moderator
 from posts import get_pinned_post_as_json
 from posts import outbox_message_create_wrap
 from daemon_get_masto_api import masto_api

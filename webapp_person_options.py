@@ -11,7 +11,7 @@ import os
 from shutil import copyfile
 from petnames import get_pet_name
 from person import is_person_snoozed
-from posts import is_moderator
+from flags import is_moderator
 from flags import is_featured_writer
 from flags import is_dormant
 from quote import quote_toots_allowed

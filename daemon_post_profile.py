@@ -20,6 +20,7 @@ from httpheaders import clear_login_details
 from flags import is_artist
 from flags import is_memorial_account
 from flags import is_premium_account
+from flags import is_moderator
 from timeFunctions import get_account_timezone
 from timeFunctions import set_account_timezone
 from utils import data_dir
@@ -109,7 +110,6 @@ from webapp_utils import set_blog_address
 from session import site_is_verified
 from languages import set_actor_languages
 from languages import get_actor_languages
-from posts import is_moderator
 from posts import set_post_expiry_keep_dms
 from posts import get_post_expiry_keep_dms
 from posts import set_post_expiry_days

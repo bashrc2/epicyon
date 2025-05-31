@@ -16,6 +16,7 @@ from flags import is_system_account
 from flags import is_group_account
 from flags import is_valid_date
 from flags import is_premium_account
+from flags import is_moderator
 from status import actor_status_expired
 from status import get_actor_status
 from textmode import text_mode_removals
@@ -63,7 +64,6 @@ from person import get_person_notes
 from posts import get_post_expiry_keep_dms
 from posts import get_post_expiry_days
 from posts import get_person_box
-from posts import is_moderator
 from posts import parse_user_feed
 from posts import is_create_inside_announce
 from posts import get_max_profile_posts

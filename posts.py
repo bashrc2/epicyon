@@ -32,6 +32,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from flags import is_moderator
 from flags import is_evil
 from flags import is_public_post
 from flags import invalid_ciphertext
@@ -161,39 +162,6 @@ def convert_post_content_to_html(message_json: {}) -> None:
             continue
         obj_json['contentMap'][lang] = \
             markdown_to_html(content_str)
-
-
-def is_moderator(base_dir: str, nickname: str) -> bool:
-    """Returns true if the given nickname is a moderator
-    """
-    moderators_file = data_dir(base_dir) + '/moderators.txt'
-
-    if not os.path.isfile(moderators_file):
-        admin_name = get_config_param(base_dir, 'admin')
-        if not admin_name:
-            return False
-        if admin_name == nickname:
-            return True
-        return False
-
-    lines: list[str] = []
-    try:
-        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
-            lines = fp_mod.readlines()
-    except OSError:
-        print('EX: is_moderator unable to read ' + moderators_file)
-
-    if not lines:
-        admin_name = get_config_param(base_dir, 'admin')
-        if not admin_name:
-            return False
-        if admin_name == nickname:
-            return True
-    for moderator in lines:
-        moderator = moderator.strip('\n').strip('\r')
-        if moderator == nickname:
-            return True
-    return False
 
 
 def no_of_followers_on_domain(base_dir: str, handle: str,

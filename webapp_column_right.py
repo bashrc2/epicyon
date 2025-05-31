@@ -11,6 +11,7 @@ import os
 from content import remove_long_words
 from content import limit_repeated_words
 from flags import is_editor
+from flags import is_moderator
 from utils import replace_strings
 from utils import data_dir
 from utils import get_fav_filename_from_url
@@ -25,7 +26,6 @@ from utils import remove_domain_port
 from utils import acct_dir
 from formats import get_image_extensions
 from timeFunctions import date_from_string_format
-from posts import is_moderator
 from newswire import get_newswire_favicon_url
 from webapp_utils import get_right_image_file
 from webapp_utils import html_header_with_external_style

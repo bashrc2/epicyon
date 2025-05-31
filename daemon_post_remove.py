@@ -21,7 +21,7 @@ from utils import get_config_param
 from utils import get_nickname_from_actor
 from reading import remove_reading_event
 from httpheaders import redirect_headers
-from posts import is_moderator
+from flags import is_moderator
 from shares import remove_shared_item2
 from shares import add_shares_to_actor
 from cache import store_person_in_cache

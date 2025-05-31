@@ -11,6 +11,7 @@ import os
 import errno
 from socket import error as SocketError
 from flags import is_editor
+from flags import is_moderator
 from cache import clear_from_post_caches
 from utils import data_dir
 from utils import remove_id_ending
@@ -23,7 +24,6 @@ from utils import get_instance_url
 from utils import get_nickname_from_actor
 from timeFunctions import date_from_string_format
 from httpheaders import redirect_headers
-from posts import is_moderator
 from content import extract_text_fields_in_post
 from content import load_dogwhistles
 

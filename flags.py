@@ -719,3 +719,36 @@ def local_only_is_local(message_json: {}, domain_full: str) -> bool:
                   str(message_json))
             return False
     return True
+
+
+def is_moderator(base_dir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is a moderator
+    """
+    moderators_file = data_dir(base_dir) + '/moderators.txt'
+
+    if not os.path.isfile(moderators_file):
+        admin_name = get_config_param(base_dir, 'admin')
+        if not admin_name:
+            return False
+        if admin_name == nickname:
+            return True
+        return False
+
+    lines: list[str] = []
+    try:
+        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
+            lines = fp_mod.readlines()
+    except OSError:
+        print('EX: is_moderator unable to read ' + moderators_file)
+
+    if not lines:
+        admin_name = get_config_param(base_dir, 'admin')
+        if not admin_name:
+            return False
+        if admin_name == nickname:
+            return True
+    for moderator in lines:
+        moderator = moderator.strip('\n').strip('\r')
+        if moderator == nickname:
+            return True
+    return False

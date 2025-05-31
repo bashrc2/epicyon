@@ -15,7 +15,7 @@ from httpheaders import redirect_headers
 from httpheaders import set_headers
 from newswire import get_rss_from_dict
 from fitnessFunctions import fitness_performance
-from posts import is_moderator
+from flags import is_moderator
 from utils import data_dir
 from utils import local_actor_url
 from utils import save_json

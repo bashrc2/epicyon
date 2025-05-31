@@ -13,6 +13,7 @@ from collections import OrderedDict
 from session import get_json
 from session import get_json_valid
 from flags import is_float
+from flags import is_moderator
 from formats import media_file_mime_type
 from utils import replace_strings
 from utils import get_image_file
@@ -52,7 +53,6 @@ from content import add_html_tags
 from content import replace_emoji_from_tags
 from person import get_person_avatar_url
 from person import get_person_notes
-from posts import is_moderator
 from blocking import is_blocked
 from blocking import allowed_announce
 from shares import vf_proposal_from_share

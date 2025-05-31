@@ -18,7 +18,7 @@ from utils import get_full_domain
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import get_instance_url
-from posts import is_moderator
+from flags import is_moderator
 from httpcodes import write2
 from httpheaders import redirect_headers
 from httpheaders import login_headers
