@@ -6115,21 +6115,23 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
 def _reject_announce(announce_filename: str,
                      base_dir: str, nickname: str, domain: str,
                      announce_post_id: str, recent_posts_cache: {},
-                     debug: bool):
+                     debug: bool) -> None:
     """Marks an announce as rejected
     """
     reject_post_id(base_dir, nickname, domain, announce_post_id,
                    recent_posts_cache, debug)
 
     # reject the post referenced by the announce activity object
-    if not os.path.isfile(announce_filename + '.reject'):
-        try:
-            with open(announce_filename + '.reject', 'w+',
-                      encoding='utf-8') as fp_reject_announce:
-                fp_reject_announce.write('\n')
-        except OSError:
-            print('EX: _reject_announce unable to write ' +
-                  announce_filename + '.reject')
+    if os.path.isfile(announce_filename + '.reject'):
+        return
+
+    try:
+        with open(announce_filename + '.reject', 'w+',
+                  encoding='utf-8') as fp_reject_announce:
+            fp_reject_announce.write('\n')
+    except OSError:
+        print('EX: _reject_announce unable to write ' +
+              announce_filename + '.reject')
 
 
 def download_announce(session, base_dir: str, http_prefix: str,
