@@ -1509,8 +1509,7 @@ def _profile_post_approve_followers(on_final_welcome_screen: bool,
     if on_final_welcome_screen:
         # Default setting created via the welcome screen
         actor_json['manuallyApprovesFollowers'] = True
-        actor_changed = True
-        set_premium_account(base_dir, nickname, domain, False)
+        actor_changed = set_premium_account(base_dir, nickname, domain, False)
     else:
         approve_followers = premium
         if fields.get('approveFollowers'):
@@ -1521,9 +1520,9 @@ def _profile_post_approve_followers(on_final_welcome_screen: bool,
         if fields.get('premiumAccount'):
             if fields['premiumAccount'] == 'on':
                 # turn on premium flag
-                set_premium_account(base_dir, nickname, domain, True)
-                approve_followers = True
-                premium_activated = True
+                if set_premium_account(base_dir, nickname, domain, True):
+                    approve_followers = True
+                    premium_activated = True
         if premium and not premium_activated:
             # turn off premium flag
             set_premium_account(base_dir, nickname, domain, False)
