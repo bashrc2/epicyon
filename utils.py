@@ -3726,6 +3726,7 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
                 os.remove(premium_filename)
             except OSError:
                 print('EX: unable to remove premium flag ' + premium_filename)
+                return False
     else:
         if flag_state:
             try:
@@ -3734,6 +3735,8 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
                     fp_premium.write('\n')
             except OSError:
                 print('EX: unable to set premium flag ' + premium_filename)
+                return False
+    return True
 
 
 def get_post_attachments(post_json_object: {}) -> []:
