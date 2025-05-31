@@ -39,6 +39,7 @@ from daemon import run_daemon
 from session import get_json_valid
 from session import create_session
 from session import get_json
+from sendC2S import send_post_via_server
 from posts import json_post_allows_comments
 from posts import convert_post_content_to_html
 from posts import get_actor_from_in_reply_to
@@ -51,7 +52,6 @@ from posts import send_post
 from posts import no_of_followers_on_domain
 from posts import group_followers_by_domain
 from posts import archive_posts_for_person
-from posts import send_post_via_server
 from posts import seconds_between_published
 from follow import clear_follows
 from follow import clear_followers

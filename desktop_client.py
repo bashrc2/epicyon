@@ -50,11 +50,11 @@ from follow import get_following_via_server
 from follow import get_followers_via_server
 from follow import send_follow_request_via_server
 from follow import send_unfollow_request_via_server
-from posts import send_block_via_server
-from posts import send_undo_block_via_server
-from posts import send_mute_via_server
-from posts import send_undo_mute_via_server
-from posts import send_post_via_server
+from sendC2S import send_post_via_server
+from sendC2S import send_block_via_server
+from sendC2S import send_undo_block_via_server
+from sendC2S import send_mute_via_server
+from sendC2S import send_undo_mute_via_server
 from posts import c2s_box_json
 from posts import download_announce
 from announce import send_announce_via_server
