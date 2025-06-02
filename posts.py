@@ -1085,23 +1085,26 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
         except OSError:
             print('EX: _update_hashtags_index unable to write tags file ' +
                   tags_filename)
-    else:
-        # prepend to tags index file
-        if not text_in_file(new_post_id, tags_filename):
-            days_diff = date_utcnow() - date_epoch()
-            days_since_epoch = days_diff.days
-            tag_line = \
-                str(days_since_epoch) + '  ' + nickname + '  ' + \
-                new_post_id + '\n'
-            try:
-                with open(tags_filename, 'r+', encoding='utf-8') as fp_tags:
-                    content = fp_tags.read()
-                    if tag_line not in content:
-                        fp_tags.seek(0, 0)
-                        fp_tags.write(tag_line + content)
-            except OSError as ex:
-                print('EX: Failed to write entry to tags file ' +
-                      tags_filename + ' ' + str(ex))
+        return
+
+    if text_in_file(new_post_id, tags_filename):
+        return
+
+    # prepend to tags index file
+    days_diff = date_utcnow() - date_epoch()
+    days_since_epoch = days_diff.days
+    tag_line = \
+        str(days_since_epoch) + '  ' + nickname + '  ' + \
+        new_post_id + '\n'
+    try:
+        with open(tags_filename, 'r+', encoding='utf-8') as fp_tags:
+            content = fp_tags.read()
+            if tag_line not in content:
+                fp_tags.seek(0, 0)
+                fp_tags.write(tag_line + content)
+    except OSError as ex:
+        print('EX: Failed to write entry to tags file ' +
+              tags_filename + ' ' + str(ex))
 
 
 def _add_schedule_post(base_dir: str, nickname: str, domain: str,
