@@ -2982,23 +2982,25 @@ def _remove_send_block(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(send_block_filename):
         return
 
-    if text_in_file(inbox_url, send_block_filename, False):
-        send_blocks_str = ''
-        try:
-            with open(send_block_filename, 'r',
-                      encoding='utf-8') as fp_blocks:
-                send_blocks_str = fp_blocks.read()
-        except OSError:
-            print('EX: _remove_send_block unable to read ' +
-                  send_block_filename)
-        send_blocks_str = send_blocks_str.replace(inbox_url, '')
-        try:
-            with open(send_block_filename, 'w+',
-                      encoding='utf-8') as fp_blocks:
-                fp_blocks.write(send_blocks_str)
-        except OSError:
-            print('EX: _remove_send_block unable to write ' +
-                  send_block_filename)
+    if not text_in_file(inbox_url, send_block_filename, False):
+        return
+
+    send_blocks_str = ''
+    try:
+        with open(send_block_filename, 'r',
+                  encoding='utf-8') as fp_blocks:
+            send_blocks_str = fp_blocks.read()
+    except OSError:
+        print('EX: _remove_send_block unable to read ' +
+              send_block_filename)
+    send_blocks_str = send_blocks_str.replace(inbox_url, '')
+    try:
+        with open(send_block_filename, 'w+',
+                  encoding='utf-8') as fp_blocks:
+            fp_blocks.write(send_blocks_str)
+    except OSError:
+        print('EX: _remove_send_block unable to write ' +
+              send_block_filename)
 
 
 def thread_send_post(session, post_json_str: str, federation_list: [],
