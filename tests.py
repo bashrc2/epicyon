@@ -4176,11 +4176,10 @@ def _test_addemoji(base_dir: str):
         'class="mention hashtag" rel="tag" tabindex="10">' + \
         '<span aria-hidden="true">#</span>' + \
         '<span>hashtag</span></a>".</p>'
-    # TODO
-    # if content_modified2 != expected_content2:
-    #     print('expected_content2: ' + expected_content2)
-    #     print('content_modified2: ' + content_modified2)
-    # assert content_modified2 == expected_content2
+    if content_modified2 != expected_content2:
+        print('expected_content2: ' + expected_content2)
+        print('content_modified2: ' + content_modified2)
+    assert content_modified2 == expected_content2
 
     os.chdir(base_dir_original)
     shutil.rmtree(base_dir_original + '/.tests',

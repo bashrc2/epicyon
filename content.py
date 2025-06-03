@@ -1235,6 +1235,9 @@ def _get_simplified_content(content: str) -> str:
     replacements = {
         ',': ' ',
         ';': ' ',
+        '"': ' ',
+        '“': ' ',
+        '”': ' ',
         '- ': ' '
     }
     content_simplified = replace_strings(content, replacements)
@@ -1382,9 +1385,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     max_word_length = 40
     replacements = {
         '\r': '',
-        '\n': ' --linebreak-- ',
-        '“': ' --openquote-- ',
-        '”': ' --closequote-- '
+        '\n': ' --linebreak-- '
     }
     content = replace_strings(content, replacements)
     now_playing_str = 'NowPlaying'
