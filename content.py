@@ -1526,8 +1526,11 @@ def add_html_tags(base_dir: str, http_prefix: str,
     content = html_replace_email_quote(content)
     content = html_replace_quote_marks(content)
 
-    content = content.replace(' --openquote-- ', '“')
-    content = content.replace(' --closequote-- ', '”')
+    # undo replacements
+    for text, substitute in replacements.items():
+        if not substitute or text == '\n':
+            continue
+        content = content.replace(substitute, text)
     content = content.replace(' --linebreak-- ', '</p><p>')
     return '<p>' + content + '</p>'
 
