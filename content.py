@@ -1383,7 +1383,8 @@ def add_html_tags(base_dir: str, http_prefix: str,
     replacements = {
         '\r': '',
         '\n': ' --linebreak-- ',
-        '"': ' --quote-- '
+        '“': ' --openquote-- ',
+        '”': ' --closequote-- '
     }
     content = replace_strings(content, replacements)
     now_playing_str = 'NowPlaying'
@@ -1522,10 +1523,13 @@ def add_html_tags(base_dir: str, http_prefix: str,
     if long_words_list:
         content = remove_long_words(content, max_word_length, long_words_list)
     content = limit_repeated_words(content, 6)
-    content = content.replace(' --quote-- ', '"')
-    content = content.replace(' --linebreak-- ', '</p><p>')
     content = html_replace_email_quote(content)
-    return '<p>' + html_replace_quote_marks(content) + '</p>'
+    content = html_replace_quote_marks(content)
+
+    content = content.replace(' --openquote-- ', '“')
+    content = content.replace(' --closequote-- ', '”')
+    content = content.replace(' --linebreak-- ', '</p><p>')
+    return '<p>' + content + '</p>'
 
 
 def _string_starts_with_url_prefix(text: str) -> bool:
