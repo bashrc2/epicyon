@@ -45,10 +45,10 @@ This system will not federate with instances whose moderation policy is incompat
 
 This system will not federate with instances publishing unmarked algorithmic content.
 
-### Use by Research Organizations and Universities
-Data may not be "scraped" or otherwise obtained from this instance and used for academic research or cited within research publications without the prior written permission of the administrator. Financial remedy will be sought through the courts from any researcher publishing data obtained from this instance without consent.
+### Use by Research Organizations, Universities and Machine Learning models
+Data may not be "scraped" or otherwise obtained from this instance and used for academic research or cited within research publications or used to train machine learning models (LLMs or generative models) without the prior written permission of the administrator. Financial remedy will be sought through the courts from any individual or organisation publishing data obtained by such methods from this instance without consent and outside of the expected federation functionality according to the scope of posts.
 
-The administrator of this instance does not agree to participate in human subjects research, or research to study website policies and practices, carried out by academic institutions or their executors without prior written consent.
+The administrator of this instance does not agree to participate in human subjects research, or research to study website policies and practices, carried out by academic organisations or their subcontractors without prior written consent.
 
 ### Commercial Use
 Commercial use of original content on this instance is strictly forbidden without the prior written permission of individual account holders. The instance administrator does not hold copyright on any original content posted by account holders. Publication or federation of content does not imply permission for commercial use.
