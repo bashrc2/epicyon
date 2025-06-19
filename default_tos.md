@@ -33,8 +33,13 @@ Moderators rely upon your reports. Don't assume that something of concern has al
 
 Content found to be non-compliant with this policy will be removed and any accounts on this instance producing, repeating or linking to such content will be deleted typically without prior notification.
 
+### No Intellectual Property Transfer
+This instance claims no intellectual property rights over any content within posts that you submit, other than the ability to display your content and federate it, as determined by the scope of your posts (public, followers only, direct messages, etc) and any content license that you optionally select (such as a Creative Commons one) at the point of post creation.
+
+If you delete posts, or delete your account, then this instance ceases to display and federate your content as instructed, although federated posts may continue to be viewable on other instances or archive websites if they do not comply with federated deletions.
+
 ### Federation Policy
-In a proactive effort to avoid the classic fate of *"embrace, extend, extinguish"* this system will block any instance launched, acquired or funded by Alphabet/Google, Facebook/Meta, Twitter/x.com, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.
+In a proactive effort to avoid the classic fate of *"embrace, extend, extinguish"* this system will block any instance launched, acquired or funded by Alphabet/Google, Facebook/Meta/Threads, Twitter/x.com, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.
 
 This system will not federate with instances whose moderation policy is incompatible with the content policy described above. If an instance lacks a moderation policy, or refuses to enforce one, it will be assumed to be incompatible.
 
