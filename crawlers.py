@@ -149,7 +149,10 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'cohere-train', 'crawlspace', 'facebookexternal',
             'img2dataset', 'imgproxy', 'isscyberriskcrawler', 'sidetrade',
             'kangaroo.ai', 'kangaroo bot', 'iaskspider', 'duckassistbot',
-            'pangubot', 'semrush'
+            'pangubot', 'semrush', 'poseidon research', 'awario',
+            'datenbank', 'echobot', 'mistralai', 'wardbot',
+            'gemini-deep', 'netestate', 'summalybot', 'thinkbot',
+            'tiktokspider'
         )
         for bot_str in llm_bot_strings:
             if bot_str in agent_str_lower:
