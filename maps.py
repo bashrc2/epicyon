@@ -591,7 +591,7 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
     coords = coords_str.split(',')
     if len(coords) not in (2, 3):
         return None, None, None
-    zoom = '100'
+    zoom = 100
     if zoom_exists:
         zoom = coords[2]
         if not zoom.isdigit():
@@ -602,6 +602,8 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
     latitude = coords[0]
     if not is_float(latitude):
         return None, None, None
+    if '"' in coords[1]:
+        coords[1] = coords[1].split('"')[0]
     longitude = coords[1]
     if not is_float(longitude):
         return None, None, None
@@ -639,6 +641,8 @@ def _geocoords_from_bmaps_link(url: str) -> (int, float, float):
     if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
+    if '"' in coords[1]:
+        coords[1] = coords[1].split('"')[0]
     if not is_float(longitude):
         return None, None, None
     zoom = 17
@@ -685,6 +689,8 @@ def _geocoords_from_waze_link(url: str) -> (int, float, float):
     if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
+    if '"' in coords[1]:
+        coords[1] = coords[1].split('"')[0]
     if not is_float(longitude):
         return None, None, None
     zoom = 17
@@ -723,6 +729,8 @@ def _geocoords_from_wego_link(url: str) -> (int, float, float):
     if not is_float(latitude):
         return None, None, None
     longitude = coords[1]
+    if '"' in coords[1]:
+        coords[1] = coords[1].split('"')[0]
     if not is_float(longitude):
         return None, None, None
     zoom = coords[2]
