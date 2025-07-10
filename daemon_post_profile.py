@@ -2563,7 +2563,7 @@ def _profile_post_news_instance_status(base_dir: str, fields: {},
             self.server.news_instance = False
             self.server.default_timeline = 'inbox'
             set_config_param(base_dir, "newsInstance",
-                             self.server.media_instance)
+                             self.server.news_instance)
 
 
 def _profile_post_media_instance_status(base_dir: str, fields: {},
