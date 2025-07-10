@@ -384,7 +384,6 @@ class EpicyonServer(ThreadingHTTPServer):
     max_followers = 2000
     show_publish_as_icon = False
     full_width_tl_button_header = False
-    icons_as_buttons = False
     rss_icon_at_top = True
     publish_button_at_top = False
     max_feed_item_size_kb = 100
@@ -619,7 +618,6 @@ def run_daemon(accounts_data_dir: str,
                max_feed_item_size_kb: int,
                publish_button_at_top: bool,
                rss_icon_at_top: bool,
-               icons_as_buttons: bool,
                full_width_tl_button_header: bool,
                show_publish_as_icon: bool,
                max_followers: int,
@@ -1075,9 +1073,6 @@ def run_daemon(accounts_data_dir: str,
     # Whether to show the timeline header containing inbox, outbox
     # calendar, etc as the full width of the screen or not
     httpd.full_width_tl_button_header = full_width_tl_button_header
-
-    # whether to show icons in the header (eg calendar) as buttons
-    httpd.icons_as_buttons = False
 
     # whether to show the RSS icon at the top or the bottom of the timeline
     httpd.rss_icon_at_top = rss_icon_at_top

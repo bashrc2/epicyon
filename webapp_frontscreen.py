@@ -115,7 +115,6 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
 
 def html_front_screen(signing_priv_key_pem: str,
                       rss_icon_at_top: bool,
-                      icons_as_buttons: bool,
                       default_timeline: str,
                       recent_posts_cache: {}, max_recent_posts: int,
                       translate: {}, project_version: str,
@@ -155,8 +154,7 @@ def html_front_screen(signing_priv_key_pem: str,
         domain_full = domain + ':' + str(port)
 
     login_button = header_buttons_front_screen(translate, nickname,
-                                               'features', authorized,
-                                               icons_as_buttons)
+                                               'features', authorized)
 
     # If this is the news account then show a different banner
     banner_file, _ = \

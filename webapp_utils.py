@@ -213,21 +213,14 @@ def html_hashtag_blocked(base_dir: str, translate: {}) -> str:
 
 def header_buttons_front_screen(translate: {},
                                 nickname: str, box_name: str,
-                                authorized: bool,
-                                icons_as_buttons: bool) -> str:
+                                authorized: bool) -> str:
     """Returns the header buttons for the front page of a news instance
     """
     header_str = ''
     if nickname == 'news':
         button_features = 'buttonMobile'
-        button_newswire = 'buttonMobile'
-        button_links = 'buttonMobile'
         if box_name == 'features':
             button_features = 'buttonselected'
-        elif box_name == 'newswire':
-            button_newswire = 'buttonselected'
-        elif box_name == 'links':
-            button_links = 'buttonselected'
 
         header_str += \
             '        <a href="/">' + \
@@ -240,30 +233,18 @@ def header_buttons_front_screen(translate: {},
                 '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
                 '</span></button></a>'
-        if icons_as_buttons:
-            header_str += \
-                '        <a href="/users/news/newswiremobile">' + \
-                '<button class="' + button_newswire + '">' + \
-                '<span>' + translate['Newswire'] + \
-                '</span></button></a>'
-            header_str += \
-                '        <a href="/users/news/linksmobile">' + \
-                '<button class="' + button_links + '">' + \
-                '<span>' + translate['Links'] + \
-                '</span></button></a>'
-        else:
-            header_str += \
-                '        <a href="' + \
-                '/users/news/newswiremobile">' + \
-                '<img loading="lazy" decoding="async" src="/icons' + \
-                '/newswire.png" title="' + translate['Newswire'] + \
-                '" alt="| ' + translate['Newswire'] + '"/></a>\n'
-            header_str += \
-                '        <a href="' + \
-                '/users/news/linksmobile">' + \
-                '<img loading="lazy" decoding="async" src="/icons' + \
-                '/links.png" title="' + translate['Links'] + \
-                '" alt="| ' + translate['Links'] + '"/></a>\n'
+        header_str += \
+            '        <a href="' + \
+            '/users/news/newswiremobile">' + \
+            '<img loading="lazy" decoding="async" src="/icons' + \
+            '/newswire.png" title="' + translate['Newswire'] + \
+            '" alt="| ' + translate['Newswire'] + '"/></a>\n'
+        header_str += \
+            '        <a href="' + \
+            '/users/news/linksmobile">' + \
+            '<img loading="lazy" decoding="async" src="/icons' + \
+            '/links.png" title="' + translate['Links'] + \
+            '" alt="| ' + translate['Links'] + '"/></a>\n'
     else:
         if not authorized:
             header_str += \

@@ -46,7 +46,6 @@ def header_buttons_timeline(default_timeline: str,
                             calendar_path: str,
                             calendar_image: str,
                             follow_approvals: str,
-                            icons_as_buttons: bool,
                             access_keys: {},
                             is_text_browser: str,
                             show_announces: bool) -> str:
@@ -205,50 +204,27 @@ def header_buttons_timeline(default_timeline: str,
         twodays = datetime.now() + timedelta(2)
         if day_events_check(base_dir, nickname, domain, now):
             # happening today button
-            if not icons_as_buttons:
-                happening_str += \
-                    '<a href="' + users_path + '/calendar?year=' + \
-                    str(now.year) + '?month=' + str(now.month) + \
-                    '?day=' + str(now.day) + '" tabindex="2">' + \
-                    '<button class="buttonevent">' + \
-                    translate['Happening Today'] + '</button></a>'
-            else:
-                happening_str += \
-                    '<a href="' + users_path + '/calendar?year=' + \
-                    str(now.year) + '?month=' + str(now.month) + \
-                    '?day=' + str(now.day) + '" tabindex="2">' + \
-                    '<button class="button">' + \
-                    translate['Happening Today'] + '</button></a>'
+            happening_str += \
+                '<a href="' + users_path + '/calendar?year=' + \
+                str(now.year) + '?month=' + str(now.month) + \
+                '?day=' + str(now.day) + '" tabindex="2">' + \
+                '<button class="buttonevent">' + \
+                translate['Happening Today'] + '</button></a>'
 
         elif day_events_check(base_dir, nickname, domain, tomorrow):
             # happening tomorrow button
-            if not icons_as_buttons:
-                happening_str += \
-                    '<a href="' + users_path + '/calendar?year=' + \
-                    str(tomorrow.year) + '?month=' + str(tomorrow.month) + \
-                    '?day=' + str(tomorrow.day) + '" tabindex="2">' + \
-                    '<button class="buttonevent">' + \
-                    translate['Happening Tomorrow'] + '</button></a>'
-            else:
-                happening_str += \
-                    '<a href="' + users_path + '/calendar?year=' + \
-                    str(tomorrow.year) + '?month=' + str(tomorrow.month) + \
-                    '?day=' + str(tomorrow.day) + '" tabindex="2">' + \
-                    '<button class="button">' + \
-                    translate['Happening Tomorrow'] + '</button></a>'
+            happening_str += \
+                '<a href="' + users_path + '/calendar?year=' + \
+                str(tomorrow.year) + '?month=' + str(tomorrow.month) + \
+                '?day=' + str(tomorrow.day) + '" tabindex="2">' + \
+                '<button class="buttonevent">' + \
+                translate['Happening Tomorrow'] + '</button></a>'
         elif day_events_check(base_dir, nickname, domain, twodays):
-            if not icons_as_buttons:
-                happening_str += \
-                    '<a href="' + users_path + \
-                    '/calendar" tabindex="2">' + \
-                    '<button class="buttonevent">' + \
-                    translate['Happening This Week'] + '</button></a>'
-            else:
-                happening_str += \
-                    '<a href="' + users_path + \
-                    '/calendar" tabindex="2">' + \
-                    '<button class="button">' + \
-                    translate['Happening This Week'] + '</button></a>'
+            happening_str += \
+                '<a href="' + users_path + \
+                '/calendar" tabindex="2">' + \
+                '<button class="buttonevent">' + \
+                translate['Happening This Week'] + '</button></a>'
 
     if not is_text_browser:
         if not features_header:
@@ -290,59 +266,34 @@ def header_buttons_timeline(default_timeline: str,
     # 3. the newswire and links button to show right column links
     if not is_text_browser:
         # the links button to show left column links
-        if not icons_as_buttons:
-            tl_str += \
-                '<a class="imageAnchorMobile" href="' + \
-                users_path + '/linksmobile">' + \
-                '<img loading="lazy" decoding="async" src="/icons' + \
-                '/links.png" title="' + translate['Edit Links'] + \
-                '" alt="| ' + translate['Edit Links'] + \
-                '" class="timelineicon"/></a>'
-        else:
-            # NOTE: deliberately no \n at end of line
-            tl_str += \
-                '<a href="' + \
-                users_path + '/linksmobile' + \
-                '" tabindex="2"><button class="buttonMobile">' + \
-                '<span>' + translate['Links'] + \
-                '</span></button></a>'
+        tl_str += \
+            '<a class="imageAnchorMobile" href="' + \
+            users_path + '/linksmobile">' + \
+            '<img loading="lazy" decoding="async" src="/icons' + \
+            '/links.png" title="' + translate['Edit Links'] + \
+            '" alt="| ' + translate['Edit Links'] + \
+            '" class="timelineicon"/></a>'
 
         # the newswire button to show left column links
-        if not icons_as_buttons:
-            tl_str += \
-                '<a class="imageAnchorMobile" href="' + \
-                users_path + '/newswiremobile">' + \
-                '<img loading="lazy" decoding="async" src="/icons' + \
-                '/newswire.png" title="' + translate['News'] + \
-                '" alt="| ' + translate['News'] + \
-                '" class="timelineicon"/></a>'
-        else:
-            # NOTE: deliberately no \n at end of line
-            tl_str += \
-                '<a href="' + \
-                users_path + '/newswiremobile' + \
-                '" tabindex="2"><button class="buttonMobile">' + \
-                '<span>' + translate['Newswire'] + \
-                '</span></button></a>'
+        tl_str += \
+            '<a class="imageAnchorMobile" href="' + \
+            users_path + '/newswiremobile">' + \
+            '<img loading="lazy" decoding="async" src="/icons' + \
+            '/newswire.png" title="' + translate['News'] + \
+            '" alt="| ' + translate['News'] + \
+            '" class="timelineicon"/></a>'
 
     if not is_text_browser:
         if not features_header:
             # 4. the show/hide button, for a simpler header appearance
-            if not icons_as_buttons:
-                tl_str += \
-                    '      <a class="imageAnchor" href="' + \
-                    users_path + '/minimal" tabindex="3">' + \
-                    '<img loading="lazy" decoding="async" src="/icons' + \
-                    '/showhide.png" title="' + \
-                    translate['Show/Hide Buttons'] + \
-                    '" alt="| ' + translate['Show/Hide Buttons'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                tl_str += \
-                    '<a href="' + users_path + '/minimal' + \
-                    '" tabindex="3"><button class="button">' + \
-                    '<span>' + translate['Show/Hide Buttons'] + \
-                    '</span></button></a>'
+            tl_str += \
+                '      <a class="imageAnchor" href="' + \
+                users_path + '/minimal" tabindex="3">' + \
+                '<img loading="lazy" decoding="async" src="/icons' + \
+                '/showhide.png" title="' + \
+                translate['Show/Hide Buttons'] + \
+                '" alt="| ' + translate['Show/Hide Buttons'] + \
+                '" class="timelineicon"/></a>\n'
 
             # 5. the hide announces button
             if show_announces:
@@ -352,21 +303,14 @@ def header_buttons_timeline(default_timeline: str,
                 hide_announces_icon = 'repeat_show.png'
                 hide_announces_text = translate['Show Announces']
 
-            if not icons_as_buttons:
-                tl_str += \
-                    '      <a class="imageAnchor" href="' + \
-                    users_path + '/hideannounces" tabindex="3">' + \
-                    '<img loading="lazy" decoding="async" src="/icons' + \
-                    '/' + hide_announces_icon + '" title="' + \
-                    hide_announces_text + \
-                    '" alt="| ' + translate['Hide Announces'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                tl_str += \
-                    '<a href="' + users_path + '/hideannounces' + \
-                    '" tabindex="3"><button class="button">' + \
-                    '<span>' + hide_announces_text + \
-                    '</span></button></a>'
+            tl_str += \
+                '      <a class="imageAnchor" href="' + \
+                users_path + '/hideannounces" tabindex="3">' + \
+                '<img loading="lazy" decoding="async" src="/icons' + \
+                '/' + hide_announces_icon + '" title="' + \
+                hide_announces_text + \
+                '" alt="| ' + translate['Hide Announces'] + \
+                '" class="timelineicon"/></a>\n'
 
         # 6. calendar button
         if not features_header:
@@ -374,23 +318,15 @@ def header_buttons_timeline(default_timeline: str,
             if new_calendar_event:
                 # indicate that the calendar icon is highlighted
                 calendar_alt_text = '*' + calendar_alt_text + '*'
-            if not icons_as_buttons:
-                tl_str += \
-                    '      <a class="imageAnchor" href="' + \
-                    users_path + calendar_path + \
-                    '" accesskey="' + access_keys['menuCalendar'] + \
-                    '" tabindex="3">' + \
-                    '<img loading="lazy" decoding="async" src="/icons/' + \
-                    calendar_image + '" title="' + translate['Calendar'] + \
-                    '" alt="| ' + calendar_alt_text + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                tl_str += \
-                    '<a href="' + users_path + calendar_path + \
-                    '" tabindex="3"><button class="button" accesskey="' + \
-                    access_keys['menuCalendar'] + '">' + \
-                    '<span>' + translate['Calendar'] + \
-                    '</span></button></a>'
+            tl_str += \
+                '      <a class="imageAnchor" href="' + \
+                users_path + calendar_path + \
+                '" accesskey="' + access_keys['menuCalendar'] + \
+                '" tabindex="3">' + \
+                '<img loading="lazy" decoding="async" src="/icons/' + \
+                calendar_image + '" title="' + translate['Calendar'] + \
+                '" alt="| ' + calendar_alt_text + \
+                '" class="timelineicon"/></a>\n'
 
     if features_header:
         tl_str += \
@@ -404,26 +340,16 @@ def header_buttons_timeline(default_timeline: str,
     # 7. search button
     if not is_text_browser:
         if not features_header:
-            if not icons_as_buttons:
-                # the search icon
-                tl_str += \
-                    '<a class="imageAnchor" href="' + users_path + \
-                    '/search" accesskey="' + access_keys['menuSearch'] + \
-                    '" tabindex="3">' + \
-                    '<img loading="lazy" decoding="async" src="/' + \
-                    'icons/search.png" title="' + \
-                    translate['Search and follow'] + '" alt="| ' + \
-                    translate['Search and follow'] + \
-                    '" class="timelineicon"/></a>'
-            else:
-                # the search button
-                tl_str += \
-                    '<a href="' + users_path + \
-                    '/search" tabindex="3">' + \
-                    '<button class="button" ' + \
-                    'accesskey="' + access_keys['menuSearch'] + '>' + \
-                    '<span>' + translate['Search'] + \
-                    '</span></button></a>'
+            # the search icon
+            tl_str += \
+                '<a class="imageAnchor" href="' + users_path + \
+                '/search" accesskey="' + access_keys['menuSearch'] + \
+                '" tabindex="3">' + \
+                '<img loading="lazy" decoding="async" src="/' + \
+                'icons/search.png" title="' + \
+                translate['Search and follow'] + '" alt="| ' + \
+                translate['Search and follow'] + \
+                '" class="timelineicon"/></a>'
 
     # 8. new post
     if not is_text_browser:
@@ -436,8 +362,7 @@ def header_buttons_timeline(default_timeline: str,
         print('TIMELINE TIMING ' + box_name + ' 5 = ' + str(time_diff))
 
     # end of headericons div
-    if not icons_as_buttons:
-        tl_str += '</div>'
+    tl_str += '</div>'
 
     # end of the button header with inbox, outbox, etc
     tl_str += '    </nav></div>\n'

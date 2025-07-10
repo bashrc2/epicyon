@@ -496,7 +496,6 @@ def html_newswire_mobile(base_dir: str, nickname: str,
                          show_publish_as_icon: bool,
                          authorized: bool,
                          rss_icon_at_top: bool,
-                         icons_as_buttons: bool,
                          default_timeline: str,
                          theme: str,
                          access_keys: {},
@@ -546,8 +545,7 @@ def html_newswire_mobile(base_dir: str, nickname: str,
 
     html_str += '<center>' + \
         header_buttons_front_screen(translate, nickname,
-                                    'newswire', authorized,
-                                    icons_as_buttons) + '</center>'
+                                    'newswire', authorized) + '</center>'
     html_str += \
         get_right_column_content(base_dir, nickname, domain_full,
                                  translate,

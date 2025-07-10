@@ -378,7 +378,6 @@ def html_links_mobile(base_dir: str,
                       http_prefix: str, translate,
                       timeline_path: str, authorized: bool,
                       rss_icon_at_top: bool,
-                      icons_as_buttons: bool,
                       default_timeline: str,
                       theme: str, access_keys: {},
                       shared_items_federated_domains: [],
@@ -420,8 +419,7 @@ def html_links_mobile(base_dir: str,
     html_str += '<div class="col-left-mobile">\n'
     html_str += '<center>' + \
         header_buttons_front_screen(translate, nickname,
-                                    'links', authorized,
-                                    icons_as_buttons) + '</center>'
+                                    'links', authorized) + '</center>'
     html_str += \
         get_left_column_content(base_dir, nickname, domain_full,
                                 http_prefix, translate,

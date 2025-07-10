@@ -205,20 +205,6 @@ def _set_newswire_publish_as_icon(base_dir: str, use_icon: bool) -> bool:
     return save_json(config_json, config_filename)
 
 
-def _set_icons_as_buttons(base_dir: str, use_buttons: bool) -> bool:
-    """Whether to show icons in the header (inbox, outbox, etc)
-    as buttons
-    """
-    config_filename = base_dir + '/config.json'
-    if not os.path.isfile(config_filename):
-        return False
-    config_json = load_json(config_filename)
-    if not config_json:
-        return False
-    config_json['iconsAsButtons'] = use_buttons
-    return save_json(config_json, config_filename)
-
-
 def _set_rss_icon_at_top(base_dir: str, at_top: bool) -> bool:
     """Whether to show RSS icon at the top of the timeline
     """
@@ -382,12 +368,6 @@ def _set_theme_from_dict(base_dir: str, name: str,
                         _set_full_width_timeline_button_header(base_dir, True)
                     else:
                         _set_full_width_timeline_button_header(base_dir, False)
-                    continue
-                if param_name == 'icons-as-buttons':
-                    if param_value.lower() == 'true':
-                        _set_icons_as_buttons(base_dir, True)
-                    else:
-                        _set_icons_as_buttons(base_dir, False)
                     continue
                 if param_name == 'rss-icon-at-top':
                     if param_value.lower() == 'true':

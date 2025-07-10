@@ -2981,7 +2981,6 @@ def daemon_http_get(self) -> None:
                 '/users/' + nickname + '/' + self.server.default_timeline
             show_publish_as_icon = self.server.show_publish_as_icon
             rss_icon_at_top = self.server.rss_icon_at_top
-            icons_as_buttons = False
             default_timeline = self.server.default_timeline
             access_keys = self.server.access_keys
             if self.server.key_shortcuts.get(nickname):
@@ -2998,7 +2997,6 @@ def daemon_http_get(self) -> None:
                                      show_publish_as_icon,
                                      authorized,
                                      rss_icon_at_top,
-                                     icons_as_buttons,
                                      default_timeline,
                                      self.server.theme_name,
                                      access_keys,
@@ -3026,7 +3024,6 @@ def daemon_http_get(self) -> None:
                 access_keys = self.server.key_shortcuts[nickname]
             timeline_path = \
                 '/users/' + nickname + '/' + self.server.default_timeline
-            icons_as_buttons = False
             default_timeline = self.server.default_timeline
             shared_items_domains = \
                 self.server.shared_items_federated_domains
@@ -3039,7 +3036,6 @@ def daemon_http_get(self) -> None:
                                   timeline_path,
                                   authorized,
                                   self.server.rss_icon_at_top,
-                                  icons_as_buttons,
                                   default_timeline,
                                   self.server.theme_name,
                                   access_keys,
@@ -4720,7 +4716,6 @@ def daemon_http_get(self) -> None:
                       self.server.cached_webfingers,
                       self.server.yt_replace_domain,
                       self.server.twitter_replacement_domain,
-                      self.server.icons_as_buttons,
                       self.server.access_keys,
                       self.server.key_shortcuts,
                       self.server.city,
@@ -4779,7 +4774,6 @@ def daemon_http_get(self) -> None:
                        self.server.yt_replace_domain,
                        self.server.twitter_replacement_domain,
                        self.server.show_published_date_only,
-                       self.server.icons_as_buttons,
                        self.server.allow_local_network_access,
                        self.server.access_keys,
                        self.server.key_shortcuts,
@@ -4951,7 +4945,6 @@ def daemon_http_get(self) -> None:
                       self.server.show_published_date_only,
                       self.server.newswire,
                       self.server.show_publish_as_icon,
-                      self.server.icons_as_buttons,
                       self.server.rss_icon_at_top,
                       self.server.publish_button_at_top,
                       self.server.theme_name,
@@ -5012,7 +5005,6 @@ def daemon_http_get(self) -> None:
                     self.server.yt_replace_domain,
                     self.server.newswire,
                     self.server.show_publish_as_icon,
-                    self.server.icons_as_buttons,
                     self.server.rss_icon_at_top,
                     self.server.publish_button_at_top,
                     self.server.theme_name,
@@ -5073,7 +5065,6 @@ def daemon_http_get(self) -> None:
                         self.server.yt_replace_domain,
                         self.server.newswire,
                         self.server.show_publish_as_icon,
-                        self.server.icons_as_buttons,
                         self.server.rss_icon_at_top,
                         self.server.publish_button_at_top,
                         self.server.theme_name,
@@ -5134,7 +5125,6 @@ def daemon_http_get(self) -> None:
                                self.server.show_published_date_only,
                                self.server.newswire,
                                self.server.show_publish_as_icon,
-                               self.server.icons_as_buttons,
                                self.server.rss_icon_at_top,
                                self.server.publish_button_at_top,
                                self.server.theme_name,
@@ -5198,7 +5188,6 @@ def daemon_http_get(self) -> None:
                                self.server.show_published_date_only,
                                self.server.newswire,
                                self.server.show_publish_as_icon,
-                               self.server.icons_as_buttons,
                                self.server.rss_icon_at_top,
                                self.server.publish_button_at_top,
                                self.server.theme_name,
@@ -5260,7 +5249,6 @@ def daemon_http_get(self) -> None:
                               self.server.show_published_date_only,
                               self.server.newswire,
                               self.server.show_publish_as_icon,
-                              self.server.icons_as_buttons,
                               self.server.rss_icon_at_top,
                               self.server.publish_button_at_top,
                               self.server.theme_name,
@@ -5322,7 +5310,6 @@ def daemon_http_get(self) -> None:
                                   self.server.yt_replace_domain,
                                   self.server.newswire,
                                   self.server.show_publish_as_icon,
-                                  self.server.icons_as_buttons,
                                   self.server.rss_icon_at_top,
                                   self.server.publish_button_at_top,
                                   self.server.theme_name,
@@ -5379,7 +5366,6 @@ def daemon_http_get(self) -> None:
                                 self.server.newswire,
                                 self.server.positive_voting,
                                 self.server.show_publish_as_icon,
-                                self.server.icons_as_buttons,
                                 self.server.rss_icon_at_top,
                                 self.server.publish_button_at_top,
                                 self.server.theme_name,
@@ -5433,7 +5419,6 @@ def daemon_http_get(self) -> None:
                                 self.server.newswire,
                                 self.server.positive_voting,
                                 self.server.show_publish_as_icon,
-                                self.server.icons_as_buttons,
                                 self.server.rss_icon_at_top,
                                 self.server.publish_button_at_top,
                                 self.server.theme_name,
@@ -5586,7 +5571,6 @@ def daemon_http_get(self) -> None:
                                    self.server.yt_replace_domain,
                                    self.server.newswire,
                                    self.server.show_publish_as_icon,
-                                   self.server.icons_as_buttons,
                                    self.server.rss_icon_at_top,
                                    self.server.publish_button_at_top,
                                    self.server.theme_name,
@@ -5648,7 +5632,6 @@ def daemon_http_get(self) -> None:
                                 self.server.show_published_date_only,
                                 self.server.newswire,
                                 self.server.show_publish_as_icon,
-                                self.server.icons_as_buttons,
                                 self.server.rss_icon_at_top,
                                 self.server.publish_button_at_top,
                                 self.server.theme_name,
@@ -5715,7 +5698,6 @@ def daemon_http_get(self) -> None:
                              self.server.yt_replace_domain,
                              self.server.newswire,
                              self.server.show_publish_as_icon,
-                             self.server.icons_as_buttons,
                              self.server.rss_icon_at_top,
                              self.server.publish_button_at_top,
                              self.server.theme_name,
@@ -5759,7 +5741,6 @@ def daemon_http_get(self) -> None:
                         self.server.bold_reading,
                         self.server.signing_priv_key_pem,
                         self.server.rss_icon_at_top,
-                        self.server.icons_as_buttons,
                         self.server.default_timeline,
                         self.server.recent_posts_cache,
                         self.server.max_recent_posts,
@@ -5821,7 +5802,6 @@ def daemon_http_get(self) -> None:
                            self.server.sites_unavailable,
                            self.server.signing_priv_key_pem,
                            self.server.rss_icon_at_top,
-                           self.server.icons_as_buttons,
                            self.server.default_timeline,
                            self.server.recent_posts_cache,
                            self.server.max_recent_posts,
@@ -5879,7 +5859,6 @@ def daemon_http_get(self) -> None:
                        self.server.sites_unavailable,
                        self.server.signing_priv_key_pem,
                        self.server.rss_icon_at_top,
-                       self.server.icons_as_buttons,
                        self.server.default_timeline,
                        self.server.recent_posts_cache,
                        self.server.max_recent_posts,
@@ -5939,7 +5918,6 @@ def daemon_http_get(self) -> None:
                           self.server.max_shares_on_profile,
                           self.server.signing_priv_key_pem,
                           self.server.rss_icon_at_top,
-                          self.server.icons_as_buttons,
                           self.server.default_timeline,
                           self.server.recent_posts_cache,
                           self.server.max_recent_posts,
@@ -5997,7 +5975,6 @@ def daemon_http_get(self) -> None:
                            self.server.sites_unavailable,
                            self.server.signing_priv_key_pem,
                            self.server.rss_icon_at_top,
-                           self.server.icons_as_buttons,
                            self.server.default_timeline,
                            self.server.recent_posts_cache,
                            self.server.max_recent_posts,
@@ -6056,7 +6033,6 @@ def daemon_http_get(self) -> None:
                            self.server.fitness,
                            self.server.signing_priv_key_pem,
                            self.server.rss_icon_at_top,
-                           self.server.icons_as_buttons,
                            self.server.default_timeline,
                            self.server.recent_posts_cache,
                            self.server.max_recent_posts,

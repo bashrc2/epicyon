@@ -113,36 +113,57 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
 
 
 def _html_timeline_new_post(manually_approve_followers: bool,
-                            box_name: str, icons_as_buttons: bool,
+                            box_name: str,
                             users_path: str, translate: {},
                             access_keys: {}) -> str:
     """Returns html for the new post button
     """
     new_post_button_str = ''
     if box_name == 'dm':
-        if not icons_as_buttons:
-            new_post_button_str += \
-                '<a class="imageAnchor" href="' + users_path + \
-                '/newdm?nodropdown" tabindex="3" accesskey="' + \
-                access_keys['menuNewPost'] + '">' + \
-                '<img loading="lazy" decoding="async" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new DM'] + \
-                '" alt="| ' + translate['Create a new DM'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            new_post_button_str += \
-                '<a href="' + users_path + \
-                '/newdm?nodropdown" tabindex="3" accesskey="' + \
-                access_keys['menuNewPost'] + '">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>'
+        new_post_button_str += \
+            '<a class="imageAnchor" href="' + users_path + \
+            '/newdm?nodropdown" tabindex="3" accesskey="' + \
+            access_keys['menuNewPost'] + '">' + \
+            '<img loading="lazy" decoding="async" src="/' + \
+            'icons/newpost.png" title="' + \
+            translate['Create a new DM'] + \
+            '" alt="| ' + translate['Create a new DM'] + \
+            '" class="timelineicon"/></a>\n'
     elif box_name in ('tlblogs', 'tlnews', 'tlfeatures'):
-        if not icons_as_buttons:
+        new_post_button_str += \
+            '<a class="imageAnchor" href="' + users_path + \
+            '/newblog" tabindex="3" accesskey="' + \
+            access_keys['menuNewPost'] + '">' + \
+            '<img loading="lazy" decoding="async" src="/' + \
+            'icons/newpost.png" title="' + \
+            translate['Create a new post'] + '" alt="| ' + \
+            translate['Create a new post'] + \
+            '" class="timelineicon"/></a>\n'
+    elif box_name == 'tlshares':
+        new_post_button_str += \
+            '<a class="imageAnchor" href="' + users_path + \
+            '/newshare?nodropdown" tabindex="3" accesskey="' + \
+            access_keys['menuNewPost'] + '">' + \
+            '<img loading="lazy" decoding="async" src="/' + \
+            'icons/newpost.png" title="' + \
+            translate['Create a new shared item'] + '" alt="| ' + \
+            translate['Create a new shared item'] + \
+            '" class="timelineicon"/></a>\n'
+    elif box_name == 'tlwanted':
+        new_post_button_str += \
+            '<a class="imageAnchor" href="' + users_path + \
+            '/newwanted?nodropdown" tabindex="3" accesskey="' + \
+            access_keys['menuNewPost'] + '">' + \
+            '<img loading="lazy" decoding="async" src="/' + \
+            'icons/newpost.png" title="' + \
+            translate['Create a new wanted item'] + '" alt="| ' + \
+            translate['Create a new wanted item'] + \
+            '" class="timelineicon"/></a>\n'
+    else:
+        if not manually_approve_followers:
             new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newblog" tabindex="3" accesskey="' + \
-                access_keys['menuNewPost'] + '">' + \
+                '/newpost" tabindex="3">' + \
                 '<img loading="lazy" decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
@@ -150,81 +171,14 @@ def _html_timeline_new_post(manually_approve_followers: bool,
                 '" class="timelineicon"/></a>\n'
         else:
             new_post_button_str += \
-                '<a href="' + users_path + \
-                '/newblog" tabindex="3" accesskey="' + \
-                access_keys['menuNewPost'] + '">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    elif box_name == 'tlshares':
-        if not icons_as_buttons:
-            new_post_button_str += \
                 '<a class="imageAnchor" href="' + users_path + \
-                '/newshare?nodropdown" tabindex="3" accesskey="' + \
+                '/newfollowers" tabindex="3" accesskey="' + \
                 access_keys['menuNewPost'] + '">' + \
                 '<img loading="lazy" decoding="async" src="/' + \
                 'icons/newpost.png" title="' + \
-                translate['Create a new shared item'] + '" alt="| ' + \
-                translate['Create a new shared item'] + \
+                translate['Create a new post'] + \
+                '" alt="| ' + translate['Create a new post'] + \
                 '" class="timelineicon"/></a>\n'
-        else:
-            new_post_button_str += \
-                '<a href="' + users_path + \
-                '/newshare?nodropdown" tabindex="3" accesskey="' + \
-                access_keys['menuNewPost'] + '">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    elif box_name == 'tlwanted':
-        if not icons_as_buttons:
-            new_post_button_str += \
-                '<a class="imageAnchor" href="' + users_path + \
-                '/newwanted?nodropdown" tabindex="3" accesskey="' + \
-                access_keys['menuNewPost'] + '">' + \
-                '<img loading="lazy" decoding="async" src="/' + \
-                'icons/newpost.png" title="' + \
-                translate['Create a new wanted item'] + '" alt="| ' + \
-                translate['Create a new wanted item'] + \
-                '" class="timelineicon"/></a>\n'
-        else:
-            new_post_button_str += \
-                '<a href="' + users_path + \
-                '/newwanted?nodropdown" tabindex="3" accesskey="' + \
-                access_keys['menuNewPost'] + '">' + \
-                '<button class="button"><span>' + \
-                translate['Post'] + '</span></button></a>'
-    else:
-        if not manually_approve_followers:
-            if not icons_as_buttons:
-                new_post_button_str += \
-                    '<a class="imageAnchor" href="' + users_path + \
-                    '/newpost" tabindex="3">' + \
-                    '<img loading="lazy" decoding="async" src="/' + \
-                    'icons/newpost.png" title="' + \
-                    translate['Create a new post'] + '" alt="| ' + \
-                    translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                new_post_button_str += \
-                    '<a href="' + users_path + '/newpost" tabindex="3">' + \
-                    '<button class="button"><span>' + \
-                    translate['Post'] + '</span></button></a>'
-        else:
-            if not icons_as_buttons:
-                new_post_button_str += \
-                    '<a class="imageAnchor" href="' + users_path + \
-                    '/newfollowers" tabindex="3" accesskey="' + \
-                    access_keys['menuNewPost'] + '">' + \
-                    '<img loading="lazy" decoding="async" src="/' + \
-                    'icons/newpost.png" title="' + \
-                    translate['Create a new post'] + \
-                    '" alt="| ' + translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                new_post_button_str += \
-                    '<a href="' + users_path + \
-                    '/newfollowers" tabindex="3" accesskey="' + \
-                    access_keys['menuNewPost'] + '">' + \
-                    '<button class="button"><span>' + \
-                    translate['Post'] + '</span></button></a>'
     return new_post_button_str
 
 
@@ -502,7 +456,6 @@ def html_timeline(default_timeline: str,
                   positive_voting: bool,
                   show_publish_as_icon: bool,
                   full_width_tl_button_header: bool,
-                  icons_as_buttons: bool,
                   rss_icon_at_top: bool,
                   publish_button_at_top: bool,
                   authorized: bool,
@@ -823,13 +776,12 @@ def html_timeline(default_timeline: str,
     header_icons_str = ''
     # start of headericons div
     if not news_header:
-        if not icons_as_buttons:
-            header_icons_str = '<div class="headericons">'
+        header_icons_str = '<div class="headericons">'
 
     # what screen to go to when a new post is created
     new_post_button_str = \
         _html_timeline_new_post(manually_approve_followers, box_name,
-                                icons_as_buttons, users_path, translate,
+                                users_path, translate,
                                 access_keys)
 
     # keyboard navigation
@@ -870,7 +822,7 @@ def html_timeline(default_timeline: str,
                                     domain, timeline_start_time,
                                     new_calendar_event, calendar_path,
                                     calendar_image, follow_approvals,
-                                    icons_as_buttons, access_keys,
+                                    access_keys,
                                     is_text_browser, show_announces)
 
     # start the timeline
@@ -924,7 +876,7 @@ def html_timeline(default_timeline: str,
                                     domain, timeline_start_time,
                                     new_calendar_event, calendar_path,
                                     calendar_image, follow_approvals,
-                                    icons_as_buttons, access_keys,
+                                    access_keys,
                                     is_text_browser, show_announces)
 
     tl_str += \
@@ -1410,7 +1362,6 @@ def html_shares(default_timeline: str,
                 newswire: {}, positive_voting: bool,
                 show_publish_as_icon: bool,
                 full_width_tl_button_header: bool,
-                icons_as_buttons: bool,
                 rss_icon_at_top: bool,
                 publish_button_at_top: bool,
                 authorized: bool, theme: str,
@@ -1454,7 +1405,7 @@ def html_shares(default_timeline: str,
                          newswire, False, False, artist,
                          positive_voting, show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -1484,7 +1435,6 @@ def html_wanted(default_timeline: str,
                 newswire: {}, positive_voting: bool,
                 show_publish_as_icon: bool,
                 full_width_tl_button_header: bool,
-                icons_as_buttons: bool,
                 rss_icon_at_top: bool,
                 publish_button_at_top: bool,
                 authorized: bool, theme: str,
@@ -1528,7 +1478,7 @@ def html_wanted(default_timeline: str,
                          newswire, False, False, artist,
                          positive_voting, show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -1559,7 +1509,6 @@ def html_inbox(default_timeline: str,
                newswire: {}, positive_voting: bool,
                show_publish_as_icon: bool,
                full_width_tl_button_header: bool,
-               icons_as_buttons: bool,
                rss_icon_at_top: bool,
                publish_button_at_top: bool,
                authorized: bool, theme: str,
@@ -1604,7 +1553,7 @@ def html_inbox(default_timeline: str,
                          newswire, False, False, artist,
                          positive_voting, show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -1635,7 +1584,6 @@ def html_bookmarks(default_timeline: str,
                    newswire: {}, positive_voting: bool,
                    show_publish_as_icon: bool,
                    full_width_tl_button_header: bool,
-                   icons_as_buttons: bool,
                    rss_icon_at_top: bool,
                    publish_button_at_top: bool,
                    authorized: bool, theme: str,
@@ -1679,7 +1627,7 @@ def html_bookmarks(default_timeline: str,
                          newswire, False, False, artist,
                          positive_voting, show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -1709,7 +1657,6 @@ def html_inbox_dms(default_timeline: str,
                    newswire: {}, positive_voting: bool,
                    show_publish_as_icon: bool,
                    full_width_tl_button_header: bool,
-                   icons_as_buttons: bool,
                    rss_icon_at_top: bool,
                    publish_button_at_top: bool,
                    authorized: bool, theme: str,
@@ -1749,7 +1696,7 @@ def html_inbox_dms(default_timeline: str,
                          newswire, False, False, artist, positive_voting,
                          show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -1780,7 +1727,6 @@ def html_inbox_replies(default_timeline: str,
                        newswire: {}, positive_voting: bool,
                        show_publish_as_icon: bool,
                        full_width_tl_button_header: bool,
-                       icons_as_buttons: bool,
                        rss_icon_at_top: bool,
                        publish_button_at_top: bool,
                        authorized: bool, theme: str,
@@ -1820,7 +1766,7 @@ def html_inbox_replies(default_timeline: str,
                          newswire, False, False, artist,
                          positive_voting, show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -1849,7 +1795,6 @@ def html_inbox_media(default_timeline: str,
                      newswire: {}, positive_voting: bool,
                      show_publish_as_icon: bool,
                      full_width_tl_button_header: bool,
-                     icons_as_buttons: bool,
                      rss_icon_at_top: bool,
                      publish_button_at_top: bool,
                      authorized: bool, theme: str,
@@ -1889,7 +1834,7 @@ def html_inbox_media(default_timeline: str,
                          newswire, False, False, artist,
                          positive_voting, show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -1918,7 +1863,6 @@ def html_inbox_blogs(default_timeline: str,
                      newswire: {}, positive_voting: bool,
                      show_publish_as_icon: bool,
                      full_width_tl_button_header: bool,
-                     icons_as_buttons: bool,
                      rss_icon_at_top: bool,
                      publish_button_at_top: bool,
                      authorized: bool, theme: str,
@@ -1958,7 +1902,7 @@ def html_inbox_blogs(default_timeline: str,
                          newswire, False, False, artist,
                          positive_voting, show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -1987,7 +1931,6 @@ def html_inbox_features(default_timeline: str,
                         newswire: {}, positive_voting: bool,
                         show_publish_as_icon: bool,
                         full_width_tl_button_header: bool,
-                        icons_as_buttons: bool,
                         rss_icon_at_top: bool,
                         publish_button_at_top: bool,
                         authorized: bool,
@@ -2026,7 +1969,7 @@ def html_inbox_features(default_timeline: str,
                          newswire, False, False, False,
                          positive_voting, show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -2055,7 +1998,6 @@ def html_inbox_news(default_timeline: str,
                     newswire: {}, moderator: bool, editor: bool, artist: bool,
                     positive_voting: bool, show_publish_as_icon: bool,
                     full_width_tl_button_header: bool,
-                    icons_as_buttons: bool,
                     rss_icon_at_top: bool,
                     publish_button_at_top: bool,
                     authorized: bool, theme: str,
@@ -2093,7 +2035,7 @@ def html_inbox_news(default_timeline: str,
                          newswire, moderator, editor, artist,
                          positive_voting, show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,
@@ -2122,7 +2064,6 @@ def html_outbox(default_timeline: str,
                 newswire: {}, positive_voting: bool,
                 show_publish_as_icon: bool,
                 full_width_tl_button_header: bool,
-                icons_as_buttons: bool,
                 rss_icon_at_top: bool,
                 publish_button_at_top: bool,
                 authorized: bool, theme: str,
@@ -2163,7 +2104,7 @@ def html_outbox(default_timeline: str,
                          newswire, False, False, artist, positive_voting,
                          show_publish_as_icon,
                          full_width_tl_button_header,
-                         icons_as_buttons, rss_icon_at_top,
+                         rss_icon_at_top,
                          publish_button_at_top,
                          authorized, None, theme, peertube_instances,
                          allow_local_network_access, text_mode_banner,

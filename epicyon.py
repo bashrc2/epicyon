@@ -525,11 +525,6 @@ def _command_options() -> None:
                         help="Whether to show the timeline " +
                         "button header containing inbox and outbox " +
                         "as the full width of the screen")
-    parser.add_argument("--icons_as_buttons",
-                        dest='icons_as_buttons',
-                        type=str2bool, nargs='?',
-                        const=True, default=False,
-                        help="Show header icons as buttons")
     parser.add_argument("--log_login_failures",
                         dest='log_login_failures',
                         type=str2bool, nargs='?',
@@ -4159,8 +4154,6 @@ def _command_options() -> None:
     if show_publish_as_icon is not None:
         argb.show_publish_as_icon = bool(show_publish_as_icon)
 
-    icons_as_buttons = False
-
     rss_icon_at_top = \
         get_config_param(base_dir, 'rssIconAtTop')
     if rss_icon_at_top is not None:
@@ -4353,7 +4346,6 @@ if __name__ == "__main__":
                argb2.max_feed_item_size_kb,
                argb2.publish_button_at_top,
                argb2.rss_icon_at_top,
-               argb2.icons_as_buttons,
                argb2.full_width_tl_button_header,
                argb2.show_publish_as_icon,
                argb2.max_followers,
