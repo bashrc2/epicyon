@@ -2981,7 +2981,7 @@ def daemon_http_get(self) -> None:
                 '/users/' + nickname + '/' + self.server.default_timeline
             show_publish_as_icon = self.server.show_publish_as_icon
             rss_icon_at_top = self.server.rss_icon_at_top
-            icons_as_buttons = self.server.icons_as_buttons
+            icons_as_buttons = False
             default_timeline = self.server.default_timeline
             access_keys = self.server.access_keys
             if self.server.key_shortcuts.get(nickname):
@@ -3026,7 +3026,7 @@ def daemon_http_get(self) -> None:
                 access_keys = self.server.key_shortcuts[nickname]
             timeline_path = \
                 '/users/' + nickname + '/' + self.server.default_timeline
-            icons_as_buttons = self.server.icons_as_buttons
+            icons_as_buttons = False
             default_timeline = self.server.default_timeline
             shared_items_domains = \
                 self.server.shared_items_federated_domains

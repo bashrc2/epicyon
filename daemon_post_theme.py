@@ -135,11 +135,6 @@ def theme_designer_edit(self, calling_domain: str, cookie: str,
             self.server.show_publish_as_icon = True
         else:
             self.server.show_publish_as_icon = False
-    if 'icons-as-buttons' in theme_designer_params:
-        if theme_designer_params['icons-as-buttons'].lower() == 'true':
-            self.server.icons_as_buttons = True
-        else:
-            self.server.icons_as_buttons = False
     if 'full-width-timeline-buttons' in theme_designer_params:
         theme_value = theme_designer_params['full-width-timeline-buttons']
         if theme_value.lower() == 'true':

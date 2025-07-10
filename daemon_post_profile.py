@@ -1444,8 +1444,7 @@ def _profile_post_remove_custom_font(base_dir: str, nickname: str, domain: str,
                 get_config_param(base_dir, 'showPublishAsIcon')
             self.server.full_width_tl_button_header = \
                 get_config_param(base_dir, 'fullWidthTimelineButtonHeader')
-            self.server.icons_as_buttons = \
-                get_config_param(base_dir, 'iconsAsButtons')
+            self.server.icons_as_buttons = False
             self.server.rss_icon_at_top = \
                 get_config_param(base_dir, 'rssIconAtTop')
             self.server.publish_button_at_top = \
@@ -2617,8 +2616,7 @@ def _profile_post_theme_change(base_dir: str, nickname: str,
                     get_config_param(base_dir, 'showPublishAsIcon')
                 self.server.full_width_tl_button_header = \
                     get_config_param(base_dir, 'fullWidthTlButtonHeader')
-                self.server.icons_as_buttons = \
-                    get_config_param(base_dir, 'iconsAsButtons')
+                self.server.icons_as_buttons = False
                 self.server.rss_icon_at_top = \
                     get_config_param(base_dir, 'rssIconAtTop')
                 self.server.publish_button_at_top = \

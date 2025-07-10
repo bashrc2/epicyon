@@ -4159,10 +4159,7 @@ def _command_options() -> None:
     if show_publish_as_icon is not None:
         argb.show_publish_as_icon = bool(show_publish_as_icon)
 
-    icons_as_buttons = \
-        get_config_param(base_dir, 'iconsAsButtons')
-    if icons_as_buttons is not None:
-        argb.icons_as_buttons = bool(icons_as_buttons)
+    icons_as_buttons = False
 
     rss_icon_at_top = \
         get_config_param(base_dir, 'rssIconAtTop')

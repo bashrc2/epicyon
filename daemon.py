@@ -1077,7 +1077,7 @@ def run_daemon(accounts_data_dir: str,
     httpd.full_width_tl_button_header = full_width_tl_button_header
 
     # whether to show icons in the header (eg calendar) as buttons
-    httpd.icons_as_buttons = icons_as_buttons
+    httpd.icons_as_buttons = False
 
     # whether to show the RSS icon at the top or the bottom of the timeline
     httpd.rss_icon_at_top = rss_icon_at_top
