@@ -2516,7 +2516,7 @@ def _profile_post_blog_instance_status(base_dir: str, fields: {},
                                        self) -> None:
     """ HTTP POST blog instance status
     """
-    if fields.get('blogsInstance'):
+    if 'blogsInstance' in fields:
         self.server.blogs_instance = False
         self.server.default_timeline = 'inbox'
         if fields['blogsInstance'] == 'on':
@@ -2542,7 +2542,7 @@ def _profile_post_news_instance_status(base_dir: str, fields: {},
                                        self) -> None:
     """ HTTP POST change news instance status
     """
-    if fields.get('newsInstance'):
+    if 'newsInstance' in fields:
         self.server.news_instance = False
         self.server.default_timeline = 'inbox'
         if fields['newsInstance'] == 'on':
@@ -2568,7 +2568,7 @@ def _profile_post_media_instance_status(base_dir: str, fields: {},
                                         self) -> None:
     """ HTTP POST change media instance status
     """
-    if fields.get('mediaInstance'):
+    if 'mediaInstance' in fields:
         self.server.media_instance = False
         self.server.default_timeline = 'inbox'
         if fields['mediaInstance'] == 'on':
