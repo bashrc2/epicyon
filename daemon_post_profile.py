@@ -2531,7 +2531,8 @@ def _profile_post_blog_instance_status(base_dir: str, fields: {},
         set_config_param(base_dir, "newsInstance",
                          self.server.news_instance)
     else:
-        if self.server.blogs_instance:
+        if self.server.blogs_instance or \
+           get_config_param(base_dir, "blogsInstance"):
             self.server.blogs_instance = False
             self.server.default_timeline = 'inbox'
             set_config_param(base_dir, "blogsInstance",
@@ -2557,7 +2558,8 @@ def _profile_post_news_instance_status(base_dir: str, fields: {},
         set_config_param(base_dir, "newsInstance",
                          self.server.news_instance)
     else:
-        if self.server.news_instance:
+        if self.server.news_instance or \
+           get_config_param(base_dir, "newsInstance"):
             self.server.news_instance = False
             self.server.default_timeline = 'inbox'
             set_config_param(base_dir, "newsInstance",
@@ -2583,7 +2585,8 @@ def _profile_post_media_instance_status(base_dir: str, fields: {},
         set_config_param(base_dir, "newsInstance",
                          self.server.news_instance)
     else:
-        if self.server.media_instance:
+        if self.server.media_instance or \
+           get_config_param(base_dir, "mediaInstance"):
             self.server.media_instance = False
             self.server.default_timeline = 'inbox'
             set_config_param(base_dir, "mediaInstance",
