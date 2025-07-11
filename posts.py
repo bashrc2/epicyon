@@ -4755,12 +4755,16 @@ def _create_box_items(base_dir: str,
         }
         first_post_id = replace_strings(first_post_id, replacements)
 
+    prev_post_filename = None
     try:
         with open(index_filename, 'r', encoding='utf-8') as fp_index:
             posts_added_to_timeline = 0
             while posts_added_to_timeline < items_per_page:
                 post_filename = fp_index.readline()
 
+                if post_filename == prev_post_filename:
+                    break
+                prev_post_filename = post_filename
                 if not post_filename:
                     break
 
