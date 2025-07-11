@@ -125,6 +125,7 @@ from cwlists import add_cw_from_lists
 from blocking import is_blocked
 from blocking import sending_is_blocked2
 from reaction import html_emoji_reactions
+from maps import get_map_links_from_post_content
 from maps import update_address_book
 from maps import html_open_street_map
 from maps import set_map_preferences_coords
@@ -3189,6 +3190,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
             buy_links = get_buy_links(post_json_object, translate, buy_sites)
         # show embedded map if the location contains a map url
         location_str = get_location_from_post(post_json_object)
+        if not location_str:
+            # try to obtain a location from the message content.
+            # This is a bit 'protocol decay' but it's current praxis
+            map_links = get_map_links_from_post_content(content_str, session)
+            if map_links:
+                location_str = map_links[0]
+
         category_str = get_category_from_post(post_json_object, translate)
         time_span_str = get_event_time_span_from_post(post_json_object)
 

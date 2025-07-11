@@ -8336,7 +8336,11 @@ def _test_hashtag_maps():
     assert longitude
     assert int(longitude * 1000) == 135502
 
-    link = "<a href=\"https://www.google.com/maps/place/36.82,-3.15\" target=\"_blank\" rel=\"nofollow noopener noreferrer\" translate=\"no\"><span class=\"invisible\">https://www.</span><span class=\"ellipsis\">google.com/maps/place/36.82</span><span class=\"invisible\">3,-3.15</span></a>"
+    link = "<a href=\"https://www.google.com/maps/place/36.82,-3.15\" " + \
+        "target=\"_blank\" rel=\"nofollow noopener noreferrer\" " + \
+        "translate=\"no\"><span class=\"invisible\">https://www." + \
+        "</span><span class=\"ellipsis\">google.com/maps/place/36.82" + \
+        "</span><span class=\"invisible\">3,-3.15</span></a>"
     zoom, latitude, longitude = \
         geocoords_from_map_link(link, 'openstreetmap.org', session)
     assert zoom == 100
