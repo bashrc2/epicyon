@@ -1851,6 +1851,7 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
+    shown_items: list[str] = []
     while ctr < max_items and curr_page < 4:
         outbox_feed_path_str = \
             '/users/' + nickname + '/' + box_name + '?page=' + \
@@ -1866,7 +1867,6 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
             break
         if not outbox_feed['orderedItems']:
             break
-        shown_items: list[str] = []
         for item in outbox_feed['orderedItems']:
             if item['type'] == 'Create':
                 if not item['object'].get('id'):
