@@ -217,11 +217,16 @@ def standardize_text(text: str) -> str:
         [127344, 'A'],
         [127312, 'A'],
         [127280, 'A'],
-        [127248, 'A']
+        [127248, 'A'],
+        [120276, 'A'],
+        [120812, '0']
     )
     for char_range in char_ranges:
         range_start = char_range[0]
-        range_end = range_start + 26
+        if char_range[1] == '0':
+            range_end = range_start + 10
+        else:
+            range_end = range_start + 26
         offset = char_range[1]
         text = _standardize_text_range(text, range_start, range_end, offset)
 

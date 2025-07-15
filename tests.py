@@ -8350,6 +8350,22 @@ def _test_hashtag_maps():
     assert int(longitude * 1000) == -3150
 
 
+def _test_unbold():
+    print('test_unbold')
+    text = "Latest 𝗩aluable 𝗡ews - 𝟮𝟬𝟮𝟱/𝟬𝟳/𝟭𝟰 Valuable News"
+    expected = "Latest Valuable News - 2025/07/14 Valuable News"
+    result = standardize_text(text)
+    if result != expected:
+        print('text: ' + text)
+        print('expected: ' + expected)
+        print('result: ' + result)
+        test = ''
+        for char in text:
+            test += char + '(' + str(ord(char)) + ') '
+        print(test)
+    assert result == expected
+
+
 def _test_uninvert():
     print('test_uninvert')
     text = 'ʇsƎʇ ɐ sı sıɥ⊥'
@@ -9413,6 +9429,7 @@ def run_all_tests():
     _test_reply_language(base_dir)
     _test_emoji_in_actor_name(base_dir)
     _test_uninvert()
+    _test_unbold()
     _test_hashtag_maps()
     _test_combine_lines()
     _test_text_standardize()
