@@ -1113,6 +1113,7 @@ def remove_long_words(content: str, max_word_length: int,
                     content = content[:max_word_length]
                 return content
     content = content.replace('<p></p>', '<p> </p>')
+    content = content.replace('<br />', '<br>')
     words = content.split(' ')
     if not long_words_list:
         long_words_list: list[str] = []
@@ -1169,10 +1170,10 @@ def remove_long_words(content: str, max_word_length: int,
             end_of_line_char = '\n'
             if '<br>' in original_word_str:
                 end_of_line_char = ''
-            content = content.replace(word_str,
-                                      word_str[:max_word_length] +
-                                      end_of_line_char +
-                                      word_str[max_word_length:])
+            new_word_str = \
+                word_str[:max_word_length] + end_of_line_char + \
+                word_str[max_word_length:]
+            content = content.replace(word_str, new_word_str)
         else:
             content = content.replace(word_str,
                                       word_str[:max_word_length])
