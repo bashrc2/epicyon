@@ -19,9 +19,16 @@ grep "0.0.0.0" noai_hosts.txt | awk -F ' ' '{print $2}' > $TEMPFILENAME
 
 while IFS= read -r line
 do
-    linestr=$(echo "$line" | sed 's/\r$//')
-    linestr2="        \"${linestr}\","
-    echo "$linestr2" >> $CW_FILENAME
+    linestr=$(echo "${line}" | sed 's/\r$//')
+    if [[ "${linestr}" != "www."* ]]; then
+        linestr2="        \"/${linestr}\","
+        echo "${linestr2}" >> $CW_FILENAME
+        linestr2="        \".${linestr}\","
+        echo "${linestr2}" >> $CW_FILENAME
+    else
+        linestr2="        \"${linestr}\","
+        echo "${linestr2}" >> $CW_FILENAME
+    fi
 done < $TEMPFILENAME
 
 { echo "    ]";
