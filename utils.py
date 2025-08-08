@@ -734,12 +734,16 @@ def set_config_param(base_dir: str, variable_name: str,
                      variable_value) -> None:
     """Sets a configuration value
     """
+    if not variable_name:
+        return
     _create_config(base_dir)
     config_filename = base_dir + '/config.json'
     config_json = {}
     if os.path.isfile(config_filename):
         config_json = load_json(config_filename)
     variable_name = _convert_to_camel_case(variable_name)
+    if not variable_name:
+        return
     config_json[variable_name] = variable_value
     save_json(config_json, config_filename)
 
