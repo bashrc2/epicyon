@@ -741,6 +741,8 @@ def set_config_param(base_dir: str, variable_name: str,
     config_json = {}
     if os.path.isfile(config_filename):
         config_json = load_json(config_filename)
+        if config_json is None:
+            config_json = {}
     variable_name = _convert_to_camel_case(variable_name)
     if not variable_name:
         return
