@@ -973,35 +973,38 @@ def _add_mention(base_dir: str, word_str: str, http_prefix: str,
             return True
         # try replacing petnames with mentions
         follow_ctr = 0
-        for follow in following:
-            if '@' not in follow:
-                follow_ctr += 1
-                continue
-            pet = remove_eol(petnames[follow_ctr])
-            if pet:
-                if possible_nickname != pet:
+        if petnames:
+            for follow in following:
+                if '@' not in follow:
                     follow_ctr += 1
                     continue
-                follow_str = remove_eol(follow)
-                replace_nickname = follow_str.split('@')[0]
-                replace_domain = follow_str.split('@')[1]
-                recipient_actor = \
-                    _mention_to_url(base_dir, http_prefix,
-                                    replace_domain, replace_nickname)
-                if recipient_actor not in recipients:
-                    recipients.append(recipient_actor)
-                tags[word_str] = {
-                    'href': recipient_actor,
-                    'name': word_str,
-                    'type': 'Mention'
-                }
-                replace_mentions[word_str] = \
-                    "<span class=\"h-card\"><a href=\"" + \
-                    recipient_actor + "\" tabindex=\"10\" " + \
-                    "class=\"u-url mention\">@<span>" + \
-                    replace_nickname + "</span></a></span>"
-                return True
-            follow_ctr += 1
+                pet = None
+                if len(petnames) > follow_ctr:
+                    pet = remove_eol(petnames[follow_ctr])
+                if pet:
+                    if possible_nickname != pet:
+                        follow_ctr += 1
+                        continue
+                    follow_str = remove_eol(follow)
+                    replace_nickname = follow_str.split('@')[0]
+                    replace_domain = follow_str.split('@')[1]
+                    recipient_actor = \
+                        _mention_to_url(base_dir, http_prefix,
+                                        replace_domain, replace_nickname)
+                    if recipient_actor not in recipients:
+                        recipients.append(recipient_actor)
+                    tags[word_str] = {
+                        'href': recipient_actor,
+                        'name': word_str,
+                        'type': 'Mention'
+                    }
+                    replace_mentions[word_str] = \
+                        "<span class=\"h-card\"><a href=\"" + \
+                        recipient_actor + "\" tabindex=\"10\" " + \
+                        "class=\"u-url mention\">@<span>" + \
+                        replace_nickname + "</span></a></span>"
+                    return True
+                follow_ctr += 1
         return False
     possible_nickname = None
     possible_domain = None
