@@ -52,6 +52,9 @@ def get_email_address(actor_json: {}) -> str:
     if not isinstance(actor_json['attachment'], list):
         return ''
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -95,6 +98,9 @@ def get_deltachat_invite(actor_json: {}, translate: {}) -> str:
     match_strings = _get_deltachat_strings()
     match_strings.append(translate['DeltaChat'].lower())
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -131,6 +137,9 @@ def get_pgp_pub_key(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -160,6 +169,9 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
     if not actor_json.get('attachment'):
         return ''
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -202,6 +214,9 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -221,6 +236,9 @@ def set_email_address(actor_json: {}, email_address: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -273,6 +291,9 @@ def set_deltachat_invite(actor_json: {}, invite_link: str,
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         if not property_value.get('name'):
             continue
         if not property_value.get('type'):
@@ -312,6 +333,9 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -331,6 +355,9 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -375,6 +402,9 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -394,6 +424,9 @@ def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
         return
 
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']

@@ -533,6 +533,9 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
         aliases_not_found.append(alias)
 
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']

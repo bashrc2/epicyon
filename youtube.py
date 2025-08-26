@@ -23,6 +23,9 @@ def get_youtube(actor_json: {}) -> str:
     if not isinstance(actor_json['attachment'], list):
         return ''
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name'].lower()
@@ -44,6 +47,9 @@ def get_youtube(actor_json: {}) -> str:
         return remove_html(youtube_text)
 
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         if not property_value.get('type'):
             continue
         prop_value_name, _ = \
@@ -69,6 +75,9 @@ def set_youtube(actor_json: {}, youtube: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name'].lower()
@@ -87,6 +96,9 @@ def set_youtube(actor_json: {}, youtube: str) -> None:
         actor_json['attachment'].remove(property_found)
 
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']

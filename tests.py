@@ -6828,6 +6828,8 @@ def test_update_actor(base_dir: str):
     assert len(actor_json['attachment']) > 0
     property_found = False
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            continue
         if property_value['name'] == 'PGP':
             print('PGP property set within attachment')
             assert pub_key in property_value['value']

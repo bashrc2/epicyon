@@ -30,6 +30,9 @@ def get_website(actor_json: {}, translate: {}) -> str:
     match_strings = _get_website_strings()
     match_strings.append(website_str)
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -72,6 +75,9 @@ def get_gemini_link(actor_json: {}) -> str:
         return ''
     match_strings = _get_gemini_strings()
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -93,6 +99,9 @@ def get_gemini_link(actor_json: {}) -> str:
         return remove_link_tracking(url)
 
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         if not property_value.get('type'):
             continue
         prop_value_name, _ = \
@@ -131,6 +140,9 @@ def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         if not property_value.get('name'):
             continue
         if not property_value.get('type'):
@@ -174,6 +186,9 @@ def set_gemini_link(actor_json: {}, gemini_link: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         if not property_value.get('name'):
             continue
         if not property_value.get('type'):

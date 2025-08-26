@@ -23,6 +23,9 @@ def get_discord(actor_json: {}) -> str:
     if not isinstance(actor_json['attachment'], list):
         return ''
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name'].lower()
@@ -54,6 +57,9 @@ def set_discord(actor_json: {}, discord: str) -> None:
     # remove any existing value
     property_found = None
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name'].lower()
@@ -72,6 +78,9 @@ def set_discord(actor_json: {}, discord: str) -> None:
         actor_json['attachment'].remove(property_found)
 
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']

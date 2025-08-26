@@ -171,6 +171,9 @@ def get_actor_languages_list(actor_json: {}) -> []:
     if not actor_json.get('attachment'):
         return []
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if property_value.get('name'):
             name_value = property_value['name']
@@ -2703,6 +2706,9 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
         return ''
     property_name = property_name.lower()
     for property_value in actor_json['attachment']:
+        if not isinstance(property_value, dict):
+            print("WARN: actor attachment is not dict: " + str(property_value))
+            continue
         name_value = None
         if not isinstance(property_value, dict):
             print("WARN: Actor attachment is not dict: " + str(property_value))
