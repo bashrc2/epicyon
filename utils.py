@@ -2704,6 +2704,9 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
     property_name = property_name.lower()
     for property_value in actor_json['attachment']:
         name_value = None
+        if not isinstance(property_value, dict):
+            print("WARN: Actor attachment is not dict: " + str(property_value))
+            continue
         if property_value.get('name'):
             name_value = property_value['name']
         elif property_value.get('schema:name'):
