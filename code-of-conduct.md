@@ -44,7 +44,7 @@ In cases where criticism of ideology or culture remains on-topic, respectfully d
 
 ## No proprietary software
 
-This is a Free Software project and there is no intention to support or endorse any software which is proprietary, including that which may be running on client devices or corporate silo systems. For example, supporting iThings or Windows users is out of scope of the project. So too would be integration with Twitter or Google's sevices.
+This is a Free Software project and there is no intention to support or endorse any software which is proprietary, including that which may be running on client devices or corporate silo systems. For example, supporting iThings or Windows users is out of scope of the project. So too would be integration with the website formerly known as Twitter, or Google/Microsoft services.
 
 ## No synthetically generated content
 
