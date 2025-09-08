@@ -46,6 +46,10 @@ In cases where criticism of ideology or culture remains on-topic, respectfully d
 
 This is a Free Software project and there is no intention to support or endorse any software which is proprietary, including that which may be running on client devices or corporate silo systems. For example, supporting iThings or Windows users is out of scope of the project. So too would be integration with Twitter or Google's sevices.
 
+## No synthetically generated content
+
+We will not accept changes (code, images or otherwise) created with the aid of generative AI tooling, such as CodeConductor, Devin or CoPilot.
+
 ## Raising concerns
 
 If you're raising concerns about something or someone, there must be demonstrable evidence that the thing exists or that the event occurred. That means having something to show or link to. Concerns not based upon observable evidence will be considered spurious.
