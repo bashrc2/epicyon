@@ -48,7 +48,7 @@ This is a Free Software project and there is no intention to support or endorse 
 
 ## No synthetically generated content
 
-We will not accept changes (code, images or otherwise) created with the aid of generative AI tooling, such as CodeConductor, Devin or CoPilot.
+Changes created using generative AI tooling (such as CodeConductor, Devin or CoPilot) will not be accepted.
 
 ## Raising concerns
 
