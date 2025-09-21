@@ -4461,6 +4461,7 @@ def _test_site_active():
 
 def _test_strip_html():
     print('test_remove_html')
+
     test_str = 'This string has no html.'
     assert remove_html(test_str) == test_str
     test_str = 'This string <a href="1234.567">has html</a>.'
@@ -4474,7 +4475,22 @@ def _test_strip_html():
     test_str = '<p>This string contains a url http://somesite.or.other</p>'
     assert remove_html(test_str) == \
         'This string contains a url http://somesite.or.other'
-
+    test_str = 'Mostly <a ' \
+        'href="https://secretsquirrel.headquarters/discover/tags/nuts?' \
+        'src=hash" title="#nuts" class="u-url hashtag" rel="external ' \
+        'nofollow noopener">#nuts</a> from <a ' \
+        'href="https://secretsquirrel.headquarters/discover/tags/place1?' \
+        'src=hash" title="#place1" class="u-url hashtag" rel="external ' \
+        'nofollow noopener">#place1</a> <a ' \
+        'href="https://secretsquirrel.headquarters/discover/tags/place2?' \
+        'src=hash" title="#place2" class="u-url hashtag" rel="external ' \
+        'nofollow noopener">#place2</a> <a ' \
+        'href="https://secretsquirrel.headquarters/discover/tags/place3?' \
+        'src=hash" title="#place3" class="u-url hashtag" rel="external ' \
+        'nofollow noopener">#place3</a> and other places'
+    result = remove_html(test_str)
+    assert result == \
+        'Mostly #nuts from #place1 #place2 #place3 and other places'
 
 def _test_danger_css(base_dir: str) -> None:
     print('test_dangerous_css')
