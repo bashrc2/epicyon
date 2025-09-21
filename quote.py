@@ -21,7 +21,7 @@ def get_quote_toot_url(post_json_object: str) -> str:
     # adhoc quote toot implementations
     object_quote_url_fields = (
         'quoteUri', 'quoteUrl', 'quoteReply', 'toot:quoteReply',
-        '_misskey_quote'
+        '_misskey_quote', 'quote'
     )
     for fieldname in object_quote_url_fields:
         if not post_json_object['object'].get(fieldname):
