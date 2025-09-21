@@ -4491,6 +4491,11 @@ def _test_strip_html():
     result = remove_html(test_str)
     assert result == \
         'Mostly #nuts from #place1 #place2 #place3 and other places'
+    result = standardize_text(test_str)
+    print(result)
+    assert result == \
+        'Mostly #nuts from #place1 #place2 #place3 and other places'
+
 
 def _test_danger_css(base_dir: str) -> None:
     print('test_dangerous_css')
