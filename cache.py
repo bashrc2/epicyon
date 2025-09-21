@@ -243,7 +243,7 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
         elif i2p_domain:
             if '.i2p/' in person_url:
                 person_domain = i2p_domain
-        profile_str = 'https://www.w3.org/ns/activitystreams'
+        profile_str: str = 'https://www.w3.org/ns/activitystreams'
         accept_str = \
             'application/activity+json; profile="' + profile_str + '"'
         as_header = {
@@ -288,7 +288,7 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
         return False
     cached = False
     post_id = remove_id_ending(obj['id']).replace('/', '--')
-    actor = 'unknown'
+    actor: str = 'unknown'
     if post_attachments and obj.get('attributedTo'):
         actor = get_attributed_to(obj['attributedTo'])
     log_filename = data_dir(base_dir) + '/svg_scripts_log.txt'
@@ -417,7 +417,7 @@ def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
     """Clears cached html for the given post, so that edits
     to news will appear
     """
-    filename = '/postcache/' + post_id + '.html'
+    filename: str = '/postcache/' + post_id + '.html'
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:

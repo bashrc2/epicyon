@@ -48,7 +48,7 @@ def get_hashtag_category(base_dir: str, hashtag: str) -> str:
 def load_city_hashtags(base_dir: str, translate: {}) -> None:
     """create hashtag categories for cities
     """
-    category_str = 'places'
+    category_str: str = 'places'
     if translate.get(category_str):
         category_str = translate[category_str]
 
@@ -91,7 +91,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
                               city_filename)
                 if '-' in hashtag:
                     section = hashtag.split('-')
-                    new_hashtag = ''
+                    new_hashtag: str = ''
                     for text in section:
                         new_hashtag += text.lower().title()
                     hashtag2 = new_hashtag
@@ -107,7 +107,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
                                   city_filename)
                 if ' ' in hashtag:
                     section = hashtag.split(' ')
-                    new_hashtag = ''
+                    new_hashtag: str = ''
                     for text in section:
                         new_hashtag += text.lower().title()
                     hashtag2 = new_hashtag
@@ -207,7 +207,7 @@ def update_hashtag_categories(base_dir: str) -> None:
         category_list.append(category_str)
     category_list.sort()
 
-    category_list_str = ''
+    category_list_str: str = ''
     for category_str in category_list:
         category_list_str += category_str + '\n'
 
@@ -291,7 +291,7 @@ def guess_hashtag_category(tag_name: str, hashtag_categories: {},
     if len(tag_name) < min_tag_length:
         return ''
 
-    category_matched = ''
+    category_matched: str = ''
     tag_matched_len = 0
     finished = False
 

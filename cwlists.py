@@ -115,7 +115,7 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
     if 'content' not in post_json_object['object']:
         if 'contentMap' not in post_json_object['object']:
             return
-    cw_text = ''
+    cw_text: str = ''
     if post_json_object['object'].get('summary'):
         cw_text = post_json_object['object']['summary']
 

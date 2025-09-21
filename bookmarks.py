@@ -78,7 +78,7 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
     bookmark_index = remove_eol(bookmark_index)
     if not text_in_file(bookmark_index, bookmarks_index_filename):
         return
-    index_str = ''
+    index_str: str = ''
     try:
         with open(bookmarks_index_filename, 'r',
                   encoding='utf-8') as fp_index:
@@ -199,7 +199,7 @@ def update_bookmarks_collection(recent_posts_cache: {},
                   str(post_json_object))
         return
 
-    bookmarks_ending = '/bookmarks'
+    bookmarks_ending: str = '/bookmarks'
     if not object_url.endswith(bookmarks_ending):
         collection_id = object_url + bookmarks_ending
     else:
@@ -445,7 +445,7 @@ def send_bookmark_via_server(base_dir: str, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    post_to_box = 'outbox'
+    post_to_box: str = 'outbox'
 
     # get the actor inbox for the To handle
     origin_domain = domain
@@ -542,7 +542,7 @@ def send_undo_bookmark_via_server(base_dir: str, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    post_to_box = 'outbox'
+    post_to_box: str = 'outbox'
 
     # get the actor inbox for the To handle
     origin_domain = domain

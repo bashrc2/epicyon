@@ -257,7 +257,7 @@ def authorize(base_dir: str, path: str, auth_header: str, debug: bool) -> bool:
 
 
 def create_password(length: int):
-    valid_chars = 'abcdefghijklmnopqrstuvwxyz' + \
+    valid_chars: str = 'abcdefghijklmnopqrstuvwxyz' + \
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     return ''.join((secrets.choice(valid_chars) for i in range(length)))
 
@@ -293,10 +293,10 @@ def record_login_failure(base_dir: str, ip_address: str,
     if not log_to_file:
         return
 
-    failure_log = data_dir(base_dir) + '/loginfailures.log'
-    write_type = 'a+'
+    failure_log: str = data_dir(base_dir) + '/loginfailures.log'
+    write_type: str = 'a+'
     if not os.path.isfile(failure_log):
-        write_type = 'w+'
+        write_type: str = 'w+'
     curr_time = date_utcnow()
     curr_time_str = curr_time.strftime("%Y-%m-%d %H:%M:%SZ")
     try:

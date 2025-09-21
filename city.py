@@ -214,8 +214,8 @@ def spoof_geolocation(base_dir: str,
     variance_at_location = 0.0004
     default_latitude = 51.8744
     default_longitude = 0.368333
-    default_latdirection = 'N'
-    default_longdirection = 'W'
+    default_latdirection: str = 'N'
+    default_longdirection: str = 'W'
 
     if cities_list:
         cities = cities_list
@@ -257,13 +257,13 @@ def spoof_geolocation(base_dir: str,
             area_km2 = 0
             if len(city_fields) > 3:
                 area_km2 = int(city_fields[3])
-            latdirection = 'N'
-            longdirection = 'E'
+            latdirection: str = 'N'
+            longdirection: str = 'E'
             if 'S' in latitude:
-                latdirection = 'S'
+                latdirection: str = 'S'
                 latitude = latitude.replace('S', '')
             if 'W' in longitude:
-                longdirection = 'W'
+                longdirection: str = 'W'
                 longitude = longitude.replace('W', '')
             latitude = float(latitude)
             longitude = float(longitude)
@@ -330,7 +330,7 @@ def get_spoofed_city(city: str, base_dir: str,
     """Returns the name of the city to use as a GPS spoofing location for
     image metadata
     """
-    city = ''
+    city: str = ''
     city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(city_filename):
         try:

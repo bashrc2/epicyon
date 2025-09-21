@@ -60,7 +60,7 @@ def get_global_block_reason(search_text: str,
     if not text_in_file(search_text, blocking_reasons_filename):
         return ''
 
-    reasons_str = ''
+    reasons_str: str = ''
     try:
         with open(blocking_reasons_filename, 'r',
                   encoding='utf-8') as fp_reas:
@@ -93,8 +93,8 @@ def get_account_blocks(base_dir: str,
     if not os.path.isfile(blocking_filename):
         return ''
 
-    blocked_accounts_textarea = ''
-    blocking_file_text = ''
+    blocked_accounts_textarea: str = ''
+    blocking_file_text: str = ''
     try:
         with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
             blocking_file_text = fp_block.read()
@@ -155,7 +155,7 @@ def blocked_timeline_json(actor: str, page_number: int, items_per_page: int,
         if index >= len(blocked_list):
             break
         block_handle = blocked_list[index]
-        block_reason = ''
+        block_reason: str = ''
         if ' - ' in block_handle:
             block_reason = block_handle.split(' - ')[1]
             block_handle = block_handle.split(' - ')[0]
@@ -187,8 +187,8 @@ def add_account_blocks(base_dir: str,
     if blocked_accounts_textarea is None:
         return False
     blocklist = blocked_accounts_textarea.split('\n')
-    blocking_file_text = ''
-    blocking_reasons_file_text = ''
+    blocking_file_text: str = ''
+    blocking_reasons_file_text: str = ''
     for line in blocklist:
         line = line.strip()
         reason = None
@@ -271,7 +271,7 @@ def _add_global_block_reason(base_dir: str,
                 print('EX: unable to add blocking reason ' +
                       block_id)
         else:
-            reasons_str = ''
+            reasons_str: str = ''
             try:
                 with open(blocking_reasons_filename, 'r',
                           encoding='utf-8') as fp_reas:
@@ -279,7 +279,7 @@ def _add_global_block_reason(base_dir: str,
             except OSError:
                 print('EX: unable to read blocking reasons')
             reasons_lines = reasons_str.split('\n')
-            new_reasons_str = ''
+            new_reasons_str: str = ''
             for line in reasons_lines:
                 if not line.startswith(block_id + ' '):
                     new_reasons_str += line + '\n'
@@ -375,7 +375,7 @@ def _add_block_reason(base_dir: str,
                 print('EX: unable to add blocking reason 2 ' +
                       block_id)
         else:
-            reasons_str = ''
+            reasons_str: str = ''
             try:
                 with open(blocking_reasons_filename, 'r',
                           encoding='utf-8') as fp_reas:
@@ -383,7 +383,7 @@ def _add_block_reason(base_dir: str,
             except OSError:
                 print('EX: unable to read blocking reasons 2')
             reasons_lines = reasons_str.split('\n')
-            new_reasons_str = ''
+            new_reasons_str: str = ''
             for line in reasons_lines:
                 if not line.startswith(block_id + ' '):
                     new_reasons_str += line + '\n'
@@ -428,7 +428,7 @@ def add_block(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(following_filename):
         if text_in_file(block_handle + '\n', following_filename):
-            following_str = ''
+            following_str: str = ''
             try:
                 with open(following_filename, 'r',
                           encoding='utf-8') as fp_foll:
@@ -453,7 +453,7 @@ def add_block(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followers_filename):
         if text_in_file(block_handle + '\n', followers_filename):
-            followers_str = ''
+            followers_str: str = ''
             try:
                 with open(followers_filename, 'r',
                           encoding='utf-8') as fp_foll:
@@ -504,7 +504,7 @@ def _remove_global_block_reason(base_dir: str,
     if not text_in_file(unblock_id + ' ', unblocking_filename):
         return False
 
-    reasons_str = ''
+    reasons_str: str = ''
     try:
         with open(unblocking_filename, 'r',
                   encoding='utf-8') as fp_reas:
@@ -512,7 +512,7 @@ def _remove_global_block_reason(base_dir: str,
     except OSError:
         print('EX: unable to read blocking reasons 3')
     reasons_lines = reasons_str.split('\n')
-    new_reasons_str = ''
+    new_reasons_str: str = ''
     for line in reasons_lines:
         if line.startswith(unblock_id + ' '):
             continue
@@ -640,7 +640,7 @@ def is_blocked_hashtag(base_dir: str, hashtag: str) -> bool:
     if os.path.isfile(global_blocking_filename):
         hashtag = hashtag.strip('\n').strip('\r')
         if not hashtag.startswith('#'):
-            hashtag = '#' + hashtag
+            hashtag: str = '#' + hashtag
         if text_in_file(hashtag + '\n', global_blocking_filename):
             return True
     return False
@@ -650,7 +650,7 @@ def get_domain_blocklist(base_dir: str) -> str:
     """Returns all globally blocked domains as a string
     This can be used for fast matching to mitigate flooding
     """
-    blocked_str = ''
+    blocked_str: str = ''
 
     evil_domains = evil_incarnate()
     for evil in evil_domains:
@@ -748,7 +748,7 @@ def is_blocked_domain(base_dir: str, domain: str,
         else:
             blocked_cache_list = blocked_cache
 
-        search_str = '*@' + domain
+        search_str: str = '*@' + domain
         for curr_block_list in (blocked_cache_list, block_federated_list):
             for blocked_str in curr_block_list:
                 blocked_str = blocked_str.strip()
@@ -1011,7 +1011,7 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
 
     handle = following_nickname + '@' + following_domain
     if text_in_file(handle + '\n', blocking_filename, False):
-        file_text = ''
+        file_text: str = ''
         try:
             with open(blocking_filename, 'r',
                       encoding='utf-8') as fp_noannounce:
@@ -1020,7 +1020,7 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
             print('EX: unable to read noannounce add: ' +
                   blocking_filename + ' ' + handle)
 
-        new_file_text = ''
+        new_file_text: str = ''
         file_text_list = file_text.split('\n')
         handle_lower = handle.lower()
         for allowed in file_text_list:
@@ -1058,7 +1058,7 @@ def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
                   blocking_filename + ' ' + handle)
         return
 
-    file_text = ''
+    file_text: str = ''
     if not text_in_file(handle + '\n', blocking_filename, False):
         try:
             with open(blocking_filename, 'r',
@@ -1091,7 +1091,7 @@ def blocked_quote_toots_add(base_dir: str, nickname: str, domain: str,
 
     handle = following_nickname + '@' + following_domain
     if not text_in_file(handle + '\n', blocking_filename, False):
-        file_text = ''
+        file_text: str = ''
         try:
             with open(blocking_filename, 'r',
                       encoding='utf-8') as fp_quotes:
@@ -1123,7 +1123,7 @@ def blocked_quote_toots_remove(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(blocking_filename):
         return
 
-    file_text = ''
+    file_text: str = ''
     if text_in_file(handle + '\n', blocking_filename, False):
         try:
             with open(blocking_filename, 'r',
@@ -1825,7 +1825,7 @@ def import_blocking_file(base_dir: str, nickname: str, domain: str,
             # already blocked
             continue
         append_blocks.append(blocked_domain_name)
-        blocked_comment = ''
+        blocked_comment: str = ''
         if '"' in line_str:
             quote_section = line_str.split('"')
             if len(quote_section) > 1:
@@ -1905,7 +1905,7 @@ def export_blocking_file(base_dir: str, nickname: str, domain: str) -> str:
         blocked_domain = blocked_domain.strip()
         if blocked_domain.startswith('#'):
             continue
-        reason_str = ''
+        reason_str: str = ''
         for reason_line in blocking_reasons:
             if reason_line.startswith(blocked_domain + ' '):
                 reason_str = reason_line.split(' ', 1)[1]
@@ -2042,7 +2042,7 @@ def load_blocked_nostr(base_dir: str) -> {}:
 def save_blocked_military(base_dir: str, block_military: {}) -> None:
     """Saves a list of nicknames for accounts which block military instances
     """
-    nicknames_str = ''
+    nicknames_str: str = ''
     for nickname, _ in block_military.items():
         nicknames_str += nickname + '\n'
 
@@ -2058,7 +2058,7 @@ def save_blocked_military(base_dir: str, block_military: {}) -> None:
 def save_blocked_government(base_dir: str, block_government: {}) -> None:
     """Saves a list of nicknames for accounts which block government instances
     """
-    nicknames_str = ''
+    nicknames_str: str = ''
     for nickname, _ in block_government.items():
         nicknames_str += nickname + '\n'
 
@@ -2074,7 +2074,7 @@ def save_blocked_government(base_dir: str, block_government: {}) -> None:
 def save_blocked_bluesky(base_dir: str, block_bluesky: {}) -> None:
     """Saves a list of nicknames for accounts which block bluesky bridges
     """
-    nicknames_str = ''
+    nicknames_str: str = ''
     for nickname, _ in block_bluesky.items():
         nicknames_str += nickname + '\n'
 
@@ -2090,7 +2090,7 @@ def save_blocked_bluesky(base_dir: str, block_bluesky: {}) -> None:
 def save_blocked_nostr(base_dir: str, block_nostr: {}) -> None:
     """Saves a list of nicknames for accounts which block nostr bridges
     """
-    nicknames_str = ''
+    nicknames_str: str = ''
     for nickname, _ in block_nostr.items():
         nicknames_str += nickname + '\n'
 
@@ -2247,7 +2247,7 @@ def _update_federated_blocks(session, base_dir: str,
         print('DEBUG: federated blocklist endpoints: ' +
               str(block_federated_endpoints))
 
-    new_block_api_str = ''
+    new_block_api_str: str = ''
     for endpoint in block_federated_endpoints:
         if not endpoint:
             continue
@@ -2328,7 +2328,7 @@ def save_block_federated_endpoints(base_dir: str,
     block_api_endpoints_filename = \
         data_dir(base_dir) + '/block_api_endpoints.txt'
     result: list[str] = []
-    block_federated_endpoints_str = ''
+    block_federated_endpoints_str: str = ''
     for endpoint in block_federated_endpoints:
         if not endpoint:
             continue

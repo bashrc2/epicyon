@@ -356,6 +356,21 @@ def get_language_from_post(post_json_object: {}, system_language: str,
     return system_language
 
 
+def get_post_attachments(post_json_object: {}) -> []:
+    """ Returns the list of attachments for a post
+    """
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+    if not post_obj.get('attachment'):
+        return []
+    if isinstance(post_obj['attachment'], list):
+        return post_obj['attachment']
+    if isinstance(post_obj['attachment'], dict):
+        return [post_obj['attachment']]
+    return []
+
+
 def get_media_descriptions_from_post(post_json_object: {}) -> str:
     """Returns all attached media descriptions as a single text.
     This is used for filtering
@@ -3752,21 +3767,6 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
                 print('EX: unable to set premium flag ' + premium_filename)
                 return False
     return True
-
-
-def get_post_attachments(post_json_object: {}) -> []:
-    """ Returns the list of attachments for a post
-    """
-    post_obj = post_json_object
-    if has_object_dict(post_json_object):
-        post_obj = post_json_object['object']
-    if not post_obj.get('attachment'):
-        return []
-    if isinstance(post_obj['attachment'], list):
-        return post_obj['attachment']
-    if isinstance(post_obj['attachment'], dict):
-        return [post_obj['attachment']]
-    return []
 
 
 def string_ends_with(text: str, possible_endings: []) -> bool:

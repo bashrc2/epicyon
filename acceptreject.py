@@ -217,7 +217,7 @@ def _reject_quote_request(message_json: {}, domain_full: str,
                not curr_domain.endswith('.onion') and \
                domain_to_follow.endswith('.onion'):
                 curr_session = session_onion
-                curr_http_prefix = 'http'
+                curr_http_prefix: str = 'http'
                 curr_domain = onion_domain
                 curr_port = 80
                 port = 80
@@ -228,7 +228,7 @@ def _reject_quote_request(message_json: {}, domain_full: str,
                   not curr_domain.endswith('.i2p') and
                   domain_to_follow.endswith('.i2p')):
                 curr_session = session_i2p
-                curr_http_prefix = 'http'
+                curr_http_prefix: str = 'http'
                 curr_domain = i2p_domain
                 curr_port = 80
                 port = 80
@@ -403,7 +403,7 @@ def receive_accept_reject(base_dir: str, domain: str, message_json: {},
     nickname = get_nickname_from_actor(actor_url)
     if not nickname:
         # single user instance
-        nickname = 'dev'
+        nickname: str = 'dev'
         if debug:
             print('DEBUG: ' + message_json['type'] +
                   ' does not contain a nickname. ' +

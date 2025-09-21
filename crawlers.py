@@ -90,7 +90,7 @@ def _save_known_web_bots(base_dir: str, known_bots: []) -> bool:
     """Saves a list of known web bots
     """
     known_bots_filename = data_dir(base_dir) + '/knownBots.txt'
-    known_bots_str = ''
+    known_bots_str: str = ''
     for crawler in known_bots:
         known_bots_str += crawler.strip() + '\n'
     try:

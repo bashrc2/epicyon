@@ -162,7 +162,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
         print('EX: unable to read blog 4 ' + post_filename)
 
     if lines:
-        replies_str = ''
+        replies_str: str = ''
         for reply_post_id in lines:
             reply_post_id = remove_eol(reply_post_id)
             replacements = {
@@ -187,7 +187,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                 replies_str += rply
 
         # indicate the reply indentation level
-        indent_str = '>'
+        indent_str: str = '>'
         indent_level = 0
         while indent_level < depth:
             indent_str += ' >'
@@ -210,13 +210,13 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     """Returns the content for a single blog post
     """
     linked_author = False
-    actor = ''
-    blog_str = ''
-    message_link = ''
+    actor: str = ''
+    blog_str: str = ''
+    message_link: str = ''
     if post_json_object['object'].get('id'):
         message_link = \
             post_json_object['object']['id'].replace('/statuses/', '/')
-    title_str = ''
+    title_str: str = ''
     article_added = False
     if post_json_object['object'].get('summary'):
         title_str = post_json_object['object']['summary']
@@ -263,14 +263,14 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                         blog_str += ' ' + handle
             blog_str += '</h3>\n'
 
-    avatar_link = ''
-    reply_str = ''
-    announce_str = ''
-    like_str = ''
-    bookmark_str = ''
-    delete_str = ''
-    mute_str = ''
-    is_muted = False
+    avatar_link: str = ''
+    reply_str: str = ''
+    announce_str: str = ''
+    like_str: str = ''
+    bookmark_str: str = ''
+    delete_str: str = ''
+    mute_str: str = ''
+    is_muted: bool = False
 
     person_url = local_actor_url(http_prefix, nickname, domain_full)
     actor_json = \
@@ -308,7 +308,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
         else:
             blog_str += '<br><article>' + content_str + '</article>\n'
 
-    citations_str = ''
+    citations_str: str = ''
     if post_json_object['object'].get('tag'):
         for tag_json in post_json_object['object']['tag']:
             if not isinstance(tag_json, dict):
@@ -328,7 +328,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                 '<li><a href="' + citation_url + '">' + \
                 '<cite>' + citation_name + '</cite></a></li>\n'
         if citations_str:
-            citations_str = '<p><b>' + translate['Citations'] + \
+            citations_str: str = '<p><b>' + translate['Citations'] + \
                 ':</b></p>' + \
                 '<u>\n' + citations_str + '</u>\n'
 
@@ -346,7 +346,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
 
     # separator between blogs should be centered
     if '<center>' not in blog_separator:
-        blog_separator = '<center>' + blog_separator + '</center>'
+        blog_separator: str = '<center>' + blog_separator + '</center>'
 
     if replies == 0:
         blog_str += blog_separator + '\n'
@@ -379,8 +379,8 @@ def _html_blog_post_rss2(domain: str, post_json_object: {},
                          system_language: str) -> str:
     """Returns the RSS version 2 feed for a single blog post
     """
-    rss_str = ''
-    message_link = ''
+    rss_str: str = ''
+    message_link: str = ''
     if post_json_object['object'].get('id'):
         message_link = \
             post_json_object['object']['id'].replace('/statuses/', '/')
@@ -398,7 +398,7 @@ def _html_blog_post_rss2(domain: str, post_json_object: {},
                                                system_language)
                 description = first_paragraph_from_string(content)
                 description = escape_text(description)
-                rss_str = '     <item>'
+                rss_str: str = '     <item>'
                 rss_str += '         <title>' + title_str + '</title>'
                 rss_str += '         <link>' + message_link + '</link>'
                 rss_str += \
@@ -413,8 +413,8 @@ def _html_blog_post_rss3(domain: str, post_json_object: {},
                          system_language: str) -> str:
     """Returns the RSS version 3 feed for a single blog post
     """
-    rss_str = ''
-    message_link = ''
+    rss_str: str = ''
+    message_link: str = ''
     if post_json_object['object'].get('id'):
         message_link = \
             post_json_object['object']['id'].replace('/statuses/', '/')
@@ -431,7 +431,7 @@ def _html_blog_post_rss3(domain: str, post_json_object: {},
                     get_base_content_from_post(post_json_object,
                                                system_language)
                 description = first_paragraph_from_string(content)
-                rss_str = 'title: ' + title_str + '\n'
+                rss_str: str = 'title: ' + title_str + '\n'
                 rss_str += 'link: ' + message_link + '\n'
                 rss_str += 'description: ' + description + '\n'
                 rss_str += 'created: ' + rss_date_str + '\n\n'
@@ -479,7 +479,7 @@ def html_blog_post(session, authorized: bool,
                    debug: bool, content_license_url: str) -> str:
     """Returns a html blog post
     """
-    blog_str = ''
+    blog_str: str = ''
 
     css_filename = base_dir + '/epicyon-blog.css'
     if os.path.isfile(base_dir + '/blog.css'):
@@ -491,7 +491,7 @@ def html_blog_post(session, authorized: bool,
     if post_json_object['object'].get('updated'):
         modified = post_json_object['object']['updated']
     title = post_json_object['object']['summary']
-    url = ''
+    url: str = ''
     if post_json_object['object'].get('url'):
         url_str = get_url_from_post(post_json_object['object']['url'])
         url = remove_html(url_str)
@@ -545,7 +545,7 @@ def html_blog_page(authorized: bool, session,
     if ' ' in nickname or '@' in nickname or \
        '\n' in nickname or '\r' in nickname:
         return None
-    blog_str = ''
+    blog_str: str = ''
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -574,7 +574,7 @@ def html_blog_page(authorized: bool, session,
 
     # show previous and next buttons
     if page_number is not None:
-        navigate_str = '<p>'
+        navigate_str: str = '<p>'
         if page_number > 1:
             # show previous button
             navigate_str += '<a href="' + http_prefix + '://' + \
@@ -640,7 +640,7 @@ def html_blog_page_rss2(base_dir: str, http_prefix: str, translate: {},
 
     domain_full = get_full_domain(domain, port)
 
-    blog_rss2 = ''
+    blog_rss2: str = ''
     if include_header:
         blog_rss2 = rss2header(http_prefix, nickname, domain_full,
                                'Blog', translate)
@@ -685,7 +685,7 @@ def html_blog_page_rss3(base_dir: str, http_prefix: str,
        '\n' in nickname or '\r' in nickname:
         return None
 
-    blog_rss3 = ''
+    blog_rss3: str = ''
 
     blogs_index = acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogs_index):
@@ -751,7 +751,7 @@ def html_blog_view(authorized: bool,
                    person_cache: {}, debug: bool) -> str:
     """Show the blog main page
     """
-    blog_str = ''
+    blog_str: str = ''
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -816,7 +816,7 @@ def html_edit_blog(media_instance: bool, translate: {},
         try:
             with open(dir_str + '/newpost.txt', 'r',
                       encoding='utf-8') as fp_blog:
-                edit_blog_text = '<p>' + fp_blog.read() + '</p>'
+                edit_blog_text: str = '<p>' + fp_blog.read() + '</p>'
         except OSError:
             print('EX: html_edit_blog unable to read ' +
                   dir_str + '/newpost.txt')
@@ -829,7 +829,7 @@ def html_edit_blog(media_instance: bool, translate: {},
         path = path.split('?')[0]
     path_base = path
 
-    edit_blog_image_section = '    <div class="container">'
+    edit_blog_image_section: str = '    <div class="container">'
     edit_blog_image_section += '      <label class="labels">' + \
         translate['Image description'] + '</label>'
     edit_blog_image_section += \
@@ -843,11 +843,10 @@ def html_edit_blog(media_instance: bool, translate: {},
     placeholder_message = translate['Write something'] + '...'
     endpoint = 'editblogpost'
     placeholder_subject = translate['Title']
-    scope_icon = 'scope_blog.png'
-    scope_description = translate['Blog']
+    scope_icon: str = 'scope_blog.png'
+    scope_description: str = translate['Blog']
 
-    date_and_location = ''
-    date_and_location = '<div class="container">'
+    date_and_location: str = '<div class="container">'
 
     date_and_location += \
         '<p><input type="checkbox" class="profilecheckbox" ' + \
@@ -917,7 +916,7 @@ def html_edit_blog(media_instance: bool, translate: {},
         edit_blog_form += edit_blog_image_section
     edit_blog_form += \
         '    <label class="labels">' + placeholder_subject + '</label><br>'
-    title_str = ''
+    title_str: str = ''
     if post_json_object['object'].get('summary'):
         title_str = post_json_object['object']['summary']
     edit_blog_form += \

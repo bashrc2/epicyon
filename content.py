@@ -98,7 +98,7 @@ def remove_html_tag(html_str: str, tag: str) -> str:
     """
     tag_found = True
     while tag_found:
-        match_str = ' ' + tag + '="'
+        match_str: str = ' ' + tag + '="'
         if match_str not in html_str:
             tag_found = False
             break
@@ -164,7 +164,7 @@ def html_replace_email_quote(content: str) -> str:
         return content
     content_str = content.replace('<p>', '')
     content_lines = content_str.split('</p>')
-    new_content = ''
+    new_content: str = ''
     for line_str in content_lines:
         if not line_str:
             continue
@@ -209,7 +209,7 @@ def html_replace_quote_marks(content: str) -> str:
     if '"' in content:
         sections = content.split('"')
         if len(sections) > 1:
-            new_content = ''
+            new_content: str = ''
             open_quote = True
             markup = False
             for char in content:
@@ -220,16 +220,16 @@ def html_replace_quote_marks(content: str) -> str:
                     markup = False
                 elif char == '"' and not markup:
                     if open_quote:
-                        curr_char = '“'
+                        curr_char: str = '“'
                     else:
-                        curr_char = '”'
+                        curr_char: str = '”'
                     open_quote = not open_quote
                 new_content += curr_char
 
     if '&quot;' in new_content:
         open_quote = True
         content = new_content
-        new_content = ''
+        new_content: str = ''
         ctr = 0
         sections = content.split('&quot;')
         no_of_sections = len(sections)
@@ -512,7 +512,7 @@ def replace_emoji_from_tags(session, base_dir: str,
         else:
             # sequence of codes
             icon_codes = icon_name.split('-')
-            icon_code_sequence = ''
+            icon_code_sequence: str = ''
             for icode in icon_codes:
                 replaced = False
                 try:
@@ -520,7 +520,7 @@ def replace_emoji_from_tags(session, base_dir: str,
                                                   icode, 16))
                     replaced = True
                 except BaseException:
-                    icon_code_sequence = ''
+                    icon_code_sequence: str = ''
                     if debug:
                         print('EX: ' +
                               'replace_emoji_from_tags 2 ' +
@@ -545,18 +545,18 @@ def replace_emoji_from_tags(session, base_dir: str,
                 content = content.replace(tag_item['name'],
                                           icon_code_sequence)
 
-        html_class = 'emoji'
+        html_class: str = 'emoji'
         if message_type == 'post header':
             html_class = 'emojiheader'
         if message_type == 'profile':
             html_class = 'emojiprofile'
         if screen_readable:
-            emoji_tag_name = tag_item['name'].replace(':', '')
+            emoji_tag_name: str = tag_item['name'].replace(':', '')
         else:
-            emoji_tag_name = ''
-        url_str = get_url_from_post(tag_item['icon']['url'])
-        tag_url = remove_html(url_str)
-        emoji_html = "<img src=\"" + tag_url + "\" alt=\"" + \
+            emoji_tag_name: str = ''
+        url_str: str = get_url_from_post(tag_item['icon']['url'])
+        tag_url: str = remove_html(url_str)
+        emoji_html: str = "<img src=\"" + tag_url + "\" alt=\"" + \
             emoji_tag_name + \
             "\" align=\"middle\" class=\"" + html_class + "\"/>"
         content = content.replace(tag_item['name'], emoji_html)
@@ -621,8 +621,8 @@ def _contains_doi_reference(wrd: str, replace_dict: {}) -> bool:
         return False
 
     doi_ref_str = wrd.split(':', 1)[1]
-    doi_site = 'https://sci-hub.ru'
-    markup = '<a href="' + doi_site + '/' + \
+    doi_site: str = 'https://sci-hub.ru'
+    markup: str = '<a href="' + doi_site + '/' + \
         doi_ref_str + '" tabindex="10" ' + \
         'rel="nofollow noopener noreferrer" ' + \
         'target="_blank">' + \
@@ -657,7 +657,7 @@ def _contains_arxiv_reference(wrd: str, replace_dict: {}) -> bool:
     if not arxiv_day.isdigit():
         return False
     ref_str = arxiv_ref[0] + '.' + arxiv_ref[1]
-    markup = '<a href="https://arxiv.org/abs/' + \
+    markup: str = '<a href="https://arxiv.org/abs/' + \
         ref_str + '" tabindex="10" ' + \
         'rel="nofollow noopener noreferrer" ' + \
         'target="_blank">' + \
@@ -687,7 +687,7 @@ def remove_link_trackers_from_content(content: str) -> str:
         return content
     sections = content.split('?utm_')
     ctr = 0
-    new_content = ''
+    new_content: str = ''
     for section_str in sections:
         if ctr == 0:
             new_content = section_str
@@ -748,7 +748,7 @@ def add_web_links(content: str) -> str:
         if url.endswith('.') or wrd.endswith(';'):
             url = url[:-1]
         url = remove_link_tracking(url)
-        markup = '<a href="' + url + '" tabindex="10" ' + \
+        markup: str = '<a href="' + url + '" tabindex="10" ' + \
             'rel="nofollow noopener noreferrer" target="_blank">'
         for prefix in prefixes:
             if url.startswith(prefix):
@@ -846,7 +846,7 @@ def replace_remote_hashtags(content: str,
             ctr += 1
             continue
         if '/' + domain not in link:
-            new_link = '/users/' + nickname + \
+            new_link: str = '/users/' + nickname + \
                 '?remotetag=' + link.replace('/', '--')
             replacements[link] = new_link
         ctr += 1
@@ -1170,7 +1170,7 @@ def remove_long_words(content: str, max_word_length: int,
         if '/' in word_str:
             continue
         if len(word_str[max_word_length:]) < max_word_length:
-            end_of_line_char = '\n'
+            end_of_line_char: str = '\n'
             if '<br>' in original_word_str:
                 end_of_line_char = ''
             new_word_str = \
@@ -1272,7 +1272,7 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
             ending = True
 
         if ending:
-            prev_wrd = ''
+            prev_wrd: str = ''
             for wrd in words:
                 wrd2 = (prev_wrd + ' ' + wrd).strip()
                 if wrd.endswith(whistle) or wrd2.endswith(whistle):
@@ -1294,7 +1294,7 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
             starting = True
 
         if starting:
-            prev_wrd = ''
+            prev_wrd: str = ''
             for wrd in words:
                 wrd2 = (prev_wrd + ' ' + wrd).strip()
                 if wrd.startswith(whistle) or wrd2.startswith(whistle):
@@ -1311,7 +1311,7 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
         if '*' in whistle:
             whistle_start = whistle.split('*', 1)[0]
             whistle_end = whistle.split('*', 1)[1]
-            prev_wrd = ''
+            prev_wrd: str = ''
             for wrd in words:
                 wrd2 = (prev_wrd + ' ' + wrd).strip()
                 if ((wrd.startswith(whistle_start) and
@@ -1328,7 +1328,7 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
                 prev_wrd = wrd
             continue
 
-        prev_wrd = ''
+        prev_wrd: str = ''
         for wrd in words:
             wrd2 = (prev_wrd + ' ' + wrd).strip()
             if whistle in (wrd, wrd2):
@@ -1392,10 +1392,10 @@ def add_html_tags(base_dir: str, http_prefix: str,
         '\n': ' --linebreak-- '
     }
     content = replace_strings(content, replacements)
-    now_playing_str = 'NowPlaying'
+    now_playing_str: str = 'NowPlaying'
     if translate.get(now_playing_str):
         now_playing_str = translate[now_playing_str]
-    now_playing_lower_str = 'nowplaying'
+    now_playing_lower_str: str = 'nowplaying'
     if translate.get(now_playing_lower_str):
         now_playing_lower_str = translate[now_playing_lower_str]
     if '#' + now_playing_lower_str in content:
@@ -1445,7 +1445,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
 
     # extract mentions and tags from words
     long_words_list: list[str] = []
-    prev_word_str = ''
+    prev_word_str: str = ''
     auto_tags_list = _load_auto_tags(base_dir, nickname, domain)
     append_tags = []
     for word_str in words:
@@ -1459,7 +1459,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
             if _add_mention(base_dir, word_str, http_prefix, following,
                             petnames, replace_mentions, recipients,
                             hashtags):
-                prev_word_str = ''
+                prev_word_str: str = ''
                 continue
         elif first_char == '#':
             # remove any endings from the hashtag
@@ -1471,7 +1471,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
 
             if _add_hash_tags(word_str, http_prefix, original_domain,
                               replace_hashtags, hashtags):
-                prev_word_str = ''
+                prev_word_str: str = ''
                 continue
         elif ':' in word_str:
             word_str2 = word_str.split(':')[1]
@@ -1500,12 +1500,12 @@ def add_html_tags(base_dir: str, http_prefix: str,
                        emoji_dict)
         else:
             if _auto_tag(word_str, auto_tags_list, append_tags):
-                prev_word_str = ''
+                prev_word_str: str = ''
                 continue
             if prev_word_str:
                 if _auto_tag(prev_word_str + ' ' + word_str,
                              auto_tags_list, append_tags):
-                    prev_word_str = ''
+                    prev_word_str: str = ''
                     continue
         prev_word_str = word_str
 
@@ -1641,7 +1641,7 @@ def save_media_in_form_post(media_bytes, debug: bool,
         return None, None
 
     media_location = -1
-    search_str = ''
+    search_str: str = ''
     filename = None
 
     # directly search the binary array for the beginning
@@ -1821,7 +1821,7 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
     if debug:
         if 'password' not in message_fields:
             print('DEBUG: POST message_fields: ' + str(message_fields))
-    lynx_content_type = 'Content-Type: text/plain; charset=utf-8\r\n'
+    lynx_content_type: str = 'Content-Type: text/plain; charset=utf-8\r\n'
     # examine each section of the POST, separated by the boundary
     for fld in message_fields:
         if fld == '--':
@@ -1856,7 +1856,7 @@ def extract_text_fields_in_post(post_bytes, boundary: str, debug: bool,
         post_lines = post_value_str.split('\r\n')
         if debug and 'password' not in post_key:
             print('post_lines: ' + str(post_lines))
-        post_value = ''
+        post_value: str = ''
         if len(post_lines) > 2:
             for line in range(2, len(post_lines)-1):
                 if line > 2:
@@ -1873,9 +1873,9 @@ def limit_repeated_words(text: str, max_repeats: int) -> str:
     """
     words = text.replace('\n', ' ').split(' ')
     repeat_ctr = 0
-    repeated_text = ''
+    repeated_text: str = ''
     replacements = {}
-    prev_word = ''
+    prev_word: str = ''
     for word in words:
         if word == prev_word:
             repeat_ctr += 1
@@ -1975,7 +1975,7 @@ def contains_invalid_local_links(domain_full: str,
     """Returns true if the given content has invalid links
     """
     for inv_str in INVALID_CONTENT_STRINGS:
-        match_str = '?' + inv_str + '='
+        match_str: str = '?' + inv_str + '='
         if match_str not in content:
             continue
         # extract the urls and check whether they are for the local domain
@@ -2009,10 +2009,10 @@ def bold_reading_string(text: str) -> str:
         add_paragraph_markup = True
     paragraphs = text.split('\n')
     parag_ctr = 0
-    new_text = ''
+    new_text: str = ''
     for parag in paragraphs:
         words = parag.split(' ')
-        new_parag = ''
+        new_parag: str = ''
         reading_markup = False
         for wrd in words:
             if '<' in wrd:
@@ -2025,8 +2025,8 @@ def bold_reading_string(text: str) -> str:
                '&' not in wrd and '=' not in wrd and \
                not wrd.startswith(':'):
 
-                prefix = ''
-                postfix = ''
+                prefix: str = ''
+                postfix: str = ''
                 if wrd.startswith('"'):
                     prefix = '"'
                     wrd = wrd[1:]
@@ -2109,7 +2109,7 @@ def content_diff(content: str, prev_content: str) -> str:
 
     diff = cdiff.compare(text1_sentences, text2_sentences)
 
-    diff_text = ''
+    diff_text: str = ''
     for line in diff:
         if line.startswith('- '):
             if not diff_text:
@@ -2146,7 +2146,7 @@ def create_edits_html(edits_json: {}, post_json_object: {},
     for modified, _ in edits_json.items():
         edit_dates_list.append(modified)
     edit_dates_list.sort(reverse=True)
-    edits_str = ''
+    edits_str: str = ''
     content = get_content_from_post(post_json_object, system_language,
                                     languages_understood, "content")
     if not content:
@@ -2172,7 +2172,7 @@ def create_edits_html(edits_json: {}, post_json_object: {},
         datetime_object = \
             convert_published_to_local_timezone(datetime_object, timezone)
         modified_str = datetime_object.strftime("%a %b %d, %H:%M")
-        diff = '<p><b>' + modified_str + '</b></p>' + diff
+        diff: str = '<p><b>' + modified_str + '</b></p>' + diff
         edits_str += diff
         content = prev_content
     if not edits_str:
@@ -2189,7 +2189,7 @@ def remove_script(content: str, log_filename: str,
     separators = [['<', '>'], ['&lt;', '&gt;']]
     for sep in separators:
         prefix = sep[0] + 'script'
-        ending = '/script' + sep[1]
+        ending: str = '/script' + sep[1]
         if prefix not in content:
             continue
         sections = content.split(prefix)
@@ -2208,7 +2208,7 @@ def remove_script(content: str, log_filename: str,
                 if log_filename and actor:
                     # write the detected script to a log file
                     log_str = actor + ' ' + url + ' ' + text + '\n'
-                    write_type = 'a+'
+                    write_type: str = 'a+'
                     if os.path.isfile(log_filename):
                         write_type = 'w+'
                     try:
@@ -2321,22 +2321,22 @@ def format_mixed_right_to_left(content: str,
     # not a RTL language
     if language_right_to_left(language):
         return content
-    result = ''
+    result: str = ''
     changed = False
     paragraphs = content.split('<p>')
     for text_html in paragraphs:
         if '</p>' not in text_html:
             continue
-        text_html = '<p>' + text_html
-        text_plain = remove_html(text_html)
+        text_html: str = '<p>' + text_html
+        text_plain: str = remove_html(text_html)
         if is_right_to_left_text(text_plain):
             text_html = text_html.replace('<p>', '<p><div dir="rtl">', 1)
             text_html = text_html.replace('</p>', '</div></p>', 1)
             changed = True
         result += text_html
     if not changed:
-        result = ''
-        prev_distilled = ''
+        result: str = ''
+        prev_distilled: str = ''
         distilled = content
         while prev_distilled != distilled:
             prev_distilled = distilled

@@ -127,7 +127,7 @@ def send_availability_via_server(base_dir: str, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    post_to_box = 'outbox'
+    post_to_box: str = 'outbox'
 
     # get the actor inbox for the To handle
     origin_domain = domain

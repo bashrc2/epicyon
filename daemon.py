@@ -108,7 +108,7 @@ from poison import load_2grams
 
 
 class PubServer(BaseHTTPRequestHandler):
-    protocol_version = 'HTTP/1.1'
+    protocol_version: str = 'HTTP/1.1'
 
     def handle_error(self, request, client_address):
         """HTTP server error handling
@@ -295,11 +295,11 @@ class PubServer(BaseHTTPRequestHandler):
 
 
 class PubServerUnitTest(PubServer):
-    protocol_version = 'HTTP/1.0'
+    protocol_version: str = 'HTTP/1.0'
 
 
 class EpicyonServer(ThreadingHTTPServer):
-    starting_daemon = True
+    starting_daemon: bool = True
     hide_announces = {}
     no_of_books = 0
     max_api_blocks = 32000
@@ -315,7 +315,7 @@ class EpicyonServer(ThreadingHTTPServer):
     block_government = {}
     block_bluesky = {}
     block_nostr = {}
-    followers_synchronization = False
+    followers_synchronization: bool = False
     followers_sync_cache = {}
     buy_sites = None
     min_images_for_accounts = 0
@@ -323,7 +323,7 @@ class EpicyonServer(ThreadingHTTPServer):
     css_cache = {}
     reverse_sequence = None
     clacks = None
-    public_replies_unlisted = False
+    public_replies_unlisted: bool = False
     dogwhistles = {}
     preferred_podcast_formats: list[str] = []
     bold_reading = {}
@@ -331,18 +331,18 @@ class EpicyonServer(ThreadingHTTPServer):
     hide_recent_posts = {}
     account_timezone = None
     post_to_nickname = None
-    nodeinfo_is_active = False
-    security_txt_is_active = False
-    vcard_is_active = False
-    masto_api_is_active = False
+    nodeinfo_is_active: bool = False
+    security_txt_is_active: bool = False
+    vcard_is_active: bool = False
+    masto_api_is_active: bool = False
     map_format = None
-    dyslexic_font = False
-    content_license_url = ''
-    dm_license_url = ''
+    dyslexic_font: bool = False
+    content_license_url: str = ''
+    dm_license_url: str = ''
     fitness = {}
     signing_priv_key_pem = None
-    show_node_info_accounts = False
-    show_node_info_version = False
+    show_node_info_accounts: bool = False
+    show_node_info_version: bool = False
     text_mode_banner = ''
     access_keys = {}
     rss_timeout_sec = 20
@@ -350,68 +350,68 @@ class EpicyonServer(ThreadingHTTPServer):
     default_reply_interval_hrs = 9999999
     recent_dav_etags = {}
     key_shortcuts = {}
-    low_bandwidth = False
+    low_bandwidth: bool = False
     user_agents_blocked = None
     crawlers_allowed = None
     known_bots = None
-    unit_test = False
-    allow_local_network_access = False
-    yt_replace_domain = ''
-    twitter_replacement_domain = ''
+    unit_test: bool = False
+    allow_local_network_access: bool = False
+    yt_replace_domain: str = ''
+    twitter_replacement_domain: str = ''
     newswire = {}
     max_newswire_posts = 0
-    verify_all_signatures = False
+    verify_all_signatures: bool = False
     blocklistUpdateCtr = 0
     blocklistUpdateInterval = 100
     domainBlocklist = None
     manual_follower_approval = True
     onion_domain = None
     i2p_domain = None
-    media_instance = False
-    blogs_instance = False
+    media_instance: bool = False
+    blogs_instance: bool = False
     translate = {}
-    system_language = 'en'
+    system_language: str = 'en'
     city = ''
     voting_time_mins = 30
-    positive_voting = False
+    positive_voting: bool = False
     newswire_votes_threshold = 1
     max_newswire_feed_size_kb = 1
     max_newswire_posts_per_source = 1
-    show_published_date_only = False
+    show_published_date_only: bool = False
     max_mirrored_articles = 0
     max_news_posts = 0
     maxTags = 32
     max_followers = 2000
-    show_publish_as_icon = False
-    full_width_tl_button_header = False
-    rss_icon_at_top = True
-    publish_button_at_top = False
+    show_publish_as_icon: bool = False
+    full_width_tl_button_header: bool = False
+    rss_icon_at_top: bool = True
+    publish_button_at_top: bool = False
     max_feed_item_size_kb = 100
     maxCategoriesFeedItemSizeKb = 1024
     dormant_months = 6
     max_like_count = 10
     followingItemsPerPage = 12
-    registration = False
-    enable_shared_inbox = True
+    registration: bool = False
+    enable_shared_inbox: bool = True
     outboxThread = {}
     outbox_thread_index = {}
     new_post_thread = {}
     project_version = __version__
-    secure_mode = True
+    secure_mode: bool = True
     max_post_length = 0
     maxMediaSize = 0
     maxMessageLength = 64000
     maxPostsInBox = 32000
     maxCacheAgeDays = 30
-    domain = ''
+    domain: str = ''
     port = 43
-    domain_full = ''
-    http_prefix = 'https'
-    debug = False
+    domain_full: str = ''
+    http_prefix: str = 'https'
+    debug: bool = False
     federation_list: list[str] = []
     shared_items_federated_domains: list[str] = []
-    base_dir = ''
-    instance_id = ''
+    base_dir: str = ''
+    instance_id: str = ''
     person_cache = {}
     cached_webfingers = {}
     favicons_cache = {}
@@ -421,22 +421,22 @@ class EpicyonServer(ThreadingHTTPServer):
     session_i2p = None
     last_getreq = 0
     last_postreq = 0
-    getreq_busy = False
-    postreq_busy = False
-    received_message = False
+    getreq_busy: bool = False
+    postreq_busy: bool = False
+    received_message: bool = False
     inbox_queue: list[dict] = []
     send_threads = None
     post_log = []
     max_queue_length = 64
-    allow_deletion = True
+    allow_deletion: bool = True
     last_login_time = 0
     last_login_failure = 0
     login_failure_count = {}
-    log_login_failures = True
+    log_login_failures: bool = True
     max_replies = 10
     tokens = {}
     tokens_lookup = {}
-    instance_only_skills_search = True
+    instance_only_skills_search: bool = True
     followers_threads = []
     blocked_cache = []
     blocked_cache_last_updated = 0
@@ -447,9 +447,9 @@ class EpicyonServer(ThreadingHTTPServer):
     last_known_crawler = 0
     lists_enabled = None
     cw_lists = {}
-    theme_name = ''
-    news_instance = False
-    default_timeline = 'inbox'
+    theme_name: str = ''
+    news_instance: bool = False
+    default_timeline: str = 'inbox'
     thrFitness = None
     recent_posts_cache = {}
     thrCache = None
@@ -471,9 +471,9 @@ class EpicyonServer(ThreadingHTTPServer):
     thrPostSchedule = None
     thrNewswireDaemon = None
     thrFederatedSharesDaemon = None
-    restart_inbox_queue_in_progress = False
-    restart_inbox_queue = False
-    signing_priv_key_pem = ''
+    restart_inbox_queue_in_progress: bool = False
+    restart_inbox_queue: bool = False
+    signing_priv_key_pem: str = ''
     thrCheckActor = {}
     thrImportFollowing = None
     thrWatchdog = None
@@ -482,8 +482,8 @@ class EpicyonServer(ThreadingHTTPServer):
     thrFederatedSharesWatchdog = None
     thrFederatedBlocksDaemon = None
     qrcode_scale = 6
-    instance_description = ''
-    instance_description_short = 'Epicyon'
+    instance_description: str = ''
+    instance_description_short: str = 'Epicyon'
     robots_txt = None
     last_llm_time = None
     mitm_servers = []
@@ -877,7 +877,7 @@ def run_daemon(accounts_data_dir: str,
     if not content_license_url:
         content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     httpd.content_license_url = content_license_url
-    httpd.dm_license_url = ''
+    httpd.dm_license_url: str = ''
 
     # fitness metrics
     fitness_filename = data_dir(base_dir) + '/fitness.json'
@@ -1013,7 +1013,7 @@ def run_daemon(accounts_data_dir: str,
 
     # load translations dictionary
     httpd.translate = {}
-    httpd.system_language = 'en'
+    httpd.system_language: str = 'en'
     if not unit_test:
         httpd.translate, httpd.system_language = \
             load_translations_from_file(base_dir, language)
@@ -1207,7 +1207,7 @@ def run_daemon(accounts_data_dir: str,
     httpd.cw_lists = load_cw_lists(base_dir, True)
 
     # set the avatar for the news account
-    httpd.theme_name = get_config_param(base_dir, 'theme')
+    httpd.theme_name: str = get_config_param(base_dir, 'theme')
     if not httpd.theme_name:
         httpd.theme_name = 'default'
     if is_news_theme_name(base_dir, httpd.theme_name):

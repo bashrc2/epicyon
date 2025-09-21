@@ -264,7 +264,7 @@ def announce_public(session, base_dir: str, federation_list: [],
     """
     from_domain = get_full_domain(domain, port)
 
-    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    to_url: str = 'https://www.w3.org/ns/activitystreams#Public'
     cc_url = local_actor_url(http_prefix, nickname, from_domain) + '/followers'
     return create_announce(session, base_dir, federation_list,
                            nickname, domain, port,
@@ -296,7 +296,7 @@ def send_announce_via_server(base_dir: str, session,
 
     from_domain_full = get_full_domain(from_domain, from_port)
 
-    to_url = 'https://www.w3.org/ns/activitystreams#Public'
+    to_url: str = 'https://www.w3.org/ns/activitystreams#Public'
     actor_str = local_actor_url(http_prefix, from_nickname, from_domain_full)
     cc_url = actor_str + '/followers'
 
@@ -333,7 +333,7 @@ def send_announce_via_server(base_dir: str, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    post_to_box = 'outbox'
+    post_to_box: str = 'outbox'
 
     # get the actor inbox for the To handle
     origin_domain = from_domain
@@ -422,7 +422,7 @@ def send_undo_announce_via_server(base_dir: str, session,
               ' did not return a dict. ' + str(wf_request))
         return 1
 
-    post_to_box = 'outbox'
+    post_to_box: str = 'outbox'
 
     # get the actor inbox for the To handle
     origin_domain = domain

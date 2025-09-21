@@ -299,7 +299,7 @@ def download_conversation_posts(authorized: bool, session,
     """
     if '://' not in post_id:
         return []
-    profile_str = 'https://www.w3.org/ns/activitystreams'
+    profile_str: str = 'https://www.w3.org/ns/activitystreams'
     as_header = {
         'Accept': 'application/ld+json; profile="' + profile_str + '"'
     }
@@ -438,7 +438,7 @@ def conversation_tag_to_convthread_id(tag: str) -> str:
     """
     if not isinstance(tag, str):
         return ''
-    convthread_id = ''
+    convthread_id: str = ''
     for tag_chr in tag:
         if tag_chr.isdigit():
             convthread_id += tag_chr
