@@ -668,6 +668,15 @@ def remove_html(content: str) -> str:
     return result
 
 
+def content_is_single_url(content: str) -> bool:
+    """Returns true of the content string only contains a web link
+    """
+    if '<a href=' in content:
+        if not remove_html(content).strip():
+            return True
+    return False
+
+
 def remove_style_within_html(content: str) -> str:
     """Removes style="something" within html post content.
     Used to ensure that styles

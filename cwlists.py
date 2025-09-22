@@ -10,6 +10,7 @@ __module_group__ = "Core"
 import os
 from utils import load_json
 from utils import get_content_from_post
+from utils import content_is_single_url
 
 
 def load_cw_lists(base_dir: str, verbose: bool) -> {}:
@@ -123,6 +124,15 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
                                     languages_understood, "content")
     if not content:
         return
+
+    # warn about possible dangerous web links, which could be phishing scams
+    if content_is_single_url(content):
+        single_link_warning = translate['Warning: Possible dangerous link']
+        if cw_text:
+            if single_link_warning not in cw_text:
+                cw_text = single_link_warning + ' / ' + cw_text
+        else:
+            cw_text = single_link_warning
 
     post_tags: list[dict] = []
     if post_json_object['object'].get('tag'):
