@@ -7628,6 +7628,26 @@ def _test_add_cw_lists(base_dir: str) -> None:
     assert post_json_object['object']['summary'] == \
         "Murdoch Press / Existing CW"
 
+    content = \
+        '<p>Wah wah-wah wah waaaah.</p><p><a ' + \
+        'href="https://www.ft.com/content/abcdef" target="_blank" ' + \
+        'rel="nofollow noopener" translate="no"><span class="invisible">' + \
+        'https://www.</span><span class="ellipsis">ft.com/content/abcdef' + \
+        '</span><span class="invisible">ghi</span></a></p>'
+    post_json_object = {
+        "object": {
+            "sensitive": True,
+            "summary": "Existing CW",
+            "content": content
+        }
+    }
+    add_cw_from_lists(post_json_object, cw_lists, translate,
+                      'Paywalled or registration only',
+                      system_language, languages_understood)
+    assert post_json_object['object']['sensitive'] is True
+    assert post_json_object['object']['summary'] == \
+        "Paywalled or Registration Only / Existing CW"
+
 
 def _test_valid_emoji_content() -> None:
     print('test_valid_emoji_content')

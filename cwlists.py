@@ -81,10 +81,12 @@ def _add_cw_match_domains(item: {}, content: str, cw_text: str,
     the post content
     """
     matched = False
+
     for domain in item['domains']:
         if '.' in domain:
             first_section = domain.split('.')[0]
-            if len(first_section) < 4:
+            len_first_section = len(first_section)
+            if len_first_section in range(1, 4):
                 if '.' + domain in content or \
                    '/' + domain in content:
                     if cw_text:
@@ -116,6 +118,7 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
     if 'content' not in post_json_object['object']:
         if 'contentMap' not in post_json_object['object']:
             return
+
     cw_text: str = ''
     if post_json_object['object'].get('summary'):
         cw_text = post_json_object['object']['summary']
