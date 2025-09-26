@@ -288,6 +288,11 @@ def valid_inbox_filenames(base_dir: str, nickname: str, domain: str,
 def inbox_message_has_params(message_json: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
     """
+    if not isinstance(message_json, dict):
+        print('WARN: message_json is expected to be a dict ' +
+              str(message_json))
+        return False
+
     expected_params = ['actor', 'type', 'object']
     for param in expected_params:
         if not message_json.get(param):
