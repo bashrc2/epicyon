@@ -1226,18 +1226,17 @@ def daemon_http_post(self) -> None:
         return
 
     # handle POST containing multiple messages
+    message_list: list[dict] = [message_json]
     if isinstance(message_json, list):
         message_list = message_json
-    else:
-        message_list = [message_json]
 
-    for message_json in message_list:
-        if not isinstance(message_json, dict):
+    for message_list_json in message_list:
+        if not isinstance(message_list_json, dict):
             continue
 
         if self.path.endswith('/inbox') or \
            self.path == '/sharedInbox':
-            if not inbox_message_has_params(message_json):
+            if not inbox_message_has_params(message_list_json):
                 if self.server.debug:
                     print("DEBUG: inbox message doesn't have the " +
                           "required parameters")
@@ -1266,7 +1265,7 @@ def daemon_http_post(self) -> None:
 
         if not self.server.unit_test:
             if not inbox_permitted_message(self.server.domain,
-                                           message_json,
+                                           message_list_json,
                                            self.server.federation_list):
                 if self.server.debug:
                     # https://www.youtube.com/watch?v=K3PrSj9XEu4
@@ -1291,7 +1290,7 @@ def daemon_http_post(self) -> None:
                 if self.post_to_nickname:
                     queue_status = \
                         update_inbox_queue(self, self.post_to_nickname,
-                                           message_json, message_bytes,
+                                           message_list_json, message_bytes,
                                            self.server.debug)
                     if queue_status in range(0, 4):
                         continue
@@ -1308,7 +1307,7 @@ def daemon_http_post(self) -> None:
             if self.server.debug:
                 print('INBOX: POST to shared inbox')
             queue_status = \
-                update_inbox_queue(self, 'inbox', message_json,
+                update_inbox_queue(self, 'inbox', message_list_json,
                                    message_bytes,
                                    self.server.debug)
             if queue_status in range(0, 4):
