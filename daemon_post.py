@@ -1225,6 +1225,23 @@ def daemon_http_post(self) -> None:
         self.server.postreq_busy = False
         return
 
+    # check that the header has a signature
+    header_signature = getheader_signature_input(self.headers)
+
+    if header_signature:
+        if 'keyId=' not in header_signature:
+            if self.server.debug:
+                print('DEBUG: POST to inbox has no keyId in ' +
+                      'header signature parameter')
+            self.send_response(403)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return
+
+    fitness_performance(postreq_start_time, self.server.fitness,
+                        '_POST', 'keyId check',
+                        self.server.debug)
+
     # handle POST containing multiple messages
     message_list: list[dict] = [message_json]
     if isinstance(message_json, list):
@@ -1246,21 +1263,6 @@ def daemon_http_post(self) -> None:
 
         fitness_performance(postreq_start_time, self.server.fitness,
                             '_POST', 'inbox_message_has_params',
-                            self.server.debug)
-
-        header_signature = getheader_signature_input(self.headers)
-
-        if header_signature:
-            if 'keyId=' not in header_signature:
-                if self.server.debug:
-                    print('DEBUG: POST to inbox has no keyId in ' +
-                          'header signature parameter')
-                self.send_response(403)
-                self.end_headers()
-                continue
-
-        fitness_performance(postreq_start_time, self.server.fitness,
-                            '_POST', 'keyId check',
                             self.server.debug)
 
         if not self.server.unit_test:
