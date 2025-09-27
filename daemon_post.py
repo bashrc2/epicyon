@@ -83,7 +83,7 @@ def _http_post_message_receive(self, message_list_json: {},
                                postreq_start_time, users_in_path: bool,
                                message_bytes) -> bool:
     """Receive message json via http POST
-    Returns true if a http code is sent
+    Returns true if message is sent into queue
     """
     if not isinstance(message_list_json, dict):
         return False
@@ -96,7 +96,7 @@ def _http_post_message_receive(self, message_list_json: {},
                       "required parameters")
             self.send_response(403)
             self.end_headers()
-            return True
+            return False
 
     fitness_performance(postreq_start_time, self.server.fitness,
                         '_POST', 'inbox_message_has_params',
@@ -111,7 +111,7 @@ def _http_post_message_receive(self, message_list_json: {},
                 print('DEBUG: Ah Ah Ah')
             self.send_response(403)
             self.end_headers()
-            return True
+            return False
 
     fitness_performance(postreq_start_time, self.server.fitness,
                         '_POST', 'inbox_permitted_message',
@@ -141,7 +141,7 @@ def _http_post_message_receive(self, message_list_json: {},
                     print('INBOX: self.post_to_nickname is None')
         self.send_response(403)
         self.end_headers()
-        return True
+        return False
     if self.path in ('/sharedInbox', '/inbox'):
         if self.server.debug:
             print('INBOX: POST to shared inbox')
@@ -151,7 +151,8 @@ def _http_post_message_receive(self, message_list_json: {},
                                self.server.debug)
         if queue_status in range(0, 4):
             return False
-    return False
+    http_200(self)
+    return True
 
 
 def daemon_http_post(self) -> None:
@@ -1322,13 +1323,9 @@ def daemon_http_post(self) -> None:
     if isinstance(message_json, list):
         message_list = message_json
 
-    http_code_returned = False
     for message_list_json in message_list:
-        if _http_post_message_receive(self, message_list_json,
-                                      postreq_start_time, users_in_path,
-                                      message_bytes):
-            http_code_returned = True
+        _http_post_message_receive(self, message_list_json,
+                                   postreq_start_time, users_in_path,
+                                   message_bytes)
 
-    if not http_code_returned:
-        http_200(self)
     self.server.postreq_busy = False
