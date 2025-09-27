@@ -79,6 +79,81 @@ MAX_POSTS_IN_HASHTAG_FEED = 6
 MAX_POSTS_IN_FEED = 12
 
 
+def _http_post_message_receive(self, message_list_json: {},
+                               postreq_start_time, users_in_path: bool,
+                               message_bytes) -> bool:
+    """Receive message json via http POST
+    Returns true if a http code is sent
+    """
+    if not isinstance(message_list_json, dict):
+        return False
+
+    if self.path.endswith('/inbox') or \
+       self.path == '/sharedInbox':
+        if not inbox_message_has_params(message_list_json):
+            if self.server.debug:
+                print("DEBUG: inbox message doesn't have the " +
+                      "required parameters")
+            self.send_response(403)
+            self.end_headers()
+            return True
+
+    fitness_performance(postreq_start_time, self.server.fitness,
+                        '_POST', 'inbox_message_has_params',
+                        self.server.debug)
+
+    if not self.server.unit_test:
+        if not inbox_permitted_message(self.server.domain,
+                                       message_list_json,
+                                       self.server.federation_list):
+            if self.server.debug:
+                # https://www.youtube.com/watch?v=K3PrSj9XEu4
+                print('DEBUG: Ah Ah Ah')
+            self.send_response(403)
+            self.end_headers()
+            return True
+
+    fitness_performance(postreq_start_time, self.server.fitness,
+                        '_POST', 'inbox_permitted_message',
+                        self.server.debug)
+
+    if self.server.debug:
+        print('INBOX: POST saving to inbox queue')
+    if users_in_path:
+        path_users_section = self.path.split('/users/')[1]
+        if '/' not in path_users_section:
+            if self.server.debug:
+                print('INBOX: This is not a users endpoint')
+        else:
+            self.post_to_nickname = path_users_section.split('/')[0]
+            if self.post_to_nickname:
+                queue_status = \
+                    update_inbox_queue(self, self.post_to_nickname,
+                                       message_list_json, message_bytes,
+                                       self.server.debug)
+                if queue_status in range(0, 4):
+                    return False
+                if self.server.debug:
+                    print('INBOX: update_inbox_queue exited ' +
+                          'without doing anything')
+            else:
+                if self.server.debug:
+                    print('INBOX: self.post_to_nickname is None')
+        self.send_response(403)
+        self.end_headers()
+        return True
+    if self.path in ('/sharedInbox', '/inbox'):
+        if self.server.debug:
+            print('INBOX: POST to shared inbox')
+        queue_status = \
+            update_inbox_queue(self, 'inbox', message_list_json,
+                               message_bytes,
+                               self.server.debug)
+        if queue_status in range(0, 4):
+            return False
+    return False
+
+
 def daemon_http_post(self) -> None:
     """HTTP POST handler
     """
@@ -1247,73 +1322,13 @@ def daemon_http_post(self) -> None:
     if isinstance(message_json, list):
         message_list = message_json
 
+    http_code_returned = False
     for message_list_json in message_list:
-        if not isinstance(message_list_json, dict):
-            continue
+        if _http_post_message_receive(self, message_list_json,
+                                      postreq_start_time, users_in_path,
+                                      message_bytes):
+            http_code_returned = True
 
-        if self.path.endswith('/inbox') or \
-           self.path == '/sharedInbox':
-            if not inbox_message_has_params(message_list_json):
-                if self.server.debug:
-                    print("DEBUG: inbox message doesn't have the " +
-                          "required parameters")
-                self.send_response(403)
-                self.end_headers()
-                continue
-
-        fitness_performance(postreq_start_time, self.server.fitness,
-                            '_POST', 'inbox_message_has_params',
-                            self.server.debug)
-
-        if not self.server.unit_test:
-            if not inbox_permitted_message(self.server.domain,
-                                           message_list_json,
-                                           self.server.federation_list):
-                if self.server.debug:
-                    # https://www.youtube.com/watch?v=K3PrSj9XEu4
-                    print('DEBUG: Ah Ah Ah')
-                self.send_response(403)
-                self.end_headers()
-                continue
-
-        fitness_performance(postreq_start_time, self.server.fitness,
-                            '_POST', 'inbox_permitted_message',
-                            self.server.debug)
-
-        if self.server.debug:
-            print('INBOX: POST saving to inbox queue')
-        if users_in_path:
-            path_users_section = self.path.split('/users/')[1]
-            if '/' not in path_users_section:
-                if self.server.debug:
-                    print('INBOX: This is not a users endpoint')
-            else:
-                self.post_to_nickname = path_users_section.split('/')[0]
-                if self.post_to_nickname:
-                    queue_status = \
-                        update_inbox_queue(self, self.post_to_nickname,
-                                           message_list_json, message_bytes,
-                                           self.server.debug)
-                    if queue_status in range(0, 4):
-                        continue
-                    if self.server.debug:
-                        print('INBOX: update_inbox_queue exited ' +
-                              'without doing anything')
-                else:
-                    if self.server.debug:
-                        print('INBOX: self.post_to_nickname is None')
-            self.send_response(403)
-            self.end_headers()
-            continue
-        if self.path in ('/sharedInbox', '/inbox'):
-            if self.server.debug:
-                print('INBOX: POST to shared inbox')
-            queue_status = \
-                update_inbox_queue(self, 'inbox', message_list_json,
-                                   message_bytes,
-                                   self.server.debug)
-            if queue_status in range(0, 4):
-                continue
-
-    http_200(self)
+    if not http_code_returned:
+        http_200(self)
     self.server.postreq_busy = False
