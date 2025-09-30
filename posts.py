@@ -5262,7 +5262,8 @@ def _novel_fields_for_person(nickname: str, domain: str,
         'quoteReply',
         'toot:quoteReply',
         '_misskey_quote',
-        'quote'
+        'quote',
+        'quoteAuthorization'
     )
     for post_filename in posts_in_box:
         post_filename = post_filename.name
