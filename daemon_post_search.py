@@ -523,7 +523,7 @@ def _receive_search_handle(self, search_str: str,
         # get the avatar url for the actor
         avatar_url = \
             get_avatar_image_url(curr_session,
-                                 base_dir, http_prefix,
+                                 base_dir, http_prefix, domain,
                                  actor, person_cache,
                                  None, True,
                                  signing_priv_key_pem,

@@ -364,7 +364,8 @@ def set_blog_address(actor_json: {}, blog_address: str) -> None:
 
 
 def update_avatar_image_cache(signing_priv_key_pem: str,
-                              session, base_dir: str, http_prefix: str,
+                              session, base_dir: str,
+                              http_prefix: str, domain: str,
                               actor: str, avatar_url: str,
                               person_cache: {}, allow_downloads: bool,
                               mitm_servers: [],
@@ -393,6 +394,8 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
 
     if (not os.path.isfile(avatar_image_filename) or force) and \
        allow_downloads:
+        if '://' not in avatar_url and avatar_url.startswith('/'):
+            avatar_url = http_prefix + '://' + domain + avatar_url
         try:
             if debug:
                 print('avatar image url: ' + avatar_url)
@@ -1798,7 +1801,8 @@ def html_highlight_label(label: str, highlight: bool) -> str:
     return '*' + str(label) + '*'
 
 
-def get_avatar_image_url(session, base_dir: str, http_prefix: str,
+def get_avatar_image_url(session, base_dir: str,
+                         http_prefix: str, domain: str,
                          post_actor: str, person_cache: {},
                          avatar_url: str, allow_downloads: bool,
                          signing_priv_key_pem: str,
@@ -1811,12 +1815,12 @@ def get_avatar_image_url(session, base_dir: str, http_prefix: str,
             get_person_avatar_url(base_dir, post_actor, person_cache)
         avatar_url = \
             update_avatar_image_cache(signing_priv_key_pem,
-                                      session, base_dir, http_prefix,
+                                      session, base_dir, http_prefix, domain,
                                       post_actor, avatar_url, person_cache,
                                       allow_downloads, mitm_servers)
     else:
         update_avatar_image_cache(signing_priv_key_pem,
-                                  session, base_dir, http_prefix,
+                                  session, base_dir, http_prefix, domain,
                                   post_actor, avatar_url, person_cache,
                                   allow_downloads, mitm_servers)
 

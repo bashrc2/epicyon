@@ -613,7 +613,7 @@ def _get_post_from_recent_cache(session,
         _log_post_timing(enable_timing_log, post_start_time, '2.1')
 
     update_avatar_image_cache(signing_priv_key_pem,
-                              session, base_dir, http_prefix,
+                              session, base_dir, http_prefix, domain,
                               post_actor, avatar_url, person_cache,
                               allow_downloads, mitm_servers)
 
@@ -2232,7 +2232,7 @@ def remove_incomplete_code_tags(content: str) -> str:
     return content
 
 
-def _mentions_to_person_options(html_str: str, nickname: str,
+def _mentions_to_person_options(html_str: str, nickname: str, domain: str,
                                 session, base_dir: str, http_prefix: str,
                                 person_cache: {},
                                 allow_downloads: bool,
@@ -2259,7 +2259,7 @@ def _mentions_to_person_options(html_str: str, nickname: str,
         post_actor = link.split('"')[0]
         # look up the avatar image for the mention
         avatar_url = \
-            get_avatar_image_url(session, base_dir, http_prefix,
+            get_avatar_image_url(session, base_dir, http_prefix, domain,
                                  post_actor, person_cache,
                                  None, allow_downloads,
                                  signing_priv_key_pem,
@@ -2391,7 +2391,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     avatar_url = \
         get_avatar_image_url(session,
-                             base_dir, http_prefix,
+                             base_dir, http_prefix, domain,
                              post_actor, person_cache,
                              avatar_url, allow_downloads,
                              signing_priv_key_pem,
@@ -3369,7 +3369,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     # This enables following of mentions in browsers which don't
     # support javascript
     post_html = \
-        _mentions_to_person_options(post_html, nickname,
+        _mentions_to_person_options(post_html, nickname, domain,
                                     session, base_dir, http_prefix,
                                     person_cache,
                                     allow_downloads,
