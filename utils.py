@@ -995,6 +995,17 @@ def evil_incarnate() -> []:
     return ['fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz']
 
 
+def evil_nickname(sending_actor_nickname: str) -> bool:
+    """sender nicknames which are automatically rejected
+    """
+    evil_nicks = ('hitler', '1488')
+    nickname_lower = sending_actor_nickname.lower()
+    for nick in evil_nicks:
+        if nick in nickname_lower:
+            return True
+    return False
+
+
 def contains_invalid_chars(json_str: str) -> bool:
     """Does the given json string contain invalid characters?
     """

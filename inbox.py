@@ -63,6 +63,7 @@ from utils import get_actor_from_post
 from utils import data_dir
 from utils import is_dm
 from utils import has_actor
+from utils import evil_nickname
 from status import get_status_number
 from httpsig import get_digest_algorithm_from_headers
 from httpsig import verify_post_headers
@@ -1459,6 +1460,8 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
     sending_actor_nickname = \
         get_nickname_from_actor(sending_actor)
     if not sending_actor_nickname:
+        return False
+    if evil_nickname(sending_actor_nickname):
         return False
     sending_actor_domain, _ = \
         get_domain_from_actor(sending_actor)
@@ -3412,6 +3415,19 @@ def run_inbox_queue(server,
         curr_session = session
         if queue_json.get('actor'):
             if isinstance(queue_json['actor'], str):
+                # blocking based upon nickname
+                sender_nickname = get_nickname_from_actor(queue_json['actor'])
+                if evil_nickname(sender_nickname):
+                    if os.path.isfile(queue_filename):
+                        try:
+                            os.remove(queue_filename)
+                        except OSError:
+                            print('EX: run_inbox_queue 11 unable to delete ' +
+                                  str(queue_filename))
+                    if queue:
+                        queue.pop(0)
+                    continue
+
                 sender_domain, _ = get_domain_from_actor(queue_json['actor'])
                 if sender_domain:
                     if sender_domain.endswith('.onion') and \
