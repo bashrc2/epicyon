@@ -3421,8 +3421,9 @@ def run_inbox_queue(server,
                           session_i2p and proxy_type != 'i2p'):
                         curr_session = session_i2p
 
-        if debug and queue_json.get('actor'):
-            print('Obtaining public key for actor ' + queue_json['actor'])
+                if debug:
+                    print('Obtaining public key for actor ' +
+                          queue_json['actor'])
 
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'start_get_pubkey', debug)
