@@ -46,6 +46,7 @@ from utils import local_actor_url
 from utils import has_actor
 from utils import text_in_file
 from utils import get_actor_from_post
+from utils import evil_incarnate
 from conversation import mute_conversation
 from conversation import unmute_conversation
 from auth import create_basic_auth_header
@@ -670,7 +671,7 @@ def update_blocked_cache(base_dir: str,
                 blocked_lines[index] = remove_eol(blocked_lines[index])
             # update the cache
             blocked_cache.clear()
-            blocked_cache += blocked_lines
+            blocked_cache += evil_incarnate() + blocked_lines
     except OSError as ex:
         print('EX: update_blocked_cache unable to read ' +
               global_blocking_filename + ' ' + str(ex))

@@ -992,7 +992,7 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
 def evil_incarnate() -> []:
     """Hardcoded blocked domains
     """
-    return ('fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz')
+    return ['fedilist.com', 'gab.com', 'gabfed.com', 'spinster.xyz']
 
 
 def contains_invalid_chars(json_str: str) -> bool:
