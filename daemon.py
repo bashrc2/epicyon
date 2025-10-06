@@ -37,7 +37,6 @@ from blocking import load_blocked_bluesky
 from blocking import load_blocked_nostr
 from blocking import update_blocked_cache
 from blocking import set_broch_mode
-from blocking import get_domain_blocklist
 from webapp_utils import load_buy_sites
 from webapp_accesskeys import load_access_keys_for_accounts
 from webapp_media import load_peertube_instances
@@ -362,8 +361,6 @@ class EpicyonServer(ThreadingHTTPServer):
     max_newswire_posts = 0
     verify_all_signatures: bool = False
     blocklistUpdateCtr = 0
-    blocklistUpdateInterval = 100
-    domainBlocklist = None
     manual_follower_approval = True
     onion_domain = None
     i2p_domain = None
@@ -994,12 +991,6 @@ def run_daemon(accounts_data_dir: str,
 
     # whether to require that all incoming posts have valid jsonld signatures
     httpd.verify_all_signatures = verify_all_signatures
-
-    # This counter is used to update the list of blocked domains in memory.
-    # It helps to avoid touching the disk and so improves flooding resistance
-    httpd.blocklistUpdateCtr = 0
-    httpd.blocklistUpdateInterval = 100
-    httpd.domainBlocklist = get_domain_blocklist(base_dir)
 
     httpd.manual_follower_approval = manual_follower_approval
     if domain.endswith('.onion'):

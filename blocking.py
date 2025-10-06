@@ -39,7 +39,6 @@ from utils import has_users_path
 from utils import get_full_domain
 from utils import remove_id_ending
 from utils import locate_post
-from utils import evil_incarnate
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import acct_dir
@@ -644,29 +643,6 @@ def is_blocked_hashtag(base_dir: str, hashtag: str) -> bool:
         if text_in_file(hashtag + '\n', global_blocking_filename):
             return True
     return False
-
-
-def get_domain_blocklist(base_dir: str) -> str:
-    """Returns all globally blocked domains as a string
-    This can be used for fast matching to mitigate flooding
-    """
-    blocked_str: str = ''
-
-    evil_domains = evil_incarnate()
-    for evil in evil_domains:
-        blocked_str += evil + '\n'
-
-    global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
-    if not os.path.isfile(global_blocking_filename):
-        return blocked_str
-    try:
-        with open(global_blocking_filename, 'r',
-                  encoding='utf-8') as fp_blocked:
-            blocked_str += fp_blocked.read()
-    except OSError:
-        print('EX: get_domain_blocklist unable to read ' +
-              global_blocking_filename)
-    return blocked_str
 
 
 def update_blocked_cache(base_dir: str,
