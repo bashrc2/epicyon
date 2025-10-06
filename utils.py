@@ -2432,6 +2432,8 @@ def valid_nickname(domain: str, nickname: str) -> bool:
         return False
     if _is_reserved_name(nickname):
         return False
+    if evil_nickname(nickname):
+        return False
     return True
 
 
