@@ -47,6 +47,7 @@ from utils import has_actor
 from utils import text_in_file
 from utils import get_actor_from_post
 from utils import evil_incarnate
+from utils import evil_nickname
 from conversation import mute_conversation
 from conversation import unmute_conversation
 from auth import create_basic_auth_header
@@ -769,6 +770,9 @@ def is_blocked_nickname(base_dir: str, nickname: str,
                         blocked_cache: [] = None) -> bool:
     """Is the given nickname blocked?
     """
+    if evil_nickname(nickname):
+        return True
+
     if not blocked_cache:
         # instance-wide block list
         blocked_cache = []
