@@ -282,5 +282,6 @@
     "hashtag-size2": "40px",
     "hashtag-margin": "2%",
     "instance-software-fg-color": "#bbb",
-    "instance-software-bg-color": "#444"
+    "instance-software-bg-color": "#444",
+    "transition-type": "auto"
 }

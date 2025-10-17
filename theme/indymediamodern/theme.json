@@ -284,5 +284,6 @@
     "button-event-background-color": "green",
     "banner-height": "15vh",
     "instance-software-fg-color": "#bbb",
-    "instance-software-bg-color": "#444"
+    "instance-software-bg-color": "#444",
+    "transition-type": "auto"
 }

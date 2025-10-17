@@ -279,5 +279,6 @@
     "button-event-background-color": "green",
     "hashtag-background-color": "black",
     "instance-software-fg-color": "#bbb",
-    "instance-software-bg-color": "#444"
+    "instance-software-bg-color": "#444",
+    "transition-type": "auto"
 }

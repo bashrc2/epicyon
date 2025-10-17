@@ -25,6 +25,7 @@
     --login-logo-width: 20%;
     --main-link-color-hover: blue;
     --rendering: normal;
+    --transition-type: auto;
 }
 
 @font-face {
@@ -40,6 +41,10 @@
   font-weight: normal;
   font-display: block;
   src: url('./fonts/NimbusSanL.otf') format('opentype');
+}
+
+@view-transition {
+    navigation: var(--transition-type);
 }
 
 body, html {

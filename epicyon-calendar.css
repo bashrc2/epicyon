@@ -39,6 +39,7 @@
     --ical-icon-size: 32px;
     --ical-icon-size-mobile: 80px;
     --ical-icon-size-tiny: 80px;
+    --transition-type: auto;
 }
 
 @font-face {
@@ -54,6 +55,10 @@
   font-weight: normal;
   font-display: block;
   src: url('./fonts/NimbusSanL.otf') format('opentype');
+}
+
+@view-transition {
+    navigation: var(--transition-type);
 }
 
 body {
