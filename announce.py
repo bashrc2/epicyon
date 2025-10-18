@@ -608,6 +608,8 @@ def undo_announce_collection_entry(recent_posts_cache: {},
         total_items = post_json_object['object']['shares']['totalItems']
     item_found = False
     for announce_item in post_json_object['object']['shares']['items']:
+        if not isinstance(announce_item, dict):
+            continue
         if not announce_item.get('actor'):
             continue
         if announce_item['actor'] != actor:
@@ -692,6 +694,8 @@ def update_announce_collection(recent_posts_cache: {},
         if post_json_object['object']['shares'].get('items'):
             shares_items = post_json_object['object']['shares']['items']
             for announce_item in shares_items:
+                if not isinstance(announce_item, dict):
+                    continue
                 if announce_item.get('actor'):
                     if announce_item['actor'] == actor:
                         return
