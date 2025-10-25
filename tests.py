@@ -5141,6 +5141,11 @@ def _test_parse_newswire_feed_date():
     assert published_date != "2020-11-22 00:00:00+00:00"
     assert "2020-11-22 00:" in published_date
 
+    pub_date = "Sun, 08 Jun 2025 00:50:05"
+    published_date = parse_feed_date(pub_date, unique_string_identifier)
+    assert published_date != "2025-06-08 00:50:05"
+    assert "2025-06-08 00:50:05+00:00" in published_date
+
 
 def _test_valid_nick():
     print('test_valid_nickname')

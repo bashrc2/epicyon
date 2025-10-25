@@ -316,7 +316,8 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
                "%a, %d %b %Y %H:%M:%S HST",
                "%a, %d %b %Y %H:%M:%S UT",
                "%Y-%m-%dT%H:%M:%S%z",
-               "%Y-%m-%dT%H:%M:%S%Z")
+               "%Y-%m-%dT%H:%M:%S%Z",
+               "%a, %d %b %Y %H:%M:%S")
     published_date = None
     for date_format in formats:
         if ',' in pub_date and ',' not in date_format:
