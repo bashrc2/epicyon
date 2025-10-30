@@ -3331,16 +3331,17 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
         edit_text_field(translate['Time Zone'], 'timeZone',
                         timezone, 'Europe/London')
 
+    keep_dms = get_post_expiry_keep_dms(base_dir, nickname, domain)
+    edit_profile_form += '<br>\n' + \
+        edit_check_box(translate['Keep DMs during post expiry'],
+                       'expiryKeepDMs', keep_dms)
+
     post_expiry_period_days = \
         get_post_expiry_days(base_dir, nickname, domain)
     edit_profile_form += \
         edit_number_field(translate['Post expiry period in days'],
                           'postExpiryPeriod', post_expiry_period_days,
                           0, 9999999999999999999999, 0)
-    keep_dms = get_post_expiry_keep_dms(base_dir, nickname, domain)
-    edit_profile_form += '<br>\n' + \
-        edit_check_box(translate['Keep DMs during post expiry'],
-                       'expiryKeepDMs', keep_dms)
 
     max_profile_posts = \
         get_max_profile_posts(base_dir, nickname, domain, max_recent_posts)
