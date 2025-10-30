@@ -3345,7 +3345,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
 
     max_profile_posts = \
         get_max_profile_posts(base_dir, nickname, domain, max_recent_posts)
-    edit_profile_form += \
+    edit_profile_form += '<br>\n' + \
         edit_number_field(translate['Preview posts on profile screen'],
                           'maxRecentProfilePosts', max_profile_posts,
                           1, 20, max_recent_posts)
