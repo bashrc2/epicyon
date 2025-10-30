@@ -2602,7 +2602,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         translate[idx] + \
         ':</label> <input type="number" name="replyhours" ' + \
         'min="0" max="999999999999" step="1" ' + \
-        'value="' + str(reply_interval_hours) + '"><br>\n'
+        'value="' + str(reply_interval_hours) + '"><br><br>\n'
 
     edit_profile_form += \
         '<label class="labels">' + \
