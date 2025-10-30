@@ -622,10 +622,13 @@ def html_new_post(edit_post_params: {},
     new_post_image_section += \
         '    <label class="labels">' + \
         translate['Describe your attachment'] + '</label>\n'
+    image_description_style = 'height:' + str(image_description_height) + 'px'
+    # TODO currently not supported by Firefox but may be better in future
+    # image_description_style = 'field-sizing: content'
     new_post_image_section += \
         '    <textarea id="imageDescription" name="imageDescription" ' + \
-        'style="height:' + str(image_description_height) + \
-        'px" spellcheck="true" autocomplete="on"></textarea>\n'
+        'style="' + image_description_style + \
+        '" spellcheck="true" autocomplete="on"></textarea>\n'
     media_creator_str = translate['Media creator']
     new_post_image_section += \
         edit_text_field(media_creator_str, 'mediaCreator', '', '')
@@ -1352,9 +1355,13 @@ def html_new_post(edit_post_params: {},
                 _remove_initial_mentions_from_content(default_message)
 
     if endpoint != 'newreadingstatus':
+        message_box_style = \
+            "height:" + str(message_box_height) + 'px'
+        # TODO currently not supported by Firefox but may be better in future
+        # message_box_style = "field-sizing: content"
         new_post_form += \
-            '    <textarea id="message" name="message" style="height:' + \
-            str(message_box_height) + 'px"' + selected_str + \
+            '    <textarea id="message" name="message" style="' + \
+            message_box_style + '"' + selected_str + \
             ' spellcheck="true" autocomplete="on">' + \
             default_message + '</textarea>\n'
     new_post_form += \
