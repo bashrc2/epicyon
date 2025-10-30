@@ -639,10 +639,13 @@ def html_new_post(edit_post_params: {},
     new_post_image_section += \
         '    <label class="labels">' + \
         translate['Transcript'] + ' (WebVTT)</label>\n'
+    transcript_style = 'height:' + str(transcript_height) + 'px'
+    # TODO currently not supported by Firefox but may be better in future
+    # transcript_style = 'field-sizing: content'
     new_post_image_section += \
         '    <textarea id="videoTranscript" name="videoTranscript" ' + \
-        'style="height:' + str(transcript_height) + \
-        'px" spellcheck="true" autocomplete="on"></textarea>\n'
+        'style="' + transcript_style + \
+        '" spellcheck="true" autocomplete="on"></textarea>\n'
     new_post_image_section += end_edit_section()
 
     new_post_emoji_section = ''
