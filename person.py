@@ -229,6 +229,10 @@ def get_actor_update_json(actor_json: {}) -> {}:
     actor_url = get_url_from_post(actor_json['url'])
     icon_url = get_url_from_post(actor_json['icon']['url'])
     image_url = get_url_from_post(actor_json['image']['url'])
+    attribution_domains: list[str] = []
+    if actor_json.get('attributionDomains'):
+        if isinstance(actor_json['attributionDomains'], list):
+            attribution_domains = actor_json['attributionDomains']
     return {
         '@context': [
             "https://www.w3.org/ns/activitystreams",
@@ -322,6 +326,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
                 'url': image_url
             },
             'attachment': actor_json['attachment'],
+            'attributionDomains': attribution_domains,
             'following': actor_json['id'] + '/following',
             'followers': actor_json['id'] + '/followers',
             'inbox': actor_json['id'] + '/inbox',
@@ -464,6 +469,8 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         approve_followers = True
         person_type = 'Application'
 
+    attribution_domains: list[str] = []
+
     # NOTE: these image files don't need to have
     # cryptographically secure names
 
@@ -485,6 +492,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         'published': published,
         'alsoKnownAs': [],
         'attachment': [],
+        'attributionDomains': attribution_domains,
         'devices': person_id + '/collections/devices',
         'endpoints': {
             'id': person_id + '/endpoints',
@@ -570,6 +578,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         del new_person['followers']
         del new_person['following']
         del new_person['attachment']
+        del new_person['attributionDomains']
 
     if save_to_file:
         # save person to file
@@ -867,6 +876,10 @@ def person_upgrade_actor(base_dir: str, person_json: {},
             person_id = person_json['id']
             person_json['moderators'] = person_id + '/moderators'
             update_actor = True
+
+    if 'attributionDomains' not in person_json:
+        person_json['attributionDomains'] = []
+        update_actor = True
 
     if 'capabilities' not in person_json:
         person_json['capabilities'] = {
