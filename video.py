@@ -36,6 +36,9 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
     if not post_json_object.get('type'):
         return None
 
+    if not isinstance(post_json_object['type'], str):
+        return None
+
     if post_json_object['type'] != 'Video':
         return None
 
