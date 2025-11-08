@@ -1,4 +1,4 @@
-__filename__ = "video.py"
+__filename__ = "torrent.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.6.0"
@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-from utils import get_url_from_post
 from utils import remove_html
 from utils import get_full_domain
 from utils import get_nickname_from_actor
@@ -17,35 +16,36 @@ from utils import get_attributed_to
 from utils import get_content_from_post
 from utils import dangerous_markup
 from utils import license_link_from_name
-from utils import get_media_url_from_video
+from utils import get_media_url_from_torrent
 from utils import resembles_url
 from blocking import is_blocked
 from filters import is_filtered
 from conversation import post_id_to_convthread_id
 
 
-def convert_video_to_note(base_dir: str, nickname: str, domain: str,
-                          system_language: str,
-                          post_json_object: {}, blocked_cache: {},
-                          block_federated: [],
-                          languages_understood: []) -> {}:
-    """Converts a PeerTube Video ActivityPub(ish) object into
+def convert_torrent_to_note(base_dir: str, nickname: str, domain: str,
+                            system_language: str,
+                            post_json_object: {}, blocked_cache: {},
+                            block_federated: [],
+                            languages_understood: []) -> {}:
+    """Converts a Torrent ActivityPub(ish) object into
     a Note, so that it can then be displayed in a timeline
-    https://docs.joinpeertube.org/api/activitypub#video
+    https://socialhub.activitypub.rocks/t/
+    fep-d8c8-bittorrent-torrent-objects/8309/6
     """
     if not post_json_object.get('type'):
         return None
 
-    if post_json_object['type'] != 'Video':
+    if post_json_object['type'] != 'Torrent':
         return None
 
     # check that the required fields are present
     required_fields = (
-        'id', 'published', 'to', 'attributedTo', 'content', 'name'
+        'id', 'published', 'to', 'attributedTo', 'content'
     )
     for field_name in required_fields:
         if not post_json_object.get(field_name):
-            print('REJECT: video ' + str(post_json_object))
+            print('REJECT: torrent ' + str(post_json_object))
             return None
 
     # who is this attributed to ?
@@ -55,7 +55,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
     if not attributed_to:
         return None
 
-    # get the language of the video
+    # get the language of the torrent
     post_language = system_language
     if post_json_object.get('language'):
         if isinstance(post_json_object['language'], dict):
@@ -76,15 +76,12 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
         return None
 
     # check that the content is valid
-    if is_filtered(base_dir, nickname, domain, post_json_object['name'],
-                   system_language):
-        return None
     if is_filtered(base_dir, nickname, domain, post_json_object['content'],
                    system_language):
         return None
 
     # get the content
-    content = '<p><b>' + post_json_object['name'] + '</b></p>'
+    content = ''
     if post_json_object.get('license'):
         if isinstance(post_json_object['license'], dict):
             if post_json_object['license'].get('name'):
@@ -96,13 +93,15 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
     content += \
         get_content_from_post(post_json_object, system_language,
                               languages_understood, "content")
+    if not content:
+        return None
 
     conversation_id = remove_id_ending(post_json_object['id'])
     conversation_id = post_id_to_convthread_id(conversation_id,
                                                post_json_object['published'])
 
     media_type, media_url, media_torrent, media_magnet = \
-        get_media_url_from_video(post_json_object)
+        get_media_url_from_torrent(post_json_object)
 
     if not media_url:
         return None
@@ -113,14 +112,6 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
             'type': 'Document',
             'url': media_url
     }]
-
-    if media_torrent or media_magnet:
-        content += '<p>'
-        if media_torrent:
-            content += '<a href="' + media_torrent + '">⇓</a> '
-        if media_magnet:
-            content += '<a href="' + media_magnet + '">🧲</a>'
-        content += '</p>'
 
     comments_enabled = True
     if 'commentsEnabled' in post_json_object:
@@ -136,6 +127,14 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
     if 'cc' in post_json_object:
         if isinstance(post_json_object['cc'], list):
             cc = post_json_object['cc']
+
+    if media_torrent or media_magnet:
+        content += '<p>'
+        if media_torrent:
+            content += '<a href="' + media_torrent + '">⇓</a> '
+        if media_magnet:
+            content += '<a href="' + media_magnet + '">🧲</a>'
+        content += '</p>'
 
     new_post_id2 = remove_html(post_json_object['id'])
     new_post_id = remove_id_ending(new_post_id2)
@@ -216,31 +215,5 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                             "name": "license",
                             "value": content_license_url
                         })
-
-    if post_json_object.get('subtitleLanguage'):
-        if isinstance(post_json_object['subtitleLanguage'], list):
-            for lang in post_json_object['subtitleLanguage']:
-                if not isinstance(lang, dict):
-                    continue
-                if not lang.get('identifier'):
-                    continue
-                if not isinstance(lang['identifier'], str):
-                    continue
-                if not lang.get('url'):
-                    continue
-                url_str = get_url_from_post(lang['url'])
-                if not url_str:
-                    continue
-                if not url_str.endswith('.vtt'):
-                    continue
-                for understood in languages_understood:
-                    if understood in lang['identifier']:
-                        new_post['object']['attachment'].append({
-                            "type": "Document",
-                            "name": understood,
-                            "mediaType": "text/vtt",
-                            "url": url_str
-                        })
-                        break
 
     return new_post

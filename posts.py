@@ -123,6 +123,7 @@ from git import is_git_patch
 from linked_data_sig import generate_json_signature
 from petnames import resolve_petnames
 from video import convert_video_to_note
+from torrent import convert_torrent_to_note
 from context import get_individual_post_context
 from maps import get_location_dict_from_tags
 from maps import geocoords_from_map_link
@@ -6301,6 +6302,15 @@ def download_announce(session, base_dir: str, http_prefix: str,
                                       announced_json, blocked_cache,
                                       block_federated,
                                       languages_understood)
+            if converted_json:
+                announced_json = converted_json
+        if announced_json['type'] == 'Torrent':
+            converted_json = \
+                convert_torrent_to_note(base_dir, nickname, domain,
+                                        system_language,
+                                        announced_json, blocked_cache,
+                                        block_federated,
+                                        languages_understood)
             if converted_json:
                 announced_json = converted_json
         if not contains_statuses(announced_json['id']):

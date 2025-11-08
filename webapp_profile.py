@@ -185,7 +185,8 @@ def _valid_profile_preview_post(post_json_object: {},
         if not has_object_dict(post_json_object):
             return False, None
     if post_json_object['type'] not in ('Create', 'Announce'):
-        if post_json_object['type'] not in ('Note', 'Event', 'Video', 'Page'):
+        if post_json_object['type'] not in ('Note', 'Event', 'Video',
+                                            'Torrent', 'Page'):
             return False, None
         if not post_json_object.get('to'):
             return False, None
