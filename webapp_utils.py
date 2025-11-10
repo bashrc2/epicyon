@@ -1274,10 +1274,10 @@ def get_post_attachments_as_html(base_dir: str,
     # handle peertube-style video posts, where the media links
     # are stored in the url field
     if post_json_object.get('object'):
-        media_type, media_url, _, _ = \
+        media_type, media_url, _, _, _ = \
             get_media_url_from_video(post_json_object['object'])
     else:
-        media_type, media_url, _, _ = \
+        media_type, media_url, _, _, _ = \
             get_media_url_from_video(post_json_object)
     if media_url and media_type:
         attachment_dict = [{

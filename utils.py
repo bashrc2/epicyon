@@ -3589,17 +3589,21 @@ def lines_in_file(filename: str) -> int:
     return 0
 
 
-def get_media_url_from_video(post_json_object: {}) -> (str, str, str, str):
+def get_media_url_from_video(post_json_object: {}) -> (str, str, str,
+                                                       str, str):
     """Within a Video post (eg peertube) return the media details
     """
     media_type = None
     media_url = None
     media_torrent = None
     media_magnet = None
+    media_bencoded = None
     if not post_json_object.get('url'):
-        return media_type, media_url, media_torrent, media_magnet
+        return media_type, media_url, media_torrent, \
+            media_magnet, media_bencoded
     if not isinstance(post_json_object['url'], list):
-        return media_type, media_url, media_torrent, media_magnet
+        return media_type, media_url, media_torrent, \
+            media_magnet, media_bencoded
     for media_link in post_json_object['url']:
         if not isinstance(media_link, dict):
             continue
@@ -3628,26 +3632,32 @@ def get_media_url_from_video(post_json_object: {}) -> (str, str, str, str):
             media_torrent = remove_html(media_link['href'])
         if media_link['href'].startswith('magnet:'):
             media_magnet = remove_html(media_link['href'])
+        elif media_link['href'].startswith('bencoded:'):
+            media_bencoded = remove_html(media_link['href'])
         if media_link['mediaType'] != 'video/mp4' and \
            media_link['mediaType'] != 'video/ogv':
             continue
         if not media_url:
             media_type = media_link['mediaType']
             media_url = remove_html(media_link['href'])
-    return media_type, media_url, media_torrent, media_magnet
+    return media_type, media_url, media_torrent, media_magnet, media_bencoded
 
 
-def get_media_url_from_torrent(post_json_object: {}) -> (str, str, str, str):
+def get_media_url_from_torrent(post_json_object: {}) -> (str, str, str,
+                                                         str, str):
     """Within a Torrent post return the media details
     """
     media_type = None
     media_url = None
     media_torrent = None
     media_magnet = None
+    media_bencoded = None
     if not post_json_object.get('url'):
-        return media_type, media_url, media_torrent, media_magnet
+        return media_type, media_url, media_torrent, \
+            media_magnet, media_bencoded
     if not isinstance(post_json_object['url'], list):
-        return media_type, media_url, media_torrent, media_magnet
+        return media_type, media_url, media_torrent, \
+            media_magnet, media_bencoded
     for media_link in post_json_object['url']:
         if not isinstance(media_link, dict):
             continue
@@ -3666,9 +3676,12 @@ def get_media_url_from_torrent(post_json_object: {}) -> (str, str, str, str):
                     if not tag_link.get('href'):
                         continue
                     if tag_link['mediaType'] == 'application/x-bittorrent' or \
-                       tag_link['mediaType'].startswith('magnet:'):
+                       tag_link['mediaType'].startswith('magnet:') or \
+                       tag_link['mediaType'].startswith('bencoded:'):
                         if tag_link['mediaType'].startswith('magnet:'):
                             media_magnet = remove_html(media_link['href'])
+                        elif tag_link['mediaType'].startswith('bencoded:'):
+                            media_bencoded = remove_html(media_link['href'])
                         else:
                             media_torrent = remove_html(media_link['href'])
                         media_type = tag_link['mediaType']
@@ -3680,13 +3693,15 @@ def get_media_url_from_torrent(post_json_object: {}) -> (str, str, str, str):
             media_torrent = remove_html(media_link['href'])
         if media_link['href'].startswith('magnet:'):
             media_magnet = remove_html(media_link['href'])
+        elif media_link['href'].startswith('bencoded:'):
+            media_bencoded = remove_html(media_link['href'])
         if media_link['mediaType'] != 'video/mp4' and \
            media_link['mediaType'] != 'video/ogv':
             continue
         if not media_url:
             media_type = media_link['mediaType']
             media_url = remove_html(media_link['href'])
-    return media_type, media_url, media_torrent, media_magnet
+    return media_type, media_url, media_torrent, media_magnet, media_bencoded
 
 
 def get_reply_to(post_json_object: {}) -> str:

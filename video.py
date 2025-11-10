@@ -104,7 +104,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
     conversation_id = post_id_to_convthread_id(conversation_id,
                                                post_json_object['published'])
 
-    media_type, media_url, media_torrent, media_magnet = \
+    media_type, media_url, media_torrent, media_magnet, media_bencoded = \
         get_media_url_from_video(post_json_object)
 
     if not media_url:
@@ -117,9 +117,9 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
             'url': media_url
     }]
 
-    if media_torrent or media_magnet:
+    if media_torrent or media_magnet or media_bencoded:
         content += '<p>'
-        if media_torrent:
+        if media_torrent or media_bencoded:
             content += '<a href="' + media_torrent + '">⇓</a> '
         if media_magnet:
             content += '<a href="' + media_magnet + '">🧲</a>'
