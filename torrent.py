@@ -51,6 +51,11 @@ def convert_torrent_to_note(base_dir: str, nickname: str, domain: str,
             print('REJECT: torrent ' + str(post_json_object))
             return None
 
+    if not post_json_object.get('infohash_v1') and \
+       not post_json_object.get('infohash_v2'):
+        print('REJECT: infohash missing from torrent ' + str(post_json_object))
+        return None
+
     # who is this attributed to ?
     attributed_to = None
     if isinstance(post_json_object['attributedTo'], str):
