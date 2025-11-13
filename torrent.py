@@ -32,6 +32,7 @@ def convert_torrent_to_note(base_dir: str, nickname: str, domain: str,
     a Note, so that it can then be displayed in a timeline
     https://socialhub.activitypub.rocks/t/
     fep-d8c8-bittorrent-torrent-objects/8309/6
+    https://codeberg.org/fediverse/fep/src/branch/main/fep/d8c8/fep-d8c8.md
     """
     if not post_json_object.get('type'):
         return None

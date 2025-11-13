@@ -138,10 +138,10 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
         # https://github.com/ai-robots-txt/ai.robots.txt/blob/main/robots.txt
         llm_bot_strings = (
             'gptbot', '-ai/', ' ai/', '-ai ', ' ai ', 'chatgpt',
-            'anthropic', 'mlbot', 'claude-web', 'claudebot', 'ccbot',
-            'facebookbot', 'google-extended', 'piplbot', 'oai-search',
-            'applebot', 'meta-external', 'diffbot', 'perplexitybot',
-            'perplexity‑', 'novaact', 'operator',
+            'anthropic', 'mlbot', 'claude-', 'claudebot', 'ccbot',
+            'facebookbot', 'facebookexternalhit', 'google-extended',
+            'piplbot', 'oai-search', 'applebot', 'meta-external',
+            'diffbot', 'perplexitybot', 'perplexity‑', 'novaact', 'operator',
             'omgili', 'imagesiftbot', 'bytespider', 'amazonbot', 'youbot',
             'petalbot', 'ai2bot', 'allenai', 'firecrawl', 'friendlycrawler',
             'googleother', 'icc-crawler', 'scrapy', 'timpibot',
@@ -152,7 +152,18 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
             'pangubot', 'semrush', 'poseidon research', 'awario',
             'datenbank', 'echobot', 'mistralai', 'wardbot',
             'gemini-deep', 'netestate', 'summalybot', 'thinkbot',
-            'tiktokspider'
+            'tiktokspider', 'amazonbuyforme', 'atlassian', 'anomura',
+            'bedrockbot', 'bigsur', 'bravebot', 'brightbot', 'buddybot',
+            '-autorag', 'cloudvertexbot', 'cotoyogi', 'deepseekbot',
+            'devin', 'echoboxbot', 'factset_spyderbot', 'firecrawlagent',
+            'google-cloudvertexbot', 'google-firebase',
+            'google-Notebooklm', 'googleagent-mariner',
+            'google-', 'iboubot', 'linerbot', 'linguee bot',
+            'meta-externalagent', 'meta-externalfetcher', 'meta-webindexer',
+            'mycentralaiscraperbot',
+            'openai', 'panscient', 'phindbot', 'qualifiedbot', 'quillbot',
+            'sbIntuitionsbot', 'semrushbot', 'shapbot', 'terracotta',
+            'velenpublicwebcrawler', 'wpbot', 'yak', 'yandex'
         )
         for bot_str in llm_bot_strings:
             if bot_str in agent_str_lower:
