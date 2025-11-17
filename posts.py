@@ -5411,7 +5411,6 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
         published_str = published_str.split('"')[1]
         if not published_str.endswith('Z'):
             continue
-        print('DEBUG: published_str ' + published_str + ' ' + str(max_age_days))
         # get time difference
         if not valid_post_date(published_str, max_age_days, debug):
             if keep_dms:
@@ -5419,8 +5418,8 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
                 if not post_json_object:
                     continue
                 if is_dm(post_json_object):
-                    print('DEBUG: is DM')
                     continue
+            print('DEBUG: published_str ' + published_str + ' ' + str(max_age_days))
             delete_post(base_dir, http_prefix, nickname, domain,
                         full_filename, debug, recent_posts_cache, True)
             expired_post_count += 1
