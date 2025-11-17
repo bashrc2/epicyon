@@ -5419,12 +5419,16 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
                     continue
                 if is_dm(post_json_object):
                     continue
-            print('DEBUG: published_str ' + published_str + ' ' + str(max_age_days))
+            print('DEBUG: published_str ' + published_str + ' ' +
+                  str(max_age_days))
             debug = True
             if delete_post(base_dir, http_prefix, nickname, domain,
                            full_filename, debug, recent_posts_cache, True):
                 expired_post_count += 1
             debug = False
+        else:
+            print('DEBUG: retained published_str ' + published_str + ' ' +
+                  str(max_age_days))
 
     return expired_post_count
 
