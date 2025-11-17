@@ -5424,6 +5424,7 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
             if delete_post(base_dir, http_prefix, nickname, domain,
                            full_filename, debug, recent_posts_cache, True):
                 expired_post_count += 1
+            debug = False
 
     return expired_post_count
 
