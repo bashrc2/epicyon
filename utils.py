@@ -2204,8 +2204,9 @@ def _is_remote_dm(domain_full: str, post_json_object: {}) -> bool:
 def delete_post(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, post_filename: str,
                 debug: bool, recent_posts_cache: {},
-                manual: bool) -> None:
+                manual: bool) -> bool:
     """Recursively deletes a post and its replies and attachments
+    Returns True if deleted
     """
     post_json_object = load_json(post_filename)
     if not post_json_object:
@@ -2216,27 +2217,32 @@ def delete_post(base_dir: str, http_prefix: str,
         # finally, remove the post itself
         try:
             os.remove(post_filename)
+            return True
         except OSError:
             if debug:
                 print('EX: delete_post unable to delete post ' +
                       str(post_filename))
-        return
+        return False
 
     # don't allow DMs to be deleted if they came from a different instance
     # otherwise this breaks expectations about how DMs should operate
     # i.e. DMs should only be removed if they are manually deleted
     if not manual:
         if _is_remote_dm(domain, post_json_object):
-            return
+            print('DEBUG: remote DM not deleted ' + post_filename)
+            return False
 
     # don't allow deletion of bookmarked posts
     if _is_bookmarked(base_dir, nickname, domain, post_filename):
-        return
+        if debug:
+            print('DEBUG: bookmarked post not deleted ' + post_filename)
+        return False
 
     # don't remove replies to blog posts
     if _is_reply_to_blog_post(base_dir, nickname, domain,
                               post_json_object):
-        return
+        print('DEBUG: reply to blog post not deleted ' + post_filename)
+        return False
 
     # remove from recent posts cache in memory
     remove_post_from_cache(post_json_object, recent_posts_cache)
@@ -2294,10 +2300,12 @@ def delete_post(base_dir: str, http_prefix: str,
     # finally, remove the post itself
     try:
         os.remove(post_filename)
+        return True
     except OSError:
         if debug:
             print('EX: delete_post unable to delete post ' +
                   str(post_filename))
+    return False
 
 
 def _is_valid_language(text: str) -> bool:
