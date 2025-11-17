@@ -5391,7 +5391,7 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
         post_filename = post_filename.name
         if not post_filename.endswith('.json'):
             continue
-        # Time of file creation
+        # get the post json as text
         full_filename = os.path.join(box_dir, post_filename)
         if not os.path.isfile(full_filename):
             continue
@@ -5402,12 +5402,14 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
         except OSError:
             print('EX: expire_posts_for_person unable to open content ' +
                   full_filename)
+        # Time of publication
         if '"published":' not in content:
             continue
         published_str = content.split('"published":')[1]
         if '"' not in published_str:
             continue
         published_str = published_str.split('"')[1]
+        print('DEBUG: published_str ' + published_str)
         if not published_str.endswith('Z'):
             continue
         # get time difference
