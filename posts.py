@@ -5402,15 +5402,28 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
         except OSError:
             print('EX: expire_posts_for_person unable to open content ' +
                   full_filename)
-        # Time of publication
+
+        # Get time of publication
+        published_str = ''
         if '"published":' not in content:
+            # If a publication date is not available then check the last
+            # modified date
+            if '"actor":' not in content:
+                continue
+            published_str = file_last_modified(full_filename)
+            if not published_str:
+                continue
+        else:
+            published_str = content.split('"published":')[1]
+            if '"' not in published_str:
+                continue
+            published_str = published_str.split('"')[1]
+            if not published_str.endswith('Z'):
+                continue
+
+        if not published_str:
             continue
-        published_str = content.split('"published":')[1]
-        if '"' not in published_str:
-            continue
-        published_str = published_str.split('"')[1]
-        if not published_str.endswith('Z'):
-            continue
+
         # get time difference
         if not valid_post_date(published_str, max_age_days, debug):
             if keep_dms:
