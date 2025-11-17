@@ -3384,7 +3384,9 @@ def _command_options() -> None:
         expired_count = expire_posts(base_dir, http_prefix, {},
                                      argb.debug)
         if expired_count > 0:
-            print(str(expired_count) + ' posts expired')
+            print(str(expired_count) + ' account posts expired')
+        else:
+            print('No account posts expired')
         sys.exit()
 
     if not argb.domain and not domain:
