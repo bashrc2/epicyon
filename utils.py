@@ -2229,7 +2229,8 @@ def delete_post(base_dir: str, http_prefix: str,
     # i.e. DMs should only be removed if they are manually deleted
     if not manual:
         if _is_remote_dm(domain, post_json_object):
-            print('DEBUG: remote DM not deleted ' + post_filename)
+            if debug:
+                print('DEBUG: remote DM not deleted ' + post_filename)
             return False
 
     # don't allow deletion of bookmarked posts
@@ -2241,7 +2242,8 @@ def delete_post(base_dir: str, http_prefix: str,
     # don't remove replies to blog posts
     if _is_reply_to_blog_post(base_dir, nickname, domain,
                               post_json_object):
-        print('DEBUG: reply to blog post not deleted ' + post_filename)
+        if debug:
+            print('DEBUG: reply to blog post not deleted ' + post_filename)
         return False
 
     # remove from recent posts cache in memory
