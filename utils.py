@@ -2201,6 +2201,66 @@ def _is_remote_dm(domain_full: str, post_json_object: {}) -> bool:
     return False
 
 
+def get_gemini_blog_title(message_json: dict, system_language: str) -> str:
+    """Returns the title for a gemini blog post
+    """
+    title_text = ''
+    title_str = get_summary_from_post(message_json, system_language, [])
+    if title_str:
+        title_text = remove_html(title_str)
+    return title_text
+
+
+def get_gemini_blog_published(message_json: dict, debug: bool) -> str:
+    """Returns the published date for a gemini blog post
+    """
+    # get the publication date
+    obj = message_json
+    if has_object_dict(message_json):
+        obj = message_json['object']
+    if not obj.get('published'):
+        if debug:
+            print('WARN: blog_to_gemini Blog post has no publication date ' +
+                  str(message_json))
+        return ''
+    if not isinstance(obj['published'], str):
+        if debug:
+            print('WARN: blog_to_gemini publication date is not a string ' +
+                  str(message_json))
+        return ''
+    if 'T' not in obj['published']:
+        if debug:
+            print('WARN: blog_to_gemini ' +
+                  'publication date not in expected format ' +
+                  obj['published'])
+        return ''
+    return obj['published'].split('T')[0]
+
+
+def get_gemini_blog_filename(base_dir: str, nickname: str, domain: str,
+                             message_json: dict, system_language: str,
+                             debug: bool, testing: bool) -> str:
+    """Returns the filename for a gemini blog post
+    """
+    title_text = get_gemini_blog_title(message_json, system_language)
+    published = get_gemini_blog_published(message_json, debug)
+    if not published:
+        return ''
+    title_text2 = title_text.replace('.', ' ')
+    title_text2 = title_text2.replace(' ', '_')
+
+    if not testing:
+        account_dir = acct_dir(base_dir, nickname, domain)
+        gemini_blog_dir = account_dir + '/gemini'
+    else:
+        account_dir = base_dir
+        gemini_blog_dir = account_dir + '/geminitest'
+
+    gemini_blog_filename = \
+        gemini_blog_dir + '/' + published + '_' + title_text2.lower() + '.gmi'
+    return gemini_blog_filename
+
+
 def delete_post(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, post_filename: str,
                 debug: bool, recent_posts_cache: {},
@@ -2245,6 +2305,21 @@ def delete_post(base_dir: str, http_prefix: str,
         if debug:
             print('DEBUG: reply to blog post not deleted ' + post_filename)
         return False
+
+    # delete gemini blog post
+    gemini_blog_filename = \
+        get_gemini_blog_filename(base_dir, nickname, domain,
+                                 post_json_object, '',
+                                 debug, False)
+    if gemini_blog_filename:
+        if os.path.isfile(gemini_blog_filename):
+            try:
+                os.remove(gemini_blog_filename)
+                return True
+            except OSError:
+                if debug:
+                    print('EX: delete_post unable to delete gemini post ' +
+                          str(gemini_blog_filename))
 
     # remove from recent posts cache in memory
     remove_post_from_cache(post_json_object, recent_posts_cache)

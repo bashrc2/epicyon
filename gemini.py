@@ -10,72 +10,13 @@ __module_group__ = "Timeline"
 import os
 import shutil
 from utils import acct_dir
-from utils import has_object_dict
 from utils import remove_html
-from utils import get_summary_from_post
 from utils import get_base_content_from_post
 from utils import get_post_attachments
 from utils import get_url_from_post
-
-
-def _get_gemini_blog_title(message_json: dict, system_language: str) -> str:
-    """Returns the title for a gemini blog post
-    """
-    title_text = ''
-    title_str = get_summary_from_post(message_json, system_language, [])
-    if title_str:
-        title_text = remove_html(title_str)
-    return title_text
-
-
-def _get_gemini_blog_published(message_json: dict, debug: bool) -> str:
-    """Returns the published date for a gemini blog post
-    """
-    # get the publication date
-    obj = message_json
-    if has_object_dict(message_json):
-        obj = message_json['object']
-    if not obj.get('published'):
-        if debug:
-            print('WARN: blog_to_gemini Blog post has no publication date ' +
-                  str(message_json))
-        return ''
-    if not isinstance(obj['published'], str):
-        if debug:
-            print('WARN: blog_to_gemini publication date is not a string ' +
-                  str(message_json))
-        return ''
-    if 'T' not in obj['published']:
-        if debug:
-            print('WARN: blog_to_gemini ' +
-                  'publication date not in expected format ' +
-                  obj['published'])
-        return ''
-    return obj['published'].split('T')[0]
-
-
-def _get_gemini_blog_filename(base_dir: str, nickname: str, domain: str,
-                              message_json: dict, system_language: str,
-                              debug: bool, testing: bool) -> str:
-    """Returns the filename for a gemini blog post
-    """
-    title_text = _get_gemini_blog_title(message_json, system_language)
-    published = _get_gemini_blog_published(message_json, debug)
-    if not published:
-        return ''
-    title_text2 = title_text.replace('.', ' ')
-    title_text2 = title_text2.replace(' ', '_')
-
-    if not testing:
-        account_dir = acct_dir(base_dir, nickname, domain)
-        gemini_blog_dir = account_dir + '/gemini'
-    else:
-        account_dir = base_dir
-        gemini_blog_dir = account_dir + '/geminitest'
-
-    gemini_blog_filename = \
-        gemini_blog_dir + '/' + published + '_' + title_text2.lower() + '.gmi'
-    return gemini_blog_filename
+from utils import get_gemini_blog_title
+from utils import get_gemini_blog_published
+from utils import get_gemini_blog_filename
 
 
 def blog_to_gemini(base_dir: str, nickname: str, domain: str,
@@ -98,7 +39,7 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
                   account_dir)
         return False
 
-    published = _get_gemini_blog_published(message_json, debug)
+    published = get_gemini_blog_published(message_json, debug)
     if not published:
         return False
 
@@ -112,7 +53,7 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
     content_text = remove_html(content_str)
 
     # get the blog title
-    title_text = _get_gemini_blog_title(message_json, system_language)
+    title_text = get_gemini_blog_title(message_json, system_language)
 
     # get web links
     links: list[str] = []
@@ -148,9 +89,9 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
         os.mkdir(gemini_blog_dir)
 
     gemini_blog_filename = \
-        _get_gemini_blog_filename(base_dir, nickname, domain,
-                                  message_json, system_language,
-                                  debug, testing)
+        get_gemini_blog_filename(base_dir, nickname, domain,
+                                 message_json, system_language,
+                                 debug, testing)
 
     if not title_text.startswith('# '):
         title_text = '# ' + title_text
