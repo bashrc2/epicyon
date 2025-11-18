@@ -14,6 +14,8 @@ from utils import has_object_dict
 from utils import remove_html
 from utils import get_summary_from_post
 from utils import get_base_content_from_post
+from utils import get_post_attachments
+from utils import get_url_from_post
 
 
 def blog_to_gemini(base_dir: str, nickname: str, domain: str,
@@ -74,11 +76,11 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
         title_text = remove_html(title_str)
 
     # get web links
+    links: list[str] = []
     if '://' in content_text:
         sections = content_text.split('://')
         ctr = 0
         prev_section = ''
-        links: list[str] = []
         for section in sections:
             if ctr > 0:
                 link_str = section
@@ -98,12 +100,6 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
             prev_section = section
             ctr += 1
 
-        # add links to the end of the content
-        if links:
-            content_text += '\n\n'
-        for link_str in links:
-            content_text += '=> ' + link_str + '\n'
-
     # create gemini blog directory
     if not testing:
         gemini_blog_dir = account_dir + '/gemini'
@@ -119,6 +115,26 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
 
     if not title_text.startswith('# '):
         title_text = '# ' + title_text
+
+    # get attachments
+    post_attachments = get_post_attachments(message_json)
+    if post_attachments:
+        descriptions = ''
+        for attach in post_attachments:
+            if not isinstance(attach, dict):
+                continue
+            if not attach.get('name'):
+                continue
+            descriptions += attach['name'] + ' '
+            if attach.get('url'):
+                links.append(get_url_from_post(attach['url']) + ' ' +
+                             attach['name'])
+
+    # add links to the end of the content
+    if links:
+        content_text += '\n\n'
+    for link_str in links:
+        content_text += '=> ' + link_str + '\n'
 
     try:
         with open(gemini_blog_filename, 'w+',
