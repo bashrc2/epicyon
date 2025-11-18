@@ -68,6 +68,7 @@ from speaker import update_speaker
 from reading import store_book_events
 from reading import has_edition_tag
 from inbox_receive import inbox_update_index
+from gemini import blog_to_gemini
 
 
 def _localonly_not_local(message_json: {}, domain_full: str) -> bool:
@@ -543,6 +544,11 @@ def post_message_to_outbox(session, translate: {},
     if not saved_filename:
         print('WARN: post not saved to outbox ' + outbox_name)
         return False
+
+    if outbox_name == 'tlblogs':
+        # export blog post in gemini format
+        blog_to_gemini(base_dir, post_to_nickname, domain,
+                       message_json, system_language, debug, False)
 
     # update the speaker endpoint for speech synthesis
     actor_url = get_actor_from_post(message_json)

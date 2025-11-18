@@ -8,17 +8,17 @@ __status__ = "Production"
 __module_group__ = "Testing"
 
 import base64
+import time
+import os
+import shutil
+import json
+import datetime
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import utils as hazutils
-import time
-import os
-import shutil
-import json
-import datetime
 from shutil import copyfile
 from random import randint
 from time import gmtime, strftime
@@ -234,6 +234,7 @@ from webapp_utils import add_emoji_to_display_name
 from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from filters import filtered_match
+from gemini import blog_to_gemini
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -9490,6 +9491,37 @@ def _test_actor_status() -> None:
     assert not actor_status_expired(actor['sm:status'])
 
 
+def _test_gemini_blog(base_dir: str) -> None:
+    print('gemini_blog')
+    gemini_blog_dir = base_dir + '/geminitest'
+    published = '2022-02-25T20:15:00Z'
+    title = 'Test title'
+    content = 'This is a test'
+    link = 'https://some.link'
+    gemini_blog_filename = \
+        gemini_blog_dir + '/2022-02-25_' + \
+        title.replace(' ', '_').lower() + '.gmi'
+    system_language = 'en'
+    debug = True
+    message_json = {
+        'object': {
+            'published': published,
+            'summary': title,
+            'content': content + ' ' + link
+        }
+    }
+    result = blog_to_gemini(base_dir, 'someuser', 'somedomain',
+                            message_json, system_language,
+                            debug, True)
+    assert result
+    assert os.path.isdir(gemini_blog_dir)
+    assert os.path.isfile(gemini_blog_filename)
+    assert text_in_file('# ' + title + '\n', gemini_blog_filename)
+    assert text_in_file(content, gemini_blog_filename)
+    assert text_in_file('=> ' + link, gemini_blog_filename)
+    shutil.rmtree(gemini_blog_dir, ignore_errors=True)
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -9508,6 +9540,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_gemini_blog(base_dir)
     _test_actor_status()
     _test_filter_match()
     _test_blocking_domain(base_dir)
