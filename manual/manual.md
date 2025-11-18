@@ -1216,6 +1216,8 @@ By the end of January, after Elon Musk was recorded unambiguously doing antisemi
 
 In April the fosstodon.org instance melted down after it was discovered that one of its moderators had been doing fascistic crap elsewhere on the internet, but had been operating perfectly within the code of conduct of the instance. This just goes to show that you need to consider the *overall character and conduct of the person* when assigning instance moderators, and not just narrowly look at what they do on the instance. It is possible for people to be doing stuff which threatens other instance members, but indirectly from outside of the instance itself which then throws the reliability of their judgement into question.
 
+In November Eugen Rochko, the original developer and CEO of the Mastodon project, stepped down and took a more advisory role. Mastodon was the main project which propelled the fediverse into public awareness, and the first to implement the ActivityPub specification.
+
 ### Fediverse culture shock
 This is what happens when someone has only had a presence within large corporate sites, such as the website formerly known as Twitter or Facebook, and then moves to a federated system on the open internet.
 
