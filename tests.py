@@ -200,6 +200,7 @@ from webapp_post import replace_link_variable
 from webapp_post import prepare_html_post_nickname
 from speaker import speaker_replace_links
 from markdown import markdown_to_html
+from markdown import blog_to_markdown
 from languages import get_reply_language
 from languages import set_actor_languages
 from languages import get_actor_languages
@@ -9519,7 +9520,39 @@ def _test_gemini_blog(base_dir: str) -> None:
     assert text_in_file('# ' + title + '\n', gemini_blog_filename)
     assert text_in_file(content, gemini_blog_filename)
     assert text_in_file('=> ' + link, gemini_blog_filename)
+    assert text_in_file('2022-02-25', gemini_blog_filename)
     shutil.rmtree(gemini_blog_dir, ignore_errors=True)
+
+
+def _test_markdown_blog(base_dir: str) -> None:
+    print('markdown_blog')
+    markdown_blog_dir = base_dir + '/markdowntest'
+    published = '2022-02-25T20:15:00Z'
+    title = 'Markdown test title'
+    content = 'This is a markdown test'
+    link = 'https://some.link'
+    markdown_blog_filename = \
+        markdown_blog_dir + '/2022-02-25_' + \
+        title.replace(' ', '_').lower() + '.md'
+    system_language = 'en'
+    debug = True
+    message_json = {
+        'object': {
+            'published': published,
+            'summary': title,
+            'content': content + ' ' + link
+        }
+    }
+    result = blog_to_markdown(base_dir, 'someuser', 'somedomain',
+                              message_json, system_language,
+                              debug, True)
+    assert result
+    assert os.path.isdir(markdown_blog_dir)
+    assert os.path.isfile(markdown_blog_filename)
+    assert text_in_file('# ' + title + '\n', markdown_blog_filename)
+    assert text_in_file(content, markdown_blog_filename)
+    assert text_in_file('2022-02-25', markdown_blog_filename)
+    shutil.rmtree(markdown_blog_dir, ignore_errors=True)
 
 
 def run_all_tests():
@@ -9540,6 +9573,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_markdown_blog(base_dir)
     _test_gemini_blog(base_dir)
     _test_actor_status()
     _test_filter_match()

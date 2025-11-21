@@ -7,6 +7,17 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
+import os
+import shutil
+from utils import acct_dir
+from utils import remove_html
+from utils import get_base_content_from_post
+from utils import get_post_attachments
+from utils import get_url_from_post
+from utils import get_markdown_blog_filename
+from utils import get_gemini_blog_title
+from utils import get_gemini_blog_published
+
 
 def _markdown_get_sections(markdown: str) -> []:
     """Returns a list of sections for markdown
@@ -493,3 +504,88 @@ def markdown_to_html(markdown: str) -> str:
         html_str = html_str.replace(pair[0], pair[1])
 
     return html_str
+
+
+def blog_to_markdown(base_dir: str, nickname: str, domain: str,
+                     message_json: dict, system_language: str,
+                     debug: bool, testing: bool) -> bool:
+    """
+    Converts a blog post to markdown format
+    Returns True on success
+     """
+    if not testing:
+        account_dir = acct_dir(base_dir, nickname, domain)
+    else:
+        account_dir = base_dir
+        if os.path.isdir(account_dir + '/markdowntest'):
+            shutil.rmtree(account_dir + '/markdowntest', ignore_errors=True)
+
+    if not os.path.isdir(account_dir):
+        if debug:
+            print('WARN: blog_to_markdown account directory not found ' +
+                  account_dir)
+        return False
+
+    published = get_gemini_blog_published(message_json, debug)
+    if not published:
+        return False
+
+    # get the blog content
+    content_str = get_base_content_from_post(message_json, system_language)
+    if not content_str:
+        if debug:
+            print('WARN: blog_to_markdown no content ' +
+                  str(message_json))
+        return False
+    content_text = remove_html(content_str)
+
+    # get the blog title
+    title_text = get_gemini_blog_title(message_json, system_language)
+
+    # create markdown blog directory
+    if not testing:
+        markdown_blog_dir = account_dir + '/markdown'
+    else:
+        markdown_blog_dir = account_dir + '/markdowntest'
+    if not os.path.isdir(markdown_blog_dir):
+        os.mkdir(markdown_blog_dir)
+
+    markdown_blog_filename = \
+        get_markdown_blog_filename(base_dir, nickname, domain,
+                                   message_json, system_language,
+                                   debug, testing)
+
+    if not title_text.startswith('# '):
+        title_text = '# ' + title_text
+
+    # get attachments
+    links: list[str] = []
+    post_attachments = get_post_attachments(message_json)
+    if post_attachments:
+        descriptions = ''
+        for attach in post_attachments:
+            if not isinstance(attach, dict):
+                continue
+            if not attach.get('name'):
+                continue
+            descriptions += attach['name'] + ' '
+            if attach.get('url'):
+                links.append('[' + attach['name'] + '](' +
+                             get_url_from_post(attach['url']) + ')')
+
+    # add links to the end of the content
+    if links:
+        content_text += '\n\n'
+    for link_str in links:
+        content_text += link_str + '\n'
+
+    try:
+        with open(markdown_blog_filename, 'w+',
+                  encoding='utf-8') as fp_markdown:
+            fp_markdown.write(title_text + '\n\n' + published + '\n\n' +
+                              content_text)
+    except OSError:
+        print('EX: blog_to_markdown unable to write ' + markdown_blog_filename)
+        return False
+
+    return True

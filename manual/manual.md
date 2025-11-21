@@ -408,6 +408,8 @@ Used to create a blog post. Blog posts are typically longer than other types of 
 
 At the top of the *links* column on the main timeline screen there is an icon to show an RSS feed for your blog entries.
 
+When you create a blog post a corresponding file in [Gemini](https://en.wikipedia.org/wiki/Gemini_(protocol)) and [Markdown](https://en.wikipedia.org/wiki/Markdown) formats will also be generated. These can be found in the **accounts/username@domain/gemnini** and **accounts/username@domain/markdown** directories. If you are running a Gemini server or a separate markdown blog you can then perhaps set up a cron script to copy those files to the relevant destinations.
+
 ### Unlisted
 Similar to a public post, but will not appear as a recent post within your profile. Unlisted posts can add a little more privacy to a conversation in that it will not be immediately obvious to casual observers. Often in practice this is all that's needed to avoid trolls or unwanted attention.
 
