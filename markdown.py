@@ -570,7 +570,7 @@ def blog_to_markdown(base_dir: str, nickname: str, domain: str,
                 continue
             descriptions += attach['name'] + ' '
             if attach.get('url'):
-                links.append('[' + attach['name'] + '](' +
+                links.append('![' + attach['name'] + '](' +
                              get_url_from_post(attach['url']) + ')')
 
     # add links to the end of the content
