@@ -217,6 +217,11 @@ def spoof_geolocation(base_dir: str,
     default_latdirection: str = 'N'
     default_longdirection: str = 'W'
 
+    if not city:
+        return (default_latitude, default_longitude,
+                default_latdirection, default_longdirection,
+                "", "", 0)
+
     if cities_list:
         cities = cities_list
     else:
