@@ -814,6 +814,22 @@ def get_followers_list(base_dir: str,
     return []
 
 
+def get_mutuals_of_person(base_dir: str,
+                          nickname: str, domain: str) -> []:
+    """Returns the mutuals of a person
+    i.e. accounts which they follow and which also follow back
+    """
+    followers = \
+        get_followers_list(base_dir, nickname, domain, 'followers.txt')
+    following = \
+        get_followers_list(base_dir, nickname, domain, 'following.txt')
+    mutuals: list[str] = []
+    for handle in following:
+        if handle in followers:
+            mutuals.append(handle)
+    return mutuals
+
+
 def get_followers_of_person(base_dir: str,
                             nickname: str, domain: str,
                             follow_file: str = 'following.txt') -> []:
