@@ -1503,7 +1503,8 @@ def _get_post_title_announce_html(base_dir: str,
                                   mitm: bool,
                                   mitm_servers: [],
                                   software_name: str,
-                                  mutuals_list: []) -> (str, str, str, str):
+                                  mutuals_list: [],
+                                  is_text_mode: bool) -> (str, str, str, str):
     """Returns the announce title of a post containing names of participants
     x announces y
     """
@@ -1567,14 +1568,18 @@ def _get_post_title_announce_html(base_dir: str,
                                       announce_display_name, False,
                                       translate)
     # add mutual icon to the display name
-    mutuals_icon = ''
+    mutual_prefix = ''
     if announce_handle in mutuals_list:
-        mutuals_icon = ' ⇆'
+        if not is_text_mode:
+            mutual_prefix = '⇆ '
+        else:
+            mutual_prefix = translate['Mutual'] + ' '
 
     _log_post_timing(enable_timing_log, post_start_time, '13.3.1')
+    announce_display_name2 = mutual_prefix + announce_display_name
     title_str += \
         _announce_with_display_name_html(translate, post_json_object,
-                                         announce_display_name + mutuals_icon,
+                                         announce_display_name2,
                                          nickname, announce_handle)
 
     if mitm or announce_domain in mitm_servers:
@@ -1934,7 +1939,8 @@ def _get_post_title_html(base_dir: str,
                          debug: bool,
                          mitm_servers: [],
                          software_name: str,
-                         mutuals_list: []) -> (str, str, str, str):
+                         mutuals_list: [],
+                         is_text_mode: bool) -> (str, str, str, str):
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
@@ -1963,7 +1969,8 @@ def _get_post_title_html(base_dir: str,
                                              container_class, mitm,
                                              mitm_servers,
                                              software_name,
-                                             mutuals_list)
+                                             mutuals_list,
+                                             is_text_mode)
 
     return _get_post_title_reply_html(base_dir,
                                       http_prefix,
@@ -2648,12 +2655,16 @@ def individual_post_as_html(signing_priv_key_pem: str,
         mitm_str = ' ' + mitm_warning_html(translate)
 
     # get the list of mutuals for the current account
+    is_text_mode = text_mode_browser(ua_str)
     mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
 
     # add mutual icon to the display name
-    mutuals_icon = ''
+    mutual_prefix = ''
     if actor_handle in mutuals_list:
-        mutuals_icon = ' ⇆'
+        if not is_text_mode:
+            mutual_prefix = '⇆ '
+        else:
+            mutual_prefix = translate['Mutual'] + ' '
 
     if display_name:
         display_name = _enforce_max_display_name_length(display_name)
@@ -2668,7 +2679,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
             '" tabindex="10" title="' + actor_handle + '">' + \
-            '<span itemprop="author">' + display_name + mutuals_icon + \
+            '<span itemprop="author">' + mutual_prefix + display_name + \
             mitm_str + '</span></a>\n'
     else:
         if not message_id:
@@ -2685,7 +2696,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
             '" tabindex="10">' + \
-            '@<span itemprop="author">' + actor_handle + mutuals_icon + \
+            '@<span itemprop="author">' + mutual_prefix + actor_handle + \
             mitm_str + '</span></a>\n'
 
     # benchmark 9
@@ -2891,7 +2902,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                              session, False,
                                              mitm_servers,
                                              software_name,
-                                             mutuals_list)
+                                             mutuals_list,
+                                             is_text_mode)
     title_str += title_str2
 
     _log_post_timing(enable_timing_log, post_start_time, '14')
