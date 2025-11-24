@@ -31,6 +31,14 @@ def text_mode_removals(text: str, translate: {}) -> str:
     return text
 
 
+def text_mode_replacements(text: str, translate: {}) -> str:
+    """Replaces some elements of a post when displaying in a text mode browser
+    """
+    text = text.replace('">⇆ ', '">' + translate['Mutual'] + ' ')
+    text = text.replace(' ⇆ ', ' ' + translate['Mutual'] + ' ')
+    return text
+
+
 def get_text_mode_banner(base_dir: str) -> str:
     """Returns the banner used for shell browsers, like Lynx
     """

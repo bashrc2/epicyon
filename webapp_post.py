@@ -1711,9 +1711,19 @@ def _get_reply_html(translate: {},
                     nickname: str,
                     post_json_object: {},
                     reply_handle: str,
-                    software_name: str) -> str:
+                    software_name: str,
+                    mutuals_list: [],
+                    is_text_mode: bool) -> str:
     """Returns html title for a reply
     """
+    # add mutual icon to the display name
+    mutual_prefix = ''
+    if reply_handle in mutuals_list:
+        if not is_text_mode:
+            mutual_prefix = '⇆ '
+        else:
+            mutual_prefix = translate['Mutual'] + ' '
+
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_bookmark = '#' + bookmark_from_id(in_reply_to)
     post_link = '/users/' + nickname + '?convthread=' + \
@@ -1728,7 +1738,7 @@ def _get_reply_html(translate: {},
         '        <a href="' + post_link + \
         '" class="announceOrReply" tabindex="10" title="' + \
         reply_handle + '">' + '<span itemprop="audience">' + \
-        reply_display_name + '</span></a>\n'
+        mutual_prefix + reply_display_name + '</span></a>\n'
 
     title_str += _get_instance_software_html(title_str, software_name)
     return title_str
@@ -1752,7 +1762,9 @@ def _get_post_title_reply_html(base_dir: str,
                                signing_priv_key_pem: str,
                                session, debug: bool,
                                mitm_servers: [],
-                               software_name: str) -> (str, str, str, str):
+                               software_name: str,
+                               mutuals_list: [],
+                               is_text_mode: bool) -> (str, str, str, str):
     """Returns the reply title of a post containing names of participants
     x replies to y
     """
@@ -1882,7 +1894,7 @@ def _get_post_title_reply_html(base_dir: str,
         title_str += \
             _get_reply_html(translate, in_reply_to, reply_display_name,
                             nickname, post_json_object, reply_handle,
-                            software_name)
+                            software_name, mutuals_list, is_text_mode)
 
     if mitm or reply_domain in mitm_servers:
         title_str += mitm_warning_html(translate)
@@ -1989,7 +2001,9 @@ def _get_post_title_html(base_dir: str,
                                       signing_priv_key_pem,
                                       session, debug,
                                       mitm_servers,
-                                      software_name)
+                                      software_name,
+                                      mutuals_list,
+                                      is_text_mode)
 
 
 def _get_footer_with_icons(show_icons: bool,
