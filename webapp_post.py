@@ -1503,8 +1503,7 @@ def _get_post_title_announce_html(base_dir: str,
                                   mitm: bool,
                                   mitm_servers: [],
                                   software_name: str,
-                                  mutuals_list: [],
-                                  is_text_mode: bool) -> (str, str, str, str):
+                                  mutuals_list: []) -> (str, str, str, str):
     """Returns the announce title of a post containing names of participants
     x announces y
     """
@@ -1570,10 +1569,7 @@ def _get_post_title_announce_html(base_dir: str,
     # add mutual icon to the display name
     mutual_prefix = ''
     if announce_handle in mutuals_list:
-        if not is_text_mode:
-            mutual_prefix = '⇆ '
-        else:
-            mutual_prefix = translate['Mutual'] + ' '
+        mutual_prefix = '⇆ '
 
     _log_post_timing(enable_timing_log, post_start_time, '13.3.1')
     announce_display_name2 = mutual_prefix + announce_display_name
@@ -1712,17 +1708,13 @@ def _get_reply_html(translate: {},
                     post_json_object: {},
                     reply_handle: str,
                     software_name: str,
-                    mutuals_list: [],
-                    is_text_mode: bool) -> str:
+                    mutuals_list: []) -> str:
     """Returns html title for a reply
     """
     # add mutual icon to the display name
     mutual_prefix = ''
     if reply_handle in mutuals_list:
-        if not is_text_mode:
-            mutual_prefix = '⇆ '
-        else:
-            mutual_prefix = translate['Mutual'] + ' '
+        mutual_prefix = '⇆ '
 
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_bookmark = '#' + bookmark_from_id(in_reply_to)
@@ -1763,8 +1755,7 @@ def _get_post_title_reply_html(base_dir: str,
                                session, debug: bool,
                                mitm_servers: [],
                                software_name: str,
-                               mutuals_list: [],
-                               is_text_mode: bool) -> (str, str, str, str):
+                               mutuals_list: []) -> (str, str, str, str):
     """Returns the reply title of a post containing names of participants
     x replies to y
     """
@@ -1894,7 +1885,7 @@ def _get_post_title_reply_html(base_dir: str,
         title_str += \
             _get_reply_html(translate, in_reply_to, reply_display_name,
                             nickname, post_json_object, reply_handle,
-                            software_name, mutuals_list, is_text_mode)
+                            software_name, mutuals_list)
 
     if mitm or reply_domain in mitm_servers:
         title_str += mitm_warning_html(translate)
@@ -1951,8 +1942,7 @@ def _get_post_title_html(base_dir: str,
                          debug: bool,
                          mitm_servers: [],
                          software_name: str,
-                         mutuals_list: [],
-                         is_text_mode: bool) -> (str, str, str, str):
+                         mutuals_list: []) -> (str, str, str, str):
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
@@ -1981,8 +1971,7 @@ def _get_post_title_html(base_dir: str,
                                              container_class, mitm,
                                              mitm_servers,
                                              software_name,
-                                             mutuals_list,
-                                             is_text_mode)
+                                             mutuals_list)
 
     return _get_post_title_reply_html(base_dir,
                                       http_prefix,
@@ -2002,8 +1991,7 @@ def _get_post_title_html(base_dir: str,
                                       session, debug,
                                       mitm_servers,
                                       software_name,
-                                      mutuals_list,
-                                      is_text_mode)
+                                      mutuals_list)
 
 
 def _get_footer_with_icons(show_icons: bool,
@@ -2669,16 +2657,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
         mitm_str = ' ' + mitm_warning_html(translate)
 
     # get the list of mutuals for the current account
-    is_text_mode = text_mode_browser(ua_str)
     mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
 
     # add mutual icon to the display name
     mutual_prefix = ''
     if actor_handle in mutuals_list:
-        if not is_text_mode:
-            mutual_prefix = '⇆ '
-        else:
-            mutual_prefix = translate['Mutual'] + ' '
+        mutual_prefix = '⇆ '
 
     if display_name:
         display_name = _enforce_max_display_name_length(display_name)
@@ -2916,8 +2900,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                              session, False,
                                              mitm_servers,
                                              software_name,
-                                             mutuals_list,
-                                             is_text_mode)
+                                             mutuals_list)
     title_str += title_str2
 
     _log_post_timing(enable_timing_log, post_start_time, '14')
