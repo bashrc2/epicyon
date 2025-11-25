@@ -3442,7 +3442,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          min_images_for_accounts: [],
                          buy_sites: {},
                          auto_cw_cache: {}, mitm_servers: [],
-                         instance_software: {}) -> str:
+                         instance_software: {},
+                         ua_str: str) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -3472,8 +3473,18 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         # Liked by handle
         domain_full = get_full_domain(domain, port)
         actor = '/users/' + nickname
+
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+        mutual_prefix = ''
+        if by_str_handle in mutuals_list:
+            if not text_mode_browser(ua_str):
+                mutual_prefix = '⇆ '
+            else:
+                mutual_prefix = translate['Mutual'] + ' '
+
         post_str += \
-            '<p>' + by_text + ' '
+            '<p>' + mutual_prefix + by_text + ' '
         post_str += \
             '<form method="POST" accept-charset="UTF-8" action="' + \
             actor + '/searchhandle">\n' + \

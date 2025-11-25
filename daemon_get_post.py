@@ -86,7 +86,8 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                          onion_domain: str,
                          i2p_domain: str,
                          mitm_servers: [],
-                         instance_software: {}) -> bool:
+                         instance_software: {},
+                         ua_str: str) -> bool:
     """Shows an individual post from its filename
     """
     if not os.path.isfile(post_filename):
@@ -166,7 +167,8 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                                  buy_sites,
                                  auto_cw_cache,
                                  mitm_servers,
-                                 instance_software)
+                                 instance_software,
+                                 ua_str)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         set_html_post_headers(self, msglen,
@@ -247,7 +249,8 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                          onion_domain: str,
                          i2p_domain: str,
                          mitm_servers: [],
-                         instance_software: {}) -> bool:
+                         instance_software: {},
+                         ua_str: str) -> bool:
     """Shows an individual post
     """
     liked_by = None
@@ -354,7 +357,8 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                                   onion_domain,
                                   i2p_domain,
                                   mitm_servers,
-                                  instance_software)
+                                  instance_software,
+                                  ua_str)
 
     fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_individual_post',
@@ -584,7 +588,8 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                             i2p_domain: str,
                             bold_reading_nicknames: {},
                             mitm_servers: [],
-                            instance_software: {}) -> bool:
+                            instance_software: {},
+                            ua_str: str) -> bool:
     """get an individual post from the path /@nickname/statusnumber
     """
     if '/@' not in path:
@@ -697,7 +702,8 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                                   onion_domain,
                                   i2p_domain,
                                   mitm_servers,
-                                  instance_software)
+                                  instance_software,
+                                  ua_str)
 
     fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_individual_at_post',
@@ -1218,7 +1224,8 @@ def show_notify_post(self, authorized: bool,
                      i2p_domain: str,
                      bold_reading_nicknames: {},
                      mitm_servers: [],
-                     instance_software: {}) -> bool:
+                     instance_software: {},
+                     ua_str: str) -> bool:
     """Shows an individual post from an account which you are following
     and where you have the notify checkbox set on person options
     """
@@ -1278,7 +1285,8 @@ def show_notify_post(self, authorized: bool,
                                   onion_domain,
                                   i2p_domain,
                                   mitm_servers,
-                                  instance_software)
+                                  instance_software,
+                                  ua_str)
     fitness_performance(getreq_start_time, fitness,
                         '_GET', 'show_notify_post',
                         debug)

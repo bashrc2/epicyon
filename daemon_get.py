@@ -4562,7 +4562,8 @@ def daemon_http_get(self) -> None:
                                self.server.i2p_domain,
                                self.server.bold_reading,
                                self.server.mitm_servers,
-                               self.server.instance_software):
+                               self.server.instance_software,
+                               ua_str):
         self.server.getreq_busy = False
         return
 
@@ -4854,7 +4855,8 @@ def daemon_http_get(self) -> None:
                             self.server.i2p_domain,
                             self.server.bold_reading,
                             self.server.mitm_servers,
-                            self.server.instance_software):
+                            self.server.instance_software,
+                            ua_str):
             self.server.getreq_busy = False
             return
 
@@ -4900,7 +4902,8 @@ def daemon_http_get(self) -> None:
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
                                 self.server.mitm_servers,
-                                self.server.instance_software):
+                                self.server.instance_software,
+                                ua_str):
             self.server.getreq_busy = False
             return
 
