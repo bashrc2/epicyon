@@ -8,10 +8,12 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+from utils import get_mutuals_of_person
 from utils import locate_post
 from utils import get_config_param
 from utils import get_display_name
 from utils import get_nickname_from_actor
+from utils import get_domain_from_actor
 from utils import has_object_dict
 from utils import load_json
 from utils import get_actor_from_post
@@ -22,6 +24,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_banner_file
 from webapp_utils import add_emoji_to_display_name
 from webapp_post import individual_post_as_html
+from textmode import text_mode_browser
 
 
 def html_likers_of_post(base_dir: str, nickname: str,
@@ -47,7 +50,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                         buy_sites: {}, auto_cw_cache: {},
                         dict_name: str,
                         mitm_servers: [],
-                        instance_software: {}) -> str:
+                        instance_software: {},
+                        ua_str: str) -> str:
     """Returns html for a screen showing who liked a post
     """
     css_filename = base_dir + '/epicyon-profile.css'
@@ -142,6 +146,10 @@ def html_likers_of_post(base_dir: str, nickname: str,
         html_str += \
             '<center><h2>' + translate['Repeated by'] + '</h2></center>\n'
 
+    # get the list of mutuals for the current account
+    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+    is_text_mode = text_mode_browser(ua_str)
+
     likers_list = ''
     for like_item in obj[dict_name]['items']:
         if not like_item.get('actor'):
@@ -159,8 +167,10 @@ def html_likers_of_post(base_dir: str, nickname: str,
                                               nickname, domain,
                                               liker_name, False,
                                               translate)
+            liker_username = get_nickname_from_actor(liker_actor)
         else:
             liker_name = get_nickname_from_actor(liker_actor)
+            liker_username = liker_name
             if not liker_name:
                 liker_name = 'unknown'
         if likers_list:
@@ -171,13 +181,26 @@ def html_likers_of_post(base_dir: str, nickname: str,
             liker_avatar_url = ''
         else:
             liker_avatar_url = ';' + liker_avatar_url
+
+        # get the mutual icon prefix
+        mutual_prefix = ''
+        if liker_username:
+            liker_domain, _ = get_domain_from_actor(liker_actor)
+            if liker_domain:
+                liker_handle = liker_username + '@' + liker_domain
+                if liker_handle in mutuals_list:
+                    if not is_text_mode:
+                        mutual_prefix = '⇆ '
+                    else:
+                        mutual_prefix = translate['Mutual'] + ' '
+
         liker_options_link = \
             '/users/' + nickname + '?options=' + \
             liker_actor + ';1' + liker_avatar_url
         likers_list += \
             '<label class="likerNames">' + \
-            '<a href="' + liker_options_link + '">' + liker_name + '</a>' + \
-            '</label>'
+            '<a href="' + liker_options_link + '">' + \
+            mutual_prefix + liker_name + '</a>' + '</label>'
     html_str += '<center>\n' + likers_list + '\n</center>\n'
 
     return html_str + html_footer()

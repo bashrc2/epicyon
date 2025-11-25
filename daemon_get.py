@@ -4603,7 +4603,8 @@ def daemon_http_get(self) -> None:
                            self.server.auto_cw_cache,
                            self.server.fitness,
                            self.server.mitm_servers,
-                           self.server.instance_software):
+                           self.server.instance_software,
+                           ua_str):
         self.server.getreq_busy = False
         return
 
@@ -4643,7 +4644,8 @@ def daemon_http_get(self) -> None:
                                self.server.auto_cw_cache,
                                self.server.fitness,
                                self.server.mitm_servers,
-                               self.server.instance_software):
+                               self.server.instance_software,
+                               ua_str):
         self.server.getreq_busy = False
         return
 

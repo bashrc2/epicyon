@@ -743,7 +743,8 @@ def show_likers_of_post(self, authorized: bool,
                         auto_cw_cache: {},
                         fitness: {},
                         mitm_servers: [],
-                        instance_software: {}) -> bool:
+                        instance_software: {},
+                        ua_str: str) -> bool:
     """Show the likers of a post
     """
     if not authorized:
@@ -793,7 +794,8 @@ def show_likers_of_post(self, authorized: bool,
                             buy_sites,
                             auto_cw_cache, 'likes',
                             mitm_servers,
-                            instance_software)
+                            instance_software,
+                            ua_str)
     if not msg:
         http_404(self, 69)
         return True
@@ -840,7 +842,8 @@ def show_announcers_of_post(self, authorized: bool,
                             auto_cw_cache: {},
                             fitness: {},
                             mitm_servers: [],
-                            instance_software: {}) -> bool:
+                            instance_software: {},
+                            ua_str: str) -> bool:
     """Show the announcers of a post
     """
     if not authorized:
@@ -890,7 +893,8 @@ def show_announcers_of_post(self, authorized: bool,
                             buy_sites,
                             auto_cw_cache,
                             'shares', mitm_servers,
-                            instance_software)
+                            instance_software,
+                            ua_str)
     if not msg:
         http_404(self, 70)
         return True
