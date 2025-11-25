@@ -3484,7 +3484,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                 mutual_prefix = translate['Mutual'] + ' '
 
         post_str += \
-            '<p>' + mutual_prefix + by_text + ' '
+            '<p>' + by_text + ' '
         post_str += \
             '<form method="POST" accept-charset="UTF-8" action="' + \
             actor + '/searchhandle">\n' + \
@@ -3495,7 +3495,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
             '"><button type="submit" ' + \
             'class="followApproveHandle" ' + \
             'name="submitSearch" tabindex="10">' + \
-            by_str_handle + '</button></form>'
+            mutual_prefix + by_str_handle + '</button></form>'
         post_str += by_text_extra + '\n'
         follow_str = '  <form method="POST" ' + \
             'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'
