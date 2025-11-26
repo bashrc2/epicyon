@@ -11,6 +11,7 @@ __module_group__ = "Timeline"
 import os
 from conversation import download_conversation_posts
 from flags import is_public_post
+from utils import get_mutuals_of_person
 from utils import remove_id_ending
 from utils import get_config_param
 from utils import get_nickname_from_actor
@@ -131,6 +132,8 @@ def html_conversation_view(authorized: bool, post_id: str,
                           blocked_cache, block_federated):
                 show_individual_post_icons = False
         allow_deletion = False
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
                                     True, recent_posts_cache,
@@ -159,7 +162,8 @@ def html_conversation_view(authorized: bool, post_id: str,
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    mutuals_list)
         if post_str:
             conv_str += \
                 current_reading_str + text_mode_separator + \

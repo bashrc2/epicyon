@@ -19,6 +19,7 @@ from flags import is_featured_writer
 from flags import is_quote_toot
 from quote import quote_toots_allowed
 from timeFunctions import get_account_timezone
+from utils import get_mutuals_of_person
 from utils import data_dir
 from utils import get_post_attachments
 from utils import get_attributed_to
@@ -665,6 +666,9 @@ def post_message_to_outbox(session, translate: {},
                 minimize_all_images = False
                 if post_to_nickname in min_images_for_accounts:
                     minimize_all_images = True
+                # get the list of mutuals for the current account
+                mutuals_list = \
+                    get_mutuals_of_person(base_dir, post_to_nickname, domain)
                 individual_post_as_html(signing_priv_key_pem,
                                         False, recent_posts_cache,
                                         max_recent_posts,
@@ -694,7 +698,8 @@ def post_message_to_outbox(session, translate: {},
                                         minimize_all_images, None,
                                         buy_sites, auto_cw_cache,
                                         mitm_servers,
-                                        instance_software)
+                                        instance_software,
+                                        mutuals_list)
 
     if is_edited_post:
         message_json['type'] = 'Update'

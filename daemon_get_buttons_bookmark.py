@@ -10,6 +10,7 @@ __status__ = "Production"
 __module_group__ = "Daemon GET"
 
 import os
+from utils import get_mutuals_of_person
 from utils import get_cached_post_filename
 from utils import load_json
 from utils import locate_post
@@ -182,6 +183,9 @@ def bookmark_button(self, calling_domain: str, path: str,
             minimize_all_images = False
             if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
+            # get the list of mutuals for the current account
+            mutuals_list = \
+                get_mutuals_of_person(base_dir, self.post_to_nickname, domain)
             individual_post_as_html(signing_priv_key_pem,
                                     False,
                                     recent_posts_cache,
@@ -218,7 +222,8 @@ def bookmark_button(self, calling_domain: str, path: str,
                                     buy_sites,
                                     auto_cw_cache,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    mutuals_list)
         else:
             print('WARN: Bookmarked post not found: ' + bookmark_filename)
     actor_absolute = \
@@ -393,6 +398,9 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
             minimize_all_images = False
             if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
+            # get the list of mutuals for the current account
+            mutuals_list = \
+                get_mutuals_of_person(base_dir, self.post_to_nickname, domain)
             individual_post_as_html(signing_priv_key_pem,
                                     False,
                                     recent_posts_cache,
@@ -429,7 +437,8 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                                     buy_sites,
                                     auto_cw_cache,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    mutuals_list)
         else:
             print('WARN: Unbookmarked post not found: ' +
                   bookmark_filename)

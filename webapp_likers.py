@@ -97,6 +97,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
+    # get the list of mutuals for the current account
+    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
     html_str += \
         individual_post_as_html(signing_priv_key_pem,
                                 True, recent_posts_cache,
@@ -126,7 +128,8 @@ def html_likers_of_post(base_dir: str, nickname: str,
                                 minimize_all_images, None,
                                 buy_sites, auto_cw_cache,
                                 mitm_servers,
-                                instance_software)
+                                instance_software,
+                                mutuals_list)
 
     # show likers beneath the post
     obj = post_json_object

@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from flags import is_public_post_from_url
 from flags import is_premium_account
+from utils import get_mutuals_of_person
 from utils import get_event_categories
 from utils import data_dir
 from utils import dangerous_markup
@@ -432,6 +433,9 @@ def html_new_post(edit_post_params: {},
                         minimize_all_images = False
                         if nickname in min_images_for_accounts:
                             minimize_all_images = True
+                        # get the list of mutuals for the current account
+                        mutuals_list = \
+                            get_mutuals_of_person(base_dir, nickname, domain)
                         replied_to_post = \
                             individual_post_as_html(signing_priv_key_pem,
                                                     True, recent_posts_cache,
@@ -461,7 +465,8 @@ def html_new_post(edit_post_params: {},
                                                     minimize_all_images, None,
                                                     buy_sites, auto_cw_cache,
                                                     mitm_servers,
-                                                    instance_software)
+                                                    instance_software,
+                                                    mutuals_list)
                         new_post_text += \
                             open_content_warning(replied_to_post, translate)
                         # about the author

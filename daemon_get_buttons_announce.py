@@ -10,6 +10,7 @@ __status__ = "Production"
 __module_group__ = "Daemon GET"
 
 import os
+from utils import get_mutuals_of_person
 from utils import delete_post
 from utils import locate_post
 from utils import is_dm
@@ -228,6 +229,9 @@ def announce_button(self, calling_domain: str, path: str,
         minimize_all_images = False
         if self.post_to_nickname in min_images_for_accounts:
             minimize_all_images = True
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir,
+                                             self.post_to_nickname, domain)
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache,
                                 max_recent_posts,
@@ -263,7 +267,8 @@ def announce_button(self, calling_domain: str, path: str,
                                 buy_sites,
                                 auto_cw_cache,
                                 mitm_servers,
-                                instance_software)
+                                instance_software,
+                                mutuals_list)
 
     actor_absolute = \
         get_instance_url(calling_domain,

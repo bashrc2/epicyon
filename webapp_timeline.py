@@ -14,6 +14,7 @@ from flags import is_editor
 from flags import is_artist
 from flags import is_float
 from flags import is_moderator
+from utils import get_mutuals_of_person
 from utils import data_dir
 from utils import dangerous_markup
 from utils import get_config_param
@@ -1016,6 +1017,9 @@ def html_timeline(default_timeline: str,
         if os.path.isfile(no_seen_posts_filename):
             no_seen_posts = True
 
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+
         # show each post in the timeline
         tl_items_str = ''
         for item in timeline_json['orderedItems']:
@@ -1098,7 +1102,8 @@ def html_timeline(default_timeline: str,
                                                 first_post_id, buy_sites,
                                                 auto_cw_cache,
                                                 mitm_servers,
-                                                instance_software)
+                                                instance_software,
+                                                mutuals_list)
                     _log_timeline_timing(enable_timing_log,
                                          timeline_start_time, box_name, '12')
 

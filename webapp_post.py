@@ -2326,7 +2326,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             buy_sites: {},
                             auto_cw_cache: {},
                             mitm_servers: [],
-                            instance_software: {}) -> str:
+                            instance_software: {},
+                            mutuals_list: []) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2655,9 +2656,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
     mitm_str = ''
     if mitm or actor_domain in mitm_servers:
         mitm_str = ' ' + mitm_warning_html(translate)
-
-    # get the list of mutuals for the current account
-    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
 
     # add mutual icon to the display name
     mutual_prefix = ''
@@ -3443,7 +3441,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          buy_sites: {},
                          auto_cw_cache: {}, mitm_servers: [],
                          instance_software: {},
-                         ua_str: str) -> str:
+                         ua_str: str,
+                         mutuals_list: []) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -3541,7 +3540,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None, buy_sites,
                                 auto_cw_cache, mitm_servers,
-                                instance_software)
+                                instance_software, mutuals_list)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -3595,7 +3594,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             None, buy_sites,
                                             auto_cw_cache,
                                             mitm_servers,
-                                            instance_software) + post_str
+                                            instance_software,
+                                            mutuals_list) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -3637,7 +3637,8 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             bold_reading, dogwhistles,
                                             minimize_all_images, None,
                                             buy_sites, auto_cw_cache,
-                                            mitm_servers, instance_software)
+                                            mitm_servers, instance_software,
+                                            mutuals_list)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -3691,7 +3692,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       buy_sites: {},
                       auto_cw_cache: {},
                       mitm_servers: [],
-                      instance_software: {}) -> str:
+                      instance_software: {},
+                      mutuals_list: []) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -3725,7 +3727,8 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         minimize_all_images, None,
                                         buy_sites, auto_cw_cache,
                                         mitm_servers,
-                                        instance_software)
+                                        instance_software,
+                                        mutuals_list)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -3768,6 +3771,8 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
+    # get the list of mutuals for the current account
+    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
     reacted_to_post_str = \
         '<br><center><label class="followText">' + \
         translate['Select reaction'].title() + '</label></center>\n' + \
@@ -3792,7 +3797,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None, buy_sites,
                                 auto_cw_cache, mitm_servers,
-                                instance_software)
+                                instance_software, mutuals_list)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):

@@ -29,6 +29,7 @@ from timeFunctions import date_utcnow
 from timeFunctions import date_epoch
 from timeFunctions import get_account_timezone
 from timeFunctions import get_current_time_int
+from utils import get_mutuals_of_person
 from utils import harmless_markup
 from utils import lines_in_file
 from utils import contains_statuses
@@ -196,7 +197,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                                     buy_sites: {},
                                     auto_cw_cache: {},
                                     mitm_servers: [],
-                                    instance_software: {}) -> None:
+                                    instance_software: {},
+                                    mutuals_list: []) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -227,7 +229,8 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             cw_lists, lists_enabled, timezone, mitm,
                             bold_reading, dogwhistles, minimize_all_images,
                             None, buy_sites, auto_cw_cache,
-                            mitm_servers, instance_software)
+                            mitm_servers, instance_software,
+                            mutuals_list)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -1867,6 +1870,9 @@ def _inbox_after_initial(server, inbox_start_time,
 
     handle_name = handle.split('@')[0]
 
+    # get the list of mutuals for the current account
+    mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
+
     if receive_actor_status(base_dir, person_cache, message_json,
                             debug):
         if debug:
@@ -2548,7 +2554,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                                         buy_sites,
                                                         server.auto_cw_cache,
                                                         server.mitm_servers,
-                                                        instance_software)
+                                                        instance_software,
+                                                        mutuals_list)
                         fitness_performance(inbox_start_time,
                                             server.fitness,
                                             'INBOX',

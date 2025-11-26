@@ -11,6 +11,7 @@ import os
 from flags import has_group_type
 from timeFunctions import get_account_timezone
 from announce import undo_announce_collection_entry
+from utils import get_mutuals_of_person
 from utils import has_object_dict
 from utils import remove_domain_port
 from utils import remove_id_ending
@@ -259,6 +260,8 @@ def receive_undo_like(recent_posts_cache: {},
             minimize_all_images = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
+            # get the list of mutuals for the current account
+            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -282,7 +285,8 @@ def receive_undo_like(recent_posts_cache: {},
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    mutuals_list)
     return True
 
 
@@ -406,6 +410,8 @@ def receive_undo_reaction(recent_posts_cache: {},
             minimize_all_images = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
+            # get the list of mutuals for the current account
+            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -430,7 +436,8 @@ def receive_undo_reaction(recent_posts_cache: {},
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    mutuals_list)
     return True
 
 
@@ -539,6 +546,8 @@ def receive_undo_bookmark(recent_posts_cache: {},
         minimize_all_images = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache, max_recent_posts,
                                 translate, page_number, base_dir,
@@ -560,7 +569,8 @@ def receive_undo_bookmark(recent_posts_cache: {},
                                 timezone, mitm, bold_reading,
                                 dogwhistles, minimize_all_images, None,
                                 buy_sites, auto_cw_cache,
-                                mitm_servers, instance_software)
+                                mitm_servers, instance_software,
+                                mutuals_list)
     return True
 
 

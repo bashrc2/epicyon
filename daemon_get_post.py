@@ -14,6 +14,7 @@ from flags import is_public_post_from_url
 from flags import is_public_post
 from flags import is_premium_account
 from flags import can_reply_to
+from utils import get_mutuals_of_person
 from utils import get_instance_url
 from utils import local_actor_url
 from utils import locate_post
@@ -136,6 +137,9 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
         if bold_reading_nicknames.get(nickname):
             bold_reading = True
 
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+
         msg = \
             html_individual_post(recent_posts_cache,
                                  max_recent_posts,
@@ -168,7 +172,8 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                                  auto_cw_cache,
                                  mitm_servers,
                                  instance_software,
-                                 ua_str)
+                                 ua_str,
+                                 mutuals_list)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         set_html_post_headers(self, msglen,
@@ -1014,6 +1019,8 @@ def show_replies_to_post(self, authorized: bool,
             bold_reading = False
             if bold_reading_nicknames.get(nickname):
                 bold_reading = True
+            # get the list of mutuals for the current account
+            mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
             msg = \
                 html_post_replies(recent_posts_cache,
                                   max_recent_posts,
@@ -1045,7 +1052,8 @@ def show_replies_to_post(self, authorized: bool,
                                   buy_sites,
                                   auto_cw_cache,
                                   mitm_servers,
-                                  instance_software)
+                                  instance_software,
+                                  mutuals_list)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
@@ -1128,6 +1136,8 @@ def show_replies_to_post(self, authorized: bool,
         bold_reading = False
         if bold_reading_nicknames.get(nickname):
             bold_reading = True
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
         msg = \
             html_post_replies(recent_posts_cache,
                               max_recent_posts,
@@ -1159,7 +1169,8 @@ def show_replies_to_post(self, authorized: bool,
                               buy_sites,
                               auto_cw_cache,
                               mitm_servers,
-                              instance_software)
+                              instance_software,
+                              mutuals_list)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         set_headers(self, 'text/html', msglen,

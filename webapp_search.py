@@ -14,6 +14,7 @@ from flags import is_editor
 from flags import is_public_post
 from searchable import search_box_posts
 from timeFunctions import date_from_string_format
+from utils import get_mutuals_of_person
 from utils import get_person_icon
 from utils import data_dir
 from utils import get_post_attachments
@@ -827,6 +828,8 @@ def html_history_search(translate: {}, base_dir: str,
             continue
         show_individual_post_icons = True
         allow_deletion = False
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
                                     True, recent_posts_cache,
@@ -855,7 +858,8 @@ def html_history_search(translate: {}, base_dir: str,
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    mutuals_list)
         if post_str:
             history_search_form += separator_str + post_str
         index += 1
@@ -1059,6 +1063,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         minimize_all_images = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads, recent_posts_cache,
@@ -1088,7 +1094,8 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    mutuals_list)
         if post_str:
             hashtag_search_form += \
                 text_mode_separator + separator_str + post_str
@@ -1270,6 +1277,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         minimize_all_images = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \
             individual_post_as_html(signing_priv_key_pem,
                                     allow_downloads, recent_posts_cache,
@@ -1299,7 +1308,8 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    mutuals_list)
         if post_str:
             hashtag_search_form += \
                 text_mode_separator + separator_str + post_str

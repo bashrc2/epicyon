@@ -14,6 +14,7 @@ from flags import is_quote_toot
 from status import actor_status_expired
 from quote import get_quote_toot_url
 from timeFunctions import get_account_timezone
+from utils import get_mutuals_of_person
 from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
 from utils import get_attributed_to
@@ -501,6 +502,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
+    # get the list of mutuals for the current account
+    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
     individual_post_as_html(signing_priv_key_pem, False,
                             recent_posts_cache, max_recent_posts,
                             translate, page_number, base_dir,
@@ -522,7 +525,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             bold_reading, dogwhistles,
                             minimize_all_images, None,
                             buy_sites, auto_cw_cache,
-                            mitm_servers, instance_software)
+                            mitm_servers, instance_software,
+                            mutuals_list)
     return True
 
 
@@ -1061,6 +1065,8 @@ def receive_like(recent_posts_cache: {},
             minimize_all_images = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
+            # get the list of mutuals for the current account
+            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1083,7 +1089,7 @@ def receive_like(recent_posts_cache: {},
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None, buy_sites,
                                     auto_cw_cache, mitm_servers,
-                                    instance_software)
+                                    instance_software, mutuals_list)
     return True
 
 
@@ -1285,6 +1291,8 @@ def receive_reaction(recent_posts_cache: {},
             minimize_all_images = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
+            # get the list of mutuals for the current account
+            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1308,7 +1316,7 @@ def receive_reaction(recent_posts_cache: {},
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None, buy_sites,
                                     auto_cw_cache, mitm_servers,
-                                    instance_software)
+                                    instance_software, mutuals_list)
     return True
 
 
@@ -1474,6 +1482,8 @@ def receive_zot_reaction(recent_posts_cache: {},
             minimize_all_images = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
+            # get the list of mutuals for the current account
+            mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
             individual_post_as_html(signing_priv_key_pem, False,
                                     recent_posts_cache, max_recent_posts,
                                     translate, page_number, base_dir,
@@ -1498,7 +1508,8 @@ def receive_zot_reaction(recent_posts_cache: {},
                                     minimize_all_images, None,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    mutuals_list)
     return True
 
 
@@ -1605,6 +1616,8 @@ def receive_bookmark(recent_posts_cache: {},
         minimize_all_images = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
+        # get the list of mutuals for the current account
+        mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
         individual_post_as_html(signing_priv_key_pem, False,
                                 recent_posts_cache, max_recent_posts,
                                 translate, page_number, base_dir,
@@ -1628,7 +1641,8 @@ def receive_bookmark(recent_posts_cache: {},
                                 minimize_all_images, None,
                                 buy_sites, auto_cw_cache,
                                 mitm_servers,
-                                instance_software)
+                                instance_software,
+                                mutuals_list)
     return True
 
 
@@ -1886,6 +1900,9 @@ def receive_announce(recent_posts_cache: {},
     if os.path.isfile(show_vote_file):
         show_vote_posts = False
 
+    # get the list of mutuals for the current account
+    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
+
     announce_html = \
         individual_post_as_html(signing_priv_key_pem, True,
                                 recent_posts_cache, max_recent_posts,
@@ -1910,7 +1927,8 @@ def receive_announce(recent_posts_cache: {},
                                 minimize_all_images, None,
                                 buy_sites, auto_cw_cache,
                                 mitm_servers,
-                                instance_software)
+                                instance_software,
+                                mutuals_list)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -2105,6 +2123,8 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
+    # get the list of mutuals for the current account
+    mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
     individual_post_as_html(signing_priv_key_pem, False,
                             recent_posts_cache, max_recent_posts,
                             translate, page_number, base_dir,
@@ -2128,7 +2148,8 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                             minimize_all_images, None,
                             buy_sites, auto_cw_cache,
                             mitm_servers,
-                            instance_software)
+                            instance_software,
+                            mutuals_list)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,

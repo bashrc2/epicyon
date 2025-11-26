@@ -9,6 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 from flags import is_system_account
+from utils import get_mutuals_of_person
 from utils import get_domain_from_actor
 from utils import get_config_param
 from timeFunctions import get_account_timezone
@@ -76,6 +77,9 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
             minimize_all_images = False
             if nickname in min_images_for_accounts:
                 minimize_all_images = True
+            # get the list of mutuals for the current account
+            mutuals_list = \
+                get_mutuals_of_person(base_dir, nickname, domain)
             post_str = \
                 individual_post_as_html(signing_priv_key_pem,
                                         True, recent_posts_cache,
@@ -103,7 +107,8 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
                                         minimize_all_images, None,
                                         buy_sites, auto_cw_cache,
                                         mitm_servers,
-                                        instance_software)
+                                        instance_software,
+                                        mutuals_list)
             if post_str:
                 profile_str += post_str + separator_str
                 ctr += 1
