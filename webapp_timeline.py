@@ -962,7 +962,7 @@ def html_timeline(default_timeline: str,
         text_mode_separator = ''
 
     # page up arrow
-    if page_number > 1:
+    if page_number > 1 or is_text_browser:
         tl_str += text_mode_separator
         tl_str += '<br>' + \
             page_number_buttons(users_path, box_name, page_number,
@@ -971,17 +971,18 @@ def html_timeline(default_timeline: str,
         if page_number > 2:
             if last_post_id:
                 first_post_str = ';firstpost=' + last_post_id
-        tl_str += \
-            '  <center>\n' + \
-            '    <a href="' + users_path + '/' + box_name + \
-            '?page=' + str(page_number - 1) + first_post_str + \
-            '#timelineposts" accesskey="' + access_keys['Page up'] + '" ' + \
-            'class="imageAnchor" tabindex="9">' + \
-            '<img loading="lazy" decoding="async" class="pageicon" src="/' + \
-            'icons/pageup.png" title="' + \
-            translate['Page up'] + '" alt="' + \
-            translate['Page up'] + '"></a>\n' + \
-            '  </center>\n'
+        if page_number > 1:
+            tl_str += \
+                '  <center>\n' + \
+                '    <a href="' + users_path + '/' + box_name + \
+                '?page=' + str(page_number - 1) + first_post_str + \
+                '#timelineposts" accesskey="' + access_keys['Page up'] + \
+                '" ' + 'class="imageAnchor" tabindex="9">' + \
+                '<img loading="lazy" decoding="async" ' + \
+                'class="pageicon" src="/' + 'icons/pageup.png" title="' + \
+                translate['Page up'] + '" alt="' + \
+                translate['Page up'] + '">' + \
+                '</a>\n  </center>\n'
 
     # show the posts
     item_ctr = 0
