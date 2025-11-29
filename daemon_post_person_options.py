@@ -922,7 +922,8 @@ def _person_options_dm(self, options_confirm_params: str,
                        cookie: str, calling_domain: str,
                        access_keys: {},
                        mitm_servers: [],
-                       instance_software: {}) -> bool:
+                       instance_software: {},
+                       ua_str: str) -> bool:
     """Person options screen, DM button
     See html_person_options
     """
@@ -1005,7 +1006,8 @@ def _person_options_dm(self, options_confirm_params: str,
                           auto_cw_cache,
                           searchable_by_default,
                           mitm_servers,
-                          instance_software)
+                          instance_software,
+                          ua_str)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -1163,7 +1165,8 @@ def _person_options_report(self, options_confirm_params: str,
                            cookie: str, calling_domain: str,
                            access_keys: {},
                            mitm_servers: [],
-                           instance_software: {}) -> bool:
+                           instance_software: {},
+                           ua_str: str) -> bool:
     """Person options screen, report button
     See html_person_options
     """
@@ -1246,7 +1249,8 @@ def _person_options_report(self, options_confirm_params: str,
                           auto_cw_cache,
                           searchable_by_default,
                           mitm_servers,
-                          instance_software)
+                          instance_software,
+                          ua_str)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -1641,7 +1645,8 @@ def person_options2(self, path: str,
                           cookie, calling_domain,
                           access_keys,
                           mitm_servers,
-                          instance_software):
+                          instance_software,
+                          ua_str):
         return
 
     if _person_options_info(self, options_confirm_params,
@@ -1711,7 +1716,8 @@ def person_options2(self, path: str,
                               cookie, calling_domain,
                               access_keys,
                               mitm_servers,
-                              instance_software):
+                              instance_software,
+                              ua_str):
         return
 
     # redirect back from person options screen

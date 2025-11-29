@@ -52,6 +52,7 @@ from maps import get_map_preferences_coords
 from maps import get_location_from_post
 from cache import get_person_from_cache
 from person import get_person_notes
+from textmode import text_mode_browser
 
 
 def _html_new_post_drop_down(scope_icon: str, scope_description: str,
@@ -278,7 +279,8 @@ def html_new_post(edit_post_params: {},
                   auto_cw_cache: {},
                   searchable_by_default: str,
                   mitm_servers: [],
-                  instance_software: {}) -> str:
+                  instance_software: {},
+                  ua_str: str) -> str:
     """New post screen
     """
     # get the json if this is an edited post
@@ -1116,14 +1118,20 @@ def html_new_post(edit_post_params: {},
                             'https://www.openstreetmap.org/#map=') + '</p>\n'
 
         # event address
-        date_and_location += \
-            '<label class="labels">' + translate['Address'] + ':' + \
-            '</label><br>\n'
-        date_and_location += \
-            '<input type="text" name="locationAddress" ' + \
-            'list="addressbook">\n'
-        date_and_location += \
-            html_address_book_list(base_dir, nickname, domain)
+        # The list of known addresses doesn't work in text mode browsers
+        if not text_mode_browser(ua_str):
+            date_and_location += \
+                '<label class="labels">' + translate['Address'] + ':' + \
+                '</label><br>\n'
+            date_and_location += \
+                '<input type="text" name="locationAddress" ' + \
+                'list="addressbook">\n'
+            date_and_location += \
+                html_address_book_list(base_dir, nickname, domain)
+        else:
+            date_and_location += \
+                edit_text_field(translate['Address'], 'locationAddress',
+                                '', '') + '</p>\n'
 
         date_and_location += end_edit_section()
 

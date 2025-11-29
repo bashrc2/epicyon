@@ -413,7 +413,8 @@ def show_new_post(self, edit_post_params: {},
                   auto_cw_cache: {},
                   searchable_by_default_dict: [],
                   mitm_servers: [],
-                  instance_software: {}) -> bool:
+                  instance_software: {},
+                  ua_str: str) -> bool:
     """Shows the new post screen
     """
     searchable_by_default = 'yourself'
@@ -541,7 +542,8 @@ def show_new_post(self, edit_post_params: {},
                           auto_cw_cache,
                           searchable_by_default,
                           mitm_servers,
-                          instance_software)
+                          instance_software,
+                          ua_str)
         if not msg:
             print('Error replying to ' + in_reply_to_url)
             http_404(self, 104)
