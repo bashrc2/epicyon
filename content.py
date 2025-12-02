@@ -189,6 +189,27 @@ def html_replace_email_quote(content: str) -> str:
     return _remove_quotes_within_quotes(new_content)
 
 
+def html_replace_inline_quotes(content: str) -> str:
+    """Replaces inline quotes within content with quotation marks
+    """
+    if '<p class="quote-inline">' not in content:
+        return content
+    sections = content.split('<p class="quote-inline">')
+    ctr = 0
+    new_content = ''
+    for section in sections:
+        if ctr == 0:
+            new_content = section
+            ctr += 1
+            continue
+        if '</p>' in section:
+            new_content += '<p>"' + section.replace('</p>', '"</p>', 1)
+        else:
+            new_content += section
+        ctr += 1
+    return new_content
+
+
 def html_replace_quote_marks(content: str) -> str:
     """Replaces quotes with html formatting
     "hello" becomes <q>hello</q>
@@ -1384,6 +1405,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     by matching against known following accounts
     """
     if content.startswith('<p>'):
+        content = html_replace_inline_quotes(content)
         content = html_replace_email_quote(content)
         return html_replace_quote_marks(content)
     max_word_length = 40
@@ -1529,6 +1551,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
         content = remove_long_words(content, max_word_length, long_words_list)
     content = limit_repeated_words(content, 6)
     content = html_replace_email_quote(content)
+    content = html_replace_inline_quotes(content)
     content = html_replace_quote_marks(content)
 
     # undo replacements

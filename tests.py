@@ -171,6 +171,7 @@ from content import limit_repeated_words
 from content import switch_words
 from content import extract_text_fields_in_post
 from content import html_replace_email_quote
+from content import html_replace_inline_quotes
 from content import html_replace_quote_marks
 from content import dangerous_css
 from content import add_web_links
@@ -4673,7 +4674,7 @@ def _test_danger_markup():
     assert not dangerous_markup(content, allow_local_network_access, [])
 
 
-def _run_html_replace_quote_marks():
+def _test_html_replace_quote_marks():
     print('html_replace_quote_marks')
     test_str = 'The "cat" "sat" on the mat'
     result = html_replace_quote_marks(test_str)
@@ -4690,6 +4691,22 @@ def _run_html_replace_quote_marks():
     test_str = '"hello" <a href="somesite.html">&quot;test&quot; html</a>'
     result = html_replace_quote_marks(test_str)
     assert result == '“hello” <a href="somesite.html">“test” html</a>'
+
+
+def _test_html_replace_inline_quotes():
+    print('html_replace_inline_quotes')
+    test_str = 'The <p class="quote-inline">cat</p> ' + \
+        '<p class="quote-inline">sat</p> on the mat'
+    result = html_replace_inline_quotes(test_str)
+    assert result == 'The <p>"cat"</p> <p>"sat"</p> on the mat'
+
+    test_str = 'The cat sat on the mat'
+    result = html_replace_inline_quotes(test_str)
+    assert result == 'The cat sat on the mat'
+
+    test_str = '<p class="quote-inline">hello</p>'
+    result = html_replace_inline_quotes(test_str)
+    assert result == '<p>"hello"</p>'
 
 
 def _test_json_post_allows_comment():
@@ -9662,7 +9679,8 @@ def run_all_tests():
     _test_valid_content_warning()
     _test_remove_id_ending()
     _test_json_post_allows_comment()
-    _run_html_replace_quote_marks()
+    _test_html_replace_inline_quotes()
+    _test_html_replace_quote_marks()
     _test_danger_css(base_dir)
     _test_danger_markup()
     _test_strip_html()

@@ -94,6 +94,7 @@ from content import create_edits_html
 from content import bold_reading_string
 from content import limit_repeated_words
 from content import replace_emoji_from_tags
+from content import html_replace_inline_quotes
 from content import html_replace_quote_marks
 from content import html_replace_email_quote
 from content import remove_text_formatting
@@ -3132,6 +3133,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             object_content = \
                 switch_words(base_dir, nickname, domain, object_content)
             object_content = html_replace_email_quote(object_content)
+            object_content = html_replace_inline_quotes(object_content)
             object_content = html_replace_quote_marks(object_content)
             object_content = \
                 format_mixed_right_to_left(object_content, system_language)

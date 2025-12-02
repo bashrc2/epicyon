@@ -31,6 +31,7 @@ from utils import acct_dir
 from utils import local_actor_url
 from utils import get_actor_from_post
 from content import html_replace_quote_marks
+from content import html_replace_inline_quotes
 
 SPEAKER_REMOVE_CHARS = ('.\n', '. ', ',', ';', '?', '!')
 
@@ -418,7 +419,8 @@ def speakable_text(http_prefix: str,
     # replace some emoji before removing html
     if ' <3' in content:
         content = content.replace(' <3', ' ' + translate['heart'])
-    content = remove_html(html_replace_quote_marks(content))
+    content = remove_html(html_replace_inline_quotes(content))
+    content = html_replace_quote_marks(content)
     detected_links: list[str] = []
     content = speaker_replace_links(http_prefix,
                                     nickname, domain, domain_full,
@@ -459,7 +461,8 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
         # replace some emoji before removing html
         if ' <3' in content:
             content = content.replace(' <3', ' ' + translate['heart'])
-        content = remove_html(html_replace_quote_marks(content))
+        content = remove_html(html_replace_inline_quotes(content))
+        content = html_replace_quote_marks(content)
         content = speaker_replace_links(http_prefix,
                                         nickname, domain, domain_full,
                                         content, translate, detected_links)
