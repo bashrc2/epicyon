@@ -6,6 +6,7 @@ Epicyon is a [fediverse](https://en.wikipedia.org/wiki/Fediverse) server suitabl
 
 Key features:
 
+ * No AI
  * Open standards: HTML, CSS, ActivityPub S2S and C2S, RSS, CalDAV.
  * Supports common web browsers and [shell browsers](https://lynx.invisible-island.net).
  * Will not drain your mobile or laptop battery.

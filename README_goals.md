@@ -39,8 +39,9 @@
 
 The following are considered anti-features of other social network systems, since they encourage dysfunctional social interactions.
 
+ * AI features of any sort
  * Features designed to scale to large numbers of accounts (say, more than 20 active users)
- * Trending hashtags, or trending anything
+ * Trending hashtags, or trending anything (recent hashtags in alphabetical order are ok)
  * Ranking, rating or recommending mechanisms for posts or people (other than likes or repeats/boosts)
  * Geo-location features, unless they're always opt-in
  * Algorithmic timelines (i.e. non-chronological)
