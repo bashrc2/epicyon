@@ -198,6 +198,55 @@ function sendNotification {
     fi
 
     if [ -d /etc/prosody ]; then
+        sendxmpp_config=/home/${ADMIN_USERNAME}/.sendxmpprc
+        sendxmpp_binary=/usr/bin/go-sendxmpp
+        sendxmpp_cmd="sudo -H -u ${ADMIN_USERNAME} ${sendxmpp_binary}"
+        if [ -f "${sendxmpp_binary}" ]; then
+            notify_by_xmpp=
+            if [ -f "${notification_method_filename}" ]; then
+                if grep -q 'xmpp' "${notification_method_filename}"; then
+                    notify_by_xmpp=1
+                fi
+            fi
+            if [ $notify_by_xmpp ]; then
+                if [[ "${SUBJECT}" == *' Tor '* ]]; then
+                    MESSAGE="${SUBJECT}"
+                fi
+
+                if [ -f "${sendxmpp_binary}" ]; then
+                    # kill any existing send process
+                    kill_sendxmpp_process
+                    if [[ "${ADMIN_USERNAME}" == "admin" ]]; then
+                        notification_user_password=$(cat /root/login.txt)
+                    else
+                        notification_user_password="${ADMIN_PASSWORD}"
+                    fi
+                    { echo "username: ${ADMIN_USERNAME}";
+                      echo "jserver: ${local_domain}";
+                      echo "password: ${notification_user_password}"; } > "${sendxmpp_config}"
+                    # send the message
+                    chmod 400 "${sendxmpp_config}"
+                    chown ${ADMIN_USERNAME}:${ADMIN_USERNAME} "${sendxmpp_config}"
+                    if [[ "${local_domain}" != *".onion" ]]; then
+                        echo "${MESSAGE}" | ${sendxmpp_cmd} "${ADMIN_EMAIL_ADDRESS}"
+                        sleep 2
+                    else
+                        echo "${MESSAGE}" | HTTP_PROXY="socks5://127.0.0.1:9050" ${sendxmpp_cmd} --no-tls-verify "${ADMIN_EMAIL_ADDRESS}"
+                        sleep 5
+                    fi
+                    echo "xmpp message sent to ${ADMIN_EMAIL_ADDRESS}"
+                    # remove the sendxmpp configuration file
+                    if [ "${sendxmpp_config}" ]; then
+                        if [ -f "${sendxmpp_config}" ]; then
+                            rm "${sendxmpp_config}"
+                        fi
+                    fi
+                fi
+            fi
+        fi
+    fi
+
+    if [ -d /etc/prosody ]; then
         if [ -f /usr/bin/sendxmpp ]; then
             # generate a random password for a temporary user account
             notification_user_password=$(openssl rand -base64 32 | tr -dc A-Za-z0-9 | head -c 30 ; echo -n '')
