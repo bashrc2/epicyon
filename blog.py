@@ -202,10 +202,10 @@ def html_blog_post_markdown(content: str) -> str:
     """Converts any markdown to html
     """
     replacements = {
-        "># ": "h3",
-        ">## ": "h3",
-        ">### ": "h3",
-        ">#### ": "h4",
+        "># ": "h4",
+        ">## ": "h4",
+        ">### ": "h4",
+        ">#### ": "h5",
         ">##### ": "h5",
         ">###### ": "h6"
     }
