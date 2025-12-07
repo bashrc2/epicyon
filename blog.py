@@ -198,6 +198,39 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
     return ''
 
 
+def _html_blog_post_markdown(content: str) -> str:
+    """Converts any markdown to html
+    """
+    replacements = {
+        "># ": "h1",
+        ">## ": "h2",
+        ">### ": "h3",
+        ">#### ": "h4",
+        ">##### ": "h5",
+        ">###### ": "h6"
+    }
+    new_content = content
+    for markdown_text, html_header in replacements.items():
+        if markdown_text not in new_content:
+            continue
+        sections = new_content.split(markdown_text)
+        ctr = 0
+        new_content2 = ''
+        for section in sections:
+            if ctr == 0:
+                new_content2 = section
+                ctr += 1
+            if '<' in section:
+                section = section.replace('<', '</' + html_header + '><', 1)
+                section = '<' + html_header + '>' + section
+            else:
+                section = markdown_text + section
+            new_content2 += section
+            ctr += 1
+        new_content = new_content2
+    return new_content
+
+
 def _html_blog_post_content(debug: bool, session, authorized: bool,
                             base_dir: str, http_prefix: str, translate: {},
                             nickname: str, domain: str, domain_full: str,
@@ -207,7 +240,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                             system_language: str,
                             person_cache: {},
                             blog_separator: str) -> str:
-    """Returns the content for a single blog post
+    """Returns the html content for a single blog post
     """
     linked_author = False
     actor: str = ''
@@ -347,6 +380,9 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
     # separator between blogs should be centered
     if '<center>' not in blog_separator:
         blog_separator: str = '<center>' + blog_separator + '</center>'
+
+    # convert any markdown
+    blog_str = _html_blog_post_markdown(blog_str)
 
     if replies == 0:
         blog_str += blog_separator + '\n'
