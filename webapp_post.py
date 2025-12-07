@@ -139,6 +139,7 @@ from maps import get_event_time_span_from_post
 from session import get_json_valid
 from session import get_json
 from blog import html_blog_post_markdown
+from blog import html_blog_post_gemini_links
 
 # maximum length for display name within html posts
 MAX_DISPLAY_NAME_LENGTH = 42
@@ -3141,6 +3142,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             # replace any markdown headers with html
             if post_is_blog:
                 object_content = html_blog_post_markdown(object_content)
+            # replace gemini-style links with html links
+            object_content = html_blog_post_gemini_links(object_content)
             # show quote toot link
             quote_url = get_quote_toot_url(post_json_object)
             if quote_url:

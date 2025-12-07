@@ -45,6 +45,7 @@ from posts import create_blogs_timeline
 from newswire import rss2header
 from newswire import rss2footer
 from cache import get_person_from_cache
+from flags import is_image_file
 
 
 def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
@@ -196,6 +197,52 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
         replies_str = replies_str.replace(translate['SHOW MORE'], indent_str)
         return replies_str.replace('?tl=outbox', '?tl=tlblogs')
     return ''
+
+
+def html_blog_post_gemini_links(content: str) -> str:
+    """Converts gemini-style links to html
+    """
+    if '=> ' not in content:
+        return content
+    ctr = 0
+    sections = content.split('=> ')
+    for section in sections:
+        if ctr == 0:
+            ctr += 1
+            continue
+        if ' ' not in section:
+            ctr += 1
+            continue
+        web_link_str = section.split(' ', 1)[0]
+        if '://' not in web_link_str or \
+           '.' not in web_link_str:
+            ctr += 1
+            continue
+        after_web_link = section.split(web_link_str, 1)[1]
+        after_str = ''
+        if '<' in after_web_link:
+            after_str = after_web_link.split('<', 1)[0]
+        elif '\n' in after_web_link:
+            after_str = after_web_link.split('\n', 1)[0]
+        else:
+            ctr += 1
+            continue
+        if is_image_file(web_link_str) and \
+           not web_link_str.endswith('.svg'):
+            link_str = '<img loading="lazy" ' + \
+                'decoding="async" src="' + \
+                web_link_str + '" alt="' + after_str + \
+                '" title="' + after_str + '">\n'
+        else:
+            link_str = '<a href="' + web_link_str + '"' + \
+                'tabindex="10" ' + \
+                'rel="nofollow noopener noreferrer" ' + \
+                'target="_blank">' + after_str + '</a>'
+
+        content = content.replace('=> ' + web_link_str + ' ' + after_str,
+                                  link_str)
+        ctr += 1
+    return content
 
 
 def html_blog_post_markdown(content: str) -> str:
@@ -399,6 +446,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
 
     # convert any markdown
     blog_str = html_blog_post_markdown(blog_str)
+    blog_str = html_blog_post_gemini_links(blog_str)
 
     if replies == 0:
         blog_str += blog_separator + '\n'
