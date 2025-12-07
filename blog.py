@@ -232,6 +232,18 @@ def html_blog_post_markdown(content: str) -> str:
             new_content2 += section
             ctr += 1
         new_content = new_content2
+
+    if new_content == content:
+        return new_content
+
+    # remove extra newlines after header
+    for _, html_header in replacements.items():
+        if '</' + html_header + '><br><br>' in new_content:
+            new_content = new_content.replace('</' + html_header + '><br><br>',
+                                              '</' + html_header + '>')
+        elif '</' + html_header + '><br>' in new_content:
+            new_content = new_content.replace('</' + html_header + '><br>',
+                                              '</' + html_header + '>')
     return new_content
 
 
