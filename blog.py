@@ -222,9 +222,9 @@ def html_blog_post_markdown(content: str) -> str:
                 ctr += 1
                 continue
             if '<' in section:
-                section = '><b>' + section.replace('<', '</b><', 1)
+                section = '><s>' + section.replace('<', '</s><', 1)
             elif '\n' in section:
-                section = '><b>' + section.replace('\n', '</b>\n', 1)
+                section = '><s>' + section.replace('\n', '</s>\n', 1)
             else:
                 section = markdown_text + section
             new_content2 += section
