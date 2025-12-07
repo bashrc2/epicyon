@@ -203,11 +203,11 @@ def html_blog_post_markdown(content: str) -> str:
     """
     replacements = {
         "># ": "h3",
-        ">## ": "h4",
-        ">### ": "h5",
-        ">#### ": "h6",
-        ">##### ": "h7",
-        ">###### ": "h8"
+        ">## ": "h3",
+        ">### ": "h3",
+        ">#### ": "h4",
+        ">##### ": "h5",
+        ">###### ": "h6"
     }
     new_content = content
     for markdown_text, html_header in replacements.items():
