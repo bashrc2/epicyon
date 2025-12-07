@@ -210,7 +210,7 @@ def html_blog_post_markdown(content: str) -> str:
         ">###### ": "h6"
     }
     new_content = content
-    for markdown_text, html_header in replacements.items():
+    for markdown_text, _ in replacements.items():
         if markdown_text not in new_content:
             continue
         sections = new_content.split(markdown_text)
@@ -222,11 +222,9 @@ def html_blog_post_markdown(content: str) -> str:
                 ctr += 1
                 continue
             if '<' in section:
-                section = '><' + html_header + '>' + \
-                    section.replace('<', '</' + html_header + '><', 1)
+                section = '><b>' + section.replace('<', '</b><', 1)
             elif '\n' in section:
-                section = '><' + html_header + '>' + \
-                    section.replace('\n', '</' + html_header + '>\n', 1)
+                section = '><b>' + section.replace('\n', '</b>\n', 1)
             else:
                 section = markdown_text + section
             new_content2 += section
