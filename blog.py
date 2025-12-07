@@ -240,9 +240,10 @@ def html_blog_post_gemini_links(content: str) -> str:
             after_str = after_web_link.split('\n', 1)[0]
             after_link_str = '\n' + after_web_link.split('\n', 1)[1]
         else:
-            new_content += '=> ' + section
-            ctr += 1
-            continue
+            after_str = after_web_link
+            after_link_str = ''
+        after_str = after_str.strip()
+        after_link_str = after_link_str.strip()
         if is_image_file(web_link_str) and \
            not web_link_str.endswith('.svg'):
             link_str = '<img loading="lazy" ' + \
@@ -250,14 +251,14 @@ def html_blog_post_gemini_links(content: str) -> str:
                 web_link_str + '" alt="' + after_str + \
                 '" title="' + after_str + '">\n'
         else:
-            link_str = '<a href="' + web_link_str + '"' + \
+            link_str = '<a href="' + web_link_str + '" ' + \
                 'tabindex="10" ' + \
                 'rel="nofollow noopener noreferrer" ' + \
                 'target="_blank">' + after_str + '</a>'
 
         new_content += link_str + after_link_str
         ctr += 1
-    return content
+    return new_content
 
 
 def html_blog_post_markdown(content: str) -> str:

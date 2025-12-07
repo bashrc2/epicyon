@@ -237,6 +237,7 @@ from blocking import is_blocked_nickname
 from blocking import is_blocked_domain
 from filters import filtered_match
 from gemini import blog_to_gemini
+from blog import html_blog_post_gemini_links
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -9572,6 +9573,39 @@ def _test_markdown_blog(base_dir: str) -> None:
     shutil.rmtree(markdown_blog_dir, ignore_errors=True)
 
 
+def _test_replace_gemini_links() -> None:
+    print('replace_gemini_links')
+    content = 'Some content'
+    result = html_blog_post_gemini_links(content)
+    expected = 'Some content'
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    content = 'Some content\n=> https://my.link link description'
+    result = html_blog_post_gemini_links(content)
+    expected = 'Some content\n<a href="https://my.link" tabindex="10" ' + \
+        'rel="nofollow noopener noreferrer" target="_blank">' + \
+        'link description</a>'
+    if result != expected:
+        print(result)
+    assert result == expected
+
+    content = 'Some content\n=> <a href="https://some.link" ' + \
+        'tabindex="10" rel="nofollow noopener noreferrer" ' + \
+        'target="_blank"><span class="invisible">https://</span>' + \
+        '<span class=\"ellipsis\">some link</span><span ' + \
+        'class=\"invisible\">or other</span></a>' + \
+        '(description afterwards)<br><br>'
+    result = html_blog_post_gemini_links(content)
+    expected = 'Some content\n<a href="https://some.link" tabindex="10" ' + \
+        'rel="nofollow noopener noreferrer" target="_blank">' + \
+        '(description afterwards)</a><br><br>'
+    if result != expected:
+        print(result)
+    assert result == expected
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -9590,6 +9624,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_replace_gemini_links()
     _test_markdown_blog(base_dir)
     _test_gemini_blog(base_dir)
     _test_actor_status()
