@@ -206,25 +206,41 @@ def html_blog_post_gemini_links(content: str) -> str:
         return content
     ctr = 0
     sections = content.split('=> ')
+    new_content = ''
     for section in sections:
         if ctr == 0:
+            new_content = section
             ctr += 1
             continue
-        if ' ' not in section:
+        end_character = ' '
+        if section.startswith('<a '):
+            end_character = '</a>'
+
+        if end_character not in section:
+            new_content += '=> ' + section
             ctr += 1
             continue
-        web_link_str = section.split(' ', 1)[0]
+        web_link_str = section.split(end_character, 1)[0]
         if '://' not in web_link_str or \
            '.' not in web_link_str:
+            new_content += '=> ' + section
             ctr += 1
             continue
-        after_web_link = section.split(web_link_str, 1)[1]
+        if section.startswith('<a ') and '"' in section:
+            web_link_str = section.split('"')[1]
+            after_web_link = section.split(end_character, 1)[1]
+        else:
+            after_web_link = section.split(web_link_str, 1)[1]
         after_str = ''
+        after_link_str = ''
         if '<' in after_web_link:
             after_str = after_web_link.split('<', 1)[0]
+            after_link_str = '<' + after_web_link.split('<', 1)[1]
         elif '\n' in after_web_link:
             after_str = after_web_link.split('\n', 1)[0]
+            after_link_str = '\n' + after_web_link.split('\n', 1)[1]
         else:
+            new_content += '=> ' + section
             ctr += 1
             continue
         if is_image_file(web_link_str) and \
@@ -239,8 +255,7 @@ def html_blog_post_gemini_links(content: str) -> str:
                 'rel="nofollow noopener noreferrer" ' + \
                 'target="_blank">' + after_str + '</a>'
 
-        content = content.replace('=> ' + web_link_str + ' ' + after_str,
-                                  link_str)
+        new_content += link_str + after_link_str
         ctr += 1
     return content
 
