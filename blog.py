@@ -220,6 +220,7 @@ def _html_blog_post_markdown(content: str) -> str:
             if ctr == 0:
                 new_content2 = section
                 ctr += 1
+                continue
             if '<' in section:
                 section = section.replace('<', '</' + html_header + '><', 1)
                 section = '<' + html_header + '>' + section
