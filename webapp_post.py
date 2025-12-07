@@ -3125,6 +3125,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 content_str = bold_reading_string(content_str)
 
             object_content = remove_header_tags(content_str)
+            # replace gemini-style links with html links
+            object_content = html_blog_post_gemini_links(object_content)
             object_content = \
                 remove_link_trackers_from_content(object_content)
             object_content = \
@@ -3142,8 +3144,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
             # replace any markdown headers with html
             if post_is_blog:
                 object_content = html_blog_post_markdown(object_content)
-            # replace gemini-style links with html links
-            object_content = html_blog_post_gemini_links(object_content)
             # show quote toot link
             quote_url = get_quote_toot_url(post_json_object)
             if quote_url:
