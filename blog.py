@@ -198,7 +198,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
     return ''
 
 
-def _html_blog_post_markdown(content: str) -> str:
+def html_blog_post_markdown(content: str) -> str:
     """Converts any markdown to html
     """
     replacements = {
@@ -381,12 +381,12 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                                   nickname, domain, domain_full,
                                   post_json_object['object']['id'], 0)
 
-    # separator between blogs should be centered
+    # separator between blogs should be centred
     if '<center>' not in blog_separator:
         blog_separator: str = '<center>' + blog_separator + '</center>'
 
     # convert any markdown
-    blog_str = _html_blog_post_markdown(blog_str)
+    blog_str = html_blog_post_markdown(blog_str)
 
     if replies == 0:
         blog_str += blog_separator + '\n'

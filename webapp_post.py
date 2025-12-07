@@ -138,6 +138,7 @@ from maps import get_category_from_post
 from maps import get_event_time_span_from_post
 from session import get_json_valid
 from session import get_json
+from blog import html_blog_post_markdown
 
 # maximum length for display name within html posts
 MAX_DISPLAY_NAME_LENGTH = 42
@@ -3117,6 +3118,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             # remove any tabs
             content_str = \
                 content_str.replace('\t', '').replace('\r', '')
+            # replace any markdown with html
+            content_str = html_blog_post_markdown(content_str)
             # Add bold text
             if bold_reading and \
                not post_is_blog:
