@@ -224,6 +224,9 @@ def _html_blog_post_markdown(content: str) -> str:
             if '<' in section:
                 section = '<' + html_header + '>' + \
                     section.replace('<', '</' + html_header + '><', 1)
+            elif '\n' in section:
+                section = '<' + html_header + '>' + \
+                    section.replace('\n', '</' + html_header + '>\n', 1)
             else:
                 section = markdown_text + section
             new_content2 += section
