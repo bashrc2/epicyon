@@ -3124,9 +3124,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 content_str = bold_reading_string(content_str)
 
             object_content = remove_header_tags(content_str)
-            if post_is_blog:
-                # replace any markdown headers with html
-                object_content = html_blog_post_markdown(object_content)
             object_content = \
                 remove_link_trackers_from_content(object_content)
             object_content = \
@@ -3141,6 +3138,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
             object_content = html_replace_quote_marks(object_content)
             object_content = \
                 format_mixed_right_to_left(object_content, system_language)
+            # replace any markdown headers with html
+            if post_is_blog:
+                object_content = html_blog_post_markdown(object_content)
             # show quote toot link
             quote_url = get_quote_toot_url(post_json_object)
             if quote_url:
