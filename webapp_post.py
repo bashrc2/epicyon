@@ -3124,8 +3124,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 content_str = bold_reading_string(content_str)
 
             object_content = remove_header_tags(content_str)
-            # replace any markdown with html
-            content_str = html_blog_post_markdown(content_str)
+            if post_is_blog:
+                # replace any markdown headers with html
+                object_content = html_blog_post_markdown(object_content)
             object_content = \
                 remove_link_trackers_from_content(object_content)
             object_content = \
