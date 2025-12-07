@@ -3118,14 +3118,14 @@ def individual_post_as_html(signing_priv_key_pem: str,
             # remove any tabs
             content_str = \
                 content_str.replace('\t', '').replace('\r', '')
-            # replace any markdown with html
-            content_str = html_blog_post_markdown(content_str)
             # Add bold text
             if bold_reading and \
                not post_is_blog:
                 content_str = bold_reading_string(content_str)
 
             object_content = remove_header_tags(content_str)
+            # replace any markdown with html
+            content_str = html_blog_post_markdown(content_str)
             object_content = \
                 remove_link_trackers_from_content(object_content)
             object_content = \

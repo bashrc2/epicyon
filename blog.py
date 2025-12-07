@@ -202,15 +202,15 @@ def html_blog_post_markdown(content: str) -> str:
     """Converts any markdown to html
     """
     replacements = {
-        "># ": "h1",
-        ">## ": "h2",
-        ">### ": "h3",
-        ">#### ": "h4",
-        ">##### ": "h5",
-        ">###### ": "h6"
+        "># ": "h3",
+        ">## ": "h4",
+        ">### ": "h5",
+        ">#### ": "h6",
+        ">##### ": "h7",
+        ">###### ": "h8"
     }
     new_content = content
-    for markdown_text, _ in replacements.items():
+    for markdown_text, html_header in replacements.items():
         if markdown_text not in new_content:
             continue
         sections = new_content.split(markdown_text)
@@ -222,9 +222,11 @@ def html_blog_post_markdown(content: str) -> str:
                 ctr += 1
                 continue
             if '<' in section:
-                section = '><s>' + section.replace('<', '</s><', 1)
+                section = '><' + html_header + '>' + \
+                    section.replace('<', '</' + html_header + '><', 1)
             elif '\n' in section:
-                section = '><s>' + section.replace('\n', '</s>\n', 1)
+                section = '><' + html_header + '>' + \
+                    section.replace('\n', '</' + html_header + '>\n', 1)
             else:
                 section = markdown_text + section
             new_content2 += section
