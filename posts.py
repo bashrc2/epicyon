@@ -1371,6 +1371,7 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
         elif location.get('name'):
             # check if the location url looks like a map url
             locn_url2 = locn_url
+            latitude = longitude = None
             if locn_url2:
                 _, latitude, longitude = \
                     geocoords_from_map_link(locn_url2, 'openstreetmap.org',
@@ -1379,10 +1380,18 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                     locn_url2 = None
 
             if not locn_url2 or location.get('address'):
-                new_post['object']['location'] = {
-                    'type': 'Place',
-                    'name': location['name']
-                }
+                if latitude and longitude:
+                    new_post['object']['location'] = {
+                        'type': 'Place',
+                        'name': location['name'],
+                        'longitude': longitude,
+                        'latitude': latitude
+                    }
+                else:
+                    new_post['object']['location'] = {
+                        'type': 'Place',
+                        'name': location['name']
+                    }
             else:
                 new_post['object']['location'] = {
                     'type': 'VirtualLocation',
@@ -1528,6 +1537,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
         elif location.get('name'):
             # check if the location url looks like a map url
             locn_url2 = locn_url
+            latitude = longitude = None
             if locn_url2:
                 _, latitude, longitude = \
                     geocoords_from_map_link(locn_url2, 'openstreetmap.org',
@@ -1536,10 +1546,18 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                     locn_url2 = None
 
             if not locn_url2 or location.get('address'):
-                new_post['location'] = {
-                    'type': 'Place',
-                    'name': location['name']
-                }
+                if latitude and longitude:
+                    new_post['location'] = {
+                        'type': 'Place',
+                        'name': location['name'],
+                        'longitude': longitude,
+                        'latitude': latitude
+                    }
+                else:
+                    new_post['location'] = {
+                        'type': 'Place',
+                        'name': location['name']
+                    }
             else:
                 new_post['location'] = {
                     'type': 'VirtualLocation',
