@@ -1378,7 +1378,7 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                 if not latitude or not longitude:
                     locn_url2 = None
 
-            if not locn_url2:
+            if not locn_url2 or location.get('address'):
                 new_post['object']['location'] = {
                     'type': 'Place',
                     'name': location['name']
@@ -1535,7 +1535,7 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                 if not latitude or not longitude:
                     locn_url2 = None
 
-            if not locn_url2:
+            if not locn_url2 or location.get('address'):
                 new_post['location'] = {
                     'type': 'Place',
                     'name': location['name']
