@@ -9,6 +9,7 @@ __module_group__ = "Core"
 
 import os
 from flags import is_dormant
+from utils import remove_html
 from utils import data_dir
 from utils import get_user_paths
 from utils import acct_dir
@@ -280,10 +281,15 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
         if not actor_json.get('movedTo'):
             if not actor_json.get('copiedTo'):
                 continue
+        moved_url = ''
         if actor_json.get('movedTo'):
-            moved_url = actor_json['movedTo']
+            if not isinstance(actor_json['movedTo'], str):
+                moved_url = remove_html(actor_json['movedTo'])
         else:
-            moved_url = actor_json['copiedTo']
+            if not isinstance(actor_json['copiedTo'], str):
+                moved_url = remove_html(actor_json['copiedTo'])
+        if not moved_url:
+            continue
         nickname = get_nickname_from_actor(moved_url)
         if not nickname:
             continue

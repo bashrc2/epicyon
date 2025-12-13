@@ -1752,7 +1752,8 @@ def _profile_post_moved(actor_json: {}, fields: {},
     for fieldname in fieldnames:
         moved_to = ''
         if actor_json.get(fieldname):
-            moved_to = actor_json[fieldname]
+            if isinstance(actor_json[fieldname], str):
+                moved_to = remove_html(actor_json[fieldname])
 
         if fields.get(fieldname):
             if fields[fieldname] != moved_to and \

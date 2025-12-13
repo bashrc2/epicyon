@@ -9,6 +9,7 @@ __module_group__ = "Core"
 
 import os
 from flags import has_group_type
+from utils import remove_html
 from utils import data_dir
 from utils import is_account_dir
 from utils import get_nickname_from_actor
@@ -114,10 +115,15 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     if not person_json.get('movedTo') and \
        not person_json.get('copiedTo'):
         return ctr
+    moved_to_url = ''
     if person_json.get('movedTo'):
-        moved_to_url = person_json['movedTo']
+        if isinstance(person_json['movedTo'], str):
+            moved_to_url = remove_html(person_json['movedTo'])
     else:
-        moved_to_url = person_json['copiedTo']
+        if isinstance(person_json['copiedTo'], str):
+            moved_to_url = remove_html(person_json['copiedTo'])
+    if not moved_to_url:
+        return ctr
     if '://' not in moved_to_url:
         return ctr
     if '.' not in moved_to_url:

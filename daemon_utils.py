@@ -671,13 +671,15 @@ def show_person_options(self, calling_domain: str, path: str,
                                   self.server.person_cache)
         if actor_json:
             if actor_json.get('movedTo'):
-                moved_to = actor_json['movedTo']
-                if '"' in moved_to:
-                    moved_to = moved_to.split('"')[1]
+                if isinstance(actor_json['movedTo'], str):
+                    moved_to = remove_html(actor_json['movedTo'])
+                    if '"' in moved_to:
+                        moved_to = moved_to.split('"')[1]
             elif actor_json.get('copiedTo'):
-                moved_to = actor_json['copiedTo']
-                if '"' in moved_to:
-                    moved_to = moved_to.split('"')[1]
+                if isinstance(actor_json['copiedTo'], str):
+                    moved_to = remove_html(actor_json['copiedTo'])
+                    if '"' in moved_to:
+                        moved_to = moved_to.split('"')[1]
             if actor_json.get('type'):
                 if actor_json['type'] == 'Group':
                     is_group = True

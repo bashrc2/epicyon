@@ -359,10 +359,15 @@ def get_actor_move_json(actor_json: {}) -> {}:
     if not actor_json.get('movedTo') and \
        not actor_json.get('copiedTo'):
         return None
+    moved_url = ''
     if actor_json.get('movedTo'):
-        moved_url = actor_json['movedTo']
+        if isinstance(actor_json['movedTo'], str):
+            moved_url = remove_html(actor_json['movedTo'])
     else:
-        moved_url = actor_json['copiedTo']
+        if isinstance(actor_json['copiedTo'], str):
+            moved_url = remove_html(actor_json['copiedTo'])
+    if not moved_url:
+        return None
     if '://' not in moved_url or \
        '.' not in moved_url:
         return None

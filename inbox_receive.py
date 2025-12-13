@@ -250,9 +250,11 @@ def _person_receive_update(base_dir: str,
 
     person_has_moved_url = None
     if person_json.get('movedTo'):
-        person_has_moved_url = person_json['movedTo']
+        if isinstance(person_json['movedTo'], str):
+            person_has_moved_url = remove_html(person_json['movedTo'])
     elif person_json.get('copiedTo'):
-        person_has_moved_url = person_json['copiedTo']
+        if isinstance(person_json['copiedTo'], str):
+            person_has_moved_url = remove_html(person_json['copiedTo'])
 
     if person_has_moved_url:
         prev_domain_full = None

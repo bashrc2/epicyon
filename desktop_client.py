@@ -1002,10 +1002,12 @@ def _desktop_show_actor(http_prefix: str,
     _say_command(say_str, say_str, screenreader, system_language, espeak)
     print(actor)
     if actor_json.get('movedTo'):
-        say_str = 'Moved to ' + html.unescape(actor_json['movedTo'])
+        moved_url = html.unescape(actor_json['movedTo'])
+        say_str = 'Moved to ' + remove_html(moved_url)
         _say_command(say_str, say_str, screenreader, system_language, espeak)
     elif actor_json.get('copiedTo'):
-        say_str = 'Copied to ' + html.unescape(actor_json['copiedTo'])
+        moved_url = html.unescape(actor_json['copiedTo'])
+        say_str = 'Copied to ' + remove_html(moved_url)
         _say_command(say_str, say_str, screenreader, system_language, espeak)
     if actor_json.get('alsoKnownAs'):
         also_known_as_str = ''

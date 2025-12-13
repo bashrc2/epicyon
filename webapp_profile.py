@@ -352,16 +352,16 @@ def html_profile_after_search(authorized: bool,
     moved_to = ''
     if profile_json.get('movedTo') or profile_json.get('copiedTo'):
         if profile_json.get('movedTo'):
-            moved_to = profile_json['movedTo']
+            if not isinstance(profile_json['movedTo'], str):
+                moved_to = remove_html(profile_json['movedTo'])
         else:
-            moved_to = profile_json['copiedTo']
-        if isinstance(moved_to, str):
+            if not isinstance(profile_json['copiedTo'], str):
+                moved_to = remove_html(profile_json['copiedTo'])
+        if moved_to:
             if '"' in moved_to:
                 moved_to = moved_to.split('"')[1]
-            moved_to = remove_html(moved_to)
+            moved_to = moved_to
             display_name += ' ⌂'
-        else:
-            moved_to = ''
 
     you_follow = \
         is_following_actor(base_dir,
@@ -1493,10 +1493,12 @@ def html_profile(signing_priv_key_pem: str,
     moved_to = ''
     if profile_json.get('movedTo') or profile_json.get('copiedTo'):
         if profile_json.get('movedTo'):
-            moved_to = profile_json['movedTo']
+            if isinstance(profile_json['movedTo'], str):
+                moved_to = remove_html(profile_json['movedTo'])
         else:
-            moved_to = profile_json['copiedTo']
-        if isinstance(moved_to, str):
+            if isinstance(profile_json['copiedTo'], str):
+                moved_to = remove_html(profile_json['copiedTo'])
+        if moved_to:
             if '"' in moved_to:
                 moved_to = moved_to.split('"')[1]
         else:
@@ -3481,9 +3483,11 @@ def html_edit_profile(server, translate: {},
     actor_json = load_json(actor_filename)
     if actor_json:
         if actor_json.get('movedTo'):
-            moved_to = actor_json['movedTo']
+            if isinstance(actor_json['movedTo'], str):
+                moved_to = remove_html(actor_json['movedTo'])
         elif actor_json.get('copiedTo'):
-            moved_to = actor_json['copiedTo']
+            if isinstance(actor_json['copiedTo'], str):
+                moved_to = remove_html(actor_json['copiedTo'])
         featured_hashtags = get_featured_hashtags(actor_json)
         donate_url = get_donation_url(actor_json)
         website_url = get_website(actor_json, translate)
