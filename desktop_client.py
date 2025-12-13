@@ -1004,6 +1004,9 @@ def _desktop_show_actor(http_prefix: str,
     if actor_json.get('movedTo'):
         say_str = 'Moved to ' + html.unescape(actor_json['movedTo'])
         _say_command(say_str, say_str, screenreader, system_language, espeak)
+    elif actor_json.get('copiedTo'):
+        say_str = 'Copied to ' + html.unescape(actor_json['copiedTo'])
+        _say_command(say_str, say_str, screenreader, system_language, espeak)
     if actor_json.get('alsoKnownAs'):
         also_known_as_str = ''
         ctr = 0

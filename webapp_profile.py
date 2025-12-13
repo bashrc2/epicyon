@@ -350,12 +350,18 @@ def html_profile_after_search(authorized: bool,
     blog_url = get_blog_address(profile_json)
 
     moved_to = ''
-    if profile_json.get('movedTo'):
-        moved_to = profile_json['movedTo']
-        if '"' in moved_to:
-            moved_to = moved_to.split('"')[1]
-        moved_to = remove_html(moved_to)
-        display_name += ' ⌂'
+    if profile_json.get('movedTo') or profile_json.get('copiedTo'):
+        if profile_json.get('movedTo'):
+            moved_to = profile_json['movedTo']
+        else:
+            moved_to = profile_json['copiedTo']
+        if isinstance(moved_to, str):
+            if '"' in moved_to:
+                moved_to = moved_to.split('"')[1]
+            moved_to = remove_html(moved_to)
+            display_name += ' ⌂'
+        else:
+            moved_to = ''
 
     you_follow = \
         is_following_actor(base_dir,
@@ -765,6 +771,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
             '    <p>' + joined_str + ' ' + \
             joined_date.split('T')[0] + '<br>\n'
     if moved_to:
+        moved_to = remove_html(moved_to)
         new_nickname = get_nickname_from_actor(moved_to)
         new_domain, new_port = get_domain_from_actor(moved_to)
         if new_nickname and new_domain:
@@ -1484,10 +1491,16 @@ def html_profile(signing_priv_key_pem: str,
         avatar_description = replace_strings(avatar_description, replacements)
 
     moved_to = ''
-    if profile_json.get('movedTo'):
-        moved_to = profile_json['movedTo']
-        if '"' in moved_to:
-            moved_to = moved_to.split('"')[1]
+    if profile_json.get('movedTo') or profile_json.get('copiedTo'):
+        if profile_json.get('movedTo'):
+            moved_to = profile_json['movedTo']
+        else:
+            moved_to = profile_json['copiedTo']
+        if isinstance(moved_to, str):
+            if '"' in moved_to:
+                moved_to = moved_to.split('"')[1]
+        else:
+            moved_to = ''
 
     also_known_as = None
     if profile_json.get('alsoKnownAs'):
@@ -3469,6 +3482,8 @@ def html_edit_profile(server, translate: {},
     if actor_json:
         if actor_json.get('movedTo'):
             moved_to = actor_json['movedTo']
+        elif actor_json.get('copiedTo'):
+            moved_to = actor_json['copiedTo']
         featured_hashtags = get_featured_hashtags(actor_json)
         donate_url = get_donation_url(actor_json)
         website_url = get_website(actor_json, translate)

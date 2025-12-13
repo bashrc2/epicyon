@@ -1748,18 +1748,23 @@ def _profile_post_moved(actor_json: {}, fields: {},
                         send_move_activity: bool) -> bool:
     """ HTTP POST account moved to new address
     """
-    moved_to = ''
-    if actor_json.get('movedTo'):
-        moved_to = actor_json['movedTo']
-    if fields.get('movedTo'):
-        if fields['movedTo'] != moved_to and resembles_url(fields['movedTo']):
-            actor_json['movedTo'] = fields['movedTo']
-            send_move_activity = True
-            actor_changed = True
-    else:
-        if moved_to:
-            del actor_json['movedTo']
-            actor_changed = True
+    fieldnames = ('movedTo', 'copiedTo')
+    for fieldname in fieldnames:
+        moved_to = ''
+        if actor_json.get(fieldname):
+            moved_to = actor_json[fieldname]
+
+        if fields.get(fieldname):
+            if fields[fieldname] != moved_to and \
+               resembles_url(fields[fieldname]):
+                actor_json[fieldname] = fields[fieldname]
+                send_move_activity = True
+                actor_changed = True
+        else:
+            if moved_to:
+                del actor_json[fieldname]
+                actor_changed = True
+
     return actor_changed, send_move_activity
 
 

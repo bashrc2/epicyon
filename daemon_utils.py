@@ -674,6 +674,10 @@ def show_person_options(self, calling_domain: str, path: str,
                 moved_to = actor_json['movedTo']
                 if '"' in moved_to:
                     moved_to = moved_to.split('"')[1]
+            elif actor_json.get('copiedTo'):
+                moved_to = actor_json['copiedTo']
+                if '"' in moved_to:
+                    moved_to = moved_to.split('"')[1]
             if actor_json.get('type'):
                 if actor_json['type'] == 'Group':
                     is_group = True

@@ -111,9 +111,13 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
                        signing_priv_key_pem, None, mitm_servers)
     if not person_json:
         return ctr
-    if not person_json.get('movedTo'):
+    if not person_json.get('movedTo') and \
+       not person_json.get('copiedTo'):
         return ctr
-    moved_to_url = person_json['movedTo']
+    if person_json.get('movedTo'):
+        moved_to_url = person_json['movedTo']
+    else:
+        moved_to_url = person_json['copiedTo']
     if '://' not in moved_to_url:
         return ctr
     if '.' not in moved_to_url:

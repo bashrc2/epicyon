@@ -356,12 +356,17 @@ def get_actor_move_json(actor_json: {}) -> {}:
     within the actor
     https://codeberg.org/fediverse/fep/src/branch/main/fep/7628/fep-7628.md
     """
-    if not actor_json.get('movedTo'):
+    if not actor_json.get('movedTo') and \
+       not actor_json.get('copiedTo'):
         return None
-    if '://' not in actor_json['movedTo'] or \
-       '.' not in actor_json['movedTo']:
+    if actor_json.get('movedTo'):
+        moved_url = actor_json['movedTo']
+    else:
+        moved_url = actor_json['copiedTo']
+    if '://' not in moved_url or \
+       '.' not in moved_url:
         return None
-    if actor_json['movedTo'] == actor_json['id']:
+    if moved_url == actor_json['id']:
         return None
     pub_number, _ = get_status_number()
     return {
@@ -373,7 +378,7 @@ def get_actor_move_json(actor_json: {}) -> {}:
         "type": "Move",
         "actor": actor_json['id'],
         "object": actor_json['id'],
-        "target": actor_json['movedTo'],
+        "target": moved_url,
         "to": ['https://www.w3.org/ns/activitystreams#Public'],
         "cc": [actor_json['id'] + '/followers']
     }

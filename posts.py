@@ -439,7 +439,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
                          possible_display_name, 'en'):
             display_name = '*FILTERED*'
         # have they moved?
-        if person_json.get('movedTo'):
+        if person_json.get('movedTo') or person_json.get('copiedTo'):
             display_name += ' ⌂'
 
     store_person_in_cache(base_dir, person_url, person_json,

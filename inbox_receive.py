@@ -248,17 +248,24 @@ def _person_receive_update(base_dir: str,
         if debug:
             print('actor updated for ' + idx)
 
+    person_has_moved_url = None
     if person_json.get('movedTo'):
+        person_has_moved_url = person_json['movedTo']
+    elif person_json.get('copiedTo'):
+        person_has_moved_url = person_json['copiedTo']
+
+    if person_has_moved_url:
         prev_domain_full = None
         prev_domain, prev_port = get_domain_from_actor(idx)
         if prev_domain:
             prev_domain_full = get_full_domain(prev_domain, prev_port)
         prev_nickname = get_nickname_from_actor(idx)
         new_domain = None
-        new_domain, new_port = get_domain_from_actor(person_json['movedTo'])
+        new_domain, new_port = get_domain_from_actor(person_has_moved_url)
+        new_domain_full = None
         if new_domain:
             new_domain_full = get_full_domain(new_domain, new_port)
-        new_nickname = get_nickname_from_actor(person_json['movedTo'])
+        new_nickname = get_nickname_from_actor(person_has_moved_url)
 
         if prev_nickname and prev_domain_full and new_domain and \
            new_nickname and new_domain_full:
