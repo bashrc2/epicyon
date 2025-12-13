@@ -215,11 +215,11 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
 
 
 def _is_happening_event(tag: {}) -> bool:
-    """Is this tag an Event or Place ActivityStreams type?
+    """Is this tag an Event, Place or VirtualLocation ActivityStreams type?
     """
     if not tag.get('type'):
         return False
-    if tag['type'] != 'Event' and tag['type'] != 'Place':
+    if tag['type'] not in ('Event', 'Place', 'VirtualLocation'):
         return False
     return True
 
@@ -472,6 +472,11 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
             elif evnt['type'] == 'Place':
                 if evnt.get('name'):
                     event_place = remove_html(evnt['name'])
+            elif evnt['type'] == 'VirtualLocation':
+                if evnt.get('url'):
+                    event_place = remove_html(evnt['url'])
+                if evnt.get('name'):
+                    event_description = evnt['name'].strip()
 
         print('icalendar: ' + str(post_id) + ' ' +
               str(event_start) + ' ' + str(event_description) + ' ' +

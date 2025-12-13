@@ -39,12 +39,17 @@ def get_location_dict_from_tags(tags: []) -> str:
     for tag_item in tags:
         if not tag_item.get('type'):
             continue
-        if tag_item['type'] != 'Place':
+        if tag_item['type'] not in ('Place', 'VirtualLocation'):
             continue
         if not tag_item.get('name'):
             continue
         if not isinstance(tag_item['name'], str):
             continue
+        if tag_item.get('url'):
+            if not isinstance(tag_item['url'], str):
+                continue
+            if not resembles_url(tag_item['url']):
+                continue
         return tag_item
     return None
 
@@ -94,12 +99,10 @@ def _get_location_from_tags(tags: []) -> str:
         location_str = remove_html(location_str)
         if locn.get('url'):
             # location name and link
-            if isinstance(locn['url'], str):
-                if resembles_url(locn['url']):
-                    location_str = \
-                        '<a href="' + locn['url'] + '" target="_blank" ' + \
-                        'rel="nofollow noopener noreferrer">' + \
-                        location_str + '</a>'
+            location_str = \
+                '<a href="' + locn['url'] + '" target="_blank" ' + \
+                'rel="nofollow noopener noreferrer">' + \
+                location_str + '</a>'
         if locn.get('address'):
             # location name and address
             if isinstance(locn['address'], str):

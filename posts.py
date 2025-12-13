@@ -1253,7 +1253,8 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                      media_license_url: str, media_creator: str,
                      buy_url: str, chat_url: str, translate: {},
                      searchable_by: [],
-                     automatic_quote_approval: str) -> {}:
+                     automatic_quote_approval: str,
+                     session) -> {}:
     """Creates a new server-to-server post
     """
     domain_full = get_full_domain(domain, port)
@@ -1354,6 +1355,10 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
     # pixelfed/friendica style location representation
     location = get_location_dict_from_tags(tags)
     if location:
+        locn_url = None
+        if location.get('url'):
+            locn_url = location['url']
+
         if location.get('name') and \
            location.get('longitude') and \
            location.get('latitude'):
@@ -1364,17 +1369,31 @@ def _create_post_s2s(base_dir: str, nickname: str, domain: str, port: int,
                 'latitude': location['latitude']
             }
         elif location.get('name'):
-            new_post['object']['location'] = {
-                'type': 'Place',
-                'name': location['name']
-            }
+            # check if the location url looks like a map url
+            locn_url2 = locn_url
+            if locn_url2:
+                _, latitude, longitude = \
+                    geocoords_from_map_link(locn_url2, 'openstreetmap.org',
+                                            session)
+                if not latitude or not longitude:
+                    locn_url2 = None
+
+            if not locn_url2:
+                new_post['object']['location'] = {
+                    'type': 'Place',
+                    'name': location['name']
+                }
+            else:
+                new_post['object']['location'] = {
+                    'type': 'VirtualLocation',
+                    'name': location['name'],
+                    'url': location['url']
+                }
         if location.get('address'):
             if isinstance(location['address'], str):
                 new_post['object']['location']['address'] = location['address']
-        if location.get('url'):
-            if isinstance(location['url'], str):
-                if resembles_url(location['url']):
-                    new_post['object']['location']['url'] = location['url']
+        if locn_url:
+            new_post['object']['location']['url'] = locn_url
     if attach_image_filename:
         new_post['object'] = \
             attach_media(base_dir, http_prefix, nickname, domain, port,
@@ -1403,7 +1422,8 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                      content_license_url: str, media_license_url: str,
                      media_creator: str, buy_url: str, chat_url: str,
                      translate: {}, searchable_by: [],
-                     automatic_quote_approval: str) -> {}:
+                     automatic_quote_approval: str,
+                     session) -> {}:
     """Creates a new client-to-server post
     """
     domain_full = get_full_domain(domain, port)
@@ -1492,6 +1512,10 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
     # pixelfed/friendica style location representation
     location = get_location_dict_from_tags(tags)
     if location:
+        locn_url = None
+        if location.get('url'):
+            locn_url = location['url']
+
         if location.get('name') and \
            location.get('longitude') and \
            location.get('latitude'):
@@ -1502,17 +1526,31 @@ def _create_post_c2s(base_dir: str, nickname: str, domain: str, port: int,
                 'latitude': location['latitude']
             }
         elif location.get('name'):
-            new_post['location'] = {
-                'type': 'Place',
-                'name': location['name']
-            }
+            # check if the location url looks like a map url
+            locn_url2 = locn_url
+            if locn_url2:
+                _, latitude, longitude = \
+                    geocoords_from_map_link(locn_url2, 'openstreetmap.org',
+                                            session)
+                if not latitude or not longitude:
+                    locn_url2 = None
+
+            if not locn_url2:
+                new_post['location'] = {
+                    'type': 'Place',
+                    'name': location['name']
+                }
+            else:
+                new_post['location'] = {
+                    'type': 'VirtualLocation',
+                    'name': location['name'],
+                    'url': location['url']
+                }
         if location.get('address'):
             if isinstance(location['address'], str):
                 new_post['object']['location']['address'] = location['address']
-        if location.get('url'):
-            if isinstance(location['url'], str):
-                if resembles_url(location['url']):
-                    new_post['object']['location']['url'] = location['url']
+        if locn_url:
+            new_post['object']['location']['url'] = locn_url
 
     if attach_image_filename:
         new_post = \
@@ -1617,14 +1655,24 @@ def _create_post_place_and_time(event_date: str, end_date: str,
                 "longitude": longitude
             }
         else:
-            location_tag_json = {
-                "@context": [
-                    'https://www.w3.org/ns/activitystreams',
-                    'https://w3id.org/security/v1'
-                ],
-                "type": "Place",
-                "name": location
-            }
+            if not resembles_url(location.strip()):
+                location_tag_json = {
+                    "@context": [
+                        'https://www.w3.org/ns/activitystreams',
+                        'https://w3id.org/security/v1'
+                    ],
+                    "type": "Place",
+                    "name": location
+                }
+            else:
+                location_tag_json = {
+                    "@context": [
+                        'https://www.w3.org/ns/activitystreams',
+                        'https://w3id.org/security/v1'
+                    ],
+                    "type": "VirtualLocation",
+                    "url": location
+                }
         # add the address if it is available
         if location_address:
             location_tag_json['address'] = remove_html(location_address)
@@ -1957,7 +2005,8 @@ def create_post_base(base_dir: str,
                              content_license_url, media_license_url,
                              media_creator, buy_url, chat_url,
                              translate, searchable_by_list,
-                             automatic_quote_approval)
+                             automatic_quote_approval,
+                             session)
     else:
         new_post = \
             _create_post_c2s(base_dir, nickname, domain, port,
@@ -1974,7 +2023,8 @@ def create_post_base(base_dir: str,
                              content_license_url, media_license_url,
                              media_creator, buy_url, chat_url,
                              translate, searchable_by_list,
-                             automatic_quote_approval)
+                             automatic_quote_approval,
+                             session)
 
     _create_post_mentions(cc_url, new_post, to_recipients, tags)
 
