@@ -103,6 +103,8 @@ def site_is_active(url: str, timeout: int,
     """
     if '<>' in url:
         url = url.replace('<>', '')
+    if '<' in url:
+        url = url.split('<')[0]
     if not url.startswith('http') and \
        not url.startswith('ipfs') and \
        not url.startswith('ipns'):

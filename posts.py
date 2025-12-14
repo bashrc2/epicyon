@@ -4143,6 +4143,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
     # randomize the order of sending to instances
     randomized_instances: list[str] = []
     for follower_domain, follower_handles in grouped.items():
+        if '<' in follower_domain:
+            follower_domain = follower_domain.split('<')[0]
         randomized_instances.append([follower_domain, follower_handles])
     random.shuffle(randomized_instances)
 

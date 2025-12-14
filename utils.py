@@ -1512,6 +1512,10 @@ def get_domain_from_actor(actor: str) -> (str, int):
             domain = domain.replace(prefix, '')
         if '/' in actor:
             domain = domain.split('/')[0]
+    if '<' in domain:
+        # handle domain with handle appended
+        # https://domain<user@domain>
+        domain = domain.split('<')[0]
     if ':' in domain:
         port = get_port_from_domain(domain)
         domain = remove_domain_port(domain)
