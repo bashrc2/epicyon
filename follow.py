@@ -1573,6 +1573,8 @@ def remove_follower(base_dir: str,
     new_followers_str = ''
     found = False
     for handle2 in followers_list:
+        if not handle2:
+            continue
         if handle2.lower() != handle:
             new_followers_str += handle2 + '\n'
         else:
