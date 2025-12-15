@@ -32,7 +32,7 @@ Key features:
  * Written in Python, with few dependencies.
  * AGPL license, which big tech hates.
 
-Epicyon is for people who are tired of Big Anything and just want to DIY their online social experience without much fuss or expense. Think "water cooler discussions" rather than "shouting into the void", in which you're mainly just reading and responding to the posts of people that you're following.
+Epicyon is for people who are tired of enshittified Big Tech garbage and just want to DIY their online social experience without much fuss or expense. Think "water cooler discussions" rather than "shouting into the void", in which you're mainly just reading and responding to the posts of people that you're following.
 
 ## An Internet of People, Not Corporate Agendas
 
