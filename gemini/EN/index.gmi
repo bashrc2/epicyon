@@ -17,7 +17,6 @@ Epicyon is a fediverse server suitable for self-hosting a small number of accoun
 
 Key features:
 
- * No AI
  * Open standards: HTML, CSS, ActivityPub S2S and C2S, RSS, CalDAV.
  * Supports common web browsers and shell browsers.
  * Will not drain your mobile or laptop battery.
@@ -28,7 +27,7 @@ Key features:
  * No javascript.
  * No database. Data stored as ordinary files.
  * No fashionable web frameworks. "Boring by design".
- * No blockchain garbage.
+ * No blockchain or AI garbage.
  * Written in Python, with few dependencies.
  * AGPL license, which big tech hates.
 

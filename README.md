@@ -6,7 +6,6 @@ Epicyon is a [fediverse](https://en.wikipedia.org/wiki/Fediverse) server suitabl
 
 Key features:
 
- * No AI
  * Open standards: HTML, CSS, ActivityPub S2S and C2S, RSS, CalDAV.
  * Supports common web browsers and [shell browsers](https://lynx.invisible-island.net).
  * Will not drain your mobile or laptop battery.
@@ -19,11 +18,11 @@ Key features:
  * No javascript. [Progressive enhancement class A](https://dillo-browser.github.io/pec/).
  * No database. Data stored as ordinary files.
  * No fashionable web frameworks. *"Boring by design"*.
- * No blockchain garbage.
+ * No blockchain or AI garbage.
  * Written in Python, with few dependencies.
  * AGPL license, which big tech hates.
 
-Epicyon is for people who are tired of *big anything* and just want to DIY their online social experience without much fuss or expense. Think *water cooler discussions* rather than *shouting into the void*, in which you're mainly just reading and responding to the posts of people that you're following.
+Epicyon is for people who are tired of *enshittified Big Tech garbage* and just want to DIY their online social experience without much fuss or expense. Think *water cooler discussions* rather than *doomscrolling* and *shouting into the void*, in which you're mainly just reading and responding to the posts of people that you're following.
 
 <img src="https://gitlab.com/bashrc2/epicyon/-/raw/main/img/progressive_enhancement_badge.png" width="10%" alt="Progressive enhancement class A: When Javascript is disabled all the essential and non-essential functionality works well. It maintains a high degree of similarity with the reference page." title="Progressive enhancement class A: When Javascript is disabled all the essential and non-essential functionality works well. It maintains a high degree of similarity with the reference page."/>
 
