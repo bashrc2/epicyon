@@ -1196,8 +1196,10 @@ In December the website formerly known as Twitter had a purge of Spanish leftist
 ### 2019: Chaos Computer Club
 At the annual congress Mastodon was significantly more referenced than in the previous two years, and some speakers asked the audience to give feedback via Mastodon hashtags.
 
-### 2022: The Muskening
+### 2022: The Muskening and the rise of John Mastodon
 In November, the oligarch Elon Musk, known for electric vehicles and spacecraft, purchased the website formerly known as Twitter. One of his first decisions was to fire most of the moderators. Admittedly, the moderators of Twitter did an abysmal job in the years leading up to the acquisition, but becoming an unmoderated space did not go down well with many users or advertising customers. This resulted in perhaps the biggest exodus up to that time.
+
+On December 16th Mediaite.com editor Isaac Schor published an article about censorship on Twitter, saying *"the platform removed John Mastodon, the founder of a competing social media company named after himself, for posting a link to the [Elon Musk's private] jet tracker’s Mastodon account"*. Somewhere along the line he had misheard "Join Mastodon", which is a website, as "John Mastodon". Hillarious memes then ensued in which the newly minted superhero John Mastodon was taking on and defeating Big Tech personalities.
 
 ### 2023: Facebook joins the fediverse
 In August Facebook launched its own fediverse instance, known as Threads. This was a cynical attempt to scoop up disgruntled Twitter users looking for an alternative social media site due to the chaos being created by its new owner, Elon Musk. There was a lot of concern about the evil empire of Zuckerberg joining the fediverse, and possibly squashing it by sheer weight of numbers. A website called [fediPact](https://fedipact.online) was created on which administrators could express their intention to block the Facebook instance. Many people had come to the fediverse precisely to get away from harassment on Facebook or Twitter, so the prospect of BigTech companies showing up in the fediverse and perhaps taking it over was scary.
