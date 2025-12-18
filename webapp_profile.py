@@ -295,6 +295,10 @@ def html_profile_after_search(authorized: bool,
         return None
 
     person_url = profile_json['id']
+    person_url2 = person_url
+    if profile_json.get('url'):
+        if isinstance(profile_json['url'], str):
+            person_url2 = remove_html(profile_json['url'])
     search_domain, search_port = get_domain_from_actor(person_url)
     if not search_domain:
         return None
@@ -526,6 +530,9 @@ def html_profile_after_search(authorized: bool,
         profile_str += \
             '      <input type="hidden" name="actor" value="' + \
             person_url + '">\n'
+        profile_str += \
+            '      <input type="hidden" name="actorUrl" value="' + \
+            person_url2 + '">\n'
         if not you_follow:
             if is_moderator(base_dir, nickname):
                 profile_str += \
@@ -560,6 +567,8 @@ def html_profile_after_search(authorized: bool,
             '    <center>\n' + \
             '      <input type="hidden" name="actor" value="' + \
             person_url + '">\n' + \
+            '      <input type="hidden" name="actorUrl" value="' + \
+            person_url2 + '">\n' + \
             '      <button type="submit" class="button" name="submitView" ' + \
             'accesskey="' + access_keys['viewButton'] + '">' + \
             translate['View'] + '</button>\n' + \
