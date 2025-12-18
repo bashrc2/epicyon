@@ -1847,7 +1847,7 @@ def get_person_notes_endpoint(base_dir: str, nickname: str, domain: str,
     return notes_json
 
 
-def _detect_users_path(url: str) -> str:
+def _detect_users_path(url: str) -> []:
     """Tries to detect the /users/ path
     """
     if '/' not in url:
@@ -1920,9 +1920,10 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
                 print('get_actor_json Syntax: --actor nickname@domain')
             return None, None
         if handle.startswith('@'):
+            # remove the initial @
             handle = handle[1:]
         elif handle.startswith('!'):
-            # handle for a group
+            # handle for a group, removing initial !
             handle = handle[1:]
             group_account = True
         if '@' not in handle:
@@ -2034,12 +2035,14 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
                 person_url = person_url.replace(user_path, '/actor/')
     if not person_url and group_account:
         person_url = http_prefix + '://' + domain + '/c/' + nickname
+    try_single_person = False
     if not person_url:
         # try single user instance
         person_url = http_prefix + '://' + domain + '/' + nickname
         headers_list = (
             "ld+json", "jrd+json", "activity+json"
         )
+        try_single_person = True
         if debug:
             print('Trying single user instance ' + person_url)
     if '/channel/' in person_url or '/accounts/' in person_url:
@@ -2061,6 +2064,21 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
             if not quiet:
                 pprint(person_json)
             return person_json, as_header
+
+        if try_single_person:
+            # whack that mole!
+            person_url = http_prefix + '://' + domain + '/ap/users/' + nickname
+            if debug:
+                print('Trying /ap/users/ ' + person_url)
+            person_json = \
+                get_json(signing_priv_key_pem, session, person_url, as_header,
+                         None, debug, mitm_servers, __version__, http_prefix,
+                         host_domain, 20, quiet)
+            if get_json_valid(person_json):
+                if not quiet:
+                    pprint(person_json)
+                return person_json, as_header
+
     return None, None
 
 

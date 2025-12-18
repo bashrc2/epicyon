@@ -1475,7 +1475,7 @@ def get_user_paths() -> []:
             '/nieuws/author/', '/author/', '/federation/user/',
             '/activitypub/', '/actors/', '/snac/', '/@/', '/~/',
             '/fediverse/blog/', '/user/', '/@', '/api/collections/',
-            '/feed/', '/actor/', '/ap/')
+            '/feed/', '/actor/', '/ap/', '/ap/users/')
 
 
 def get_group_paths() -> []:
