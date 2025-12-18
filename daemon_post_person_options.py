@@ -63,10 +63,10 @@ def _person_options_page_number(options_confirm_params: str) -> int:
     return page_number
 
 
-def _person_options_actor(options_confirm_params: str) -> str:
-    """Get the actor
+def _person_options_actor_url(options_confirm_params: str) -> str:
+    """Get the actor url
     """
-    options_actor = options_confirm_params.split('actor=')[1]
+    options_actor = options_confirm_params.split('actorUrl=')[1]
     if '&' in options_actor:
         options_actor = options_actor.split('&')[0]
     return options_actor
@@ -1347,7 +1347,7 @@ def person_options2(self, path: str,
 
     page_number = _person_options_page_number(options_confirm_params)
 
-    options_actor = _person_options_actor(options_confirm_params)
+    options_actor = _person_options_actor_url(options_confirm_params)
 
     options_actor_moved = _person_options_moved_to(options_confirm_params)
 
