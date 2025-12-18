@@ -615,6 +615,7 @@ def show_person_options(self, calling_domain: str, path: str,
         page_number = 1
         options_list = options_str.split(';')
         options_actor = options_list[0]
+        options_actor_url = options_actor
         options_page_number = 1
         if len(options_list) > 1:
             options_page_number = options_list[1]
@@ -670,6 +671,9 @@ def show_person_options(self, calling_domain: str, path: str,
                                   options_actor,
                                   self.server.person_cache)
         if actor_json:
+            if actor_json.get('url'):
+                if isinstance(actor_json['url'], str):
+                    options_actor_url = actor_json['url']
             if actor_json.get('movedTo'):
                 if isinstance(actor_json['movedTo'], str):
                     moved_to = remove_html(actor_json['movedTo'])
@@ -750,6 +754,7 @@ def show_person_options(self, calling_domain: str, path: str,
                                 domain_full,
                                 origin_path_str,
                                 options_actor,
+                                options_actor_url,
                                 options_profile_url,
                                 options_link,
                                 page_number, donate_url, website_url,

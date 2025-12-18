@@ -192,7 +192,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
     if '&submitView=' in follow_confirm_params:
         following_actor = \
             urllib.parse.unquote_plus(follow_confirm_params)
-        following_actor = following_actor.split('actor=')[1]
+        following_actor = following_actor.split('actorUrl=')[1]
         if '&' in following_actor:
             following_actor = following_actor.split('&')[0]
         redirect_headers(self, following_actor, cookie, calling_domain, 303)

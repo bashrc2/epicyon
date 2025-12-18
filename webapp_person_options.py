@@ -142,6 +142,7 @@ def html_person_options(default_timeline: str,
                         domain: str, domain_full: str,
                         origin_path_str: str,
                         options_actor: str,
+                        options_actor_url: str,
                         options_profile_url: str,
                         options_link: str,
                         page_number: int,
@@ -527,6 +528,8 @@ def html_person_options(default_timeline: str,
         str(page_number) + '">\n'
     options_str += '    <input type="hidden" name="actor" value="' + \
         options_actor + '">\n'
+    options_str += '    <input type="hidden" name="actorUrl" value="' + \
+        options_actor_url + '">\n'
     options_str += '    <input type="hidden" name="avatarUrl" value="' + \
         options_profile_url + '">\n'
 
