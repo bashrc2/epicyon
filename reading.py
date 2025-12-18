@@ -585,6 +585,7 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
         book_reading = False
         book_finished = False
         book_event_type = ''
+        book_image_url = None
         for event_type in ('want', 'finished', 'rated'):
             if not reader_books_json[book_url].get(event_type):
                 continue
