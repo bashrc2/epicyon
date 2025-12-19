@@ -349,6 +349,11 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             elif '-' in ending:
                 timezone_str = '-' + ending.split('-')[1]
             pub_date2 = pub_date2.split('.')[0] + timezone_str
+        elif date_format == '"%a, %d %b %Y %H:%M:%S"':
+            # date without time zone
+            pub_date2 += ' Z'
+            date_format += ' Z'
+
         try:
             published_date = date_from_string_format(pub_date2, [date_format])
         except BaseException:
