@@ -321,47 +321,22 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
                "%a, %d %b %Y %H:%M:%S")
     published_date = None
     errmsg = ''
+    timezone_endings = (
+        ',', 'Z', 'GMT', 'EST', 'PST', 'AST', 'CST', 'MST', 'AKST', 'HST',
+        'UT'
+    )
     for date_format in formats:
-        errmsg += ' | ' + date_format
-        if ',' in pub_date and ',' not in date_format:
-            continue
-        if ',' not in pub_date and ',' in date_format:
-            continue
-        if 'Z' in pub_date and 'Z' not in date_format:
-            continue
-        if 'Z' not in pub_date and 'Z' in date_format:
-            continue
-        if 'EST' not in pub_date and 'EST' in date_format:
-            continue
-        if 'EST' in pub_date and 'EST' not in date_format:
-            continue
-        if 'GMT' not in pub_date and 'GMT' in date_format:
-            continue
-        if 'GMT' in pub_date and 'GMT' not in date_format:
-            continue
-        if 'UT' not in pub_date and 'UT' in date_format:
-            continue
-        if 'UT' in pub_date and 'UT' not in date_format:
-            continue
-        if 'AST' in pub_date and 'AST' not in date_format:
-            continue
-        if 'AST' not in pub_date and 'AST' in date_format:
-            continue
-        if 'HST' in pub_date and 'HST' not in date_format:
-            continue
-        if 'HST' not in pub_date and 'HST' in date_format:
-            continue
-        if 'MST' in pub_date and 'MST' not in date_format:
-            continue
-        if 'MST' not in pub_date and 'MST' in date_format:
-            continue
-        if 'PST' in pub_date and 'PST' not in date_format:
-            continue
-        if 'PST' not in pub_date and 'PST' in date_format:
-            continue
-        if 'AKST' in pub_date and 'AKST' not in date_format:
-            continue
-        if 'AKST' not in pub_date and 'AKST' in date_format:
+        timezone_mismatch = False
+        for timezone_ending in timezone_endings:
+            if timezone_ending in pub_date and \
+               timezone_ending not in date_format:
+                timezone_mismatch = True
+                break
+            if timezone_ending not in pub_date and \
+               timezone_ending in date_format:
+                timezone_mismatch = True
+                break
+        if timezone_mismatch:
             continue
 
         # remove any fraction of a second
@@ -374,7 +349,6 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             elif '-' in ending:
                 timezone_str = '-' + ending.split('-')[1]
             pub_date2 = pub_date2.split('.')[0] + timezone_str
-        errmsg += ' ' + pub_date2
 
         try:
             published_date = \
@@ -382,7 +356,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             # published_date = \
             #    date_from_string_format(pub_date2, [date_format])
         except BaseException as exc:
-            errmsg += ' ' + str(exc).replace('\n', ' ')
+            errmsg = ' | ' + date_format + ' ' + str(exc).replace('\n', ' ')
             continue
 
         if published_date is not None:
