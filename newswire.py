@@ -275,8 +275,8 @@ def _add_newswire_dict_entry(base_dir: str,
 
 
 def _valid_feed_date(pub_date: str, debug: bool = False) -> bool:
-    # convert from YY-MM-DD HH:MM:SS+00:00 to
-    # YY-MM-DDTHH:MM:SSZ
+    """ convert from YY-MM-DD HH:MM:SS+00:00 to YY-MM-DDTHH:MM:SSZ
+    """
     post_date = pub_date.replace(' ', 'T').replace('+00:00', 'Z')
     if '.' in post_date:
         ending = post_date.split('.')[1]
@@ -321,6 +321,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
     published_date = None
     errmsg = ''
     for date_format in formats:
+        errmsg += ' | ' + date_format
         if ',' in pub_date and ',' not in date_format:
             continue
         if ',' not in pub_date and ',' in date_format:
@@ -350,22 +351,21 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             elif '-' in ending:
                 timezone_str = '-' + ending.split('-')[1]
             pub_date2 = pub_date2.split('.')[0] + timezone_str
+        errmsg += ' ' + pub_date2
 
         try:
             published_date = date_from_string_format(pub_date2, [date_format])
-        except BaseException as exc:
-            if date_format == "%a, %d %b %Y %H:%M:%S":
-                errmsg = '| ' + pub_date2 + '| ' + str(exc)
+        except BaseException:
             continue
 
-        if published_date:
+        if published_date is not None:
             if pub_date.endswith(' EST'):
                 hours_added = timedelta(hours=5)
                 published_date = published_date + hours_added
             break
 
     pub_date_str = None
-    if published_date:
+    if published_date is not None:
         offset = published_date.utcoffset()
         if offset:
             published_date = published_date - offset
