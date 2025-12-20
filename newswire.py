@@ -354,11 +354,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
         try:
             published_date = date_from_string_format(pub_date2, [date_format])
         except BaseException as exc:
-            if 'Z' not in pub_date and \
-               'EST' not in pub_date and \
-               'GMT' not in pub_date and \
-               'UT' not in pub_date and \
-               date_format == "%a, %d %b %Y %H:%M:%S":
+            if date_format == "%a, %d %b %Y %H:%M:%S":
                 errmsg = '| ' + pub_date2 + '| ' + str(exc)
             continue
 
