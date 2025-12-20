@@ -12,7 +12,6 @@ import json
 import requests
 import random
 import time
-import datetime
 from socket import error as SocketError
 import errno
 from datetime import timedelta
@@ -320,7 +319,6 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
                "%Y-%m-%dT%H:%M:%S%Z",
                "%a, %d %b %Y %H:%M:%S")
     published_date = None
-    errmsg = ''
     timezone_endings = (
         ',', 'Z', 'GMT', 'EST', 'PST', 'AST', 'CST', 'MST', 'AKST', 'HST',
         'UT'
@@ -353,18 +351,11 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
 
         try:
             published_date = \
-                datetime.datetime.strptime(pub_date2, date_format)
-            # published_date = \
-            #    date_from_string_format(pub_date2, [date_format])
-        except BaseException as exc:
-            errmsg = ' | ' + date_format + ' ' + \
-                str(exc).replace('\n', ' ').replace('\r', ' ')
+                date_from_string_format(pub_date2, [date_format])
+        except BaseException:
             continue
 
         if published_date is not None:
-            if not published_date.tzinfo:
-                published_date = \
-                    published_date.replace(tzinfo=timezone.utc)
             if pub_date.endswith(' EST'):
                 hours_added = timedelta(hours=5)
                 published_date = published_date + hours_added
@@ -381,7 +372,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
         if not pub_date_str.endswith('+00:00'):
             pub_date_str += '+00:00'
     else:
-        print('WARN: unrecognized date format: ' + pub_date + errmsg)
+        print('WARN: unrecognized date format: ' + pub_date)
 
     return pub_date_str
 

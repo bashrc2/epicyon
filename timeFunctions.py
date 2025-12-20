@@ -72,6 +72,7 @@ def date_from_string_format(date_str: str, formats: []):
                    "%a, %d %b %Y %H:%M:%S %z",
                    "%Y-%m-%dT%H:%M:%S%z")
     dtime = None
+    date_str = date_str.strip()
     for date_format in formats:
         try:
             dtime = \
