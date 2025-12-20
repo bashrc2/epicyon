@@ -349,6 +349,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             elif '-' in ending:
                 timezone_str = '-' + ending.split('-')[1]
             pub_date2 = pub_date2.split('.')[0] + timezone_str
+        pub_date2 = pub_date2.strip()
 
         try:
             published_date = \
@@ -356,7 +357,8 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             # published_date = \
             #    date_from_string_format(pub_date2, [date_format])
         except BaseException as exc:
-            errmsg = ' | ' + date_format + ' ' + str(exc).replace('\n', ' ')
+            errmsg = ' | ' + date_format + ' ' + \
+                str(exc).replace('\n', ' ').replace('\r', ' ')
             continue
 
         if published_date is not None:
