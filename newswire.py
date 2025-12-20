@@ -360,7 +360,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             # published_date = \
             #    date_from_string_format(pub_date2, [date_format])
         except BaseException as exc:
-            errmsg += ' ' + str(exc)
+            errmsg += ' ' + str(exc).replace('\n', ' ')
             continue
 
         if published_date is not None:
