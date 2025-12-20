@@ -319,6 +319,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
                "%Y-%m-%dT%H:%M:%S%Z",
                "%a, %d %b %Y %H:%M:%S")
     published_date = None
+    errmsg = ''
     for date_format in formats:
         if ',' in pub_date and ',' not in date_format:
             continue
@@ -349,14 +350,13 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             elif '-' in ending:
                 timezone_str = '-' + ending.split('-')[1]
             pub_date2 = pub_date2.split('.')[0] + timezone_str
-        elif date_format == '"%a, %d %b %Y %H:%M:%S"':
-            # date without time zone
-            pub_date2 += ' Z'
-            date_format += ' Z'
 
         try:
             published_date = date_from_string_format(pub_date2, [date_format])
-        except BaseException:
+        except BaseException as exc:
+            if '.' not in pub_date2 and \
+               date_format == "%a, %d %b %Y %H:%M:%S":
+                errmsg = ' ' + str(exc)
             continue
 
         if published_date:
@@ -376,7 +376,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
         if not pub_date_str.endswith('+00:00'):
             pub_date_str += '+00:00'
     else:
-        print('WARN: unrecognized date format: ' + pub_date)
+        print('WARN: unrecognized date format: ' + pub_date + errmsg)
 
     return pub_date_str
 
