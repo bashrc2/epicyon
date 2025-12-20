@@ -12,6 +12,7 @@ import json
 import requests
 import random
 import time
+import datetime
 from socket import error as SocketError
 import errno
 from datetime import timedelta
@@ -354,11 +355,18 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
         errmsg += ' ' + pub_date2
 
         try:
-            published_date = date_from_string_format(pub_date2, [date_format])
-        except BaseException:
+            published_date = \
+                datetime.datetime.strptime(pub_date2, date_format)
+            # published_date = \
+            #    date_from_string_format(pub_date2, [date_format])
+        except BaseException as exc:
+            errmsg += ' ' + str(exc)
             continue
 
         if published_date is not None:
+            if not published_date.tzinfo:
+                published_date = \
+                    published_date.replace(tzinfo=timezone.utc)
             if pub_date.endswith(' EST'):
                 hours_added = timedelta(hours=5)
                 published_date = published_date + hours_added
