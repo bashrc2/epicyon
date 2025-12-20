@@ -333,13 +333,35 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             continue
         if 'EST' not in pub_date and 'EST' in date_format:
             continue
+        if 'EST' in pub_date and 'EST' not in date_format:
+            continue
         if 'GMT' not in pub_date and 'GMT' in date_format:
             continue
-        if 'EST' in pub_date and 'EST' not in date_format:
+        if 'GMT' in pub_date and 'GMT' not in date_format:
             continue
         if 'UT' not in pub_date and 'UT' in date_format:
             continue
         if 'UT' in pub_date and 'UT' not in date_format:
+            continue
+        if 'AST' in pub_date and 'AST' not in date_format:
+            continue
+        if 'AST' not in pub_date and 'AST' in date_format:
+            continue
+        if 'HST' in pub_date and 'HST' not in date_format:
+            continue
+        if 'HST' not in pub_date and 'HST' in date_format:
+            continue
+        if 'MST' in pub_date and 'MST' not in date_format:
+            continue
+        if 'MST' not in pub_date and 'MST' in date_format:
+            continue
+        if 'PST' in pub_date and 'PST' not in date_format:
+            continue
+        if 'PST' not in pub_date and 'PST' in date_format:
+            continue
+        if 'AKST' in pub_date and 'AKST' not in date_format:
+            continue
+        if 'AKST' not in pub_date and 'AKST' in date_format:
             continue
 
         # remove any fraction of a second
