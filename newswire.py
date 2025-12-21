@@ -347,7 +347,6 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
             elif '-' in ending:
                 timezone_str = '-' + ending.split('-')[1]
             pub_date2 = pub_date2.split('.')[0] + timezone_str
-        pub_date2 = pub_date2.strip()
 
         try:
             published_date = \
