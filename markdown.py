@@ -15,7 +15,6 @@ from utils import get_base_content_from_post
 from utils import get_post_attachments
 from utils import get_url_from_post
 from utils import get_markdown_blog_filename
-from utils import get_gemini_blog_title
 from utils import get_gemini_blog_published
 
 
@@ -539,9 +538,6 @@ def blog_to_markdown(base_dir: str, nickname: str, domain: str,
         return False
     content_text = remove_html(content_str)
 
-    # get the blog title
-    title_text = get_gemini_blog_title(message_json, system_language)
-
     # create markdown blog directory
     if not testing:
         markdown_blog_dir = account_dir + '/markdown'
@@ -554,9 +550,6 @@ def blog_to_markdown(base_dir: str, nickname: str, domain: str,
         get_markdown_blog_filename(base_dir, nickname, domain,
                                    message_json, system_language,
                                    debug, testing)
-
-    if not title_text.startswith('# '):
-        title_text = '# ' + title_text
 
     # get attachments
     links: list[str] = []
@@ -582,8 +575,7 @@ def blog_to_markdown(base_dir: str, nickname: str, domain: str,
     try:
         with open(markdown_blog_filename, 'w+',
                   encoding='utf-8') as fp_markdown:
-            fp_markdown.write(title_text + '\n\n' + published + '\n\n' +
-                              content_text)
+            fp_markdown.write(published + '\n\n' + content_text)
     except OSError:
         print('EX: blog_to_markdown unable to write ' + markdown_blog_filename)
         return False
