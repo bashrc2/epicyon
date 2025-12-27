@@ -119,7 +119,8 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
     try:
         with open(gemini_blog_filename, 'w+',
                   encoding='utf-8') as fp_gemini:
-            fp_gemini.write(title_text + '\n\n' + published + '\n\n' +
+            fp_gemini.write(title_text + '\n\n' +
+                            published.replace('-', '/') + '\n\n' +
                             content_text)
     except OSError:
         print('EX: blog_to_gemini unable to write ' + gemini_blog_filename)
