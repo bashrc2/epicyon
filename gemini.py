@@ -113,8 +113,8 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
     # add links to the end of the content
     if links:
         content_text += '\n\n'
-    for link_str in links:
-        content_text += '=> ' + link_str + '\n'
+        for link_str in links:
+            content_text += '=> ' + link_str + '\n'
 
     try:
         with open(gemini_blog_filename, 'w+',
