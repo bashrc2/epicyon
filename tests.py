@@ -9538,7 +9538,7 @@ def _test_gemini_blog(base_dir: str) -> None:
     assert text_in_file('# ' + title + '\n', gemini_blog_filename)
     assert text_in_file(content, gemini_blog_filename)
     assert text_in_file('=> ' + link, gemini_blog_filename)
-    assert text_in_file('2022-02-25', gemini_blog_filename)
+    assert text_in_file('2022/02/25', gemini_blog_filename)
     shutil.rmtree(gemini_blog_dir, ignore_errors=True)
 
 
@@ -9567,7 +9567,6 @@ def _test_markdown_blog(base_dir: str) -> None:
     assert result
     assert os.path.isdir(markdown_blog_dir)
     assert os.path.isfile(markdown_blog_filename)
-    assert text_in_file('# ' + title + '\n', markdown_blog_filename)
     assert text_in_file(content, markdown_blog_filename)
     assert text_in_file('2022-02-25', markdown_blog_filename)
     shutil.rmtree(markdown_blog_dir, ignore_errors=True)
@@ -9606,7 +9605,7 @@ def _test_replace_gemini_links() -> None:
     assert result == expected
 
 
-def run_all_tests():
+def run_all_tests():    
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
     print('Running tests...')

@@ -110,6 +110,10 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
                 links.append(get_url_from_post(attach['url']) + ' ' +
                              attach['name'])
 
+    # replace any excessive lines
+    for _ in range(2):
+        content_text = content_text.replace('\n\n', '\n')
+
     # add links to the end of the content
     if links:
         content_text += '\n\n'
