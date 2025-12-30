@@ -286,7 +286,8 @@ def daemon_http_get(self) -> None:
         if is_image_file(self.path):
             http_404(self, 720)
             return
-        print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
+        print('GET HTTP LLM scraper poisoned: ' +
+              str(self.headers).replace('\n', ' '))
         msg = html_poisoned(self.server.dictionary,
                             self.server.twograms)
         msg = msg.encode('utf-8')
@@ -302,7 +303,8 @@ def daemon_http_get(self) -> None:
 
     # suspicious headers
     if contains_suspicious_headers(self.headers):
-        print('GET HTTP suspicious headers 1 ' + str(self.headers))
+        print('GET HTTP suspicious headers 1 ' +
+              str(self.headers).replace('\n', ' '))
         http_403(self)
         return
 
@@ -340,7 +342,7 @@ def daemon_http_get(self) -> None:
 
     if contains_invalid_chars(str(self.headers)):
         print('GET HTTP headers contain invalid characters ' +
-              str(self.headers))
+              str(self.headers).replace('\n', ' '))
         http_403(self)
         return
 
@@ -405,7 +407,8 @@ def daemon_http_get(self) -> None:
                     http_402(self)
                     return
                 # if this is an LLM crawler then feed it some trash
-                print('GET HTTP LLM scraper poisoned: ' + str(self.headers))
+                print('GET HTTP LLM scraper poisoned: ' +
+                      str(self.headers).replace('\n', ' '))
                 msg = html_poisoned(self.server.dictionary,
                                     self.server.twograms)
                 msg = msg.encode('utf-8')
@@ -649,7 +652,7 @@ def daemon_http_get(self) -> None:
               str(self.server.getreq_busy))
 
     if self.server.debug:
-        print(str(self.headers))
+        print(str(self.headers).replace('\n', ' '))
 
     cookie = None
     if self.headers.get('Cookie'):
@@ -708,7 +711,7 @@ def daemon_http_get(self) -> None:
             print('GET Authorization granted ' + self.path)
         else:
             print('GET Not authorized ' + self.path + ' ' +
-                  str(self.headers))
+                  str(self.headers).replace('\n', ' '))
 
     fitness_performance(getreq_start_time, self.server.fitness,
                         '_GET', 'isAuthorized',
@@ -1484,7 +1487,8 @@ def daemon_http_get(self) -> None:
                       self.headers['Connection'])
             http_200(self)
         else:
-            print('WARN: No Accept header ' + str(self.headers))
+            print('WARN: No Accept header ' +
+                  str(self.headers).replace('\n', ' '))
             http_400(self)
         return
 

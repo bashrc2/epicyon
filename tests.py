@@ -9605,7 +9605,7 @@ def _test_replace_gemini_links() -> None:
     assert result == expected
 
 
-def run_all_tests():    
+def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
     print('Running tests...')

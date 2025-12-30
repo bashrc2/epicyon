@@ -178,17 +178,20 @@ def daemon_http_post(self) -> None:
 
     mitm = detect_mitm(self)
     if mitm:
-        print('DEBUG: MITM on HTTP POST, ' + str(self.headers))
+        print('DEBUG: MITM on HTTP POST, ' +
+              str(self.headers).replace('\n', ' '))
 
     # headers used by LLM scrapers
     if 'oai-host-hash' in self.headers:
-        print('POST HTTP LLM scraper bounced: ' + str(self.headers))
+        print('POST HTTP LLM scraper bounced: ' +
+              str(self.headers).replace('\n', ' '))
         http_402(self)
         return
 
     # suspicious headers
     if contains_suspicious_headers(self.headers):
-        print('POST HTTP suspicious headers 2 ' + str(self.headers))
+        print('POST HTTP suspicious headers 2 ' +
+              str(self.headers).replace('\n', ' '))
         http_403(self)
         return
 
@@ -261,7 +264,7 @@ def daemon_http_post(self) -> None:
 
     if contains_invalid_chars(str(self.headers)):
         print('POST HTTP headers contain invalid characters ' +
-              str(self.headers))
+              str(self.headers).replace('\n', ' '))
         http_403(self)
         self.server.postreq_busy = False
         return
@@ -342,7 +345,7 @@ def daemon_http_post(self) -> None:
     authorized = is_authorized(self)
     if not authorized and self.server.debug:
         print('POST Not authorized')
-        print(str(self.headers))
+        print(str(self.headers).replace('\n', ' '))
 
     # if this is a POST to the outbox then check authentication
     self.outbox_authenticated = False
@@ -1140,7 +1143,7 @@ def daemon_http_post(self) -> None:
        not content_type_str.startswith('application/ld+json'):
         print("POST is not json: " + self.headers['Content-type'])
         if self.server.debug:
-            print(str(self.headers))
+            print(str(self.headers).replace('\n', ' '))
             length = int(self.headers['Content-length'])
             if length < self.server.max_post_length:
                 try:
