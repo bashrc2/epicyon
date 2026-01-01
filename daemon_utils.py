@@ -586,6 +586,9 @@ def is_authorized(self) -> bool:
                   self.headers['Cookie'].replace('epicyon=', '') +
                   ' token_str=' + token_str)
             return False
+        else:
+            print('AUTH: Header cookie does not have expected format. ' +
+                  'It may have been modified in transit.')
         print('AUTH: Header cookie was not authorized')
         return False
     # basic auth for c2s
