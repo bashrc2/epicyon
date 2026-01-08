@@ -3964,6 +3964,7 @@ def check_bad_path(path: str):
     """for http GET or POST check that the path looks valid
     """
     path_lower = path.lower()
+
     bad_strings = ('..', '/.', '%2e%2e', '%252e%252e')
 
     # allow /.well-known/...
@@ -3971,6 +3972,10 @@ def check_bad_path(path: str):
         if path_lower.startswith('/.well-known/') or \
            path_lower.startswith('/users/.well-known/'):
             bad_strings = ('..', '%2e%2e', '%252e%252e')
+
+    if path_lower.startswith('/wp-content'):
+        print('WARN: this is not wordpress ' + path)
+        return True
 
     if string_contains(path_lower, bad_strings):
         print('WARN: bad path ' + path)
