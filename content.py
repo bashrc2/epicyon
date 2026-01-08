@@ -1108,6 +1108,28 @@ def remove_text_formatting(content: str, bold_reading: bool) -> str:
     return content
 
 
+def _remove_truncated_link(content: str) -> str:
+    """Removes any truncated links.
+    Sometimes very long links get truncated due to character limits
+    on some instances.
+    """
+    if '<a href' not in content:
+        return content
+    sections = content.split('<a href')
+    ctr = 0
+    remove_strings = []
+    for section in sections:
+        if ctr == 0:
+            ctr = 1
+            continue
+        if '</a>' not in section:
+            remove_strings.append('<a href' + section)
+        ctr += 1
+    for removal_text in remove_strings:
+        content = content.replace(removal_text, '')
+    return content
+
+
 def remove_long_words(content: str, max_word_length: int,
                       long_words_list: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't
@@ -1116,6 +1138,7 @@ def remove_long_words(content: str, max_word_length: int,
     if is_pgp_encrypted(content) or contains_pgp_public_key(content):
         return content
     content = replace_content_duplicates(content)
+    content = _remove_truncated_link(content)
 
     non_html_list = False
     if '\n\n' in content and '<p>' not in content:

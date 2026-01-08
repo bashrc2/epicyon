@@ -4125,6 +4125,28 @@ def _test_web_links():
     result_text = remove_long_words(test_fn_str, 40, [])
     assert result_text == example_text
 
+    example_text = \
+        "<p>Malformed link</p><p><a href=\"" + \
+        "https://some.crap.domain/cos-osf-prod-files-us-east1/" + \
+        "46238446746346949566326576231358356756535656956256?" + \
+        "response-content-disposition=attachment%3B%20filename%3D%22" + \
+        "CN_IS_jfoewyffnmviwyudrw_in%20thing.pdf%22%3B%20filename%2A%3D" + \
+        "UTF-8%27%27CN_IS_37492fbhfbhvgbwhvbwv_in%2520thing.pdf&amp;" + \
+        "BigTechAccessId=files-us%40cos-osf-prod.iam.sillyaccount." + \
+        "whatever&amp;Expires=1261814358&amp;Signature=bnhvsdbyfef2h2he2" + \
+        "8756254hthvifbebvWi6psszq7mLUQpB0Zrrbj7VU93k8GsUnHjidJFNWCIg2%2" + \
+        "FztCupUxXwtBXg%2FZP1uSCeVu3Nv09y9y6mszhXOqlsBuXIROMTYYQzCUN%2Bz" + \
+        "ZaffzUfbnwhebwufbwewyvvwvbiOlpeI7gG2lIku23vy2m%2Fk2PHf9I5Z0Nt1n" + \
+        "Lv3%2Beb%2FR8avLECuCIJjhbMkiBWvDarY0l5Hl%2F%2BQ9QCbRnRRLIC1vjJo" + \
+        "PyjK%2FzyShPVz%2B4ztVMF6MYOnMTxFQC4POa4ovxoo1%2B1QdixwmAI9sIK4U" + \
+        "%2BOKYiV%2FEZdw%3D%3D"
+    result_text = remove_long_words(example_text, 40, [])
+    expected_text = "<p>Malformed link</p><p></p>"
+    if result_text != expected_text:
+        print("Expected: " + expected_text)
+        print("Result:   " + result_text)
+    assert result_text == expected_text
+
 
 def _test_addemoji(base_dir: str):
     print('test_addemoji')
