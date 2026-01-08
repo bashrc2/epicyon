@@ -1960,7 +1960,9 @@ def _inbox_after_initial(server, inbox_start_time,
                         bold_reading, dogwhistles,
                         server.min_images_for_accounts,
                         buy_sites, server.auto_cw_cache,
-                        mitm_servers, instance_software):
+                        mitm_servers, instance_software,
+                        server.blocked_cache,
+                        server.block_federated):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,

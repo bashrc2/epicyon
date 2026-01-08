@@ -1185,7 +1185,9 @@ def receive_reaction(recent_posts_cache: {},
                      buy_sites: {},
                      auto_cw_cache: {},
                      mitm_servers: [],
-                     instance_software: {}) -> bool:
+                     instance_software: {},
+                     blocked_cache: [],
+                     block_federated: []) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'EmojiReact':
@@ -1245,8 +1247,22 @@ def receive_reaction(recent_posts_cache: {},
         print('DEBUG: emoji reaction post found in inbox')
 
     reaction_actor = get_actor_from_post(message_json)
-    handle_name = handle.split('@')[0]
-    handle_dom = handle.split('@')[1]
+    # is the reaction actor blocked?
+    reaction_actor_nickname = get_nickname_from_actor(reaction_actor)
+    reaction_actor_domain, _ = get_domain_from_actor(reaction_actor)
+    if not reaction_actor_nickname or \
+       not reaction_actor_domain:
+        print("DEBUG: no reaction actor " + str(reaction_actor))
+        return True
+    if is_blocked(base_dir, handle_name, handle_dom,
+                  reaction_actor_nickname, reaction_actor_domain,
+                  blocked_cache, block_federated):
+        if debug:
+            print('BLOCK: reaction from ' +
+                  reaction_actor_nickname + '@' + reaction_actor_domain +
+                  ' blocked')
+        return True
+
     if not _already_reacted(base_dir,
                             handle_name, handle_dom,
                             post_reaction_id,

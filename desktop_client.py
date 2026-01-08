@@ -821,7 +821,7 @@ def _read_local_box_post(session, nickname: str, domain: str,
                          translate: {}, your_actor: str,
                          domain_full: str, person_cache: {},
                          signing_priv_key_pem: str,
-                         blocked_cache: {}, block_federated: [],
+                         blocked_cache: [], block_federated: [],
                          bold_reading: bool,
                          mitm_servers: []) -> {}:
     """Reads a post from the given timeline

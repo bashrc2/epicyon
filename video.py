@@ -26,7 +26,7 @@ from conversation import post_id_to_convthread_id
 
 def convert_video_to_note(base_dir: str, nickname: str, domain: str,
                           system_language: str,
-                          post_json_object: {}, blocked_cache: {},
+                          post_json_object: {}, blocked_cache: [],
                           block_federated: [],
                           languages_understood: []) -> {}:
     """Converts a PeerTube Video ActivityPub(ish) object into

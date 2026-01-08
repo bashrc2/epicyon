@@ -48,7 +48,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                       theme_name: str,
                       access_keys: {}, person_cache: {},
                       recent_posts_cache: {},
-                      blocked_cache: {},
+                      blocked_cache: [],
                       mitm_servers: []) -> None:
     """Actions on the moderator screen
     """
