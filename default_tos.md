@@ -29,6 +29,8 @@ Genocide denial or apologia are not permitted.
 
 Due to lack of age verification, content of a pornographic nature in the form of text, photos or fictional depictions is not permitted. Non-pornographic discussions of sex or gender issues are permitted though.
 
+Non-consentual "nudification" images or video content are not permitted, even if such images are not considered to be pornographic.
+
 Moderators rely upon your reports. Don't assume that something of concern has already been reported. It's better for there to be duplicate reports than for something potentially damaging to go unreported.
 
 Content found to be non-compliant with this policy will be removed and any accounts on this instance producing, repeating or linking to such content will be deleted typically without prior notification.
