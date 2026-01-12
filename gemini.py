@@ -112,7 +112,7 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
 
     # replace any excessive lines
     for _ in range(2):
-        content_text = content_text.replace('\n\n', '\n')
+        content_text = content_text.replace('\n\n\n', '\n\n')
 
     # add links to the end of the content
     if links:

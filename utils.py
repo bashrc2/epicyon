@@ -2268,6 +2268,7 @@ def get_gemini_blog_filename(base_dir: str, nickname: str, domain: str,
         return ''
     title_text2 = title_text.replace('.', ' ')
     title_text2 = title_text2.replace(' ', '_')
+    title_text2 = title_text2.replace('"', '')
 
     if not testing:
         account_dir = acct_dir(base_dir, nickname, domain)
@@ -2292,6 +2293,7 @@ def get_markdown_blog_filename(base_dir: str, nickname: str, domain: str,
         return ''
     title_text2 = title_text.replace('.', ' ')
     title_text2 = title_text2.replace(' ', '_')
+    title_text2 = title_text2.replace('"', '')
 
     if not testing:
         account_dir = acct_dir(base_dir, nickname, domain)
