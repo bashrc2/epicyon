@@ -6147,8 +6147,8 @@ def daemon_http_get(self) -> None:
                                 '_GET', 'arbitrary json',
                                 self.server.debug)
     else:
-        if self.server.debug:
-            print('DEBUG: GET Unknown file')
+        if self.server.debug or self.server.log_unknown_requests:
+            print('DEBUG: GET Unknown request ' + self.path)
         http_404(self, 144)
     self.server.getreq_busy = False
 

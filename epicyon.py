@@ -1603,6 +1603,11 @@ def _command_options() -> None:
         set_config_param(base_dir, 'instanceDescription',
                          'Just another ActivityPub server')
 
+    # whether to log unknown requests
+    log_unknown_requests = get_config_param(base_dir, 'logUnknownRequests')
+    if log_unknown_requests is None:
+        set_config_param(base_dir, 'logUnknownRequests', False)
+
     # set the short instance description in config.json
     desc_short = get_config_param(base_dir, 'instanceDescriptionShort')
     if not desc_short:

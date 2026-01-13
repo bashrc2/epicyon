@@ -484,6 +484,7 @@ class EpicyonServer(ThreadingHTTPServer):
     robots_txt = None
     last_llm_time = None
     mitm_servers = []
+    log_unknown_requests: bool = False
     watermark_width_percent = 0
     watermark_position = 0
     watermark_opacity = 0
@@ -711,6 +712,14 @@ def run_daemon(accounts_data_dir: str,
 
     # the last time when an LLM scraper was replied to
     httpd.last_llm_time = None
+
+    # whether to log unknown requests
+    httpd.log_unknown_requests = \
+        get_config_param(base_dir, 'logUnknownRequests')
+    if httpd.log_unknown_requests is None:
+        httpd.log_unknown_requests = False
+    if not isinstance(httpd.log_unknown_requests, bool):
+        httpd.log_unknown_requests = False
 
     # servers with man-in-the-middle transport encryption
     httpd.mitm_servers = load_mitm_servers(base_dir)
