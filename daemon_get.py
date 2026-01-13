@@ -6103,6 +6103,13 @@ def daemon_http_get(self) -> None:
     # check that the file exists
     filename = self.server.base_dir + self.path
 
+    if filename == data_dir(self.server.base_dir) + '/passwords':
+        print('WARN: attempt to access passwords ' +
+              str(self.headers).replace('\n', ' '))
+        http_404(self, 143)
+        self.server.getreq_busy = False
+        return
+
     # check that the file is not suspended
     if filename.endswith('.suspended'):
         http_404(self, 145)
