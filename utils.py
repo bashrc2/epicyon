@@ -3975,7 +3975,7 @@ def check_bad_path(path: str):
            path_lower.startswith('/users/.well-known/'):
             bad_strings = ('..', '%2e%2e', '%252e%252e')
 
-    if path_lower.startswith('/wp-content'):
+    if path_lower.startswith('/wp-'):
         print('WARN: this is not wordpress ' + path)
         return True
 
