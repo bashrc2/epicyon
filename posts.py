@@ -5691,9 +5691,9 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         post_filename = post_filename.name
         if not post_filename.endswith('.edits'):
             continue
+        edit_files_ctr += 1
         full_filename = os.path.join(box_dir, post_filename)
         if os.path.isfile(full_filename):
-            edit_files_ctr += 1
             content = ''
             try:
                 with open(full_filename, 'r', encoding='utf-8') as fp_content:
