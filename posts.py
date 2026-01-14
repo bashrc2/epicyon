@@ -5682,14 +5682,13 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                 print('EX: archive_posts_for_person unable to write ' +
                       index_filename)
 
-    posts_in_box_dict = {}
-    posts_ctr = 0
-    posts_in_box = os.scandir(box_dir)
+    # remove any edits
+    edits_in_box_dict = {}
+    edits_ctr = 0
     for post_filename in posts_in_box:
         post_filename = post_filename.name
-        if not post_filename.endswith('.json'):
+        if not post_filename.endswith('.edits'):
             continue
-        # Time of file creation
         full_filename = os.path.join(box_dir, post_filename)
         if os.path.isfile(full_filename):
             content = ''
@@ -5697,7 +5696,69 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                 with open(full_filename, 'r', encoding='utf-8') as fp_content:
                     content = fp_content.read()
             except OSError:
-                print('EX: unable to open content ' + full_filename)
+                print('EX: unable to open content 2 ' + full_filename)
+            if '"published":' in content:
+                published_str = content.split('"published":')[1]
+                if '"' in published_str:
+                    published_str = published_str.split('"')[1]
+                    if published_str.endswith('Z'):
+                        edits_in_box_dict[published_str] = post_filename
+                        edits_ctr += 1
+
+    no_of_edits = edits_ctr
+    if no_of_edits <= max_posts_in_box:
+        print('Checked ' + str(no_of_edits) + ' ' + boxname +
+              ' edits for ' + nickname + '@' + domain)
+    else:
+        # sort the list in ascending order of date
+        edits_in_box_sorted = \
+            OrderedDict(sorted(edits_in_box_dict.items(), reverse=False))
+
+        remove_edits_ctr = 0
+        for published_str, edit_filename in edits_in_box_sorted.items():
+            file_path = os.path.join(box_dir, edit_filename)
+            if not os.path.isfile(file_path):
+                continue
+            if archive_dir:
+                archive_path = os.path.join(archive_dir, edit_filename)
+                try:
+                    os.rename(file_path, archive_path)
+                    remove_edits_ctr += 1
+                except OSError:
+                    print('EX: ' +
+                          'archive_posts_for_person unable to archive edit ' +
+                          file_path + ' -> ' + archive_path)
+            else:
+                try:
+                    os.remove(edit_filename)
+                    remove_edits_ctr += 1
+                except OSError:
+                    print('EX: ' +
+                          'archive_posts_for_person unable to delete edit ' +
+                          edit_filename)
+        if archive_dir:
+            print('Archived ' + str(remove_edits_ctr) + ' ' + boxname +
+                  ' edits for ' + nickname + '@' + domain)
+        else:
+            print('Removed ' + str(remove_edits_ctr) + ' ' + boxname +
+                  ' edits for ' + nickname + '@' + domain)
+
+    posts_in_box_dict = {}
+    posts_ctr = 0
+    posts_in_box = os.scandir(box_dir)
+    for post_filename in posts_in_box:
+        post_filename = post_filename.name
+        if not post_filename.endswith('.json'):
+            continue
+        # Get the published time
+        full_filename = os.path.join(box_dir, post_filename)
+        if os.path.isfile(full_filename):
+            content = ''
+            try:
+                with open(full_filename, 'r', encoding='utf-8') as fp_content:
+                    content = fp_content.read()
+            except OSError:
+                print('EX: unable to open content 1 ' + full_filename)
             if '"published":' in content:
                 published_str = content.split('"published":')[1]
                 if '"' in published_str:
@@ -5726,7 +5787,11 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             continue
         if archive_dir:
             archive_path = os.path.join(archive_dir, post_filename)
-            os.rename(file_path, archive_path)
+            try:
+                os.rename(file_path, archive_path)
+            except OSError:
+                print('EX: archive_posts_for_person unable to archive ' +
+                      file_path + ' -> ' + archive_path)
 
             extensions = (
                 'votes', 'arrived', 'muted', 'tts', 'reject', 'mitm',
