@@ -5683,6 +5683,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                       index_filename)
 
     # remove any edits
+    posts_in_box = os.scandir(box_dir)
     edits_in_box_dict = {}
     edits_ctr = 0
     edit_files_ctr = 0
