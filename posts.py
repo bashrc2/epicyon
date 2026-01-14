@@ -5682,89 +5682,95 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                 print('EX: archive_posts_for_person unable to write ' +
                       index_filename)
 
-    # remove any edits
-    posts_in_box = os.scandir(box_dir)
-    edits_in_box_dict = {}
-    edits_ctr = 0
-    edits_removed_ctr = 0
-    edit_files_ctr = 0
-    for post_filename in posts_in_box:
-        post_filename = post_filename.name
-        if not post_filename.endswith('.edits'):
-            continue
-        original_post_filename = post_filename.replace('.edits', '.json')
-        full_original_filename = os.path.join(box_dir, original_post_filename)
-        full_filename = os.path.join(box_dir, post_filename)
-        if not os.path.isfile(full_original_filename):
-            # if the original file doesn't exist (was remotely deleted by its
-            # author) then remove the corresponding edits
-            try:
-                os.remove(full_filename)
-                edits_removed_ctr += 1
-            except OSError:
-                print('EX: unable to remove edits file ' + full_filename)
+    # remove any edits or replies
+    for ext_name in ('edits', 'replies'):
+        ext = '.' + ext_name
+        posts_in_box = os.scandir(box_dir)
+        edits_in_box_dict = {}
+        edits_ctr = 0
+        edits_removed_ctr = 0
+        edit_files_ctr = 0
+        for post_filename in posts_in_box:
+            post_filename = post_filename.name
+            if not post_filename.endswith(ext):
                 continue
-        edit_files_ctr += 1
-        if os.path.isfile(full_filename):
-            content = ''
-            try:
-                with open(full_filename, 'r', encoding='utf-8') as fp_content:
-                    content = fp_content.read()
-            except OSError:
-                print('EX: unable to open content 2 ' + full_filename)
-            if '"published":' in content:
-                published_str = content.split('"published":')[1]
-                if '"' in published_str:
-                    published_str = published_str.split('"')[1]
-                    # does this look like a date?
-                    if 'T' in published_str and \
-                       '-' in published_str and \
-                       ':' in published_str:
-                        edits_in_box_dict[published_str] = post_filename
-                        edits_ctr += 1
-
-    if edits_removed_ctr > 0:
-        print(str(edits_removed_ctr) + ' edits removed from ' + boxname +
-              ' for ' + nickname + '@' + domain)
-
-    no_of_edits = edits_ctr
-    if no_of_edits <= max_posts_in_box:
-        print('Checked ' + str(no_of_edits) + ' ' + boxname +
-              ' edits in ' + str(edit_files_ctr) +
-              ' files for ' + nickname + '@' + domain)
-    else:
-        # sort the list in ascending order of date
-        edits_in_box_sorted = \
-            OrderedDict(sorted(edits_in_box_dict.items(), reverse=False))
-
-        remove_edits_ctr = 0
-        for published_str, edit_filename in edits_in_box_sorted.items():
-            file_path = os.path.join(box_dir, edit_filename)
-            if not os.path.isfile(file_path):
-                continue
-            if archive_dir:
-                archive_path = os.path.join(archive_dir, edit_filename)
+            original_post_filename = post_filename.replace(ext, '.json')
+            full_original_filename = \
+                os.path.join(box_dir, original_post_filename)
+            full_filename = os.path.join(box_dir, post_filename)
+            if not os.path.isfile(full_original_filename):
+                # if the original file doesn't exist (was remotely deleted by
+                # its author) then remove the corresponding edits
                 try:
-                    os.rename(file_path, archive_path)
-                    remove_edits_ctr += 1
+                    os.remove(full_filename)
+                    edits_removed_ctr += 1
                 except OSError:
-                    print('EX: ' +
-                          'archive_posts_for_person unable to archive edit ' +
-                          file_path + ' -> ' + archive_path)
-            else:
+                    print('EX: unable to remove ' + ext_name + ' file ' +
+                          full_filename)
+                    continue
+            edit_files_ctr += 1
+            if os.path.isfile(full_filename):
+                content = ''
                 try:
-                    os.remove(edit_filename)
-                    remove_edits_ctr += 1
+                    with open(full_filename, 'r',
+                              encoding='utf-8') as fp_content:
+                        content = fp_content.read()
                 except OSError:
-                    print('EX: ' +
-                          'archive_posts_for_person unable to delete edit ' +
-                          edit_filename)
-        if archive_dir:
-            print('Archived ' + str(remove_edits_ctr) + ' ' + boxname +
-                  ' edits for ' + nickname + '@' + domain)
+                    print('EX: unable to open content 2 ' + full_filename)
+                if '"published":' in content:
+                    published_str = content.split('"published":')[1]
+                    if '"' in published_str:
+                        published_str = published_str.split('"')[1]
+                        # does this look like a date?
+                        if 'T' in published_str and \
+                           '-' in published_str and \
+                           ':' in published_str:
+                            edits_in_box_dict[published_str] = post_filename
+                            edits_ctr += 1
+
+        if edits_removed_ctr > 0:
+            print(str(edits_removed_ctr) + ' ' + ext_name + ' removed from ' +
+                  boxname + ' for ' + nickname + '@' + domain)
+
+        no_of_edits = edits_ctr
+        if no_of_edits <= max_posts_in_box:
+            print('Checked ' + str(no_of_edits) + ' ' + boxname +
+                  ' ' + ext_name + ' in ' + str(edit_files_ctr) +
+                  ' files for ' + nickname + '@' + domain)
         else:
-            print('Removed ' + str(remove_edits_ctr) + ' ' + boxname +
-                  ' edits for ' + nickname + '@' + domain)
+            # sort the list in ascending order of date
+            edits_in_box_sorted = \
+                OrderedDict(sorted(edits_in_box_dict.items(), reverse=False))
+
+            remove_edits_ctr = 0
+            for published_str, edit_filename in edits_in_box_sorted.items():
+                file_path = os.path.join(box_dir, edit_filename)
+                if not os.path.isfile(file_path):
+                    continue
+                if archive_dir:
+                    archive_path = os.path.join(archive_dir, edit_filename)
+                    try:
+                        os.rename(file_path, archive_path)
+                        remove_edits_ctr += 1
+                    except OSError:
+                        print('EX: ' +
+                              'archive_posts_for_person unable to archive ' +
+                              ext_name + ' ' + file_path + ' -> ' +
+                              archive_path)
+                else:
+                    try:
+                        os.remove(edit_filename)
+                        remove_edits_ctr += 1
+                    except OSError:
+                        print('EX: ' +
+                              'archive_posts_for_person unable to delete ' +
+                              ext_name + ' ' + edit_filename)
+            if archive_dir:
+                print('Archived ' + str(remove_edits_ctr) + ' ' + boxname +
+                      ' ' + ext_name + ' for ' + nickname + '@' + domain)
+            else:
+                print('Removed ' + str(remove_edits_ctr) + ' ' + boxname +
+                      ' ' + ext_name + ' for ' + nickname + '@' + domain)
 
     posts_in_box_dict = {}
     posts_ctr = 0
