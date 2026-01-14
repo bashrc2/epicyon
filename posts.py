@@ -5686,13 +5686,25 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
     posts_in_box = os.scandir(box_dir)
     edits_in_box_dict = {}
     edits_ctr = 0
+    edits_removed_ctr = 0
     edit_files_ctr = 0
     for post_filename in posts_in_box:
         post_filename = post_filename.name
         if not post_filename.endswith('.edits'):
             continue
-        edit_files_ctr += 1
+        original_post_filename = post_filename.replace('.edits', '.json')
+        full_original_filename = os.path.join(box_dir, original_post_filename)
         full_filename = os.path.join(box_dir, post_filename)
+        if not os.path.isfile(full_original_filename):
+            # if the original file doesn't exist (was remotely deleted by its
+            # author) then remove the corresponding edits
+            try:
+                os.remove(full_filename)
+                edits_removed_ctr += 1
+            except OSError:
+                print('EX: unable to remove edits file ' + full_filename)
+                continue
+        edit_files_ctr += 1
         if os.path.isfile(full_filename):
             content = ''
             try:
@@ -5710,6 +5722,10 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                        ':' in published_str:
                         edits_in_box_dict[published_str] = post_filename
                         edits_ctr += 1
+
+    if edits_removed_ctr > 0:
+        print(str(edits_removed_ctr) + ' edits removed from ' + boxname +
+              ' for ' + nickname + '@' + domain)
 
     no_of_edits = edits_ctr
     if no_of_edits <= max_posts_in_box:
