@@ -5685,12 +5685,14 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
     # remove any edits
     edits_in_box_dict = {}
     edits_ctr = 0
+    edit_files_ctr = 0
     for post_filename in posts_in_box:
         post_filename = post_filename.name
         if not post_filename.endswith('.edits'):
             continue
         full_filename = os.path.join(box_dir, post_filename)
         if os.path.isfile(full_filename):
+            edit_files_ctr += 1
             content = ''
             try:
                 with open(full_filename, 'r', encoding='utf-8') as fp_content:
@@ -5701,14 +5703,18 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                 published_str = content.split('"published":')[1]
                 if '"' in published_str:
                     published_str = published_str.split('"')[1]
-                    if published_str.endswith('Z'):
+                    # does this look like a date?
+                    if 'T' in published_str and \
+                       '-' in published_str and \
+                       ':' in published_str:
                         edits_in_box_dict[published_str] = post_filename
                         edits_ctr += 1
 
     no_of_edits = edits_ctr
     if no_of_edits <= max_posts_in_box:
         print('Checked ' + str(no_of_edits) + ' ' + boxname +
-              ' edits for ' + nickname + '@' + domain)
+              ' edits in ' + str(edit_files_ctr) +
+              ' files for ' + nickname + '@' + domain)
     else:
         # sort the list in ascending order of date
         edits_in_box_sorted = \
