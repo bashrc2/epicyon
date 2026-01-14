@@ -5728,7 +5728,10 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             archive_path = os.path.join(archive_dir, post_filename)
             os.rename(file_path, archive_path)
 
-            extensions = ('replies', 'votes', 'arrived', 'muted')
+            extensions = (
+                'votes', 'arrived', 'muted', 'tts', 'reject', 'mitm',
+                'edits', 'seen'
+            )
             for ext in extensions:
                 ext_path = file_path.replace('.json', '.' + ext)
                 if os.path.isfile(ext_path):
