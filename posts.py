@@ -5829,15 +5829,26 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             for ext in extensions:
                 ext_path = file_path.replace('.json', '.' + ext)
                 if os.path.isfile(ext_path):
-                    os.rename(ext_path,
+                    try:
+                        os.rename(ext_path,
+                                  archive_path.replace('.json', '.' + ext))
+                    except OSError:
+                        print('EX: unable to archive file ' + ext_path +
+                              ' -> ' +
                               archive_path.replace('.json', '.' + ext))
-                else:
-                    ext_path = file_path.replace('.json',
-                                                 '.json.' + ext)
-                    if os.path.isfile(ext_path):
+                    continue
+                ext_path = file_path.replace('.json', '.json.' + ext)
+                if os.path.isfile(ext_path):
+                    try:
                         os.rename(ext_path,
                                   archive_path.replace('.json',
                                                        '.json.' + ext))
+                    except OSError:
+                        print('EX: unable to archive file ' + ext_path +
+                              ' -> ' +
+                              archive_path.replace('.json',
+                                                   '.json.' + ext))
+
         else:
             delete_post(base_dir, http_prefix, nickname, domain,
                         file_path, False, recent_posts_cache, False)
