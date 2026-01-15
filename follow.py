@@ -159,7 +159,13 @@ def _remove_from_follow_base(base_dir: str,
         print('EX: _remove_from_follow_base ' +
               approve_follows_filename + ' ' + str(ex))
 
-    os.rename(approve_follows_filename + '.new', approve_follows_filename)
+    try:
+        os.rename(approve_follows_filename + '.new',
+                  approve_follows_filename)
+    except OSError:
+        print('EX: _remove_from_follow_base could not rename ' +
+              approve_follows_filename + '.new' + ' -> ' +
+              approve_follows_filename)
 
 
 def remove_from_follow_requests(base_dir: str,

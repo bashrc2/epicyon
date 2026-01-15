@@ -481,7 +481,11 @@ def post_message_to_outbox(session, translate: {},
                     create_media_dirs(base_dir, mpath)
                     media_filename = base_dir + '/' + media_path
                     # move the uploaded image to its new path
-                    os.rename(upload_media_filename, media_filename)
+                    try:
+                        os.rename(upload_media_filename, media_filename)
+                    except OSError:
+                        print('EX: post_message_to_outbox unable to rename ' +
+                              upload_media_filename + ' -> ' + media_filename)
                     # convert dictionary to list if needed
                     if isinstance(message_json['object']['attachment'], dict):
                         message_json['object']['attachment'] = \

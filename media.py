@@ -454,7 +454,12 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
         except OSError:
             print('EX: convert_image_to_low_bandwidth unable to delete ' +
                   image_filename)
-        os.rename(low_bandwidth_filename, image_filename)
+        try:
+            os.rename(low_bandwidth_filename, image_filename)
+        except OSError:
+            print('EX: convert_image_to_low_bandwidth could not rename ' +
+                  low_bandwidth_filename + ' -> ' + image_filename)
+
         if os.path.isfile(image_filename):
             print('Image converted to low bandwidth ' + image_filename)
     else:

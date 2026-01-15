@@ -1860,8 +1860,12 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         else:
             if os.path.isfile(filename):
                 new_filename = filename.replace('.temp', '')
-                os.rename(filename, new_filename)
-                filename = new_filename
+                try:
+                    os.rename(filename, new_filename)
+                    filename = new_filename
+                except OSError:
+                    print('EX: POST could not rename ' +
+                          filename + ' -> ' + new_filename)
 
     fields = \
         extract_text_fields_in_post(post_bytes, boundary, debug, None)

@@ -178,7 +178,11 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                 # move to the outbox
                 outbox_post_filename = \
                     post_filename.replace('/scheduled/', '/outbox/')
-                os.rename(post_filename, outbox_post_filename)
+                try:
+                    os.rename(post_filename, outbox_post_filename)
+                except OSError:
+                    print('EX: _update_post_schedule unable to rename ' +
+                          post_filename + ' -> ' + outbox_post_filename)
 
                 print('Scheduled post sent ' + post_id)
 

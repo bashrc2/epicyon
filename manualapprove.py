@@ -363,7 +363,13 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
         # mark this handle as approved for following
         _approve_follower_handle(account_dir, approve_handle)
         # update the follow requests with the handles not yet approved
-        os.rename(approve_follows_filename + '.new', approve_follows_filename)
+        try:
+            os.rename(approve_follows_filename + '.new',
+                      approve_follows_filename)
+        except OSError:
+            print('EX: manual_approve_follow_request could not rename ' +
+                  approve_follows_filename + '.new' + ' -> ' +
+                  approve_follows_filename)
         # remove the .follow file
         if follow_activity_filename:
             if os.path.isfile(follow_activity_filename):

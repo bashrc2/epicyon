@@ -79,8 +79,12 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
               filters_filename + ' ' + str(ex))
         return False
     if os.path.isfile(new_filters_filename):
-        os.rename(new_filters_filename, filters_filename)
-        return True
+        try:
+            os.rename(new_filters_filename, filters_filename)
+            return True
+        except OSError:
+            print('EX: remove_filter could not rename ' +
+                  new_filters_filename + ' -> ' + filters_filename)
     return False
 
 
@@ -105,8 +109,12 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
               filters_filename + ' ' + str(ex))
         return False
     if os.path.isfile(new_filters_filename):
-        os.rename(new_filters_filename, filters_filename)
-        return True
+        try:
+            os.rename(new_filters_filename, filters_filename)
+            return True
+        except OSError:
+            print('EX: remove_global_filter could not rename ' +
+                  new_filters_filename + ' -> ' + filters_filename)
     return False
 
 
