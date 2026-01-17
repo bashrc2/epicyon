@@ -2100,7 +2100,7 @@ def get_gov_domains_list() -> []:
 def get_bsky_domains_list() -> []:
     """returns a list of bluesky bridges
     """
-    return ['brid.gy']
+    return ['brid.gy', 'bsky.feed']
 
 
 def get_nostr_domains_list() -> []:
@@ -2144,8 +2144,7 @@ def contains_bluesky_domain(message_str: str) -> bool:
     """
     bsky_domains = get_bsky_domains_list()
     for domain_str in bsky_domains:
-        if domain_str + '"' in message_str or \
-           domain_str + '/' in message_str:
+        if domain_str in message_str:
             return True
     return False
 
