@@ -737,7 +737,11 @@ def html_history_search(translate: {}, base_dir: str,
                         buy_sites: {},
                         auto_cw_cache: {},
                         mitm_servers: [],
-                        instance_software: {}) -> str:
+                        instance_software: {},
+                        block_military: {},
+                        block_government: {},
+                        block_bluesky: {},
+                        block_nostr: {}) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith("'"):
@@ -859,7 +863,11 @@ def html_history_search(translate: {}, base_dir: str,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    block_military,
+                                    block_government,
+                                    block_bluesky,
+                                    block_nostr)
         if post_str:
             history_search_form += separator_str + post_str
         index += 1
@@ -891,7 +899,11 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                         buy_sites: {}, auto_cw_cache: {},
                         ua_str: str,
                         mitm_servers: [],
-                        instance_software: {}) -> str:
+                        instance_software: {},
+                        block_military: {},
+                        block_government: {},
+                        block_bluesky: {},
+                        block_nostr: {}) -> str:
     """Show a page containing search results for a hashtag
     or after selecting a hashtag from the swarm
     """
@@ -1095,7 +1107,11 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    block_military,
+                                    block_government,
+                                    block_bluesky,
+                                    block_nostr)
         if post_str:
             hashtag_search_form += \
                 text_mode_separator + separator_str + post_str
@@ -1141,7 +1157,11 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                debug: bool, buy_sites: {},
                                auto_cw_cache: {},
                                mitm_servers: [],
-                               instance_software: {}) -> str:
+                               instance_software: {},
+                               block_military: {},
+                               block_government: {},
+                               block_bluesky: {},
+                               block_nostr: {}) -> str:
     """Show a page containing search results for a remote hashtag
     """
     hashtag = urllib.parse.unquote(hashtag_url.split('/')[-1])
@@ -1309,7 +1329,11 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    block_military,
+                                    block_government,
+                                    block_bluesky,
+                                    block_nostr)
         if post_str:
             hashtag_search_form += \
                 text_mode_separator + separator_str + post_str

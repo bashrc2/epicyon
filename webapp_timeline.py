@@ -481,7 +481,11 @@ def html_timeline(default_timeline: str,
                   show_announces: bool,
                   known_epicyon_instances: [],
                   mitm_servers: [],
-                  instance_software: {}) -> str:
+                  instance_software: {},
+                  block_military: {},
+                  block_government: {},
+                  block_bluesky: {},
+                  block_nostr: {}) -> str:
     """Show the timeline as html
     """
     enable_timing_log = False
@@ -1103,7 +1107,11 @@ def html_timeline(default_timeline: str,
                                                 auto_cw_cache,
                                                 mitm_servers,
                                                 instance_software,
-                                                mutuals_list)
+                                                mutuals_list,
+                                                block_military,
+                                                block_government,
+                                                block_bluesky,
+                                                block_nostr)
                     _log_timeline_timing(enable_timing_log,
                                          timeline_start_time, box_name, '12')
 
@@ -1389,7 +1397,11 @@ def html_shares(default_timeline: str,
                 auto_cw_cache: {},
                 known_epicyon_instances: [],
                 mitm_servers: [],
-                instance_software: {}) -> str:
+                instance_software: {},
+                block_military: {},
+                block_government: {},
+                block_bluesky: {},
+                block_nostr: {}) -> str:
     """Show the shares timeline as html
     """
     manually_approve_followers = \
@@ -1426,7 +1438,11 @@ def html_shares(default_timeline: str,
                          reverse_sequence, None, buy_sites,
                          auto_cw_cache, show_announces,
                          known_epicyon_instances,
-                         mitm_servers, instance_software)
+                         mitm_servers, instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_wanted(default_timeline: str,
@@ -1462,7 +1478,11 @@ def html_wanted(default_timeline: str,
                 auto_cw_cache: {},
                 known_epicyon_instances: [],
                 mitm_servers: [],
-                instance_software: {}) -> str:
+                instance_software: {},
+                block_military: {},
+                block_government: {},
+                block_bluesky: {},
+                block_nostr: {}) -> str:
     """Show the wanted timeline as html
     """
     manually_approve_followers = \
@@ -1499,7 +1519,11 @@ def html_wanted(default_timeline: str,
                          reverse_sequence, None, buy_sites,
                          auto_cw_cache, show_announces,
                          known_epicyon_instances,
-                         mitm_servers, instance_software)
+                         mitm_servers, instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_inbox(default_timeline: str,
@@ -1538,7 +1562,11 @@ def html_inbox(default_timeline: str,
                show_announces: bool,
                known_epicyon_instances: [],
                mitm_servers: [],
-               instance_software: {}) -> str:
+               instance_software: {},
+               block_military: {},
+               block_government: {},
+               block_bluesky: {},
+               block_nostr: {}) -> str:
     """Show the inbox as html
     """
     manually_approve_followers = \
@@ -1574,7 +1602,11 @@ def html_inbox(default_timeline: str,
                          reverse_sequence, last_post_id,
                          buy_sites, auto_cw_cache, show_announces,
                          known_epicyon_instances,
-                         mitm_servers, instance_software)
+                         mitm_servers, instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_bookmarks(default_timeline: str,
@@ -1611,7 +1643,11 @@ def html_bookmarks(default_timeline: str,
                    auto_cw_cache: {},
                    known_epicyon_instances: [],
                    mitm_servers: [],
-                   instance_software: {}) -> str:
+                   instance_software: {},
+                   block_military: {},
+                   block_government: {},
+                   block_bluesky: {},
+                   block_nostr: {}) -> str:
     """Show the bookmarks as html
     """
     manually_approve_followers = \
@@ -1647,7 +1683,11 @@ def html_bookmarks(default_timeline: str,
                          reverse_sequence, None, buy_sites,
                          auto_cw_cache, show_announces,
                          known_epicyon_instances,
-                         mitm_servers, instance_software)
+                         mitm_servers, instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_inbox_dms(default_timeline: str,
@@ -1685,7 +1725,11 @@ def html_inbox_dms(default_timeline: str,
                    auto_cw_cache: {},
                    known_epicyon_instances: [],
                    mitm_servers: [],
-                   instance_software: {}) -> str:
+                   instance_software: {},
+                   block_military: {},
+                   block_government: {},
+                   block_bluesky: {},
+                   block_nostr: {}) -> str:
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1717,7 +1761,11 @@ def html_inbox_dms(default_timeline: str,
                          reverse_sequence, last_post_id,
                          buy_sites, auto_cw_cache, show_announces,
                          known_epicyon_instances,
-                         mitm_servers, instance_software)
+                         mitm_servers, instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_inbox_replies(default_timeline: str,
@@ -1755,7 +1803,11 @@ def html_inbox_replies(default_timeline: str,
                        auto_cw_cache: {},
                        known_epicyon_instances: [],
                        mitm_servers: [],
-                       instance_software: {}) -> str:
+                       instance_software: {},
+                       block_military: {},
+                       block_government: {},
+                       block_bluesky: {},
+                       block_nostr: {}) -> str:
     """Show the replies timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1785,7 +1837,11 @@ def html_inbox_replies(default_timeline: str,
                          reverse_sequence, last_post_id, buy_sites,
                          auto_cw_cache, show_announces,
                          known_epicyon_instances, mitm_servers,
-                         instance_software)
+                         instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_inbox_media(default_timeline: str,
@@ -1824,7 +1880,11 @@ def html_inbox_media(default_timeline: str,
                      show_announces: bool,
                      known_epicyon_instances: [],
                      mitm_servers: [],
-                     instance_software: {}) -> str:
+                     instance_software: {},
+                     block_military: {},
+                     block_government: {},
+                     block_bluesky: {},
+                     block_nostr: {}) -> str:
     """Show the media timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1853,7 +1913,11 @@ def html_inbox_media(default_timeline: str,
                          reverse_sequence, last_post_id, buy_sites,
                          auto_cw_cache, show_announces,
                          known_epicyon_instances, mitm_servers,
-                         instance_software)
+                         instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_inbox_blogs(default_timeline: str,
@@ -1891,7 +1955,11 @@ def html_inbox_blogs(default_timeline: str,
                      auto_cw_cache: {},
                      known_epicyon_instances: [],
                      mitm_servers: [],
-                     instance_software: {}) -> str:
+                     instance_software: {},
+                     block_military: {},
+                     block_government: {},
+                     block_bluesky: {},
+                     block_nostr: {}) -> str:
     """Show the blogs timeline as html
     """
     artist = is_artist(base_dir, nickname)
@@ -1921,7 +1989,11 @@ def html_inbox_blogs(default_timeline: str,
                          reverse_sequence, last_post_id, buy_sites,
                          auto_cw_cache, show_announces,
                          known_epicyon_instances, mitm_servers,
-                         instance_software)
+                         instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_inbox_features(default_timeline: str,
@@ -1959,7 +2031,11 @@ def html_inbox_features(default_timeline: str,
                         auto_cw_cache: {},
                         known_epicyon_instances: [],
                         mitm_servers: [],
-                        instance_software: {}) -> str:
+                        instance_software: {},
+                        block_military: {},
+                        block_government: {},
+                        block_bluesky: {},
+                        block_nostr: {}) -> str:
     """Show the features timeline as html
     """
     show_announces = True
@@ -1988,7 +2064,11 @@ def html_inbox_features(default_timeline: str,
                          reverse_sequence, None, buy_sites,
                          auto_cw_cache, show_announces,
                          known_epicyon_instances, mitm_servers,
-                         instance_software)
+                         instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_inbox_news(default_timeline: str,
@@ -2025,7 +2105,11 @@ def html_inbox_news(default_timeline: str,
                     auto_cw_cache: {},
                     known_epicyon_instances: [],
                     mitm_servers: [],
-                    instance_software: {}) -> str:
+                    instance_software: {},
+                    block_military: {},
+                    block_government: {},
+                    block_bluesky: {},
+                    block_nostr: {}) -> str:
     """Show the news timeline as html
     """
     show_announces = True
@@ -2054,7 +2138,11 @@ def html_inbox_news(default_timeline: str,
                          reverse_sequence, None, buy_sites,
                          auto_cw_cache, show_announces,
                          known_epicyon_instances, mitm_servers,
-                         instance_software)
+                         instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
 
 def html_outbox(default_timeline: str,
@@ -2092,7 +2180,11 @@ def html_outbox(default_timeline: str,
                 show_announces: bool,
                 known_epicyon_instances: [],
                 mitm_servers: [],
-                instance_software: {}) -> str:
+                instance_software: {},
+                block_military: {},
+                block_government: {},
+                block_bluesky: {},
+                block_nostr: {}) -> str:
     """Show the Outbox as html
     """
     manually_approve_followers = \
@@ -2122,4 +2214,8 @@ def html_outbox(default_timeline: str,
                          dogwhistles, ua_str, min_images_for_accounts,
                          reverse_sequence, None, buy_sites, auto_cw_cache,
                          show_announces, known_epicyon_instances,
-                         mitm_servers, instance_software)
+                         mitm_servers, instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)

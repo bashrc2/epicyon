@@ -198,7 +198,11 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                                     auto_cw_cache: {},
                                     mitm_servers: [],
                                     instance_software: {},
-                                    mutuals_list: []) -> None:
+                                    mutuals_list: [],
+                                    block_military: {},
+                                    block_government: {},
+                                    block_bluesky: {},
+                                    block_nostr: {}) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -230,7 +234,11 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
                             bold_reading, dogwhistles, minimize_all_images,
                             None, buy_sites, auto_cw_cache,
                             mitm_servers, instance_software,
-                            mutuals_list)
+                            mutuals_list,
+                            block_military,
+                            block_government,
+                            block_bluesky,
+                            block_nostr)
 
 
 def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
@@ -824,7 +832,11 @@ def update_edited_post(base_dir: str,
                        onion_domain: str,
                        i2p_domain: str,
                        mitm_servers: [],
-                       instance_software: {}) -> None:
+                       instance_software: {},
+                       block_military: {},
+                       block_government: {},
+                       block_bluesky: {},
+                       block_nostr: {}) -> None:
     """ When an edited post is created this assigns
     a published and updated date to it, and uses
     the previous id
@@ -876,7 +888,11 @@ def update_edited_post(base_dir: str,
                          auto_cw_cache,
                          onion_domain, i2p_domain,
                          mitm_servers,
-                         instance_software)
+                         instance_software,
+                         block_military,
+                         block_government,
+                         block_bluesky,
+                         block_nostr)
 
     # update the index
     id_str = edited_postid.split('/')[-1]
@@ -1903,7 +1919,11 @@ def _inbox_after_initial(server, inbox_start_time,
                     bold_reading, dogwhistles,
                     server.min_images_for_accounts,
                     buy_sites, server.auto_cw_cache,
-                    mitm_servers, instance_software):
+                    mitm_servers, instance_software,
+                    server.block_military,
+                    server.block_government,
+                    server.block_bluesky,
+                    server.block_nostr):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1931,7 +1951,11 @@ def _inbox_after_initial(server, inbox_start_time,
                          bold_reading, dogwhistles,
                          server.min_images_for_accounts,
                          buy_sites, server.auto_cw_cache,
-                         mitm_servers, instance_software):
+                         mitm_servers, instance_software,
+                         server.block_military,
+                         server.block_government,
+                         server.block_bluesky,
+                         server.block_nostr):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1962,7 +1986,11 @@ def _inbox_after_initial(server, inbox_start_time,
                         buy_sites, server.auto_cw_cache,
                         mitm_servers, instance_software,
                         server.blocked_cache,
-                        server.block_federated):
+                        server.block_federated,
+                        server.block_military,
+                        server.block_government,
+                        server.block_bluesky,
+                        server.block_nostr):
         if debug:
             print('DEBUG: Reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -1991,7 +2019,11 @@ def _inbox_after_initial(server, inbox_start_time,
                             bold_reading, dogwhistles,
                             server.min_images_for_accounts,
                             buy_sites, server.auto_cw_cache,
-                            mitm_servers, instance_software):
+                            mitm_servers, instance_software,
+                            server.block_military,
+                            server.block_government,
+                            server.block_bluesky,
+                            server.block_nostr):
         if debug:
             print('DEBUG: Zot reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2019,7 +2051,11 @@ def _inbox_after_initial(server, inbox_start_time,
                              bold_reading, dogwhistles,
                              server.min_images_for_accounts,
                              buy_sites, server.auto_cw_cache,
-                             mitm_servers, instance_software):
+                             mitm_servers, instance_software,
+                             server.block_military,
+                             server.block_government,
+                             server.block_bluesky,
+                             server.block_nostr):
         if debug:
             print('DEBUG: Undo reaction accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2048,7 +2084,11 @@ def _inbox_after_initial(server, inbox_start_time,
                         server.min_images_for_accounts,
                         server.buy_sites,
                         server.auto_cw_cache,
-                        mitm_servers, instance_software):
+                        mitm_servers, instance_software,
+                        server.block_military,
+                        server.block_government,
+                        server.block_bluesky,
+                        server.block_nostr):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2077,7 +2117,11 @@ def _inbox_after_initial(server, inbox_start_time,
                              server.min_images_for_accounts,
                              server.buy_sites,
                              server.auto_cw_cache,
-                             mitm_servers, instance_software):
+                             mitm_servers, instance_software,
+                             server.block_military,
+                             server.block_government,
+                             server.block_bluesky,
+                             server.block_nostr):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2126,7 +2170,11 @@ def _inbox_after_initial(server, inbox_start_time,
                         languages_understood,
                         server.auto_cw_cache,
                         server.block_federated,
-                        mitm_servers, instance_software):
+                        mitm_servers, instance_software,
+                        server.block_military,
+                        server.block_government,
+                        server.block_bluesky,
+                        server.block_nostr):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2528,6 +2576,7 @@ def _inbox_after_initial(server, inbox_start_time,
                         min_img_for_accounts = \
                             server.min_images_for_accounts
                         instance_software = server.instance_software
+                        block_government = server.block_government
                         _inbox_store_post_to_html_cache(recent_posts_cache,
                                                         max_recent_posts,
                                                         translate, base_dir,
@@ -2557,7 +2606,11 @@ def _inbox_after_initial(server, inbox_start_time,
                                                         server.auto_cw_cache,
                                                         server.mitm_servers,
                                                         instance_software,
-                                                        mutuals_list)
+                                                        mutuals_list,
+                                                        server.block_military,
+                                                        block_government,
+                                                        server.block_bluesky,
+                                                        server.block_nostr)
                         fitness_performance(inbox_start_time,
                                             server.fitness,
                                             'INBOX',
@@ -3778,7 +3831,11 @@ def run_inbox_queue(server,
                                    server.auto_cw_cache,
                                    onion_domain,
                                    i2p_domain, server.mitm_servers,
-                                   server.instance_software):
+                                   server.instance_software,
+                                   server.block_military,
+                                   server.block_government,
+                                   server.block_bluesky,
+                                   server.block_nostr):
             if debug:
                 print('Queue: Update accepted from ' + key_id)
             if os.path.isfile(queue_filename):

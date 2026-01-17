@@ -137,7 +137,11 @@ def _receive_search_hashtag(self, actor_str: str,
                             buy_sites,
                             auto_cw_cache, ua_str,
                             mitm_servers,
-                            instance_software)
+                            instance_software,
+                            self.server.block_military,
+                            self.server.block_government,
+                            self.server.block_bluesky,
+                            self.server.block_nostr)
     if hashtag_str:
         msg = hashtag_str.encode('utf-8')
         msglen = len(msg)
@@ -289,7 +293,11 @@ def _receive_search_my_posts(self, search_str: str,
                             buy_sites,
                             auto_cw_cache,
                             mitm_servers,
-                            instance_software)
+                            instance_software,
+                            self.server.block_military,
+                            self.server.block_government,
+                            self.server.block_bluesky,
+                            self.server.block_nostr)
     if history_str:
         msg = history_str.encode('utf-8')
         msglen = len(msg)
@@ -404,7 +412,11 @@ def _receive_search_bookmarks(self, search_str: str,
                             buy_sites,
                             auto_cw_cache,
                             mitm_servers,
-                            instance_software)
+                            instance_software,
+                            self.server.block_military,
+                            self.server.block_government,
+                            self.server.block_bluesky,
+                            self.server.block_nostr)
     if bookmarks_str:
         msg = bookmarks_str.encode('utf-8')
         msglen = len(msg)
@@ -611,7 +623,11 @@ def _receive_search_handle(self, search_str: str,
                                   auto_cw_cache,
                                   mitm_servers,
                                   ua_str,
-                                  instance_software)
+                                  instance_software,
+                                  self.server.block_military,
+                                  self.server.block_government,
+                                  self.server.block_bluesky,
+                                  self.server.block_nostr)
     if profile_str:
         msg = profile_str.encode('utf-8')
         msglen = len(msg)

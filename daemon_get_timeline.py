@@ -205,7 +205,11 @@ def show_media_timeline(self, authorized: bool,
                                      show_announces,
                                      known_epicyon_instances,
                                      mitm_servers,
-                                     instance_software)
+                                     instance_software,
+                                     self.server.block_military,
+                                     self.server.block_government,
+                                     self.server.block_bluesky,
+                                     self.server.block_nostr)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -417,7 +421,11 @@ def show_blogs_timeline(self, authorized: bool,
                                      auto_cw_cache,
                                      known_epicyon_instances,
                                      mitm_servers,
-                                     instance_software)
+                                     instance_software,
+                                     self.server.block_military,
+                                     self.server.block_government,
+                                     self.server.block_bluesky,
+                                     self.server.block_nostr)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -634,7 +642,11 @@ def show_news_timeline(self, authorized: bool,
                                     auto_cw_cache,
                                     known_epicyon_instances,
                                     mitm_servers,
-                                    instance_software)
+                                    instance_software,
+                                    self.server.block_military,
+                                    self.server.block_government,
+                                    self.server.block_bluesky,
+                                    self.server.block_nostr)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -845,7 +857,11 @@ def show_features_timeline(self, authorized: bool,
                                         auto_cw_cache,
                                         known_epicyon_instances,
                                         mitm_servers,
-                                        instance_software)
+                                        instance_software,
+                                        self.server.block_military,
+                                        self.server.block_government,
+                                        self.server.block_bluesky,
+                                        self.server.block_nostr)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -1016,7 +1032,11 @@ def show_shares_timeline(self, authorized: bool,
                                 auto_cw_cache,
                                 known_epicyon_instances,
                                 mitm_servers,
-                                instance_software)
+                                instance_software,
+                                self.server.block_military,
+                                self.server.block_government,
+                                self.server.block_bluesky,
+                                self.server.block_nostr)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -1163,7 +1183,11 @@ def show_wanted_timeline(self, authorized: bool,
                                 auto_cw_cache,
                                 known_epicyon_instances,
                                 mitm_servers,
-                                instance_software)
+                                instance_software,
+                                self.server.block_military,
+                                self.server.block_government,
+                                self.server.block_bluesky,
+                                self.server.block_nostr)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -1346,7 +1370,11 @@ def show_bookmarks_timeline(self, authorized: bool,
                                        auto_cw_cache,
                                        known_epicyon_instances,
                                        mitm_servers,
-                                       instance_software)
+                                       instance_software,
+                                       self.server.block_military,
+                                       self.server.block_government,
+                                       self.server.block_bluesky,
+                                       self.server.block_nostr)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     set_headers(self, 'text/html', msglen,
@@ -1565,7 +1593,11 @@ def show_outbox_timeline(self, authorized: bool,
                             show_announces,
                             known_epicyon_instances,
                             mitm_servers,
-                            instance_software)
+                            instance_software,
+                            self.server.block_military,
+                            self.server.block_government,
+                            self.server.block_bluesky,
+                            self.server.block_nostr)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
@@ -1758,7 +1790,11 @@ def show_mod_timeline(self, authorized: bool,
                                         auto_cw_cache,
                                         known_epicyon_instances,
                                         mitm_servers,
-                                        instance_software)
+                                        instance_software,
+                                        self.server.block_military,
+                                        self.server.block_government,
+                                        self.server.block_bluesky,
+                                        self.server.block_nostr)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     set_headers(self, 'text/html', msglen,
@@ -1965,7 +2001,11 @@ def show_dms(self, authorized: bool,
                                        auto_cw_cache,
                                        known_epicyon_instances,
                                        mitm_servers,
-                                       instance_software)
+                                       instance_software,
+                                       self.server.block_military,
+                                       self.server.block_government,
+                                       self.server.block_bluesky,
+                                       self.server.block_nostr)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     set_headers(self, 'text/html', msglen,
@@ -2176,7 +2216,11 @@ def show_replies(self, authorized: bool,
                                        auto_cw_cache,
                                        known_epicyon_instances,
                                        mitm_servers,
-                                       instance_software)
+                                       instance_software,
+                                       self.server.block_military,
+                                       self.server.block_government,
+                                       self.server.block_bluesky,
+                                       self.server.block_nostr)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -2400,7 +2444,11 @@ def show_inbox(self, authorized: bool,
                                    show_announces,
                                    known_epicyon_instances,
                                    mitm_servers,
-                                   instance_software)
+                                   instance_software,
+                                   self.server.block_military,
+                                   self.server.block_government,
+                                   self.server.block_bluesky,
+                                   self.server.block_nostr)
                     if getreq_start_time:
                         fitness_performance(getreq_start_time, fitness,
                                             '_GET', '_show_inbox3',

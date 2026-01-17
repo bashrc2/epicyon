@@ -240,7 +240,11 @@ def hashtag_search2(self, calling_domain: str,
                             buy_sites,
                             auto_cw_cache, ua_str,
                             mitm_servers,
-                            instance_software)
+                            instance_software,
+                            self.server.block_military,
+                            self.server.block_government,
+                            self.server.block_bluesky,
+                            self.server.block_nostr)
     if hashtag_str:
         msg = hashtag_str.encode('utf-8')
         msglen = len(msg)

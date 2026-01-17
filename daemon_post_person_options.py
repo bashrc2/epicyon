@@ -332,7 +332,11 @@ def _person_options_view(self, options_confirm_params: str,
                                       auto_cw_cache,
                                       mitm_servers,
                                       ua_str,
-                                      instance_software)
+                                      instance_software,
+                                      self.server.block_military,
+                                      self.server.block_government,
+                                      self.server.block_bluesky,
+                                      self.server.block_nostr)
         if profile_str:
             msg = profile_str.encode('utf-8')
             msglen = len(msg)
@@ -1007,7 +1011,11 @@ def _person_options_dm(self, options_confirm_params: str,
                           searchable_by_default,
                           mitm_servers,
                           instance_software,
-                          ua_str)
+                          ua_str,
+                          self.server.block_military,
+                          self.server.block_government,
+                          self.server.block_bluesky,
+                          self.server.block_nostr)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -1250,7 +1258,11 @@ def _person_options_report(self, options_confirm_params: str,
                           searchable_by_default,
                           mitm_servers,
                           instance_software,
-                          ua_str)
+                          ua_str,
+                          self.server.block_military,
+                          self.server.block_government,
+                          self.server.block_bluesky,
+                          self.server.block_nostr)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

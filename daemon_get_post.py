@@ -173,7 +173,11 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                                  mitm_servers,
                                  instance_software,
                                  ua_str,
-                                 mutuals_list)
+                                 mutuals_list,
+                                 self.server.block_military,
+                                 self.server.block_government,
+                                 self.server.block_bluesky,
+                                 self.server.block_nostr)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         set_html_post_headers(self, msglen,
@@ -543,7 +547,11 @@ def show_new_post(self, edit_post_params: {},
                           searchable_by_default,
                           mitm_servers,
                           instance_software,
-                          ua_str)
+                          ua_str,
+                          self.server.block_military,
+                          self.server.block_government,
+                          self.server.block_bluesky,
+                          self.server.block_nostr)
         if not msg:
             print('Error replying to ' + in_reply_to_url)
             http_404(self, 104)
@@ -802,7 +810,11 @@ def show_likers_of_post(self, authorized: bool,
                             auto_cw_cache, 'likes',
                             mitm_servers,
                             instance_software,
-                            ua_str)
+                            ua_str,
+                            self.server.block_military,
+                            self.server.block_government,
+                            self.server.block_bluesky,
+                            self.server.block_nostr)
     if not msg:
         http_404(self, 69)
         return True
@@ -901,7 +913,11 @@ def show_announcers_of_post(self, authorized: bool,
                             auto_cw_cache,
                             'shares', mitm_servers,
                             instance_software,
-                            ua_str)
+                            ua_str,
+                            self.server.block_military,
+                            self.server.block_government,
+                            self.server.block_bluesky,
+                            self.server.block_nostr)
     if not msg:
         http_404(self, 70)
         return True
@@ -1055,7 +1071,11 @@ def show_replies_to_post(self, authorized: bool,
                                   auto_cw_cache,
                                   mitm_servers,
                                   instance_software,
-                                  mutuals_list)
+                                  mutuals_list,
+                                  self.server.block_military,
+                                  self.server.block_government,
+                                  self.server.block_bluesky,
+                                  self.server.block_nostr)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'text/html', msglen,
@@ -1172,7 +1192,11 @@ def show_replies_to_post(self, authorized: bool,
                               auto_cw_cache,
                               mitm_servers,
                               instance_software,
-                              mutuals_list)
+                              mutuals_list,
+                              self.server.block_military,
+                              self.server.block_government,
+                              self.server.block_bluesky,
+                              self.server.block_nostr)
         msg = msg.encode('utf-8')
         msglen = len(msg)
         set_headers(self, 'text/html', msglen,
@@ -1431,7 +1455,11 @@ def show_conversation_thread(self, authorized: bool,
                                ua_str,
                                default_timeline,
                                mitm_servers,
-                               instance_software)
+                               instance_software,
+                               self.server.block_military,
+                               self.server.block_government,
+                               self.server.block_bluesky,
+                               self.server.block_nostr)
     if conv_str:
         msg = conv_str.encode('utf-8')
         msglen = len(msg)

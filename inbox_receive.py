@@ -390,7 +390,11 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                          onion_domain: str,
                          i2p_domain: str,
                          mitm_servers: [],
-                         instance_software: {}) -> bool:
+                         instance_software: {},
+                         block_military: {},
+                         block_government: {},
+                         block_bluesky: {},
+                         block_nostr: {}) -> bool:
     """A post was edited
     """
     if not has_object_dict(message_json):
@@ -535,7 +539,11 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                             minimize_all_images, None,
                             buy_sites, auto_cw_cache,
                             mitm_servers, instance_software,
-                            mutuals_list)
+                            mutuals_list,
+                            block_military,
+                            block_government,
+                            block_bluesky,
+                            block_nostr)
     return True
 
 
@@ -673,7 +681,11 @@ def receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                             onion_domain: str,
                             i2p_domain: str,
                             mitm_servers: [],
-                            instance_software: {}) -> bool:
+                            instance_software: {},
+                            block_military: {},
+                            block_government: {},
+                            block_bluesky: {},
+                            block_nostr: {}) -> bool:
     """Receives an Update activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Update':
@@ -721,7 +733,11 @@ def receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                                     auto_cw_cache,
                                     onion_domain, i2p_domain,
                                     mitm_servers,
-                                    instance_software):
+                                    instance_software,
+                                    block_military,
+                                    block_government,
+                                    block_bluesky,
+                                    block_nostr):
                 print('EDITPOST: received ' + message_json['object']['id'])
                 return True
         else:
@@ -979,7 +995,11 @@ def receive_like(recent_posts_cache: {},
                  buy_sites: {},
                  auto_cw_cache: {},
                  mitm_servers: [],
-                 instance_software: {}) -> bool:
+                 instance_software: {},
+                 block_military: {},
+                 block_government: {},
+                 block_bluesky: {},
+                 block_nostr: {}) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Like':
@@ -1098,7 +1118,11 @@ def receive_like(recent_posts_cache: {},
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None, buy_sites,
                                     auto_cw_cache, mitm_servers,
-                                    instance_software, mutuals_list)
+                                    instance_software, mutuals_list,
+                                    block_military,
+                                    block_government,
+                                    block_bluesky,
+                                    block_nostr)
     return True
 
 
@@ -1187,7 +1211,11 @@ def receive_reaction(recent_posts_cache: {},
                      mitm_servers: [],
                      instance_software: {},
                      blocked_cache: [],
-                     block_federated: []) -> bool:
+                     block_federated: [],
+                     block_military: {},
+                     block_government: {},
+                     block_bluesky: {},
+                     block_nostr: {}) -> bool:
     """Receives an emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'EmojiReact':
@@ -1341,7 +1369,11 @@ def receive_reaction(recent_posts_cache: {},
                                     bold_reading, dogwhistles,
                                     minimize_all_images, None, buy_sites,
                                     auto_cw_cache, mitm_servers,
-                                    instance_software, mutuals_list)
+                                    instance_software, mutuals_list,
+                                    block_military,
+                                    block_government,
+                                    block_bluesky,
+                                    block_nostr)
     return True
 
 
@@ -1367,7 +1399,11 @@ def receive_zot_reaction(recent_posts_cache: {},
                          buy_sites: {},
                          auto_cw_cache: {},
                          mitm_servers: [],
-                         instance_software: {}) -> bool:
+                         instance_software: {},
+                         block_military: {},
+                         block_government: {},
+                         block_bluesky: {},
+                         block_nostr: {}) -> bool:
     """Receives an zot-style emoji reaction within the POST section of
     HTTPServer A zot style emoji reaction is an ordinary reply Note whose
     content is exactly one emoji
@@ -1534,7 +1570,11 @@ def receive_zot_reaction(recent_posts_cache: {},
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    block_military,
+                                    block_government,
+                                    block_bluesky,
+                                    block_nostr)
     return True
 
 
@@ -1558,7 +1598,11 @@ def receive_bookmark(recent_posts_cache: {},
                      buy_sites: {},
                      auto_cw_cache: {},
                      mitm_servers: [],
-                     instance_software: {}) -> bool:
+                     instance_software: {},
+                     block_military: {},
+                     block_government: {},
+                     block_bluesky: {},
+                     block_nostr: {}) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -1667,7 +1711,11 @@ def receive_bookmark(recent_posts_cache: {},
                                 buy_sites, auto_cw_cache,
                                 mitm_servers,
                                 instance_software,
-                                mutuals_list)
+                                mutuals_list,
+                                block_military,
+                                block_government,
+                                block_bluesky,
+                                block_nostr)
     return True
 
 
@@ -1772,7 +1820,11 @@ def receive_announce(recent_posts_cache: {},
                      auto_cw_cache: {},
                      block_federated: [],
                      mitm_servers: [],
-                     instance_software: {}) -> bool:
+                     instance_software: {},
+                     block_military: {},
+                     block_government: {},
+                     block_bluesky: {},
+                     block_nostr: {}) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Announce':
@@ -1953,7 +2005,11 @@ def receive_announce(recent_posts_cache: {},
                                 buy_sites, auto_cw_cache,
                                 mitm_servers,
                                 instance_software,
-                                mutuals_list)
+                                mutuals_list,
+                                block_military,
+                                block_government,
+                                block_bluesky,
+                                block_nostr)
     if not announce_html:
         print('WARN: Unable to generate html for announce ' +
               str(message_json))
@@ -1978,7 +2034,11 @@ def receive_announce(recent_posts_cache: {},
                                          bold_reading,
                                          show_vote_posts,
                                          languages_understood,
-                                         mitm_servers)
+                                         mitm_servers,
+                                         block_military,
+                                         block_government,
+                                         block_bluesky,
+                                         block_nostr)
     # are annouced/boosted replies allowed?
     announce_denied = False
     if post_json_object:
@@ -2174,7 +2234,11 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                             buy_sites, auto_cw_cache,
                             mitm_servers,
                             instance_software,
-                            mutuals_list)
+                            mutuals_list,
+                            server.block_military,
+                            server.block_government,
+                            server.block_bluesky,
+                            server.block_nostr)
 
     # add id to inbox index
     inbox_update_index('inbox', base_dir, handle,

@@ -153,7 +153,11 @@ def reaction_picker2(self, calling_domain: str, path: str,
                                    buy_sites,
                                    auto_cw_cache,
                                    mitm_servers,
-                                   instance_software)
+                                   instance_software,
+                                   self.server.block_military,
+                                   self.server.block_government,
+                                   self.server.block_bluesky,
+                                   self.server.block_nostr)
     msg = msg.encode('utf-8')
     msglen = len(msg)
     set_headers(self, 'text/html', msglen,

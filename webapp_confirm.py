@@ -47,7 +47,11 @@ def html_confirm_delete(server,
                         buy_sites: {},
                         auto_cw_cache: {},
                         mitm_servers: [],
-                        instance_software: {}) -> str:
+                        instance_software: {},
+                        block_military: {},
+                        block_government: {},
+                        block_bluesky: {},
+                        block_nostr: {}) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in message_id:
@@ -111,7 +115,11 @@ def html_confirm_delete(server,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None, buy_sites,
                                 auto_cw_cache, mitm_servers,
-                                instance_software, mutuals_list)
+                                instance_software, mutuals_list,
+                                block_military,
+                                block_government,
+                                block_bluesky,
+                                block_nostr)
     delete_post_str += '<center>'
     delete_post_str += \
         '  <p class="followText">' + \

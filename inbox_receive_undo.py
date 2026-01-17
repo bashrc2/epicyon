@@ -178,7 +178,11 @@ def receive_undo_like(recent_posts_cache: {},
                       buy_sites: {},
                       auto_cw_cache: {},
                       mitm_servers: [],
-                      instance_software: {}) -> bool:
+                      instance_software: {},
+                      block_military: {},
+                      block_government: {},
+                      block_bluesky: {},
+                      block_nostr: {}) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -286,7 +290,11 @@ def receive_undo_like(recent_posts_cache: {},
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    block_military,
+                                    block_government,
+                                    block_bluesky,
+                                    block_nostr)
     return True
 
 
@@ -311,7 +319,11 @@ def receive_undo_reaction(recent_posts_cache: {},
                           buy_sites: {},
                           auto_cw_cache: {},
                           mitm_servers: [],
-                          instance_software: {}) -> bool:
+                          instance_software: {},
+                          block_military: {},
+                          block_government: {},
+                          block_bluesky: {},
+                          block_nostr: {}) -> bool:
     """Receives an undo emoji reaction within the POST section of HTTPServer
     """
     if message_json['type'] != 'Undo':
@@ -437,7 +449,11 @@ def receive_undo_reaction(recent_posts_cache: {},
                                     buy_sites, auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    block_military,
+                                    block_government,
+                                    block_bluesky,
+                                    block_nostr)
     return True
 
 
@@ -461,7 +477,11 @@ def receive_undo_bookmark(recent_posts_cache: {},
                           buy_sites: {},
                           auto_cw_cache: {},
                           mitm_servers: [],
-                          instance_software: {}) -> bool:
+                          instance_software: {},
+                          block_military: {},
+                          block_government: {},
+                          block_bluesky: {},
+                          block_nostr: {}) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
     if not message_json.get('type'):
@@ -570,7 +590,11 @@ def receive_undo_bookmark(recent_posts_cache: {},
                                 dogwhistles, minimize_all_images, None,
                                 buy_sites, auto_cw_cache,
                                 mitm_servers, instance_software,
-                                mutuals_list)
+                                mutuals_list,
+                                block_military,
+                                block_government,
+                                block_bluesky,
+                                block_nostr)
     return True
 
 

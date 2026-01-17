@@ -3110,7 +3110,11 @@ def daemon_http_get(self) -> None:
                                        self.server.buy_sites,
                                        self.server.auto_cw_cache,
                                        self.server.mitm_servers,
-                                       self.server.instance_software)
+                                       self.server.instance_software,
+                                       self.server.block_military,
+                                       self.server.block_government,
+                                       self.server.block_bluesky,
+                                       self.server.block_nostr)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

@@ -260,7 +260,11 @@ def html_profile_after_search(authorized: bool,
                               auto_cw_cache: {},
                               mitm_servers: [],
                               ua_str: str,
-                              instance_software: {}) -> str:
+                              instance_software: {},
+                              block_military: {},
+                              block_government: {},
+                              block_bluesky: {},
+                              block_nostr: {}) -> str:
     """Show a profile page after a search for a fediverse address
     """
     http = False
@@ -655,7 +659,11 @@ def html_profile_after_search(authorized: bool,
                                         buy_sites, auto_cw_cache,
                                         mitm_servers,
                                         instance_software,
-                                        mutuals_list)
+                                        mutuals_list,
+                                        block_military,
+                                        block_government,
+                                        block_bluesky,
+                                        block_nostr)
             if not profile_post_html:
                 if debug:
                     print('DEBUG: no html produced for profile post: ' +
@@ -1115,7 +1123,11 @@ def html_profile(signing_priv_key_pem: str,
                  known_epicyon_instances: [],
                  mitm_servers: [],
                  instance_software: {},
-                 hide_recent_posts: {}) -> str:
+                 hide_recent_posts: {},
+                 block_military: {},
+                 block_government: {},
+                 block_bluesky: {},
+                 block_nostr: {}) -> str:
     """Show the profile page as html
     """
     show_moved_accounts = False
@@ -1148,7 +1160,11 @@ def html_profile(signing_priv_key_pem: str,
                                  min_images_for_accounts, buy_sites,
                                  auto_cw_cache,
                                  known_epicyon_instances,
-                                 mitm_servers, instance_software)
+                                 mitm_servers, instance_software,
+                                 block_military,
+                                 block_government,
+                                 block_bluesky,
+                                 block_nostr)
 
     domain, port = get_domain_from_actor(profile_json['id'])
     if not domain:
@@ -1760,7 +1776,11 @@ def html_profile(signing_priv_key_pem: str,
                                 auto_cw_cache,
                                 mitm_servers,
                                 instance_software,
-                                mutuals_list) + license_str
+                                mutuals_list,
+                                block_military,
+                                block_government,
+                                block_bluesky,
+                                block_nostr) + license_str
     if not is_group:
         if selected == 'following':
             profile_str += \
@@ -1873,7 +1893,11 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                         auto_cw_cache: {},
                         mitm_servers: [],
                         instance_software: {},
-                        mutuals_list: []) -> str:
+                        mutuals_list: [],
+                        block_military: {},
+                        block_government: {},
+                        block_bluesky: {},
+                        block_nostr: {}) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -1935,7 +1959,11 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
                                             buy_sites, auto_cw_cache,
                                             mitm_servers,
                                             instance_software,
-                                            mutuals_list)
+                                            mutuals_list,
+                                            block_military,
+                                            block_government,
+                                            block_bluesky,
+                                            block_nostr)
                 if post_str and item_id not in shown_items:
                     profile_str += post_str + separator_str
                     shown_items.append(item_id)

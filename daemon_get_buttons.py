@@ -318,7 +318,11 @@ def delete_button(self, calling_domain: str, path: str,
                                 buy_sites,
                                 auto_cw_cache,
                                 mitm_servers,
-                                instance_software)
+                                instance_software,
+                                self.server.block_military,
+                                self.server.block_government,
+                                self.server.block_bluesky,
+                                self.server.block_nostr)
         if delete_str:
             delete_str_len = len(delete_str)
             set_headers(self, 'text/html', delete_str_len,

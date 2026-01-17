@@ -270,7 +270,11 @@ def like_button(self, calling_domain: str, path: str,
                                     auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    self.server.block_military,
+                                    self.server.block_government,
+                                    self.server.block_bluesky,
+                                    self.server.block_nostr)
         else:
             print('WARN: Liked post not found: ' + liked_post_filename)
         # clear the icon from the cache so that it gets updated
@@ -529,7 +533,11 @@ def like_button_undo(self, calling_domain: str, path: str,
                                     auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    self.server.block_military,
+                                    self.server.block_government,
+                                    self.server.block_bluesky,
+                                    self.server.block_nostr)
         else:
             print('WARN: Unliked post not found: ' + liked_post_filename)
         # clear the icon from the cache so that it gets updated

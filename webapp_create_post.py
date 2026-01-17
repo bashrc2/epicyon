@@ -280,7 +280,11 @@ def html_new_post(edit_post_params: {},
                   searchable_by_default: str,
                   mitm_servers: [],
                   instance_software: {},
-                  ua_str: str) -> str:
+                  ua_str: str,
+                  block_military: {},
+                  block_government: {},
+                  block_bluesky: {},
+                  block_nostr: {}) -> str:
     """New post screen
     """
     # get the json if this is an edited post
@@ -468,7 +472,11 @@ def html_new_post(edit_post_params: {},
                                                     buy_sites, auto_cw_cache,
                                                     mitm_servers,
                                                     instance_software,
-                                                    mutuals_list)
+                                                    mutuals_list,
+                                                    block_military,
+                                                    block_government,
+                                                    block_bluesky,
+                                                    block_nostr)
                         new_post_text += \
                             open_content_warning(replied_to_post, translate)
                         # about the author

@@ -860,6 +860,10 @@ def _read_local_box_post(session, nickname: str, domain: str,
             get_person_from_cache(base_dir, person_url, person_cache)
         if actor_json:
             languages_understood = get_actor_languages_list(actor_json)
+        block_military = {}
+        block_government = {}
+        block_bluesky = {}
+        block_nostr = {}
         post_json_object2 = \
             download_announce(session, base_dir,
                               http_prefix,
@@ -876,7 +880,11 @@ def _read_local_box_post(session, nickname: str, domain: str,
                               blocked_cache, block_federated, bold_reading,
                               show_vote_posts,
                               languages_understood,
-                              mitm_servers)
+                              mitm_servers,
+                              block_military,
+                              block_government,
+                              block_bluesky,
+                              block_nostr)
         if post_json_object2:
             if has_object_dict(post_json_object2):
                 if post_json_object2['object'].get('attributedTo') and \
@@ -2826,6 +2834,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         yt_replace_domain = None
                         twitter_replacement_domain = None
                         show_vote_posts = False
+                        block_military = {}
+                        block_government = {}
+                        block_bluesky = {}
+                        block_nostr = {}
                         post_json_object2 = \
                             download_announce(session, base_dir,
                                               http_prefix,
@@ -2844,7 +2856,11 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                               bold_reading,
                                               show_vote_posts,
                                               languages_understood,
-                                              mitm_servers)
+                                              mitm_servers,
+                                              block_military,
+                                              block_government,
+                                              block_bluesky,
+                                              block_nostr)
                         if post_json_object2:
                             post_json_object = post_json_object2
                 if post_json_object:

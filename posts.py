@@ -116,6 +116,10 @@ from auth import create_basic_auth_header
 from blocking import is_blocked_hashtag
 from blocking import is_blocked
 from blocking import is_blocked_domain
+from blocking import contains_military_domain
+from blocking import contains_government_domain
+from blocking import contains_bluesky_domain
+from blocking import contains_nostr_domain
 from filters import is_filtered
 from filters import is_question_filtered
 from git import convert_post_to_patch
@@ -4563,6 +4567,10 @@ def is_image_media(session, base_dir: str, http_prefix: str,
     if post_json_object['type'] == 'Announce':
         blocked_cache = {}
         block_federated: list[str] = []
+        block_military = {}
+        block_government = {}
+        block_bluesky = {}
+        block_nostr = {}
         post_json_announce = \
             download_announce(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
@@ -4578,7 +4586,11 @@ def is_image_media(session, base_dir: str, http_prefix: str,
                               bold_reading,
                               show_vote_posts,
                               languages_understood,
-                              mitm_servers)
+                              mitm_servers,
+                              block_military,
+                              block_government,
+                              block_bluesky,
+                              block_nostr)
         if post_json_announce:
             post_json_object = post_json_announce
     if post_json_object['type'] != 'Create':
@@ -6365,7 +6377,11 @@ def download_announce(session, base_dir: str, http_prefix: str,
                       bold_reading: bool,
                       show_vote_posts: bool,
                       languages_understood: [],
-                      mitm_servers: []) -> {}:
+                      mitm_servers: [],
+                      block_military: {},
+                      block_government: {},
+                      block_bluesky: {},
+                      block_nostr: {}) -> {}:
     """Download the post referenced by an announce
     """
     if not post_json_object.get('object'):
@@ -6487,13 +6503,41 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if announced_json.get('attributedTo'):
             announced_actor = get_attributed_to(announced_json['attributedTo'])
 
+        announced_json_str = str(announced_json)
         if not announced_json.get('type'):
             print('WARN: announced post does not have a type ' +
-                  str(announced_json))
+                  announced_json_str)
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache, debug)
             return None
+
+        # check for blocked content
+        if block_military.get(nickname):
+            if contains_military_domain(announced_json_str):
+                _reject_announce(announce_filename,
+                                 base_dir, nickname, domain, post_id,
+                                 recent_posts_cache, debug)
+                return None
+        if block_government.get(nickname):
+            if contains_government_domain(announced_json_str):
+                _reject_announce(announce_filename,
+                                 base_dir, nickname, domain, post_id,
+                                 recent_posts_cache, debug)
+                return None
+        if block_bluesky.get(nickname):
+            if contains_bluesky_domain(announced_json_str):
+                _reject_announce(announce_filename,
+                                 base_dir, nickname, domain, post_id,
+                                 recent_posts_cache, debug)
+                return None
+        if block_nostr.get(nickname):
+            if contains_nostr_domain(announced_json_str):
+                _reject_announce(announce_filename,
+                                 base_dir, nickname, domain, post_id,
+                                 recent_posts_cache, debug)
+                return None
+
         if announced_json['type'] == 'Video':
             converted_json = \
                 convert_video_to_note(base_dir, nickname, domain,

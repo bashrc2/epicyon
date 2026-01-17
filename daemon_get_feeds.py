@@ -174,7 +174,11 @@ def show_shares_feed(self, authorized: bool,
                                  known_epicyon_instances,
                                  mitm_servers,
                                  instance_software,
-                                 hide_recent_posts)
+                                 hide_recent_posts,
+                                 self.server.block_military,
+                                 self.server.block_government,
+                                 self.server.block_bluesky,
+                                 self.server.block_nostr)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
@@ -368,7 +372,11 @@ def show_following_feed(self, authorized: bool,
                                  known_epicyon_instances,
                                  mitm_servers,
                                  instance_software,
-                                 hide_recent_posts).encode('utf-8')
+                                 hide_recent_posts,
+                                 self.server.block_military,
+                                 self.server.block_government,
+                                 self.server.block_bluesky,
+                                 self.server.block_nostr).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html',
                             msglen, cookie, calling_domain, False)
@@ -563,7 +571,11 @@ def show_moved_feed(self, authorized: bool,
                                  known_epicyon_instances,
                                  mitm_servers,
                                  instance_software,
-                                 hide_recent_posts).encode('utf-8')
+                                 hide_recent_posts,
+                                 self.server.block_military,
+                                 self.server.block_government,
+                                 self.server.block_bluesky,
+                                 self.server.block_nostr).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html',
                             msglen, cookie, calling_domain, False)
@@ -751,7 +763,11 @@ def show_inactive_feed(self, authorized: bool,
                                  known_epicyon_instances,
                                  mitm_servers,
                                  instance_software,
-                                 hide_recent_posts).encode('utf-8')
+                                 hide_recent_posts,
+                                 self.server.block_military,
+                                 self.server.block_government,
+                                 self.server.block_bluesky,
+                                 self.server.block_nostr).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html',
                             msglen, cookie, calling_domain, False)
@@ -942,7 +958,11 @@ def show_followers_feed(self, authorized: bool,
                                  known_epicyon_instances,
                                  mitm_servers,
                                  instance_software,
-                                 hide_recent_posts).encode('utf-8')
+                                 hide_recent_posts,
+                                 self.server.block_military,
+                                 self.server.block_government,
+                                 self.server.block_bluesky,
+                                 self.server.block_nostr).encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'text/html', msglen,
                             cookie, calling_domain, False)

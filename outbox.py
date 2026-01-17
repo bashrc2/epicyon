@@ -703,7 +703,11 @@ def post_message_to_outbox(session, translate: {},
                                         buy_sites, auto_cw_cache,
                                         mitm_servers,
                                         instance_software,
-                                        mutuals_list)
+                                        mutuals_list,
+                                        server.block_military,
+                                        server.block_government,
+                                        server.block_bluesky,
+                                        server.block_nostr)
 
     if is_edited_post:
         message_json['type'] = 'Update'

@@ -232,7 +232,11 @@ def _receive_new_post_process_newpost(self, fields: {},
                                auto_cw_cache,
                                onion_domain, i2p_domain,
                                mitm_servers,
-                               instance_software)
+                               instance_software,
+                               self.server.block_military,
+                               self.server.block_government,
+                               self.server.block_bluesky,
+                               self.server.block_nostr)
             print('DEBUG: sending edited public post ' +
                   str(message_json))
         if fields['schedulePost']:
@@ -651,7 +655,11 @@ def _receive_new_post_process_newunlisted(self, fields: {},
                                auto_cw_cache,
                                onion_domain, i2p_domain,
                                mitm_servers,
-                               instance_software)
+                               instance_software,
+                               self.server.block_military,
+                               self.server.block_government,
+                               self.server.block_bluesky,
+                               self.server.block_nostr)
             print('DEBUG: sending edited unlisted post ' +
                   str(message_json))
 
@@ -827,7 +835,11 @@ def _receive_new_post_process_newfollowers(self, fields: {},
                                auto_cw_cache,
                                onion_domain, i2p_domain,
                                mitm_servers,
-                               instance_software)
+                               instance_software,
+                               self.server.block_military,
+                               self.server.block_government,
+                               self.server.block_bluesky,
+                               self.server.block_nostr)
             print('DEBUG: sending edited followers post ' +
                   str(message_json))
 
@@ -1012,7 +1024,11 @@ def _receive_new_post_process_newdm(self, fields: {},
                                auto_cw_cache,
                                onion_domain, i2p_domain,
                                mitm_servers,
-                               instance_software)
+                               instance_software,
+                               self.server.block_military,
+                               self.server.block_government,
+                               self.server.block_bluesky,
+                               self.server.block_nostr)
             print('DEBUG: sending edited dm post ' +
                   str(message_json))
 
@@ -1181,7 +1197,11 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
                                auto_cw_cache,
                                onion_domain, i2p_domain,
                                mitm_servers,
-                               instance_software)
+                               instance_software,
+                               self.server.block_military,
+                               self.server.block_government,
+                               self.server.block_bluesky,
+                               self.server.block_nostr)
             print('DEBUG: sending edited reminder post ' +
                   str(message_json))
         if post_to_outbox(self, message_json,
@@ -1535,7 +1555,11 @@ def _receive_new_post_process_newreading(self, fields: {},
                                auto_cw_cache,
                                onion_domain, i2p_domain,
                                mitm_servers,
-                               instance_software)
+                               instance_software,
+                               self.server.block_military,
+                               self.server.block_government,
+                               self.server.block_bluesky,
+                               self.server.block_nostr)
             print('DEBUG: sending edited reading status post ' +
                   str(message_json))
         if fields['schedulePost']:

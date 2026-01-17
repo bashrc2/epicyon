@@ -185,7 +185,11 @@ def mute_button(self, calling_domain: str, path: str,
                                     auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    self.server.block_military,
+                                    self.server.block_government,
+                                    self.server.block_bluesky,
+                                    self.server.block_nostr)
         else:
             print('WARN: Muted post not found: ' + mute_filename)
 
@@ -366,7 +370,11 @@ def mute_button_undo(self, calling_domain: str, path: str,
                                     auto_cw_cache,
                                     mitm_servers,
                                     instance_software,
-                                    mutuals_list)
+                                    mutuals_list,
+                                    self.server.block_military,
+                                    self.server.block_government,
+                                    self.server.block_bluesky,
+                                    self.server.block_nostr)
         else:
             print('WARN: Unmuted post not found: ' + mute_filename)
     if calling_domain.endswith('.onion') and onion_domain:

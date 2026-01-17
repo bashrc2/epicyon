@@ -2330,7 +2330,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             auto_cw_cache: {},
                             mitm_servers: [],
                             instance_software: {},
-                            mutuals_list: []) -> str:
+                            mutuals_list: [],
+                            block_military: {},
+                            block_government: {},
+                            block_bluesky: {},
+                            block_nostr: {}) -> str:
     """ Shows a single post as html
     """
     if not post_json_object:
@@ -2527,7 +2531,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
                               bold_reading,
                               show_vote_posts,
                               languages_understood,
-                              mitm_servers)
+                              mitm_servers,
+                              block_military,
+                              block_government,
+                              block_bluesky,
+                              block_nostr)
         if not post_json_announce:
             # if the announce could not be downloaded then mark it as rejected
             announced_post_id = remove_id_ending(post_json_object['id'])
@@ -3450,7 +3458,11 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                          auto_cw_cache: {}, mitm_servers: [],
                          instance_software: {},
                          ua_str: str,
-                         mutuals_list: []) -> str:
+                         mutuals_list: [],
+                         block_military: {},
+                         block_government: {},
+                         block_bluesky: {},
+                         block_nostr: {}) -> str:
     """Show an individual post as html
     """
     original_post_json = post_json_object
@@ -3548,7 +3560,11 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None, buy_sites,
                                 auto_cw_cache, mitm_servers,
-                                instance_software, mutuals_list)
+                                instance_software, mutuals_list,
+                                block_military,
+                                block_government,
+                                block_bluesky,
+                                block_nostr)
     message_id = remove_id_ending(post_json_object['id'])
 
     # show the previous posts
@@ -3603,7 +3619,11 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             auto_cw_cache,
                                             mitm_servers,
                                             instance_software,
-                                            mutuals_list) + post_str
+                                            mutuals_list,
+                                            block_military,
+                                            block_government,
+                                            block_bluesky,
+                                            block_nostr) + post_str
 
     # show the following posts
     post_filename = locate_post(base_dir, nickname, domain, message_id)
@@ -3646,7 +3666,11 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                                             minimize_all_images, None,
                                             buy_sites, auto_cw_cache,
                                             mitm_servers, instance_software,
-                                            mutuals_list)
+                                            mutuals_list,
+                                            block_military,
+                                            block_government,
+                                            block_bluesky,
+                                            block_nostr)
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -3701,7 +3725,11 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       auto_cw_cache: {},
                       mitm_servers: [],
                       instance_software: {},
-                      mutuals_list: []) -> str:
+                      mutuals_list: [],
+                      block_military: {},
+                      block_government: {},
+                      block_bluesky: {},
+                      block_nostr: {}) -> str:
     """Show the replies to an individual post as html
     """
     replies_str = ''
@@ -3736,7 +3764,11 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                                         buy_sites, auto_cw_cache,
                                         mitm_servers,
                                         instance_software,
-                                        mutuals_list)
+                                        mutuals_list,
+                                        block_military,
+                                        block_government,
+                                        block_bluesky,
+                                        block_nostr)
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -3773,7 +3805,11 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                buy_sites: {},
                                auto_cw_cache: {},
                                mitm_servers: [],
-                               instance_software: {}) -> str:
+                               instance_software: {},
+                               block_military: {},
+                               block_government: {},
+                               block_bluesky: {},
+                               block_nostr: {}) -> str:
     """Returns the emoji picker screen
     """
     minimize_all_images = False
@@ -3805,7 +3841,11 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                 bold_reading, dogwhistles,
                                 minimize_all_images, None, buy_sites,
                                 auto_cw_cache, mitm_servers,
-                                instance_software, mutuals_list)
+                                instance_software, mutuals_list,
+                                block_military,
+                                block_government,
+                                block_bluesky,
+                                block_nostr)
 
     reactions_filename = base_dir + '/emoji/reactions.json'
     if not os.path.isfile(reactions_filename):
