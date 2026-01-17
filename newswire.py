@@ -315,9 +315,21 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
                "%a, %d %b %Y %H:%M:%S AKST",
                "%a, %d %b %Y %H:%M:%S HST",
                "%a, %d %b %Y %H:%M:%S UT",
+               "%d %b %Y %H:%M:%S %z",
+               "%d %b %Y %H:%M:%S Z",
+               "%d %b %Y %H:%M:%S GMT",
+               "%d %b %Y %H:%M:%S EST",
+               "%d %b %Y %H:%M:%S PST",
+               "%d %b %Y %H:%M:%S AST",
+               "%d %b %Y %H:%M:%S CST",
+               "%d %b %Y %H:%M:%S MST",
+               "%d %b %Y %H:%M:%S AKST",
+               "%d %b %Y %H:%M:%S HST",
+               "%d %b %Y %H:%M:%S UT",
                "%Y-%m-%dT%H:%M:%S%z",
                "%Y-%m-%dT%H:%M:%S%Z",
-               "%a, %d %b %Y %H:%M:%S")
+               "%a, %d %b %Y %H:%M:%S",
+               "%d %b %Y %H:%M:%S")
     published_date = None
     timezone_endings = (
         ',', 'Z', 'GMT', 'EST', 'PST', 'AST', 'CST', 'MST', 'AKST', 'HST',
