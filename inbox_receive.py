@@ -72,6 +72,10 @@ from blocking import is_blocked
 from blocking import is_blocked_domain
 from blocking import is_blocked_nickname
 from blocking import allowed_announce
+from blocking import contains_military_domain
+from blocking import contains_government_domain
+from blocking import contains_bluesky_domain
+from blocking import contains_nostr_domain
 from like import update_likes_collection
 from reaction import valid_emoji_content
 from reaction import update_reaction_collection
@@ -1863,6 +1867,30 @@ def receive_announce(recent_posts_cache: {},
         announce_url = str(message_json['object'])
     else:
         announce_url = get_quote_toot_url(message_json)
+
+    # Check that the domain of the announced post is not blocked
+    handle_nickname = handle.split('@')[0]
+    if block_military.get(handle_nickname):
+        if contains_military_domain(announce_url):
+            print('BLOCK: ' + handle_nickname +
+                  ' blocked military domain announce')
+            return False
+    if block_government.get(handle_nickname):
+        if contains_government_domain(announce_url):
+            print('BLOCK: ' + handle_nickname +
+                  ' blocked government domain announce')
+            return False
+    if block_bluesky.get(handle_nickname):
+        if contains_bluesky_domain(announce_url):
+            print('BLOCK: ' + handle_nickname +
+                  ' blocked bluesky domain announce')
+            return False
+    if block_nostr.get(handle_nickname):
+        if contains_nostr_domain(announce_url):
+            print('BLOCK: ' + handle_nickname +
+                  ' blocked nostr domain announce')
+            return False
+
     if not has_users_path(announce_url):
         # log any unrecognised statuses
         if not contains_statuses(announce_url):
