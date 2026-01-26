@@ -318,7 +318,8 @@ def _remove_meta_data(image_filename: str, output_filename: str) -> None:
 
 def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
                      output_filename: str, spoof_city: str,
-                     content_license_url: str) -> None:
+                     content_license_url: str,
+                     exif_json: list[dict]) -> None:
     """Spoof image metadata using a decoy model for a given city
     """
     if not os.path.isfile(output_filename):
@@ -372,6 +373,52 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
                      '-Comment="" ' +
                      output_filename) != 0:  # nosec
             print('ERROR: exiftool failed to run')
+        else:
+            # FEP-ee3a
+            # https://codeberg.org/fediverse/fep/src/branch/main/
+            # fep/ee3a/fep-ee3a.md
+            exif_json += [
+                {
+                    "@type": "PropertyValue",
+                    "name": "DateTime",
+                    "value": published
+                },
+                {
+                    "@type": "PropertyValue",
+                    "name": "GPSLongitudeRef",
+                    "value": longitude_ref
+                },
+                {
+                    "@type": "PropertyValue",
+                    "name": "GPSLongitude",
+                    "value": str(longitude)
+                },
+                {
+                    "@type": "PropertyValue",
+                    "name": "GPSLatitudeRef",
+                    "value": latitude_ref
+                },
+                {
+                    "@type": "PropertyValue",
+                    "name": "GPSLatitude",
+                    "value": str(latitude)
+                },
+                {
+                    "@type": "PropertyValue",
+                    "name": "Make",
+                    "value": cam_make
+                },
+                {
+                    "@type": "PropertyValue",
+                    "name": "Model",
+                    "value": cam_model
+                },
+                {
+                    "@type": "PropertyValue",
+                    "name": "PhotographicSensitivity",
+                    "value": "400"
+                }
+            ]
     else:
         print('ERROR: exiftool is not installed')
         return
@@ -469,7 +516,8 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
 
 def process_meta_data(base_dir: str, nickname: str, domain: str,
                       image_filename: str, output_filename: str,
-                      city: str, content_license_url: str) -> None:
+                      city: str, content_license_url: str,
+                      exif_json: list[dict]) -> None:
     """Handles image metadata. This tries to spoof the metadata
     if possible, but otherwise just removes it
     """
@@ -478,7 +526,7 @@ def process_meta_data(base_dir: str, nickname: str, domain: str,
 
     # now add some spoofed data to misdirect surveillance capitalists
     _spoof_meta_data(base_dir, nickname, domain, output_filename, city,
-                     content_license_url)
+                     content_license_url, exif_json)
 
 
 def _is_media(image_filename: str) -> bool:
@@ -707,9 +755,15 @@ def attach_media(base_dir: str, http_prefix: str,
         if media_type.startswith('image/'):
             if low_bandwidth:
                 convert_image_to_low_bandwidth(image_filename)
+            exif_json: list[dict] = []
             process_meta_data(base_dir, nickname, domain,
                               image_filename, media_filename, city,
-                              content_license_url)
+                              content_license_url, exif_json)
+            if exif_json:
+                # FEP-ee3a
+                # https://codeberg.org/fediverse/fep/src/branch/main/
+                # fep/ee3a/fep-ee3a.md
+                attachment_json['exifData'] = exif_json
         else:
             copyfile(image_filename, media_filename)
         _log_uploaded_media(base_dir, nickname, domain, media_filename)

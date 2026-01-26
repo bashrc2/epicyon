@@ -2959,9 +2959,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
             if self.server.low_bandwidth:
                 convert_image_to_low_bandwidth(filename)
+            exif_json: list[dict] = []
             process_meta_data(base_dir, nickname, domain,
                               filename, post_image_filename, city,
-                              content_license_url)
+                              content_license_url, exif_json)
             if os.path.isfile(post_image_filename):
                 print('profile update POST ' + m_type +
                       ' image, zip or font saved to ' +

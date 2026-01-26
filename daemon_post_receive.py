@@ -64,6 +64,7 @@ from cache import remove_person_from_cache
 from cache import get_person_from_cache
 from shares import add_shares_to_actor
 from person import get_actor_update_json
+from maps import geocoords_to_osm_link
 
 NEW_POST_SUCCESS = 1
 NEW_POST_FAILED = -1
@@ -1860,6 +1861,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         else:
             print('DEBUG: no media filename in POST')
 
+    exif_json: list[dict] = []
     if filename:
         if is_image_file(filename):
             # convert to low bandwidth if needed
@@ -1875,10 +1877,11 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             city = get_spoofed_city(city, base_dir, nickname, domain)
             process_meta_data(base_dir, nickname, domain,
                               filename, post_image_filename, city,
-                              content_license_url)
+                              content_license_url, exif_json)
             if os.path.isfile(post_image_filename):
                 print('POST media saved to ' + post_image_filename)
             else:
+                exif_json = []
                 print('ERROR: POST media could not be saved to ' +
                       post_image_filename)
         else:
@@ -1953,6 +1956,33 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         fields['eventEndTime'] = None
     if not fields.get('location'):
         fields['location'] = None
+        if exif_json:
+            # convert the exif geolocation into an OSM link
+            latitude = None
+            longitude = None
+            for property_dict in exif_json:
+                if not isinstance(property_dict, dict):
+                    continue
+                if not property_dict.get('name') or \
+                   not property_dict.get('value'):
+                    continue
+                if not isinstance(property_dict['name'], str):
+                    continue
+                if property_dict['name'] == "GPSLongitude":
+                    longitude = property_dict['value']
+                    if not isinstance(longitude, float):
+                        longitude = float(longitude)
+                if property_dict['name'] == "GPSLatitude":
+                    latitude = property_dict['value']
+                    if not isinstance(latitude, float):
+                        longitude = float(latitude)
+            if latitude is not None and \
+               longitude is not None:
+                osm_domain = 'osm.org'
+                zoom = 17
+                fields['location'] = \
+                    geocoords_to_osm_link(osm_domain, zoom,
+                                          latitude, longitude)
     if not fields.get('locationAddress'):
         fields['locationAddress'] = None
     if not fields.get('languagesDropdown'):

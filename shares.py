@@ -393,9 +393,10 @@ def add_share(base_dir: str,
                     continue
                 if low_bandwidth:
                     convert_image_to_low_bandwidth(image_filename)
+                exif_json: list[dict] = []
                 process_meta_data(base_dir, nickname, domain,
                                   image_filename, item_idfile + '.' + ext,
-                                  city, content_license_url)
+                                  city, content_license_url, exif_json)
                 if move_image:
                     try:
                         os.remove(image_filename)

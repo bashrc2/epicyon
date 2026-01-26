@@ -25,8 +25,8 @@ from timeFunctions import date_utcnow
 from session import get_resolved_url
 
 
-def _geocoords_to_osm_link(osm_domain: str, zoom: int,
-                           latitude: float, longitude: float) -> str:
+def geocoords_to_osm_link(osm_domain: str, zoom: int,
+                          latitude: float, longitude: float) -> str:
     """Returns an OSM link for the given geocoordinates
     """
     return 'https://www.' + osm_domain + '/#map=' + \
@@ -280,9 +280,9 @@ def get_location_from_post(post_json_object: {}) -> str:
         # location geocoordinate
         osm_domain = 'osm.org'
         zoom = 17
-        locn = _geocoords_to_osm_link(osm_domain, zoom,
-                                      locn2['latitude'],
-                                      locn2['longitude'])
+        locn = geocoords_to_osm_link(osm_domain, zoom,
+                                     locn2['latitude'],
+                                     locn2['longitude'])
     elif locn_url:
         # location name and link
         if locn:
@@ -814,7 +814,7 @@ def html_open_street_map(url: str,
         return ''
     if not zoom:
         return ''
-    osm_url = _geocoords_to_osm_link(osm_domain, zoom, latitude, longitude)
+    osm_url = geocoords_to_osm_link(osm_domain, zoom, latitude, longitude)
     html_str = \
         '<iframe width="' + width + '" height="' + height + \
         '" frameborder="0" ' + \

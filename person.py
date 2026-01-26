@@ -172,9 +172,10 @@ def set_profile_image(base_dir: str, http_prefix: str,
             ' -size ' + resolution + ' -quality 50 ' + \
             safe_system_string(profile_filename)
         subprocess.call(cmd, shell=True)
+        exif_json: list[dict] = []
         process_meta_data(base_dir, nickname, domain,
                           profile_filename, profile_filename, city,
-                          content_license_url)
+                          content_license_url, exif_json)
         return True
     return False
 
