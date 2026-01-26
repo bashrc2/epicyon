@@ -1970,12 +1970,14 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     continue
                 if property_dict['name'] == "GPSLongitude":
                     longitude = property_dict['value']
-                    if not isinstance(longitude, float):
-                        longitude = float(longitude)
+                    if not is_float(longitude):
+                        if isinstance(longitude, str):
+                            longitude = float(longitude)
                 if property_dict['name'] == "GPSLatitude":
                     latitude = property_dict['value']
-                    if not isinstance(latitude, float):
-                        longitude = float(latitude)
+                    if not is_float(latitude):
+                        if isinstance(latitude, str):
+                            latitude = float(latitude)
             if latitude is not None and \
                longitude is not None:
                 osm_domain = 'osm.org'

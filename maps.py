@@ -276,6 +276,58 @@ def get_location_from_post(post_json_object: {}) -> str:
                 elif isinstance(locn2['address'], dict):
                     locn_address = \
                         _location_address_from_dict(locn2['address'])
+
+    if not locn_exists:
+        # is the location contained within attachments as exif data?
+        # see FEP-ee3a
+        # https://codeberg.org/fediverse/fep/src/branch/main/
+        # fep/ee3a/fep-ee3a.md
+        attachment_list: list[dict] = []
+        if post_obj.get('attachment'):
+            if isinstance(post_obj['attachment'], list):
+                attachment_list = post_obj['attachment']
+        for attach_dict in attachment_list:
+            if not isinstance(attach_dict, dict):
+                continue
+            if not attach_dict.get('type'):
+                continue
+            if not isinstance(attach_dict['type'], str):
+                continue
+            if attach_dict['type'] != 'Image':
+                continue
+            if not attach_dict.get('exifData'):
+                continue
+            if not isinstance(attach_dict['exifData'], list):
+                continue
+            exif_json = attach_dict['exifData']
+            latitude = None
+            longitude = None
+            for property_dict in exif_json:
+                if not isinstance(property_dict, dict):
+                    continue
+                if not property_dict.get('name') or \
+                   not property_dict.get('value'):
+                    continue
+                if not isinstance(property_dict['name'], str):
+                    continue
+                if property_dict['name'] == "GPSLongitude":
+                    longitude = property_dict['value']
+                    if not is_float(longitude):
+                        if isinstance(longitude, str):
+                            longitude = float(longitude)
+                if property_dict['name'] == "GPSLatitude":
+                    latitude = property_dict['value']
+                    if not is_float(latitude):
+                        if isinstance(latitude, str):
+                            latitude = float(latitude)
+            if latitude is not None and \
+               longitude is not None:
+                locn2 = {
+                    'latitude': latitude,
+                    'longitude': longitude
+                }
+                locn_exists = True
+
     if locn_exists:
         # location geocoordinate
         osm_domain = 'osm.org'
