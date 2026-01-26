@@ -91,7 +91,8 @@ def _location_address_from_dict(location: {}) -> str:
 
 
 def _get_location_from_tags(tags: []) -> str:
-    """Returns the location from the tags list
+    """Returns the location string which is typically a link
+    from the tags list
     """
     locn = get_location_dict_from_tags(tags)
     if locn:
@@ -277,7 +278,7 @@ def get_location_from_post(post_json_object: {}) -> str:
                     locn_address = \
                         _location_address_from_dict(locn2['address'])
 
-    if not locn_exists:
+    if not locn and not locn_exists:
         # is the location contained within attachments as exif data?
         # see FEP-ee3a
         # https://codeberg.org/fediverse/fep/src/branch/main/
