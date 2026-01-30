@@ -1880,6 +1880,8 @@ def receive_announce(recent_posts_cache: {},
             print('BLOCK: ' + handle_nickname +
                   ' blocked government domain announce')
             return False
+    print('DEBUG: block_bluesky ' + str(block_bluesky) + ', ' +
+          announce_url)
     if block_bluesky.get(handle_nickname):
         if contains_bluesky_domain(announce_url):
             print('BLOCK: ' + handle_nickname +
