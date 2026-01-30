@@ -6513,26 +6513,30 @@ def download_announce(session, base_dir: str, http_prefix: str,
             return None
 
         # check for blocked content
-        if block_military.get(nickname):
-            if contains_military_domain(announced_json_str):
+        if nickname in block_military:
+            if block_military[nickname] is True and \
+               contains_military_domain(announced_json_str):
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)
                 return None
-        if block_government.get(nickname):
-            if contains_government_domain(announced_json_str):
+        if nickname in block_government:
+            if block_government[nickname] is True and \
+               contains_government_domain(announced_json_str):
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)
                 return None
-        if block_bluesky.get(nickname):
-            if contains_bluesky_domain(announced_json_str):
+        if nickname in block_bluesky:
+            if block_bluesky[nickname] is True and \
+               contains_bluesky_domain(announced_json_str):
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)
                 return None
-        if block_nostr.get(nickname):
-            if contains_nostr_domain(announced_json_str):
+        if nickname in block_nostr:
+            if block_nostr[nickname] is True and \
+               contains_nostr_domain(announced_json_str):
                 _reject_announce(announce_filename,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)

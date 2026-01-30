@@ -1232,26 +1232,30 @@ def daemon_http_post(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-        if self.server.block_military.get(nickname):
-            if contains_military_domain(decoded_message_bytes):
+        if nickname in self.server.block_military:
+            if self.server.block_military[nickname] is True and \
+               contains_military_domain(decoded_message_bytes):
                 http_400(self)
                 print('BLOCK: blocked military domain')
                 self.server.postreq_busy = False
                 return
-        if self.server.block_government.get(nickname):
-            if contains_government_domain(decoded_message_bytes):
+        if nickname in self.server.block_government:
+            if self.server.block_government[nickname] is True and \
+               contains_government_domain(decoded_message_bytes):
                 http_400(self)
                 print('BLOCK: blocked government domain')
                 self.server.postreq_busy = False
                 return
-        if self.server.block_bluesky.get(nickname):
-            if contains_bluesky_domain(decoded_message_bytes):
+        if nickname in self.server.block_bluesky:
+            if self.server.block_bluesky[nickname] is True and \
+               contains_bluesky_domain(decoded_message_bytes):
                 http_400(self)
                 print('BLOCK: blocked bluesky domain')
                 self.server.postreq_busy = False
                 return
-        if self.server.block_nostr.get(nickname):
-            if contains_nostr_domain(decoded_message_bytes):
+        if nickname in self.server.block_nostr:
+            if self.server.block_nostr[nickname] is True and \
+               contains_nostr_domain(decoded_message_bytes):
                 http_400(self)
                 print('BLOCK: blocked nostr domain')
                 self.server.postreq_busy = False
