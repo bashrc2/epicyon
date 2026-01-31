@@ -16,7 +16,7 @@ git add manual.html
 if [ -f /usr/bin/ebook-convert ]; then
     ebook-convert manual.html manual.epub --cover manual-cover.png --authors "${EPUB_AUTHORS}" --language "${EPUB_LANGUAGE}" --tags "${EPUB_TAGS}" --comments "${EPUB_COMMENTS}" --title "${EPUB_TITLE}" --pretty-print  --publisher "${EPUB_PUBLISHER}"
 else
-    echo 'ebook-convert command not found'
+    echo 'ebook-convert command not found, trying flatpak version'
     if [ -f /usr/bin/flatpak ]; then
         if ! flatpak --command="sh" run com.calibre_ebook.calibre \
              -c "ebook-convert manual.html manual.epub --cover manual-cover.png --authors \"${EPUB_AUTHORS}\" --language \"${EPUB_LANGUAGE}\" --tags \"${EPUB_TAGS}\" --comments \"${EPUB_COMMENTS}\" --title \"${EPUB_TITLE}\" --pretty-print --publisher \"${EPUB_PUBLISHER}\""; then

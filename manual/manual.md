@@ -1222,6 +1222,10 @@ In April the fosstodon.org instance melted down after it was discovered that one
 
 In November Eugen Rochko, the original developer and CEO of the Mastodon project, stepped down and took a more advisory role. Mastodon was the main project which propelled the fediverse into public awareness, and the first to implement the ActivityPub specification.
 
+### 2026: End of the flagship
+
+At the FOSDEM conference at the end of January, the Mastodon project announced that its mobile app would by default recommend the geographically closest instance, rather than the "flagship" instance (mastodon.social). The expanding size of the flagship instance had been an issue for the previous few years, making it hard to moderate.
+
 ### Fediverse culture shock
 This is what happens when someone has only had a presence within large corporate sites, such as the website formerly known as Twitter or Facebook, and then moves to a federated system on the open internet.
 
