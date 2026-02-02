@@ -1311,7 +1311,6 @@ def get_actor_type(base_dir: str, actor: str, person_cache: {}) -> str:
     """
     actor = get_actor_from_post_id(actor)
     if person_cache.get(actor):
-        return ''
         if person_cache[actor].get('actor'):
             if person_cache[actor]['actor'].get('type'):
                 if isinstance(person_cache[actor]['actor']['type'], str):
