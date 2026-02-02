@@ -350,10 +350,9 @@ def html_profile_after_search(authorized: bool,
 
     # is this a bot account?
     if profile_json.get('type'):
-        if profile_json['type']:
-            if isinstance(profile_json['type'], str):
-                if profile_json['type'] != 'Person':
-                    display_name = '[' + translate['Bot'] + '] ' + display_name
+        if isinstance(profile_json['type'], str):
+            if profile_json['type'] != 'Person':
+                display_name = '[' + translate['Bot'] + '] ' + display_name
 
     pronouns = get_pronouns(profile_json)
     discord = get_discord(profile_json)
@@ -1186,10 +1185,9 @@ def html_profile(signing_priv_key_pem: str,
 
     # is this a bot account?
     if profile_json.get('type'):
-        if profile_json['type']:
-            if isinstance(profile_json['type'], str):
-                if profile_json['type'] != 'Person':
-                    display_name = '[' + translate['Bot'] + '] ' + display_name
+        if isinstance(profile_json['type'], str):
+            if profile_json['type'] != 'Person':
+                display_name = '[' + translate['Bot'] + '] ' + display_name
 
     domain_full = get_full_domain(domain, port)
     profile_status = get_actor_status(profile_json)
