@@ -1577,8 +1577,9 @@ def _get_post_title_announce_html(base_dir: str,
 
     actor_type = get_actor_type(base_dir, attributed_to, person_cache)
     bot_prefix = ''
-    if actor_type != 'Person':
-        bot_prefix = '[' + translate['Bot'] + '] '
+    if actor_type:
+        if actor_type != 'Person':
+            bot_prefix = '[' + translate['Bot'] + '] '
 
     _log_post_timing(enable_timing_log, post_start_time, '13.3.1')
     announce_display_name2 = \
@@ -1728,8 +1729,9 @@ def _get_reply_html(translate: {},
         mutual_prefix = '⇆ '
 
     bot_prefix = ''
-    if actor_type != 'Person':
-        bot_prefix = '[' + translate['Bot'] + '] '
+    if actor_type:
+        if actor_type != 'Person':
+            bot_prefix = '[' + translate['Bot'] + '] '
 
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_bookmark = '#' + bookmark_from_id(in_reply_to)
@@ -2689,8 +2691,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     actor_type = get_actor_type(base_dir, post_actor, person_cache)
     bot_prefix = ''
-    if actor_type != 'Person':
-        bot_prefix = '[' + translate['Bot'] + '] '
+    if actor_type:
+        if actor_type != 'Person':
+            bot_prefix = '[' + translate['Bot'] + '] '
 
     if display_name:
         display_name = _enforce_max_display_name_length(display_name)
