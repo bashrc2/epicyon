@@ -1285,25 +1285,26 @@ def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
     """Returns the display name for the given actor
     """
     actor = get_actor_from_post_id(actor)
-    if not person_cache.get(actor):
-        return None
     name_found = None
-    if person_cache[actor].get('actor'):
-        if person_cache[actor]['actor'].get('name'):
-            name_found = person_cache[actor]['actor']['name']
-    else:
-        # Try to obtain from the cached actors
-        cached_actor_filename = \
-            base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-        if os.path.isfile(cached_actor_filename):
-            actor_json = load_json(cached_actor_filename)
-            if actor_json:
-                if actor_json.get('name'):
+    if person_cache.get(actor):
+        if person_cache[actor].get('actor'):
+            if person_cache[actor]['actor'].get('name'):
+                if isinstance(person_cache[actor]['actor']['name'], str):
+                    name_found = person_cache[actor]['actor']['name']
+    # Try to obtain from the cached actors
+    cached_actor_filename = \
+        base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+    if os.path.isfile(cached_actor_filename):
+        actor_json = load_json(cached_actor_filename)
+        if actor_json:
+            if actor_json.get('name'):
+                if isinstance(actor_json['name'], str):
                     name_found = actor_json['name']
     if name_found:
         if dangerous_markup(name_found, False, []):
             name_found = "*ADVERSARY*"
-    return standardize_text(name_found)
+        return standardize_text(name_found)
+    return None
 
 
 def get_actor_type(base_dir: str, actor: str, person_cache: {}) -> str:
