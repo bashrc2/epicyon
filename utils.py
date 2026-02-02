@@ -1310,22 +1310,21 @@ def get_actor_type(base_dir: str, actor: str, person_cache: {}) -> str:
     """Returns the type of actor
     """
     actor = get_actor_from_post_id(actor)
-    if not person_cache.get(actor):
+    if person_cache.get(actor):
         return ''
-    if person_cache[actor].get('actor'):
-        if person_cache[actor]['actor'].get('type'):
-            if isinstance(person_cache[actor]['actor']['type'], str):
-                return person_cache[actor]['actor']['type']
-    else:
-        # Try to obtain from the cached actors
-        cached_actor_filename = \
-            base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
-        if os.path.isfile(cached_actor_filename):
-            actor_json = load_json(cached_actor_filename)
-            if actor_json:
-                if actor_json.get('type'):
-                    if isinstance(actor_json['type'], str):
-                        return actor_json['type']
+        if person_cache[actor].get('actor'):
+            if person_cache[actor]['actor'].get('type'):
+                if isinstance(person_cache[actor]['actor']['type'], str):
+                    return person_cache[actor]['actor']['type']
+    # Try to obtain from the cached actors
+    cached_actor_filename = \
+        base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+    if os.path.isfile(cached_actor_filename):
+        actor_json = load_json(cached_actor_filename)
+        if actor_json:
+            if actor_json.get('type'):
+                if isinstance(actor_json['type'], str):
+                    return actor_json['type']
     return ''
 
 
