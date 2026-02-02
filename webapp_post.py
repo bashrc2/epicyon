@@ -75,6 +75,7 @@ from utils import get_cached_post_directory
 from utils import get_cached_post_filename
 from utils import get_protocol_prefixes
 from utils import get_display_name
+from utils import get_actor_type
 from utils import display_name_is_emoji
 from utils import remove_id_ending
 from utils import get_nickname_from_actor
@@ -1574,8 +1575,14 @@ def _get_post_title_announce_html(base_dir: str,
     if announce_handle in mutuals_list:
         mutual_prefix = '⇆ '
 
+    actor_type = get_actor_type(base_dir, attributed_to, person_cache)
+    bot_prefix = ''
+    if actor_type != 'Person':
+        bot_prefix = '[' + translate['Bot'] + '] '
+
     _log_post_timing(enable_timing_log, post_start_time, '13.3.1')
-    announce_display_name2 = mutual_prefix + announce_display_name
+    announce_display_name2 = \
+        mutual_prefix + bot_prefix + announce_display_name
     title_str += \
         _announce_with_display_name_html(translate, post_json_object,
                                          announce_display_name2,
@@ -1707,6 +1714,7 @@ def _reply_with_unknown_path_html(translate: {},
 
 def _get_reply_html(translate: {},
                     in_reply_to: str, reply_display_name: str,
+                    actor_type: str,
                     nickname: str,
                     post_json_object: {},
                     reply_handle: str,
@@ -1718,6 +1726,10 @@ def _get_reply_html(translate: {},
     mutual_prefix = ''
     if reply_handle in mutuals_list:
         mutual_prefix = '⇆ '
+
+    bot_prefix = ''
+    if actor_type != 'Person':
+        bot_prefix = '[' + translate['Bot'] + '] '
 
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
     post_bookmark = '#' + bookmark_from_id(in_reply_to)
@@ -1733,7 +1745,7 @@ def _get_reply_html(translate: {},
         '        <a href="' + post_link + \
         '" class="announceOrReply" tabindex="10" title="' + \
         reply_handle + '">' + '<span itemprop="audience">' + \
-        mutual_prefix + reply_display_name + '</span></a>\n'
+        mutual_prefix + bot_prefix + reply_display_name + '</span></a>\n'
 
     title_str += _get_instance_software_html(title_str, software_name)
     return title_str
@@ -1870,6 +1882,8 @@ def _get_post_title_reply_html(base_dir: str,
             reply_display_name = None
     if not reply_display_name:
         reply_display_name = reply_handle
+    actor_type = \
+        get_actor_type(base_dir, reply_actor, person_cache)
 
     # add emoji to the display name
     if ':' in reply_display_name:
@@ -1887,8 +1901,8 @@ def _get_post_title_reply_html(base_dir: str,
     else:
         title_str += \
             _get_reply_html(translate, in_reply_to, reply_display_name,
-                            nickname, post_json_object, reply_handle,
-                            software_name, mutuals_list)
+                            actor_type, nickname, post_json_object,
+                            reply_handle, software_name, mutuals_list)
 
     if mitm or reply_domain in mitm_servers:
         title_str += mitm_warning_html(translate)
@@ -2673,6 +2687,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if actor_handle in mutuals_list:
         mutual_prefix = '⇆ '
 
+    actor_type = get_actor_type(base_dir, post_actor, person_cache)
+    bot_prefix = ''
+    if actor_type != 'Person':
+        bot_prefix = '[' + translate['Bot'] + '] '
+
     if display_name:
         display_name = _enforce_max_display_name_length(display_name)
         # add emojis
@@ -2686,8 +2705,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
             '" tabindex="10" title="' + actor_handle + '">' + \
-            '<span itemprop="author">' + mutual_prefix + display_name + \
-            mitm_str + '</span></a>\n'
+            '<span itemprop="author">' + mutual_prefix + bot_prefix + \
+            display_name + mitm_str + '</span></a>\n'
     else:
         if not message_id:
             # pprint(post_json_object)
@@ -2703,8 +2722,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             nickname + '?options=' + post_actor + \
             ';' + str(page_number) + ';' + avatar_url + message_id_str + \
             '" tabindex="10">' + \
-            '@<span itemprop="author">' + mutual_prefix + actor_handle + \
-            mitm_str + '</span></a>\n'
+            '@<span itemprop="author">' + mutual_prefix + bot_prefix + \
+            actor_handle + mitm_str + '</span></a>\n'
 
     # benchmark 9
     _log_post_timing(enable_timing_log, post_start_time, '9')

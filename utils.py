@@ -1306,6 +1306,27 @@ def get_display_name(base_dir: str, actor: str, person_cache: {}) -> str:
     return standardize_text(name_found)
 
 
+def get_actor_type(base_dir: str, actor: str, person_cache: {}) -> str:
+    """Returns the type of actor
+    """
+    actor = get_actor_from_post_id(actor)
+    if not person_cache.get(actor):
+        return None
+    if person_cache[actor].get('actor'):
+        if person_cache[actor]['actor'].get('type'):
+            return person_cache[actor]['actor']['type']
+    else:
+        # Try to obtain from the cached actors
+        cached_actor_filename = \
+            base_dir + '/cache/actors/' + (actor.replace('/', '#')) + '.json'
+        if os.path.isfile(cached_actor_filename):
+            actor_json = load_json(cached_actor_filename)
+            if actor_json:
+                if actor_json.get('type'):
+                    return actor_json['type']
+    return None
+
+
 def display_name_is_emoji(display_name: str) -> bool:
     """Returns true if the given display name is an emoji
     """
