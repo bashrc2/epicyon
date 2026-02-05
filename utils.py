@@ -4003,6 +4003,15 @@ def check_bad_path(path: str):
         print('WARN: this is not wordpress ' + path)
         return True
 
+    if path_lower.endswith('.js') or \
+       path_lower.endswith('.php') or \
+       path_lower.endswith('.bak') or \
+       path_lower.endswith('.env') or \
+       path_lower.endswith('.local') or \
+       path_lower.endswith('.yml'):
+        print('WARN: bad path ' + path)
+        return True
+
     if string_contains(path_lower, bad_strings):
         print('WARN: bad path ' + path)
         return True
