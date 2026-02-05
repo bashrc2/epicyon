@@ -3991,7 +3991,8 @@ def check_bad_path(path: str):
 
     bad_strings = ('..', '/.', '%2e%2e', '%252e%252e',
                    '/sftp.', '/sftp-', '/statistics',
-                   '/config/', 'settings.', 'credentials')
+                   '/config/', 'settings.', 'credentials',
+                   '/packs/', '/backend/', '/apis/')
 
     # allow /.well-known/...
     if '/.' in path_lower:
