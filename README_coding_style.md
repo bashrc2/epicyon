@@ -1,5 +1,7 @@
 # Epicyon Coding Style
 
+No LLMs for issues or pull requests. Anything "agentic" will be rejected.
+
 Try to keep to the typical PEP8 coding style supported by Python static analysis systems.
 
 Variables all lower case and using underscores to separate words (snake case).
