@@ -798,6 +798,25 @@ def add_web_links(content: str) -> str:
     return content
 
 
+def _web_link_concatenations(html_text: str) -> str:
+    """If any web links are concatenated with other words then undo them
+    """
+    if 'https://' not in html_text:
+        return html_text
+    words = html_text.split(' ')
+    new_html_text = ''
+    for wrd in words:
+        if 'https://' not in wrd:
+            new_html_text += wrd + ' '
+            continue
+        if wrd.startswith('https://'):
+            new_html_text += wrd + ' '
+            continue
+        new_html_text += wrd.split('https://')[0] + ' '
+        new_html_text += 'https://' + wrd.split('https://')[1] + ' '
+    return new_html_text.strip()
+
+
 def safe_web_text(arbitrary_html: str) -> str:
     """Turns arbitrary html into something safe.
     So if the arbitrary html contains attack scripts those will be removed
@@ -810,6 +829,7 @@ def safe_web_text(arbitrary_html: str) -> str:
     remove_chars = ('Œ', 'â€', 'ğŸ', '�', ']]', '__')
     for remchar in remove_chars:
         safe_text = safe_text.replace(remchar, '')
+    safe_text = _web_link_concatenations(safe_text)
     # recreate any url links safely
     return add_web_links(safe_text)
 
