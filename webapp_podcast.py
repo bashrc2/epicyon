@@ -500,6 +500,8 @@ def html_podcast_episode(translate: {},
         tags_str = ''
         for tag in podcast_properties['categories']:
             tag = tag.replace('#', '')
+            if not tag:
+                continue
             tag_link = '/users/' + nickname + '/tags/' + tag
             tags_str += \
                 '#<a href="' + tag_link + '">' + \
