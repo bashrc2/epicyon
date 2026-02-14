@@ -469,6 +469,18 @@ def daemon_http_get(self) -> None:
         write2(self, msg)
         return
 
+    # handle trust.txt
+    # see trust.txt-specification-v1.5-.pdf
+    if self.path == '/trust.txt' or \
+       self.path.startswith('/.well-known/trust.txt'):
+        msg = "datatrainingallowed=no"
+        msg = msg.encode('utf-8')
+        msglen = len(msg)
+        set_headers(self, 'text/plain', msglen,
+                    '', calling_domain, False)
+        write2(self, msg)
+        return
+
     # Since fediverse crawlers are quite active,
     # make returning info to them high priority
     # get nodeinfo endpoint
