@@ -354,7 +354,8 @@ def html_profile_after_search(authorized: bool,
         if isinstance(profile_json['type'], str):
             if profile_json['type'] != 'Person' or \
                search_nickname in chatbot_nicknames():
-                display_name = '[' + translate['Bot'] + '] ' + display_name
+                display_name = \
+                    '<b>[' + translate['Bot'] + ']</b> ' + display_name
 
     pronouns = get_pronouns(profile_json)
     discord = get_discord(profile_json)
@@ -1190,7 +1191,8 @@ def html_profile(signing_priv_key_pem: str,
         if isinstance(profile_json['type'], str):
             if profile_json['type'] != 'Person' or \
                nickname in chatbot_nicknames():
-                display_name = '[' + translate['Bot'] + '] ' + display_name
+                display_name = \
+                    '<b>[' + translate['Bot'] + ']</b> ' + display_name
 
     domain_full = get_full_domain(domain, port)
     profile_status = get_actor_status(profile_json)
@@ -3929,7 +3931,8 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
         actor_type = get_actor_type(base_dir, follow_url, person_cache)
         if actor_type != 'Person' or \
            actor_nickname in chatbot_nicknames():
-            display_name = '[' + translate['Bot'] + '] ' + display_name
+            display_name = \
+                '<b>[' + translate['Bot'] + ']</b> ' + display_name
         title_str = display_name
 
     if offline:
