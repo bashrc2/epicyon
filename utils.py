@@ -4161,6 +4161,12 @@ def load_instance_software(base_dir: str) -> []:
     return {}
 
 
+def chatbot_nicknames() -> []:
+    """Returns a list of common chatbot usernames/nicknames
+    """
+    return ('gemini', 'chatgpt')
+
+
 def get_event_categories() -> []:
     """Returns event categories
     https://codeberg.org/fediverse/fep/src/branch/main/fep/8a8e/fep-8a8e.md

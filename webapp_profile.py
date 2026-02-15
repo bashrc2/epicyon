@@ -23,6 +23,7 @@ from textmode import text_mode_removals
 from unicodetext import uninvert_text
 from unicodetext import standardize_text
 from occupation import get_occupation_name
+from utils import chatbot_nicknames
 from utils import get_actor_type
 from utils import get_mutuals_of_person
 from utils import get_person_icon
@@ -351,7 +352,8 @@ def html_profile_after_search(authorized: bool,
     # is this a bot account?
     if profile_json.get('type'):
         if isinstance(profile_json['type'], str):
-            if profile_json['type'] != 'Person':
+            if profile_json['type'] != 'Person' or \
+               search_nickname in chatbot_nicknames():
                 display_name = '[' + translate['Bot'] + '] ' + display_name
 
     pronouns = get_pronouns(profile_json)
@@ -1186,7 +1188,8 @@ def html_profile(signing_priv_key_pem: str,
     # is this a bot account?
     if profile_json.get('type'):
         if isinstance(profile_json['type'], str):
-            if profile_json['type'] != 'Person':
+            if profile_json['type'] != 'Person' or \
+               nickname in chatbot_nicknames():
                 display_name = '[' + translate['Bot'] + '] ' + display_name
 
     domain_full = get_full_domain(domain, port)
@@ -3924,7 +3927,8 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                       actor_nickname, domain,
                                       display_name, False, translate)
         actor_type = get_actor_type(base_dir, follow_url, person_cache)
-        if actor_type != 'Person':
+        if actor_type != 'Person' or \
+           actor_nickname in chatbot_nicknames():
             display_name = '[' + translate['Bot'] + '] ' + display_name
         title_str = display_name
 
