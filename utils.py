@@ -4164,7 +4164,7 @@ def load_instance_software(base_dir: str) -> []:
 def chatbot_nicknames() -> []:
     """Returns a list of common chatbot usernames/nicknames
     """
-    return ('gemini', 'chatgpt')
+    return ('gemini', 'chatgpt', 'copilot')
 
 
 def get_event_categories() -> []:
