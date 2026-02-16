@@ -88,8 +88,11 @@ def post_to_outbox(self, message_json: {}, version: str,
         return False
 
     if not is_online():
-        print('WARN: ' + post_to_nickname +
-              ' cannot send post because not online')
+        if post_to_nickname:
+            print('WARN: ' + post_to_nickname +
+                  ' cannot send post because not online')
+        else:
+            print('WARN: cannot send post because not online')
         return False
 
     city = self.server.city
