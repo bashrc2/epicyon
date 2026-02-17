@@ -14,10 +14,15 @@ from utils import remove_link_tracking
 
 
 def _get_website_strings() -> []:
-    return ['www', 'website', 'web', 'homepage', 'home', 'contact']
+    """List of attachment properties indicating a website
+    """
+    return ['www', 'website', 'web', 'homepage', 'home', 'contact',
+            'portfolio']
 
 
 def _get_gemini_strings() -> []:
+    """List of attachment properties indicating a gemini site
+    """
     return ['gemini', 'capsule', 'gemlog']
 
 
