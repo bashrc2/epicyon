@@ -31,10 +31,7 @@ def daemon_http_head(self) -> None:
     if self.server.starting_daemon:
         return
     if check_bad_path(self.path):
-        calling_ip_address = self.request.getpeername()
-        if calling_ip_address:
-            print('WARN: bad path HEAD ' +
-                  self.path + ' ' + str(calling_ip_address))
+        print('WARN: bad path HEAD ' + self.path)
         http_400(self)
         return
 

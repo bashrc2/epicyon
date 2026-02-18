@@ -248,10 +248,7 @@ def daemon_http_get(self) -> None:
     if self.server.starting_daemon:
         return
     if check_bad_path(self.path):
-        calling_ip_address = self.request.getpeername()
-        if calling_ip_address:
-            print('WARN: bad path GET ' +
-                  self.path + ' ' + str(calling_ip_address))
+        print('WARN: bad path GET ' + self.path)
         http_400(self)
         return
 
