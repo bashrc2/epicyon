@@ -4002,7 +4002,6 @@ def check_bad_path(path: str):
             bad_strings = ('..', '%2e%2e', '%252e%252e')
 
     if path_lower.startswith('/wp-'):
-        print('WARN: this is not wordpress ' + path)
         return True
 
     bad_endings = (
@@ -4010,11 +4009,9 @@ def check_bad_path(path: str):
         '.rs', '.ru'
     )
     if string_ends_with(path_lower, bad_endings):
-        print('WARN: bad path ' + path)
         return True
 
     if string_contains(path_lower, bad_strings):
-        print('WARN: bad path ' + path)
         return True
     return False
 

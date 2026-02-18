@@ -254,6 +254,10 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.starting_daemon:
             return
         if check_bad_path(self.path):
+            calling_ip_address = self.request.getpeername()
+            if calling_ip_address:
+                print('WARN: bad path PROPFIND ' +
+                      self.path + ' ' + str(calling_ip_address))
             http_400(self)
             return
 
@@ -263,6 +267,10 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.starting_daemon:
             return
         if check_bad_path(self.path):
+            calling_ip_address = self.request.getpeername()
+            if calling_ip_address:
+                print('WARN: bad path PROPFIND ' +
+                      self.path + ' ' + str(calling_ip_address))
             http_400(self)
             return
 
@@ -272,6 +280,10 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.starting_daemon:
             return
         if check_bad_path(self.path):
+            calling_ip_address = self.request.getpeername()
+            if calling_ip_address:
+                print('WARN: bad path REPORT ' +
+                      self.path + ' ' + str(calling_ip_address))
             http_400(self)
             return
 
@@ -281,6 +293,10 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.starting_daemon:
             return
         if check_bad_path(self.path):
+            calling_ip_address = self.request.getpeername()
+            if calling_ip_address:
+                print('WARN: bad path DELETE ' +
+                      self.path + ' ' + str(calling_ip_address))
             http_400(self)
             return
 
