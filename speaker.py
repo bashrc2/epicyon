@@ -524,11 +524,14 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
             get_domain_from_actor(announcing_actor)
         if announced_nickname and announced_domain:
             announced_handle = announced_nickname + '@' + announced_domain
+            announces_str = 'announces'
+            if translate.get('announces'):
+                announces_str = translate['announces']
             say_content = \
-                translate['announces'] + ' ' + \
+                announces_str + ' ' + \
                 announced_handle + '. ' + say_content
             content = \
-                translate['announces'] + ' ' + \
+                announces_str + ' ' + \
                 announced_handle + '. ' + content
     post_id = None
     if post_json_object['object'].get('id'):
