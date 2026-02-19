@@ -32,6 +32,7 @@ from webfinger import webfinger_handle
 from httpsig import create_signed_header
 from siteactive import site_is_active
 from languages import understood_post_language
+from flags import is_quote_toot
 from flags import is_moderator
 from flags import is_evil
 from flags import is_public_post
@@ -139,6 +140,7 @@ from question import dangerous_question
 from pyjsonld import JsonLdError
 from conversation import conversation_tag_to_convthread_id
 from conversation import post_id_to_convthread_id
+from quote import quote_toots_allowed
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -6655,6 +6657,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache, debug)
             return None
+
         summary_str = \
             get_summary_from_post(announced_json, system_language, [])
         media_descriptions = \
@@ -6748,6 +6751,19 @@ def download_announce(session, base_dir: str, http_prefix: str,
                                  base_dir, nickname, domain, post_id,
                                  recent_posts_cache, debug)
                 return None
+
+            # check if quote toots are allowed
+            if is_quote_toot(announced_json, content_str):
+                allow_quotes = \
+                    quote_toots_allowed(base_dir, nickname, domain,
+                                        attributed_nickname,
+                                        attributed_domain)
+                if not allow_quotes:
+                    print('REJECT: announced quote toot ' +
+                          nickname + '@' + domain + ' ' +
+                          str(announced_json['object']['id']))
+                    return None
+
         post_json_object = announced_json
         replace_you_tube(post_json_object, yt_replace_domain, system_language)
         replace_twitter(post_json_object, twitter_replacement_domain,
