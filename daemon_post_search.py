@@ -499,8 +499,8 @@ def _receive_search_handle(self, search_str: str,
         get_domain_from_actor(search_str)
     if search_nickname and search_domain:
         if not valid_nickname(search_domain, search_nickname):
-            self.send_response(400)
-            self.end_headers()
+            redirect_headers(self, actor_str + '/search',
+                             cookie, calling_domain, 303)
             self.server.postreq_busy = False
             return True
     search_follower = \
