@@ -25,8 +25,10 @@ def get_quote_toot_url(post_json_object: str) -> str:
         '_misskey_quote', 'quote'
     )
     post_obj = post_json_object
+    obj_exists = False
     if has_object_dict(post_json_object):
         post_obj = post_json_object['object']
+        obj_exists = True
 
     for fieldname in object_quote_url_fields:
         if not post_obj.get(fieldname):
@@ -38,7 +40,7 @@ def get_quote_toot_url(post_json_object: str) -> str:
 
     # as defined by FEP-dd4b
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/dd4b/fep-dd4b.md
-    if has_object_dict(post_json_object):
+    if obj_exists:
         if ((post_json_object.get('content') or
              post_json_object.get('contentMap')) and
             (not post_json_object['object'].get('content') and
