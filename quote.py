@@ -50,7 +50,7 @@ def get_quote_toot_url(post_json_object: str) -> str:
                     return remove_html(quote_url)
 
     # Other ActivityPub implementation - adding a Link tag
-    if post_obj.get('tag'):
+    if not post_obj.get('tag'):
         return ''
 
     if not isinstance(post_obj['tag'], list):
