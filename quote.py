@@ -12,6 +12,7 @@ from utils import acct_dir
 from utils import resembles_url
 from utils import remove_html
 from utils import text_in_file
+from utils import has_object_dict
 
 
 def get_quote_toot_url(post_json_object: str) -> str:
@@ -23,34 +24,39 @@ def get_quote_toot_url(post_json_object: str) -> str:
         'quoteUri', 'quoteUrl', 'quoteReply', 'toot:quoteReply',
         '_misskey_quote', 'quote'
     )
+    post_obj = post_json_object
+    if has_object_dict(post_json_object):
+        post_obj = post_json_object['object']
+
     for fieldname in object_quote_url_fields:
-        if not post_json_object['object'].get(fieldname):
+        if not post_obj.get(fieldname):
             continue
-        quote_url = post_json_object['object'][fieldname]
+        quote_url = post_obj[fieldname]
         if isinstance(quote_url, str):
             if resembles_url(quote_url):
                 return remove_html(quote_url)
 
     # as defined by FEP-dd4b
     # https://codeberg.org/fediverse/fep/src/branch/main/fep/dd4b/fep-dd4b.md
-    if ((post_json_object.get('content') or
-         post_json_object.get('contentMap')) and
-        (not post_json_object['object'].get('content') and
-         not post_json_object['object'].get('contentMap')) and
-       post_json_object['object'].get('id')):
-        quote_url = post_json_object['object']['id']
-        if isinstance(quote_url, str):
-            if resembles_url(quote_url):
-                return remove_html(quote_url)
+    if has_object_dict(post_json_object):
+        if ((post_json_object.get('content') or
+             post_json_object.get('contentMap')) and
+            (not post_json_object['object'].get('content') and
+             not post_json_object['object'].get('contentMap')) and
+           post_json_object['object'].get('id')):
+            quote_url = post_json_object['object']['id']
+            if isinstance(quote_url, str):
+                if resembles_url(quote_url):
+                    return remove_html(quote_url)
 
     # Other ActivityPub implementation - adding a Link tag
-    if not post_json_object['object'].get('tag'):
+    if post_obj.get('tag'):
         return ''
 
-    if not isinstance(post_json_object['object']['tag'], list):
+    if not isinstance(post_obj['tag'], list):
         return ''
 
-    for item in post_json_object['object']['tag']:
+    for item in post_obj['tag']:
         if not isinstance(item, dict):
             continue
         if item.get('rel'):
