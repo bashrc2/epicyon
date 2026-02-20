@@ -21,6 +21,7 @@ from utils import get_domain_from_actor
 from utils import get_full_domain
 from utils import local_actor_url
 from utils import remove_eol
+from utils import valid_nickname
 from webapp_utils import get_avatar_image_url
 from webapp_search import html_hashtag_search
 from webapp_search import html_skills_search
@@ -493,8 +494,15 @@ def _receive_search_handle(self, search_str: str,
     # are we already following or followed by the searched
     # for handle?
     search_nickname = get_nickname_from_actor(search_str)
+    # check that nickname is valid, otherwise DNS resolution can fail
     search_domain, search_port = \
         get_domain_from_actor(search_str)
+    if search_nickname and search_domain:
+        if not valid_nickname(search_domain, search_nickname):
+            self.send_response(400)
+            self.end_headers()
+            self.server.postreq_busy = False
+            return True
     search_follower = \
         is_follower_of_person(base_dir, nickname, domain,
                               search_nickname, search_domain)

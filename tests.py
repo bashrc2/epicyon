@@ -5205,6 +5205,10 @@ def _test_valid_nick():
     nickname = 'my invalid nick?'
     assert not valid_nickname(domain, nickname)
 
+    # causes http signature check failures
+    nickname = '你好'
+    assert not valid_nickname(domain, nickname)
+
 
 def _test_guess_tag_category() -> None:
     print('test_guess_hashtag_category')
