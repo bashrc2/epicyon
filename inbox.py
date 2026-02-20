@@ -644,7 +644,8 @@ def _inbox_post_recipients_add(base_dir: str, to_list: [],
                                recipients_dict: {},
                                domain_match: str, domain: str,
                                debug: bool,
-                               onion_domain: str, i2p_domain: str) -> bool:
+                               onion_domain: str,
+                               i2p_domain: str) -> (bool, {}):
     """Given a list of post recipients (to_list) from 'to' or 'cc' parameters
     populate a recipients_dict with the handle for each
     """
@@ -668,7 +669,11 @@ def _inbox_post_recipients_add(base_dir: str, to_list: [],
             handle = nickname + '@' + domain
             handle_dir = acct_handle_dir(base_dir, handle)
             if os.path.isdir(handle_dir):
-                recipients_dict[handle] = None
+                if nickname == 'inbox':
+                    # 'to' is the shared inbox
+                    follower_recipients = True
+                else:
+                    recipients_dict[handle] = None
             else:
                 if debug:
                     print('DEBUG: ' + data_dir(base_dir) + '/' +
@@ -1887,6 +1892,42 @@ def _inbox_after_initial(server, inbox_start_time,
     inbox_start_time = time.time()
 
     handle_name = handle.split('@')[0]
+
+    # check for rejected quote toots
+    if is_quote_toot(message_json, ''):
+        # get the actor which posted
+        quote_post_actor = None
+        if has_object_dict(message_json):
+            if message_json['object'].get('attributedTo'):
+                quote_post_actor = \
+                    get_attributed_to(message_json['object']['attributedTo'])
+        else:
+            if message_json.get('attributedTo'):
+                quote_post_actor = \
+                    get_attributed_to(message_json['attributedTo'])
+        quote_post_nickname = None
+        quote_post_domain_full = None
+        allow_quotes = False
+        if quote_post_actor:
+            quote_post_nickname = get_nickname_from_actor(quote_post_actor)
+            quote_post_domain, quote_post_port = \
+                get_domain_from_actor(quote_post_actor)
+            if quote_post_domain:
+                quote_post_domain_full = \
+                    get_full_domain(quote_post_domain, quote_post_port)
+        # are quote toots allowed from this actor?
+        if quote_post_nickname and quote_post_domain_full:
+            allow_quotes = \
+                quote_toots_allowed(base_dir, handle_name, domain,
+                                    quote_post_nickname,
+                                    quote_post_domain_full)
+        if not allow_quotes:
+            if message_json.get('id'):
+                print('REJECT: inbox quote toot ' +
+                      handle_name + '@' + domain + ' ' +
+                      str(message_json['id']))
+            inbox_start_time = time.time()
+            return False
 
     # get the list of mutuals for the current account
     mutuals_list = get_mutuals_of_person(base_dir, handle_name, domain)
