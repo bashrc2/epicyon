@@ -485,18 +485,20 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
         get_base_content_from_post(post_json_object, system_language)
 
     if obj_dict_exists:
-        if is_quote_toot(post_json_object, content_str):
-            allow_quotes = False
-            if sending_actor:
-                allow_quotes = \
-                    quote_toots_allowed(base_dir, nickname, domain,
-                                        post_nickname, post_domain)
-            if not allow_quotes:
-                if post_json_object.get('id'):
-                    print('REJECT: inbox quote toot ' +
-                          nickname + '@' + domain + ' ' +
-                          str(post_json_object['id']))
-                return None
+        # allow quote toots going to the shared inbox
+        if nickname != 'inbox':
+            if is_quote_toot(post_json_object, content_str):
+                allow_quotes = False
+                if sending_actor:
+                    allow_quotes = \
+                        quote_toots_allowed(base_dir, nickname, domain,
+                                            post_nickname, post_domain)
+                if not allow_quotes:
+                    if post_json_object.get('id'):
+                        print('REJECT: inbox quote toot ' +
+                              nickname + '@' + domain + ' ' +
+                              str(post_json_object['id']))
+                    return None
 
         # is this a reply to a blocked domain or account?
         reply_id = get_reply_to(post_json_object['object'])
