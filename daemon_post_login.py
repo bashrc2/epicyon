@@ -130,7 +130,8 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             ip_address = self.headers['X-Forwarded-For']
         else:
             ip_address = self.client_address[0]
-        if not domain.endswith('.onion'):
+        if not domain.endswith('.onion') and \
+           not domain.endswith('.i2p'):
             if not is_local_network_address(ip_address):
                 print('Login attempt from IP: ' + str(ip_address))
         if not authorize_basic(base_dir, '/users/' +
@@ -140,7 +141,8 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             clear_login_details(self, login_nickname, calling_domain)
             fail_time = int(time.time())
             self.server.last_login_failure = fail_time
-            if not domain.endswith('.onion'):
+            if not domain.endswith('.onion') and \
+               not domain.endswith('.i2p'):
                 if not is_local_network_address(ip_address):
                     record_login_failure(base_dir, ip_address,
                                          self.server.login_failure_count,
