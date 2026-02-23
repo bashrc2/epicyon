@@ -303,6 +303,8 @@ def _receive_new_post_process_newblog(self, fields: {},
                         cookie, calling_domain, False)
             write2(self, message_json)
             return NEW_POST_SUCCESS
+        if debug:
+            print('New post failed on citations')
         return NEW_POST_FAILED
     if not fields['subject']:
         print('WARN: blog posts must have a title')
@@ -384,6 +386,8 @@ def _receive_new_post_process_newblog(self, fields: {},
                              max_replies,
                              debug)
             return NEW_POST_SUCCESS
+    if debug:
+        print('Failed to post new blog')
     return NEW_POST_FAILED
 
 
@@ -1800,6 +1804,8 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         print('DEBUG: receiving POST')
 
     if ' boundary=' not in headers['Content-Type']:
+        if debug:
+            print('No boundary in Content-Type header')
         return NEW_POST_FAILED
 
     if debug:

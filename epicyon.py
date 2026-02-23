@@ -1840,7 +1840,7 @@ def _command_options() -> None:
         proxy_type = 'tor'
     elif argb.i2p or domain.endswith('.i2p'):
         proxy_type = 'i2p'
-    elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+    elif argb.yggdrasil or is_yggdrasil_address(domain):
         proxy_type = 'yggdrasil'
     elif argb.gnunet:
         proxy_type = 'gnunet'
@@ -2146,7 +2146,7 @@ def _command_options() -> None:
             proxy_type = 'i2p'
             if domain.endswith('.i2p'):
                 argb.port = 80
-        elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+        elif argb.yggdrasil or is_yggdrasil_address(domain):
             proxy_type = 'yggdrasil'
             if is_yggdrasil_address(domain):
                 argb.port = 80
@@ -2234,7 +2234,7 @@ def _command_options() -> None:
             proxy_type = 'i2p'
             if domain.endswith('.i2p'):
                 argb.port = 80
-        elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+        elif argb.yggdrasil or is_yggdrasil_address(domain):
             proxy_type = 'yggdrasil'
             if is_yggdrasil_address(domain):
                 argb.port = 80
@@ -3036,7 +3036,7 @@ def _command_options() -> None:
         http_prefix = 'ipns'
     if argb.i2p:
         http_prefix = 'http'
-    if argb.yggdrasil_domain:
+    if argb.yggdrasil:
         http_prefix = 'http'
 
     if argb.migrations:
@@ -3651,7 +3651,7 @@ def _command_options() -> None:
             proxy_type = 'i2p'
             if domain.endswith('.i2p'):
                 argb.port = 80
-        elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+        elif argb.yggdrasil or is_yggdrasil_address(domain):
             proxy_type = 'yggdrasil'
             if is_yggdrasil_address(domain):
                 argb.port = 80
