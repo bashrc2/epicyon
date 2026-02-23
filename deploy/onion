@@ -262,12 +262,9 @@ web_dir=/var/www
 if [ -f /usr/bin/pacman ]; then
     web_dir=/srv/http
 fi
-if [ ! -d /var/www/${ONION_DOMAIN}/htdocs ]; then
-    mkdir -p /var/www/${ONION_DOMAIN}/htdocs
-fi
 
-if [ ! -d /var/www/${ONION_DOMAIN}/htdocs ]; then
-	mkdir -p /var/www/${ONION_DOMAIN}/htdocs
+if [ ! -d "${web_dir}/${ONION_DOMAIN}/htdocs" ]; then
+    mkdir -p "${web_dir}/${ONION_DOMAIN}/htdocs"
 fi
 
 echo "Creating nginx virtual host for ${ONION_DOMAIN}"
@@ -291,7 +288,7 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
   echo '    index index.html;';
   echo '';
   echo '    location /newsmirror {';
-  echo "      root /var/www/${ONION_DOMAIN}/htdocs;";
+  echo "      root ${web_dir}/${ONION_DOMAIN}/htdocs;";
   echo '      try_files $uri =404;';
   echo '    }';
   echo '';
@@ -318,12 +315,12 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
   echo '    }';
   echo '}'; } > "/etc/nginx/sites-available/${username}"
 
-chown -R www-data:www-data /var/www/${ONION_DOMAIN}/htdocs
+chown -R www-data:www-data ${web_dir}/${ONION_DOMAIN}/htdocs
 if [ ! -d ${install_destination}/accounts/newsmirror ]; then
     mkdir -p ${install_destination}/accounts/newsmirror
     chown -R ${username}:${username} ${install_destination}
 fi
-ln -s ${install_destination}/newsmirror /var/www/${ONION_DOMAIN}/htdocs/newsmirror
+ln -s ${install_destination}/newsmirror ${web_dir}/${ONION_DOMAIN}/htdocs/newsmirror
 
 ln -s "/etc/nginx/sites-available/${username}" /etc/nginx/sites-enabled/
 systemctl restart nginx
