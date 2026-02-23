@@ -3953,7 +3953,8 @@ def get_reply_to(post_json_object: {}) -> str:
 def resembles_url(text: str) -> bool:
     """Does the given text look like a url?
     """
-    if '://' in text and '.' in text and \
+    if '://' in text and \
+       ('.' in text or ('[' in text and ']' in text and ':' in text)) and \
        ' ' not in text and '<' not in text:
         return True
     return False
