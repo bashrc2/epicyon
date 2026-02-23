@@ -1702,6 +1702,10 @@ def _command_options() -> None:
 
     yggdrasil_domain = None
     if argb.yggdrasil_domain:
+        if not argb.yggdrasil_domain.startswith('['):
+            argb.yggdrasil_domain = '[' + argb.yggdrasil_domain
+        if not argb.yggdrasil_domain.endswith(']'):
+            argb.yggdrasil_domain = argb.yggdrasil_domain + ']'
         if not is_yggdrasil_address(argb.yggdrasil_domain):
             print(argb.yggdrasil_domain +
                   ' does not look like a yggdrasil domain')
@@ -1776,6 +1780,10 @@ def _command_options() -> None:
     # get yggdrasil domain name from configuration
     configyggdrasil_domain = get_config_param(base_dir, 'yggdrasilDomain')
     if configyggdrasil_domain:
+        if not configyggdrasil_domain.startswith('['):
+            configyggdrasil_domain = '[' + configyggdrasil_domain
+        if not configyggdrasil_domain.endswith(']'):
+            configyggdrasil_domain = configyggdrasil_domain + ']'
         yggdrasil_domain = configyggdrasil_domain
     else:
         yggdrasil_domain = None
@@ -1862,6 +1870,10 @@ def _command_options() -> None:
             session_i2p = create_session('i2p')
         yggdrasil_domain = get_config_param(base_dir, 'yggdrasilDomain')
         if argb.yggdrasil_domain:
+            if not argb.yggdrasil_domain.startswith('['):
+                argb.yggdrasil_domain = '[' + argb.yggdrasil_domain
+            if not argb.yggdrasil_domain.endswith(']'):
+                argb.yggdrasil_domain = argb.yggdrasil_domain + ']'
             yggdrasil_domain = argb.yggdrasil_domain
         if yggdrasil_domain:
             session_yggdrasil = create_session('yggdrasil')
@@ -1919,6 +1931,10 @@ def _command_options() -> None:
             session_i2p = create_session('i2p')
         yggdrasil_domain = get_config_param(base_dir, 'yggdrasilDomain')
         if argb.yggdrasil_domain:
+            if not argb.yggdrasil_domain.startswith('['):
+                argb.yggdrasil_domain = '[' + argb.yggdrasil_domain
+            if not argb.yggdrasil_domain.endswith(']'):
+                argb.yggdrasil_domain = argb.yggdrasil_domain + ']'
             yggdrasil_domain = argb.yggdrasil_domain
         if yggdrasil_domain:
             session_yggdrasil = create_session('yggdrasil')
