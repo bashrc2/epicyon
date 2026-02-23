@@ -67,6 +67,8 @@ from flags import is_right_to_left_text
 from status import actor_status_expired
 from status import get_actor_status
 from unicodetext import uninvert_text
+from utils import remove_domain_port
+from utils import get_port_from_domain
 from utils import is_yggdrasil_url
 from utils import replace_strings
 from utils import valid_content_warning
@@ -9653,8 +9655,12 @@ def _test_yggdrasil_addresses() -> None:
     assert is_yggdrasil_url(text)
     text = 'http://[200:abcd:abcd:abcd:abcd:abcd:abcd:abcd]:5026/something'
     assert is_yggdrasil_url(text)
+    assert get_port_from_domain(text) == 5026
+    assert remove_domain_port(text) == \
+        'http://[200:abcd:abcd:abcd:abcd:abcd:abcd:abcd]'
     text = 'http://[203:abcd:abcd:abcd:abcd:abcd:abcd]/something'
     assert not is_yggdrasil_url(text)
+    assert get_port_from_domain(text) is None
 
 
 def run_all_tests():
