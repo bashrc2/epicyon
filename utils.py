@@ -2963,7 +2963,10 @@ def remove_domain_port(domain: str) -> str:
     if ':' in domain:
         if domain.startswith('did:'):
             return domain
-        domain = domain.split(':')[0]
+        if ']:' not in domain:
+            domain = domain.split(':')[0]
+        else:
+            domain = domain.split(']:')[0] + ']'
     return domain
 
 
@@ -2974,7 +2977,10 @@ def get_port_from_domain(domain: str) -> int:
     if ':' in domain:
         if domain.startswith('did:'):
             return None
-        port_str = domain.split(':')[1]
+        if ']:' not in domain:
+            port_str = domain.split(':')[1]
+        else:
+            port_str = domain.split(']:')[1]
         if port_str.isdigit():
             return int(port_str)
     return None
