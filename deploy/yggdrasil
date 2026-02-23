@@ -38,7 +38,7 @@ if [ -f /usr/bin/pacman ]; then
            imagemagick python-pillow python-requests \
            perl-image-exiftool python-numpy python-dateutil \
            certbot flake8 git wget qrencode \
-           proxychains midori bandit yggdrasil
+           proxychains bandit yggdrasil
     pip3 install pyqrcode pypng
 else
     apt-get update
@@ -49,7 +49,7 @@ else
             libimage-exiftool-perl python3-flake8 \
             python3-django-timezone-field nginx git wget \
             python3-pyqrcode qrencode python3-png \
-            proxychains midori python3-bandit yggdrasil
+            proxychains python3-bandit yggdrasil
 fi
 
 if [ ! -d /etc/yggdrasil ]; then
@@ -336,5 +336,7 @@ echo ''
 echo 'Then register an account. You may also want to add extra public peers'
 echo 'within /etc/yggdrasil/yggdrasil.conf'
 echo 'See https://publicpeers.neilalexander.dev'
+echo ''
+echo 'To show your address use: sudo yggdrasil-address'
 
 exit 0
