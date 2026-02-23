@@ -254,8 +254,8 @@ fi
 
 echo "Creating nginx virtual host for http://[${YGGDRASIL_ADDRESS}]"
 { echo 'server {';
-  echo '    listen 80;';
-  echo '    listen [::]:80;';
+  echo '    listen 80 default_server;';
+  echo '    listen [::]:80 default_server;';
   echo "    server_name ${YGGDRASIL_ADDRESS};"
   echo '';
   echo '    gzip            on;';
@@ -303,6 +303,11 @@ echo "Creating nginx virtual host for http://[${YGGDRASIL_ADDRESS}]"
   echo '}'; } > /etc/nginx/sites-available/${username}
 
 ln -s /etc/nginx/sites-available/${username} /etc/nginx/sites-enabled/
+rm /etc/nginx/sites-enabled/*~
+# remove any default configuration
+if [ -f /etc/nginx/sites-enabled/default ]; then
+	rm /etc/nginx/sites-enabled/default
+fi
 systemctl restart nginx
 
 clear
