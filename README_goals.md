@@ -18,7 +18,7 @@
  * Support content warnings, reporting and blocking
  * http signatures and basic auth
  * JSON-LD signatures on outgoing posts, optional on incoming
- * Compatible with HTTP (onion addresses, i2p) and HTTPS
+ * Compatible with HTTP (onion addresses, i2p, yggdrasil) and HTTPS
  * Minimal dependencies
  * Dependencies are maintained Debian packages
  * Data minimization principle. Configurable post expiry time

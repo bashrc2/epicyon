@@ -301,11 +301,11 @@ To run a security audit:
 Note that not all of the issues identified will necessarily be relevant to this project. Consider its output as a list of things which potentially can be investigated but usually will turn out not to be relevant.
 
 
-## Installing on Onion or i2p domains
+## Installing on Onion, i2p, or yggdrasil addresses
 
 If you don't have access to the clearnet, or prefer not to use it, then it's possible to run an Epicyon instance easily from your laptop. There are scripts within the ```deploy``` directory which can be used to install an instance on a Debian or Arch/Parabola operating system. With some modification of package names they could be also used with other distros.
 
-Please be aware that such installations will not federate with ordinary fediverse instances on the clearnet, unless those instances have been specially modified to do so. But onion instances will federate with other onion instances and i2p instances with other i2p instances.
+Please be aware that such installations will not federate with ordinary fediverse instances on the clearnet, unless those instances have been specially modified to do so. But onion instances will federate with other onion instances, i2p instances with other i2p instances, etc.
 
 
 ## Custom Fonts
