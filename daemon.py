@@ -676,8 +676,9 @@ def run_daemon(accounts_data_dir: str,
         domain = 'localhost'
     if '.' not in domain:
         if domain != 'localhost':
-            print('Invalid domain: ' + domain)
-            return
+            if not is_yggdrasil_address(domain):
+                print('Invalid domain: ' + domain)
+                return
 
     update_moved_actors(base_dir, debug)
 
