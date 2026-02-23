@@ -25,6 +25,7 @@ from posts import create_news_post
 from posts import archive_posts_for_person
 from timeFunctions import date_from_string_format
 from timeFunctions import date_utcnow
+from utils import remove_domain_port
 from utils import valid_hash_tag
 from utils import get_base_content_from_post
 from utils import remove_html
@@ -342,11 +343,7 @@ def _hashtag_add(base_dir: str, http_prefix: str, domain_full: str,
     post_json_object['object']['content'] = content
     domain = domain_full
     if ':' in domain:
-        if ']:' not in domain:
-            domain = domain.split(':')[0]
-        else:
-            # yggdrassil domain
-            domain = domain.split(']:')[0] + ']'
+        domain = remove_domain_port(domain)
     store_hash_tags(base_dir, 'news', domain,
                     http_prefix, domain_full,
                     post_json_object, translate, session)
