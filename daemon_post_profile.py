@@ -210,7 +210,8 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
     print('Sending actor update: ' + str(update_actor_json))
     post_to_outbox(self, update_actor_json,
                    project_version, nickname,
-                   curr_session, proxy_type)
+                   curr_session, proxy_type,
+                   self.server.debug)
     # send move activity if necessary
     if send_move_activity:
         move_actor_json = get_actor_move_json(actor_json)
@@ -218,7 +219,8 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
         post_to_outbox(self, move_actor_json,
                        project_version,
                        nickname,
-                       curr_session, proxy_type)
+                       curr_session, proxy_type,
+                       self.server.debug)
 
 
 def _profile_post_memorial(base_dir: str, nickname: str,

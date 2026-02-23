@@ -40,7 +40,7 @@ def reaction_button(self, calling_domain: str, path: str,
                     yggdrasil_domain: str,
                     getreq_start_time,
                     proxy_type: str, cookie: str,
-                    debug: str,
+                    debug: bool,
                     curr_session,
                     signing_priv_key_pem: str,
                     recent_posts_cache: {},
@@ -203,7 +203,7 @@ def reaction_button(self, calling_domain: str, path: str,
 
     # send out the emoji reaction to followers
     post_to_outbox(self, reaction_json, project_version, None,
-                   curr_session, proxy_type)
+                   curr_session, proxy_type, debug)
 
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_reaction_button postToOutbox',
@@ -347,7 +347,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                          yggdrasil_domain: str,
                          getreq_start_time,
                          proxy_type: str, cookie: str,
-                         debug: str,
+                         debug: bool,
                          curr_session,
                          signing_priv_key_pem: str,
                          recent_posts_cache: {},
@@ -514,7 +514,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
     # send out the undo emoji reaction to followers
     post_to_outbox(self, undo_reaction_json,
                    project_version, None,
-                   curr_session, proxy_type)
+                   curr_session, proxy_type, debug)
 
     # directly undo the emoji reaction within the post file
     if not reaction_post_filename:

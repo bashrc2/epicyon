@@ -19,6 +19,7 @@ from flags import is_featured_writer
 from flags import is_quote_toot
 from quote import quote_toots_allowed
 from timeFunctions import get_account_timezone
+from utils import resembles_url
 from utils import get_mutuals_of_person
 from utils import data_dir
 from utils import get_post_attachments
@@ -333,6 +334,8 @@ def post_message_to_outbox(session, translate: {},
     if has_object_dict(message_json):
         # if this is "local only" and it is not local then reject the post
         if _localonly_not_local(message_json, domain_full):
+            if debug:
+                print('DEBUG: local only message is not local')
             return False
 
         # if quote toots are not allowed then reject the post
@@ -396,14 +399,21 @@ def post_message_to_outbox(session, translate: {},
         # actor should be a string
         actor_url = get_actor_from_post(message_json)
         if not actor_url:
+            if debug:
+                print('DEBUG: post_message_to_outbox no actor url')
             return False
 
         # actor should look like a url
-        if '://' not in actor_url or \
-           '.' not in actor_url:
+        if not resembles_url(actor_url):
+            if debug:
+                print('DEBUG: post_message_to_outbox ' +
+                      'actor does not resemble url')
             return False
 
         if contains_invalid_actor_url_chars(actor_url):
+            if debug:
+                print('DEBUG: post_message_to_outbox ' +
+                      'actor_url contains invalid characters')
             return False
 
         # sent by an actor on a local network address?
@@ -411,6 +421,9 @@ def post_message_to_outbox(session, translate: {},
             local_network_pattern_list = get_local_network_addresses()
             for local_network_pattern in local_network_pattern_list:
                 if local_network_pattern in actor_url:
+                    if debug:
+                        print('DEBUG: post_message_to_outbox ' +
+                              'local network not permitted')
                     return False
 
         # is the post actor blocked?

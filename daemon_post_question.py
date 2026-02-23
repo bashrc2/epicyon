@@ -276,7 +276,7 @@ def _send_reply_to_question(self, base_dir: str,
         message_json['object']['name'] = answer
         if post_to_outbox(self, message_json,
                           project_version, nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             post_filename = \
                 locate_post(base_dir, nickname, domain, message_id)
             if post_filename:

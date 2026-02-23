@@ -25,7 +25,7 @@ def show_instance_actor(self, calling_domain: str,
                         onion_domain: str, i2p_domain: str,
                         yggdrasil_domain: str,
                         getreq_start_time,
-                        cookie: str, debug: str,
+                        cookie: str, debug: bool,
                         enable_shared_inbox: bool,
                         fitness: {}) -> bool:
     """Shows the instance actor

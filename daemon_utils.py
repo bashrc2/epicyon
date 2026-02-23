@@ -79,12 +79,15 @@ from siteactive import is_online
 
 def post_to_outbox(self, message_json: {}, version: str,
                    post_to_nickname: str,
-                   curr_session, proxy_type: str) -> bool:
+                   curr_session, proxy_type: str,
+                   debug: bool) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
     """
     if not curr_session:
+        if debug:
+            print('DEBUG: post_to_outbox no curr_session')
         return False
 
     if not is_online():
@@ -130,7 +133,7 @@ def post_to_outbox(self, message_json: {}, version: str,
                                   self.server.person_cache,
                                   self.server.allow_deletion,
                                   proxy_type, version,
-                                  self.server.debug,
+                                  debug,
                                   self.server.yt_replace_domain,
                                   self.server.twitter_replacement_domain,
                                   self.server.show_published_date_only,
@@ -214,7 +217,8 @@ def post_to_outbox_thread(self, message_json: {},
         thread_with_trace(target=post_to_outbox,
                           args=(self, message_json.copy(),
                                 self.server.project_version, None,
-                                curr_session, proxy_type),
+                                curr_session, proxy_type,
+                                self.server.debug),
                           daemon=True)
     print('Starting outbox thread')
     outbox_thread = \

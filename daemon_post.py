@@ -1321,7 +1321,8 @@ def daemon_http_post(self) -> None:
     if self.outbox_authenticated:
         if post_to_outbox(self, message_json,
                           self.server.project_version, None,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type,
+                          self.server.debug):
             if message_json.get('id'):
                 locn_str = remove_id_ending(message_json['id'])
                 self.headers['Location'] = locn_str

@@ -221,7 +221,8 @@ def remove_share(self, calling_domain: str, cookie: str,
                                        project_version,
                                        share_nickname,
                                        curr_session,
-                                       proxy_type)
+                                       proxy_type,
+                                       self.server.debug)
 
     if calling_domain.endswith('.onion') and onion_domain:
         origin_path_str = 'http://' + onion_domain + users_path

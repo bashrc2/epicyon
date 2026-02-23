@@ -129,6 +129,8 @@ def _receive_new_post_process_newpost(self, fields: {},
         if not fields['message']:
             # remove the pinned content from profile screen
             undo_pinned_post(base_dir, nickname, domain)
+            if debug:
+                print('DEBUG: _receive_new_post_process_newpost no message')
             return NEW_POST_SUCCESS
 
     city = get_spoofed_city(city, base_dir, nickname, domain)
@@ -255,7 +257,7 @@ def _receive_new_post_process_newpost(self, fields: {},
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             populate_replies(base_dir,
                              http_prefix,
                              domain_full,
@@ -263,6 +265,8 @@ def _receive_new_post_process_newpost(self, fields: {},
                              max_replies,
                              debug)
             return NEW_POST_SUCCESS
+        if debug:
+            print('DEBUG: failed to post to outbox')
     return NEW_POST_FAILED
 
 
@@ -379,7 +383,7 @@ def _receive_new_post_process_newblog(self, fields: {},
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             refresh_newswire(base_dir)
             populate_replies(base_dir, http_prefix, domain_full,
                              message_json,
@@ -677,7 +681,7 @@ def _receive_new_post_process_newunlisted(self, fields: {},
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             populate_replies(base_dir, http_prefix, domain,
                              message_json,
                              max_replies,
@@ -859,7 +863,7 @@ def _receive_new_post_process_newfollowers(self, fields: {},
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             populate_replies(base_dir, http_prefix, domain,
                              message_json,
                              max_replies,
@@ -1052,7 +1056,7 @@ def _receive_new_post_process_newdm(self, fields: {},
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             populate_replies(base_dir, http_prefix, domain,
                              message_json,
                              max_replies,
@@ -1222,7 +1226,7 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             return NEW_POST_SUCCESS
     return NEW_POST_FAILED
 
@@ -1289,7 +1293,7 @@ def _receive_new_post_process_newreport(self, fields: {},
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             return NEW_POST_SUCCESS
     return NEW_POST_FAILED
 
@@ -1395,7 +1399,7 @@ def _receive_new_post_process_newquestion(self, fields: {},
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             return NEW_POST_SUCCESS
     return NEW_POST_FAILED
 
@@ -1595,7 +1599,7 @@ def _receive_new_post_process_newreading(self, fields: {},
         if post_to_outbox(self, message_json,
                           project_version,
                           nickname,
-                          curr_session, proxy_type):
+                          curr_session, proxy_type, debug):
             populate_replies(base_dir, http_prefix,
                              domain_full,
                              message_json,
@@ -1736,7 +1740,8 @@ def _receive_new_post_process_newshare(self, fields: {},
                 post_to_outbox(self, update_actor_json,
                                project_version,
                                nickname,
-                               curr_session, proxy_type)
+                               curr_session, proxy_type,
+                               debug)
 
     if filename:
         if os.path.isfile(filename):

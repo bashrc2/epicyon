@@ -201,7 +201,7 @@ def announce_button(self, calling_domain: str, path: str,
         post_to_outbox(self, announce_json,
                        project_version,
                        self.post_to_nickname,
-                       curr_session, proxy_type)
+                       curr_session, proxy_type, debug)
 
         fitness_performance(getreq_start_time, fitness,
                             '_GET', '_announce_button postToOutboxThread',
@@ -437,7 +437,7 @@ def announce_button_undo(self, calling_domain: str, path: str,
     post_to_outbox(self, new_undo_announce,
                    project_version,
                    self.post_to_nickname,
-                   curr_session, proxy_type)
+                   curr_session, proxy_type, debug)
 
     actor_absolute = \
         get_instance_url(calling_domain,

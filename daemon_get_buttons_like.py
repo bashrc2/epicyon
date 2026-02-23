@@ -39,7 +39,7 @@ def like_button(self, calling_domain: str, path: str,
                 yggdrasil_domain: str,
                 getreq_start_time,
                 proxy_type: str, cookie: str,
-                debug: str,
+                debug: bool,
                 curr_session,
                 signing_priv_key_pem: str,
                 recent_posts_cache: {},
@@ -179,7 +179,7 @@ def like_button(self, calling_domain: str, path: str,
 
     # send out the like to followers
     post_to_outbox(self, like_json, project_version, None,
-                   curr_session, proxy_type)
+                   curr_session, proxy_type, debug)
 
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_like_button postToOutbox',
@@ -319,7 +319,7 @@ def like_button_undo(self, calling_domain: str, path: str,
                      yggdrasil_domain: str,
                      getreq_start_time,
                      proxy_type: str, cookie: str,
-                     debug: str,
+                     debug: bool,
                      curr_session,
                      signing_priv_key_pem: str,
                      recent_posts_cache: {},
@@ -464,7 +464,7 @@ def like_button_undo(self, calling_domain: str, path: str,
     # send out the undo like to followers
     post_to_outbox(self, undo_like_json,
                    project_version, None,
-                   curr_session, proxy_type)
+                   curr_session, proxy_type, debug)
 
     # directly undo the like within the post file
     if not liked_post_filename:
