@@ -40,6 +40,7 @@ from media import process_meta_data
 from flags import is_image_file
 from timeFunctions import date_utcnow
 from timeFunctions import get_current_time_int
+from utils import is_yggdrasil_address
 from utils import get_person_icon
 from utils import account_is_indexable
 from utils import get_instance_url
@@ -1948,6 +1949,9 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     elif domain.endswith('.i2p'):
         http_prefix = 'http'
         proxy_type = 'i2p'
+    elif is_yggdrasil_address(domain):
+        http_prefix = 'http'
+        proxy_type = 'yggdrasil'
     elif gnunet:
         http_prefix = 'gnunet'
         proxy_type = 'gnunet'

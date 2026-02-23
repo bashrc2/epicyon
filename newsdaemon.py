@@ -342,7 +342,11 @@ def _hashtag_add(base_dir: str, http_prefix: str, domain_full: str,
     post_json_object['object']['content'] = content
     domain = domain_full
     if ':' in domain:
-        domain = domain.split(':')[0]
+        if ']:' not in domain:
+            domain = domain.split(':')[0]
+        else:
+            # yggdrassil domain
+            domain = domain.split(']:')[0] + ']'
     store_hash_tags(base_dir, 'news', domain,
                     http_prefix, domain_full,
                     post_json_object, translate, session)

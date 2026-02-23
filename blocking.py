@@ -19,6 +19,7 @@ from quote import get_quote_toot_url
 from timeFunctions import date_utcnow
 from timeFunctions import date_from_string_format
 from timeFunctions import get_current_time_int
+from utils import is_yggdrasil_address
 from utils import get_user_paths
 from utils import contains_statuses
 from utils import data_dir
@@ -697,7 +698,8 @@ def is_blocked_domain(base_dir: str, domain: str,
     """Is the given domain blocked?
     """
     if '.' not in domain:
-        return False
+        if not is_yggdrasil_address(domain):
+            return False
 
     if is_evil(domain):
         return True

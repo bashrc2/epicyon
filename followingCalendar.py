@@ -50,7 +50,11 @@ def _port_domain_remove(domain: str) -> str:
     if ':' in domain:
         if domain.startswith('did:'):
             return domain
-        domain = domain.split(':')[0]
+        if ']:' not in domain:
+            domain = domain.split(':')[0]
+        else:
+            # yggdrasil domain
+            domain = domain.split(']:')[0] + ']'
     return domain
 
 
