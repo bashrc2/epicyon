@@ -305,26 +305,6 @@ echo "Creating nginx virtual host for http://[${YGGDRASIL_ADDRESS}]"
 ln -s /etc/nginx/sites-available/${username} /etc/nginx/sites-enabled/
 systemctl restart nginx
 
-# set up a desktop icon
-for d in /home/*/ ; do
-    CURRUSER=$(echo "$d" | awk -F '/' '{print $3}')
-    if [ -d "/home/${CURRUSER}/Desktop" ]; then
-        { echo '#!/usr/bin/env xdg-open';
-          echo '[Desktop Entry]';
-          echo 'Name=Epicyon yggdrasil';
-          echo 'GenericName=P2P Social Network';
-          echo 'Comment=P2P Social Network';
-          echo "Exec=midori http://[${YGGDRASIL_ADDRESS}]";
-          echo 'Icon=org.midori_browser.Midori';
-          echo 'Type=Application';
-          echo 'Terminal=false';
-          echo 'Categories=Internet;SocialNetwork;';
-          echo 'StartupWMClass=Epicyon';
-          echo 'Keywords=Epicyon;P2P;yggdrasil;'; } > "/home/${CURRUSER}/Desktop/${username}.desktop"
-        chown "$CURRUSER":"$CURRUSER" "/home/${CURRUSER}/Desktop/${username}.desktop"
-    fi
-done
-
 clear
 echo -n "http://[${YGGDRASIL_ADDRESS}]" | qrencode -t ANSI
 echo 'Your Epicyon yggdrasil instance is now installed.'
