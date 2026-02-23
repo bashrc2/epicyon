@@ -105,7 +105,7 @@ if [ ! "${YGGDRASIL_ADDRESS}" ]; then
 	exit 73
 fi
 
-echo "Your yggdrassil address is: http://[${YGGDRASIL_ADDRESS}\]"
+echo "Your yggdrassil address is: http://[${YGGDRASIL_ADDRESS}]"
 
 echo 'Creating Epicyon daemon'
 { echo '[Unit]';
@@ -118,7 +118,7 @@ echo 'Creating Epicyon daemon'
   echo "User=$username";
   echo "Group=$username";
   echo "WorkingDirectory=${install_destination}";
-  echo "ExecStart=/usr/bin/python3 ${install_destination}/epicyon.py --http --yggdrasil --bind 0.0.0.0 --port 80 --proxy ${EPICYON_PORT} --domain [${YGGDRASIL_ADDRESS}\] --registration open";
+  echo "ExecStart=/usr/bin/python3 ${install_destination}/epicyon.py --http --yggdrasil --bind 0.0.0.0 --port 80 --proxy ${EPICYON_PORT} --domain [${YGGDRASIL_ADDRESS}] --registration open";
   echo "Environment=USER=$username";
   echo 'Environment=PYTHONUNBUFFERED=true';
   echo 'Environment=PYTHONIOENCODING=utf-8';
@@ -248,11 +248,11 @@ if [ -f /usr/bin/pacman ]; then
     web_dir=/srv/http
 fi
 
-if [ ! -d "/var/www/[${YGGDRASIL_ADDRESS}\]/htdocs" ]; then
-	mkdir -p "/var/www/[${YGGDRASIL_ADDRESS}\]/htdocs"
+if [ ! -d "/var/www/[${YGGDRASIL_ADDRESS}]/htdocs" ]; then
+	mkdir -p "/var/www/[${YGGDRASIL_ADDRESS}]/htdocs"
 fi
 
-echo "Creating nginx virtual host for http://[${YGGDRASIL_ADDRESS}\]"
+echo "Creating nginx virtual host for http://[${YGGDRASIL_ADDRESS}]"
 { echo 'server {';
   echo '    listen 80;';
   echo '    listen [::]:80;';
@@ -275,7 +275,7 @@ echo "Creating nginx virtual host for http://[${YGGDRASIL_ADDRESS}\]"
   echo '    index index.html;';
   echo '';
   echo '    location /newsmirror {';
-  echo "      root /var/www/[${YGGDRASIL_ADDRESS}\]/htdocs;";
+  echo "      root /var/www/[${YGGDRASIL_ADDRESS}]/htdocs;";
   echo '      try_files $uri =404;';
   echo '    }';
   echo '';
@@ -306,12 +306,12 @@ ln -s /etc/nginx/sites-available/${username} /etc/nginx/sites-enabled/
 systemctl restart nginx
 
 clear
-echo -n "http://[${YGGDRASIL_ADDRESS}\]" | qrencode -t ANSI
+echo -n "http://[${YGGDRASIL_ADDRESS}]" | qrencode -t ANSI
 echo 'Your Epicyon yggdrasil instance is now installed.'
 echo ''
 echo 'You can view it in your preferred browser by navigating to:'
 echo ''
-echo "http://[${YGGDRASIL_ADDRESS}\]"
+echo "http://[${YGGDRASIL_ADDRESS}]"
 echo ''
 echo 'Then register an account. You may also want to add extra public peers'
 echo 'within /etc/yggdrasil/yggdrasil.conf'
