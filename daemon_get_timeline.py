@@ -84,6 +84,7 @@ def show_media_timeline(self, authorized: bool,
                         full_width_tl_button_header: bool,
                         onion_domain: str,
                         i2p_domain: str,
+                        yggdrasil_domain: str,
                         hide_announces: {},
                         mitm_servers: []) -> bool:
     """Shows the media timeline
@@ -228,7 +229,8 @@ def show_media_timeline(self, authorized: bool,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          onion_domain, i2p_domain)
+                                          onion_domain, i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -305,6 +307,7 @@ def show_blogs_timeline(self, authorized: bool,
                         fitness: {},
                         onion_domain: str,
                         i2p_domain: str,
+                        yggdrasil_domain: str,
                         mitm_servers: []) -> bool:
     """Shows the blogs timeline
     """
@@ -443,7 +446,8 @@ def show_blogs_timeline(self, authorized: bool,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          onion_domain, i2p_domain)
+                                          onion_domain, i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -521,6 +525,7 @@ def show_news_timeline(self, authorized: bool,
                        fitness: {},
                        onion_domain: str,
                        i2p_domain: str,
+                       yggdrasil_domain: str,
                        mitm_servers: []) -> bool:
     """Shows the news timeline
     """
@@ -664,7 +669,8 @@ def show_news_timeline(self, authorized: bool,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          onion_domain, i2p_domain)
+                                          onion_domain, i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -740,6 +746,7 @@ def show_features_timeline(self, authorized: bool,
                            fitness: {},
                            onion_domain: str,
                            i2p_domain: str,
+                           yggdrasil_domain: str,
                            mitm_servers: []) -> bool:
     """Shows the features timeline (all local blogs)
     """
@@ -880,7 +887,8 @@ def show_features_timeline(self, authorized: bool,
                                           msg_str,
                                           http_prefix,
                                           domain,
-                                          onion_domain, i2p_domain)
+                                          onion_domain, i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -1259,6 +1267,7 @@ def show_bookmarks_timeline(self, authorized: bool,
                             fitness: {},
                             onion_domain: str,
                             i2p_domain: str,
+                            yggdrasil_domain: str,
                             mitm_servers: []) -> bool:
     """Shows the bookmarks timeline
     """
@@ -1393,7 +1402,8 @@ def show_bookmarks_timeline(self, authorized: bool,
                                               msg_str, http_prefix,
                                               domain,
                                               onion_domain,
-                                              i2p_domain)
+                                              i2p_domain,
+                                              yggdrasil_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -1471,6 +1481,7 @@ def show_outbox_timeline(self, authorized: bool,
                          fitness: {},
                          onion_domain: str,
                          i2p_domain: str,
+                         yggdrasil_domain: str,
                          hide_announces: {},
                          mitm_servers: [],
                          hide_recent_posts: {}) -> bool:
@@ -1616,7 +1627,8 @@ def show_outbox_timeline(self, authorized: bool,
                                           msg_str, http_prefix,
                                           domain,
                                           onion_domain,
-                                          i2p_domain)
+                                          i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -1680,6 +1692,7 @@ def show_mod_timeline(self, authorized: bool,
                       fitness: {},
                       onion_domain: str,
                       i2p_domain: str,
+                      yggdrasil_domain: str,
                       mitm_servers: []) -> bool:
     """Shows the moderation timeline
     """
@@ -1813,7 +1826,8 @@ def show_mod_timeline(self, authorized: bool,
                                               msg_str, http_prefix,
                                               domain,
                                               onion_domain,
-                                              i2p_domain)
+                                              i2p_domain,
+                                              yggdrasil_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -1887,6 +1901,7 @@ def show_dms(self, authorized: bool,
              fitness: {},
              onion_domain: str,
              i2p_domain: str,
+             yggdrasil_domain: str,
              mitm_servers: []) -> bool:
     """Shows the DMs timeline
     """
@@ -2023,7 +2038,8 @@ def show_dms(self, authorized: bool,
                                               msg_str, http_prefix,
                                               domain,
                                               onion_domain,
-                                              i2p_domain)
+                                              i2p_domain,
+                                              yggdrasil_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']
@@ -2101,6 +2117,7 @@ def show_replies(self, authorized: bool,
                  fitness: {},
                  onion_domain: str,
                  i2p_domain: str,
+                 yggdrasil_domain: str,
                  mitm_servers: []) -> bool:
     """Shows the replies timeline
     """
@@ -2238,7 +2255,8 @@ def show_replies(self, authorized: bool,
                                           referer_domain,
                                           msg_str, http_prefix,
                                           domain,
-                                          onion_domain, i2p_domain)
+                                          onion_domain, i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -2315,6 +2333,7 @@ def show_inbox(self, authorized: bool,
                auto_cw_cache: {},
                onion_domain: str,
                i2p_domain: str,
+               yggdrasil_domain: str,
                hide_announces: {},
                mitm_servers: []) -> bool:
     """Shows the inbox timeline
@@ -2461,7 +2480,8 @@ def show_inbox(self, authorized: bool,
                                                   http_prefix,
                                                   domain,
                                                   onion_domain,
-                                                  i2p_domain)
+                                                  i2p_domain,
+                                                  yggdrasil_domain)
                         msg = msg_str.encode('utf-8')
                         msglen = len(msg)
                         set_headers(self, 'text/html', msglen,
@@ -2482,7 +2502,8 @@ def show_inbox(self, authorized: bool,
                                               http_prefix,
                                               domain,
                                               onion_domain,
-                                              i2p_domain)
+                                              i2p_domain,
+                                              yggdrasil_domain)
                     msg = msg_str.encode('utf-8')
                     msglen = len(msg)
                     accept_str = self.headers['Accept']

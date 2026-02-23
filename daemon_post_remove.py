@@ -19,6 +19,7 @@ from utils import get_domain_from_actor
 from utils import local_actor_url
 from utils import get_config_param
 from utils import get_nickname_from_actor
+from utils import is_yggdrasil_address
 from reading import remove_reading_event
 from httpheaders import redirect_headers
 from flags import is_moderator
@@ -37,6 +38,7 @@ def remove_reading_status(self, calling_domain: str, cookie: str,
                           path: str, base_dir: str, http_prefix: str,
                           domain_full: str,
                           onion_domain: str, i2p_domain: str,
+                          yggdrasil_domain: str,
                           debug: bool,
                           books_cache: {}) -> None:
     """Remove a reading status from the profile screen
@@ -103,6 +105,8 @@ def remove_reading_status(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str = 'http://' + yggdrasil_domain + users_path
     redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
@@ -111,6 +115,7 @@ def remove_share(self, calling_domain: str, cookie: str,
                  authorized: bool, path: str,
                  base_dir: str, http_prefix: str, domain_full: str,
                  onion_domain: str, i2p_domain: str,
+                 yggdrasil_domain: str,
                  curr_session, proxy_type: str,
                  person_cache: {},
                  max_shares_on_profile: int,
@@ -181,7 +186,8 @@ def remove_share(self, calling_domain: str, cookie: str,
                                      http_prefix,
                                      domain_full,
                                      onion_domain,
-                                     i2p_domain) + \
+                                     i2p_domain,
+                                     yggdrasil_domain) + \
                     '/users/' + share_nickname
                 actor_json = get_person_from_cache(base_dir,
                                                    actor, person_cache)
@@ -221,6 +227,8 @@ def remove_share(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str = 'http://' + yggdrasil_domain + users_path
     redirect_headers(self, origin_path_str + '/tlshares',
                      cookie, calling_domain, 303)
     self.server.postreq_busy = False
@@ -230,7 +238,8 @@ def remove_wanted(self, calling_domain: str, cookie: str,
                   authorized: bool, path: str,
                   base_dir: str, http_prefix: str,
                   domain_full: str,
-                  onion_domain: str, i2p_domain: str) -> None:
+                  onion_domain: str, i2p_domain: str,
+                  yggdrasil_domain: str) -> None:
     """Removes a wanted item
     """
     users_path = path.split('/rmwanted')[0]
@@ -294,6 +303,8 @@ def remove_wanted(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str = 'http://' + yggdrasil_domain + users_path
     redirect_headers(self, origin_path_str + '/tlwanted',
                      cookie, calling_domain, 303)
     self.server.postreq_busy = False
@@ -303,6 +314,7 @@ def receive_remove_post(self, calling_domain: str, cookie: str,
                         path: str, base_dir: str, http_prefix: str,
                         domain: str, domain_full: str,
                         onion_domain: str, i2p_domain: str,
+                        yggdrasil_domain: str,
                         curr_session, proxy_type: str) -> None:
     """Endpoint for removing posts after confirmation
     """
@@ -411,6 +423,8 @@ def receive_remove_post(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str = 'http://' + yggdrasil_domain + users_path
     if page_number == 1:
         redirect_headers(self, origin_path_str + '/outbox', cookie,
                          calling_domain, 303)

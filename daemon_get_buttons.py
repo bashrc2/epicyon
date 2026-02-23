@@ -21,6 +21,8 @@ from httpcodes import http_404
 from utils import get_full_domain
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
+from utils import is_yggdrasil_address
+from utils import is_yggdrasil_url
 from webapp_confirm import html_confirm_delete
 
 
@@ -29,6 +31,7 @@ def follow_approve_button(self, calling_domain: str, path: str,
                           base_dir: str, http_prefix: str,
                           domain: str, domain_full: str, port: int,
                           onion_domain: str, i2p_domain: str,
+                          yggdrasil_domain: str,
                           getreq_start_time,
                           proxy_type: str, debug: bool,
                           curr_session,
@@ -44,6 +47,7 @@ def follow_approve_button(self, calling_domain: str, path: str,
                           signing_priv_key_pem: str,
                           followers_sync_cache: {},
                           session_onion, session_i2p,
+                          session_yggdrasil,
                           session, mitm_servers: []) -> None:
     """Follow approve button was pressed
     """
@@ -71,6 +75,12 @@ def follow_approve_button(self, calling_domain: str, path: str,
                 curr_session = session_i2p
                 proxy_type = 'i2p'
                 port = 80
+        if yggdrasil_domain:
+            following_handle_domain = following_handle.split('@')[1]
+            if is_yggdrasil_address(following_handle_domain):
+                curr_session = session_yggdrasil
+                proxy_type = 'yggdrasil'
+                port = 80
 
         curr_session = \
             establish_session("follow_approve_button",
@@ -84,8 +94,10 @@ def follow_approve_button(self, calling_domain: str, path: str,
         manual_approve_follow_request_thread(session,
                                              session_onion,
                                              session_i2p,
+                                             session_yggdrasil,
                                              onion_domain,
                                              i2p_domain,
+                                             yggdrasil_domain,
                                              base_dir, http_prefix,
                                              follower_nickname,
                                              domain, port,
@@ -111,6 +123,9 @@ def follow_approve_button(self, calling_domain: str, path: str,
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str_absolute = \
             'http://' + i2p_domain + origin_path_str
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str_absolute = \
+            'http://' + yggdrasil_domain + origin_path_str
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_follow_approve_button',
                         debug)
@@ -122,6 +137,7 @@ def follow_deny_button(self, calling_domain: str, path: str,
                        cookie: str, base_dir: str, http_prefix: str,
                        domain: str, domain_full: str, port: int,
                        onion_domain: str, i2p_domain: str,
+                       yggdrasil_domain: str,
                        getreq_start_time, debug: bool,
                        federation_list: [],
                        send_threads: {},
@@ -135,6 +151,7 @@ def follow_deny_button(self, calling_domain: str, path: str,
                        system_language: str,
                        fitness: {},
                        session, session_onion, session_i2p,
+                       session_yggdrasil,
                        mitm_servers: []) -> None:
     """Follow deny button was pressed
     """
@@ -155,8 +172,10 @@ def follow_deny_button(self, calling_domain: str, path: str,
         manual_deny_follow_request_thread(session,
                                           session_onion,
                                           session_i2p,
+                                          session_yggdrasil,
                                           onion_domain,
                                           i2p_domain,
+                                          yggdrasil_domain,
                                           base_dir, http_prefix,
                                           follower_nickname,
                                           domain, port,
@@ -181,6 +200,9 @@ def follow_deny_button(self, calling_domain: str, path: str,
     elif calling_domain.endswith('.i2p') and i2p_domain:
         origin_path_str_absolute = \
             'http://' + i2p_domain + origin_path_str
+    elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+        origin_path_str_absolute = \
+            'http://' + yggdrasil_domain + origin_path_str
     redirect_headers(self, origin_path_str_absolute,
                      cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,
@@ -192,6 +214,7 @@ def delete_button(self, calling_domain: str, path: str,
                   base_dir: str, http_prefix: str,
                   domain_full: str,
                   onion_domain: str, i2p_domain: str,
+                  yggdrasil_domain: str,
                   getreq_start_time,
                   proxy_type: str, cookie: str,
                   debug: str, curr_session,
@@ -220,6 +243,7 @@ def delete_button(self, calling_domain: str, path: str,
                   allow_deletion: bool,
                   session_onion,
                   session_i2p,
+                  session_yggdrasil,
                   default_timeline: str,
                   mitm_servers: [],
                   instance_software: {}) -> None:
@@ -261,6 +285,8 @@ def delete_button(self, calling_domain: str, path: str,
                 actor = 'http://' + onion_domain + users_path
             elif calling_domain.endswith('.i2p') and i2p_domain:
                 actor = 'http://' + i2p_domain + users_path
+            elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+                actor = 'http://' + yggdrasil_domain + users_path
             redirect_headers(self, actor + '/' + timeline_str,
                              cookie, calling_domain, 303)
             return
@@ -271,6 +297,8 @@ def delete_button(self, calling_domain: str, path: str,
                 actor = 'http://' + onion_domain + users_path
             elif calling_domain.endswith('.i2p') and i2p_domain:
                 actor = 'http://' + i2p_domain + users_path
+            elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+                actor = 'http://' + yggdrasil_domain + users_path
             redirect_headers(self, actor + '/' + timeline_str,
                              cookie, calling_domain, 303)
             return
@@ -283,6 +311,10 @@ def delete_button(self, calling_domain: str, path: str,
             if '.onion/' in actor:
                 curr_session = session_i2p
                 proxy_type = 'i2p'
+        if yggdrasil_domain:
+            if is_yggdrasil_url(actor):
+                curr_session = session_yggdrasil
+                proxy_type = 'yggdrasil'
 
         curr_session = \
             establish_session("delete_button",
@@ -334,6 +366,8 @@ def delete_button(self, calling_domain: str, path: str,
         actor = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         actor = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        actor = 'http://' + yggdrasil_domain + users_path
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_delete_button',
                         debug)

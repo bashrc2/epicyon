@@ -19,6 +19,7 @@ from utils import is_dm
 from utils import local_actor_url
 from utils import get_instance_url
 from utils import get_nickname_from_actor
+from utils import is_yggdrasil_url
 from mitm import detect_mitm
 from httpheaders import redirect_headers
 from session import establish_session
@@ -36,6 +37,7 @@ def reaction_button(self, calling_domain: str, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domain_full: str,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     getreq_start_time,
                     proxy_type: str, cookie: str,
                     debug: str,
@@ -67,6 +69,7 @@ def reaction_button(self, calling_domain: str, path: str,
                     bold_reading_nicknames: {},
                     min_images_for_accounts: [],
                     session_onion, session_i2p,
+                    session_yggdrasil,
                     mitm_servers: [],
                     instance_software: {}) -> None:
     """Press an emoji reaction button
@@ -120,7 +123,8 @@ def reaction_button(self, calling_domain: str, path: str,
                              http_prefix,
                              domain_full,
                              onion_domain,
-                             i2p_domain) + \
+                             i2p_domain,
+                             yggdrasil_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -137,7 +141,8 @@ def reaction_button(self, calling_domain: str, path: str,
                              http_prefix,
                              domain_full,
                              onion_domain,
-                             i2p_domain) + \
+                             i2p_domain,
+                             yggdrasil_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -154,6 +159,10 @@ def reaction_button(self, calling_domain: str, path: str,
         if '.onion/' in actor:
             curr_session = session_i2p
             proxy_type = 'i2p'
+    if yggdrasil_domain:
+        if is_yggdrasil_url(actor):
+            curr_session = session_yggdrasil
+            proxy_type = 'yggdrasil'
 
     curr_session = \
         establish_session("reaction_button",
@@ -316,7 +325,8 @@ def reaction_button(self, calling_domain: str, path: str,
                          http_prefix,
                          domain_full,
                          onion_domain,
-                         i2p_domain) + \
+                         i2p_domain,
+                         yggdrasil_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -334,6 +344,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                          base_dir: str, http_prefix: str,
                          domain: str, domain_full: str,
                          onion_domain: str, i2p_domain: str,
+                         yggdrasil_domain: str,
                          getreq_start_time,
                          proxy_type: str, cookie: str,
                          debug: str,
@@ -366,6 +377,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                          min_images_for_accounts: [],
                          session_onion,
                          session_i2p,
+                         session_yggdrasil,
                          mitm_servers: [],
                          instance_software: {}) -> None:
     """A button is pressed to undo emoji reaction
@@ -413,7 +425,8 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                              http_prefix,
                              domain_full,
                              onion_domain,
-                             i2p_domain) + \
+                             i2p_domain,
+                             yggdrasil_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -433,7 +446,8 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                              http_prefix,
                              domain_full,
                              onion_domain,
-                             i2p_domain) + \
+                             i2p_domain,
+                             yggdrasil_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -451,6 +465,10 @@ def reaction_button_undo(self, calling_domain: str, path: str,
         if '.onion/' in actor:
             curr_session = session_i2p
             proxy_type = 'i2p'
+    if yggdrasil_domain:
+        if is_yggdrasil_url(actor):
+            curr_session = session_yggdrasil
+            proxy_type = 'yggdrasil'
 
     curr_session = \
         establish_session("reaction_button_undo",
@@ -598,7 +616,8 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                          http_prefix,
                          domain_full,
                          onion_domain,
-                         i2p_domain) + \
+                         i2p_domain,
+                         yggdrasil_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \

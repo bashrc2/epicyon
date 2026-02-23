@@ -19,6 +19,7 @@ from utils import data_dir
 from utils import get_url_from_post
 from utils import get_config_param
 from utils import remove_html
+from utils import is_yggdrasil_url
 from media import path_is_audio
 from content import safe_web_text
 from webapp_utils import get_broken_link_substitute
@@ -33,6 +34,7 @@ MAX_LINK_LENGTH = 40
 
 def _html_podcast_chapters(link_url: str,
                            session, session_onion, session_i2p,
+                           session_yggdrasil,
                            http_prefix: str, domain: str,
                            podcast_properties: {},
                            debug: bool,
@@ -62,6 +64,8 @@ def _html_podcast_chapters(link_url: str,
             curr_session = session_onion
         elif chapters_url.endswith('.i2p'):
             curr_session = session_i2p
+        elif is_yggdrasil_url(chapters_url):
+            curr_session = session_yggdrasil
 
         as_header = {
             'Accept': url_type
@@ -310,6 +314,7 @@ def html_podcast_episode(translate: {},
                          newswire_item: [],
                          text_mode_banner: str,
                          session, session_onion, session_i2p,
+                         session_yggdrasil,
                          http_prefix: str, debug: bool,
                          mitm_servers: []) -> str:
     """Returns html for a podcast episode, an item from the newswire
@@ -516,6 +521,7 @@ def html_podcast_episode(translate: {},
     podcast_str += \
         _html_podcast_chapters(link_url,
                                session, session_onion, session_i2p,
+                               session_yggdrasil,
                                http_prefix, domain,
                                podcast_properties, debug, mitm_servers)
 

@@ -310,6 +310,7 @@ def wellknown_protocol_handler(path: str, http_prefix: str,
 
 def webfinger_lookup(path: str, base_dir: str,
                      domain: str, onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str,
                      port: int, debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
     GET /.well-known/webfinger?resource=acct:user@domain
@@ -408,6 +409,11 @@ def webfinger_lookup(path: str, base_dir: str,
         if i2p_domain in handle:
             handle = handle.replace(i2p_domain, domain)
             i2pify = True
+    yggdrasilify = False
+    if yggdrasil_domain:
+        if yggdrasil_domain in handle:
+            handle = handle.replace(yggdrasil_domain, domain)
+            yggdrasilify = True
     # instance actor
     if handle.startswith('actor@'):
         handle = handle.replace('actor@', 'inbox@', 1)
@@ -420,14 +426,17 @@ def webfinger_lookup(path: str, base_dir: str,
         if debug:
             print('DEBUG: WEBFINGER filename not found ' + filename)
         return None
-    if not onionify and not i2pify:
+    if not onionify and not i2pify and not yggdrasilify:
         wf_json = load_json(filename)
     elif onionify:
         print('Webfinger request for onionified ' + handle)
         wf_json = load_json_onionify(filename, domain, onion_domain)
-    else:
+    elif i2pify:
         print('Webfinger request for i2pified ' + handle)
         wf_json = load_json_onionify(filename, domain, i2p_domain)
+    else:
+        print('Webfinger request for yggdrasilified ' + handle)
+        wf_json = load_json_onionify(filename, domain, yggdrasil_domain)
     if not wf_json:
         wf_json = {"nickname": "unknown"}
     return wf_json
@@ -606,6 +615,7 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
 
 def webfinger_update(base_dir: str, nickname: str, domain: str,
                      onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str,
                      cached_webfingers: {}) -> None:
     """Regenerates stored webfinger
     """
@@ -617,6 +627,7 @@ def webfinger_update(base_dir: str, nickname: str, domain: str,
     filename = base_dir + wf_subdir + '/' + handle + '.json'
     onionify = False
     i2pify = False
+    yggdrasilify = False
     if onion_domain:
         if onion_domain in handle:
             handle = handle.replace(onion_domain, domain)
@@ -625,11 +636,17 @@ def webfinger_update(base_dir: str, nickname: str, domain: str,
         if i2p_domain in handle:
             handle = handle.replace(i2p_domain, domain)
             i2pify = True
+    elif yggdrasil_domain:
+        if yggdrasil_domain in handle:
+            handle = handle.replace(yggdrasil_domain, domain)
+            yggdrasilify = True
     if not onionify:
-        if not i2pify:
+        if not i2pify and not yggdrasilify:
             wf_json = load_json(filename)
-        else:
+        elif i2pify:
             wf_json = load_json_onionify(filename, domain, i2p_domain)
+        else:
+            wf_json = load_json_onionify(filename, domain, yggdrasil_domain)
     else:
         wf_json = load_json_onionify(filename, domain, onion_domain)
     if not wf_json:

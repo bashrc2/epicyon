@@ -1071,10 +1071,11 @@ def person_upgrade_actor(base_dir: str, person_json: {},
 
 
 def add_alternate_domains(actor_json: {}, domain: str,
-                          onion_domain: str, i2p_domain: str) -> None:
+                          onion_domain: str, i2p_domain: str,
+                          yggdrasil_domain: str) -> None:
     """Adds alternate onion and/or i2p domains to alsoKnownAs
     """
-    if not onion_domain and not i2p_domain:
+    if not onion_domain and not i2p_domain and not yggdrasil_domain:
         return
     if not actor_json.get('id'):
         return
@@ -1093,6 +1094,10 @@ def add_alternate_domains(actor_json: {}, domain: str,
         i2p_actor = 'http://' + i2p_domain + '/users/' + nickname
         if i2p_actor not in actor_json['alsoKnownAs']:
             actor_json['alsoKnownAs'].append(i2p_actor)
+    if yggdrasil_domain:
+        yggdrasil_actor = 'http://' + yggdrasil_domain + '/users/' + nickname
+        if yggdrasil_actor not in actor_json['alsoKnownAs']:
+            actor_json['alsoKnownAs'].append(yggdrasil_actor)
 
 
 def person_lookup(domain: str, path: str, base_dir: str) -> {}:
@@ -2465,7 +2470,8 @@ def get_account_pub_key(path: str, person_cache: {},
                         http_prefix: str,
                         domain_full: str,
                         onion_domain: str,
-                        i2p_domain: str) -> str:
+                        i2p_domain: str,
+                        yggdrasil_domain: str) -> str:
     """Returns the public key for an account
     """
     if '/users/' not in path:
@@ -2485,7 +2491,8 @@ def get_account_pub_key(path: str, person_cache: {},
                          http_prefix,
                          domain_full,
                          onion_domain,
-                         i2p_domain) + \
+                         i2p_domain,
+                         yggdrasil_domain) + \
         '/users/' + nickname
     actor_json = get_person_from_cache(base_dir, actor, person_cache)
     if not actor_json:
@@ -2505,7 +2512,8 @@ def get_account_pub_key(path: str, person_cache: {},
                          http_prefix,
                          domain_full,
                          onion_domain,
-                         i2p_domain) + \
+                         i2p_domain,
+                         yggdrasil_domain) + \
         path
     pub_key, _ = \
         get_actor_public_key_from_id(actor_json, original_person_url)

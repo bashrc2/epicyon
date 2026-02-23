@@ -16,6 +16,7 @@ from utils import get_cached_post_filename
 from utils import load_json
 from utils import locate_post
 from utils import get_nickname_from_actor
+from utils import is_yggdrasil_address
 from mitm import detect_mitm
 from httpcodes import http_404
 from httpheaders import redirect_headers
@@ -30,6 +31,7 @@ def mute_button(self, calling_domain: str, path: str,
                 base_dir: str, http_prefix: str,
                 domain: str, domain_full: str, port: int,
                 onion_domain: str, i2p_domain: str,
+                yggdrasil_domain: str,
                 getreq_start_time, cookie: str,
                 debug: str, curr_session,
                 signing_priv_key_pem: str,
@@ -201,6 +203,10 @@ def mute_button(self, calling_domain: str, path: str,
         actor = \
             'http://' + i2p_domain + \
             path.split('?mute=')[0]
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        actor = \
+            'http://' + yggdrasil_domain + \
+            path.split('?mute=')[0]
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_mute_button', debug)
 
@@ -215,6 +221,7 @@ def mute_button_undo(self, calling_domain: str, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domain_full: str, port: int,
                      onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str,
                      getreq_start_time, cookie: str,
                      debug: str, curr_session,
                      signing_priv_key_pem: str,
@@ -383,6 +390,9 @@ def mute_button_undo(self, calling_domain: str, path: str,
     elif calling_domain.endswith('.i2p') and i2p_domain:
         actor = \
             'http://' + i2p_domain + path.split('?unmute=')[0]
+    elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+        actor = \
+            'http://' + yggdrasil_domain + path.split('?unmute=')[0]
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_undo_mute_button', debug)
 

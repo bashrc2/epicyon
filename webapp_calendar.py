@@ -122,6 +122,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
                        theme: str, access_keys: {},
                        system_language: str,
                        session, session_onion, session_i2p,
+                       session_yggdrasil,
                        ua_str: str) -> str:
     """Show a day within the calendar
     """
@@ -247,6 +248,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
                                                      translate, session,
                                                      session_onion,
                                                      session_i2p,
+                                                     session_yggdrasil,
                                                      '320', '320')
                             if event_map:
                                 event_place = event_map
@@ -384,6 +386,7 @@ def html_calendar(person_cache: {}, translate: {},
                   icalendar: bool, system_language: str,
                   default_timeline: str, theme: str,
                   session, session_onion, session_i2p,
+                  session_yggdrasil,
                   ua_str: str) -> str:
     """Show the calendar for a person
     """
@@ -473,6 +476,7 @@ def html_calendar(person_cache: {}, translate: {},
                                   theme, access_keys,
                                   system_language, session,
                                   session_onion, session_i2p,
+                                  session_yggdrasil,
                                   ua_str)
 
     if icalendar:

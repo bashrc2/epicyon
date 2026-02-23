@@ -24,6 +24,7 @@ def progressive_web_app_manifest(self, base_dir: str,
                                  domain: str,
                                  onion_domain: str,
                                  i2p_domain: str,
+                                 yggdrasil_domain: str,
                                  fitness: {},
                                  debug: bool) -> None:
     """gets the PWA manifest
@@ -36,7 +37,8 @@ def progressive_web_app_manifest(self, base_dir: str,
                               http_prefix,
                               domain,
                               onion_domain,
-                              i2p_domain)
+                              i2p_domain,
+                              yggdrasil_domain)
     msg = msg_str.encode('utf-8')
 
     msglen = len(msg)

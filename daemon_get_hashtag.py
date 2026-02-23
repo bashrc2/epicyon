@@ -19,6 +19,7 @@ from httpheaders import set_headers
 from blocking import is_blocked_hashtag
 from utils import convert_domains
 from utils import get_nickname_from_actor
+from utils import is_yggdrasil_address
 from fitnessFunctions import fitness_performance
 from webapp_utils import html_hashtag_blocked
 from webapp_search import html_hashtag_search
@@ -32,6 +33,7 @@ def hashtag_search_rss2(self, calling_domain: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str, port: int,
                         onion_domain: str, i2p_domain: str,
+                        yggdrasil_domain: str,
                         getreq_start_time,
                         system_language: str,
                         fitness: {}, debug: bool) -> None:
@@ -66,9 +68,12 @@ def hashtag_search_rss2(self, calling_domain: str,
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str_absolute = \
                 'http://' + onion_domain + origin_path_str
-        elif (calling_domain.endswith('.i2p') and onion_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str_absolute = \
                 'http://' + i2p_domain + origin_path_str
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            origin_path_str_absolute = \
+                'http://' + yggdrasil_domain + origin_path_str
         redirect_headers(self, origin_path_str_absolute + '/search',
                          cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,
@@ -82,6 +87,7 @@ def hashtag_search_json2(self, calling_domain: str,
                          base_dir: str, http_prefix: str,
                          domain: str, domain_full: str, port: int,
                          onion_domain: str, i2p_domain: str,
+                         yggdrasil_domain: str,
                          getreq_start_time,
                          max_posts_in_feed: int,
                          fitness: {}, debug: bool) -> None:
@@ -113,7 +119,8 @@ def hashtag_search_json2(self, calling_domain: str,
         msg_str = json.dumps(hashtag_json)
         msg_str = convert_domains(calling_domain, referer_domain,
                                   msg_str, http_prefix, domain,
-                                  onion_domain, i2p_domain)
+                                  onion_domain, i2p_domain,
+                                  yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         set_headers(self, 'application/json', msglen,
@@ -126,9 +133,12 @@ def hashtag_search_json2(self, calling_domain: str,
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str_absolute = \
                 'http://' + onion_domain + origin_path_str
-        elif (calling_domain.endswith('.i2p') and onion_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str_absolute = \
                 'http://' + i2p_domain + origin_path_str
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            origin_path_str_absolute = \
+                'http://' + yggdrasil_domain + origin_path_str
         redirect_headers(self, origin_path_str_absolute,
                          cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,
@@ -141,6 +151,7 @@ def hashtag_search2(self, calling_domain: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     getreq_start_time,
                     curr_session,
                     max_posts_in_hashtag_feed: int,
@@ -258,9 +269,12 @@ def hashtag_search2(self, calling_domain: str,
         if calling_domain.endswith('.onion') and onion_domain:
             origin_path_str_absolute = \
                 'http://' + onion_domain + origin_path_str
-        elif (calling_domain.endswith('.i2p') and onion_domain):
+        elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str_absolute = \
                 'http://' + i2p_domain + origin_path_str
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            origin_path_str_absolute = \
+                'http://' + yggdrasil_domain + origin_path_str
         redirect_headers(self, origin_path_str_absolute + '/search',
                          cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,

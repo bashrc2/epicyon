@@ -69,6 +69,7 @@ def show_shares_feed(self, authorized: bool,
                      fitness: {},
                      onion_domain: str,
                      i2p_domain: str,
+                     yggdrasil_domain: str,
                      mitm_servers: [],
                      hide_recent_posts: {}) -> bool:
     """Shows the shares feed for a particular account/actor
@@ -199,7 +200,8 @@ def show_shares_feed(self, authorized: bool,
                                           msg_str, http_prefix,
                                           domain,
                                           onion_domain,
-                                          i2p_domain)
+                                          i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -260,6 +262,7 @@ def show_following_feed(self, authorized: bool,
                         fitness: {},
                         onion_domain: str,
                         i2p_domain: str,
+                        yggdrasil_domain: str,
                         mitm_servers: [],
                         hide_recent_posts: {}) -> bool:
     """Shows the following feed for a particular account/actor
@@ -403,7 +406,8 @@ def show_following_feed(self, authorized: bool,
                                           msg_str, http_prefix,
                                           domain,
                                           onion_domain,
-                                          i2p_domain)
+                                          i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -464,6 +468,7 @@ def show_moved_feed(self, authorized: bool,
                     fitness: {},
                     onion_domain: str,
                     i2p_domain: str,
+                    yggdrasil_domain: str,
                     mitm_servers: [],
                     hide_recent_posts: {}) -> bool:
     """Shows the moved feed for a particular account/actor
@@ -594,7 +599,8 @@ def show_moved_feed(self, authorized: bool,
                                           msg_str, http_prefix,
                                           domain,
                                           onion_domain,
-                                          i2p_domain)
+                                          i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -655,6 +661,7 @@ def show_inactive_feed(self, authorized: bool,
                        fitness: {},
                        onion_domain: str,
                        i2p_domain: str,
+                       yggdrasil_domain: str,
                        mitm_servers: [],
                        hide_recent_posts: {}) -> bool:
     """Shows the inactive accounts feed for a particular account/actor
@@ -787,7 +794,8 @@ def show_inactive_feed(self, authorized: bool,
                                           msg_str, http_prefix,
                                           domain,
                                           onion_domain,
-                                          i2p_domain)
+                                          i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -849,6 +857,7 @@ def show_followers_feed(self, authorized: bool,
                         fitness: {},
                         onion_domain: str,
                         i2p_domain: str,
+                        yggdrasil_domain: str,
                         mitm_servers: [],
                         hide_recent_posts: {}) -> bool:
     """Shows the followers feed for a particular account/actor
@@ -989,7 +998,8 @@ def show_followers_feed(self, authorized: bool,
                                           msg_str, http_prefix,
                                           domain,
                                           onion_domain,
-                                          i2p_domain)
+                                          i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']

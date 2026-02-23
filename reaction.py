@@ -75,6 +75,7 @@ def _reactionpost(recent_posts_cache: {},
                   signing_priv_key_pem: str,
                   curr_domain: str,
                   onion_domain: str, i2p_domain: str,
+                  yggdrasil_domain: str,
                   sites_unavailable: [],
                   system_language: str,
                   mitm_servers: []) -> {}:
@@ -155,6 +156,7 @@ def _reactionpost(recent_posts_cache: {},
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 7165392,
                          curr_domain, onion_domain, i2p_domain,
+                         yggdrasil_domain,
                          extra_headers, sites_unavailable,
                          system_language, mitm_servers)
 
@@ -173,6 +175,7 @@ def reaction_post(recent_posts_cache: {},
                   debug: bool, project_version: str,
                   signing_priv_key_pem: str,
                   curr_domain: str, onion_domain: str, i2p_domain: str,
+                  yggdrasil_domain: str,
                   sites_unavailable: [], system_language: str,
                   mitm_servers: []) -> {}:
     """Adds a reaction to a given status post. This is only used by unit tests
@@ -192,6 +195,7 @@ def reaction_post(recent_posts_cache: {},
                          cached_webfingers,
                          debug, project_version, signing_priv_key_pem,
                          curr_domain, onion_domain, i2p_domain,
+                         yggdrasil_domain,
                          sites_unavailable, system_language,
                          mitm_servers)
 

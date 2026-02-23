@@ -27,6 +27,7 @@ from webapp_login import html_get_login_credentials
 from webapp_suspended import html_suspended
 from flags import is_suspended
 from flags import is_local_network_address
+from utils import is_yggdrasil_address
 from utils import data_dir
 from utils import acct_dir
 from utils import get_instance_url
@@ -45,6 +46,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                       domain_full: str,
                       onion_domain: str,
                       i2p_domain: str,
+                      yggdrasil_domain: str,
                       manual_follower_approval: bool,
                       default_timeline: str) -> None:
     """POST to login screen, containing credentials
@@ -104,7 +106,8 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                                      http_prefix,
                                      domain_full,
                                      onion_domain,
-                                     i2p_domain) + \
+                                     i2p_domain,
+                                     yggdrasil_domain) + \
                     '/login'
                 redirect_headers(self, login_url, cookie, calling_domain, 303)
                 return
@@ -118,7 +121,8 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                                      http_prefix,
                                      domain_full,
                                      onion_domain,
-                                     i2p_domain) + \
+                                     i2p_domain,
+                                     yggdrasil_domain) + \
                     '/login'
                 redirect_headers(self, login_url, cookie, calling_domain, 303)
                 return
@@ -131,7 +135,8 @@ def post_login_screen(self, calling_domain: str, cookie: str,
         else:
             ip_address = self.client_address[0]
         if not domain.endswith('.onion') and \
-           not domain.endswith('.i2p'):
+           not domain.endswith('.i2p') and \
+           not is_yggdrasil_address(domain):
             if not is_local_network_address(ip_address):
                 print('Login attempt from IP: ' + str(ip_address))
         if not authorize_basic(base_dir, '/users/' +
@@ -142,7 +147,8 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             fail_time = int(time.time())
             self.server.last_login_failure = fail_time
             if not domain.endswith('.onion') and \
-               not domain.endswith('.i2p'):
+               not domain.endswith('.i2p') and \
+               not is_yggdrasil_address(domain):
                 if not is_local_network_address(ip_address):
                     record_login_failure(base_dir, ip_address,
                                          self.server.login_failure_count,
@@ -216,7 +222,8 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                                  http_prefix,
                                  domain_full,
                                  onion_domain,
-                                 i2p_domain) + \
+                                 i2p_domain,
+                                 yggdrasil_domain) + \
                 '/users/' + login_nickname + '/' + \
                 default_timeline
             redirect_headers(self, tl_url, cookie_str, calling_domain, 303)

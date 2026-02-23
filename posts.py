@@ -45,6 +45,7 @@ from timeFunctions import date_utcnow
 from timeFunctions import date_from_string_format
 from timeFunctions import date_epoch
 from timeFunctions import valid_post_date
+from utils import is_yggdrasil_address
 from utils import resembles_url
 from utils import get_person_icon
 from utils import remove_post_from_index
@@ -3492,6 +3493,7 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
                      signing_priv_key_pem: str,
                      source_id: int, curr_domain: str,
                      onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str,
                      extra_headers: {}, sites_unavailable: [],
                      system_language: str,
                      mitm_servers: []) -> int:
@@ -3535,6 +3537,8 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
         ua_domain = onion_domain
     elif to_domain.endswith('.i2p'):
         ua_domain = i2p_domain
+    elif is_yggdrasil_address(to_domain):
+        ua_domain = yggdrasil_domain
 
     # lookup the inbox for the To handle
     wf_request = webfinger_handle(session, handle, http_prefix,
@@ -3607,6 +3611,9 @@ def send_signed_json(post_json_object: {}, session, base_dir: str,
             account_domain = curr_domain
     if i2p_domain:
         if account_domain == i2p_domain:
+            account_domain = curr_domain
+    if yggdrasil_domain:
+        if account_domain == yggdrasil_domain:
             account_domain = curr_domain
     private_key_pem = \
         get_person_key(nickname, account_domain, base_dir, 'private', debug)
@@ -3804,9 +3811,11 @@ def _is_profile_update(post_json_object: {}) -> bool:
 
 
 def _send_to_named_addresses(server, session, session_onion, session_i2p,
+                             session_yggdrasil,
                              base_dir: str,
                              nickname: str, domain: str,
-                             onion_domain: str, i2p_domain: str, port: int,
+                             onion_domain: str, i2p_domain: str,
+                             yggdrasil_domain: str, port: int,
                              http_prefix: str, federation_list: [],
                              send_threads: [], post_log: [],
                              cached_webfingers: {}, person_cache: {},
@@ -3957,6 +3966,17 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                 to_port = 80
                 curr_proxy_type = 'i2p'
                 session_type = 'i2p'
+        if yggdrasil_domain:
+            if not is_yggdrasil_address(from_domain) and \
+               is_yggdrasil_address(to_domain):
+                from_domain = yggdrasil_domain
+                from_domain_full = yggdrasil_domain
+                from_http_prefix = 'http'
+                curr_session = session_yggdrasil
+                port = 80
+                to_port = 80
+                curr_proxy_type = 'yggdrasil'
+                session_type = 'yggdrasil'
 
         extra_headers = {}
         # followers synchronization header
@@ -4002,6 +4022,8 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                     server.session_onion = curr_session
                 elif session_type == 'i2p':
                     server.session_i2p = curr_session
+                elif session_type == 'yggdrasil':
+                    server.session_yggdrasil = curr_session
                 else:
                     server.session = curr_session
 
@@ -4015,14 +4037,17 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
                          shared_items_token, group_account,
                          signing_priv_key_pem, 34436782,
                          domain, onion_domain, i2p_domain,
+                         yggdrasil_domain,
                          extra_headers, sites_unavailable,
                          system_language, mitm_servers)
 
 
 def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
+                                   session_yggdrasil,
                                    base_dir: str, nickname: str, domain: str,
                                    onion_domain: str,
-                                   i2p_domain: str, port: int,
+                                   i2p_domain: str,
+                                   yggdrasil_domain: str, port: int,
                                    http_prefix: str, federation_list: [],
                                    send_threads: [], post_log: [],
                                    cached_webfingers: {}, person_cache: {},
@@ -4042,8 +4067,10 @@ def send_to_named_addresses_thread(server, session, session_onion, session_i2p,
     send_thread = \
         thread_with_trace(target=_send_to_named_addresses,
                           args=(server, session, session_onion, session_i2p,
+                                session_yggdrasil,
                                 base_dir, nickname, domain,
-                                onion_domain, i2p_domain, port,
+                                onion_domain, i2p_domain,
+                                yggdrasil_domain, port,
                                 http_prefix, federation_list,
                                 send_threads, post_log,
                                 cached_webfingers, person_cache,
@@ -4099,8 +4126,10 @@ def _sending_profile_update(post_json_object: {}) -> bool:
 
 
 def send_to_followers(server, session, session_onion, session_i2p,
+                      session_yggdrasil,
                       base_dir: str, nickname: str, domain: str,
-                      onion_domain: str, i2p_domain: str, port: int,
+                      onion_domain: str, i2p_domain: str,
+                      yggdrasil_domain: str, port: int,
                       http_prefix: str, federation_list: [],
                       send_threads: [], post_log: [],
                       cached_webfingers: {}, person_cache: {},
@@ -4195,6 +4224,10 @@ def send_to_followers(server, session, session_onion, session_i2p,
             if follower_domain.endswith('.i2p'):
                 curr_session = session_i2p
                 curr_http_prefix = 'http'
+        if yggdrasil_domain:
+            if is_yggdrasil_address(follower_domain):
+                curr_session = session_yggdrasil
+                curr_http_prefix = 'http'
 
         # get the domain showin by the user agent
         ua_domain = domain
@@ -4202,6 +4235,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
             ua_domain = onion_domain
         elif follower_domain.endswith('.i2p'):
             ua_domain = i2p_domain
+        elif is_yggdrasil_address(follower_domain):
+            ua_domain = yggdrasil_domain
 
         with_shared_inbox = \
             _has_shared_inbox(curr_session, curr_http_prefix, follower_domain,
@@ -4242,6 +4277,14 @@ def send_to_followers(server, session, session_onion, session_i2p,
                 to_port = 80
                 curr_proxy_type = 'i2p'
                 session_type = 'i2p'
+        if yggdrasil_domain:
+            if is_yggdrasil_address(to_domain):
+                from_domain = yggdrasil_domain
+                from_http_prefix = 'http'
+                port = 80
+                to_port = 80
+                curr_proxy_type = 'yggdrasil'
+                session_type = 'yggdrasil'
 
         if not curr_session:
             curr_session = create_session(curr_proxy_type)
@@ -4250,6 +4293,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
                     server.session_onion = curr_session
                 elif session_type == 'i2p':
                     server.session_i2p = curr_session
+                elif session_type == 'yggdrasil':
+                    server.session_yggdrasil = curr_session
                 else:
                     server.session = curr_session
 
@@ -4286,6 +4331,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                              shared_items_token, group_account,
                              signing_priv_key_pem, 639342,
                              domain, onion_domain, i2p_domain,
+                             yggdrasil_domain,
                              extra_headers, sites_unavailable,
                              system_language, mitm_servers)
         else:
@@ -4321,6 +4367,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                                  shared_items_token, group_account,
                                  signing_priv_key_pem, 634219,
                                  domain, onion_domain, i2p_domain,
+                                 yggdrasil_domain,
                                  extra_headers, sites_unavailable,
                                  system_language, mitm_servers)
 
@@ -4336,8 +4383,10 @@ def send_to_followers(server, session, session_onion, session_i2p,
 
 
 def send_to_followers_thread(server, session, session_onion, session_i2p,
+                             session_yggdrasil,
                              base_dir: str, nickname: str, domain: str,
-                             onion_domain: str, i2p_domain: str, port: int,
+                             onion_domain: str, i2p_domain: str,
+                             yggdrasil_domain: str, port: int,
                              http_prefix: str, federation_list: [],
                              send_threads: [], post_log: [],
                              cached_webfingers: {}, person_cache: {},
@@ -4355,8 +4404,10 @@ def send_to_followers_thread(server, session, session_onion, session_i2p,
     send_thread = \
         thread_with_trace(target=send_to_followers,
                           args=(server, session, session_onion, session_i2p,
+                                session_yggdrasil,
                                 base_dir, nickname, domain,
-                                onion_domain, i2p_domain, port,
+                                onion_domain, i2p_domain,
+                                yggdrasil_domain, port,
                                 http_prefix, federation_list,
                                 send_threads, post_log,
                                 cached_webfingers, person_cache,
@@ -7157,7 +7208,8 @@ def valid_post_content(base_dir: str, nickname: str, domain: str,
                        http_prefix: str, domain_full: str,
                        person_cache: {},
                        max_hashtags: int,
-                       onion_domain: str, i2p_domain: str) -> bool:
+                       onion_domain: str, i2p_domain: str,
+                       yggdrasil_domain: str) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -7272,6 +7324,7 @@ def valid_post_content(base_dir: str, nickname: str, domain: str,
 
     if contains_invalid_local_links(domain_full,
                                     onion_domain, i2p_domain,
+                                    yggdrasil_domain,
                                     content_str):
         if message_json['object'].get('id'):
             print('REJECT: post contains invalid local links ' +

@@ -23,6 +23,7 @@ def show_instance_actor(self, calling_domain: str,
                         base_dir: str, http_prefix: str,
                         domain: str, domain_full: str,
                         onion_domain: str, i2p_domain: str,
+                        yggdrasil_domain: str,
                         getreq_start_time,
                         cookie: str, debug: str,
                         enable_shared_inbox: bool,
@@ -42,7 +43,8 @@ def show_instance_actor(self, calling_domain: str,
     accept_str = self.headers['Accept']
     actor_domain_url = get_instance_url(calling_domain,
                                         http_prefix, domain_full,
-                                        onion_domain, i2p_domain)
+                                        onion_domain, i2p_domain,
+                                        yggdrasil_domain)
     actor_url = actor_domain_url + '/users/Actor'
     remove_fields = (
         'icon', 'image', 'tts', 'shares',
@@ -75,7 +77,8 @@ def show_instance_actor(self, calling_domain: str,
                               msg_str, http_prefix,
                               domain,
                               onion_domain,
-                              i2p_domain)
+                              i2p_domain,
+                              yggdrasil_domain)
     msg = msg_str.encode('utf-8')
     msglen = len(msg)
     if 'application/ld+json' in accept_str:

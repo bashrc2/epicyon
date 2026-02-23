@@ -34,6 +34,7 @@ def newswire_update(self, calling_domain: str, cookie: str,
                     default_timeline: str,
                     http_prefix: str, domain_full: str,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     max_post_length: int) -> None:
     """Updates the right newswire column of the timeline
     """
@@ -42,7 +43,8 @@ def newswire_update(self, calling_domain: str, cookie: str,
     actor_str = \
         get_instance_url(calling_domain,
                          http_prefix, domain_full,
-                         onion_domain, i2p_domain) + \
+                         onion_domain, i2p_domain,
+                         yggdrasil_domain) + \
         users_path
 
     boundary = None
@@ -231,6 +233,7 @@ def citations_update(self, calling_domain: str, cookie: str,
                      newswire: {},
                      http_prefix: str, domain_full: str,
                      onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str,
                      max_post_length: int) -> None:
     """Updates the citations for a blog post after hitting
     update button on the citations screen
@@ -239,7 +242,8 @@ def citations_update(self, calling_domain: str, cookie: str,
     actor_str = \
         get_instance_url(calling_domain,
                          http_prefix, domain_full,
-                         onion_domain, i2p_domain) + \
+                         onion_domain, i2p_domain,
+                         yggdrasil_domain) + \
         users_path
     nickname = get_nickname_from_actor(actor_str)
     if not nickname:
@@ -330,6 +334,7 @@ def news_post_edit(self, calling_domain: str, cookie: str,
                    domain: str, debug: bool,
                    http_prefix: str, domain_full: str,
                    onion_domain: str, i2p_domain: str,
+                   yggdrasil_domain: str,
                    news_instance: bool,
                    max_post_length: int,
                    system_language: str,
@@ -342,7 +347,8 @@ def news_post_edit(self, calling_domain: str, cookie: str,
     actor_str = \
         get_instance_url(calling_domain,
                          http_prefix, domain_full,
-                         onion_domain, i2p_domain) + \
+                         onion_domain, i2p_domain,
+                         yggdrasil_domain) + \
         users_path
 
     boundary = None

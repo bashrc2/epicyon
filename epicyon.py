@@ -97,6 +97,7 @@ from utils import valid_nickname
 from utils import get_protocol_prefixes
 from utils import acct_dir
 from utils import resembles_url
+from utils import is_yggdrasil_address
 from media import archive_media
 from media import get_attachment_media_type
 from delete import send_delete_via_server
@@ -260,6 +261,10 @@ def _command_options() -> None:
     parser.add_argument('--i2p_domain', dest='i2p_domain', type=str,
                         default=None,
                         help='i2p domain name of the server if ' +
+                        'primarily on clearnet')
+    parser.add_argument('--yggdrasil_domain', dest='yggdrasil_domain',
+                        type=str, default=None,
+                        help='yggdrasil domain name of the server if ' +
                         'primarily on clearnet')
     parser.add_argument('-p', '--port', dest='port', type=int,
                         default=None,
@@ -1669,9 +1674,20 @@ def _command_options() -> None:
             print(argb.i2p_domain + ' does not look like an i2p domain')
             sys.exit()
         if '://' in argb.i2p_domain:
-            argb.onion = argb.onion.split('://')[1]
+            argb.i2p_domain = argb.i2p_domain.split('://')[1]
         i2p_domain = argb.i2p_domain
         set_config_param(base_dir, 'i2pDomain', i2p_domain)
+
+    yggdrasil_domain = None
+    if argb.yggdrasil_domain:
+        if not is_yggdrasil_address(argb.yggdrasil_domain):
+            print(argb.yggdrasil_domain +
+                  ' does not look like a yggdrasil domain')
+            sys.exit()
+        if '://' in argb.yggdrasil_domain:
+            argb.yggdrasil_domain = argb.yggdrasil_domain.split('://')[1]
+        yggdrasil_domain = argb.yggdrasil_domain
+        set_config_param(base_dir, 'yggdrasilDomain', yggdrasil_domain)
 
     if not argb.language:
         language_code = get_config_param(base_dir, 'language')
@@ -1735,6 +1751,13 @@ def _command_options() -> None:
     else:
         i2p_domain = None
 
+    # get yggdrasil domain name from configuration
+    configyggdrasil_domain = get_config_param(base_dir, 'yggdrasilDomain')
+    if configyggdrasil_domain:
+        yggdrasil_domain = configyggdrasil_domain
+    else:
+        yggdrasil_domain = None
+
     # get port number from configuration
     config_port = get_config_param(base_dir, 'port')
     if config_port:
@@ -1792,6 +1815,7 @@ def _command_options() -> None:
             sys.exit()
         session_onion = None
         session_i2p = None
+        session_yggdrasil = None
         session = create_session(proxy_type)
         send_threads = []
         post_log = []
@@ -1812,12 +1836,19 @@ def _command_options() -> None:
             i2p_domain = argb.i2p_domain
         if i2p_domain:
             session_i2p = create_session('i2p')
+        yggdrasil_domain = get_config_param(base_dir, 'yggdrasilDomain')
+        if argb.yggdrasil_domain:
+            yggdrasil_domain = argb.yggdrasil_domain
+        if yggdrasil_domain:
+            session_yggdrasil = create_session('yggdrasil')
         followers_sync_cache = {}
         sites_unavailable: list[str] = []
         system_language = argb.language
         mitm_servers: list[str] = []
         manual_approve_follow_request(session, session_onion, session_i2p,
+                                      session_yggdrasil,
                                       onion_domain, i2p_domain,
+                                      yggdrasil_domain,
                                       base_dir, http_prefix,
                                       argb.nickname, domain, port,
                                       argb.approve,
@@ -1841,6 +1872,7 @@ def _command_options() -> None:
             sys.exit()
         session_onion = None
         session_i2p = None
+        session_yggdrasil = None
         session = create_session(proxy_type)
         send_threads = []
         post_log = []
@@ -1861,12 +1893,19 @@ def _command_options() -> None:
             i2p_domain = argb.i2p_domain
         if i2p_domain:
             session_i2p = create_session('i2p')
+        yggdrasil_domain = get_config_param(base_dir, 'yggdrasilDomain')
+        if argb.yggdrasil_domain:
+            yggdrasil_domain = argb.yggdrasil_domain
+        if yggdrasil_domain:
+            session_yggdrasil = create_session('yggdrasil')
         followers_sync_cache = {}
         sites_unavailable: list[str] = []
         mitm_servers: list[str] = []
         system_language = argb.language
         manual_deny_follow_request2(session, session_onion, session_i2p,
+                                    session_yggdrasil,
                                     onion_domain, i2p_domain,
+                                    yggdrasil_domain,
                                     base_dir, http_prefix,
                                     argb.nickname, domain, port,
                                     argb.deny,
@@ -4311,6 +4350,7 @@ def _command_options() -> None:
     opt['domain'] = domain
     opt['onion_domain'] = onion_domain
     opt['i2p_domain'] = i2p_domain
+    opt['yggdrasil_domain'] = yggdrasil_domain
     opt['port'] = port
     opt['proxy_port'] = proxy_port
     opt['http_prefix'] = http_prefix
@@ -4371,6 +4411,7 @@ if __name__ == "__main__":
                opt2['registration'], argb2.language, __version__,
                opt2['instance_id'], argb2.client, opt2['base_dir'],
                opt2['domain'], opt2['onion_domain'], opt2['i2p_domain'],
+               opt2['yggdrasil_domain'],
                argb2.yt_replace_domain,
                argb2.twitter_replacement_domain,
                opt2['port'], opt2['proxy_port'], opt2['http_prefix'],

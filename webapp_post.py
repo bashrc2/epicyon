@@ -3287,7 +3287,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                     html_open_street_map(loc_str,
                                          bounding_box_degrees,
                                          translate, session,
-                                         session, session)
+                                         session, session, session)
                 if map_str:
                     event_category = ''
                     if category_str:

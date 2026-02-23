@@ -23,6 +23,8 @@ from utils import get_config_param
 from utils import get_domain_from_actor
 from utils import get_full_domain
 from utils import remove_eol
+from utils import is_yggdrasil_address
+from utils import is_yggdrasil_url
 from session import establish_session
 from webapp_profile import html_profile_after_search
 from petnames import set_pet_name
@@ -238,6 +240,7 @@ def _person_options_view(self, options_confirm_params: str,
                          lists_enabled: {},
                          onion_domain: str,
                          i2p_domain: str,
+                         yggdrasil_domain: str,
                          dogwhistles: {},
                          min_images_for_accounts: {},
                          buy_sites: [],
@@ -276,6 +279,9 @@ def _person_options_view(self, options_confirm_params: str,
               profile_handle.endswith('.i2p')):
             curr_proxy_type = 'i2p'
             curr_session = self.server.session_i2p
+        elif is_yggdrasil_url(profile_handle):
+            curr_proxy_type = 'yggdrasil'
+            curr_session = self.server.session_yggdrasil
 
         curr_session = \
             establish_session("handle search",
@@ -323,6 +329,7 @@ def _person_options_view(self, options_confirm_params: str,
                                       timezone,
                                       onion_domain,
                                       i2p_domain,
+                                      yggdrasil_domain,
                                       bold_reading,
                                       dogwhistles,
                                       min_images_for_accounts,
@@ -1075,6 +1082,7 @@ def _person_options_snooze(self, options_confirm_params: str,
                            options_actor: str, base_dir: str,
                            domain: str, calling_domain: str,
                            onion_domain: str, i2p_domain: str,
+                           yggdrasil_domain: str,
                            default_timeline: str,
                            page_number: int,
                            cookie: str) -> bool:
@@ -1094,6 +1102,8 @@ def _person_options_snooze(self, options_confirm_params: str,
                 this_actor = 'http://' + onion_domain + users_path
             elif (calling_domain.endswith('.i2p') and i2p_domain):
                 this_actor = 'http://' + i2p_domain + users_path
+            elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+                this_actor = 'http://' + yggdrasil_domain + users_path
             actor_path_str = \
                 this_actor + '/' + default_timeline + \
                 '?page=' + str(page_number)
@@ -1111,6 +1121,7 @@ def _person_options_unsnooze(self, options_confirm_params: str,
                              base_dir: str, domain: str,
                              calling_domain: str,
                              onion_domain: str, i2p_domain: str,
+                             yggdrasil_domain: str,
                              default_timeline: str,
                              page_number: int, cookie: str) -> bool:
     """Person options screen, unsnooze button
@@ -1129,6 +1140,8 @@ def _person_options_unsnooze(self, options_confirm_params: str,
                 this_actor = 'http://' + onion_domain + users_path
             elif (calling_domain.endswith('.i2p') and i2p_domain):
                 this_actor = 'http://' + i2p_domain + users_path
+            elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+                this_actor = 'http://' + yggdrasil_domain + users_path
             actor_path_str = \
                 this_actor + '/' + default_timeline + \
                 '?page=' + str(page_number)
@@ -1279,6 +1292,7 @@ def person_options2(self, path: str,
                     base_dir: str, http_prefix: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     debug: bool, curr_session,
                     authorized: bool,
                     show_published_date_only: bool,
@@ -1328,6 +1342,8 @@ def person_options2(self, path: str,
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str = 'http://' + i2p_domain + users_path
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            origin_path_str = 'http://' + yggdrasil_domain + users_path
         print('WARN: unable to find nickname in ' + origin_path_str)
         redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
@@ -1378,6 +1394,8 @@ def person_options2(self, path: str,
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str = 'http://' + i2p_domain + users_path
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            origin_path_str = 'http://' + yggdrasil_domain + users_path
         print('WARN: unable to find nickname in ' + options_actor)
         redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
@@ -1389,6 +1407,8 @@ def person_options2(self, path: str,
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str = 'http://' + i2p_domain + users_path
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            origin_path_str = 'http://' + yggdrasil_domain + users_path
         print('WARN: unable to find domain in ' + options_actor)
         redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
@@ -1435,6 +1455,7 @@ def person_options2(self, path: str,
                             lists_enabled,
                             onion_domain,
                             i2p_domain,
+                            yggdrasil_domain,
                             dogwhistles,
                             min_images_for_accounts,
                             buy_sites,
@@ -1678,6 +1699,7 @@ def person_options2(self, path: str,
                               options_actor, base_dir,
                               domain, calling_domain,
                               onion_domain, i2p_domain,
+                              yggdrasil_domain,
                               default_timeline,
                               page_number,
                               cookie):
@@ -1690,6 +1712,7 @@ def person_options2(self, path: str,
                                 base_dir, domain,
                                 calling_domain,
                                 onion_domain, i2p_domain,
+                                yggdrasil_domain,
                                 default_timeline,
                                 page_number, cookie):
         return
@@ -1737,6 +1760,8 @@ def person_options2(self, path: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif calling_domain.endswith('.i2p') and i2p_domain:
         origin_path_str = 'http://' + i2p_domain + users_path
+    elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+        origin_path_str = 'http://' + yggdrasil_domain + users_path
     redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
     return

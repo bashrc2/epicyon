@@ -15,12 +15,14 @@ from theme import set_theme
 from theme import set_theme_from_designer
 from httpheaders import redirect_headers
 from utils import load_json
+from utils import is_yggdrasil_address
 
 
 def theme_designer_edit(self, calling_domain: str, cookie: str,
                         base_dir: str, http_prefix: str, nickname: str,
                         domain: str, domain_full: str,
                         onion_domain: str, i2p_domain: str,
+                        yggdrasil_domain: str,
                         default_timeline: str, theme_name: str,
                         allow_local_network_access: bool,
                         system_language: str,
@@ -72,6 +74,10 @@ def theme_designer_edit(self, calling_domain: str, cookie: str,
         elif calling_domain.endswith('.i2p') and i2p_domain:
             origin_path_str = \
                 'http://' + i2p_domain + users_path + \
+                '/' + default_timeline
+        elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+            origin_path_str = \
+                'http://' + yggdrasil_domain + users_path + \
                 '/' + default_timeline
         redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
@@ -149,6 +155,9 @@ def theme_designer_edit(self, calling_domain: str, cookie: str,
     elif calling_domain.endswith('.i2p') and i2p_domain:
         origin_path_str = \
             'http://' + i2p_domain + users_path + '/' + default_timeline
+    elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+        origin_path_str = \
+            'http://' + yggdrasil_domain + users_path + '/' + default_timeline
     redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
     return

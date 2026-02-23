@@ -12,6 +12,7 @@ from session import establish_session
 from flags import url_permitted
 from httpsig import signed_get_key_id
 from cache import get_person_pub_key
+from utils import is_yggdrasil_url
 
 
 def secure_mode(curr_session, proxy_type: str,
@@ -43,6 +44,11 @@ def secure_mode(curr_session, proxy_type: str,
         if '.i2p/' in key_id:
             curr_session = server.session_i2p
             proxy_type = 'i2p'
+    if server.yggdrasil_domain:
+        # TODO improve yggdrasil detection
+        if is_yggdrasil_url(key_id):
+            curr_session = server.session_yggdrasil
+            proxy_type = 'yggdrasil'
 
     curr_session = \
         establish_session("secure mode",
@@ -61,6 +67,7 @@ def secure_mode(curr_session, proxy_type: str,
                            server.domain,
                            server.onion_domain,
                            server.i2p_domain,
+                           server.yggdrasil_domain,
                            server.signing_priv_key_pem,
                            server.mitm_servers)
     if not pub_key:

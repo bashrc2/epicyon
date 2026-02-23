@@ -486,6 +486,7 @@ def show_media(self, path: str, base_dir: str,
 def show_qrcode(self, calling_domain: str, path: str,
                 base_dir: str, domain: str, domain_full: str,
                 onion_domain: str, i2p_domain: str,
+                yggdrasil_domain: str,
                 port: int, getreq_start_time,
                 fitness: {}, debug: bool) -> bool:
     """Shows a QR code for an account
@@ -499,6 +500,9 @@ def show_qrcode(self, calling_domain: str, path: str,
         port = 80
     elif i2p_domain:
         qrcode_domain = i2p_domain
+        port = 80
+    elif yggdrasil_domain:
+        qrcode_domain = yggdrasil_domain
         port = 80
     else:
         qrcode_domain = domain

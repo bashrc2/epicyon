@@ -18,12 +18,14 @@ from webfinger import webfinger_meta
 from webfinger import wellknown_protocol_handler
 from utils import get_json_content_from_accept
 from utils import convert_domains
+from utils import is_yggdrasil_address
 from daemon_utils import has_accept
 
 
 def get_webfinger(self, calling_domain: str, referer_domain: str,
                   cookie: str, path: str, debug: bool,
                   onion_domain: str, i2p_domain: str,
+                  yggdrasil_domain: str,
                   http_prefix: str, domain: str, domain_full: str,
                   base_dir: str, port: int) -> bool:
     if not path.startswith('/.well-known'):
@@ -42,6 +44,10 @@ def get_webfinger(self, calling_domain: str, referer_domain: str,
               i2p_domain):
             wf_result = \
                 webfinger_meta('http', i2p_domain)
+        elif (is_yggdrasil_address(calling_domain) and
+              yggdrasil_domain):
+            wf_result = \
+                webfinger_meta('http', yggdrasil_domain)
         else:
             wf_result = \
                 webfinger_meta(http_prefix, domain_full)
@@ -69,6 +75,9 @@ def get_webfinger(self, calling_domain: str, referer_domain: str,
         elif calling_domain.endswith('.i2p'):
             protocol_url, _ = \
                 wellknown_protocol_handler(path, 'http', i2p_domain)
+        elif is_yggdrasil_address(calling_domain):
+            protocol_url, _ = \
+                wellknown_protocol_handler(path, 'http', yggdrasil_domain)
         else:
             protocol_url, _ = \
                 wellknown_protocol_handler(path, http_prefix, domain_full)
@@ -87,6 +96,9 @@ def get_webfinger(self, calling_domain: str, referer_domain: str,
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             wf_result = \
                 webfinger_node_info('http', i2p_domain)
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            wf_result = \
+                webfinger_node_info('http', yggdrasil_domain)
         else:
             wf_result = \
                 webfinger_node_info(http_prefix, domain_full)
@@ -94,7 +106,8 @@ def get_webfinger(self, calling_domain: str, referer_domain: str,
             msg_str = json.dumps(wf_result)
             msg_str = convert_domains(calling_domain, referer_domain,
                                       msg_str, http_prefix, domain,
-                                      onion_domain, i2p_domain)
+                                      onion_domain, i2p_domain,
+                                      yggdrasil_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if has_accept(self, calling_domain):
@@ -116,12 +129,13 @@ def get_webfinger(self, calling_domain: str, referer_domain: str,
     wf_result = \
         webfinger_lookup(path, base_dir,
                          domain, onion_domain,
-                         i2p_domain, port, debug)
+                         i2p_domain, yggdrasil_domain, port, debug)
     if wf_result:
         msg_str = json.dumps(wf_result)
         msg_str = convert_domains(calling_domain, referer_domain,
                                   msg_str, http_prefix, domain,
-                                  onion_domain, i2p_domain)
+                                  onion_domain, i2p_domain,
+                                  yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         set_headers(self, 'application/jrd+json', msglen,

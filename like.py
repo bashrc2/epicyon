@@ -80,6 +80,7 @@ def _create_like(recent_posts_cache: {},
                  signing_priv_key_pem: str,
                  curr_domain: str,
                  onion_domain: str, i2p_domain: str,
+                 yggdrasil_domain: str,
                  sites_unavailable: [],
                  system_language: str,
                  mitm_servers: []) -> {}:
@@ -153,6 +154,7 @@ def _create_like(recent_posts_cache: {},
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 7367374,
                          curr_domain, onion_domain, i2p_domain,
+                         yggdrasil_domain,
                          extra_headers, sites_unavailable,
                          system_language, mitm_servers)
 
@@ -170,6 +172,7 @@ def like_post(recent_posts_cache: {},
               debug: bool, project_version: str,
               signing_priv_key_pem: str,
               curr_domain: str, onion_domain: str, i2p_domain: str,
+              yggdrasil_domain: str,
               sites_unavailable: [],
               system_language: str,
               mitm_servers: []) -> {}:
@@ -189,6 +192,7 @@ def like_post(recent_posts_cache: {},
                         cached_webfingers,
                         debug, project_version, signing_priv_key_pem,
                         curr_domain, onion_domain, i2p_domain,
+                        yggdrasil_domain,
                         sites_unavailable, system_language,
                         mitm_servers)
 

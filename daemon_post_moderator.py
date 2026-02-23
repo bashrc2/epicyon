@@ -41,6 +41,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                       domain: str, port: int, debug: bool,
                       domain_full: str,
                       onion_domain: str, i2p_domain: str,
+                      yggdrasil_domain: str,
                       translate: {},
                       system_language: str,
                       signing_priv_key_pem: str,
@@ -57,7 +58,8 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
     actor_str = \
         get_instance_url(calling_domain,
                          http_prefix, domain_full,
-                         onion_domain, i2p_domain) + \
+                         onion_domain, i2p_domain,
+                         yggdrasil_domain) + \
         users_path
     if not is_moderator(base_dir, nickname):
         redirect_headers(self, actor_str + '/moderation',

@@ -19,6 +19,7 @@ from utils import save_json
 from utils import locate_post
 from utils import remove_html
 from utils import has_object_dict
+from utils import is_yggdrasil_url
 from timeFunctions import date_epoch
 from timeFunctions import date_from_string_format
 from timeFunctions import date_utcnow
@@ -849,6 +850,7 @@ def html_open_street_map(url: str,
                          bounding_box_degrees: float,
                          translate: {}, session,
                          session_onion, session_i2p,
+                         session_yggdrasil,
                          width: str = "725",
                          height: str = "650") -> str:
     """Returns embed html for an OSM link
@@ -859,6 +861,8 @@ def html_open_street_map(url: str,
         map_session = session_onion
     elif '.i2p/' in url:
         map_session = session_i2p
+    elif is_yggdrasil_url(url):
+        map_session = session_yggdrasil
     zoom, latitude, longitude = \
         geocoords_from_map_link(url, osm_domain, map_session)
     if not latitude:

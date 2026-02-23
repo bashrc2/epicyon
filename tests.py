@@ -67,6 +67,7 @@ from flags import is_right_to_left_text
 from status import actor_status_expired
 from status import get_actor_status
 from unicodetext import uninvert_text
+from utils import is_yggdrasil_url
 from utils import replace_strings
 from utils import valid_content_warning
 from utils import data_dir
@@ -890,6 +891,7 @@ def create_server_alice(path: str, domain: str, port: int,
     max_emoji = 10
     onion_domain = None
     i2p_domain = None
+    yggdrasil_domain = None
     allow_local_network_access = True
     max_newswire_posts = 20
     dormant_months = 3
@@ -947,7 +949,8 @@ def create_server_alice(path: str, domain: str, port: int,
                0, False, 1, False, False, False,
                5, True, True, 'en', __version__,
                "instance_id", False, path, domain,
-               onion_domain, i2p_domain, None, None, port, port,
+               onion_domain, i2p_domain, yggdrasil_domain,
+               None, None, port, port,
                http_prefix, federation_list, max_mentions, max_emoji, False,
                proxy_type, max_replies,
                domain_max_posts_per_day, account_max_posts_per_day,
@@ -1091,6 +1094,7 @@ def create_server_bob(path: str, domain: str, port: int,
     max_emoji = 10
     onion_domain = None
     i2p_domain = None
+    yggdrasil_domain = None
     allow_local_network_access = True
     max_newswire_posts = 20
     dormant_months = 3
@@ -1148,7 +1152,8 @@ def create_server_bob(path: str, domain: str, port: int,
                False, 1, False, False, False,
                5, True, True, 'en', __version__,
                "instance_id", False, path, domain,
-               onion_domain, i2p_domain, None, None, port, port,
+               onion_domain, i2p_domain, yggdrasil_domain,
+               None, None, port, port,
                http_prefix, federation_list, max_mentions, max_emoji, False,
                proxy_type, max_replies,
                domain_max_posts_per_day, account_max_posts_per_day,
@@ -1187,6 +1192,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     max_emoji = 10
     onion_domain = None
     i2p_domain = None
+    yggdrasil_domain = None
     allow_local_network_access = True
     max_newswire_posts = 20
     dormant_months = 3
@@ -1259,6 +1265,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
                path, domain,
                onion_domain,
                i2p_domain,
+               yggdrasil_domain,
                None, None,
                port, port,
                http_prefix,
@@ -1312,6 +1319,7 @@ def create_server_group(path: str, domain: str, port: int,
     max_emoji = 10
     onion_domain = None
     i2p_domain = None
+    yggdrasil_domain = None
     allow_local_network_access = True
     max_newswire_posts = 20
     dormant_months = 3
@@ -1370,7 +1378,8 @@ def create_server_group(path: str, domain: str, port: int,
                0, False, 1, False, False, False,
                5, True, True, 'en', __version__,
                "instance_id", False, path, domain,
-               onion_domain, i2p_domain, None, None, port, port,
+               onion_domain, i2p_domain, yggdrasil_domain,
+               None, None, port, port,
                http_prefix, federation_list, max_mentions, max_emoji, False,
                proxy_type, max_replies,
                domain_max_posts_per_day, account_max_posts_per_day,
@@ -1629,7 +1638,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                      status_number, False, bob_send_threads, bob_post_log,
                      bob_person_cache, bob_cached_webfingers,
                      True, __version__, signing_priv_key_pem,
-                     bob_domain, None, None, sites_unavailable,
+                     bob_domain, None, None, None, sites_unavailable,
                      system_language, mitm_servers)
 
     for _ in range(20):
@@ -1655,7 +1664,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                          False, bob_send_threads, bob_post_log,
                          bob_person_cache, bob_cached_webfingers,
                          True, __version__, signing_priv_key_pem,
-                         bob_domain, None, None, sites_unavailable,
+                         bob_domain, None, None, None, sites_unavailable,
                          system_language, mitm_servers)
 
     for _ in range(20):
@@ -1696,7 +1705,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
                     False, bob_send_threads, bob_post_log,
                     bob_person_cache, bob_cached_webfingers,
                     True, __version__, signing_priv_key_pem,
-                    bob_domain, None, None, sites_unavailable,
+                    bob_domain, None, None, None, sites_unavailable,
                     system_language, mitm_servers)
     announce_message_arrived = False
     outbox_message_arrived = False
@@ -1847,7 +1856,8 @@ def test_follow_between_servers(base_dir: str) -> None:
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            alice_domain, None, None, sites_unavailable,
+                            alice_domain, None, None, None,
+                            sites_unavailable,
                             system_language, mitm_servers)
     print('send_result: ' + str(send_result))
 
@@ -2088,7 +2098,8 @@ def test_shared_items_federation(base_dir: str) -> None:
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            alice_domain, None, None, sites_unavailable,
+                            alice_domain, None, None, None,
+                            sites_unavailable,
                             system_language, mitm_servers)
     print('send_result: ' + str(send_result))
 
@@ -2593,7 +2604,8 @@ def test_group_follow(base_dir: str) -> None:
                             alice_send_threads, alice_post_log,
                             alice_cached_webfingers, alice_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            alice_domain, None, None, sites_unavailable,
+                            alice_domain, None, None, None,
+                            sites_unavailable,
                             system_language, mitm_servers)
     print('send_result: ' + str(send_result))
 
@@ -2674,7 +2686,8 @@ def test_group_follow(base_dir: str) -> None:
                             bob_send_threads, bob_post_log,
                             bob_cached_webfingers, bob_person_cache,
                             True, __version__, signing_priv_key_pem,
-                            bob_domain, None, None, sites_unavailable,
+                            bob_domain, None, None, None,
+                            sites_unavailable,
                             system_language, mitm_servers)
     print('send_result: ' + str(send_result))
 
@@ -4577,6 +4590,7 @@ def _test_danger_svg(base_dir: str) -> None:
     domain_full = domain
     onion_domain = None
     i2p_domain = None
+    yggdrasil_domain = None
     federation_list: list[str] = []
     debug = True
     svg_image_filename = base_dir + '/.unit_test_safe.svg'
@@ -4600,7 +4614,7 @@ def _test_danger_svg(base_dir: str) -> None:
 
     assert cache_svg_images(session, base_dir, http_prefix,
                             domain, domain_full,
-                            onion_domain, i2p_domain,
+                            onion_domain, i2p_domain, yggdrasil_domain,
                             post_json_object,
                             federation_list, debug,
                             svg_image_filename)
@@ -9631,6 +9645,18 @@ def _test_replace_gemini_links() -> None:
     assert result == expected
 
 
+def _test_yggdrasil_addresses() -> None:
+    print('yggdrasil_addresses')
+    text = 'https://some.domain'
+    assert not is_yggdrasil_url(text)
+    text = 'http://[200:abcd:abcd:abcd:abcd:abcd:abcd:abcd]/something'
+    assert is_yggdrasil_url(text)
+    text = 'http://[200:abcd:abcd:abcd:abcd:abcd:abcd:abcd]:5026/something'
+    assert is_yggdrasil_url(text)
+    text = 'http://[203:abcd:abcd:abcd:abcd:abcd:abcd]/something'
+    assert not is_yggdrasil_url(text)
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -9649,6 +9675,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_yggdrasil_addresses()
     _test_replace_gemini_links()
     _test_markdown_blog(base_dir)
     _test_gemini_blog(base_dir)

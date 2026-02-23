@@ -12,6 +12,7 @@ import urllib.parse
 from socket import error as SocketError
 from flags import has_group_type
 from flags import is_moderator
+from utils import is_yggdrasil_address
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import get_full_domain
@@ -36,6 +37,7 @@ def unfollow_confirm(self, calling_domain: str, cookie: str,
                      path: str, base_dir: str, http_prefix: str,
                      domain: str, domain_full: str, port: int,
                      onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str,
                      debug: bool,
                      curr_session, proxy_type: str,
                      person_cache: {}) -> None:
@@ -134,6 +136,8 @@ def unfollow_confirm(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str = 'http://' + yggdrasil_domain + users_path
     redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
@@ -142,6 +146,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                     path: str, base_dir: str, http_prefix: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     debug: bool,
                     curr_session, proxy_type: str,
                     translate: {},
@@ -285,6 +290,15 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                     following_port = 80
                     curr_http_prefix = 'http'
                     curr_proxy_type = 'i2p'
+            if yggdrasil_domain:
+                if not is_yggdrasil_address(curr_domain) and \
+                   is_yggdrasil_address(following_domain):
+                    curr_session = self.server.session_yggdrasil
+                    curr_domain = yggdrasil_domain
+                    curr_port = 80
+                    following_port = 80
+                    curr_http_prefix = 'http'
+                    curr_proxy_type = 'yggdrasil'
 
             curr_session = \
                 establish_session("follow request confirm",
@@ -310,6 +324,7 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                                 domain,
                                 onion_domain,
                                 i2p_domain,
+                                yggdrasil_domain,
                                 sites_unavailable,
                                 system_language,
                                 mitm_servers)
@@ -328,6 +343,8 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
                 origin_path_str = 'http://' + onion_domain + users_path
             elif (calling_domain.endswith('.i2p') and i2p_domain):
                 origin_path_str = 'http://' + i2p_domain + users_path
+            elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+                origin_path_str = 'http://' + yggdrasil_domain + users_path
             print('WARN: unable to find blocked nickname or domain in ' +
                   blocking_actor)
             redirect_headers(self, origin_path_str,
@@ -363,6 +380,8 @@ def follow_confirm2(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str = 'http://' + yggdrasil_domain + users_path
     redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
@@ -371,6 +390,7 @@ def block_confirm2(self, calling_domain: str, cookie: str,
                    path: str, base_dir: str, http_prefix: str,
                    domain: str, domain_full: str, port: int,
                    onion_domain: str, i2p_domain: str,
+                   yggdrasil_domain: str,
                    debug: bool) -> None:
     """Confirms a block from the person options screen
     """
@@ -382,6 +402,8 @@ def block_confirm2(self, calling_domain: str, cookie: str,
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str = 'http://' + i2p_domain + users_path
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            origin_path_str = 'http://' + yggdrasil_domain + users_path
         print('WARN: unable to find nickname in ' + origin_path_str)
         redirect_headers(self, origin_path_str,
                          cookie, calling_domain, 303)
@@ -427,6 +449,8 @@ def block_confirm2(self, calling_domain: str, cookie: str,
                 origin_path_str = 'http://' + onion_domain + users_path
             elif (calling_domain.endswith('.i2p') and i2p_domain):
                 origin_path_str = 'http://' + i2p_domain + users_path
+            elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+                origin_path_str = 'http://' + yggdrasil_domain + users_path
             print('WARN: unable to find nickname or domain in ' +
                   blocking_actor)
             redirect_headers(self, origin_path_str,
@@ -454,6 +478,8 @@ def block_confirm2(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str = 'http://' + yggdrasil_domain + users_path
     redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
 
@@ -462,6 +488,7 @@ def unblock_confirm(self, calling_domain: str, cookie: str,
                     path: str, base_dir: str, http_prefix: str,
                     domain: str, domain_full: str, port: int,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     debug: bool) -> None:
     """Confirms an unblock from the person options screen
     """
@@ -473,6 +500,8 @@ def unblock_confirm(self, calling_domain: str, cookie: str,
             origin_path_str = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             origin_path_str = 'http://' + i2p_domain + users_path
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            origin_path_str = 'http://' + yggdrasil_domain + users_path
         print('WARN: unable to find nickname in ' + origin_path_str)
         redirect_headers(self, origin_path_str,
                          cookie, calling_domain, 303)
@@ -515,6 +544,8 @@ def unblock_confirm(self, calling_domain: str, cookie: str,
                 origin_path_str = 'http://' + onion_domain + users_path
             elif (calling_domain.endswith('.i2p') and i2p_domain):
                 origin_path_str = 'http://' + i2p_domain + users_path
+            elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+                origin_path_str = 'http://' + yggdrasil_domain + users_path
             print('WARN: unable to find nickname in ' + blocking_actor)
             redirect_headers(self, origin_path_str,
                              cookie, calling_domain, 303)
@@ -548,6 +579,8 @@ def unblock_confirm(self, calling_domain: str, cookie: str,
         origin_path_str = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str = 'http://' + yggdrasil_domain + users_path
     redirect_headers(self, origin_path_str,
                      cookie, calling_domain, 303)
     self.server.postreq_busy = False

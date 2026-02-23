@@ -119,6 +119,7 @@ def post_to_outbox(self, message_json: {}, version: str,
                                   self.server.domain_full,
                                   self.server.onion_domain,
                                   self.server.i2p_domain,
+                                  self.server.yggdrasil_domain,
                                   self.server.port,
                                   self.server.recent_posts_cache,
                                   self.server.followers_threads,
@@ -812,7 +813,8 @@ def show_person_options(self, calling_domain: str, path: str,
                          self.server.http_prefix,
                          domain_full,
                          self.server.onion_domain,
-                         self.server.i2p_domain) + \
+                         self.server.i2p_domain,
+                         self.server.yggdrasil_domain) + \
         origin_path_str
     redirect_headers(self, origin_path_str_absolute, cookie,
                      calling_domain, 303)

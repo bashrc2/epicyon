@@ -40,7 +40,8 @@ from reaction import undo_reaction_collection_entry
 
 def _receive_undo_follow(base_dir: str, message_json: {},
                          debug: bool, domain: str,
-                         onion_domain: str, i2p_domain: str) -> bool:
+                         onion_domain: str, i2p_domain: str,
+                         yggdrasil_domain: str) -> bool:
     """
     Receives an undo follow
     {
@@ -113,6 +114,9 @@ def _receive_undo_follow(base_dir: str, message_json: {},
     if i2p_domain:
         if domain_following.endswith(i2p_domain):
             domain_following = domain
+    if yggdrasil_domain:
+        if domain_following.endswith(yggdrasil_domain):
+            domain_following = domain
     domain_following_full = get_full_domain(domain_following, port_following)
 
     group_account = has_group_type(base_dir, actor, None)
@@ -133,7 +137,8 @@ def _receive_undo_follow(base_dir: str, message_json: {},
 
 
 def receive_undo(base_dir: str, message_json: {}, debug: bool,
-                 domain: str, onion_domain: str, i2p_domain: str) -> bool:
+                 domain: str, onion_domain: str, i2p_domain: str,
+                 yggdrasil_domain: str) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
     if not message_json['type'].startswith('Undo'):
@@ -152,7 +157,8 @@ def receive_undo(base_dir: str, message_json: {}, debug: bool,
     if message_json['object']['type'] == 'Follow' or \
        message_json['object']['type'] == 'Join':
         _receive_undo_follow(base_dir, message_json,
-                             debug, domain, onion_domain, i2p_domain)
+                             debug, domain, onion_domain, i2p_domain,
+                             yggdrasil_domain)
         return True
     return False
 

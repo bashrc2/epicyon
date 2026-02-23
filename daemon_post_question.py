@@ -21,6 +21,7 @@ from utils import get_domain_from_actor
 from utils import text_in_file
 from utils import get_nickname_from_actor
 from utils import acct_dir
+from utils import is_yggdrasil_address
 from httpheaders import redirect_headers
 from city import get_spoofed_city
 from languages import get_understood_languages
@@ -33,6 +34,7 @@ def receive_vote(self, calling_domain: str, cookie: str,
                  path: str, http_prefix: str,
                  domain: str, domain_full: str, port: int,
                  onion_domain: str, i2p_domain: str,
+                 yggdrasil_domain: str,
                  curr_session, proxy_type: str,
                  base_dir: str, city: str,
                  person_cache: {}, debug: bool,
@@ -96,6 +98,8 @@ def receive_vote(self, calling_domain: str, cookie: str,
             actor = 'http://' + onion_domain + users_path
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             actor = 'http://' + i2p_domain + users_path
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            actor = 'http://' + yggdrasil_domain + users_path
         actor_path_str = \
             actor + '/' + default_timeline + \
             '?page=' + str(page_number)
@@ -163,6 +167,8 @@ def receive_vote(self, calling_domain: str, cookie: str,
         actor = 'http://' + onion_domain + users_path
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         actor = 'http://' + i2p_domain + users_path
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        actor = 'http://' + yggdrasil_domain + users_path
     actor_path_str = \
         actor + '/' + default_timeline + \
         '?page=' + str(page_number) + first_post_id + last_post_id

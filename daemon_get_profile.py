@@ -42,6 +42,7 @@ def show_person_profile(self, authorized: bool,
                         base_dir: str, http_prefix: str,
                         domain: str,
                         onion_domain: str, i2p_domain: str,
+                        yggdrasil_domain: str,
                         getreq_start_time,
                         proxy_type: str, cookie: str,
                         debug: str,
@@ -88,7 +89,8 @@ def show_person_profile(self, authorized: bool,
     actor_json = person_lookup(domain, path, base_dir)
     if not actor_json:
         return False
-    add_alternate_domains(actor_json, domain, onion_domain, i2p_domain)
+    add_alternate_domains(actor_json, domain, onion_domain, i2p_domain,
+                          yggdrasil_domain)
     if request_http(self.headers, debug):
         curr_session = \
             establish_session("show_person_profile",
@@ -186,7 +188,8 @@ def show_person_profile(self, authorized: bool,
                                       msg_str, http_prefix,
                                       domain,
                                       onion_domain,
-                                      i2p_domain)
+                                      i2p_domain,
+                                      yggdrasil_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             if 'application/ld+json' in accept_str:
@@ -249,6 +252,7 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                fitness: {},
                onion_domain: str,
                i2p_domain: str,
+               yggdrasil_domain: str,
                mitm_servers: [],
                hide_recent_posts: {}) -> bool:
     """Show roles within profile screen
@@ -351,7 +355,8 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                                           msg_str, http_prefix,
                                           domain,
                                           onion_domain,
-                                          i2p_domain)
+                                          i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 protocol_str = \
@@ -408,6 +413,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                 domain_full: str,
                 onion_domain: str,
                 i2p_domain: str,
+                yggdrasil_domain: str,
                 mitm_servers: [],
                 hide_recent_posts: {}) -> bool:
     """Show skills on the profile screen
@@ -522,7 +528,8 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                                                       http_prefix,
                                                       domain,
                                                       onion_domain,
-                                                      i2p_domain)
+                                                      i2p_domain,
+                                                      yggdrasil_domain)
                             msg = msg_str.encode('utf-8')
                             msglen = len(msg)
                             accept_str = self.headers['Accept']
@@ -541,7 +548,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
     actor = path.replace('/skills', '')
     actor_absolute = \
         get_instance_url(calling_domain, http_prefix, domain_full,
-                         onion_domain, i2p_domain) + \
+                         onion_domain, i2p_domain, yggdrasil_domain) + \
         actor
     redirect_headers(self, actor_absolute, cookie, calling_domain, 303)
     return True

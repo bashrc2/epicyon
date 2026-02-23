@@ -29,6 +29,7 @@ from timeFunctions import date_utcnow
 from timeFunctions import date_epoch
 from timeFunctions import get_account_timezone
 from timeFunctions import get_current_time_int
+from utils import is_yggdrasil_address
 from utils import get_mutuals_of_person
 from utils import harmless_markup
 from utils import lines_in_file
@@ -645,7 +646,8 @@ def _inbox_post_recipients_add(base_dir: str, to_list: [],
                                domain_match: str, domain: str,
                                debug: bool,
                                onion_domain: str,
-                               i2p_domain: str) -> (bool, {}):
+                               i2p_domain: str,
+                               yggdrasil_domain: str) -> (bool, {}):
     """Given a list of post recipients (to_list) from 'to' or 'cc' parameters
     populate a recipients_dict with the handle for each
     """
@@ -662,6 +664,9 @@ def _inbox_post_recipients_add(base_dir: str, to_list: [],
         if i2p_domain:
             if i2p_domain + '/' in recipient:
                 recipient = recipient.replace(i2p_domain, domain)
+        if yggdrasil_domain:
+            if yggdrasil_domain + '/' in recipient:
+                recipient = recipient.replace(yggdrasil_domain, domain)
         # is this a to an account on this instance?
         if domain_match in recipient:
             # get the handle for the account on this instance
@@ -699,7 +704,8 @@ def _inbox_post_recipients_add(base_dir: str, to_list: [],
 def _inbox_post_recipients(base_dir: str, post_json_object: {},
                            domain: str, port: int,
                            debug: bool,
-                           onion_domain: str, i2p_domain: str) -> ([], []):
+                           onion_domain: str, i2p_domain: str,
+                           yggdrasil_domain: str) -> ([], []):
     """Returns dictionaries containing the recipients of the given post
     The shared dictionary contains followers
     """
@@ -735,7 +741,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                            recipients_dict,
                                            domain_match, domain_base,
                                            debug,
-                                           onion_domain, i2p_domain)
+                                           onion_domain, i2p_domain,
+                                           yggdrasil_domain)
             if includes_followers:
                 follower_recipients = True
         else:
@@ -753,7 +760,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                            recipients_dict,
                                            domain_match, domain_base,
                                            debug,
-                                           onion_domain, i2p_domain)
+                                           onion_domain, i2p_domain,
+                                           yggdrasil_domain)
             if includes_followers:
                 follower_recipients = True
         else:
@@ -779,7 +787,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                        recipients_dict,
                                        domain_match, domain_base,
                                        debug,
-                                       onion_domain, i2p_domain)
+                                       onion_domain, i2p_domain,
+                                       yggdrasil_domain)
         if includes_followers:
             follower_recipients = True
 
@@ -794,7 +803,8 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
                                        recipients_dict,
                                        domain_match, domain_base,
                                        debug,
-                                       onion_domain, i2p_domain)
+                                       onion_domain, i2p_domain,
+                                       yggdrasil_domain)
         if includes_followers:
             follower_recipients = True
 
@@ -838,6 +848,7 @@ def update_edited_post(base_dir: str,
                        auto_cw_cache: {},
                        onion_domain: str,
                        i2p_domain: str,
+                       yggdrasil_domain: str,
                        mitm_servers: [],
                        instance_software: {},
                        block_military: {},
@@ -894,6 +905,7 @@ def update_edited_post(base_dir: str,
                          max_hashtags, buy_sites,
                          auto_cw_cache,
                          onion_domain, i2p_domain,
+                         yggdrasil_domain,
                          mitm_servers,
                          instance_software,
                          block_military,
@@ -993,6 +1005,7 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
 def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
                                   domain: str, onion_domain: str,
                                   i2p_domain: str,
+                                  yggdrasil_domain: str,
                                   person_cache: {},
                                   post_json_object: {}, debug: bool,
                                   signing_priv_key_pem: str,
@@ -1029,6 +1042,7 @@ def _obtain_avatar_for_reply_post(session, base_dir: str, http_prefix: str,
                                person_cache, debug,
                                __version__, http_prefix,
                                domain, onion_domain, i2p_domain,
+                               yggdrasil_domain,
                                signing_priv_key_pem,
                                mitm_servers)
         if pub_key:
@@ -1135,7 +1149,8 @@ def _group_handle(base_dir: str, handle: str) -> bool:
     return actor_json['type'] == 'Group'
 
 
-def _send_to_group_members(server, session, session_onion, session_i2p,
+def _send_to_group_members(server, session, session_onion,
+                           session_i2p, session_yggdrasil,
                            base_dir: str, handle: str, port: int,
                            post_json_object: {},
                            http_prefix: str, federation_list: [],
@@ -1144,6 +1159,7 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                            person_cache: {}, debug: bool,
                            curr_domain: str,
                            onion_domain: str, i2p_domain: str,
+                           yggdrasil_domain: str,
                            signing_priv_key_pem: str,
                            sites_unavailable: [],
                            system_language: str,
@@ -1204,12 +1220,15 @@ def _send_to_group_members(server, session, session_onion, session_i2p,
                         person_cache, cached_webfingers,
                         debug, __version__, signing_priv_key_pem,
                         curr_domain, onion_domain, i2p_domain,
+                        yggdrasil_domain,
                         sites_unavailable, system_language,
                         mitm_servers)
 
-    send_to_followers_thread(server, session, session_onion, session_i2p,
+    send_to_followers_thread(server, session, session_onion,
+                             session_i2p, session_yggdrasil,
                              base_dir, nickname, domain,
-                             onion_domain, i2p_domain, port,
+                             onion_domain, i2p_domain,
+                             yggdrasil_domain, port,
                              http_prefix, federation_list,
                              send_threads, post_log,
                              cached_webfingers, person_cache,
@@ -1352,6 +1371,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                languages_understood: [],
                bounce_is_chat: bool,
                curr_domain: str, onion_domain: str, i2p_domain: str,
+               yggdrasil_domain: str,
                sites_unavailable: [],
                mitm_servers: []) -> bool:
     """Sends a bounce message back to the sending handle
@@ -1439,6 +1459,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
                      person_cache, debug, __version__, None, group_account,
                      signing_priv_key_pem, 7238634,
                      curr_domain, onion_domain, i2p_domain,
+                     yggdrasil_domain,
                      extra_headers, sites_unavailable, system_language,
                      mitm_servers)
     return True
@@ -1458,6 +1479,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                  dm_license_url: str,
                  languages_understood: [],
                  curr_domain: str, onion_domain: str, i2p_domain: str,
+                 yggdrasil_domain: str,
                  sites_unavailable: [],
                  mitm_servers: []) -> bool:
     """Is the given message a valid DM?
@@ -1566,6 +1588,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                                    bounce_chat,
                                    curr_domain,
                                    onion_domain, i2p_domain,
+                                   yggdrasil_domain,
                                    sites_unavailable,
                                    mitm_servers)
                 return False
@@ -1747,7 +1770,8 @@ def _former_representations_to_edits(base_dir: str,
                                      max_hashtags: int,
                                      port: int,
                                      onion_domain: str,
-                                     i2p_domain: str) -> bool:
+                                     i2p_domain: str,
+                                     yggdrasil_domain: str) -> bool:
     """ Some instances use formerRepresentations to store
     previous edits
     """
@@ -1806,7 +1830,8 @@ def _former_representations_to_edits(base_dir: str,
                                   allow_local_network_access, debug,
                                   system_language, http_prefix,
                                   domain_full, person_cache,
-                                  max_hashtags, onion_domain, i2p_domain):
+                                  max_hashtags, onion_domain,
+                                  i2p_domain, yggdrasil_domain):
             continue
 
         post_history_json[published_str] = prev_post_json
@@ -1821,10 +1846,12 @@ def _former_representations_to_edits(base_dir: str,
 def _inbox_after_initial(server, inbox_start_time,
                          recent_posts_cache: {}, max_recent_posts: int,
                          session, session_onion, session_i2p,
+                         session_yggdrasil,
                          key_id: str, handle: str, message_json: {},
                          base_dir: str, http_prefix: str, send_threads: [],
                          post_log: [], cached_webfingers: {}, person_cache: {},
                          domain: str, onion_domain: str, i2p_domain: str,
+                         yggdrasil_domain: str,
                          port: int, federation_list: [], debug: bool,
                          queue_filename: str, destination_filename: str,
                          max_replies: int, allow_deletion: bool,
@@ -1853,7 +1880,7 @@ def _inbox_after_initial(server, inbox_start_time,
     """
     # if this is a clearnet instance then replace any onion/i2p
     # domains with the account domain
-    if onion_domain or i2p_domain:
+    if onion_domain or i2p_domain or yggdrasil_domain:
         message_str = json.dumps(message_json, ensure_ascii=False)
         if onion_domain:
             if onion_domain in message_str:
@@ -1874,6 +1901,17 @@ def _inbox_after_initial(server, inbox_start_time,
                 except json.decoder.JSONDecodeError as ex:
                     print('EX: json decode error ' + str(ex) +
                           ' from _inbox_after_initial i2p ' +
+                          str(message_str))
+                    inbox_start_time = time.time()
+                    return False
+        if yggdrasil_domain:
+            if yggdrasil_domain in message_str:
+                message_str = message_str.replace(yggdrasil_domain, domain)
+                try:
+                    message_json = json.loads(message_str)
+                except json.decoder.JSONDecodeError as ex:
+                    print('EX: json decode error ' + str(ex) +
+                          ' from _inbox_after_initial yggdrasil ' +
                           str(message_str))
                     inbox_start_time = time.time()
                     return False
@@ -1947,6 +1985,7 @@ def _inbox_after_initial(server, inbox_start_time,
                     base_dir, http_prefix,
                     domain, port,
                     onion_domain, i2p_domain,
+                    yggdrasil_domain,
                     cached_webfingers,
                     person_cache,
                     message_json,
@@ -2193,7 +2232,8 @@ def _inbox_after_initial(server, inbox_start_time,
     if receive_announce(recent_posts_cache,
                         session, handle,
                         base_dir, http_prefix,
-                        domain, onion_domain, i2p_domain, port,
+                        domain, onion_domain, i2p_domain,
+                        yggdrasil_domain, port,
                         cached_webfingers,
                         person_cache,
                         message_json,
@@ -2269,7 +2309,9 @@ def _inbox_after_initial(server, inbox_start_time,
                               http_prefix, handle, debug,
                               post_json_object, recent_posts_cache,
                               session, session_onion, session_i2p,
-                              onion_domain, i2p_domain, port,
+                              session_yggdrasil,
+                              onion_domain, i2p_domain,
+                              yggdrasil_domain, port,
                               federation_list, send_threads, post_log,
                               cached_webfingers, person_cache,
                               signing_priv_key_pem,
@@ -2305,7 +2347,8 @@ def _inbox_after_initial(server, inbox_start_time,
                           allow_local_network_access, debug,
                           system_language, http_prefix,
                           domain_full, person_cache,
-                          max_hashtags, onion_domain, i2p_domain):
+                          max_hashtags, onion_domain, i2p_domain,
+                          yggdrasil_domain):
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'valid_post_content',
                             debug)
@@ -2388,6 +2431,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                     languages_understood,
                                     domain,
                                     onion_domain, i2p_domain,
+                                    yggdrasil_domain,
                                     server.sites_unavailable,
                                     mitm_servers):
                     if debug:
@@ -2445,6 +2489,7 @@ def _inbox_after_initial(server, inbox_start_time,
         _obtain_avatar_for_reply_post(session, base_dir,
                                       http_prefix, domain,
                                       onion_domain, i2p_domain,
+                                      yggdrasil_domain,
                                       person_cache, post_json_object, debug,
                                       signing_priv_key_pem, mitm_servers)
         fitness_performance(inbox_start_time, server.fitness,
@@ -2456,6 +2501,7 @@ def _inbox_after_initial(server, inbox_start_time,
         cache_svg_images(session, base_dir, http_prefix,
                          domain, domain_full,
                          onion_domain, i2p_domain,
+                         yggdrasil_domain,
                          post_json_object,
                          federation_list, debug, None)
 
@@ -2527,7 +2573,8 @@ def _inbox_after_initial(server, inbox_start_time,
                                                 person_cache,
                                                 max_hashtags, port,
                                                 onion_domain,
-                                                i2p_domain):
+                                                i2p_domain,
+                                                yggdrasil_domain):
                 # ensure that there is an updated entry
                 # for the publication date
                 if post_json_object['object'].get('published') and \
@@ -2712,6 +2759,7 @@ def _inbox_after_initial(server, inbox_start_time,
             if is_group:
                 _send_to_group_members(server,
                                        session, session_onion, session_i2p,
+                                       session_yggdrasil,
                                        base_dir, handle, port,
                                        post_json_object,
                                        http_prefix, federation_list,
@@ -2719,6 +2767,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                        post_log, cached_webfingers,
                                        person_cache, debug,
                                        domain, onion_domain, i2p_domain,
+                                       yggdrasil_domain,
                                        signing_priv_key_pem,
                                        sites_unavailable,
                                        system_language,
@@ -2983,6 +3032,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
 
 
 def _receive_follow_request(session, session_onion, session_i2p,
+                            session_yggdrasil,
                             base_dir: str, http_prefix: str,
                             port: int, send_threads: [], post_log: [],
                             cached_webfingers: {}, person_cache: {},
@@ -2990,7 +3040,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                             debug: bool, project_version: str,
                             max_followers: int,
                             this_domain: str, onion_domain: str,
-                            i2p_domain: str, signing_priv_key_pem: str,
+                            i2p_domain: str, yggdrasil_domain: str,
+                            signing_priv_key_pem: str,
                             unit_test: bool, system_language: str,
                             followers_sync_cache: {},
                             sites_unavailable: [],
@@ -3051,6 +3102,9 @@ def _receive_follow_request(session, session_onion, session_i2p,
             domain_to_follow = this_domain
     if i2p_domain:
         if domain_to_follow.endswith(i2p_domain):
+            domain_to_follow = this_domain
+    if yggdrasil_domain:
+        if domain_to_follow.endswith(yggdrasil_domain):
             domain_to_follow = this_domain
     if not domain_permitted(domain_to_follow, federation_list):
         if debug:
@@ -3119,6 +3173,16 @@ def _receive_follow_request(session, session_onion, session_i2p,
         port = 80
         if debug:
             print('Domain switched from ' + domain + ' to ' + curr_domain)
+    elif (yggdrasil_domain and
+          not is_yggdrasil_address(curr_domain) and
+          is_yggdrasil_address(domain_to_follow)):
+        curr_session = session_yggdrasil
+        curr_http_prefix = 'http'
+        curr_domain = yggdrasil_domain
+        curr_port = 80
+        port = 80
+        if debug:
+            print('Domain switched from ' + domain + ' to ' + curr_domain)
 
     # is the actor sending the request valid?
     if not valid_sending_actor(curr_session, base_dir,
@@ -3163,7 +3227,8 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                person_cache, debug, project_version,
                                curr_http_prefix,
                                this_domain, onion_domain,
-                               i2p_domain, signing_priv_key_pem,
+                               i2p_domain, yggdrasil_domain,
+                               signing_priv_key_pem,
                                mitm_servers)
         if not pubkey_result:
             if debug:
@@ -3215,6 +3280,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                    person_cache, debug, project_version,
                                    curr_http_prefix, this_domain,
                                    onion_domain, i2p_domain,
+                                   yggdrasil_domain,
                                    signing_priv_key_pem,
                                    mitm_servers)
             if not pubkey_result:
@@ -3279,6 +3345,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     debug, project_version, True,
                                     signing_priv_key_pem,
                                     this_domain, onion_domain, i2p_domain,
+                                    yggdrasil_domain,
                                     followers_sync_cache, sites_unavailable,
                                     system_language, mitm_servers)
 
@@ -3291,6 +3358,7 @@ def run_inbox_queue(server,
                     cached_webfingers: {}, person_cache: {}, queue: [],
                     domain: str,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     port: int, proxy_type: str,
                     federation_list: [], max_replies: int,
                     domain_max_posts_per_day: int,
@@ -3329,8 +3397,10 @@ def run_inbox_queue(server,
     # for onion and i2p domains
     session_onion = None
     session_i2p = None
+    session_yggdrasil = None
     session_last_update_onion = 0
     session_last_update_i2p = 0
+    session_last_update_yggdrasil = 0
     if proxy_type != 'tor' and onion_domain:
         print('Starting onion session when starting inbox queue')
         session_onion = create_session('tor')
@@ -3341,6 +3411,11 @@ def run_inbox_queue(server,
         session_i2p = create_session('i2p')
         if session_i2p:
             session_i2p = curr_session_time
+    if proxy_type != 'yggdrasil' and yggdrasil_domain:
+        print('Starting yggdrasil session when starting inbox queue')
+        session_yggdrasil = create_session('yggdrasil')
+        if session_yggdrasil:
+            session_yggdrasil = curr_session_time
 
     inbox_handle = 'inbox@' + domain
     if debug:
@@ -3513,6 +3588,18 @@ def run_inbox_queue(server,
                 else:
                     print('WARN: inbox i2p session not created')
                     continue
+        if yggdrasil_domain:
+            time_diff = curr_time - session_last_update_yggdrasil
+            if not session_yggdrasil or \
+               time_diff > session_restart_interval_secs:
+                print('Regenerating inbox queue ' +
+                      'yggdrasil session at 5hr interval')
+                session_yggdrasil = create_session('yggdrasil')
+                if session_yggdrasil:
+                    session_last_update_yggdrasil = curr_time
+                else:
+                    print('WARN: inbox yggdrasil session not created')
+                    continue
         fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'recreate_session', debug)
         inbox_start_time = time.time()
@@ -3541,6 +3628,9 @@ def run_inbox_queue(server,
                     elif (sender_domain.endswith('.i2p') and
                           session_i2p and proxy_type != 'i2p'):
                         curr_session = session_i2p
+                    elif (is_yggdrasil_address(sender_domain) and
+                          session_yggdrasil and proxy_type != 'yggdrasil'):
+                        curr_session = session_yggdrasil
 
                 if debug:
                     print('Obtaining public key for actor ' +
@@ -3572,6 +3662,7 @@ def run_inbox_queue(server,
                                    person_cache, debug,
                                    project_version, http_prefix,
                                    domain, onion_domain, i2p_domain,
+                                   yggdrasil_domain,
                                    signing_priv_key_pem,
                                    server.mitm_servers)
             fitness_performance(inbox_start_time, server.fitness,
@@ -3713,7 +3804,8 @@ def run_inbox_queue(server,
         #     queue_json['post']['id'] = queue_json['id']
 
         if receive_undo(base_dir, queue_json['post'],
-                        debug, domain, onion_domain, i2p_domain):
+                        debug, domain, onion_domain, i2p_domain,
+                        yggdrasil_domain):
             print('Queue: Undo accepted from ' + key_id)
             if os.path.isfile(queue_filename):
                 try:
@@ -3731,7 +3823,8 @@ def run_inbox_queue(server,
 
         if debug:
             print('DEBUG: checking for follow requests')
-        if _receive_follow_request(curr_session, session_onion, session_i2p,
+        if _receive_follow_request(curr_session, session_onion,
+                                   session_i2p, session_yggdrasil,
                                    base_dir, http_prefix, port,
                                    send_threads, post_log,
                                    cached_webfingers,
@@ -3741,6 +3834,7 @@ def run_inbox_queue(server,
                                    debug, project_version,
                                    max_followers, domain,
                                    onion_domain, i2p_domain,
+                                   yggdrasil_domain,
                                    signing_priv_key_pem, unit_test,
                                    system_language,
                                    server.followers_sync_cache,
@@ -3767,7 +3861,8 @@ def run_inbox_queue(server,
 
         if receive_accept_reject(base_dir, domain, queue_json['post'],
                                  federation_list, debug,
-                                 domain, onion_domain, i2p_domain):
+                                 domain, onion_domain, i2p_domain,
+                                 yggdrasil_domain):
             print('Queue: Accept/Reject received from ' + key_id)
             if os.path.isfile(queue_filename):
                 try:
@@ -3787,6 +3882,7 @@ def run_inbox_queue(server,
                                  federation_list,
                                  debug, domain,
                                  session, session_onion, session_i2p,
+                                 session_yggdrasil,
                                  base_dir,
                                  http_prefix,
                                  send_threads, post_log,
@@ -3794,7 +3890,7 @@ def run_inbox_queue(server,
                                  person_cache, project_version,
                                  signing_priv_key_pem,
                                  onion_domain,
-                                 i2p_domain, {},
+                                 i2p_domain, yggdrasil_domain, {},
                                  server.sites_unavailable,
                                  system_language,
                                  server.mitm_servers,
@@ -3828,6 +3924,7 @@ def run_inbox_queue(server,
                                  federation_list,
                                  onion_domain,
                                  i2p_domain,
+                                 yggdrasil_domain,
                                  server.sites_unavailable,
                                  server.blocked_cache,
                                  server.block_federated,
@@ -3873,7 +3970,8 @@ def run_inbox_queue(server,
                                    max_hashtags, server.buy_sites,
                                    server.auto_cw_cache,
                                    onion_domain,
-                                   i2p_domain, server.mitm_servers,
+                                   i2p_domain, yggdrasil_domain,
+                                   server.mitm_servers,
                                    server.instance_software,
                                    server.block_military,
                                    server.block_government,
@@ -3899,7 +3997,8 @@ def run_inbox_queue(server,
         recipients_dict, recipients_dict_followers = \
             _inbox_post_recipients(base_dir, queue_json['post'],
                                    domain, port, debug,
-                                   onion_domain, i2p_domain)
+                                   onion_domain, i2p_domain,
+                                   yggdrasil_domain)
         if len(recipients_dict.items()) == 0 and \
            len(recipients_dict_followers.items()) == 0:
             if debug:
@@ -3980,6 +4079,7 @@ def run_inbox_queue(server,
                                  recent_posts_cache,
                                  max_recent_posts,
                                  session, session_onion, session_i2p,
+                                 session_yggdrasil,
                                  key_id, handle,
                                  queue_json['post'],
                                  base_dir, http_prefix,
@@ -3987,6 +4087,7 @@ def run_inbox_queue(server,
                                  cached_webfingers,
                                  person_cache, domain,
                                  onion_domain, i2p_domain,
+                                 yggdrasil_domain,
                                  port, federation_list,
                                  debug,
                                  queue_filename, destination,

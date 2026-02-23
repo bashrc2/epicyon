@@ -30,6 +30,7 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
                           domain_full: str,
                           onion_domain: str,
                           i2p_domain: str,
+                          yggdrasil_domain: str,
                           max_post_length: int) -> None:
     """On the screen after selecting a hashtag from the swarm, this sets
     the category for that tag
@@ -55,7 +56,8 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
     actor_str = \
         get_instance_url(calling_domain,
                          http_prefix, domain_full,
-                         onion_domain, i2p_domain) + \
+                         onion_domain, i2p_domain,
+                         yggdrasil_domain) + \
         users_path
     tag_screen_str = actor_str + '/tags/' + hashtag
 

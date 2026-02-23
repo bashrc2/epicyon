@@ -34,6 +34,7 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
                  known_crawlers: [],
                  onion_domain: str,
                  i2p_domain: str,
+                 yggdrasil_domain: str,
                  project_version: str,
                  show_node_info_version: bool,
                  show_node_info_accounts: bool,
@@ -123,7 +124,8 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
                                     http_prefix,
                                     domain_full,
                                     onion_domain,
-                                    i2p_domain)
+                                    i2p_domain,
+                                    yggdrasil_domain)
     about_url = instance_url + '/about'
     terms_of_service_url = instance_url + '/terms'
     info = meta_data_node_info(base_dir,
@@ -140,7 +142,8 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
                                   msg_str, http_prefix,
                                   domain,
                                   onion_domain,
-                                  i2p_domain)
+                                  i2p_domain,
+                                  yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         protocol_str = \

@@ -2037,6 +2037,7 @@ def words_similarity(content1: str, content2: str, min_words: int) -> int:
 
 def contains_invalid_local_links(domain_full: str,
                                  onion_domain: str, i2p_domain: str,
+                                 yggdrasil_domain: str,
                                  content: str) -> bool:
     """Returns true if the given content has invalid links
     """
@@ -2060,6 +2061,9 @@ def contains_invalid_local_links(domain_full: str,
                         return True
                 if i2p_domain:
                     if i2p_domain in url:
+                        return True
+                if yggdrasil_domain:
+                    if yggdrasil_domain in url:
                         return True
             ctr += 1
     return False

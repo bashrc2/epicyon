@@ -164,6 +164,7 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
                              nickname: str, domain: str, port: int,
                              actor_json: {}, actor_filename: str,
                              onion_domain: str, i2p_domain: str,
+                             yggdrasil_domain: str,
                              curr_session, proxy_type: str,
                              send_move_activity: bool,
                              self, cached_webfingers: {},
@@ -190,7 +191,7 @@ def _profile_post_save_actor(base_dir: str, http_prefix: str,
     # save the actor
     save_json(actor_json, actor_filename)
     webfinger_update(base_dir, nickname, domain,
-                     onion_domain, i2p_domain,
+                     onion_domain, i2p_domain, yggdrasil_domain,
                      cached_webfingers)
     # also copy to the actors cache and
     # person_cache in memory
@@ -2777,6 +2778,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                  path: str, base_dir: str, http_prefix: str,
                  domain: str, domain_full: str,
                  onion_domain: str, i2p_domain: str,
+                 yggdrasil_domain: str,
                  debug: bool, allow_local_network_access: bool,
                  system_language: str,
                  content_license_url: str,
@@ -2794,7 +2796,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
     users_path = users_path.replace('/editprofile', '')
     actor_str = \
         get_instance_url(calling_domain, http_prefix, domain_full,
-                         onion_domain, i2p_domain) + \
+                         onion_domain, i2p_domain, yggdrasil_domain) + \
         users_path
 
     boundary = None
@@ -3477,6 +3479,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                              self.server.port,
                                              actor_json, actor_filename,
                                              onion_domain, i2p_domain,
+                                             yggdrasil_domain,
                                              curr_session, proxy_type,
                                              send_move_activity,
                                              self, cached_webfingers,

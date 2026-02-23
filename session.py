@@ -19,6 +19,8 @@ from utils import text_in_file
 from utils import acct_dir
 from utils import binary_is_image
 from utils import get_domain_from_actor
+from utils import is_yggdrasil_address
+from utils import is_yggdrasil_url
 from formats import image_mime_types_dict
 from mitm import detect_mitm
 from httpsig import create_signed_header
@@ -1033,6 +1035,13 @@ def get_session_for_domains(server, calling_domain: str, referer_domain: str):
         if not server.domain.endswith('.i2p'):
             if server.i2p_domain and server.session_i2p:
                 return server.session_i2p, 'i2p'
+    if is_yggdrasil_url(calling_domain) or \
+       is_yggdrasil_address(calling_domain) or \
+       is_yggdrasil_url(referer_domain) or \
+       is_yggdrasil_address(referer_domain):
+        if not is_yggdrasil_address(server.domain):
+            if server.yggdrasil_domain and server.session_yggdrasil:
+                return server.session_yggdrasil, 'yggdrasil'
     return server.session, server.proxy_type
 
 
@@ -1054,6 +1063,11 @@ def set_session_for_sender(server, proxy_type: str, new_session) -> None:
         if not server.domain.endswith('.i2p'):
             if server.i2p_domain and server.session_i2p:
                 server.session_i2p = new_session
+                return
+    if proxy_type == 'yggdrasil':
+        if not is_yggdrasil_address(server.domain):
+            if server.yggdrasil_domain and server.session_yggdrasil:
+                server.session_yggdrasil = new_session
                 return
     server.session = new_session
 

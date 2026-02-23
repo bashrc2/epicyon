@@ -393,6 +393,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                          auto_cw_cache: {},
                          onion_domain: str,
                          i2p_domain: str,
+                         yggdrasil_domain: str,
                          mitm_servers: [],
                          instance_software: {},
                          block_military: {},
@@ -426,7 +427,8 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
                               allow_local_network_access, debug,
                               system_language, http_prefix,
                               domain_full, person_cache,
-                              max_hashtags, onion_domain, i2p_domain):
+                              max_hashtags, onion_domain, i2p_domain,
+                              yggdrasil_domain):
         print('EDITPOST: contains invalid content' + str(message_json))
         return False
 
@@ -562,6 +564,7 @@ def receive_move_activity(session, base_dir: str,
                           federation_list: [],
                           onion_domain: str,
                           i2p_domain: str,
+                          yggdrasil_domain: str,
                           sites_unavailable: [],
                           blocked_cache: [],
                           block_federated: [],
@@ -655,6 +658,7 @@ def receive_move_activity(session, base_dir: str,
                         domain,
                         onion_domain,
                         i2p_domain,
+                        yggdrasil_domain,
                         sites_unavailable,
                         system_language,
                         mitm_servers)
@@ -684,6 +688,7 @@ def receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                             auto_cw_cache: {},
                             onion_domain: str,
                             i2p_domain: str,
+                            yggdrasil_domain: str,
                             mitm_servers: [],
                             instance_software: {},
                             block_military: {},
@@ -736,6 +741,7 @@ def receive_update_activity(recent_posts_cache: {}, session, base_dir: str,
                                     max_hashtags, buy_sites,
                                     auto_cw_cache,
                                     onion_domain, i2p_domain,
+                                    yggdrasil_domain,
                                     mitm_servers,
                                     instance_software,
                                     block_military,
@@ -840,6 +846,7 @@ def _already_reacted(base_dir: str, nickname: str, domain: str,
 
 def _like_notify(base_dir: str, domain: str,
                  onion_domain: str, i2p_domain: str,
+                 yggdrasil_domain: str,
                  handle: str, actor: str, url: str) -> None:
     """Creates a notification that a like has arrived
     """
@@ -856,7 +863,10 @@ def _like_notify(base_dir: str, domain: str,
         if i2p_domain:
             if '/' + i2p_domain + '/users/' + nickname not in url:
                 return
-        if not i2p_domain and not onion_domain:
+        if yggdrasil_domain:
+            if '/' + yggdrasil_domain + '/users/' + nickname not in url:
+                return
+        if not i2p_domain and not onion_domain and not yggdrasil_domain:
             return
 
     account_dir = acct_handle_dir(base_dir,  handle)
@@ -981,6 +991,7 @@ def receive_like(recent_posts_cache: {},
                  session, handle: str, base_dir: str,
                  http_prefix: str, domain: str, port: int,
                  onion_domain: str, i2p_domain: str,
+                 yggdrasil_domain: str,
                  cached_webfingers: {},
                  person_cache: {}, message_json: {},
                  debug: bool,
@@ -1051,7 +1062,8 @@ def receive_like(recent_posts_cache: {},
                           handle_name, handle_dom,
                           post_liked_id,
                           like_actor):
-        _like_notify(base_dir, domain, onion_domain, i2p_domain, handle,
+        _like_notify(base_dir, domain, onion_domain, i2p_domain,
+                     yggdrasil_domain, handle,
                      like_actor, post_liked_id)
     update_likes_collection(recent_posts_cache, base_dir, post_filename,
                             post_liked_id, like_actor,
@@ -1803,7 +1815,8 @@ def receive_announce(recent_posts_cache: {},
                      session, handle: str, base_dir: str,
                      http_prefix: str,
                      domain: str,
-                     onion_domain: str, i2p_domain: str, port: int,
+                     onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str, port: int,
                      cached_webfingers: {},
                      person_cache: {}, message_json: {},
                      debug: bool, translate: {},
@@ -2155,6 +2168,7 @@ def receive_announce(recent_posts_cache: {},
                                            __version__, http_prefix,
                                            domain, onion_domain,
                                            i2p_domain,
+                                           yggdrasil_domain,
                                            signing_priv_key_pem,
                                            mitm_servers)
                     if pub_key:
@@ -2183,7 +2197,9 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                           http_prefix: str, handle: str, debug: bool,
                           post_json_object: {}, recent_posts_cache: {},
                           session, session_onion, session_i2p,
-                          onion_domain: str, i2p_domain: str, port: int,
+                          session_yggdrasil,
+                          onion_domain: str, i2p_domain: str,
+                          yggdrasil_domain: str, port: int,
                           federation_list: [], send_threads: [], post_log: [],
                           cached_webfingers: {}, person_cache: {},
                           signing_priv_key_pem: str,
@@ -2286,8 +2302,10 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
     shared_items_federated_domains: list[str] = []
     shared_item_federation_tokens = {}
     send_to_followers_thread(server, session, session_onion, session_i2p,
+                             session_yggdrasil,
                              base_dir, nickname, domain,
-                             onion_domain, i2p_domain, port,
+                             onion_domain, i2p_domain,
+                             yggdrasil_domain, port,
                              http_prefix, federation_list,
                              send_threads, post_log,
                              cached_webfingers, person_cache,

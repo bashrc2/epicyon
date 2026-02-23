@@ -18,6 +18,7 @@ from utils import locate_post
 from utils import local_actor_url
 from utils import get_nickname_from_actor
 from utils import get_instance_url
+from utils import is_yggdrasil_url
 from mitm import detect_mitm
 from daemon_utils import post_to_outbox
 from follow import follower_approval_active
@@ -35,6 +36,7 @@ def like_button(self, calling_domain: str, path: str,
                 base_dir: str, http_prefix: str,
                 domain: str, domain_full: str,
                 onion_domain: str, i2p_domain: str,
+                yggdrasil_domain: str,
                 getreq_start_time,
                 proxy_type: str, cookie: str,
                 debug: str,
@@ -68,6 +70,7 @@ def like_button(self, calling_domain: str, path: str,
                 min_images_for_accounts: [],
                 session_onion,
                 session_i2p,
+                session_yggdrasil,
                 mitm_servers: [],
                 instance_software: {}) -> None:
     """Press the like button
@@ -116,7 +119,8 @@ def like_button(self, calling_domain: str, path: str,
                              http_prefix,
                              domain_full,
                              onion_domain,
-                             i2p_domain) + \
+                             i2p_domain,
+                             yggdrasil_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -133,6 +137,10 @@ def like_button(self, calling_domain: str, path: str,
         if '.onion/' in actor:
             curr_session = session_i2p
             proxy_type = 'i2p'
+    if yggdrasil_domain:
+        if is_yggdrasil_url(actor):
+            curr_session = session_yggdrasil
+            proxy_type = 'yggdrasil'
 
     curr_session = \
         establish_session("like_button",
@@ -289,7 +297,8 @@ def like_button(self, calling_domain: str, path: str,
                          http_prefix,
                          domain_full,
                          onion_domain,
-                         i2p_domain) + \
+                         i2p_domain,
+                         yggdrasil_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \
@@ -307,6 +316,7 @@ def like_button_undo(self, calling_domain: str, path: str,
                      base_dir: str, http_prefix: str,
                      domain: str, domain_full: str,
                      onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str,
                      getreq_start_time,
                      proxy_type: str, cookie: str,
                      debug: str,
@@ -340,6 +350,7 @@ def like_button_undo(self, calling_domain: str, path: str,
                      icons_cache: {},
                      session_onion,
                      session_i2p,
+                     session_yggdrasil,
                      mitm_servers: [],
                      instance_software: {}) -> None:
     """A button is pressed to undo
@@ -387,7 +398,8 @@ def like_button_undo(self, calling_domain: str, path: str,
                              http_prefix,
                              domain_full,
                              onion_domain,
-                             i2p_domain) + \
+                             i2p_domain,
+                             yggdrasil_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -404,6 +416,10 @@ def like_button_undo(self, calling_domain: str, path: str,
         if '.onion/' in actor:
             curr_session = session_i2p
             proxy_type = 'i2p'
+    if yggdrasil_domain:
+        if is_yggdrasil_url(actor):
+            curr_session = session_yggdrasil
+            proxy_type = 'yggdrasil'
 
     curr_session = \
         establish_session("like_button_undo",
@@ -548,7 +564,8 @@ def like_button_undo(self, calling_domain: str, path: str,
                          http_prefix,
                          domain_full,
                          onion_domain,
-                         i2p_domain) + \
+                         i2p_domain,
+                         yggdrasil_domain) + \
         '/users/' + self.post_to_nickname
 
     actor_path_str = \

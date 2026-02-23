@@ -13,12 +13,14 @@ from socket import error as SocketError
 from httpheaders import redirect_headers
 from utils import acct_dir
 from utils import save_json
+from utils import is_yggdrasil_address
 
 
 def keyboard_shortcuts(self, calling_domain: str, cookie: str,
                        base_dir: str, http_prefix: str, nickname: str,
                        domain: str, domain_full: str,
                        onion_domain: str, i2p_domain: str,
+                       yggdrasil_domain: str,
                        access_keys2: {}, default_timeline: str,
                        access_keys: {}, key_shortcuts: {}) -> None:
     """Receive POST from webapp_accesskeys
@@ -63,6 +65,10 @@ def keyboard_shortcuts(self, calling_domain: str, cookie: str,
             origin_path_str = \
                 'http://' + i2p_domain + users_path + \
                 '/' + default_timeline
+        elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+            origin_path_str = \
+                'http://' + yggdrasil_domain + users_path + \
+                '/' + default_timeline
         redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
         self.server.postreq_busy = False
         return
@@ -100,6 +106,9 @@ def keyboard_shortcuts(self, calling_domain: str, cookie: str,
     elif calling_domain.endswith('.i2p') and i2p_domain:
         origin_path_str = \
             'http://' + i2p_domain + users_path + '/' + default_timeline
+    elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+        origin_path_str = \
+            'http://' + yggdrasil_domain + users_path + '/' + default_timeline
     redirect_headers(self, origin_path_str, cookie, calling_domain, 303)
     self.server.postreq_busy = False
     return

@@ -96,6 +96,7 @@ from flags import is_artist
 from flags import is_blog_post
 from timeFunctions import date_utcnow
 from timeFunctions import get_current_time_int
+from utils import is_yggdrasil_address
 from utils import replace_strings
 from utils import contains_invalid_chars
 from utils import save_json
@@ -363,6 +364,13 @@ def daemon_http_get(self) -> None:
                 print('GET domain blocked: ' + calling_domain)
                 http_400(self)
                 return
+        elif self.server.yggdrasil_domain:
+            if calling_domain not in (self.server.domain,
+                                      self.server.domain_full,
+                                      self.server.yggdrasil_domain):
+                print('GET domain blocked: ' + calling_domain)
+                http_400(self)
+                return
         else:
             if calling_domain not in (self.server.domain,
                                       self.server.domain_full):
@@ -450,7 +458,8 @@ def daemon_http_get(self) -> None:
                             self.server.http_prefix,
                             self.server.domain_full,
                             self.server.onion_domain,
-                            self.server.i2p_domain)
+                            self.server.i2p_domain,
+                            self.server.yggdrasil_domain)
     if acct_pub_key_json:
         msg_str = json.dumps(acct_pub_key_json, ensure_ascii=False)
         msg_str = convert_domains(calling_domain,
@@ -459,7 +468,8 @@ def daemon_http_get(self) -> None:
                                   self.server.http_prefix,
                                   self.server.domain,
                                   self.server.onion_domain,
-                                  self.server.i2p_domain)
+                                  self.server.i2p_domain,
+                                  self.server.yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -496,6 +506,7 @@ def daemon_http_get(self) -> None:
                     self.server.known_crawlers,
                     self.server.onion_domain,
                     self.server.i2p_domain,
+                    self.server.yggdrasil_domain,
                     self.server.project_version,
                     self.server.show_node_info_version,
                     self.server.show_node_info_accounts,
@@ -549,7 +560,8 @@ def daemon_http_get(self) -> None:
                                       self.server.http_prefix,
                                       self.server.domain,
                                       self.server.onion_domain,
-                                      self.server.i2p_domain)
+                                      self.server.i2p_domain,
+                                      self.server.yggdrasil_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'application/json', msglen,
@@ -568,7 +580,8 @@ def daemon_http_get(self) -> None:
                                       self.server.http_prefix,
                                       self.server.domain,
                                       self.server.onion_domain,
-                                      self.server.i2p_domain)
+                                      self.server.i2p_domain,
+                                      self.server.yggdrasil_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             accept_str = self.headers['Accept']
@@ -603,7 +616,8 @@ def daemon_http_get(self) -> None:
                                  self.server.http_prefix,
                                  self.server.domain_full,
                                  self.server.onion_domain,
-                                 self.server.i2p_domain) + \
+                                 self.server.i2p_domain,
+                                 self.server.yggdrasil_domain) + \
                 '/users/news'
             logout_redirect(self, news_url, calling_domain)
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -641,6 +655,7 @@ def daemon_http_get(self) -> None:
                                self.server.domain_full,
                                self.server.onion_domain,
                                self.server.i2p_domain,
+                               self.server.yggdrasil_domain,
                                getreq_start_time,
                                None, self.server.debug,
                                self.server.enable_shared_inbox,
@@ -686,6 +701,7 @@ def daemon_http_get(self) -> None:
                                              self.server.domain,
                                              self.server.onion_domain,
                                              self.server.i2p_domain,
+                                             self.server.yggdrasil_domain,
                                              self.server.fitness,
                                              self.server.debug)
                 return
@@ -752,7 +768,8 @@ def daemon_http_get(self) -> None:
                                       self.server.http_prefix,
                                       self.server.domain,
                                       self.server.onion_domain,
-                                      self.server.i2p_domain)
+                                      self.server.i2p_domain,
+                                      self.server.yggdrasil_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             set_headers(self, 'application/json', msglen,
@@ -791,6 +808,7 @@ def daemon_http_get(self) -> None:
                                 self.server.domain_full,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
+                                self.server.yggdrasil_domain,
                                 self.server.account_timezone,
                                 self.server.bold_reading,
                                 self.server.translate,
@@ -844,7 +862,8 @@ def daemon_http_get(self) -> None:
                              self.server.http_prefix,
                              self.server.domain_full,
                              self.server.onion_domain,
-                             self.server.i2p_domain) + \
+                             self.server.i2p_domain,
+                             self.server.yggdrasil_domain) + \
             '/users/' + nickname
         actor_json = get_person_from_cache(self.server.base_dir, actor,
                                            self.server.person_cache)
@@ -917,7 +936,8 @@ def daemon_http_get(self) -> None:
                                           self.server.http_prefix,
                                           self.server.domain,
                                           self.server.onion_domain,
-                                          self.server.i2p_domain)
+                                          self.server.i2p_domain,
+                                          self.server.yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 set_headers(self, 'application/json', msglen,
@@ -999,7 +1019,8 @@ def daemon_http_get(self) -> None:
                                   self.server.http_prefix,
                                   self.server.domain,
                                   self.server.onion_domain,
-                                  self.server.i2p_domain)
+                                  self.server.i2p_domain,
+                                  self.server.yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -1059,7 +1080,8 @@ def daemon_http_get(self) -> None:
                                   self.server.http_prefix,
                                   self.server.domain,
                                   self.server.onion_domain,
-                                  self.server.i2p_domain)
+                                  self.server.i2p_domain,
+                                  self.server.yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -1118,7 +1140,8 @@ def daemon_http_get(self) -> None:
                                   self.server.http_prefix,
                                   self.server.domain,
                                   self.server.onion_domain,
-                                  self.server.i2p_domain)
+                                  self.server.i2p_domain,
+                                  self.server.yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -1203,7 +1226,8 @@ def daemon_http_get(self) -> None:
                                   self.server.http_prefix,
                                   self.server.domain,
                                   self.server.onion_domain,
-                                  self.server.i2p_domain)
+                                  self.server.i2p_domain,
+                                  self.server.yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -1294,7 +1318,8 @@ def daemon_http_get(self) -> None:
                                           self.server.http_prefix,
                                           self.server.domain,
                                           self.server.onion_domain,
-                                          self.server.i2p_domain)
+                                          self.server.i2p_domain,
+                                          self.server.yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -1403,7 +1428,8 @@ def daemon_http_get(self) -> None:
                                           self.server.http_prefix,
                                           self.server.domain,
                                           self.server.onion_domain,
-                                          self.server.i2p_domain)
+                                          self.server.i2p_domain,
+                                          self.server.yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 msglen = len(msg)
                 accept_str = self.headers['Accept']
@@ -1441,6 +1467,7 @@ def daemon_http_get(self) -> None:
                  self.server.domain_full,
                  self.server.onion_domain,
                  self.server.i2p_domain,
+                 self.server.yggdrasil_domain,
                  self.server.translate,
                  self.server.registration,
                  self.server.system_language,
@@ -1665,7 +1692,8 @@ def daemon_http_get(self) -> None:
                                self.server.followingItemsPerPage,
                                self.server.debug, 'following',
                                self.server.onion_domain,
-                               self.server.i2p_domain)
+                               self.server.i2p_domain,
+                               self.server.yggdrasil_domain)
             return
         if '/followers?page=' in self.path:
             get_following_json(self, self.server.base_dir,
@@ -1677,7 +1705,8 @@ def daemon_http_get(self) -> None:
                                self.server.followingItemsPerPage,
                                self.server.debug, 'followers',
                                self.server.onion_domain,
-                               self.server.i2p_domain)
+                               self.server.i2p_domain,
+                               self.server.yggdrasil_domain)
             return
         if '/followrequests?page=' in self.path:
             get_following_json(self, self.server.base_dir,
@@ -1690,7 +1719,8 @@ def daemon_http_get(self) -> None:
                                self.server.debug,
                                'followrequests',
                                self.server.onion_domain,
-                               self.server.i2p_domain)
+                               self.server.i2p_domain,
+                               self.server.yggdrasil_domain)
             return
 
     # authorized endpoint used for TTS of posts
@@ -1742,6 +1772,7 @@ def daemon_http_get(self) -> None:
                                      self.server.session,
                                      self.server.session_onion,
                                      self.server.session_i2p,
+                                     self.server.session_yggdrasil,
                                      self.server.http_prefix,
                                      self.server.debug,
                                      self.server.mitm_servers)
@@ -1802,7 +1833,8 @@ def daemon_http_get(self) -> None:
                                   self.server.http_prefix,
                                   self.server.domain,
                                   self.server.onion_domain,
-                                  self.server.i2p_domain)
+                                  self.server.i2p_domain,
+                                  self.server.yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -1826,7 +1858,8 @@ def daemon_http_get(self) -> None:
                                 self.server.domain_full,
                                 self.server.system_language,
                                 self.server.onion_domain,
-                                self.server.i2p_domain)
+                                self.server.i2p_domain,
+                                self.server.yggdrasil_domain)
         return
 
     if not html_getreq and \
@@ -1837,7 +1870,8 @@ def daemon_http_get(self) -> None:
                                      self.server.domain_full,
                                      self.server.domain,
                                      self.server.onion_domain,
-                                     self.server.i2p_domain)
+                                     self.server.i2p_domain,
+                                     self.server.yggdrasil_domain)
         return
 
     fitness_performance(getreq_start_time, self.server.fitness,
@@ -1883,7 +1917,8 @@ def daemon_http_get(self) -> None:
                                   self.server.http_prefix,
                                   self.server.domain,
                                   self.server.onion_domain,
-                                  self.server.i2p_domain)
+                                  self.server.i2p_domain,
+                                  self.server.yggdrasil_domain)
         msg = msg_str.encode('utf-8')
         msglen = len(msg)
         accept_str = self.headers['Accept']
@@ -2050,6 +2085,9 @@ def daemon_http_get(self) -> None:
             elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 actor = 'http://' + self.server.i2p_domain + users_path
+            elif (is_yggdrasil_address(calling_domain) and
+                  self.server.yggdrasil_domain):
+                actor = 'http://' + self.server.yggdrasil_domain + users_path
             redirect_headers(self, actor + '/tlshares',
                              cookie, calling_domain, 303)
             return
@@ -2092,6 +2130,9 @@ def daemon_http_get(self) -> None:
             elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 actor = 'http://' + self.server.i2p_domain + users_path
+            elif (is_yggdrasil_address(calling_domain) and
+                  self.server.yggdrasil_domain):
+                actor = 'http://' + self.server.yggdrasil_domain + users_path
             redirect_headers(self, actor + '/tlwanted',
                              cookie, calling_domain, 303)
             return
@@ -2124,6 +2165,9 @@ def daemon_http_get(self) -> None:
             elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 actor = 'http://' + self.server.i2p_domain + users_path
+            elif (is_yggdrasil_address(calling_domain) and
+                  self.server.yggdrasil_domain):
+                actor = 'http://' + self.server.yggdrasil_domain + users_path
             redirect_headers(self, actor + '/tlshares',
                              cookie, calling_domain, 303)
             return
@@ -2156,6 +2200,9 @@ def daemon_http_get(self) -> None:
             elif (calling_domain.endswith('.i2p') and
                   self.server.i2p_domain):
                 actor = 'http://' + self.server.i2p_domain + users_path
+            elif (is_yggdrasil_address(calling_domain) and
+                  self.server.yggdrasil_domain):
+                actor = 'http://' + self.server.yggdrasil_domain + users_path
             redirect_headers(self, actor + '/tlwanted',
                              cookie, calling_domain, 303)
             return
@@ -2182,6 +2229,10 @@ def daemon_http_get(self) -> None:
               self.server.i2p_domain):
             msg = html_terms_of_service(self.server.base_dir, 'http',
                                         self.server.i2p_domain)
+        elif (is_yggdrasil_address(calling_domain) and
+              self.server.yggdrasil_domain):
+            msg = html_terms_of_service(self.server.base_dir, 'http',
+                                        self.server.yggdrasil_domain)
         else:
             msg = html_terms_of_service(self.server.base_dir,
                                         self.server.http_prefix,
@@ -2290,6 +2341,7 @@ def daemon_http_get(self) -> None:
             msg = \
                 html_about(self.server.base_dir, 'http',
                            self.server.i2p_domain,
+                           self.server.yggdrasil_domain,
                            None, self.server.translate,
                            self.server.system_language)
         else:
@@ -2320,6 +2372,7 @@ def daemon_http_get(self) -> None:
             msg = \
                 html_specification(self.server.base_dir, 'http',
                                    self.server.i2p_domain,
+                                   self.server.yggdrasil_domain,
                                    None, self.server.translate,
                                    self.server.system_language)
         else:
@@ -2357,6 +2410,7 @@ def daemon_http_get(self) -> None:
                 html_known_epicyon_instances(
                     self.server.base_dir, 'http',
                     self.server.i2p_domain,
+                    self.server.yggdrasil_domain,
                     self.server.system_language,
                     self.server.known_epicyon_instances,
                     self.server.translate)
@@ -2389,6 +2443,7 @@ def daemon_http_get(self) -> None:
             msg = \
                 html_manual(self.server.base_dir, 'http',
                             self.server.i2p_domain,
+                            self.server.yggdrasil_domain,
                             None, self.server.translate,
                             self.server.system_language)
         else:
@@ -2553,6 +2608,7 @@ def daemon_http_get(self) -> None:
                                     self.server.domain_full,
                                     self.server.onion_domain,
                                     self.server.i2p_domain,
+                                    self.server.yggdrasil_domain,
                                     getreq_start_time,
                                     authorized, self.server.debug,
                                     self.server.news_instance,
@@ -2700,6 +2756,7 @@ def daemon_http_get(self) -> None:
                        self.server.domain_full,
                        self.server.onion_domain,
                        self.server.i2p_domain,
+                       self.server.yggdrasil_domain,
                        self.server.port,
                        getreq_start_time,
                        self.server.fitness,
@@ -2930,6 +2987,7 @@ def daemon_http_get(self) -> None:
                      self.path, self.server.debug,
                      self.server.onion_domain,
                      self.server.i2p_domain,
+                     self.server.yggdrasil_domain,
                      self.server.http_prefix,
                      self.server.domain,
                      self.server.domain_full,
@@ -2969,7 +3027,8 @@ def daemon_http_get(self) -> None:
                                     self.server.http_prefix,
                                     self.server.domain_full,
                                     self.server.onion_domain,
-                                    self.server.i2p_domain) + \
+                                    self.server.i2p_domain,
+                                    self.server.yggdrasil_domain) + \
                                     '/users/news'
         logout_redirect(self, news_url, calling_domain)
         fitness_performance(getreq_start_time, self.server.fitness,
@@ -3147,7 +3206,8 @@ def daemon_http_get(self) -> None:
                                  self.server.http_prefix,
                                  self.server.domain_full,
                                  self.server.onion_domain,
-                                 self.server.i2p_domain) + \
+                                 self.server.i2p_domain,
+                                 self.server.yggdrasil_domain) + \
                 '/users/' + nickname + '/tags/' + hashtag
             redirect_headers(self, ht_url, cookie, calling_domain, 303)
         else:
@@ -3169,6 +3229,7 @@ def daemon_http_get(self) -> None:
                                 self.server.port,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
+                                self.server.yggdrasil_domain,
                                 getreq_start_time,
                                 self.server.system_language,
                                 self.server.fitness,
@@ -3185,6 +3246,7 @@ def daemon_http_get(self) -> None:
                                  self.server.port,
                                  self.server.onion_domain,
                                  self.server.i2p_domain,
+                                 self.server.yggdrasil_domain,
                                  getreq_start_time,
                                  MAX_POSTS_IN_FEED,
                                  self.server.fitness,
@@ -3200,6 +3262,7 @@ def daemon_http_get(self) -> None:
                         self.server.port,
                         self.server.onion_domain,
                         self.server.i2p_domain,
+                        self.server.yggdrasil_domain,
                         getreq_start_time,
                         curr_session,
                         MAX_POSTS_IN_HASHTAG_FEED,
@@ -3381,6 +3444,7 @@ def daemon_http_get(self) -> None:
                                 self.server.session,
                                 self.server.session_onion,
                                 self.server.session_i2p,
+                                self.server.session_yggdrasil,
                                 ua_str)
             if msg:
                 msg = msg.encode('utf-8')
@@ -3428,6 +3492,7 @@ def daemon_http_get(self) -> None:
                                 self.server.session,
                                 self.server.session_onion,
                                 self.server.session_i2p,
+                                self.server.session_yggdrasil,
                                 ua_str)
             if msg:
                 msg = msg.encode('utf-8')
@@ -3461,6 +3526,7 @@ def daemon_http_get(self) -> None:
                                      self.server.domain_full,
                                      self.server.onion_domain,
                                      self.server.i2p_domain,
+                                     self.server.yggdrasil_domain,
                                      getreq_start_time):
                 self.server.getreq_busy = False
                 return
@@ -3506,6 +3572,7 @@ def daemon_http_get(self) -> None:
                         self.server.port,
                         self.server.onion_domain,
                         self.server.i2p_domain,
+                        self.server.yggdrasil_domain,
                         getreq_start_time,
                         repeat_private,
                         self.server.debug,
@@ -3542,6 +3609,7 @@ def daemon_http_get(self) -> None:
                         self.server.min_images_for_accounts,
                         self.server.session_onion,
                         self.server.session_i2p,
+                        self.server.session_yggdrasil,
                         self.server.mitm_servers,
                         self.server.instance_software)
         self.server.getreq_busy = False
@@ -3564,6 +3632,7 @@ def daemon_http_get(self) -> None:
                              self.server.domain_full,
                              self.server.onion_domain,
                              self.server.i2p_domain,
+                             self.server.yggdrasil_domain,
                              getreq_start_time,
                              self.server.debug,
                              self.server.recent_posts_cache,
@@ -3572,7 +3641,8 @@ def daemon_http_get(self) -> None:
                              self.server.project_version,
                              self.server.fitness,
                              self.server.session_onion,
-                             self.server.session_i2p)
+                             self.server.session_i2p,
+                             self.server.session_yggdrasil)
         self.server.getreq_busy = False
         return
 
@@ -3590,6 +3660,7 @@ def daemon_http_get(self) -> None:
                       self.server.domain_full,
                       self.server.onion_domain,
                       self.server.i2p_domain,
+                      self.server.yggdrasil_domain,
                       getreq_start_time,
                       self.server.newswire,
                       self.server.default_timeline,
@@ -3608,6 +3679,7 @@ def daemon_http_get(self) -> None:
                         self.server.domain_full,
                         self.server.onion_domain,
                         self.server.i2p_domain,
+                        self.server.yggdrasil_domain,
                         getreq_start_time,
                         self.server.debug,
                         self.server.newswire,
@@ -3628,6 +3700,7 @@ def daemon_http_get(self) -> None:
                               self.server.port,
                               self.server.onion_domain,
                               self.server.i2p_domain,
+                              self.server.yggdrasil_domain,
                               getreq_start_time,
                               proxy_type,
                               self.server.debug,
@@ -3645,6 +3718,7 @@ def daemon_http_get(self) -> None:
                               self.server.followers_sync_cache,
                               self.server.session_onion,
                               self.server.session_i2p,
+                              self.server.session_yggdrasil,
                               self.server.session,
                               self.server.mitm_servers)
         self.server.getreq_busy = False
@@ -3666,6 +3740,7 @@ def daemon_http_get(self) -> None:
                            self.server.port,
                            self.server.onion_domain,
                            self.server.i2p_domain,
+                           self.server.yggdrasil_domain,
                            getreq_start_time,
                            self.server.debug,
                            self.server.federation_list,
@@ -3682,6 +3757,7 @@ def daemon_http_get(self) -> None:
                            self.server.session,
                            self.server.session_onion,
                            self.server.session_i2p,
+                           self.server.session_yggdrasil,
                            self.server.mitm_servers)
         self.server.getreq_busy = False
         return
@@ -3699,6 +3775,7 @@ def daemon_http_get(self) -> None:
                     self.server.domain_full,
                     self.server.onion_domain,
                     self.server.i2p_domain,
+                    self.server.yggdrasil_domain,
                     getreq_start_time,
                     proxy_type,
                     cookie,
@@ -3733,6 +3810,7 @@ def daemon_http_get(self) -> None:
                     self.server.min_images_for_accounts,
                     self.server.session_onion,
                     self.server.session_i2p,
+                    self.server.session_yggdrasil,
                     self.server.mitm_servers,
                     self.server.instance_software)
         self.server.getreq_busy = False
@@ -3751,6 +3829,7 @@ def daemon_http_get(self) -> None:
                          self.server.domain_full,
                          self.server.onion_domain,
                          self.server.i2p_domain,
+                         self.server.yggdrasil_domain,
                          getreq_start_time,
                          proxy_type,
                          cookie, self.server.debug,
@@ -3784,6 +3863,7 @@ def daemon_http_get(self) -> None:
                          self.server.iconsCache,
                          self.server.session_onion,
                          self.server.session_i2p,
+                         self.server.session_yggdrasil,
                          self.server.mitm_servers,
                          self.server.instance_software)
         self.server.getreq_busy = False
@@ -3804,6 +3884,7 @@ def daemon_http_get(self) -> None:
                         self.server.domain_full,
                         self.server.onion_domain,
                         self.server.i2p_domain,
+                        self.server.yggdrasil_domain,
                         getreq_start_time,
                         proxy_type,
                         cookie,
@@ -3837,6 +3918,7 @@ def daemon_http_get(self) -> None:
                         self.server.min_images_for_accounts,
                         self.server.session_onion,
                         self.server.session_i2p,
+                        self.server.session_yggdrasil,
                         self.server.mitm_servers,
                         self.server.instance_software)
         self.server.getreq_busy = False
@@ -3857,6 +3939,7 @@ def daemon_http_get(self) -> None:
                              self.server.domain_full,
                              self.server.onion_domain,
                              self.server.i2p_domain,
+                             self.server.yggdrasil_domain,
                              getreq_start_time,
                              proxy_type,
                              cookie, self.server.debug,
@@ -3889,6 +3972,7 @@ def daemon_http_get(self) -> None:
                              self.server.min_images_for_accounts,
                              self.server.session_onion,
                              self.server.session_i2p,
+                             self.server.session_yggdrasil,
                              self.server.mitm_servers,
                              self.server.instance_software)
         self.server.getreq_busy = False
@@ -3908,6 +3992,7 @@ def daemon_http_get(self) -> None:
                         self.server.port,
                         self.server.onion_domain,
                         self.server.i2p_domain,
+                        self.server.yggdrasil_domain,
                         getreq_start_time,
                         proxy_type,
                         cookie, self.server.debug,
@@ -3941,6 +4026,7 @@ def daemon_http_get(self) -> None:
                         self.server.min_images_for_accounts,
                         self.server.session_onion,
                         self.server.session_i2p,
+                        self.server.session_yggdrasil,
                         self.server.mitm_servers,
                         self.server.instance_software)
         self.server.getreq_busy = False
@@ -3963,6 +4049,7 @@ def daemon_http_get(self) -> None:
                          curr_session,
                          self.server.onion_domain,
                          self.server.i2p_domain,
+                         self.server.yggdrasil_domain,
                          self.server.recent_posts_cache,
                          self.server.max_recent_posts,
                          self.server.translate,
@@ -4006,6 +4093,7 @@ def daemon_http_get(self) -> None:
                              self.server.port,
                              self.server.onion_domain,
                              self.server.i2p_domain,
+                             self.server.yggdrasil_domain,
                              getreq_start_time,
                              proxy_type, cookie,
                              self.server.debug,
@@ -4039,6 +4127,7 @@ def daemon_http_get(self) -> None:
                              self.server.min_images_for_accounts,
                              self.server.session_onion,
                              self.server.session_i2p,
+                             self.server.session_yggdrasil,
                              self.server.mitm_servers,
                              self.server.instance_software)
         self.server.getreq_busy = False
@@ -4056,6 +4145,7 @@ def daemon_http_get(self) -> None:
                       self.server.domain_full,
                       self.server.onion_domain,
                       self.server.i2p_domain,
+                      self.server.yggdrasil_domain,
                       getreq_start_time,
                       proxy_type, cookie,
                       self.server.debug,
@@ -4085,6 +4175,7 @@ def daemon_http_get(self) -> None:
                       self.server.allow_deletion,
                       self.server.session_onion,
                       self.server.session_i2p,
+                      self.server.session_yggdrasil,
                       self.server.default_timeline,
                       self.server.mitm_servers,
                       self.server.instance_software)
@@ -4105,6 +4196,7 @@ def daemon_http_get(self) -> None:
                     self.server.port,
                     self.server.onion_domain,
                     self.server.i2p_domain,
+                    self.server.yggdrasil_domain,
                     getreq_start_time,
                     cookie, self.server.debug,
                     curr_session,
@@ -4153,6 +4245,7 @@ def daemon_http_get(self) -> None:
                          self.server.port,
                          self.server.onion_domain,
                          self.server.i2p_domain,
+                         self.server.yggdrasil_domain,
                          getreq_start_time,
                          cookie, self.server.debug,
                          curr_session,
@@ -4582,6 +4675,7 @@ def daemon_http_get(self) -> None:
                                self.server.auto_cw_cache,
                                self.server.onion_domain,
                                self.server.i2p_domain,
+                               self.server.yggdrasil_domain,
                                self.server.bold_reading,
                                self.server.mitm_servers,
                                self.server.instance_software,
@@ -4716,6 +4810,7 @@ def daemon_http_get(self) -> None:
                                 self.server.fitness,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
+                                self.server.yggdrasil_domain,
                                 self.server.mitm_servers,
                                 self.server.instance_software):
             self.server.getreq_busy = False
@@ -4773,6 +4868,7 @@ def daemon_http_get(self) -> None:
                       self.server.fitness,
                       self.server.onion_domain,
                       self.server.i2p_domain,
+                      self.server.yggdrasil_domain,
                       self.server.mitm_servers,
                       self.server.hide_recent_posts):
             self.server.getreq_busy = False
@@ -4831,6 +4927,7 @@ def daemon_http_get(self) -> None:
                        self.server.domain_full,
                        self.server.onion_domain,
                        self.server.i2p_domain,
+                       self.server.yggdrasil_domain,
                        self.server.mitm_servers,
                        self.server.hide_recent_posts):
             self.server.getreq_busy = False
@@ -4877,6 +4974,7 @@ def daemon_http_get(self) -> None:
                             self.server.auto_cw_cache,
                             self.server.onion_domain,
                             self.server.i2p_domain,
+                            self.server.yggdrasil_domain,
                             self.server.bold_reading,
                             self.server.mitm_servers,
                             self.server.instance_software,
@@ -4925,6 +5023,7 @@ def daemon_http_get(self) -> None:
                                 self.server.auto_cw_cache,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
+                                self.server.yggdrasil_domain,
                                 self.server.mitm_servers,
                                 self.server.instance_software,
                                 ua_str):
@@ -4988,6 +5087,7 @@ def daemon_http_get(self) -> None:
                       self.server.auto_cw_cache,
                       self.server.onion_domain,
                       self.server.i2p_domain,
+                      self.server.yggdrasil_domain,
                       self.server.hide_announces,
                       self.server.mitm_servers):
             self.server.getreq_busy = False
@@ -5049,6 +5149,7 @@ def daemon_http_get(self) -> None:
                     self.server.fitness,
                     self.server.onion_domain,
                     self.server.i2p_domain,
+                    self.server.yggdrasil_domain,
                     self.server.mitm_servers):
             self.server.getreq_busy = False
             return
@@ -5109,6 +5210,7 @@ def daemon_http_get(self) -> None:
                         self.server.fitness,
                         self.server.onion_domain,
                         self.server.i2p_domain,
+                        self.server.yggdrasil_domain,
                         self.server.mitm_servers):
             self.server.getreq_busy = False
             return
@@ -5170,6 +5272,7 @@ def daemon_http_get(self) -> None:
                                self.server.full_width_tl_button_header,
                                self.server.onion_domain,
                                self.server.i2p_domain,
+                               self.server.yggdrasil_domain,
                                self.server.hide_announces,
                                self.server.mitm_servers):
             self.server.getreq_busy = False
@@ -5232,6 +5335,7 @@ def daemon_http_get(self) -> None:
                                self.server.fitness,
                                self.server.onion_domain,
                                self.server.i2p_domain,
+                               self.server.yggdrasil_domain,
                                self.server.mitm_servers):
             self.server.getreq_busy = False
             return
@@ -5294,6 +5398,7 @@ def daemon_http_get(self) -> None:
                               self.server.fitness,
                               self.server.onion_domain,
                               self.server.i2p_domain,
+                              self.server.yggdrasil_domain,
                               self.server.mitm_servers):
             self.server.getreq_busy = False
             return
@@ -5353,6 +5458,7 @@ def daemon_http_get(self) -> None:
                                   self.server.fitness,
                                   self.server.onion_domain,
                                   self.server.i2p_domain,
+                                  self.server.yggdrasil_domain,
                                   self.server.mitm_servers):
             self.server.getreq_busy = False
             return
@@ -5615,6 +5721,7 @@ def daemon_http_get(self) -> None:
                                    self.server.fitness,
                                    self.server.onion_domain,
                                    self.server.i2p_domain,
+                                   self.server.yggdrasil_domain,
                                    self.server.mitm_servers):
             self.server.getreq_busy = False
             return
@@ -5678,6 +5785,7 @@ def daemon_http_get(self) -> None:
                                 self.server.fitness,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
+                                self.server.yggdrasil_domain,
                                 self.server.hide_announces,
                                 self.server.mitm_servers,
                                 self.server.hide_recent_posts):
@@ -5741,6 +5849,7 @@ def daemon_http_get(self) -> None:
                              self.server.fitness,
                              self.server.onion_domain,
                              self.server.i2p_domain,
+                             self.server.yggdrasil_domain,
                              self.server.mitm_servers):
             self.server.getreq_busy = False
             return
@@ -5797,6 +5906,7 @@ def daemon_http_get(self) -> None:
                         self.server.fitness,
                         self.server.onion_domain,
                         self.server.i2p_domain,
+                        self.server.yggdrasil_domain,
                         self.server.mitm_servers,
                         self.server.hide_recent_posts):
         self.server.getreq_busy = False
@@ -5855,6 +5965,7 @@ def daemon_http_get(self) -> None:
                            self.server.fitness,
                            self.server.onion_domain,
                            self.server.i2p_domain,
+                           self.server.yggdrasil_domain,
                            self.server.mitm_servers,
                            self.server.hide_recent_posts):
         self.server.getreq_busy = False
@@ -5912,6 +6023,7 @@ def daemon_http_get(self) -> None:
                        self.server.fitness,
                        self.server.onion_domain,
                        self.server.i2p_domain,
+                       self.server.yggdrasil_domain,
                        self.server.mitm_servers,
                        self.server.hide_recent_posts):
         self.server.getreq_busy = False
@@ -5970,6 +6082,7 @@ def daemon_http_get(self) -> None:
                           self.server.fitness,
                           self.server.onion_domain,
                           self.server.i2p_domain,
+                          self.server.yggdrasil_domain,
                           self.server.mitm_servers,
                           self.server.hide_recent_posts):
         self.server.getreq_busy = False
@@ -6028,6 +6141,7 @@ def daemon_http_get(self) -> None:
                            self.server.fitness,
                            self.server.onion_domain,
                            self.server.i2p_domain,
+                           self.server.yggdrasil_domain,
                            self.server.mitm_servers,
                            self.server.hide_recent_posts):
         self.server.getreq_busy = False
@@ -6046,6 +6160,7 @@ def daemon_http_get(self) -> None:
                            self.server.domain,
                            self.server.onion_domain,
                            self.server.i2p_domain,
+                           self.server.yggdrasil_domain,
                            getreq_start_time,
                            proxy_type,
                            cookie, self.server.debug,
@@ -6158,7 +6273,8 @@ def daemon_http_get(self) -> None:
                                       self.server.http_prefix,
                                       self.server.domain,
                                       self.server.onion_domain,
-                                      self.server.i2p_domain)
+                                      self.server.i2p_domain,
+                                      self.server.yggdrasil_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             accept_str = self.headers['Accept']
@@ -6313,7 +6429,8 @@ def _browser_config(self, calling_domain: str, referer_domain: str,
                               self.server.http_prefix,
                               self.server.domain,
                               self.server.onion_domain,
-                              self.server.i2p_domain)
+                              self.server.i2p_domain,
+                              self.server.yggdrasil_domain)
     msg = msg_str.encode('utf-8')
     msglen = len(msg)
     set_headers(self, 'application/xrd+xml', msglen,
@@ -6348,7 +6465,8 @@ def _get_speaker(self, calling_domain: str, referer_domain: str,
                               self.server.http_prefix,
                               domain,
                               self.server.onion_domain,
-                              self.server.i2p_domain)
+                              self.server.i2p_domain,
+                              self.server.yggdrasil_domain)
     msg = msg_str.encode('utf-8')
     msglen = len(msg)
     protocol_str = \
@@ -6411,6 +6529,7 @@ def _confirm_delete_event(self, calling_domain: str, path: str,
                           base_dir: str, http_prefix: str, cookie: str,
                           translate: {}, domain_full: str,
                           onion_domain: str, i2p_domain: str,
+                          yggdrasil_domain: str,
                           getreq_start_time) -> bool:
     """Confirm whether to delete a calendar event
     """
@@ -6449,6 +6568,10 @@ def _confirm_delete_event(self, calling_domain: str, path: str,
         elif calling_domain.endswith('.i2p') and i2p_domain:
             actor = \
                 'http://' + i2p_domain + \
+                path.split('/eventdelete')[0]
+        elif is_yggdrasil_address(calling_domain) and yggdrasil_domain:
+            actor = \
+                'http://' + yggdrasil_domain + \
                 path.split('/eventdelete')[0]
         redirect_headers(self, actor + '/calendar',
                          cookie, calling_domain, 303)

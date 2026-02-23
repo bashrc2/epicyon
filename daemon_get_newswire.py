@@ -16,6 +16,7 @@ from httpheaders import set_headers
 from newswire import get_rss_from_dict
 from fitnessFunctions import fitness_performance
 from flags import is_moderator
+from utils import is_yggdrasil_address
 from utils import data_dir
 from utils import local_actor_url
 from utils import save_json
@@ -65,6 +66,7 @@ def newswire_vote(self, calling_domain: str, path: str,
                   base_dir: str, http_prefix: str,
                   domain_full: str,
                   onion_domain: str, i2p_domain: str,
+                  yggdrasil_domain: str,
                   getreq_start_time,
                   newswire: {}, default_timeline: str,
                   fitness: {}, debug: bool) -> None:
@@ -111,6 +113,9 @@ def newswire_vote(self, calling_domain: str, path: str,
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str_absolute = \
             'http://' + i2p_domain + origin_path_str
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str_absolute = \
+            'http://' + yggdrasil_domain + origin_path_str
     fitness_performance(getreq_start_time, fitness,
                         '_GET', '_newswire_vote',
                         debug)
@@ -122,6 +127,7 @@ def newswire_unvote(self, calling_domain: str, path: str,
                     cookie: str, base_dir: str, http_prefix: str,
                     domain_full: str,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     getreq_start_time, debug: bool,
                     newswire: {}, default_timeline: str,
                     fitness: {}) -> None:
@@ -166,6 +172,9 @@ def newswire_unvote(self, calling_domain: str, path: str,
     elif (calling_domain.endswith('.i2p') and i2p_domain):
         origin_path_str_absolute = \
             'http://' + i2p_domain + origin_path_str
+    elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+        origin_path_str_absolute = \
+            'http://' + yggdrasil_domain + origin_path_str
     redirect_headers(self, origin_path_str_absolute,
                      cookie, calling_domain, 303)
     fitness_performance(getreq_start_time, fitness,

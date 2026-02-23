@@ -10,6 +10,7 @@ __module_group__ = "ActivityPub"
 import os
 from pprint import pprint
 from flags import has_group_type
+from utils import is_yggdrasil_address
 from utils import get_user_paths
 from utils import acct_handle_dir
 from utils import has_object_string_object
@@ -766,6 +767,7 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                              signing_priv_key_pem: str,
                              curr_domain: str,
                              onion_domain: str, i2p_domain: str,
+                             yggdrasil_domain: str,
                              followers_sync_cache: {},
                              sites_unavailable: [],
                              system_language: str,
@@ -825,12 +827,15 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                             person_cache, debug, project_version, None,
                             group_account, signing_priv_key_pem,
                             7856837, curr_domain, onion_domain, i2p_domain,
+                            yggdrasil_domain,
                             extra_headers, sites_unavailable,
                             system_language, mitm_servers)
 
 
 def followed_account_rejects(session, session_onion, session_i2p,
+                             session_yggdrasil,
                              onion_domain: str, i2p_domain: str,
+                             yggdrasil_domain: str,
                              base_dir: str, http_prefix: str,
                              nickname_to_follow: str, domain_to_follow: str,
                              port: int,
@@ -896,6 +901,8 @@ def followed_account_rejects(session, session_onion, session_i2p,
         curr_session = session_onion
     elif domain.endswith('.i2p') and session_i2p:
         curr_session = session_i2p
+    elif is_yggdrasil_address(domain) and session_yggdrasil:
+        curr_session = session_yggdrasil
     extra_headers = {}
     domain_full = get_full_domain(domain, from_port)
     remove_followers_sync(followers_sync_cache,
@@ -912,6 +919,7 @@ def followed_account_rejects(session, session_onion, session_i2p,
                             group_account, signing_priv_key_pem,
                             6393063,
                             domain, onion_domain, i2p_domain,
+                            yggdrasil_domain,
                             extra_headers, sites_unavailable,
                             system_language, mitm_servers)
 
@@ -929,6 +937,7 @@ def send_follow_request(session, base_dir: str,
                         project_version: str, signing_priv_key_pem: str,
                         curr_domain: str,
                         onion_domain: str, i2p_domain: str,
+                        yggdrasil_domain: str,
                         sites_unavailable: [],
                         system_language: str,
                         mitm_servers: []) -> {}:
@@ -1019,6 +1028,7 @@ def send_follow_request(session, base_dir: str,
                      debug, project_version, None, group_account,
                      signing_priv_key_pem, 8234389,
                      curr_domain, onion_domain, i2p_domain,
+                     yggdrasil_domain,
                      extra_headers, sites_unavailable,
                      system_language, mitm_servers)
 

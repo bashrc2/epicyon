@@ -20,6 +20,7 @@ from utils import get_status_count
 from utils import lines_in_file
 from utils import data_dir
 from utils import account_is_indexable
+from utils import is_yggdrasil_address
 
 
 def _meta_data_instance_v1(show_accounts: bool,
@@ -314,6 +315,7 @@ def masto_api_v1_response(path: str, calling_domain: str,
                           base_dir: str, nickname: str, domain: str,
                           domain_full: str,
                           onion_domain: str, i2p_domain: str,
+                          yggdrasil_domain: str,
                           translate: {},
                           registration: bool,
                           system_language: str,
@@ -448,6 +450,9 @@ def masto_api_v1_response(path: str, calling_domain: str,
             http_prefix = 'http'
         elif (calling_domain.endswith('.i2p') and i2p_domain):
             domain_full = i2p_domain
+            http_prefix = 'http'
+        elif (is_yggdrasil_address(calling_domain) and yggdrasil_domain):
+            domain_full = yggdrasil_domain
             http_prefix = 'http'
 
         if broch_mode:

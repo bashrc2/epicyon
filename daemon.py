@@ -65,6 +65,7 @@ from utils import set_config_param
 from utils import get_config_param
 from utils import load_json
 from utils import load_instance_software
+from utils import is_yggdrasil_address
 from mitm import load_mitm_servers
 from content import load_auto_cw_cache
 from content import load_dogwhistles
@@ -368,6 +369,7 @@ class EpicyonServer(ThreadingHTTPServer):
     manual_follower_approval = True
     onion_domain = None
     i2p_domain = None
+    yggdrasil_domain = None
     media_instance: bool = False
     blogs_instance: bool = False
     translate = {}
@@ -420,6 +422,7 @@ class EpicyonServer(ThreadingHTTPServer):
     session = None
     session_onion = None
     session_i2p = None
+    session_yggdrasil = None
     last_getreq = 0
     last_postreq = 0
     getreq_busy: bool = False
@@ -645,6 +648,7 @@ def run_daemon(accounts_data_dir: str,
                domain: str,
                onion_domain: str,
                i2p_domain: str,
+               yggdrasil_domain: str,
                yt_replace_domain: str,
                twitter_replacement_domain: str,
                port: int,
@@ -1010,8 +1014,11 @@ def run_daemon(accounts_data_dir: str,
         onion_domain = domain
     elif domain.endswith('.i2p'):
         i2p_domain = domain
+    elif is_yggdrasil_address(domain):
+        yggdrasil_domain = domain
     httpd.onion_domain = onion_domain
     httpd.i2p_domain = i2p_domain
+    httpd.yggdrasil_domain = yggdrasil_domain
     httpd.media_instance = media_instance
     httpd.blogs_instance = blogs_instance
 
@@ -1129,6 +1136,9 @@ def run_daemon(accounts_data_dir: str,
         save_domain_qrcode(base_dir, 'http', onion_domain, httpd.qrcode_scale)
     elif i2p_domain:
         save_domain_qrcode(base_dir, 'http', i2p_domain, httpd.qrcode_scale)
+    elif yggdrasil_domain:
+        save_domain_qrcode(base_dir, 'http', yggdrasil_domain,
+                           httpd.qrcode_scale)
     else:
         save_domain_qrcode(base_dir, http_prefix, httpd.domain_full,
                            httpd.qrcode_scale)
@@ -1147,6 +1157,7 @@ def run_daemon(accounts_data_dir: str,
     httpd.session = None
     httpd.session_onion = None
     httpd.session_i2p = None
+    httpd.session_yggdrasil = None
     httpd.last_getreq = 0
     httpd.last_postreq = 0
     httpd.getreq_busy = False
@@ -1340,6 +1351,7 @@ def run_daemon(accounts_data_dir: str,
                                 httpd.post_log, httpd.cached_webfingers,
                                 httpd.person_cache, httpd.inbox_queue,
                                 domain, onion_domain, i2p_domain,
+                                yggdrasil_domain,
                                 port, proxy_type,
                                 httpd.federation_list,
                                 max_replies,

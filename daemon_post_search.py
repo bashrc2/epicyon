@@ -22,6 +22,7 @@ from utils import get_full_domain
 from utils import local_actor_url
 from utils import remove_eol
 from utils import valid_nickname
+from utils import is_yggdrasil_url
 from webapp_utils import get_avatar_image_url
 from webapp_search import html_hashtag_search
 from webapp_search import html_skills_search
@@ -40,6 +41,7 @@ def _receive_search_redirect(self, calling_domain: str,
                              domain_full: str,
                              onion_domain: str,
                              i2p_domain: str,
+                             yggdrasil_domain: str,
                              users_path: str,
                              default_timeline: str,
                              cookie: str) -> None:
@@ -47,7 +49,8 @@ def _receive_search_redirect(self, calling_domain: str,
     """
     actor_str = \
         get_instance_url(calling_domain, http_prefix,
-                         domain_full, onion_domain, i2p_domain) + users_path
+                         domain_full, onion_domain, i2p_domain,
+                         yggdrasil_domain) + users_path
     redirect_headers(self, actor_str + '/' + default_timeline,
                      cookie, calling_domain, 303)
     self.server.postreq_busy = False
@@ -432,7 +435,8 @@ def _receive_search_bookmarks(self, search_str: str,
 def _receive_search_handle(self, search_str: str,
                            calling_domain: str, http_prefix: str,
                            domain_full: str, onion_domain: str,
-                           i2p_domain: str, users_path: str,
+                           i2p_domain: str, yggdrasil_domain: str,
+                           users_path: str,
                            cookie: str, path: str, base_dir: str,
                            domain: str, proxy_type: str,
                            person_cache: {}, signing_priv_key_pem: str,
@@ -477,7 +481,8 @@ def _receive_search_handle(self, search_str: str,
         actor_str = \
             get_instance_url(calling_domain, http_prefix,
                              domain_full, onion_domain,
-                             i2p_domain) + users_path
+                             i2p_domain,
+                             yggdrasil_domain) + users_path
         redirect_headers(self, actor_str + '/search',
                          cookie, calling_domain, 303)
         self.server.postreq_busy = False
@@ -532,6 +537,9 @@ def _receive_search_handle(self, search_str: str,
         elif '.i2p/' in actor:
             curr_proxy_type = 'i2p'
             curr_session = self.server.session_i2p
+        elif is_yggdrasil_url(actor):
+            curr_proxy_type = 'yggdrasil'
+            curr_session = self.server.session_yggdrasil
 
         curr_session = \
             establish_session("handle search", curr_session,
@@ -577,6 +585,9 @@ def _receive_search_handle(self, search_str: str,
           profile_handle.endswith('.i2p')):
         curr_proxy_type = 'i2p'
         curr_session = self.server.session_i2p
+    elif is_yggdrasil_url(profile_handle):
+        curr_proxy_type = 'yggdrasil'
+        curr_session = self.server.session_yggdrasil
 
     curr_session = \
         establish_session("handle search", curr_session,
@@ -622,6 +633,7 @@ def _receive_search_handle(self, search_str: str,
                                   timezone,
                                   onion_domain,
                                   i2p_domain,
+                                  yggdrasil_domain,
                                   bold_reading,
                                   dogwhistles,
                                   min_images_for_accounts,
@@ -648,7 +660,8 @@ def _receive_search_handle(self, search_str: str,
     actor_str = \
         get_instance_url(calling_domain,
                          http_prefix, domain_full,
-                         onion_domain, i2p_domain) + users_path
+                         onion_domain, i2p_domain,
+                         yggdrasil_domain) + users_path
     redirect_headers(self, actor_str + '/search',
                      cookie, calling_domain, 303)
     self.server.postreq_busy = False
@@ -762,6 +775,7 @@ def receive_search_query(self, calling_domain: str, cookie: str,
                          domain: str, domain_full: str,
                          port: int, search_for_emoji: bool,
                          onion_domain: str, i2p_domain: str,
+                         yggdrasil_domain: str,
                          getreq_start_time, debug: bool,
                          curr_session, proxy_type: str,
                          max_posts_in_hashtag_feed: int,
@@ -817,7 +831,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
     users_path = path.replace('/searchhandle', '')
     actor_str = \
         get_instance_url(calling_domain, http_prefix, domain_full,
-                         onion_domain, i2p_domain) + \
+                         onion_domain, i2p_domain,
+                         yggdrasil_domain) + \
         users_path
     length = int(self.headers['Content-length'])
     try:
@@ -847,6 +862,7 @@ def receive_search_query(self, calling_domain: str, cookie: str,
         _receive_search_redirect(self, calling_domain,
                                  http_prefix, domain_full,
                                  onion_domain, i2p_domain,
+                                 yggdrasil_domain,
                                  users_path, default_timeline,
                                  cookie)
         return
@@ -1004,7 +1020,8 @@ def receive_search_query(self, calling_domain: str, cookie: str,
         if _receive_search_handle(self, search_str,
                                   calling_domain, http_prefix,
                                   domain_full, onion_domain,
-                                  i2p_domain, users_path,
+                                  i2p_domain, yggdrasil_domain,
+                                  users_path,
                                   cookie, path, base_dir,
                                   domain, proxy_type,
                                   person_cache, signing_priv_key_pem,
@@ -1074,5 +1091,6 @@ def receive_search_query(self, calling_domain: str, cookie: str,
     _receive_search_redirect(self, calling_domain,
                              http_prefix, domain_full,
                              onion_domain, i2p_domain,
+                             yggdrasil_domain,
                              users_path, default_timeline,
                              cookie)

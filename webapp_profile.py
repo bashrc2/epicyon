@@ -23,6 +23,7 @@ from textmode import text_mode_removals
 from unicodetext import uninvert_text
 from unicodetext import standardize_text
 from occupation import get_occupation_name
+from utils import is_yggdrasil_address
 from utils import chatbot_nicknames
 from utils import get_actor_type
 from utils import get_mutuals_of_person
@@ -254,6 +255,7 @@ def html_profile_after_search(authorized: bool,
                               cw_lists: {}, lists_enabled: str,
                               timezone: str,
                               onion_domain: str, i2p_domain: str,
+                              yggdrasil_domain: str,
                               bold_reading: bool, dogwhistles: {},
                               min_images_for_accounts: [],
                               buy_sites: {},
@@ -290,6 +292,18 @@ def html_profile_after_search(authorized: bool,
         if '.i2p/' in profile_handle or profile_handle.endswith('.i2p'):
             from_domain = i2p_domain
             http = True
+    if yggdrasil_domain:
+        profile_domain = ''
+        if '@' in profile_handle:
+            profile_domain = profile_handle.split('@')[1]
+        else:
+            if '://' in profile_handle:
+                profile_domain = profile_handle.split('://')[1]
+            if '/' in profile_domain:
+                profile_domain = profile_domain.split('/')[0]
+            if is_yggdrasil_address(profile_domain):
+                from_domain = yggdrasil_domain
+                http = True
     profile_json, as_header = \
         get_actor_json(from_domain, profile_handle, http,
                        gnunet, ipfs, ipns, debug, False,

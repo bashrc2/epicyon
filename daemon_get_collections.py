@@ -26,7 +26,8 @@ def get_featured_collection(self, calling_domain: str,
                             domain_full: str,
                             system_language: str,
                             onion_domain: str,
-                            i2p_domain: str) -> None:
+                            i2p_domain: str,
+                            yggdrasil_domain: str) -> None:
     """Returns the featured posts collections in
     actor/collections/featured
     """
@@ -37,7 +38,8 @@ def get_featured_collection(self, calling_domain: str,
                          ensure_ascii=False)
     msg_str = convert_domains(calling_domain, referer_domain,
                               msg_str, http_prefix,
-                              domain, onion_domain, i2p_domain)
+                              domain, onion_domain, i2p_domain,
+                              yggdrasil_domain)
     msg = msg_str.encode('utf-8')
     msglen = len(msg)
     accept_str = self.headers['Accept']
@@ -52,7 +54,8 @@ def get_featured_tags_collection(self, calling_domain: str,
                                  referer_domain: str,
                                  path: str, http_prefix: str,
                                  domain_full: str, domain: str,
-                                 onion_domain: str, i2p_domain: str) -> None:
+                                 onion_domain: str, i2p_domain: str,
+                                 yggdrasil_domain: str) -> None:
     """Returns the featured tags collections in
     actor/collections/featuredTags
     """
@@ -71,7 +74,8 @@ def get_featured_tags_collection(self, calling_domain: str,
                               msg_str, http_prefix,
                               domain,
                               onion_domain,
-                              i2p_domain)
+                              i2p_domain,
+                              yggdrasil_domain)
     msg = msg_str.encode('utf-8')
     msglen = len(msg)
     accept_str = self.headers['Accept']
@@ -88,7 +92,8 @@ def get_following_json(self, base_dir: str, path: str,
                        domain: str, port: int,
                        following_items_per_page: int,
                        debug: bool, list_name: str,
-                       onion_domain: str, i2p_domain: str) -> None:
+                       onion_domain: str, i2p_domain: str,
+                       yggdrasil_domain: str) -> None:
     """Returns json collection for following.txt
     """
     following_json = \
@@ -106,7 +111,8 @@ def get_following_json(self, base_dir: str, path: str,
                               msg_str, http_prefix,
                               domain,
                               onion_domain,
-                              i2p_domain)
+                              i2p_domain,
+                              yggdrasil_domain)
     msg = msg_str.encode('utf-8')
     msglen = len(msg)
     accept_str = self.headers['Accept']

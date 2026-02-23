@@ -60,7 +60,8 @@ def logout_redirect(self, redirect: str, calling_domain: str) -> None:
                                     self.server.http_prefix,
                                     self.server.domain_full,
                                     self.server.onion_domain,
-                                    self.server.i2p_domain) + \
+                                    self.server.i2p_domain,
+                                    self.server.yggdrasil_domain) + \
                                     redirect
         print('WARN: redirect was not an absolute url, changed to ' +
               redirect + ' ' + calling_domain)
@@ -85,7 +86,8 @@ def redirect_headers(self, redirect: str, cookie: str,
                              self.server.http_prefix,
                              self.server.domain_full,
                              self.server.onion_domain,
-                             self.server.i2p_domain) + redirect
+                             self.server.i2p_domain,
+                             self.server.yggdrasil_domain) + redirect
         print('WARN: redirect was not an absolute url, changed to ' +
               redirect)
 

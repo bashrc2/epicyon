@@ -15,6 +15,7 @@ from utils import get_full_domain
 from utils import is_account_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
+from utils import is_yggdrasil_address
 from follow import is_following_actor
 from follow import send_follow_request
 from session import create_session
@@ -116,6 +117,7 @@ def _update_import_following(base_dir: str,
             curr_proxy_type = httpd.proxy_type
             use_onion_session = False
             use_i2p_session = False
+            use_yggdrasil_session = False
             if '.onion' not in domain and \
                httpd.onion_domain and '.onion' in following_domain:
                 curr_session = httpd.session_onion
@@ -134,6 +136,16 @@ def _update_import_following(base_dir: str,
                 curr_http_prefix = 'http'
                 curr_proxy_type = 'i2p'
                 use_i2p_session = True
+            if not is_yggdrasil_address(domain) and \
+               httpd.yggdrasil_domain and \
+               is_yggdrasil_address(following_domain):
+                curr_session = httpd.session_yggdrasil
+                curr_domain = httpd.yggdrasil_domain
+                curr_port = 80
+                following_port = 80
+                curr_http_prefix = 'http'
+                curr_proxy_type = 'yggdrasil'
+                use_yggdrasil_session = True
 
             curr_session = \
                 _establish_import_session(httpd, "import follow",
@@ -143,6 +155,8 @@ def _update_import_following(base_dir: str,
                     httpd.session_onion = curr_session
                 elif use_i2p_session:
                     httpd.session_i2p = curr_session
+                elif use_yggdrasil_session:
+                    httpd.session_yggdrasil = curr_session
                 else:
                     main_session = curr_session
 
@@ -164,6 +178,7 @@ def _update_import_following(base_dir: str,
                                 httpd.domain,
                                 httpd.onion_domain,
                                 httpd.i2p_domain,
+                                httpd.yggdrasil_domain,
                                 httpd.sites_unavailable,
                                 httpd.system_language,
                                 httpd.mitm_servers)

@@ -173,6 +173,7 @@ def create_announce(session, base_dir: str, federation_list: [],
                     signing_priv_key_pem: str,
                     curr_domain: str,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     sites_unavailable: [],
                     system_language: str,
                     mitm_servers: []) -> {}:
@@ -242,6 +243,7 @@ def create_announce(session, base_dir: str, federation_list: [],
                          debug, project_version, None, group_account,
                          signing_priv_key_pem, 639633,
                          curr_domain, onion_domain, i2p_domain,
+                         yggdrasil_domain,
                          extra_headers, sites_unavailable,
                          system_language, mitm_servers)
 
@@ -257,6 +259,7 @@ def announce_public(session, base_dir: str, federation_list: [],
                     signing_priv_key_pem: str,
                     curr_domain: str,
                     onion_domain: str, i2p_domain: str,
+                    yggdrasil_domain: str,
                     sites_unavailable: [],
                     system_language: str,
                     mitm_servers: []) -> {}:
@@ -274,7 +277,7 @@ def announce_public(session, base_dir: str, federation_list: [],
                            person_cache, cached_webfingers,
                            debug, project_version,
                            signing_priv_key_pem, curr_domain,
-                           onion_domain, i2p_domain,
+                           onion_domain, i2p_domain, yggdrasil_domain,
                            sites_unavailable,
                            system_language, mitm_servers)
 

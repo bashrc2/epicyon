@@ -20,13 +20,16 @@ from utils import acct_dir
 from utils import text_in_file
 from utils import remove_eol
 from utils import get_actor_from_post
+from utils import is_yggdrasil_address
 from threads import thread_with_trace
 from threads import begin_thread
 from session import create_session
 
 
 def manual_deny_follow_request2(session, session_onion, session_i2p,
+                                session_yggdrasil,
                                 onion_domain: str, i2p_domain: str,
+                                yggdrasil_domain: str,
                                 base_dir: str, http_prefix: str,
                                 nickname: str, domain: str, port: int,
                                 deny_handle: str,
@@ -72,7 +75,9 @@ def manual_deny_follow_request2(session, session_onion, session_i2p,
         deny_port = get_port_from_domain(deny_domain)
         deny_domain = remove_domain_port(deny_domain)
     followed_account_rejects(session, session_onion, session_i2p,
+                             session_yggdrasil,
                              onion_domain, i2p_domain,
+                             yggdrasil_domain,
                              base_dir, http_prefix,
                              nickname, domain, port,
                              deny_nickname, deny_domain, deny_port,
@@ -89,7 +94,9 @@ def manual_deny_follow_request2(session, session_onion, session_i2p,
 
 
 def manual_deny_follow_request_thread(session, session_onion, session_i2p,
+                                      session_yggdrasil,
                                       onion_domain: str, i2p_domain: str,
+                                      yggdrasil_domain: str,
                                       base_dir: str, http_prefix: str,
                                       nickname: str, domain: str, port: int,
                                       deny_handle: str,
@@ -110,7 +117,9 @@ def manual_deny_follow_request_thread(session, session_onion, session_i2p,
     thr = \
         thread_with_trace(target=manual_deny_follow_request2,
                           args=(session, session_onion, session_i2p,
+                                session_yggdrasil,
                                 onion_domain, i2p_domain,
+                                yggdrasil_domain,
                                 base_dir, http_prefix,
                                 nickname, domain, port,
                                 deny_handle,
@@ -154,7 +163,9 @@ def _approve_follower_handle(account_dir: str, approve_handle: str) -> None:
 
 
 def manual_approve_follow_request(session, session_onion, session_i2p,
+                                  session_yggdrasil,
                                   onion_domain: str, i2p_domain: str,
+                                  yggdrasil_domain: str,
                                   base_dir: str, http_prefix: str,
                                   nickname: str, domain: str, port: int,
                                   approve_handle: str,
@@ -290,6 +301,15 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                         curr_session = session_i2p
                         curr_http_prefix = 'http'
                         curr_proxy_type = 'i2p'
+                    elif (yggdrasil_domain and
+                          not is_yggdrasil_address(curr_domain) and
+                          is_yggdrasil_address(approve_domain)):
+                        curr_domain = yggdrasil_domain
+                        curr_port = 80
+                        approve_port = 80
+                        curr_session = session_yggdrasil
+                        curr_http_prefix = 'http'
+                        curr_proxy_type = 'yggdrasil'
 
                     if not curr_session:
                         curr_session = create_session(curr_proxy_type)
@@ -317,6 +337,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
                                              domain,
                                              onion_domain,
                                              i2p_domain,
+                                             yggdrasil_domain,
                                              followers_sync_cache,
                                              sites_unavailable,
                                              system_language,
@@ -387,7 +408,9 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
 
 
 def manual_approve_follow_request_thread(session, session_onion, session_i2p,
+                                         session_yggdrasil,
                                          onion_domain: str, i2p_domain: str,
+                                         yggdrasil_domain: str,
                                          base_dir: str, http_prefix: str,
                                          nickname: str, domain: str, port: int,
                                          approve_handle: str,
@@ -410,7 +433,9 @@ def manual_approve_follow_request_thread(session, session_onion, session_i2p,
     thr = \
         thread_with_trace(target=manual_approve_follow_request,
                           args=(session, session_onion, session_i2p,
+                                session_yggdrasil,
                                 onion_domain, i2p_domain,
+                                yggdrasil_domain,
                                 base_dir, http_prefix,
                                 nickname, domain, port,
                                 approve_handle,

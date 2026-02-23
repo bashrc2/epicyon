@@ -12,6 +12,7 @@ import errno
 import json
 from socket import error as SocketError
 from flags import is_corporate
+from utils import is_yggdrasil_address
 from utils import replace_strings
 from utils import string_ends_with
 from utils import get_config_param
@@ -239,6 +240,13 @@ def daemon_http_post(self) -> None:
                 print('POST domain blocked: ' + calling_domain)
                 http_400(self)
                 return
+        elif self.server.yggdrasil_domain:
+            if calling_domain not in (self.server.domain,
+                                      self.server.domain_full,
+                                      self.server.yggdrasil_domain):
+                print('POST domain blocked: ' + calling_domain)
+                http_400(self)
+                return
         else:
             if calling_domain not in (self.server.domain,
                                       self.server.domain_full):
@@ -368,6 +376,7 @@ def daemon_http_post(self) -> None:
                           self.server.domain_full,
                           self.server.onion_domain,
                           self.server.i2p_domain,
+                          self.server.yggdrasil_domain,
                           self.server.manual_follower_approval,
                           self.server.default_timeline)
         self.server.postreq_busy = False
@@ -388,6 +397,7 @@ def daemon_http_post(self) -> None:
                               self.server.domain_full,
                               self.server.onion_domain,
                               self.server.i2p_domain,
+                              self.server.yggdrasil_domain,
                               self.server.max_post_length)
         self.server.postreq_busy = False
         return
@@ -400,7 +410,9 @@ def daemon_http_post(self) -> None:
                      self.server.domain,
                      self.server.domain_full,
                      self.server.onion_domain,
-                     self.server.i2p_domain, self.server.debug,
+                     self.server.i2p_domain,
+                     self.server.yggdrasil_domain,
+                     self.server.debug,
                      self.server.allow_local_network_access,
                      self.server.system_language,
                      self.server.content_license_url,
@@ -426,6 +438,7 @@ def daemon_http_post(self) -> None:
                      self.server.domain_full,
                      self.server.onion_domain,
                      self.server.i2p_domain,
+                     self.server.yggdrasil_domain,
                      self.server.max_post_length)
         self.server.postreq_busy = False
         return
@@ -440,6 +453,7 @@ def daemon_http_post(self) -> None:
                         self.server.domain_full,
                         self.server.onion_domain,
                         self.server.i2p_domain,
+                        self.server.yggdrasil_domain,
                         self.server.max_post_length)
         self.server.postreq_busy = False
         return
@@ -455,6 +469,7 @@ def daemon_http_post(self) -> None:
                          self.server.domain_full,
                          self.server.onion_domain,
                          self.server.i2p_domain,
+                         self.server.yggdrasil_domain,
                          self.server.max_post_length)
         self.server.postreq_busy = False
         return
@@ -468,6 +483,7 @@ def daemon_http_post(self) -> None:
                        self.server.domain_full,
                        self.server.onion_domain,
                        self.server.i2p_domain,
+                       self.server.yggdrasil_domain,
                        self.server.news_instance,
                        self.server.max_post_length,
                        self.server.system_language,
@@ -497,6 +513,7 @@ def daemon_http_post(self) -> None:
                           self.server.domain_full,
                           self.server.onion_domain,
                           self.server.i2p_domain,
+                          self.server.yggdrasil_domain,
                           self.server.translate,
                           self.server.system_language,
                           self.server.signing_priv_key_pem,
@@ -541,6 +558,7 @@ def daemon_http_post(self) -> None:
                              search_for_emoji,
                              self.server.onion_domain,
                              self.server.i2p_domain,
+                             self.server.yggdrasil_domain,
                              postreq_start_time,
                              self.server.debug,
                              curr_session,
@@ -608,6 +626,7 @@ def daemon_http_post(self) -> None:
                          self.server.port,
                          self.server.onion_domain,
                          self.server.i2p_domain,
+                         self.server.yggdrasil_domain,
                          curr_session,
                          proxy_type,
                          self.server.base_dir,
@@ -636,6 +655,7 @@ def daemon_http_post(self) -> None:
                          self.server.domain_full,
                          self.server.onion_domain,
                          self.server.i2p_domain,
+                         self.server.yggdrasil_domain,
                          curr_session, proxy_type,
                          self.server.person_cache,
                          self.server.max_shares_on_profile,
@@ -651,7 +671,8 @@ def daemon_http_post(self) -> None:
                           self.server.http_prefix,
                           self.server.domain_full,
                           self.server.onion_domain,
-                          self.server.i2p_domain)
+                          self.server.i2p_domain,
+                          self.server.yggdrasil_domain)
             self.server.postreq_busy = False
             return
 
@@ -676,6 +697,7 @@ def daemon_http_post(self) -> None:
                                 self.server.domain_full,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
+                                self.server.yggdrasil_domain,
                                 curr_session, proxy_type)
             self.server.postreq_busy = False
             return
@@ -695,6 +717,7 @@ def daemon_http_post(self) -> None:
                             self.server.port,
                             self.server.onion_domain,
                             self.server.i2p_domain,
+                            self.server.yggdrasil_domain,
                             self.server.debug,
                             curr_session,
                             proxy_type, self.server.translate,
@@ -725,6 +748,7 @@ def daemon_http_post(self) -> None:
                                   self.server.domain_full,
                                   self.server.onion_domain,
                                   self.server.i2p_domain,
+                                  self.server.yggdrasil_domain,
                                   self.server.debug,
                                   self.server.books_cache)
             self.server.postreq_busy = False
@@ -745,6 +769,7 @@ def daemon_http_post(self) -> None:
                              self.server.port,
                              self.server.onion_domain,
                              self.server.i2p_domain,
+                             self.server.yggdrasil_domain,
                              self.server.debug,
                              curr_session, proxy_type,
                              self.server.person_cache)
@@ -766,6 +791,7 @@ def daemon_http_post(self) -> None:
                             self.server.port,
                             self.server.onion_domain,
                             self.server.i2p_domain,
+                            self.server.yggdrasil_domain,
                             self.server.debug)
             self.server.postreq_busy = False
             return
@@ -785,6 +811,7 @@ def daemon_http_post(self) -> None:
                            self.server.port,
                            self.server.onion_domain,
                            self.server.i2p_domain,
+                           self.server.yggdrasil_domain,
                            self.server.debug)
             self.server.postreq_busy = False
             return
@@ -805,6 +832,7 @@ def daemon_http_post(self) -> None:
                             self.server.port,
                             self.server.onion_domain,
                             self.server.i2p_domain,
+                            self.server.yggdrasil_domain,
                             self.server.debug,
                             curr_session,
                             authorized,
@@ -866,6 +894,7 @@ def daemon_http_post(self) -> None:
                                self.server.domain_full,
                                self.server.onion_domain,
                                self.server.i2p_domain,
+                               self.server.yggdrasil_domain,
                                access_keys,
                                self.server.default_timeline,
                                self.server.access_keys,
@@ -895,6 +924,7 @@ def daemon_http_post(self) -> None:
                                 self.server.domain_full,
                                 self.server.onion_domain,
                                 self.server.i2p_domain,
+                                self.server.yggdrasil_domain,
                                 self.server.default_timeline,
                                 self.server.theme_name,
                                 allow_local_network_access,
@@ -924,6 +954,7 @@ def daemon_http_post(self) -> None:
         if origin_domain != self.server.domain_full and \
            origin_domain != self.server.onion_domain and \
            origin_domain != self.server.i2p_domain and \
+           origin_domain != self.server.yggdrasil_domain and \
            origin_domain in self.server.shared_items_federated_domains:
             if self.server.debug:
                 print('DEBUG: ' +
@@ -1009,6 +1040,7 @@ def daemon_http_post(self) -> None:
                              self.server.block_federated,
                              self.server.onion_domain,
                              self.server.i2p_domain,
+                             self.server.yggdrasil_domain,
                              self.server.max_shares_on_profile,
                              self.server.watermark_width_percent,
                              self.server.watermark_position,
@@ -1037,6 +1069,15 @@ def daemon_http_post(self) -> None:
                 actor_path_str = \
                     local_actor_url('http', nickname,
                                     self.server.i2p_domain) + \
+                    '/' + post_redirect + \
+                    '?page=' + str(page_number)
+                redirect_headers(self, actor_path_str, cookie,
+                                 calling_domain, 303)
+            elif (is_yggdrasil_address(calling_domain) and
+                  self.server.yggdrasil_domain):
+                actor_path_str = \
+                    local_actor_url('http', nickname,
+                                    self.server.yggdrasil_domain) + \
                     '/' + post_redirect + \
                     '?page=' + str(page_number)
                 redirect_headers(self, actor_path_str, cookie,

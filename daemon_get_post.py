@@ -86,6 +86,7 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                          fitness: {}, path: str,
                          onion_domain: str,
                          i2p_domain: str,
+                         yggdrasil_domain: str,
                          mitm_servers: [],
                          instance_software: {},
                          ua_str: str) -> bool:
@@ -206,7 +207,8 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
                                       msg_str, http_prefix,
                                       domain,
                                       onion_domain,
-                                      i2p_domain)
+                                      i2p_domain,
+                                      yggdrasil_domain)
             msg = msg_str.encode('utf-8')
             msglen = len(msg)
             protocol_str = \
@@ -257,6 +259,7 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                          auto_cw_cache: {},
                          onion_domain: str,
                          i2p_domain: str,
+                         yggdrasil_domain: str,
                          mitm_servers: [],
                          instance_software: {},
                          ua_str: str) -> bool:
@@ -365,6 +368,7 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
                                   fitness, path,
                                   onion_domain,
                                   i2p_domain,
+                                  yggdrasil_domain,
                                   mitm_servers,
                                   instance_software,
                                   ua_str)
@@ -601,6 +605,7 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                             auto_cw_cache: {},
                             onion_domain: str,
                             i2p_domain: str,
+                            yggdrasil_domain: str,
                             bold_reading_nicknames: {},
                             mitm_servers: [],
                             instance_software: {},
@@ -716,6 +721,7 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
                                   fitness, path,
                                   onion_domain,
                                   i2p_domain,
+                                  yggdrasil_domain,
                                   mitm_servers,
                                   instance_software,
                                   ua_str)
@@ -965,6 +971,7 @@ def show_replies_to_post(self, authorized: bool,
                          fitness: {},
                          onion_domain: str,
                          i2p_domain: str,
+                         yggdrasil_domain: str,
                          mitm_servers: [],
                          instance_software: {}) -> bool:
     """Shows the replies to a post
@@ -1093,7 +1100,8 @@ def show_replies_to_post(self, authorized: bool,
                                           msg_str, http_prefix,
                                           domain,
                                           onion_domain,
-                                          i2p_domain)
+                                          i2p_domain,
+                                          yggdrasil_domain)
                 msg = msg_str.encode('utf-8')
                 protocol_str = \
                     get_json_content_from_accept(self.headers['Accept'])
@@ -1214,7 +1222,8 @@ def show_replies_to_post(self, authorized: bool,
                                       msg_str, http_prefix,
                                       domain,
                                       onion_domain,
-                                      i2p_domain)
+                                      i2p_domain,
+                                      yggdrasil_domain)
             msg = msg_str.encode('utf-8')
             protocol_str = \
                 get_json_content_from_accept(self.headers['Accept'])
@@ -1263,6 +1272,7 @@ def show_notify_post(self, authorized: bool,
                      auto_cw_cache: {},
                      onion_domain: str,
                      i2p_domain: str,
+                     yggdrasil_domain: str,
                      bold_reading_nicknames: {},
                      mitm_servers: [],
                      instance_software: {},
@@ -1325,6 +1335,7 @@ def show_notify_post(self, authorized: bool,
                                   fitness, path,
                                   onion_domain,
                                   i2p_domain,
+                                  yggdrasil_domain,
                                   mitm_servers,
                                   instance_software,
                                   ua_str)
@@ -1343,6 +1354,7 @@ def show_conversation_thread(self, authorized: bool,
                              domain_full: str,
                              onion_domain: str,
                              i2p_domain: str,
+                             yggdrasil_domain: str,
                              account_timezone: {},
                              bold_reading_nicknames: {},
                              translate: {},
@@ -1405,7 +1417,8 @@ def show_conversation_thread(self, authorized: bool,
                                         http_prefix,
                                         domain_full,
                                         onion_domain,
-                                        i2p_domain)
+                                        i2p_domain,
+                                        yggdrasil_domain)
         post_id = instance_url + post_id
     nickname = path.split('/users/')[1]
     if conv_separator in nickname:

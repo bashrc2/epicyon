@@ -131,6 +131,7 @@ def links_update(self, calling_domain: str, cookie: str,
                  allow_local_network_access: bool,
                  http_prefix: str, domain_full: str,
                  onion_domain: str, i2p_domain: str,
+                 yggdrasil_domain: str,
                  max_post_length: int) -> None:
     """Updates the left links column of the timeline
     """
@@ -141,7 +142,8 @@ def links_update(self, calling_domain: str, cookie: str,
                          http_prefix,
                          domain_full,
                          onion_domain,
-                         i2p_domain) + \
+                         i2p_domain,
+                         yggdrasil_domain) + \
         users_path
 
     boundary = None

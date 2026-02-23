@@ -26,6 +26,7 @@ from utils import load_json
 from utils import save_json
 from utils import get_file_case_insensitive
 from utils import get_user_paths
+from utils import is_yggdrasil_url
 from formats import get_image_extensions
 from timeFunctions import date_from_string_format
 from timeFunctions import date_utcnow
@@ -209,7 +210,7 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
                        person_cache: {}, debug: bool,
                        project_version: str, http_prefix: str,
                        domain: str, onion_domain: str,
-                       i2p_domain: str,
+                       i2p_domain: str, yggdrasil_domain: str,
                        signing_priv_key_pem: str,
                        mitm_servers: []) -> str:
     """Get the public key for an actor
@@ -243,6 +244,9 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
         elif i2p_domain:
             if '.i2p/' in person_url:
                 person_domain = i2p_domain
+        elif yggdrasil_domain:
+            if is_yggdrasil_url(person_url):
+                person_domain = yggdrasil_domain
         profile_str: str = 'https://www.w3.org/ns/activitystreams'
         accept_str = \
             'application/activity+json; profile="' + profile_str + '"'
@@ -272,6 +276,7 @@ def get_person_pub_key(base_dir: str, session, person_url: str,
 def cache_svg_images(session, base_dir: str, http_prefix: str,
                      domain: str, domain_full: str,
                      onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str,
                      post_json_object: {},
                      federation_list: [], debug: bool,
                      test_image_filename: str) -> bool:
@@ -313,6 +318,9 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
                     continue
             if i2p_domain:
                 if '://' + i2p_domain in url:
+                    continue
+            if yggdrasil_domain:
+                if '://' + yggdrasil_domain in url:
                     continue
             if '/' in url:
                 filename = url.split('/')[-1]

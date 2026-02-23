@@ -24,6 +24,7 @@ def reaction_picker2(self, calling_domain: str, path: str,
                      getreq_start_time, cookie: str,
                      debug: str, curr_session,
                      onion_domain: str, i2p_domain: str,
+                     yggdrasil_domain: str,
                      recent_posts_cache: {},
                      max_recent_posts: int,
                      translate: {},
@@ -86,7 +87,8 @@ def reaction_picker2(self, calling_domain: str, path: str,
                              http_prefix,
                              domain_full,
                              onion_domain,
-                             i2p_domain) + \
+                             i2p_domain,
+                             yggdrasil_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \
@@ -107,7 +109,8 @@ def reaction_picker2(self, calling_domain: str, path: str,
                              http_prefix,
                              domain_full,
                              onion_domain,
-                             i2p_domain) + \
+                             i2p_domain,
+                             yggdrasil_domain) + \
             actor
         actor_path_str = \
             actor_absolute + '/' + timeline_str + \

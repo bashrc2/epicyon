@@ -3349,6 +3349,56 @@ def _is_i2p_request(calling_domain: str, referer_domain: str,
     return False
 
 
+def is_yggdrasil_address(domain: str) -> bool:
+    """is the given domain a yggdrassil address?
+    """
+    if not domain.startswith('[2') and \
+       not domain.startswith('[3'):
+        return False
+    if not domain.endswith(']'):
+        if ']:' in domain:
+            if not domain.split(']:')[1].isdigit():
+                return False
+            domain = domain.split(']:')[0] + ']'
+        else:
+            return False
+    if domain.count(':') != 7:
+        return False
+    return True
+
+
+def is_yggdrasil_url(url: str) -> bool:
+    """does the given url contain a yggdrassil domain?
+    """
+    if '[' not in url:
+        return False
+    url2 = '[' + url.split('[', 1)[1]
+    if ']' not in url2:
+        return False
+    domain = url2.split(']')[0] + ']'
+    if ':' not in domain:
+        return False
+    return is_yggdrasil_address(domain)
+
+
+def _is_yggdrasil_request(calling_domain: str, referer_domain: str,
+                          domain: str, yggdrasil_domain: str) -> bool:
+    """Do the given domains indicate that this is a request
+    from a yggdrasil instance
+    """
+    if not yggdrasil_domain:
+        return False
+    if domain == yggdrasil_domain:
+        return True
+    if is_yggdrasil_address(calling_domain):
+        return True
+    if not referer_domain:
+        return False
+    if is_yggdrasil_address(referer_domain):
+        return True
+    return False
+
+
 def disallow_reply(content: str) -> bool:
     """Are replies not allowed for the given post?
     """
@@ -3944,7 +3994,8 @@ def convert_domains(calling_domain: str, referer_domain: str,
                     msg_str: str, http_prefix: str,
                     domain: str,
                     onion_domain: str,
-                    i2p_domain: str) -> str:
+                    i2p_domain: str,
+                    yggdrasil_domain: str) -> str:
     """Convert domains to onion or i2p, depending upon who is asking
     """
     curr_http_prefix = http_prefix + '://'
@@ -3962,6 +4013,13 @@ def convert_domains(calling_domain: str, referer_domain: str,
                                   domain,
                                   'http://' +
                                   i2p_domain)
+    elif _is_yggdrasil_request(calling_domain, referer_domain,
+                               domain,
+                               yggdrasil_domain):
+        msg_str = msg_str.replace(curr_http_prefix +
+                                  domain,
+                                  'http://' +
+                                  yggdrasil_domain)
     return msg_str
 
 
@@ -3969,7 +4027,8 @@ def get_instance_url(calling_domain: str,
                      http_prefix: str,
                      domain_full: str,
                      onion_domain: str,
-                     i2p_domain: str) -> str:
+                     i2p_domain: str,
+                     yggdrasil_domain: str) -> str:
     """Returns the URL for this instance
     """
     if calling_domain.endswith('.onion') and \
@@ -3978,6 +4037,9 @@ def get_instance_url(calling_domain: str,
     elif (calling_domain.endswith('.i2p') and
           i2p_domain):
         instance_url = 'http://' + i2p_domain
+    elif (is_yggdrasil_address(calling_domain) and
+          yggdrasil_domain):
+        instance_url = 'http://' + yggdrasil_domain
     else:
         instance_url = \
             http_prefix + '://' + domain_full

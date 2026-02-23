@@ -29,6 +29,7 @@ from utils import local_actor_url
 from utils import has_actor
 from utils import has_object_string_type
 from utils import get_actor_from_post
+from utils import is_yggdrasil_address
 from timeFunctions import get_current_time_int
 
 
@@ -140,6 +141,7 @@ def _reject_quote_request(message_json: {}, domain_full: str,
                           federation_list: [],
                           debug: bool,
                           session, session_onion, session_i2p,
+                          session_yggdrasil,
                           base_dir: str,
                           http_prefix: str,
                           send_threads: [], post_log: [],
@@ -147,6 +149,7 @@ def _reject_quote_request(message_json: {}, domain_full: str,
                           person_cache: {}, project_version: str,
                           signing_priv_key_pem: str,
                           onion_domain: str, i2p_domain: str,
+                          yggdrasil_domain: str,
                           extra_headers: {},
                           sites_unavailable: {},
                           system_language: str,
@@ -235,6 +238,17 @@ def _reject_quote_request(message_json: {}, domain_full: str,
                 if debug:
                     print('Domain switched from ' + domain +
                           ' to ' + curr_domain)
+            elif (yggdrasil_domain and
+                  not is_yggdrasil_address(curr_domain) and
+                  is_yggdrasil_address(domain_to_follow)):
+                curr_session = session_yggdrasil
+                curr_http_prefix: str = 'http'
+                curr_domain = yggdrasil_domain
+                curr_port = 80
+                port = 80
+                if debug:
+                    print('Domain switched from ' + domain +
+                          ' to ' + curr_domain)
 
             client_to_server = False
             send_signed_json(reject_json, curr_session, base_dir,
@@ -245,7 +259,8 @@ def _reject_quote_request(message_json: {}, domain_full: str,
                              send_threads, post_log, cached_webfingers,
                              person_cache, debug, project_version, None,
                              group_account, signing_priv_key_pem,
-                             726235284, curr_domain, onion_domain, i2p_domain,
+                             726235284, curr_domain,
+                             onion_domain, i2p_domain, yggdrasil_domain,
                              extra_headers, sites_unavailable,
                              system_language, mitm_servers)
         return True
@@ -255,7 +270,8 @@ def _reject_quote_request(message_json: {}, domain_full: str,
 def _accept_follow(base_dir: str, message_json: {},
                    federation_list: [], debug: bool,
                    curr_domain: str,
-                   onion_domain: str, i2p_domain: str) -> None:
+                   onion_domain: str, i2p_domain: str,
+                   yggdrasil_domain: str) -> None:
     """ Receiving an ActivityPub follow Accept activity
     Your follow was accepted
     """
@@ -339,6 +355,10 @@ def _accept_follow(base_dir: str, message_json: {},
         if accepted_domain.endswith('.i2p') and \
            not curr_domain.endswith('.i2p'):
             accepted_domain = curr_domain
+    if yggdrasil_domain:
+        if is_yggdrasil_address(accepted_domain) and \
+           not is_yggdrasil_address(curr_domain):
+            accepted_domain = curr_domain
 
     accepted_domain_full = accepted_domain
     if accepted_port:
@@ -382,7 +402,8 @@ def _accept_follow(base_dir: str, message_json: {},
 
 def receive_accept_reject(base_dir: str, domain: str, message_json: {},
                           federation_list: [], debug: bool, curr_domain: str,
-                          onion_domain: str, i2p_domain: str) -> bool:
+                          onion_domain: str, i2p_domain: str,
+                          yggdrasil_domain: str) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
     if message_json['type'] not in ('Accept', 'Reject'):
@@ -410,7 +431,7 @@ def receive_accept_reject(base_dir: str, domain: str, message_json: {},
                   'Assuming single user instance.')
     # receive follow accept
     _accept_follow(base_dir, message_json, federation_list, debug,
-                   curr_domain, onion_domain, i2p_domain)
+                   curr_domain, onion_domain, i2p_domain, yggdrasil_domain)
     if debug:
         print('DEBUG: Uh, ' + message_json['type'] + ', I guess')
     return True
@@ -420,6 +441,7 @@ def receive_quote_request(message_json: {}, federation_list: [],
                           debug: bool,
                           domain_full: str,
                           session, session_onion, session_i2p,
+                          session_yggdrasil,
                           base_dir: str,
                           http_prefix: str,
                           send_threads: [], post_log: [],
@@ -428,6 +450,7 @@ def receive_quote_request(message_json: {}, federation_list: [],
                           signing_priv_key_pem: str,
                           onion_domain: str,
                           i2p_domain: str,
+                          yggdrasil_domain: str,
                           extra_headers: {},
                           sites_unavailable: {},
                           system_language: str,
@@ -445,14 +468,15 @@ def receive_quote_request(message_json: {}, federation_list: [],
         return True
     _reject_quote_request(message_json, domain_full,
                           federation_list, debug,
-                          session, session_onion, session_i2p, base_dir,
+                          session, session_onion, session_i2p,
+                          session_yggdrasil, base_dir,
                           http_prefix,
                           send_threads, post_log,
                           cached_webfingers,
                           person_cache, project_version,
                           signing_priv_key_pem,
                           onion_domain,
-                          i2p_domain,
+                          i2p_domain, yggdrasil_domain,
                           extra_headers,
                           sites_unavailable,
                           system_language,
