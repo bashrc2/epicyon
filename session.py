@@ -15,6 +15,8 @@ from socket import error as SocketError
 from http.client import HTTPConnection
 from flags import is_image_file
 from flags import url_permitted
+from utils import get_port_from_domain
+from utils import remove_domain_port
 from utils import text_in_file
 from utils import acct_dir
 from utils import binary_is_image
@@ -240,8 +242,8 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
         to_domain_full = to_domain_full.split('/')[0]
 
     if ':' in domain_full:
-        domain = domain_full.split(':')[0]
-        port = domain_full.split(':')[1]
+        domain = remove_domain_port(domain_full)
+        port = get_port_from_domain(domain_full)
     else:
         domain = domain_full
         if http_prefix == 'https':
@@ -250,8 +252,8 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
             port = 80
 
     if ':' in to_domain_full:
-        to_domain = to_domain_full.split(':')[0]
-        to_port = to_domain_full.split(':')[1]
+        to_domain = remove_domain_port(to_domain_full)
+        to_port = get_port_from_domain(to_domain_full)
     else:
         to_domain = to_domain_full
         if http_prefix == 'https':
