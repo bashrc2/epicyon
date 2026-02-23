@@ -266,6 +266,10 @@ if [ ! -d /var/www/${ONION_DOMAIN}/htdocs ]; then
     mkdir -p /var/www/${ONION_DOMAIN}/htdocs
 fi
 
+if [ ! -d /var/www/${ONION_DOMAIN}/htdocs ]; then
+	mkdir -p /var/www/${ONION_DOMAIN}/htdocs
+fi
+
 echo "Creating nginx virtual host for ${ONION_DOMAIN}"
 { echo 'server {';
   echo "    listen 127.0.0.1:${NGINX_PORT} default_server;";
