@@ -333,6 +333,8 @@ echo 'You can view it in your preferred browser by navigating to:'
 echo ''
 echo "http://[${YGGDRASIL_ADDRESS}]"
 echo ''
-echo 'Then register an account.'
+echo 'Then register an account. You may also want to add extra public peers'
+echo 'within /etc/yggdrasil/yggdrasil.conf'
+echo 'See https://publicpeers.neilalexander.dev'
 
 exit 0
