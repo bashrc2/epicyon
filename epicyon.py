@@ -75,6 +75,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import is_yggdrasil_url
 from utils import get_event_categories
 from utils import replace_strings
 from utils import set_accounts_data_dir
@@ -658,6 +659,9 @@ def _command_options() -> None:
     parser.add_argument("--i2p", type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Use i2p protocol only")
+    parser.add_argument("--yggdrasil", type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Use yggdrasil protocol only")
     parser.add_argument("--tor", type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Route via Tor")
@@ -937,7 +941,7 @@ def _command_options() -> None:
         sys.exit()
 
     http_prefix = 'https'
-    if argb.http or argb.i2p or argb.yggdrasil_domain:
+    if argb.http or argb.i2p or argb.yggdrasil:
         http_prefix = 'http'
     elif argb.ipfs:
         http_prefix = 'ipfs'
@@ -1035,7 +1039,7 @@ def _command_options() -> None:
             proxy_type = 'i2p'
             if domain.endswith('.i2p'):
                 argb.port = 80
-        elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+        elif argb.yggdrasil or is_yggdrasil_address(domain):
             proxy_type = 'yggdrasil'
             if is_yggdrasil_address(domain):
                 argb.port = 80
@@ -1084,7 +1088,7 @@ def _command_options() -> None:
             proxy_type = 'i2p'
             if domain.endswith('.i2p'):
                 argb.port = 80
-        elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+        elif argb.yggdrasil or is_yggdrasil_address(domain):
             proxy_type = 'yggdrasil'
             if is_yggdrasil_address(domain):
                 argb.port = 80
@@ -1124,7 +1128,7 @@ def _command_options() -> None:
             proxy_type = 'i2p'
             if domain.endswith('.i2p'):
                 argb.port = 80
-        elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+        elif argb.yggdrasil or is_yggdrasil_address(domain):
             proxy_type = 'yggdrasil'
             if is_yggdrasil_address(domain):
                 argb.port = 80
@@ -1188,7 +1192,7 @@ def _command_options() -> None:
             proxy_type = 'i2p'
             if domain.endswith('.i2p'):
                 argb.port = 80
-        elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+        elif argb.yggdrasil or is_yggdrasil_address(domain):
             proxy_type = 'yggdrasil'
             if is_yggdrasil_address(domain):
                 argb.port = 80
@@ -1244,7 +1248,7 @@ def _command_options() -> None:
             proxy_type = 'i2p'
             if domain.endswith('.i2p'):
                 argb.port = 80
-        elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+        elif argb.yggdrasil or is_yggdrasil_address(domain):
             proxy_type = 'i2p'
             if is_yggdrasil_address(domain):
                 argb.port = 80
@@ -1339,7 +1343,7 @@ def _command_options() -> None:
             proxy_type = 'tor'
         elif argb.i2p or domain.endswith('.i2p'):
             proxy_type = 'i2p'
-        elif argb.yggdrasil_domain or is_yggdrasil_address(domain):
+        elif argb.yggdrasil or is_yggdrasil_address(domain):
             proxy_type = 'yggdrasil'
         elif argb.gnunet:
             proxy_type = 'gnunet'
@@ -1398,6 +1402,9 @@ def _command_options() -> None:
             http_prefix = 'http'
         elif '.i2p' in argb.instance_software:
             proxy_type = 'i2p'
+            http_prefix = 'http'
+        elif is_yggdrasil_url(argb.instance_software):
+            proxy_type = 'yggdrasil'
             http_prefix = 'http'
         if '://' not in argb.instance_software:
             argb.instance_software = \
