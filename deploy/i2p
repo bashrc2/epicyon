@@ -343,8 +343,8 @@ if [ -f /usr/bin/pacman ]; then
     web_dir=/srv/http
 fi
 
-if [ ! -d /var/www/${I2P_DOMAIN}/htdocs ]; then
-	mkdir -p /var/www/${I2P_DOMAIN}/htdocs
+if [ ! -d "${web_dir}/${I2P_DOMAIN}/htdocs" ]; then
+	mkdir -p "${web_dir}/${I2P_DOMAIN}/htdocs"
 fi
 
 echo "Creating nginx virtual host for http://${I2P_DOMAIN}"
@@ -368,7 +368,7 @@ echo "Creating nginx virtual host for http://${I2P_DOMAIN}"
   echo '    index index.html;';
   echo '';
   echo '    location /newsmirror {';
-  echo "      root /var/www/${I2P_DOMAIN}/htdocs;";
+  echo "      root ${web_dir}/${I2P_DOMAIN}/htdocs;";
   echo '      try_files $uri =404;';
   echo '    }';
   echo '';

@@ -248,8 +248,8 @@ if [ -f /usr/bin/pacman ]; then
     web_dir=/srv/http
 fi
 
-if [ ! -d "/var/www/[${YGGDRASIL_ADDRESS}]/htdocs" ]; then
-	mkdir -p "/var/www/[${YGGDRASIL_ADDRESS}]/htdocs"
+if [ ! -d "${web_dir}/[${YGGDRASIL_ADDRESS}]/htdocs" ]; then
+	mkdir -p "${web_dir}/[${YGGDRASIL_ADDRESS}]/htdocs"
 fi
 
 echo "Creating nginx virtual host for http://[${YGGDRASIL_ADDRESS}]"
@@ -274,7 +274,7 @@ echo "Creating nginx virtual host for http://[${YGGDRASIL_ADDRESS}]"
   echo '    index index.html;';
   echo '';
   echo '    location /newsmirror {';
-  echo "      root /var/www/[${YGGDRASIL_ADDRESS}]/htdocs;";
+  echo "      root ${web_dir}/[${YGGDRASIL_ADDRESS}]/htdocs;";
   echo '      try_files $uri =404;';
   echo '    }';
   echo '';
