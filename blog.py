@@ -566,6 +566,7 @@ def _html_blog_remove_cw_button(blog_str: str, translate: {}) -> str:
     }
     blog_str = replace_strings(blog_str, replacements)
     blog_str = blog_str.replace(translate['SHOW MORE'], '')
+    blog_str = blog_str.replace(translate['Show Map'], '')
     return blog_str
 
 

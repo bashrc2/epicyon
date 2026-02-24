@@ -276,6 +276,7 @@ def open_content_warning(text: str, translate: {}) -> str:
     so that you can see what you are replying to
     """
     text = text.replace('<details>', '').replace('</details>', '')
+    text = text.replace(translate['Show Map'], '', 1)
     return text.replace(translate['SHOW MORE'], '', 1)
 
 
