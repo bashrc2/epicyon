@@ -3041,7 +3041,7 @@ def _command_options() -> None:
 
     if argb.migrations:
         cached_webfingers = {}
-        if argb.http or domain.endswith('.onion'):
+        if domain.endswith('.onion'):
             http_prefix = 'http'
             port = 80
             proxy_type = 'tor'
@@ -3172,7 +3172,7 @@ def _command_options() -> None:
             domain = argb.followers.split('@')[1]
             domain = remove_eol(domain)
         cached_webfingers = {}
-        if argb.http or domain.endswith('.onion'):
+        if domain.endswith('.onion'):
             http_prefix = 'http'
             port = 80
             proxy_type = 'tor'

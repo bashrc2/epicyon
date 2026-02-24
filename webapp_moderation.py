@@ -11,6 +11,7 @@ import os
 from flags import is_editor
 from flags import is_artist
 from flags import is_moderator
+from utils import is_yggdrasil_address
 from utils import get_person_icon
 from utils import data_dir
 from utils import remove_html
@@ -160,6 +161,8 @@ def html_account_info(translate: {},
     if not os.path.isfile('/usr/bin/tor'):
         proxy_type = None
     if domain.endswith('.i2p'):
+        proxy_type = None
+    elif is_yggdrasil_address(domain):
         proxy_type = None
 
     session = create_session(proxy_type)

@@ -22,6 +22,7 @@ from categories import set_hashtag_category
 from flags import is_suspended
 from flags import is_local_network_address
 from flags import is_public_post
+from utils import is_yggdrasil_address
 from utils import data_dir
 from utils import string_contains
 from utils import resembles_url
@@ -866,6 +867,8 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
             proxy_type = 'tor'
         elif domain.endswith('.i2p'):
             proxy_type = 'i2p'
+        elif is_yggdrasil_address(domain):
+            proxy_type = 'yggdrasil'
 
         link, link_mime_type = \
             get_link_from_rss_item(rss_item, preferred_podcast_formats,
@@ -985,6 +988,8 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
             proxy_type = 'tor'
         elif domain.endswith('.i2p'):
             proxy_type = 'i2p'
+        elif is_yggdrasil_address(domain):
+            proxy_type = 'yggdrasil'
 
         link, link_mime_type = \
             get_link_from_rss_item(rss_item, preferred_podcast_formats,
@@ -1143,6 +1148,8 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
             proxy_type = 'tor'
         elif domain.endswith('.i2p'):
             proxy_type = 'i2p'
+        elif is_yggdrasil_address(domain):
+            proxy_type = 'yggdrasil'
 
         link, link_mime_type = \
             get_link_from_rss_item(atom_item, preferred_podcast_formats,

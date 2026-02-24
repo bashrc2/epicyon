@@ -1943,7 +1943,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
 
     cached_webfingers = {}
     proxy_type = None
-    if http or domain.endswith('.onion'):
+    if domain.endswith('.onion'):
         http_prefix = 'http'
         proxy_type = 'tor'
     elif domain.endswith('.i2p'):

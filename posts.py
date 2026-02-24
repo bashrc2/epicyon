@@ -4170,6 +4170,8 @@ def send_to_followers(server, session, session_onion, session_i2p,
         curr_proxy_type = 'tor'
     elif domain.endswith('.i2p'):
         curr_proxy_type = 'i2p'
+    elif is_yggdrasil_address(domain):
+        curr_proxy_type = 'yggdrasil'
 
     sending_start_time = date_utcnow()
     print('Sending post to followers begins ' +

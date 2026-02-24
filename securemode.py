@@ -45,7 +45,6 @@ def secure_mode(curr_session, proxy_type: str,
             curr_session = server.session_i2p
             proxy_type = 'i2p'
     if server.yggdrasil_domain:
-        # TODO improve yggdrasil detection
         if is_yggdrasil_url(key_id):
             curr_session = server.session_yggdrasil
             proxy_type = 'yggdrasil'
