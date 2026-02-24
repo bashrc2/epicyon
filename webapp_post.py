@@ -3217,6 +3217,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         '<article><span itemprop="articleBody">' + \
         object_content + '</span></article>'
 
+    post_id = None
     if not post_is_sensitive:
         content_str = object_content + attachment_str
         content_str = add_embedded_elements(translate, content_str,
@@ -3438,6 +3439,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             reply_avatar_image_in_post + '      </div>\n'
 
         if map_str:
+            if not post_id:
+                post_id = 'post' + str(create_password(8))
             map_str = _get_show_map_button(post_id, translate, map_str)
 
         post_html += \
