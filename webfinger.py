@@ -28,6 +28,7 @@ from utils import get_group_paths
 from utils import local_actor_url
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
+from utils import is_yggdrasil_url
 
 
 def _parse_handle(handle: str) -> (str, str, bool):
@@ -35,7 +36,8 @@ def _parse_handle(handle: str) -> (str, str, bool):
     """
     group_account = False
     if '.' not in handle:
-        return None, None, False
+        if not is_yggdrasil_url(handle):
+            return None, None, False
     prefixes = get_protocol_prefixes()
     handle_str = handle
     for prefix in prefixes:
