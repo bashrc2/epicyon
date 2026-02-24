@@ -45,6 +45,7 @@ from utils import acct_dir
 from utils import get_currencies
 from utils import remove_html
 from utils import remove_eol
+from utils import is_yggdrasil_address
 from formats import get_image_extensions
 from petnames import get_pet_name
 from session import download_image
@@ -1078,7 +1079,9 @@ def _add_mention(base_dir: str, word_str: str, http_prefix: str,
                 possible_nickname + "</span></a></span>"
             return True
     # @nick@domain
-    if not (possible_domain == 'localhost' or '.' in possible_domain):
+    if not (possible_domain == 'localhost' or
+            '.' in possible_domain or
+            is_yggdrasil_address(possible_domain)):
         return False
     recipient_actor = \
         _mention_to_url(base_dir, http_prefix,

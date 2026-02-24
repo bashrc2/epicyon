@@ -11,6 +11,7 @@ import os
 from pprint import pprint
 from flags import has_group_type
 from utils import is_yggdrasil_address
+from utils import is_yggdrasil_url
 from utils import get_user_paths
 from utils import acct_handle_dir
 from utils import has_object_string_object
@@ -431,7 +432,7 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
             if '#' in line:
                 continue
             if '@' in line and \
-               '.' in line and \
+               ('.' in line or is_yggdrasil_url(line)) and \
                not line.startswith('http'):
                 ctr += 1
             elif ((line.startswith('http') or

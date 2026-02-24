@@ -23,6 +23,8 @@ from flags import is_premium_account
 from flags import is_moderator
 from timeFunctions import get_account_timezone
 from timeFunctions import set_account_timezone
+from utils import is_yggdrasil_url
+from utils import is_yggdrasil_address
 from utils import data_dir
 from utils import set_premium_account
 from utils import save_json
@@ -1687,10 +1689,12 @@ def _profile_post_alsoknownas(actor_json: {}, fields: {},
                 also_known_as_str += ', '
             also_known_as_str += alt_actor
             also_known_as_ctr += 1
-        if fields['alsoKnownAs'] != also_known_as_str and \
-           '://' in fields['alsoKnownAs'] and \
-           '@' not in fields['alsoKnownAs'] and \
-           '.' in fields['alsoKnownAs']:
+        if fields['alsoKnownAs'] != (
+                also_known_as_str and
+                '://' in fields['alsoKnownAs'] and
+                '@' not in fields['alsoKnownAs'] and
+                ('.' in fields['alsoKnownAs'] or
+                 is_yggdrasil_url(fields['alsoKnownAs']))):
             if ';' in fields['alsoKnownAs']:
                 fields['alsoKnownAs'] = \
                     fields['alsoKnownAs'].replace(';', ',')
@@ -2481,7 +2485,8 @@ def _profile_post_twitter_alt_domain(base_dir: str, fields: {},
                 new_twitter_domain = new_twitter_domain.split('://')[1]
             if '/' in new_twitter_domain:
                 new_twitter_domain = new_twitter_domain.split('/')[0]
-            if '.' in new_twitter_domain:
+            if '.' in new_twitter_domain or \
+               is_yggdrasil_address(new_twitter_domain):
                 set_config_param(base_dir, 'twitterdomain',
                                  new_twitter_domain)
                 self.server.twitter_replacement_domain = new_twitter_domain
@@ -2502,7 +2507,8 @@ def _profile_post_youtube_alt_domain(base_dir: str, fields: {},
                 new_yt_domain = new_yt_domain.split('://')[1]
             if '/' in new_yt_domain:
                 new_yt_domain = new_yt_domain.split('/')[0]
-            if '.' in new_yt_domain:
+            if '.' in new_yt_domain or \
+               is_yggdrasil_address(new_yt_domain):
                 set_config_param(base_dir, 'youtubedomain',
                                  new_yt_domain)
                 self.server.yt_replace_domain = new_yt_domain
@@ -2758,7 +2764,8 @@ def _profile_post_avatar_image_ext(profile_media_types_uploaded: {},
             actor_url = actor_url.replace(srch_str, rep_str)
             actor_json['icon']['url'] = actor_url
             print('actor_url: ' + actor_url)
-            if '.' in actor_url:
+            if '.' in actor_url or \
+               is_yggdrasil_url(actor_url):
                 img_ext = actor_url.split('.')[-1]
                 if img_ext == 'jpg':
                     img_ext = 'jpeg'
@@ -2769,7 +2776,8 @@ def _profile_post_avatar_image_ext(profile_media_types_uploaded: {},
             last_part_of_url = im_url.split('/')[-1]
             srch_str = '/' + last_part_of_url
             actor_json['image']['url'] = im_url.replace(srch_str, rep_str)
-            if '.' in im_url:
+            if '.' in im_url or \
+               is_yggdrasil_url(im_url):
                 img_ext = im_url.split('.')[-1]
                 if img_ext == 'jpg':
                     img_ext = 'jpeg'

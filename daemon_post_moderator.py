@@ -18,6 +18,7 @@ from utils import get_full_domain
 from utils import get_domain_from_actor
 from utils import get_nickname_from_actor
 from utils import get_instance_url
+from utils import is_yggdrasil_address
 from flags import is_moderator
 from httpcodes import write2
 from httpheaders import redirect_headers
@@ -249,7 +250,9 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                         moderation_domain.split('@')[1]
                 else:
                     # assume the text is a domain name
-                    if not full_block_domain and '.' in moderation_domain:
+                    if (not full_block_domain and
+                        ('.' in moderation_domain or
+                         is_yggdrasil_address(moderation_domain))):
                         nickname = '*'
                         full_block_domain = \
                             moderation_domain.strip()
@@ -284,7 +287,9 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     full_block_domain = moderation_domain.split('@')[1]
                 else:
                     # assume the text is a domain name
-                    if not full_block_domain and '.' in moderation_domain:
+                    if (not full_block_domain and
+                        ('.' in moderation_domain or
+                         is_yggdrasil_address(moderation_domain))):
                         nickname = '*'
                         full_block_domain = moderation_domain.strip()
                 if full_block_domain or nickname.startswith('#'):

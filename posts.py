@@ -2769,7 +2769,8 @@ def get_mentioned_people(base_dir: str, http_prefix: str,
                 continue
         else:
             external_domain = handle.split('@')[1]
-            if not ('.' in external_domain or
+            if not (('.' in external_domain or
+                     is_yggdrasil_address(external_domain)) or
                     external_domain == 'localhost'):
                 continue
         mentioned_nickname = handle.split('@')[0]

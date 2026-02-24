@@ -29,6 +29,7 @@ from posts import add_to_field
 from status import actor_status_expired
 from status import get_actor_status
 from mitm import detect_mitm
+from utils import is_yggdrasil_url
 from utils import data_dir
 from utils import load_json
 from utils import save_json
@@ -633,7 +634,8 @@ def show_person_options(self, calling_domain: str, path: str,
         options_profile_url = ''
         if len(options_list) > 2:
             options_profile_url = options_list[2]
-        if '.' in options_profile_url and \
+        if ('.' in options_profile_url or
+            is_yggdrasil_url(options_profile_url)) and \
            options_profile_url.startswith('/members/'):
             ext = options_profile_url.split('.')[-1]
             options_profile_url = options_profile_url.split('/members/')[1]

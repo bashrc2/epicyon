@@ -11,6 +11,7 @@ import os
 from utils import load_json
 from utils import get_content_from_post
 from utils import content_is_single_url
+from utils import is_yggdrasil_address
 
 
 def load_cw_lists(base_dir: str, verbose: bool) -> {}:
@@ -83,7 +84,7 @@ def _add_cw_match_domains(item: {}, content: str, cw_text: str,
     matched = False
 
     for domain in item['domains']:
-        if '.' in domain:
+        if '.' in domain or is_yggdrasil_address(domain):
             first_section = domain.split('.')[0]
             len_first_section = len(first_section)
             if len_first_section in range(1, 4):
