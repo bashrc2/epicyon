@@ -764,5 +764,6 @@
     "Status": "Status",
     "Warning: Possible dangerous link": "Varoitus: Mahdollisesti vaarallinen linkki",
     "Mutual": "Keskinäinen",
-	"Bot": "Robotti"
+	"Bot": "Robotti",
+	"Show Map": "Näytä kartta"
 }
