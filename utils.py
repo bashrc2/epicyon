@@ -3374,8 +3374,12 @@ def is_yggdrasil_address(domain: str) -> bool:
             domain = domain.split(']:')[0] + ']'
         else:
             return False
-    if domain.count(':') != 7:
-        return False
+    if domain.startswith('[2'):
+        if domain.count(':') != 7:
+            return False
+    else:
+        if domain.count(':') != 5:
+            return False
     return True
 
 

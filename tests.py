@@ -9661,6 +9661,10 @@ def _test_yggdrasil_addresses() -> None:
     text = 'http://[203:abcd:abcd:abcd:abcd:abcd:abcd]/something'
     assert not is_yggdrasil_url(text)
     assert get_port_from_domain(text) is None
+    text = 'http://[302:abcd:abcd:abcd::abc]'
+    assert is_yggdrasil_url(text)
+    text = 'http://[302:abcd:abcd:abcd:abc]'
+    assert not is_yggdrasil_url(text)
 
 
 def run_all_tests():
