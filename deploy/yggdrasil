@@ -89,11 +89,7 @@ fi
 
 echo 'Creating a command script to obtain yggdrasil address'
 { echo '#!/bin/bash';
-  echo "address=\$(sudo yggdrasilctl getself | grep \"IPv6 address\" | awk -F ' ' '{print \$3}')";
-  echo "if [[ "\${address}" == *':' ]]; then";
-  echo "  address=2\$(sudo yggdrasilctl getself | grep \"IPv6 address\" | awk -F ' 2' '{print \$2}' | awk -F ' ' '{print \$1}')";
-  echo 'fi';
-  echo "echo \${address}"; } > /usr/bin/yggdrasil-address
+  echo "ip a | grep \"inet6 2\" | awk -F ' ' '{print \$2}' | awk -F '/' '{print \$1}'"; } > /usr/bin/yggdrasil-address
 chmod +x /usr/bin/yggdrasil-address
 
 echo 'Creating yggdrasil configuration'
