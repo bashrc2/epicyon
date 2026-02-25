@@ -58,7 +58,7 @@ if [ -f /usr/bin/pacman ]; then
            imagemagick python-pillow python-requests \
            perl-image-exiftool python-numpy python-dateutil \
            certbot flake8 git i2pd wget qrencode \
-           proxychains dillo bandit
+           proxychains firefox-esr bandit
     pip3 install pyqrcode pypng
 else
     apt-get update
@@ -69,7 +69,7 @@ else
             libimage-exiftool-perl python3-flake8 \
             python3-django-timezone-field nginx git i2pd wget \
             python3-pyqrcode qrencode python3-png \
-            proxychains dillo python3-bandit
+            proxychains firefox-esr python3-bandit
 fi
 
 if [ ! -d /etc/i2pd ]; then
@@ -418,12 +418,13 @@ for d in /home/*/ ; do
           echo 'Name=Epicyon I2P';
           echo 'GenericName=P2P Social Network';
           echo 'Comment=P2P Social Network';
-          echo "Exec=proxychains dillo http://${I2P_DOMAIN}";
-          echo 'Icon=org.dillo_browser.Dillo';
+          echo "Exec=proxychains /usr/lib/firefox-esr/firefox-esr http://${I2P_DOMAIN}";
+          echo 'Icon=firefox-esr';
           echo 'Type=Application';
           echo 'Terminal=false';
-          echo 'Categories=Internet;SocialNetwork;';
-          echo 'StartupWMClass=Epicyon';
+          echo 'Categories=Internet;WebBrowser;SocialNetwork;';
+		  echo 'MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/vnd.mozilla.xul+xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;';
+          echo 'StartupWMClass=firefox-esr';
           echo 'Keywords=Epicyon;P2P;I2P;'; } > "/home/${CURRUSER}/Desktop/${username}.desktop"
         chown "$CURRUSER":"$CURRUSER" "/home/${CURRUSER}/Desktop/${username}.desktop"
     fi
@@ -435,7 +436,7 @@ echo 'Your Epicyon i2p instance is now installed.'
 echo ''
 echo 'You can view it from the terminal with the command:'
 echo ''
-echo '    proxychains dillo'
+echo '    proxychains firefox-esr'
 echo ''
 echo 'If you prefer Firefox then see preferences/network settings, '
 echo 'manual proxy and uncheck DNS over HTTPS. In about:config and '
