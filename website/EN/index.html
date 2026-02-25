@@ -1211,6 +1211,7 @@
           <li>No fashionable web frameworks. <i>"Boring by design"</i>.</li>
           <li>No blockchain or AI garbage.</li>
           <li>Written in Python, with few dependencies.</li>
+		  <li>Can also federate on Tor, i2p, and yggdrasil.</li>
           <li>AGPL license, which big tech hates.</li>
       </ul>
       </div>
@@ -1335,7 +1336,8 @@ Ever feel like corporate social media is deliberately pressing your buttons or g
       </p>
 
       <p id="install" class="siteheader">Install</p>
-    </center>
+      </center>
+	  <p class="intro"><i>This describes how to install on the clearnet. For other networks see the section below.</i></p>
     <p class="intro">You will need python version 3.7 or later.</p>
     <p class="intro">On a Debian based system:</p>
     <div class="shell">
@@ -1567,6 +1569,33 @@ Ever feel like corporate social media is deliberately pressing your buttons or g
       <p class="intro">
 Please be aware that such installations will not federate with ordinary fediverse instances on the clearnet, unless those instances have been specially modified to do so. But onion instances will federate with other onion instances, i2p instances with other i2p instances, etc.
       </p>
+
+      <p class="intro">
+		To install a Tor instance onto a Debian based system:
+	  </p>
+
+    <div class="shell">
+	  cd deploy
+	  sudo ./tor
+	</div>
+
+      <p class="intro">
+		To install an i2p instance onto a Debian based system:
+	  </p>
+
+    <div class="shell">
+	  cd deploy
+	  sudo ./i2p
+	</div>
+
+      <p class="intro">
+		To install a yggdrasil instance onto a Debian based system:
+	  </p>
+
+    <div class="shell">
+	  cd deploy
+	  sudo ./yggdrasil
+	</div>
 
       <p id="upgrade" class="siteheader">Upgrade</p>
     </center>

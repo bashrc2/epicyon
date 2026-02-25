@@ -20,6 +20,7 @@ Key features:
  * No fashionable web frameworks. *"Boring by design"*.
  * No blockchain or AI garbage.
  * Written in Python, with few dependencies.
+ * Can also federate on Tor, i2p, and yggdrasil.
  * AGPL license, which big tech hates.
 
 Epicyon is for people who are tired of *enshittified Big Tech garbage* and just want to DIY their online social experience without much fuss or expense. Think *water cooler discussions* rather than *doomscrolling* and *shouting into the void*, in which you're mainly just reading and responding to the posts of people that you're following.
@@ -77,6 +78,8 @@ sudo apt install -y \
 ```
 
 ## Installation
+
+*This describes how to install on the clearnet. For other networks see the section below.*
 
 In the most common case you'll be using systemd to set up a daemon to run the server.
 
@@ -307,6 +310,26 @@ If you don't have access to the clearnet, or prefer not to use it, then it's pos
 
 Please be aware that such installations will not federate with ordinary fediverse instances on the clearnet, unless those instances have been specially modified to do so. But onion instances will federate with other onion instances, i2p instances with other i2p instances, etc.
 
+To install a Tor instance onto a Debian based system:
+
+``` bash
+cd deploy
+sudo ./tor
+```
+
+To install an i2p instance onto a Debian based system:
+
+``` bash
+cd deploy
+sudo ./i2p
+```
+
+To install a yggdrasil instance onto a Debian based system:
+
+``` bash
+cd deploy
+sudo ./yggdrasil
+```
 
 ## Custom Fonts
 

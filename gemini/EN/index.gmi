@@ -29,6 +29,7 @@ Key features:
  * No fashionable web frameworks. "Boring by design".
  * No blockchain or AI garbage.
  * Written in Python, with few dependencies.
+ * Can also federate on Tor, i2p, and yggdrasil.
  * AGPL license, which big tech hates.
 
 Epicyon is for people who are tired of enshittified Big Tech garbage and just want to DIY their online social experience without much fuss or expense. Think "water cooler discussions" rather than "doomscrolling" and "shouting into the void", in which you're mainly just reading and responding to the posts of people that you're following.
