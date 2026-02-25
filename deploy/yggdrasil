@@ -89,7 +89,7 @@ fi
 
 echo 'Creating a command script to obtain yggdrasil address'
 { echo '#!/bin/bash';
-  echo -n '2'
+  echo "echo -n '2'";
   echo "sudo yggdrasilctl getself | grep \"IPv6 address\" | awk -F ' 2' '{print \$2}'"; } > /usr/bin/yggdrasil-address
 chmod +x /usr/bin/yggdrasil-address
 
