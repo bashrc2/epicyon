@@ -186,7 +186,7 @@ Please be aware that such installations will not federate with ordinary fedivers
 To install a Tor instance onto a Debian based system:
 
     cd deploy
-    sudo ./tor
+    sudo ./onion
 
 To install an i2p instance onto a Debian based system:
 

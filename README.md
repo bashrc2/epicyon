@@ -314,7 +314,7 @@ To install a Tor instance onto a Debian based system:
 
 ``` bash
 cd deploy
-sudo ./tor
+sudo ./onion
 ```
 
 To install an i2p instance onto a Debian based system:
