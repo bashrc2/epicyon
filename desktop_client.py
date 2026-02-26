@@ -17,6 +17,7 @@ import urllib.parse
 from pathlib import Path
 from random import randint
 from flags import is_pgp_encrypted
+from utils import string_starts_with
 from utils import replace_strings
 from utils import get_post_attachments
 from utils import get_url_from_post
@@ -1855,8 +1856,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       translate,
                                       screenreader, system_language, espeak,
                                       page_number)
-            elif (command_str.startswith('show sen') or
-                  command_str.startswith('show out')):
+            elif string_starts_with(command_str,
+                                    ('show sen', 'show out')):
                 page_number = 1
                 prev_timeline_first_id = ''
                 curr_timeline = 'outbox'
@@ -1896,8 +1897,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       translate,
                                       screenreader, system_language, espeak,
                                       page_number)
-            elif (command_str.startswith('read ') or
-                  command_str.startswith('show ') or
+            elif (string_starts_with(command_str,
+                                     ('read ', 'show ')) or
                   command_str == 'read' or
                   command_str == 'show'):
                 if command_str in ('read', 'show'):
@@ -2051,17 +2052,14 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                    mitm_servers)
                 refresh_timeline = True
                 print('')
-            elif (command_str == 'post' or command_str == 'p' or
-                  command_str == 'send' or
-                  command_str.startswith('dm ') or
-                  command_str.startswith('direct message ') or
-                  command_str.startswith('post ') or
-                  command_str.startswith('send ')):
+            elif (command_str in ('post', 'p', 'send') or
+                  string_starts_with(command_str,
+                                     ('dm ', 'direct message ',
+                                      'post ', 'send '))):
                 session_post = create_session(proxy_type)
-                if command_str.startswith('dm ') or \
-                   command_str.startswith('direct message ') or \
-                   command_str.startswith('post ') or \
-                   command_str.startswith('send '):
+                if string_starts_with(command_str,
+                                      ('dm ', 'direct message ',
+                                       'post ', 'send ')):
                     replacements = {
                         ' to ': ' ',
                         ' dm ': ' ',
@@ -2143,19 +2141,20 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                  mitm_servers)
                             refresh_timeline = True
                 print('')
-            elif (command_str == 'undo mute' or
-                  command_str == 'undo ignore' or
-                  command_str == 'remove mute' or
-                  command_str == 'rm mute' or
-                  command_str == 'unmute' or
-                  command_str == 'unignore' or
-                  command_str == 'mute undo' or
-                  command_str.startswith('undo mute ') or
-                  command_str.startswith('undo ignore ') or
-                  command_str.startswith('remove mute ') or
-                  command_str.startswith('remove ignore ') or
-                  command_str.startswith('unignore ') or
-                  command_str.startswith('unmute ')):
+            elif (command_str in ('undo mute',
+                                  'undo ignore',
+                                  'remove mute',
+                                  'rm mute',
+                                  'unmute',
+                                  'unignore',
+                                  'mute undo') or
+                  string_starts_with(command_str,
+                                     ('undo mute ',
+                                      'undo ignore ',
+                                      'remove mute ',
+                                      'remove ignore ',
+                                      'unignore ',
+                                      'unmute '))):
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
@@ -2191,10 +2190,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                       mitm_servers)
                             refresh_timeline = True
                 print('')
-            elif (command_str == 'mute' or
-                  command_str == 'ignore' or
-                  command_str.startswith('mute ') or
-                  command_str.startswith('ignore ')):
+            elif (command_str in ('mute', 'ignore') or
+                  string_starts_with(command_str,
+                                     ('mute ', 'ignore '))):
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
@@ -2230,21 +2228,22 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                  mitm_servers)
                             refresh_timeline = True
                 print('')
-            elif (command_str == 'undo bookmark' or
-                  command_str == 'remove bookmark' or
-                  command_str == 'rm bookmark' or
-                  command_str == 'undo bm' or
-                  command_str == 'rm bm' or
-                  command_str == 'remove bm' or
-                  command_str == 'unbookmark' or
-                  command_str == 'bookmark undo' or
-                  command_str == 'bm undo ' or
-                  command_str.startswith('undo bm ') or
-                  command_str.startswith('remove bm ') or
-                  command_str.startswith('undo bookmark ') or
-                  command_str.startswith('remove bookmark ') or
-                  command_str.startswith('unbookmark ') or
-                  command_str.startswith('unbm ')):
+            elif (command_str in ('undo bookmark',
+                                  'remove bookmark',
+                                  'rm bookmark',
+                                  'undo bm',
+                                  'rm bm',
+                                  'remove bm',
+                                  'unbookmark',
+                                  'bookmark undo',
+                                  'bm undo ') or
+                  string_starts_with(command_str,
+                                     ('undo bm ',
+                                      'remove bm ',
+                                      'undo bookmark ',
+                                      'remove bookmark ',
+                                      'unbookmark ',
+                                      'unbm '))):
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
@@ -2281,10 +2280,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                           mitm_servers)
                             refresh_timeline = True
                 print('')
-            elif (command_str == 'bookmark' or
-                  command_str == 'bm' or
-                  command_str.startswith('bookmark ') or
-                  command_str.startswith('bm ')):
+            elif (command_str in ('bookmark', 'bm') or
+                  string_starts_with(command_str,
+                                     ('bookmark ', 'bm '))):
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
@@ -2319,10 +2317,11 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                      mitm_servers)
                             refresh_timeline = True
                 print('')
-            elif (command_str.startswith('undo block ') or
-                  command_str.startswith('remove block ') or
-                  command_str.startswith('rm block ') or
-                  command_str.startswith('unblock ')):
+            elif string_starts_with(command_str,
+                                    ('undo block ',
+                                     'remove block ',
+                                     'rm block ',
+                                     'unblock ')):
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
@@ -2457,9 +2456,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                       mitm_servers)
                             refresh_timeline = True
                 print('')
-            elif (command_str.startswith('announce') or
-                  command_str.startswith('boost') or
-                  command_str.startswith('retweet')):
+            elif string_starts_with(command_str,
+                                    ('announce', 'boost', 'retweet')):
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
@@ -2510,11 +2508,12 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                                          mitm_servers)
                     refresh_timeline = True
                 print('')
-            elif (command_str.startswith('unannounce') or
-                  command_str.startswith('undo announce') or
-                  command_str.startswith('unboost') or
-                  command_str.startswith('undo boost') or
-                  command_str.startswith('undo retweet')):
+            elif string_starts_with(command_str,
+                                    ('unannounce',
+                                     'undo announce',
+                                     'unboost',
+                                     'undo boost',
+                                     'undo retweet')):
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
@@ -2664,8 +2663,9 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _say_command(say_str,
                                      screenreader, system_language, espeak)
                     print('')
-            elif (command_str.startswith('unfollow ') or
-                  command_str.startswith('stop following ')):
+            elif string_starts_with(command_str,
+                                    ('unfollow ',
+                                     'stop following ')):
                 follow_handle = command_str.replace('unfollow ', '').strip()
                 follow_handle = follow_handle.replace('stop following ', '')
                 if follow_handle.startswith('@'):
@@ -2885,8 +2885,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         _say_command(say_str, say_str, original_screen_reader,
                                      system_language, espeak)
                 print('')
-            elif (command_str.startswith('pgp') or
-                  command_str.startswith('gpg')):
+            elif string_starts_with(command_str, ('pgp', 'gpg')):
                 if not has_local_pg_pkey():
                     print('No PGP public key was found')
                 else:
@@ -2901,10 +2900,8 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 input()
                 prev_timeline_first_id = ''
                 refresh_timeline = True
-            elif (command_str == 'delete' or
-                  command_str == 'rm' or
-                  command_str.startswith('delete ') or
-                  command_str.startswith('rm ')):
+            elif (command_str in ('delete', 'rm') or
+                  string_starts_with(command_str, ('delete ', 'rm '))):
                 curr_index = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()

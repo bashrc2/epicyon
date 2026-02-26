@@ -276,8 +276,11 @@ def get_show_map_button(post_id: str, translate: {},
                         map_content: str) -> str:
     """Returns the markup for a "show map" button
     """
+    show_map_str = 'Show Map'
+    if translate.get('Show Map'):
+        show_map_str = translate['Show Map']
     return '       <details><summary class="cw" tabindex="10">' + \
-        translate['Show Map'] + '</summary>' + \
+        show_map_str + '</summary>' + \
         '<div id="' + post_id + '">' + map_content + \
         '</div></details>\n'
 

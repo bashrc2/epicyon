@@ -12,6 +12,7 @@ import errno
 import json
 from socket import error as SocketError
 from flags import is_corporate
+from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import replace_strings
 from utils import string_ends_with
@@ -205,8 +206,9 @@ def daemon_http_post(self) -> None:
 
     # accounts directory should not be accessible
     if self.path.startswith('/accounts/'):
-        if not self.path.startswith('/accounts/avatars') and \
-           not self.path.startswith('/accounts/headers'):
+        if not string_starts_with(self.path,
+                                  ('/accounts/avatars',
+                                   '/accounts/headers')):
             print('POST HTTP Attempt to post accounts file ' + self.path)
             http_404(self, 146)
             return
@@ -1134,9 +1136,8 @@ def daemon_http_post(self) -> None:
         return
 
     is_media_content = False
-    if self.headers['Content-type'].startswith('image/') or \
-       self.headers['Content-type'].startswith('video/') or \
-       self.headers['Content-type'].startswith('audio/'):
+    if string_starts_with(self.headers['Content-type'],
+                          ('image/', 'video/', 'audio/')):
         is_media_content = True
 
     # check that the content length string is not too long
@@ -1180,9 +1181,10 @@ def daemon_http_post(self) -> None:
 
     # refuse to receive non-json content
     content_type_str = self.headers['Content-type']
-    if not content_type_str.startswith('application/json') and \
-       not content_type_str.startswith('application/activity+json') and \
-       not content_type_str.startswith('application/ld+json'):
+    if not string_starts_with(content_type_str,
+                              ('application/json',
+                               'application/activity+json',
+                               'application/ld+json')):
         print("POST is not json: " + self.headers['Content-type'])
         if self.server.debug:
             print(str(self.headers).replace('\n', ' '))

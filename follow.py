@@ -10,6 +10,7 @@ __module_group__ = "ActivityPub"
 import os
 from pprint import pprint
 from flags import has_group_type
+from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import is_yggdrasil_url
 from utils import get_user_paths
@@ -435,10 +436,8 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
                ('.' in line or is_yggdrasil_url(line)) and \
                not line.startswith('http'):
                 ctr += 1
-            elif ((line.startswith('http') or
-                   line.startswith('ipfs') or
-                   line.startswith('ipns') or
-                   line.startswith('hyper')) and
+            elif (string_starts_with(line,
+                                     ('http', 'ipfs', 'ipns', 'hyper')) and
                   has_users_path(line)):
                 ctr += 1
     return ctr
@@ -569,10 +568,8 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
                         # group actor
                         url = http_prefix + '://' + dom + '/c/' + nick
                     following['orderedItems'].append(url)
-            elif ((line.startswith('http') or
-                   line.startswith('ipfs') or
-                   line.startswith('ipns') or
-                   line.startswith('hyper')) and
+            elif (string_starts_with(line,
+                                     ('http', 'ipfs', 'ipns', 'hyper')) and
                   has_users_path(line)):
                 # https://domain/users/nickname
                 page_ctr += 1

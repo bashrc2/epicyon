@@ -563,10 +563,7 @@ def get_sha_512(msg: str):
 def local_network_host(host: str) -> bool:
     """Returns true if the given host is on the local network
     """
-    if host.startswith('localhost') or \
-       host.startswith('192.') or \
-       host.startswith('127.') or \
-       host.startswith('10.'):
+    if string_starts_with(host, ('localhost', '192.', '127.', '10.')):
         return True
     return False
 
@@ -847,9 +844,7 @@ def get_followers_of_person(base_dir: str,
         for account in dirs:
             filename = os.path.join(subdir, account) + '/' + follow_file
             if account == handle or \
-               account.startswith('inbox@') or \
-               account.startswith('Actor@') or \
-               account.startswith('news@'):
+               string_starts_with(account, ('inbox@', 'Actor@', 'news@')):
                 continue
             if not os.path.isfile(filename):
                 continue
@@ -2858,9 +2853,8 @@ def permitted_dir(path: str) -> bool:
     """These are special paths which should not be accessible
        directly via GET or POST
     """
-    if path.startswith('/wfendpoints') or \
-       path.startswith('/keys') or \
-       path.startswith('/accounts'):
+    if string_starts_with(path,
+                          ('/wfendpoints', '/keys', '/accounts')):
         return False
     return True
 
@@ -3911,8 +3905,8 @@ def get_media_url_from_torrent(post_json_object: {}) -> (str, str, str,
                     if not tag_link.get('href'):
                         continue
                     if tag_link['mediaType'] == 'application/x-bittorrent' or \
-                       tag_link['mediaType'].startswith('magnet:') or \
-                       tag_link['mediaType'].startswith('bencoded:'):
+                       string_starts_with(tag_link['mediaType'],
+                                          ('magnet:', 'bencoded:')):
                         if tag_link['mediaType'].startswith('magnet:'):
                             media_magnet = remove_html(media_link['href'])
                         elif tag_link['mediaType'].startswith('bencoded:'):
@@ -4078,7 +4072,7 @@ def check_bad_path(path: str):
     # allow /.well-known/...
     if '/.' in path_lower:
         good_starts = ('/.well-known/', '/users/.well-known/')
-        if _string_starts_with(path_lower, good_starts):
+        if string_starts_with(path_lower, good_starts):
             bad_strings = ('..', '%2e%2e', '%252e%252e')
 
     if path_lower.startswith('/wp-'):
@@ -4128,7 +4122,7 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def _string_starts_with(text: str, possible_begin: []) -> bool:
+def string_starts_with(text: str, possible_begin: []) -> bool:
     """ Does the given text start with at least one of the beginnings
     """
     for start_str in possible_begin:

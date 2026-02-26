@@ -13,6 +13,7 @@ from httpcodes import http_404
 from httpcodes import http_503
 from httpcodes import write2
 from httpheaders import set_headers
+from utils import string_starts_with
 from utils import convert_domains
 from utils import get_instance_url
 from utils import local_network_host
@@ -46,10 +47,11 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
     if path.startswith('/nodeinfo/1.0'):
         http_400(self)
         return True
-    if not path.startswith('/nodeinfo/2.') and \
-       not path.startswith('/.well-known/host-meta') and \
-       not path.startswith('/.well-known/nodeinfo') and \
-       not path.startswith('/.well-known/x-nodeinfo'):
+    if not string_starts_with(path,
+                              ('/nodeinfo/2.',
+                               '/.well-known/host-meta',
+                               '/.well-known/nodeinfo',
+                               '/.well-known/x-nodeinfo')):
         return False
     if not referer_domain:
         if not debug and not unit_test:

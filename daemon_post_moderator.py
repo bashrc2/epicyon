@@ -11,6 +11,7 @@ import os
 import errno
 import urllib.parse
 from socket import error as SocketError
+from utils import string_starts_with
 from utils import data_dir
 from utils import delete_post
 from utils import locate_post
@@ -131,9 +132,8 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                             search_handle = ''
                     if '@' not in search_handle or \
                        '/@/' in search_handle:
-                        if search_handle.startswith('http') or \
-                           search_handle.startswith('ipfs') or \
-                           search_handle.startswith('ipns'):
+                        if string_starts_with(search_handle,
+                                              ('http', 'ipfs', 'ipns')):
                             search_nickname = \
                                 get_nickname_from_actor(search_handle)
                             if search_nickname:
@@ -207,10 +207,8 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                 print('moderation_button: ' + moderation_button)
                 print('moderation_text: ' + moderation_text)
             nickname = moderation_text
-            if nickname.startswith('http') or \
-               nickname.startswith('ipfs') or \
-               nickname.startswith('ipns') or \
-               nickname.startswith('hyper'):
+            if string_starts_with(nickname,
+                                  ('http', 'ipfs', 'ipns', 'hyper')):
                 nickname = get_nickname_from_actor(nickname)
             if '@' in nickname:
                 nickname = nickname.split('@')[0]
@@ -234,10 +232,8 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     moderation_reason = moderation_text.split(' ', 1)[1]
                 else:
                     moderation_domain = moderation_text
-                if moderation_domain.startswith('http') or \
-                   moderation_domain.startswith('ipfs') or \
-                   moderation_domain.startswith('ipns') or \
-                   moderation_domain.startswith('hyper'):
+                if string_starts_with(moderation_domain,
+                                      ('http', 'ipfs', 'ipns', 'hyper')):
                     # https://domain
                     block_domain, block_port = \
                         get_domain_from_actor(moderation_domain)
@@ -272,10 +268,8 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                     moderation_domain = moderation_text.split(' ', 1)[0]
                 else:
                     moderation_domain = moderation_text
-                if moderation_domain.startswith('http') or \
-                   moderation_domain.startswith('ipfs') or \
-                   moderation_domain.startswith('ipns') or \
-                   moderation_domain.startswith('hyper'):
+                if string_starts_with(moderation_domain,
+                                      ('http', 'ipfs', 'ipns', 'hyper')):
                     # https://domain
                     block_domain, block_port = \
                         get_domain_from_actor(moderation_domain)

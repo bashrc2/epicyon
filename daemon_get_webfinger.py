@@ -16,6 +16,7 @@ from webfinger import webfinger_lookup
 from webfinger import webfinger_node_info
 from webfinger import webfinger_meta
 from webfinger import wellknown_protocol_handler
+from utils import string_starts_with
 from utils import get_json_content_from_accept
 from utils import convert_domains
 from utils import is_yggdrasil_address
@@ -60,11 +61,10 @@ def get_webfinger(self, calling_domain: str, referer_domain: str,
             return True
         http_404(self, 6)
         return True
-    if path.startswith('/api/statusnet') or \
-       path.startswith('/api/gnusocial') or \
-       path.startswith('/siteinfo') or \
-       path.startswith('/poco') or \
-       path.startswith('/friendi'):
+    if string_starts_with(path, ('/api/statusnet',
+                                 '/api/gnusocial',
+                                 '/siteinfo',
+                                 '/poco', '/friendi')):
         http_404(self, 7)
         return True
     # protocol handler. See https://fedi-to.github.io/protocol-handler.html
@@ -88,8 +88,8 @@ def get_webfinger(self, calling_domain: str, referer_domain: str,
             http_404(self, 8)
         return True
     # nodeinfo
-    if path.startswith('/.well-known/nodeinfo') or \
-       path.startswith('/.well-known/x-nodeinfo'):
+    if string_starts_with(path, ('/.well-known/nodeinfo',
+                                 '/.well-known/x-nodeinfo')):
         if calling_domain.endswith('.onion') and onion_domain:
             wf_result = \
                 webfinger_node_info('http', onion_domain)

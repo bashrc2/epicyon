@@ -75,6 +75,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import string_starts_with
 from utils import is_yggdrasil_url
 from utils import is_yggdrasil_address
 from utils import get_event_categories
@@ -3110,10 +3111,8 @@ def _command_options() -> None:
         original_actor = argb.followers
         if '/@' in argb.followers or \
            '/users/' in argb.followers or \
-           argb.followers.startswith('http') or \
-           argb.followers.startswith('ipfs') or \
-           argb.followers.startswith('ipns') or \
-           argb.followers.startswith('hyper'):
+           string_starts_with(argb.followers,
+                              ('http', 'ipfs', 'ipns', 'hyper')):
             # format: https://domain/@nick
             prefixes = get_protocol_prefixes()
             for prefix in prefixes:

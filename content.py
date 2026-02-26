@@ -20,6 +20,7 @@ from flags import is_pgp_encrypted
 from flags import contains_pgp_public_key
 from flags import is_float
 from flags import is_right_to_left_text
+from utils import string_starts_with
 from utils import replace_strings
 from utils import data_dir
 from utils import remove_link_tracking
@@ -638,8 +639,7 @@ def _shorten_linked_urls(content: str) -> str:
 def _contains_doi_reference(wrd: str, replace_dict: {}) -> bool:
     """Handle DOI scientific references
     """
-    if not wrd.startswith('doi:') and \
-       not wrd.startswith('DOI:'):
+    if not string_starts_with(wrd, ('doi:', 'DOI:')):
         return False
 
     doi_ref_str = wrd.split(':', 1)[1]
@@ -657,9 +657,7 @@ def _contains_doi_reference(wrd: str, replace_dict: {}) -> bool:
 def _contains_arxiv_reference(wrd: str, replace_dict: {}) -> bool:
     """Handle arxiv scientific references
     """
-    if not wrd.startswith('arXiv:') and \
-       not wrd.startswith('arx:') and \
-       not wrd.startswith('arxiv:'):
+    if not string_starts_with(wrd, ('arXiv:', 'arx:', 'arxiv:')):
         return False
 
     arxiv_ref_str = wrd.split(':', 1)[1].lower()

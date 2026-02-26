@@ -13,6 +13,7 @@ import ssl
 import socket
 from urllib.parse import urlparse
 from utils import data_dir
+from utils import string_starts_with
 
 
 class Result:
@@ -105,9 +106,7 @@ def site_is_active(url: str, timeout: int,
         url = url.replace('<>', '')
     if '<' in url:
         url = url.split('<')[0]
-    if not url.startswith('http') and \
-       not url.startswith('ipfs') and \
-       not url.startswith('ipns'):
+    if not string_starts_with(url, ('http', 'ipfs', 'ipns')):
         return False
     if '.onion/' in url or '.i2p/' in url or \
        url.endswith('.onion') or \

@@ -96,6 +96,7 @@ from flags import is_artist
 from flags import is_blog_post
 from timeFunctions import date_utcnow
 from timeFunctions import get_current_time_int
+from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import replace_strings
 from utils import contains_invalid_chars
@@ -318,8 +319,9 @@ def daemon_http_get(self) -> None:
 
     # accounts directory should not be accessible
     if self.path.startswith('/accounts/'):
-        if not self.path.startswith('/accounts/avatars') and \
-           not self.path.startswith('/accounts/headers'):
+        if not string_starts_with(self.path,
+                                  ('/accounts/avatars',
+                                   '/accounts/headers')):
             print('GET HTTP Attempt to get accounts file ' + self.path)
             http_404(self, 145)
             return
@@ -2706,9 +2708,8 @@ def daemon_http_get(self) -> None:
                         self.server.debug)
 
     # image on login screen or qrcode
-    if (is_image_file(self.path) and
-        (self.path.startswith('/login.') or
-         self.path.startswith('/qrcode.png'))):
+    if is_image_file(self.path) and \
+       (string_starts_with(self.path, ('/login.', '/qrcode.png'))):
         icon_filename = data_dir(self.server.base_dir) + self.path
         if os.path.isfile(icon_filename):
             if etag_exists(self, icon_filename):

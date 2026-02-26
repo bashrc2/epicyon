@@ -45,6 +45,7 @@ from timeFunctions import date_utcnow
 from timeFunctions import date_from_string_format
 from timeFunctions import date_epoch
 from timeFunctions import valid_post_date
+from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import resembles_url
 from utils import get_person_icon
@@ -2913,10 +2914,8 @@ def create_report_post(base_dir: str,
                         if moderator_actor not in moderators_list:
                             moderators_list.append(moderator_actor)
                         continue
-                    if line.startswith('http') or \
-                       line.startswith('ipfs') or \
-                       line.startswith('ipns') or \
-                       line.startswith('hyper'):
+                    if string_starts_with(line,
+                                          ('http', 'ipfs', 'ipns', 'hyper')):
                         # must be a local address - no remote moderators
                         if '://' + domain_full + '/' in line:
                             if line not in moderators_list:
@@ -4663,9 +4662,8 @@ def is_image_media(session, base_dir: str, http_prefix: str,
         return False
     for attach in post_attachments:
         if attach.get('mediaType') and attach.get('url'):
-            if attach['mediaType'].startswith('image/') or \
-               attach['mediaType'].startswith('audio/') or \
-               attach['mediaType'].startswith('video/'):
+            if string_starts_with(attach['mediaType'],
+                                  ('image/', 'audio/', 'video/')):
                 return True
     return False
 

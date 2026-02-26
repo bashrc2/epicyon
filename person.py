@@ -40,6 +40,7 @@ from media import process_meta_data
 from flags import is_image_file
 from timeFunctions import date_utcnow
 from timeFunctions import get_current_time_int
+from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import get_person_icon
 from utils import account_is_indexable
@@ -1882,10 +1883,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     detected_users_path = _detect_users_path(handle)
     if '/@' in handle or \
        detected_users_path in handle or \
-       handle.startswith('http') or \
-       handle.startswith('ipfs') or \
-       handle.startswith('ipns') or \
-       handle.startswith('hyper'):
+       string_starts_with(handle, ('http', 'ipfs', 'ipns', 'hyper')):
         group_paths = get_group_paths()
         if detected_users_path in group_paths:
             group_account = True
