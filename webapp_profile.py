@@ -24,7 +24,6 @@ from unicodetext import uninvert_text
 from unicodetext import standardize_text
 from occupation import get_occupation_name
 from utils import is_yggdrasil_address
-from utils import chatbot_nicknames
 from utils import get_actor_type
 from utils import get_mutuals_of_person
 from utils import get_person_icon
@@ -98,6 +97,7 @@ from follow import get_follower_domains
 from follow import is_following_actor
 from webapp_frontscreen import html_front_screen
 from textmode import text_mode_browser
+from webapp_utils import get_display_name_prefix
 from webapp_utils import html_following_dropdown
 from webapp_utils import edit_number_field
 from webapp_utils import html_keyboard_navigation
@@ -366,17 +366,11 @@ def html_profile_after_search(authorized: bool,
     # is this a bot account?
     if profile_json.get('type'):
         if isinstance(profile_json['type'], str):
-            if profile_json['type'] in ('Organization', 'Organisation'):
-                display_name = \
-                    '<b>[' + translate['Organisation'] + ']</b> ' + \
-                    display_name
-            elif profile_json['type'] == 'Group':
-                display_name = \
-                    '<b>[' + translate['Group'] + ']</b> ' + display_name
-            elif (profile_json['type'] != 'Person' or
-                  search_nickname in chatbot_nicknames()):
-                display_name = \
-                    '<b>[' + translate['Bot'] + ']</b> ' + display_name
+            bot_prefix = get_display_name_prefix(profile_json['type'],
+                                                 search_nickname,
+                                                 translate)
+            if bot_prefix:
+                display_name = bot_prefix + ' ' + display_name
 
     pronouns = get_pronouns(profile_json)
     discord = get_discord(profile_json)
@@ -1210,17 +1204,10 @@ def html_profile(signing_priv_key_pem: str,
     # is this a bot account?
     if profile_json.get('type'):
         if isinstance(profile_json['type'], str):
-            if profile_json['type'] in ('Organization', 'Organisation'):
-                display_name = \
-                    '<b>[' + translate['Organisation'] + ']</b> ' + \
-                    display_name
-            elif profile_json['type'] == 'Group':
-                display_name = \
-                    '<b>[' + translate['Group'] + ']</b> ' + display_name
-            elif (profile_json['type'] != 'Person' or
-                  nickname in chatbot_nicknames()):
-                display_name = \
-                    '<b>[' + translate['Bot'] + ']</b> ' + display_name
+            bot_prefix = get_display_name_prefix(profile_json['type'],
+                                                 nickname, translate)
+            if bot_prefix:
+                display_name = bot_prefix + ' ' + display_name
 
     domain_full = get_full_domain(domain, port)
     profile_status = get_actor_status(profile_json)
@@ -3957,17 +3944,11 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                       actor_nickname, domain,
                                       display_name, False, translate)
         actor_type = get_actor_type(base_dir, follow_url, person_cache)
-        if actor_type in ('Organization', 'Organisation'):
-            display_name = \
-                '<b>[' + translate['Organisation'] + ']</b> ' + \
-                display_name
-        elif actor_type == 'Group':
-            display_name = \
-                '<b>[' + translate['Group'] + ']</b> ' + display_name
-        elif (actor_type != 'Person' or
-              actor_nickname in chatbot_nicknames()):
-            display_name = \
-                '<b>[' + translate['Bot'] + ']</b> ' + display_name
+        bot_prefix = get_display_name_prefix(actor_type,
+                                             actor_nickname, translate)
+        if bot_prefix:
+            display_name = bot_prefix + ' ' + display_name
+
         title_str = display_name
 
     if offline:
