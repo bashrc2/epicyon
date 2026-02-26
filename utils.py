@@ -4077,9 +4077,8 @@ def check_bad_path(path: str):
 
     # allow /.well-known/...
     if '/.' in path_lower:
-        if path_lower.startswith('/.well-known/') or \
-           path_lower.startswith('/users/.well-known/') or \
-           path_lower.startswith('/.ghost/activitypub/'):
+        good_starts = ('/.well-known/', '/users/.well-known/')
+        if _string_starts_with(path_lower, good_starts):
             bad_strings = ('..', '%2e%2e', '%252e%252e')
 
     if path_lower.startswith('/wp-'):
@@ -4091,6 +4090,14 @@ def check_bad_path(path: str):
     )
     if string_ends_with(path_lower, bad_endings):
         return True
+
+    if '/.ghost/activitypub/' in path_lower:
+        # remove '/.'
+        bad_strings = ('..', '%2e%2e', '%252e%252e',
+                       '/sftp.', '/sftp-', '/statistics',
+                       '/config/', 'settings.', 'credentials',
+                       '/packs/', '/backend/', '/apis/',
+                       '/laravel/', '/js/')
 
     if string_contains(path_lower, bad_strings):
         return True
@@ -4119,6 +4126,15 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
                 print('EX: unable to set premium flag ' + premium_filename)
                 return False
     return True
+
+
+def _string_starts_with(text: str, possible_begin: []) -> bool:
+    """ Does the given text start with at least one of the beginnings
+    """
+    for start_str in possible_begin:
+        if text.startswith(start_str):
+            return True
+    return False
 
 
 def string_ends_with(text: str, possible_endings: []) -> bool:
