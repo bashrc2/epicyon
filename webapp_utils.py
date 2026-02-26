@@ -271,6 +271,16 @@ def get_content_warning_button(post_id: str, translate: {},
         '</div></details>\n'
 
 
+def get_show_map_button(post_id: str, translate: {},
+                        map_content: str) -> str:
+    """Returns the markup for a "show map" button
+    """
+    return '       <details><summary class="cw" tabindex="10">' + \
+        translate['Show Map'] + '</summary>' + \
+        '<div id="' + post_id + '">' + map_content + \
+        '</div></details>\n'
+
+
 def open_content_warning(text: str, translate: {}) -> str:
     """Opens content warning when replying to a post with a cw
     so that you can see what you are replying to

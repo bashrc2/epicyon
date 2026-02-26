@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "Calendar"
 
 import os
+from auth import create_password
 from datetime import datetime
 from datetime import date
 from utils import browser_supports_download_filename
@@ -30,6 +31,7 @@ from happening import get_todays_events
 from happening import get_calendar_events
 from happening import get_todays_events_icalendar
 from happening import get_month_events_icalendar
+from webapp_utils import get_show_map_button
 from webapp_utils import get_banner_file
 from webapp_utils import set_custom_background
 from webapp_utils import html_header_with_external_style
@@ -251,7 +253,11 @@ def _html_calendar_day(person_cache: {}, translate: {},
                                                      session_yggdrasil,
                                                      '320', '320')
                             if event_map:
-                                event_place = event_map
+                                if not post_id:
+                                    post_id = 'post' + str(create_password(8))
+                                event_place = \
+                                    get_show_map_button(post_id, translate,
+                                                        event_map)
 
             # prepend a link to the sender of the calendar item
             if sender_name and event_description:

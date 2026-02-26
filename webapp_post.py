@@ -107,6 +107,7 @@ from content import add_auto_cw
 from person import is_person_snoozed
 from person import get_person_avatar_url
 from textmode import text_mode_browser
+from webapp_utils import get_show_map_button
 from webapp_utils import mitm_warning_html
 from webapp_utils import get_buy_links
 from webapp_utils import get_banner_file
@@ -2316,16 +2317,6 @@ def _mentions_to_person_options(html_str: str, nickname: str, domain: str,
     return html_str
 
 
-def _get_show_map_button(post_id: str, translate: {},
-                         map_content: str) -> str:
-    """Returns the markup for a "show map" button
-    """
-    return '       <details><summary class="cw" tabindex="10">' + \
-        translate['Show Map'] + '</summary>' + \
-        '<div id="' + post_id + '">' + map_content + \
-        '</div></details>\n'
-
-
 def individual_post_as_html(signing_priv_key_pem: str,
                             allow_downloads: bool,
                             recent_posts_cache: {}, max_recent_posts: int,
@@ -3441,7 +3432,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if map_str:
             if not post_id:
                 post_id = 'post' + str(create_password(8))
-            map_str = _get_show_map_button(post_id, translate, map_str)
+            map_str = get_show_map_button(post_id, translate, map_str)
 
         post_html += \
             content_str + citations_str + map_str + \
