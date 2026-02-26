@@ -15,6 +15,7 @@ from session import get_json_valid
 from flags import is_float
 from flags import is_moderator
 from formats import media_file_mime_type
+from utils import chatbot_nicknames
 from utils import replace_strings
 from utils import get_image_file
 from utils import data_dir
@@ -2528,3 +2529,22 @@ def mitm_warning_html(translate: {}) -> str:
         mitm_warning_str + '" alt="' + \
         mitm_warning_str + '" src="/icons' + \
         '/mitm.png" class="mitm"/>\n'
+
+
+def get_display_name_prefix(actor_type: str,
+                            nickname: str,
+                            translate: {}) -> str:
+    """Returns a prefix prepended to the display name to indicate that
+    an account is a bot, organisation or group
+    """
+    if not actor_type:
+        return ''
+    display_name_prefix = ''
+    if actor_type in ('Organization', 'Organisation'):
+        display_name_prefix = '<b>[' + translate['Organisation'] + ']</b> '
+    elif actor_type == 'Group':
+        display_name_prefix = '<b>[' + translate['Group'] + ']</b> '
+    elif (actor_type != 'Person' or
+          nickname in chatbot_nicknames()):
+        display_name_prefix = '<b>[' + translate['Bot'] + ']</b> '
+    return display_name_prefix
