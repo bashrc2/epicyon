@@ -765,5 +765,7 @@
     "Warning: Possible dangerous link": "Warnung: Möglicher gefährlicher Link",
     "Mutual": "Gegenseitig",
 	"Bot": "Roboter",
-	"Show Map": "Karte anzeigen"
+	"Show Map": "Karte anzeigen",
+	"Organisation": "Organisation",
+	"Group": "Gruppe"
 }

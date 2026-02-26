@@ -765,5 +765,7 @@
     "Warning: Possible dangerous link": "تحذير: رابط خطير محتمل",
     "Mutual": "مشترك",
 	"Bot": "الروبوت",
-	"Show Map": "عرض الخريطة"
+	"Show Map": "عرض الخريطة",
+	"Organisation": "منظمة",
+	"Group": "مجموعة"
 }

@@ -765,5 +765,7 @@
     "Warning: Possible dangerous link": "Προειδοποίηση: Πιθανός επικίνδυνος σύνδεσμος",
     "Mutual": "Αμοιβαίος",
 	"Bot": "Ρομπότ",
-	"Show Map": "Εμφάνιση Χάρτη"
+	"Show Map": "Εμφάνιση Χάρτη",
+	"Organisation": "Οργάνωση",
+	"Group": "Ομάδα"
 }

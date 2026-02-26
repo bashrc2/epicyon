@@ -765,5 +765,7 @@
     "Warning: Possible dangerous link": "警告: 危険なリンクの可能性があります",
     "Mutual": "共通の",
 	"Bot": "ロボット",
-	"Show Map": "地図を表示"
+	"Show Map": "地図を表示",
+	"Organisation": "組織",
+	"Group": "グループ"
 }

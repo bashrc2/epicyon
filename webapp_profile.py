@@ -366,8 +366,15 @@ def html_profile_after_search(authorized: bool,
     # is this a bot account?
     if profile_json.get('type'):
         if isinstance(profile_json['type'], str):
-            if profile_json['type'] != 'Person' or \
-               search_nickname in chatbot_nicknames():
+            if profile_json['type'] in ('Organization', 'Organisation'):
+                display_name = \
+                    '<b>[' + translate['Organisation'] + ']</b> ' + \
+                    display_name
+            elif profile_json['type'] == 'Group':
+                display_name = \
+                    '<b>[' + translate['Group'] + ']</b> ' + display_name
+            elif (profile_json['type'] != 'Person' or
+                  search_nickname in chatbot_nicknames()):
                 display_name = \
                     '<b>[' + translate['Bot'] + ']</b> ' + display_name
 
@@ -1203,8 +1210,15 @@ def html_profile(signing_priv_key_pem: str,
     # is this a bot account?
     if profile_json.get('type'):
         if isinstance(profile_json['type'], str):
-            if profile_json['type'] != 'Person' or \
-               nickname in chatbot_nicknames():
+            if profile_json['type'] in ('Organization', 'Organisation'):
+                display_name = \
+                    '<b>[' + translate['Organisation'] + ']</b> ' + \
+                    display_name
+            elif profile_json['type'] == 'Group':
+                display_name = \
+                    '<b>[' + translate['Group'] + ']</b> ' + display_name
+            elif (profile_json['type'] != 'Person' or
+                  nickname in chatbot_nicknames()):
                 display_name = \
                     '<b>[' + translate['Bot'] + ']</b> ' + display_name
 
@@ -3943,8 +3957,15 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
                                       actor_nickname, domain,
                                       display_name, False, translate)
         actor_type = get_actor_type(base_dir, follow_url, person_cache)
-        if actor_type != 'Person' or \
-           actor_nickname in chatbot_nicknames():
+        if actor_type in ('Organization', 'Organisation'):
+            display_name = \
+                '<b>[' + translate['Organisation'] + ']</b> ' + \
+                display_name
+        elif actor_type == 'Group':
+            display_name = \
+                '<b>[' + translate['Group'] + ']</b> ' + display_name
+        elif (actor_type != 'Person' or
+              actor_nickname in chatbot_nicknames()):
             display_name = \
                 '<b>[' + translate['Bot'] + ']</b> ' + display_name
         title_str = display_name

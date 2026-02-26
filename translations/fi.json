@@ -765,5 +765,7 @@
     "Warning: Possible dangerous link": "Varoitus: Mahdollisesti vaarallinen linkki",
     "Mutual": "Keskinäinen",
 	"Bot": "Robotti",
-	"Show Map": "Näytä kartta"
+	"Show Map": "Näytä kartta",
+	"Organisation": "Organisaatio",
+	"Group": "Ryhmä"
 }

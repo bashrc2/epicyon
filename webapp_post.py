@@ -1580,8 +1580,12 @@ def _get_post_title_announce_html(base_dir: str,
     actor_type = get_actor_type(base_dir, attributed_to, person_cache)
     bot_prefix = ''
     if actor_type:
-        if actor_type != 'Person' or \
-           announce_nickname in chatbot_nicknames():
+        if actor_type in ('Organization', 'Organisation'):
+            bot_prefix = '<b>[' + translate['Organisation'] + ']</b> '
+        elif actor_type == 'Group':
+            bot_prefix = '<b>[' + translate['Group'] + ']</b> '
+        elif (actor_type != 'Person' or
+              announce_nickname in chatbot_nicknames()):
             bot_prefix = '<b>[' + translate['Bot'] + ']</b> '
 
     _log_post_timing(enable_timing_log, post_start_time, '13.3.1')
@@ -1736,8 +1740,12 @@ def _get_reply_html(translate: {},
         reply_nickname = ''
         if '@' in reply_nickname:
             reply_nickname = reply_handle.split('@')[0]
-        if actor_type != 'Person' or \
-           reply_nickname in chatbot_nicknames():
+        if actor_type in ('Organization', 'Organisation'):
+            bot_prefix = '<b>[' + translate['Organisation'] + ']</b> '
+        elif actor_type == 'Group':
+            bot_prefix = '<b>[' + translate['Group'] + ']</b> '
+        elif (actor_type != 'Person' or
+              reply_nickname in chatbot_nicknames()):
             bot_prefix = '<b>[' + translate['Bot'] + ']</b> '
 
     replying_to_str = _replying_to_with_scope(post_json_object, translate)
@@ -2699,8 +2707,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
     actor_type = get_actor_type(base_dir, post_actor, person_cache)
     bot_prefix = ''
     if actor_type:
-        if actor_type != 'Person' or \
-           actor_nickname in chatbot_nicknames():
+        if actor_type in ('Organization', 'Organisation'):
+            bot_prefix = '<b>[' + translate['Organisation'] + ']</b> '
+        elif actor_type == 'Group':
+            bot_prefix = '<b>[' + translate['Group'] + ']</b> '
+        elif (actor_type != 'Person' or
+              actor_nickname in chatbot_nicknames()):
             bot_prefix = '<b>[' + translate['Bot'] + ']</b> '
 
     if display_name:

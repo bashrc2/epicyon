@@ -765,5 +765,7 @@
     "Warning: Possible dangerous link": "Uyarı: Olası tehlikeli bağlantı",
     "Mutual": "Karşılıklı",
 	"Bot": "Bot",
-	"Show Map": "Haritayı Göster"
+	"Show Map": "Haritayı Göster",
+	"Organisation": "Organizasyon",
+	"Group": "Grup"
 }
