@@ -9,7 +9,6 @@ __module_group__ = "Profile Metadata"
 
 
 from utils import get_attachment_property_value
-from utils import remove_html
 
 VALID_LXMF_CHARS = set('0123456789abcdefghijklmnopqrstuvwxyz')
 
@@ -54,11 +53,17 @@ def get_lxmf_address(actor_json: {}) -> str:
             continue
         if not property_value['type'].endswith('PropertyValue'):
             continue
-        property_value[prop_value_name] = \
-            property_value[prop_value_name].strip()
-        if not _is_valid_lxmf_address(property_value[prop_value_name]):
+        lxmf_address = property_value[prop_value_name].strip()
+
+        # remove any prefix
+        if lxmf_address.startswith('lxmf://'):
+            lxmf_address = lxmf_address.replace('lxmf://', '')
+        elif lxmf_address.startswith('lxmf:'):
+            lxmf_address = lxmf_address.replace('lxmf:', '')
+
+        if not _is_valid_lxmf_address(lxmf_address):
             continue
-        return property_value[prop_value_name]
+        return lxmf_address
     return ''
 
 
@@ -66,6 +71,13 @@ def set_lxmf_address(actor_json: {}, lxmf_address: str) -> None:
     """Sets an lxmf address for the given actor
     """
     lxmf_address = lxmf_address.strip()
+
+    # remove any prefix
+    if lxmf_address.startswith('lxmf://'):
+        lxmf_address = lxmf_address.replace('lxmf://', '')
+    elif lxmf_address.startswith('lxmf:'):
+        lxmf_address = lxmf_address.replace('lxmf:', '')
+
     is_lxmfaddress = _is_valid_lxmf_address(lxmf_address)
 
     if not actor_json.get('attachment'):
