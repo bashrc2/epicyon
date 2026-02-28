@@ -536,7 +536,8 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
         "ssb": "ssb",
         "briar": "briar",
         "cwtch": "cwtch",
-        "tox": "toxId"
+        "tox": "toxId",
+        "lxmf": "lxmf"
     }
 
     aliases_not_found: list[str] = []
