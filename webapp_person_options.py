@@ -155,6 +155,7 @@ def html_person_options(default_timeline: str,
                         ssb_address: str,
                         blog_address: str,
                         tox_address: str,
+                        lxmf_address: str,
                         briar_address: str,
                         cwtch_address: str,
                         enigma_pub_key: str,
@@ -496,6 +497,9 @@ def html_person_options(default_timeline: str,
     if tox_address:
         options_str += \
             '  <p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
+    if lxmf_address:
+        options_str += \
+            '  <p class="imText">LXMF: ' + remove_html(lxmf_address) + '</p>\n'
     if briar_address:
         if briar_address.startswith('briar://'):
             options_str += \

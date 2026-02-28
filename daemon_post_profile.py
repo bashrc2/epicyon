@@ -120,6 +120,8 @@ from posts import set_max_profile_posts
 from posts import get_max_profile_posts
 from tox import get_tox_address
 from tox import set_tox_address
+from lxmf import get_lxmf_address
+from lxmf import set_lxmf_address
 from briar import get_briar_address
 from briar import set_briar_address
 from cwtch import get_cwtch_address
@@ -1969,6 +1971,23 @@ def _profile_post_tox_address(fields: {}, actor_json: {},
     return actor_changed
 
 
+def _profile_post_lxmf_address(fields: {}, actor_json: {},
+                               actor_changed: bool) -> bool:
+    """ HTTP POST change LXMF address
+    """
+    current_lxmf_address = get_lxmf_address(actor_json)
+    if fields.get('lxmfAddress'):
+        if fields['lxmfAddress'] != current_lxmf_address:
+            set_lxmf_address(actor_json,
+                             fields['lxmfAddress'])
+            actor_changed = True
+    else:
+        if current_lxmf_address:
+            set_lxmf_address(actor_json, '')
+            actor_changed = True
+    return actor_changed
+
+
 def _profile_post_birthday(fields: {}, actor_json: {},
                            actor_changed: bool) -> bool:
     """ HTTP POST birthday on edit profile screen
@@ -3202,6 +3221,10 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 actor_changed = \
                     _profile_post_tox_address(fields, actor_json,
                                               actor_changed)
+
+                actor_changed = \
+                    _profile_post_lxmf_address(fields, actor_json,
+                                               actor_changed)
 
                 actor_changed = \
                     _profile_post_briar_address(fields, actor_json,

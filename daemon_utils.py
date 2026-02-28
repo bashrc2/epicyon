@@ -63,6 +63,7 @@ from matrix import get_matrix_address
 from ssb import get_ssb_address
 from blog import get_blog_address
 from tox import get_tox_address
+from lxmf import get_lxmf_address
 from briar import get_briar_address
 from cwtch import get_cwtch_address
 from pgp import get_pgp_fingerprint
@@ -669,6 +670,7 @@ def show_person_options(self, calling_domain: str, path: str,
         matrix_address = None
         blog_address = None
         tox_address = None
+        lxmf_address = None
         briar_address = None
         cwtch_address = None
         ssb_address = None
@@ -716,6 +718,7 @@ def show_person_options(self, calling_domain: str, path: str,
             ssb_address = get_ssb_address(actor_json)
             blog_address = get_blog_address(actor_json)
             tox_address = get_tox_address(actor_json)
+            lxmf_address = get_lxmf_address(actor_json)
             briar_address = get_briar_address(actor_json)
             cwtch_address = get_cwtch_address(actor_json)
             email_address = get_email_address(actor_json)
@@ -774,7 +777,8 @@ def show_person_options(self, calling_domain: str, path: str,
                                 gemini_link, pronouns,
                                 xmpp_address, matrix_address,
                                 ssb_address, blog_address,
-                                tox_address, briar_address,
+                                tox_address, lxmf_address,
+                                briar_address,
                                 cwtch_address,
                                 enigma_pub_key,
                                 pgp_pub_key, pgp_fingerprint,

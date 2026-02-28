@@ -89,6 +89,7 @@ from pgp import get_pgp_fingerprint
 from pgp import get_pgp_pub_key
 from enigma import get_enigma_pub_key
 from tox import get_tox_address
+from lxmf import get_lxmf_address
 from briar import get_briar_address
 from cwtch import get_cwtch_address
 from filters import is_filtered
@@ -1294,6 +1295,7 @@ def html_profile(signing_priv_key_pem: str,
     matrix_address = get_matrix_address(profile_json)
     ssb_address = get_ssb_address(profile_json)
     tox_address = get_tox_address(profile_json)
+    lxmf_address = get_lxmf_address(profile_json)
     briar_address = get_briar_address(profile_json)
     cwtch_address = get_cwtch_address(profile_json)
     verified_site_checkmark = '✔'
@@ -1301,9 +1303,9 @@ def html_profile(signing_priv_key_pem: str,
     if donate_url or website_url or repo_url or pronouns or discord or \
        art_site_url or music_site_url or youtube or peertube or pixelfed or \
        xmpp_address or matrix_address or \
-       ssb_address or tox_address or briar_address or cwtch_address or \
-       pgp_pub_key or enigma_pub_key or pgp_fingerprint or email_address or \
-       deltachat_invite:
+       ssb_address or tox_address or lxmf_address or briar_address or \
+       cwtch_address or pgp_pub_key or enigma_pub_key or pgp_fingerprint or \
+       email_address or deltachat_invite:
         donate_section = '<div class="container">\n'
         donate_section += '  <center>\n'
         if donate_url and not is_system_account(nickname):
@@ -1411,6 +1413,10 @@ def html_profile(signing_priv_key_pem: str,
             donate_section += \
                 '<p>Tox: <label class="toxaddr">' + \
                 tox_address + '</label></p>\n'
+        if lxmf_address:
+            donate_section += \
+                '<p>LXMF: <label class="toxaddr">' + \
+                lxmf_address + '</label></p>\n'
         if briar_address:
             if briar_address.startswith('briar://'):
                 donate_section += \
@@ -3038,6 +3044,7 @@ def _html_edit_profile_contact_info(email_address: str,
                                     matrix_address: str,
                                     ssb_address: str,
                                     tox_address: str,
+                                    lxmf_address: str,
                                     briar_address: str,
                                     cwtch_address: str,
                                     translate: {},
@@ -3060,6 +3067,7 @@ def _html_edit_profile_contact_info(email_address: str,
                                          'matrixAddress', matrix_address)
     edit_profile_form += edit_text_field('SSB', 'ssbAddress', ssb_address)
     edit_profile_form += edit_text_field('Tox', 'toxAddress', tox_address)
+    edit_profile_form += edit_text_field('LXMF', 'lxmfAddress', lxmf_address)
     edit_profile_form += edit_text_field('Briar', 'briarAddress',
                                          briar_address)
     edit_profile_form += edit_text_field('Cwtch', 'cwtchAddress',
@@ -3546,7 +3554,8 @@ def html_edit_profile(server, translate: {},
     email_address = deltachat_invite = featured_hashtags = ''
     pgp_pub_key = enigma_pub_key = ''
     pgp_fingerprint = pronouns = peertube = youtube = pixelfed = ''
-    ssb_address = blog_address = matrix_address = tox_address = ''
+    ssb_address = blog_address = matrix_address = ''
+    tox_address = lxmf_address = ''
     cwtch_address = briar_address = xmpp_address = ''
     discord = music_site_url = art_site_url = ''
     manually_approves_followers = reject_spam_actors = ''
@@ -3575,6 +3584,7 @@ def html_edit_profile(server, translate: {},
         ssb_address = get_ssb_address(actor_json)
         blog_address = get_blog_address(actor_json)
         tox_address = get_tox_address(actor_json)
+        lxmf_address = get_lxmf_address(actor_json)
         briar_address = get_briar_address(actor_json)
         cwtch_address = get_cwtch_address(actor_json)
         email_address = get_email_address(actor_json)
@@ -3802,6 +3812,7 @@ def html_edit_profile(server, translate: {},
                                         deltachat_invite,
                                         xmpp_address, matrix_address,
                                         ssb_address, tox_address,
+                                        lxmf_address,
                                         briar_address,
                                         cwtch_address, translate,
                                         youtube, peertube, pixelfed,

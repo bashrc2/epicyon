@@ -1199,6 +1199,10 @@ def remove_long_words(content: str, max_word_length: int,
             if word_str.upper() == word_str:
                 # tox address
                 continue
+        if len(word_str) == 32:
+            if word_str.lower() == word_str:
+                # LXMF address
+                continue
         if '=\"' in word_str:
             continue
         if '@' in word_str:
