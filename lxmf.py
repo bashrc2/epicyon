@@ -14,6 +14,18 @@ from utils import remove_html
 VALID_LXMF_CHARS = set('0123456789abcdefghijklmnopqrstuvwxyz')
 
 
+def _is_valid_lxmf_address(lxmf_address: str) -> bool:
+    """Is the given LXMF address valid?
+    """
+    if len(lxmf_address) != 32:
+        return False
+    if lxmf_address.lower() != lxmf_address:
+        return False
+    if not set(lxmf_address).issubset(VALID_LXMF_CHARS):
+        return False
+    return True
+
+
 def get_lxmf_address(actor_json: {}) -> str:
     """Returns lxmf address for the given actor
     """
@@ -44,33 +56,10 @@ def get_lxmf_address(actor_json: {}) -> str:
             continue
         property_value[prop_value_name] = \
             property_value[prop_value_name].strip()
-        if len(property_value[prop_value_name]) != 76:
+        if not _is_valid_lxmf_address(property_value[prop_value_name]):
             continue
-        if property_value[prop_value_name].upper() != \
-           property_value[prop_value_name]:
-            continue
-        if '"' in property_value[prop_value_name]:
-            continue
-        if ' ' in property_value[prop_value_name]:
-            continue
-        if ',' in property_value[prop_value_name]:
-            continue
-        if '.' in property_value[prop_value_name]:
-            continue
-        return remove_html(property_value[prop_value_name])
+        return property_value[prop_value_name]
     return ''
-
-
-def _is_valid_lxmf_address(lxmf_address: str) -> bool:
-    """Is the given LXMF address valid?
-    """
-    if len(lxmf_address) != 32:
-        return False
-    if lxmf_address.lower() != lxmf_address:
-        return False
-    if not set(lxmf_address).issubset(VALID_LXMF_CHARS):
-        return False
-    return True
 
 
 def set_lxmf_address(actor_json: {}, lxmf_address: str) -> None:
