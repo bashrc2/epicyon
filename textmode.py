@@ -27,7 +27,6 @@ def text_mode_removals(text: str, translate: {}) -> str:
     """Removes some elements of a post when displaying in a text mode browser
     """
     text = text.replace(translate['SHOW MORE'], '')
-    text = text.replace(translate['Show Map'], '')
     text = text.replace(translate['mitm'], '👁 ')
     return text
 
