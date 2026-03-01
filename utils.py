@@ -4336,6 +4336,7 @@ def is_private_browser(ua_str: str) -> bool:
     for privacy?
     """
     ua_str_lower = ua_str.lower()
-    if 'privacy' in ua_str_lower or 'private' in ua_str_lower:
+    if string_contains(ua_str_lower,
+                       ('librewolf', 'privacy', 'private')):
         return True
     return False
