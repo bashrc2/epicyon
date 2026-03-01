@@ -509,8 +509,8 @@ def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
                                                             translate,
                                                             'audio')
         # replace MITM text with an eye icon
-        post_html = text_mode_removals(post_html, translate)
         post_html = replace_embedded_map_with_link(post_html, translate)
+        post_html = text_mode_removals(post_html, translate)
     elif is_private_browser(ua_str):
         post_html = replace_embedded_map_with_link(post_html, translate)
 

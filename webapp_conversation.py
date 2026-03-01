@@ -191,8 +191,8 @@ def html_conversation_view(authorized: bool, post_id: str,
     # is no way to hide/expand sections.
     # Also replace MITM text with an eye icon
     if text_mode_browser(ua_str):
-        conv_str = text_mode_removals(conv_str, translate)
         conv_str = replace_embedded_map_with_link(conv_str, translate)
+        conv_str = text_mode_removals(conv_str, translate)
     elif is_private_browser(ua_str):
         conv_str = replace_embedded_map_with_link(conv_str, translate)
 

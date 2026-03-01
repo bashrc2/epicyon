@@ -912,8 +912,8 @@ def html_timeline(default_timeline: str,
         # is no way to hide/expand sections.
         # Also replace MITM text with an eye icon
         if is_text_browser:
-            tl_str = text_mode_removals(tl_str, translate)
             tl_str = replace_embedded_map_with_link(tl_str, translate)
+            tl_str = text_mode_removals(tl_str, translate)
         elif is_private_browser(ua_str):
             tl_str = replace_embedded_map_with_link(tl_str, translate)
 
@@ -945,8 +945,8 @@ def html_timeline(default_timeline: str,
         # is no way to hide/expand sections.
         # Also replace MITM text with an eye icon
         if is_text_browser:
-            tl_str = text_mode_removals(tl_str, translate)
             tl_str = replace_embedded_map_with_link(tl_str, translate)
+            tl_str = text_mode_removals(tl_str, translate)
         elif is_private_browser(ua_str):
             tl_str = replace_embedded_map_with_link(tl_str, translate)
 
@@ -1191,9 +1191,9 @@ def html_timeline(default_timeline: str,
     # is no way to hide/expand sections.
     # Also replace MITM text with an eye icon
     if is_text_browser:
+        tl_str = replace_embedded_map_with_link(tl_str, translate)
         tl_str = text_mode_removals(tl_str, translate)
         tl_str = text_mode_replacements(tl_str, translate)
-        tl_str = replace_embedded_map_with_link(tl_str, translate)
     elif is_private_browser(ua_str):
         tl_str = replace_embedded_map_with_link(tl_str, translate)
 

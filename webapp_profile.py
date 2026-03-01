@@ -704,8 +704,8 @@ def html_profile_after_search(authorized: bool,
                 break
 
     if text_mode_browser(ua_str):
-        profile_str = text_mode_removals(profile_str, translate)
         profile_str = replace_embedded_map_with_link(profile_str, translate)
+        profile_str = text_mode_removals(profile_str, translate)
     elif is_private_browser(ua_str):
         profile_str = replace_embedded_map_with_link(profile_str, translate)
 
