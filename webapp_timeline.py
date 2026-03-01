@@ -14,6 +14,8 @@ from flags import is_editor
 from flags import is_artist
 from flags import is_float
 from flags import is_moderator
+from utils import is_private_browser
+from utils import replace_embedded_map_with_link
 from utils import get_mutuals_of_person
 from utils import data_dir
 from utils import dangerous_markup
@@ -911,6 +913,9 @@ def html_timeline(default_timeline: str,
         # Also replace MITM text with an eye icon
         if is_text_browser:
             tl_str = text_mode_removals(tl_str, translate)
+            tl_str = replace_embedded_map_with_link(tl_str, translate)
+        elif is_private_browser(ua_str):
+            tl_str = replace_embedded_map_with_link(tl_str, translate)
 
         tl_str += \
             _html_timeline_end(base_dir, nickname, domain_full,
@@ -941,6 +946,9 @@ def html_timeline(default_timeline: str,
         # Also replace MITM text with an eye icon
         if is_text_browser:
             tl_str = text_mode_removals(tl_str, translate)
+            tl_str = replace_embedded_map_with_link(tl_str, translate)
+        elif is_private_browser(ua_str):
+            tl_str = replace_embedded_map_with_link(tl_str, translate)
 
         tl_str += \
             _html_timeline_end(base_dir, nickname, domain_full,
@@ -1185,6 +1193,9 @@ def html_timeline(default_timeline: str,
     if is_text_browser:
         tl_str = text_mode_removals(tl_str, translate)
         tl_str = text_mode_replacements(tl_str, translate)
+        tl_str = replace_embedded_map_with_link(tl_str, translate)
+    elif is_private_browser(ua_str):
+        tl_str = replace_embedded_map_with_link(tl_str, translate)
 
     tl_str += \
         _html_timeline_end(base_dir, nickname, domain_full,

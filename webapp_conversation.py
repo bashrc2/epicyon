@@ -11,6 +11,8 @@ __module_group__ = "Timeline"
 import os
 from conversation import download_conversation_posts
 from flags import is_public_post
+from utils import is_private_browser
+from utils import replace_embedded_map_with_link
 from utils import get_mutuals_of_person
 from utils import remove_id_ending
 from utils import get_config_param
@@ -190,6 +192,9 @@ def html_conversation_view(authorized: bool, post_id: str,
     # Also replace MITM text with an eye icon
     if text_mode_browser(ua_str):
         conv_str = text_mode_removals(conv_str, translate)
+        conv_str = replace_embedded_map_with_link(conv_str, translate)
+    elif is_private_browser(ua_str):
+        conv_str = replace_embedded_map_with_link(conv_str, translate)
 
     conv_str += text_mode_separator + html_footer()
     return conv_str

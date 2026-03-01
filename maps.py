@@ -887,7 +887,8 @@ def html_open_street_map(url: str,
         '&amp;layer=mapnik" style="border: 1px solid black" ' + \
         'sandbox="allow-scripts allow-same-origin">' + \
         '</iframe><br/><small><a href="' + osm_url + \
-        '">' + translate['View Larger Map'] + '</a></small>\n'
+        '" target="_blank" rel="nofollow noopener noreferrer">' + \
+        translate['View Larger Map'] + '</a></small>\n'
     return html_str
 
 

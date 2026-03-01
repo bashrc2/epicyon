@@ -15,6 +15,7 @@ from session import get_json_valid
 from flags import is_float
 from flags import is_moderator
 from formats import media_file_mime_type
+from utils import replace_embedded_map_with_link
 from utils import chatbot_nicknames
 from utils import replace_strings
 from utils import get_image_file
@@ -279,19 +280,22 @@ def get_show_map_button(post_id: str, translate: {},
     show_map_str = 'Show Map'
     if translate.get('Show Map'):
         show_map_str = translate['Show Map']
-    return '       <details><summary class="cw" tabindex="10">' + \
+    html_str = '       <details><summary class="cw" tabindex="10">' + \
         show_map_str + '</summary>' + \
         '<div id="' + post_id + '">' + map_content + \
         '</div></details>\n'
+    return html_str
 
 
 def open_content_warning(text: str, translate: {}) -> str:
     """Opens content warning when replying to a post with a cw
     so that you can see what you are replying to
     """
+    text = replace_embedded_map_with_link(text, translate)
     text = text.replace('<details>', '').replace('</details>', '')
     text = text.replace(translate['Show Map'], '', 1)
-    return text.replace(translate['SHOW MORE'], '', 1)
+    text = text.replace(translate['SHOW MORE'], '', 1)
+    return text
 
 
 def _set_actor_property_url(actor_json: {},

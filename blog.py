@@ -17,6 +17,7 @@ from webapp_utils import get_post_attachments_as_html
 from webapp_utils import edit_text_area
 from webapp_media import add_embedded_elements
 from timeFunctions import date_from_string_format
+from utils import replace_embedded_map_with_link
 from utils import replace_strings
 from utils import data_dir
 from utils import remove_link_tracking
@@ -567,6 +568,8 @@ def _html_blog_remove_cw_button(blog_str: str, translate: {}) -> str:
     blog_str = replace_strings(blog_str, replacements)
     blog_str = blog_str.replace(translate['SHOW MORE'], '')
     blog_str = blog_str.replace(translate['Show Map'], '')
+    blog_str = replace_embedded_map_with_link(blog_str, translate)
+
     return blog_str
 
 

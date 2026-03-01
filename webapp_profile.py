@@ -23,6 +23,8 @@ from textmode import text_mode_removals
 from unicodetext import uninvert_text
 from unicodetext import standardize_text
 from occupation import get_occupation_name
+from utils import is_private_browser
+from utils import replace_embedded_map_with_link
 from utils import is_yggdrasil_address
 from utils import get_actor_type
 from utils import get_mutuals_of_person
@@ -703,6 +705,9 @@ def html_profile_after_search(authorized: bool,
 
     if text_mode_browser(ua_str):
         profile_str = text_mode_removals(profile_str, translate)
+        profile_str = replace_embedded_map_with_link(profile_str, translate)
+    elif is_private_browser(ua_str):
+        profile_str = replace_embedded_map_with_link(profile_str, translate)
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []

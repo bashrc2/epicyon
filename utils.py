@@ -4295,3 +4295,47 @@ def get_event_categories() -> []:
         'THEATRE',
         'WORKSHOPS_SKILL_SHARING'
     )
+
+
+def replace_embedded_map_with_link(text: str, translate: {}) -> str:
+    """Replaces an embedded OSM map with a link to the map location
+    """
+    if '<details>' not in text:
+        return text
+    map_str_start = 'https://www.openstreetmap.org'
+    map_str = 'src="' + map_str_start
+    if map_str not in text:
+        return text
+    sections = text.split('<details>')
+    for section_str in sections:
+        if '</details>' not in section_str:
+            continue
+        section_str = \
+            '<details>' + section_str.split('</details>')[0] + '</details>'
+        if map_str not in section_str:
+            continue
+        # get the map url
+        map_url = map_str_start + section_str.split(map_str)[1]
+        if '"' not in map_url:
+            continue
+        map_url = map_url.split('"')[0]
+        show_map_str = 'Show Map'
+        if translate.get('Show Map'):
+            show_map_str = translate['Show Map']
+        map_link = \
+            '<a href="' + map_url + \
+            '" target="_blank" rel="nofollow noopener noreferrer">' + \
+            show_map_str + '</a>'
+        # replace the iframe with a link
+        text = text.replace(section_str, map_link)
+    return text
+
+
+def is_private_browser(ua_str: str) -> bool:
+    """Does the given user agent indicate that the browser is specialised
+    for privacy?
+    """
+    ua_str_lower = ua_str.lower()
+    if 'privacy' in ua_str_lower or 'private' in ua_str_lower:
+        return True
+    return False

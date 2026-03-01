@@ -42,6 +42,8 @@ from textmode import text_mode_removals
 from quote import get_quote_toot_url
 from timeFunctions import date_from_string_format
 from timeFunctions import convert_published_to_local_timezone
+from utils import is_private_browser
+from utils import replace_embedded_map_with_link
 from utils import get_mutuals_of_person
 from utils import save_json
 from utils import remove_header_tags
@@ -508,6 +510,9 @@ def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
                                                             'audio')
         # replace MITM text with an eye icon
         post_html = text_mode_removals(post_html, translate)
+        post_html = replace_embedded_map_with_link(post_html, translate)
+    elif is_private_browser(ua_str):
+        post_html = replace_embedded_map_with_link(post_html, translate)
 
     # if on the bookmarks timeline then remain there
     if box_name in ('tlbookmarks', 'bookmarks'):
