@@ -505,7 +505,7 @@ def html_person_options(default_timeline: str,
             '/qrcode_lxmf.png" alt="' + translate['QR Code'] + '" title="' + \
             translate['QR Code'] + '" tabindex="1">' + \
             '<img class="qrcode" alt="' + translate['QR Code'] + \
-            '" src="/icons/qrcode_lxmf.png" /></a></p>\n'
+            '" src="/icons/qrcode.png" /></a></p>\n'
     if briar_address:
         if briar_address.startswith('briar://'):
             options_str += \

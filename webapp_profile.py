@@ -1428,7 +1428,7 @@ def html_profile(signing_priv_key_pem: str,
                 '" title="' + \
                 translate['QR Code'] + '" tabindex="1">' + \
                 '<img class="qrcode" alt="' + translate['QR Code'] + \
-                '" src="/icons/qrcode_lxmf.png" /></a></p>\n'
+                '" src="/icons/qrcode.png" /></a></p>\n'
         if briar_address:
             if briar_address.startswith('briar://'):
                 donate_section += \
