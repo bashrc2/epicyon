@@ -1421,7 +1421,14 @@ def html_profile(signing_priv_key_pem: str,
         if lxmf_address:
             donate_section += \
                 '<p>LXMF: <label class="toxaddr">' + \
-                lxmf_address + '</label></p>\n'
+                lxmf_address + '</label>'
+            donate_section += \
+                ' <a href="/users/' + nickname + \
+                '/qrcode_lxmf.png" alt="' + translate['QR Code'] + \
+                '" title="' + \
+                translate['QR Code'] + '" tabindex="1">' + \
+                '<img class="qrcode" alt="' + translate['QR Code'] + \
+                '" src="/icons/qrcode_lxmf.png" /></a></p>\n'
         if briar_address:
             if briar_address.startswith('briar://'):
                 donate_section += \

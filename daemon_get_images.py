@@ -495,20 +495,24 @@ def show_qrcode(self, calling_domain: str, path: str,
     if not nickname:
         http_404(self, 93)
         return True
-    if onion_domain:
-        qrcode_domain = onion_domain
-        port = 80
-    elif i2p_domain:
-        qrcode_domain = i2p_domain
-        port = 80
-    elif yggdrasil_domain:
-        qrcode_domain = yggdrasil_domain
-        port = 80
+    if path.endswith('_lxmf.png'):
+        qr_filename = \
+            acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'
     else:
-        qrcode_domain = domain
-    save_person_qrcode(base_dir, nickname, domain, qrcode_domain, port)
-    qr_filename = \
-        acct_dir(base_dir, nickname, domain) + '/qrcode.png'
+        if onion_domain:
+            qrcode_domain = onion_domain
+            port = 80
+        elif i2p_domain:
+            qrcode_domain = i2p_domain
+            port = 80
+        elif yggdrasil_domain:
+            qrcode_domain = yggdrasil_domain
+            port = 80
+        else:
+            qrcode_domain = domain
+        save_person_qrcode(base_dir, nickname, domain, qrcode_domain, port)
+        qr_filename = \
+            acct_dir(base_dir, nickname, domain) + '/qrcode.png'
     if os.path.isfile(qr_filename):
         if etag_exists(self, qr_filename):
             # The file has not changed

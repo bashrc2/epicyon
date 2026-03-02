@@ -499,7 +499,13 @@ def html_person_options(default_timeline: str,
             '  <p class="imText">Tox: ' + remove_html(tox_address) + '</p>\n'
     if lxmf_address:
         options_str += \
-            '  <p class="imText">LXMF: ' + remove_html(lxmf_address) + '</p>\n'
+            '  <p class="imText">LXMF: ' + remove_html(lxmf_address)
+        options_str += \
+            ' <a href="/users/' + nickname + \
+            '/qrcode_lxmf.png" alt="' + translate['QR Code'] + '" title="' + \
+            translate['QR Code'] + '" tabindex="1">' + \
+            '<img class="qrcode" alt="' + translate['QR Code'] + \
+            '" src="/icons/qrcode_lxmf.png" /></a></p>\n'
     if briar_address:
         if briar_address.startswith('briar://'):
             options_str += \
