@@ -15,6 +15,7 @@ from utils import get_base_content_from_post
 from utils import get_post_attachments
 from utils import get_url_from_post
 from utils import get_markdown_blog_filename
+from utils import get_micron_blog_filename
 from utils import get_gemini_blog_published
 
 
@@ -578,6 +579,84 @@ def blog_to_markdown(base_dir: str, nickname: str, domain: str,
             fp_markdown.write(published + '\n\n' + content_text)
     except OSError:
         print('EX: blog_to_markdown unable to write ' + markdown_blog_filename)
+        return False
+
+    return True
+
+
+def blog_to_micron(base_dir: str, nickname: str, domain: str,
+                   message_json: dict, system_language: str,
+                   debug: bool, testing: bool) -> bool:
+    """
+    Converts a blog post to micron format
+    Returns True on success
+     """
+    if not testing:
+        account_dir = acct_dir(base_dir, nickname, domain)
+    else:
+        account_dir = base_dir
+        if os.path.isdir(account_dir + '/microntest'):
+            shutil.rmtree(account_dir + '/microntest', ignore_errors=True)
+
+    if not os.path.isdir(account_dir):
+        if debug:
+            print('WARN: blog_to_micron account directory not found ' +
+                  account_dir)
+        return False
+
+    published = get_gemini_blog_published(message_json, debug)
+    if not published:
+        return False
+
+    # get the blog content
+    content_str = get_base_content_from_post(message_json, system_language)
+    if not content_str:
+        if debug:
+            print('WARN: blog_to_micron no content ' +
+                  str(message_json))
+        return False
+    content_text = remove_html(content_str)
+
+    # create micron blog directory
+    if not testing:
+        micron_blog_dir = account_dir + '/micron'
+    else:
+        micron_blog_dir = account_dir + '/microntest'
+    if not os.path.isdir(micron_blog_dir):
+        os.mkdir(micron_blog_dir)
+
+    micron_blog_filename = \
+        get_micron_blog_filename(base_dir, nickname, domain,
+                                 message_json, system_language,
+                                 debug, testing)
+
+    # get attachments
+    links: list[str] = []
+    post_attachments = get_post_attachments(message_json)
+    if post_attachments:
+        descriptions = ''
+        for attach in post_attachments:
+            if not isinstance(attach, dict):
+                continue
+            if not attach.get('name'):
+                continue
+            descriptions += attach['name'] + ' '
+            if attach.get('url'):
+                links.append('`[' + attach['name'] + '`' +
+                             get_url_from_post(attach['url']) + ']')
+
+    # add links to the end of the content
+    if links:
+        content_text += '\n\n-\n'
+    for link_str in links:
+        content_text += link_str + '\n'
+
+    try:
+        with open(micron_blog_filename, 'w+',
+                  encoding='utf-8') as fp_micron:
+            fp_micron.write(published + '\n\n' + content_text)
+    except OSError:
+        print('EX: blog_to_micron unable to write ' + micron_blog_filename)
         return False
 
     return True

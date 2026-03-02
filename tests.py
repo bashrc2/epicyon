@@ -205,6 +205,7 @@ from webapp_post import prepare_html_post_nickname
 from speaker import speaker_replace_links
 from markdown import markdown_to_html
 from markdown import blog_to_markdown
+from markdown import blog_to_micron
 from languages import get_reply_language
 from languages import set_actor_languages
 from languages import get_actor_languages
@@ -9614,6 +9615,36 @@ def _test_markdown_blog(base_dir: str) -> None:
     shutil.rmtree(markdown_blog_dir, ignore_errors=True)
 
 
+def _test_micron_blog(base_dir: str) -> None:
+    print('micron_blog')
+    micron_blog_dir = base_dir + '/microntest'
+    published = '2022-02-25T20:15:00Z'
+    title = 'Micron test title'
+    content = 'This is a micron test'
+    link = 'https://some.link'
+    micron_blog_filename = \
+        micron_blog_dir + '/2022-02-25_' + \
+        title.replace(' ', '_').lower() + '.mu'
+    system_language = 'en'
+    debug = True
+    message_json = {
+        'object': {
+            'published': published,
+            'summary': title,
+            'content': content + ' ' + link
+        }
+    }
+    result = blog_to_micron(base_dir, 'someuser', 'somedomain',
+                            message_json, system_language,
+                            debug, True)
+    assert result
+    assert os.path.isdir(micron_blog_dir)
+    assert os.path.isfile(micron_blog_filename)
+    assert text_in_file(content, micron_blog_filename)
+    assert text_in_file('2022-02-25', micron_blog_filename)
+    shutil.rmtree(micron_blog_dir, ignore_errors=True)
+
+
 def _test_replace_gemini_links() -> None:
     print('replace_gemini_links')
     content = 'Some content'
@@ -9685,6 +9716,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_micron_blog(base_dir)
     _test_yggdrasil_addresses()
     _test_replace_gemini_links()
     _test_markdown_blog(base_dir)

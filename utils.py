@@ -2325,6 +2325,31 @@ def get_markdown_blog_filename(base_dir: str, nickname: str, domain: str,
     return markdown_blog_filename
 
 
+def get_micron_blog_filename(base_dir: str, nickname: str, domain: str,
+                             message_json: dict, system_language: str,
+                             debug: bool, testing: bool) -> str:
+    """Returns the filename for a micron blog post
+    """
+    title_text = get_gemini_blog_title(message_json, system_language)
+    published = get_gemini_blog_published(message_json, debug)
+    if not published:
+        return ''
+    title_text2 = title_text.replace('.', ' ')
+    title_text2 = title_text2.replace(' ', '_')
+    title_text2 = title_text2.replace('"', '')
+
+    if not testing:
+        account_dir = acct_dir(base_dir, nickname, domain)
+        micron_blog_dir = account_dir + '/micron'
+    else:
+        account_dir = base_dir
+        micron_blog_dir = account_dir + '/microntest'
+
+    micron_blog_filename = \
+        micron_blog_dir + '/' + published + '_' + title_text2.lower() + '.mu'
+    return micron_blog_filename
+
+
 def delete_post(base_dir: str, http_prefix: str,
                 nickname: str, domain: str, post_filename: str,
                 debug: bool, recent_posts_cache: {},
@@ -2399,6 +2424,21 @@ def delete_post(base_dir: str, http_prefix: str,
                 if debug:
                     print('EX: delete_post unable to delete markdown post ' +
                           str(markdown_blog_filename))
+
+    # delete micron blog post
+    micron_blog_filename = \
+        get_micron_blog_filename(base_dir, nickname, domain,
+                                 post_json_object, '',
+                                 debug, False)
+    if micron_blog_filename:
+        if os.path.isfile(micron_blog_filename):
+            try:
+                os.remove(micron_blog_filename)
+                return True
+            except OSError:
+                if debug:
+                    print('EX: delete_post unable to delete micron post ' +
+                          str(micron_blog_filename))
 
     # remove from recent posts cache in memory
     remove_post_from_cache(post_json_object, recent_posts_cache)
