@@ -28,6 +28,7 @@ from flags import is_image_file
 from daemon_utils import etag_exists
 from fitnessFunctions import fitness_performance
 from person import save_person_qrcode
+from lxmf import save_lxmf_qrcode
 
 
 def show_avatar_or_banner(self, referer_domain: str, path: str,
@@ -498,6 +499,8 @@ def show_qrcode(self, calling_domain: str, path: str,
     if path.endswith('_lxmf.png'):
         qr_filename = \
             acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'
+        qrcode_scale = 6
+        save_lxmf_qrcode(base_dir, nickname, domain, qrcode_scale)
     else:
         if onion_domain:
             qrcode_domain = onion_domain

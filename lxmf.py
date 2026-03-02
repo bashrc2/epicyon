@@ -29,9 +29,9 @@ def _is_valid_lxmf_address(lxmf_address: str) -> bool:
     return True
 
 
-def _save_lxmf_qrcode(base_dir: str,
-                      nickname: str, domain: str,
-                      scale: int = 6) -> bool:
+def save_lxmf_qrcode(base_dir: str,
+                     nickname: str, domain: str,
+                     scale: int = 6) -> bool:
     """Saves a qrcode image for the handle of the person
     This helps to transfer onion or i2p handles to a mobile device
     """
@@ -180,6 +180,4 @@ def set_lxmf_address(base_dir: str, nickname: str, domain: str,
         "value": lxmf_address
     }
     actor_json['attachment'].append(new_lxmf_address)
-    _save_lxmf_qrcode(base_dir,
-                      nickname, domain,
-                      qrcode_scale)
+    save_lxmf_qrcode(base_dir, nickname, domain, qrcode_scale)
