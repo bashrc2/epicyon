@@ -8,7 +8,11 @@ __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
 
+import os
+import pyqrcode
 from utils import get_attachment_property_value
+from utils import acct_dir
+from utils import load_json
 
 VALID_LXMF_CHARS = set('0123456789abcdefghijklmnopqrstuvwxyz')
 
@@ -23,6 +27,34 @@ def _is_valid_lxmf_address(lxmf_address: str) -> bool:
     if not set(lxmf_address).issubset(VALID_LXMF_CHARS):
         return False
     return True
+
+
+def _save_lxmf_qrcode(base_dir: str,
+                      nickname: str, domain: str,
+                      scale: int = 6) -> bool:
+    """Saves a qrcode image for the handle of the person
+    This helps to transfer onion or i2p handles to a mobile device
+    """
+    qrcode_filename = acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'
+    if os.path.isfile(qrcode_filename):
+        return False
+    actor_filename = \
+        acct_dir(base_dir, nickname, domain) + '.json'
+    if not os.path.isfile(actor_filename):
+        return False
+    actor_json = load_json(actor_filename)
+    if not actor_json:
+        return False
+    lxmf_address = get_lxmf_address(actor_json)
+    if not lxmf_address:
+        return False
+    url = pyqrcode.create(lxmf_address)
+    try:
+        url.png(qrcode_filename, scale)
+        return True
+    except ModuleNotFoundError:
+        print('EX: save_lxmf_qrcode pyqrcode png module not found')
+    return False
 
 
 def get_lxmf_address(actor_json: {}) -> str:
@@ -67,9 +99,20 @@ def get_lxmf_address(actor_json: {}) -> str:
     return ''
 
 
-def set_lxmf_address(actor_json: {}, lxmf_address: str) -> None:
+def set_lxmf_address(base_dir: str, nickname: str, domain: str,
+                     actor_json: {}, lxmf_address: str,
+                     qrcode_scale: int) -> None:
     """Sets an lxmf address for the given actor
     """
+    if not lxmf_address:
+        qrcode_filename = \
+            acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'
+        if os.path.isfile(qrcode_filename):
+            try:
+                os.remove(qrcode_filename)
+            except OSError:
+                print('EX: cannot remove lxmf qrcode ' + qrcode_filename)
+
     lxmf_address = lxmf_address.strip()
 
     # remove any prefix
@@ -137,3 +180,6 @@ def set_lxmf_address(actor_json: {}, lxmf_address: str) -> None:
         "value": lxmf_address
     }
     actor_json['attachment'].append(new_lxmf_address)
+    _save_lxmf_qrcode(base_dir,
+                      nickname, domain,
+                      qrcode_scale)

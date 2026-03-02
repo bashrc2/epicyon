@@ -1971,19 +1971,24 @@ def _profile_post_tox_address(fields: {}, actor_json: {},
     return actor_changed
 
 
-def _profile_post_lxmf_address(fields: {}, actor_json: {},
+def _profile_post_lxmf_address(base_dir: str, nickname: str, domain: str,
+                               fields: {}, actor_json: {},
                                actor_changed: bool) -> bool:
     """ HTTP POST change LXMF address
     """
+    qrcode_scale = 6
     current_lxmf_address = get_lxmf_address(actor_json)
     if fields.get('lxmfAddress'):
         if fields['lxmfAddress'] != current_lxmf_address:
-            set_lxmf_address(actor_json,
-                             fields['lxmfAddress'])
+            set_lxmf_address(base_dir, nickname, domain,
+                             actor_json,
+                             fields['lxmfAddress'],
+                             qrcode_scale)
             actor_changed = True
     else:
         if current_lxmf_address:
-            set_lxmf_address(actor_json, '')
+            set_lxmf_address(base_dir, nickname, domain,
+                             actor_json, '', qrcode_scale)
             actor_changed = True
     return actor_changed
 
@@ -3223,7 +3228,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
                                               actor_changed)
 
                 actor_changed = \
-                    _profile_post_lxmf_address(fields, actor_json,
+                    _profile_post_lxmf_address(base_dir, nickname, domain,
+                                               fields, actor_json,
                                                actor_changed)
 
                 actor_changed = \
