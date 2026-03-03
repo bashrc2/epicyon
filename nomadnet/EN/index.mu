@@ -1,0 +1,47 @@
+`c
+  █▀▀ █▀█ █ █▀▀ █▄█ █▀█ █▄░█
+  ██▄ █▀▀ █ █▄▄ ░█░ █▄█ █░▀█
+`l`f
+-━
+`f
+
+Epicyon is a fediverse server suitable for self-hosting a small number of accounts on low power systems.
+
+Key features:
+
+ * Open standards: HTML, CSS, ActivityPub S2S and C2S, RSS, CalDAV.
+ * Supports common web browsers and shell browsers.
+ * Will not drain your mobile or laptop battery.
+ * Customisable themes. It doesn't have to look bland.
+ * Does not require much RAM, either on server or client.
+ * Suitable for installation on single board computers.
+ * No timeline algorithms.
+ * No javascript.
+ * No database. Data stored as ordinary files.
+ * No fashionable web frameworks. "Boring by design".
+ * No blockchain or AI garbage.
+ * Written in Python, with few dependencies.
+ * Can also federate on Tor, i2p, and yggdrasil.
+ * AGPL license, which big tech hates.
+
+Epicyon is for people who are tired of enshittified Big Tech garbage and just want to DIY their online social experience without much fuss or expense. Think "water cooler discussions" rather than "doomscrolling" and "shouting into the void", in which you're mainly just reading and responding to the posts of people that you're following.
+
+>> An Internet of People, Not Corporate Agendas
+
+Epicyon is written in Python with a HTML+CSS web interface and uses no javascript which makes display in a web browser very lightweight. It can run as a Progressive Web App on mobile. Just say "no" to boring social media sites packed with generic adverts and zombified corporate influencers.
+
+Emojis, hashtags, photos, video and audio attachments, instance and account level blocking controls, moderation functions and reports are all supported. Build the community you want and avoid the stuff you don't. No ads. No blockchains or other Silicon Valley garbage.
+
+>> Community not Audience
+
+Corporate social media gives you an audience, with reach, celebrity, spectacle, lack of control, professional influencers, anxiety, alienation and competition. It's designed for fast growth regardless of social consequences, often where the contents of your feed or timeline is rigged rather than having anything to do with what you are interested in. Epicyon is designed for community, in which you have more control over who you're associating with. The community approach is the better way to build a habitable internet for the long term.
+
+>> Links
+
+ * `[Download (https)`https://libreserver.org/epicyon/epicyon.tar.gz]
+ * `[Install (https)`https://libreserver.org/epicyon/#install]
+ * `[Repo (https)`https://gitlab.com/bashrc2/epicyon]
+ * `[Donate (https)`https://www.patreon.com/freedombone]
+ * `[Features`:/page/epicyon/features.mu]
+ * `[How to install`:/page/epicyon/install.mu]
+ * `[Upgrading`:/page/epicyon/upgrade.mu]
