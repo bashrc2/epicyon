@@ -384,6 +384,7 @@ def html_profile_after_search(authorized: bool,
     pixelfed = get_pixelfed(profile_json)
     donate_url = get_donation_url(profile_json)
     blog_url = get_blog_address(profile_json)
+    lxmf_address = get_lxmf_address(profile_json)
 
     moved_to = ''
     if profile_json.get('movedTo') or profile_json.get('copiedTo'):
@@ -523,6 +524,7 @@ def html_profile_after_search(authorized: bool,
                                          joined_date, actor_proxied,
                                          attached_shared_items,
                                          website_url, blog_url,
+                                         lxmf_address,
                                          repo_url, send_blocks_str,
                                          authorized,
                                          person_url, no_of_books,
@@ -930,6 +932,7 @@ def _get_profile_header_after_search(base_dir: str,
                                      attached_shared_items: str,
                                      website_url: str,
                                      blog_url: str,
+                                     lxmf_address: str,
                                      repo_url: str,
                                      send_blocks_str: str,
                                      authorized: bool,
@@ -1061,6 +1064,9 @@ def _get_profile_header_after_search(base_dir: str,
             blog_str = translate['Blog']
         html_str += '  <p>' + blog_str + ': <a href="' + blog_url + '">' + \
             blog_url + '</a></p>\n'
+    if lxmf_address:
+        html_str += \
+            '  <p>LXMF: ' + lxmf_address + '</p>\n'
     if youtube:
         html_str += '  <p>YouTube: <a href="' + youtube + '">' + \
             youtube + '</a></p>\n'

@@ -13,6 +13,7 @@ import pyqrcode
 from utils import get_attachment_property_value
 from utils import acct_dir
 from utils import load_json
+from utils import string_contains
 
 VALID_LXMF_CHARS = set('0123456789abcdefghijklmnopqrstuvwxyz')
 
@@ -75,7 +76,9 @@ def get_lxmf_address(actor_json: {}) -> str:
             name_value = property_value['schema:name']
         if not name_value:
             continue
-        if not name_value.lower().startswith('lxmf'):
+        name_value_lower = name_value.lower()
+        if not string_contains(name_value_lower,
+                               ('lxmf', 'reticulum', 'nomadnet')):
             continue
         if not property_value.get('type'):
             continue
