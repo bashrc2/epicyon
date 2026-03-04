@@ -94,6 +94,7 @@ chmod +x /usr/bin/yggdrasil-address
 
 echo 'Creating yggdrasil configuration'
 sudo yggdrasil -genconf | sudo tee /etc/yggdrasil/yggdrasil.conf
+sudo chown yggdrasil:yggdrasil /etc/yggdrasil/yggdrasil.conf
 sudo systemctl enable yggdrasil
 sudo systemctl restart yggdrasil
 
