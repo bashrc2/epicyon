@@ -68,6 +68,8 @@ server {
 }
 server {
     listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
     server_name $domain;
     gzip on;
     gzip_disable "msie6";
