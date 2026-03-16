@@ -375,3 +375,5 @@ To run the network tests. These simulate instances exchanging messages.
 ``` bash
 python3 epicyon.py --testsnetwork
 ```
+
+<img src="https://gitlab.com/bashrc2/epicyon/-/raw/main/img/noai.gif" width="10%" alt="No AI Allowed"/> <img src="https://gitlab.com/bashrc2/epicyon/-/raw/main/img/hand_coded.gif" width="10%" alt="Hand Coded"/> <img src="https://gitlab.com/bashrc2/epicyon/-/raw/main/img/dontfeedai.gif" width="10%" alt="Don't feed the AI"/> <img src="https://gitlab.com/bashrc2/epicyon/-/raw/main/img/writtenbyhuman.png" width="10%" alt="Written by a human not by an AI"/>
