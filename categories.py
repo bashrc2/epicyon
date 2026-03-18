@@ -228,6 +228,8 @@ def _valid_hashtag_category(category: str) -> bool:
         return False
 
     for char in get_invalid_characters():
+        if ord(char) == 0:
+            return False
         if char in category:
             return False
 
