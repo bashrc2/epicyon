@@ -230,8 +230,10 @@ def _valid_hashtag_category(category: str) -> bool:
         if char in category:
             return False
 
-    # too long
+    # too long or too short
     if len(category) > 40:
+        return False
+    elif len(category) == 0:
         return False
 
     return True
