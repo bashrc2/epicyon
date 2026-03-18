@@ -13,6 +13,7 @@ from timeFunctions import date_utcnow
 from timeFunctions import date_epoch
 from utils import data_dir
 from utils import replace_strings
+from utils import get_invalid_characters
 
 MAX_TAG_LENGTH = 42
 
@@ -226,6 +227,10 @@ def _valid_hashtag_category(category: str) -> bool:
     if not category:
         return False
 
+    for char in get_invalid_characters():
+        if char in category:
+            return False
+
     for char in INVALID_HASHTAG_CHARS:
         if char in category:
             return False
@@ -233,7 +238,7 @@ def _valid_hashtag_category(category: str) -> bool:
     # too long or too short
     if len(category) > 40:
         return False
-    elif len(category) == 0:
+    if len(category) == 0:
         return False
 
     return True

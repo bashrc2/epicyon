@@ -1017,6 +1017,12 @@ def evil_nickname(sending_actor_nickname: str) -> bool:
     return False
 
 
+def get_invalid_characters() -> []:
+    """Returns the list of invalid characters
+    """
+    return INVALID_CHARACTERS
+
+
 def contains_invalid_chars(json_str: str) -> bool:
     """Does the given json string contain invalid characters?
     """
