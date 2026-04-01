@@ -2,3 +2,4 @@
 git pull
 chown -R epicyon:epicyon *
 chmod 644 *.py
+systemctl restart epicyon
