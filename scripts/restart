@@ -1,0 +1,4 @@
+#!/bin/bash
+git pull
+chown -R epicyon:epicyon *
+chmod 644 *.py
