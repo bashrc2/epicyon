@@ -203,7 +203,7 @@ def is_evil(domain: str) -> bool:
     # declaring itself to be hostile
     evil_emporium = (
         'nazi', 'extremis', 'extreemis', 'gendercritic',
-        'kiwifarm', 'illegal', 'raplst', 'rapist',
+        'kiwifarm', 'illegal', 'raplst', 'rapist', 'loli.',
         'rapl.st', 'rapi.st', 'antivax', 'plandemic', 'terror'
     )
     for hostile_str in evil_emporium:
