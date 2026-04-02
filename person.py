@@ -1641,9 +1641,10 @@ def deactivate_account(base_dir: str, nickname: str, domain: str) -> bool:
     return os.path.isdir(deactivated_dir + '/' + nickname + '@' + domain)
 
 
-def activate_account2(base_dir: str, nickname: str, domain: str) -> None:
+def activate_account2(base_dir: str, nickname: str, domain: str) -> bool:
     """Makes a deactivated account available
     """
+    activated = False
     handle = nickname + '@' + domain
 
     deactivated_dir = base_dir + '/deactivated'
@@ -1652,6 +1653,7 @@ def activate_account2(base_dir: str, nickname: str, domain: str) -> None:
         account_dir = acct_handle_dir(base_dir, handle)
         if not os.path.isdir(account_dir):
             shutil.move(deactivated_account_dir, account_dir)
+        activated = True
 
     deactivated_webfinger_dir = base_dir + '/wfdeactivated'
     if os.path.isfile(deactivated_webfinger_dir + '/' + handle + '.json'):
@@ -1665,6 +1667,7 @@ def activate_account2(base_dir: str, nickname: str, domain: str) -> None:
                         base_dir + '/sharefiles/' + nickname)
 
     refresh_newswire(base_dir)
+    return activated
 
 
 def is_person_snoozed(base_dir: str, nickname: str, domain: str,
