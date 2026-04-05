@@ -275,8 +275,17 @@ def contains_suspicious_headers(headers: {}) -> bool:
        'think-lang' in headers or \
        'Think-lang' in headers:
         return True
+
     headers_str = str(headers)
     sus_strings = ('../../', '.php/', 'index.php', 'passwd=', 'PHPSESSID')
     if string_contains(headers_str, sus_strings):
         return True
+
+    # check for bad cookies
+    if 'Cookie:' in headers_str:
+        cookie_str = headers_str.split('Cookie:')[1]
+        if '=' in cookie_str:
+            cookie_name = cookie_str.split('=')[0].strip()
+            if cookie_name != 'epicyon':
+                return True
     return False
