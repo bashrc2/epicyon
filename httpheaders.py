@@ -282,10 +282,14 @@ def contains_suspicious_headers(headers: {}) -> bool:
         return True
 
     # check for bad cookies
-    if 'Cookie:' in headers_str:
-        cookie_str = headers_str.split('Cookie:')[1]
-        if '=' in cookie_str:
-            cookie_name = cookie_str.split('=')[0].strip()
-            if cookie_name != 'epicyon':
-                return True
+    cookie_fields = ('Cookie:', 'cookie:')
+    for cookie_fieldname in cookie_fields:
+        if cookie_fieldname not in headers_str:
+            continue
+        cookie_str = headers_str.split(cookie_fieldname)[1]
+        if '=' not in cookie_str:
+            continue
+        cookie_name = cookie_str.split('=')[0].strip()
+        if cookie_name != 'epicyon':
+            return True
     return False
