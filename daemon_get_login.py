@@ -26,6 +26,9 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
                              news_instance: bool, fitness: {}) -> bool:
     """Redirects to the login screen if necessary
     """
+    if authorized:
+        return False
+
     divert_to_login_screen = False
     non_login_paths = ('/media/', '/ontologies/', '/data/', '/sharefiles/',
                        '/statuses/', '/emoji/', '/tags/', '/tagmaps/',
@@ -43,7 +46,7 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
                 if string_ends_with(path, possible_endings):
                     divert_to_login_screen = False
 
-    if divert_to_login_screen and not authorized:
+    if divert_to_login_screen:
         divert_path = '/login'
         if news_instance:
             # for news instances if not logged in then show the

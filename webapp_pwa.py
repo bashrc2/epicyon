@@ -1,4 +1,4 @@
-__filename__ = "pwa.py"
+__filename__ = "webapp_pwa.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.7.0"
