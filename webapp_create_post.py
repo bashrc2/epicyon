@@ -606,6 +606,7 @@ def html_new_post(edit_post_params: {},
             translate['Enter the choices for your question below.'] + \
             '</h1>\n'
 
+    # load post template if it exists
     dir_str = data_dir(base_dir)
     if os.path.isfile(dir_str + '/newpost.txt'):
         try:

@@ -931,15 +931,16 @@ def html_edit_blog(media_instance: bool, translate: {},
     edit_blog_text = \
         '<h1">' + translate['Write your post text below.'] + '</h1>'
 
+    # load blog template if it exists
     dir_str = data_dir(base_dir)
-    if os.path.isfile(dir_str + '/newpost.txt'):
+    if os.path.isfile(dir_str + '/newblog.txt'):
         try:
-            with open(dir_str + '/newpost.txt', 'r',
+            with open(dir_str + '/newblog.txt', 'r',
                       encoding='utf-8') as fp_blog:
                 edit_blog_text: str = '<p>' + fp_blog.read() + '</p>'
         except OSError:
             print('EX: html_edit_blog unable to read ' +
-                  dir_str + '/newpost.txt')
+                  dir_str + '/newblog.txt')
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
