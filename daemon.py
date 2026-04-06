@@ -567,7 +567,7 @@ def run_shares_expire_watchdog(project_version: str, httpd) -> None:
 
 
 def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
-    """Loads shared items access tokens for each account
+    """Loads access tokens and shared items tokens for each account
     """
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
