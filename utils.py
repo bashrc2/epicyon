@@ -4104,6 +4104,22 @@ def get_instance_url(calling_domain: str,
     return instance_url
 
 
+def check_mixed_user_agent(ua_str: str):
+    """Check if there are contradicting browsers within the user agent
+    """
+    if not ua_str:
+        return False
+
+    client_user_agents = ('Mozilla', 'Chrome', 'Safari')
+    matching_agents = []
+    for client_ua in client_user_agents:
+        if client_ua in ua_str:
+            matching_agents.append(client_ua)
+    if len(matching_agents) > 1:
+        return True
+    return False
+
+
 def check_bad_path(path: str):
     """for http GET or POST check that the path looks valid
     """

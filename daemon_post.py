@@ -12,6 +12,7 @@ import errno
 import json
 from socket import error as SocketError
 from flags import is_corporate
+from utils import check_mixed_user_agent
 from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import replace_strings
@@ -281,6 +282,12 @@ def daemon_http_post(self) -> None:
         return
 
     ua_str = get_user_agent(self)
+
+    # contradictory browsers within the user agent indicate
+    # malevolent intent
+    if check_mixed_user_agent(ua_str):
+        http_400(self)
+        return
 
     if ua_str:
         if 'Epicyon/' in ua_str:
