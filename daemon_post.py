@@ -286,6 +286,8 @@ def daemon_http_post(self) -> None:
     # contradictory browsers within the user agent indicate
     # malevolent intent
     if check_mixed_user_agent(ua_str):
+        print('POST HTTP contradictory browsers within user agent ' +
+              str(self.headers))
         http_400(self)
         return
 
