@@ -96,7 +96,6 @@ from flags import is_artist
 from flags import is_blog_post
 from timeFunctions import date_utcnow
 from timeFunctions import get_current_time_int
-from utils import check_mixed_user_agent
 from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import replace_strings
@@ -382,14 +381,6 @@ def daemon_http_get(self) -> None:
                 return
 
     ua_str = get_user_agent(self)
-
-    # contradictory browsers within the user agent indicate
-    # malevolent intent
-    if check_mixed_user_agent(ua_str):
-        print('GET HTTP contradictory browsers within user agent ' +
-              str(self.headers).replace('\n', ' '))
-        http_400(self)
-        return
 
     if ua_str:
         if 'Epicyon/' in ua_str:
