@@ -387,7 +387,7 @@ def daemon_http_get(self) -> None:
     # malevolent intent
     if check_mixed_user_agent(ua_str):
         print('GET HTTP contradictory browsers within user agent ' +
-              str(self.headers))
+              str(self.headers).replace('\n', ' '))
         http_400(self)
         return
 
