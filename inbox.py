@@ -3811,7 +3811,11 @@ def run_inbox_queue(server,
         # if queue_json['post'].get('id'):
         #     queue_json['post']['id'] = queue_json['id']
 
-        if receive_undo(base_dir, queue_json['post'],
+        curr_post_json = queue_json['post']
+        curr_nickname = queue_json['postNickname']
+        curr_destination = queue_json['destination']
+
+        if receive_undo(base_dir, curr_post_json,
                         debug, domain, onion_domain, i2p_domain,
                         yggdrasil_domain):
             print('Queue: Undo accepted from ' + key_id)
@@ -3837,7 +3841,7 @@ def run_inbox_queue(server,
                                    send_threads, post_log,
                                    cached_webfingers,
                                    person_cache,
-                                   queue_json['post'],
+                                   curr_post_json,
                                    federation_list,
                                    debug, project_version,
                                    max_followers, domain,
@@ -3867,7 +3871,7 @@ def run_inbox_queue(server,
         if debug:
             print('DEBUG: No follow requests')
 
-        if receive_accept_reject(base_dir, domain, queue_json['post'],
+        if receive_accept_reject(base_dir, domain, curr_post_json,
                                  federation_list, debug,
                                  domain, onion_domain, i2p_domain,
                                  yggdrasil_domain):
@@ -3886,7 +3890,7 @@ def run_inbox_queue(server,
             inbox_start_time = time.time()
             continue
 
-        if receive_quote_request(queue_json['post'],
+        if receive_quote_request(curr_post_json,
                                  federation_list,
                                  debug, domain,
                                  session, session_onion, session_i2p,
@@ -3923,8 +3927,8 @@ def run_inbox_queue(server,
                                  http_prefix, domain, port,
                                  cached_webfingers,
                                  person_cache,
-                                 queue_json['post'],
-                                 queue_json['postNickname'],
+                                 curr_post_json,
+                                 curr_nickname,
                                  debug,
                                  signing_priv_key_pem,
                                  send_threads,
@@ -3959,8 +3963,8 @@ def run_inbox_queue(server,
                                    domain, port,
                                    cached_webfingers,
                                    person_cache,
-                                   queue_json['post'],
-                                   queue_json['postNickname'],
+                                   curr_post_json,
+                                   curr_nickname,
                                    debug,
                                    max_mentions, max_emoji,
                                    allow_local_network_access,
@@ -4003,7 +4007,7 @@ def run_inbox_queue(server,
 
         # get recipients list
         recipients_dict, recipients_dict_followers = \
-            _inbox_post_recipients(base_dir, queue_json['post'],
+            _inbox_post_recipients(base_dir, curr_post_json,
                                    domain, port, debug,
                                    onion_domain, i2p_domain,
                                    yggdrasil_domain)
@@ -4054,9 +4058,9 @@ def run_inbox_queue(server,
         # individual inboxes
         if len(recipients_dict_followers.items()) > 0:
             shared_inbox_post_filename = \
-                queue_json['destination'].replace(inbox_handle, inbox_handle)
+                curr_destination.replace(inbox_handle, inbox_handle)
             if not os.path.isfile(shared_inbox_post_filename):
-                save_json(queue_json['post'], shared_inbox_post_filename)
+                save_json(curr_post_json, shared_inbox_post_filename)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'shared_inbox_save',
                                 debug)
@@ -4073,7 +4077,7 @@ def run_inbox_queue(server,
         # for posts addressed to specific accounts
         for handle, _ in recipients_dict.items():
             destination = \
-                queue_json['destination'].replace(inbox_handle, handle)
+                curr_destination.replace(inbox_handle, handle)
             languages_understood: list[str] = []
             mitm = False
             if queue_json.get('mitm'):
@@ -4089,7 +4093,7 @@ def run_inbox_queue(server,
                                  session, session_onion, session_i2p,
                                  session_yggdrasil,
                                  key_id, handle,
-                                 queue_json['post'],
+                                 curr_post_json,
                                  base_dir, http_prefix,
                                  send_threads, post_log,
                                  cached_webfingers,
@@ -4125,7 +4129,7 @@ def run_inbox_queue(server,
                                 debug)
             inbox_start_time = time.time()
             if debug:
-                pprint(queue_json['post'])
+                pprint(curr_post_json)
                 print('Queue: Queue post accepted')
         if os.path.isfile(queue_filename):
             try:
