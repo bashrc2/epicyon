@@ -1851,39 +1851,39 @@ def _former_representations_to_edits(base_dir: str,
     return True
 
 
-def _inbox_after_initial(server, inbox_start_time,
-                         recent_posts_cache: {}, max_recent_posts: int,
-                         session, session_onion, session_i2p,
-                         session_yggdrasil,
-                         key_id: str, handle: str, message_json: {},
-                         base_dir: str, http_prefix: str, send_threads: [],
-                         post_log: [], cached_webfingers: {}, person_cache: {},
-                         domain: str, onion_domain: str, i2p_domain: str,
-                         yggdrasil_domain: str,
-                         port: int, federation_list: [], debug: bool,
-                         queue_filename: str, destination_filename: str,
-                         max_replies: int, allow_deletion: bool,
-                         max_mentions: int, max_emoji: int, translate: {},
-                         unit_test: bool,
-                         yt_replace_domain: str,
-                         twitter_replacement_domain: str,
-                         show_published_date_only: bool,
-                         allow_local_network_access: bool,
-                         peertube_instances: [],
-                         last_bounce_message: [],
-                         theme_name: str, system_language: str,
-                         max_like_count: int,
-                         signing_priv_key_pem: str,
-                         default_reply_interval_hrs: int,
-                         cw_lists: {}, lists_enabled: str,
-                         dm_license_url: str,
-                         languages_understood: [],
-                         mitm: bool, bold_reading: bool,
-                         dogwhistles: {},
-                         max_hashtags: int, buy_sites: {},
-                         sites_unavailable: [],
-                         mitm_servers: [],
-                         instance_software: {}) -> bool:
+def _inbox_third_stage(server, inbox_start_time,
+                       recent_posts_cache: {}, max_recent_posts: int,
+                       session, session_onion, session_i2p,
+                       session_yggdrasil,
+                       key_id: str, handle: str, message_json: {},
+                       base_dir: str, http_prefix: str, send_threads: [],
+                       post_log: [], cached_webfingers: {}, person_cache: {},
+                       domain: str, onion_domain: str, i2p_domain: str,
+                       yggdrasil_domain: str,
+                       port: int, federation_list: [], debug: bool,
+                       queue_filename: str, destination_filename: str,
+                       max_replies: int, allow_deletion: bool,
+                       max_mentions: int, max_emoji: int, translate: {},
+                       unit_test: bool,
+                       yt_replace_domain: str,
+                       twitter_replacement_domain: str,
+                       show_published_date_only: bool,
+                       allow_local_network_access: bool,
+                       peertube_instances: [],
+                       last_bounce_message: [],
+                       theme_name: str, system_language: str,
+                       max_like_count: int,
+                       signing_priv_key_pem: str,
+                       default_reply_interval_hrs: int,
+                       cw_lists: {}, lists_enabled: str,
+                       dm_license_url: str,
+                       languages_understood: [],
+                       mitm: bool, bold_reading: bool,
+                       dogwhistles: {},
+                       max_hashtags: int, buy_sites: {},
+                       sites_unavailable: [],
+                       mitm_servers: [],
+                       instance_software: {}) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     # if this is a clearnet instance then replace any onion/i2p
@@ -1897,7 +1897,7 @@ def _inbox_after_initial(server, inbox_start_time,
                     message_json = json.loads(message_str)
                 except json.decoder.JSONDecodeError as ex:
                     print('EX: json decode error ' + str(ex) +
-                          ' from _inbox_after_initial onion ' +
+                          ' from _inbox_third_stage onion ' +
                           str(message_str))
                     inbox_start_time = time.time()
                     return False
@@ -1908,7 +1908,7 @@ def _inbox_after_initial(server, inbox_start_time,
                     message_json = json.loads(message_str)
                 except json.decoder.JSONDecodeError as ex:
                     print('EX: json decode error ' + str(ex) +
-                          ' from _inbox_after_initial i2p ' +
+                          ' from _inbox_third_stage i2p ' +
                           str(message_str))
                     inbox_start_time = time.time()
                     return False
@@ -1919,7 +1919,7 @@ def _inbox_after_initial(server, inbox_start_time,
                     message_json = json.loads(message_str)
                 except json.decoder.JSONDecodeError as ex:
                     print('EX: json decode error ' + str(ex) +
-                          ' from _inbox_after_initial yggdrasil ' +
+                          ' from _inbox_third_stage yggdrasil ' +
                           str(message_str))
                     inbox_start_time = time.time()
                     return False
@@ -2531,7 +2531,7 @@ def _inbox_after_initial(server, inbox_start_time,
                               encoding='utf-8') as fp_mitm:
                         fp_mitm.write('\n')
                 except OSError:
-                    print('EX: _inbox_after_initial unable to write ' +
+                    print('EX: _inbox_third_stage unable to write ' +
                           destination_filename_mitm)
 
             _low_frequency_post_notification(base_dir, http_prefix,
@@ -2552,7 +2552,7 @@ def _inbox_after_initial(server, inbox_start_time,
                               encoding='utf-8') as fp_mute:
                         fp_mute.write('\n')
                 except OSError:
-                    print('EX: _inbox_after_initial unable to write 2 ' +
+                    print('EX: _inbox_third_stage unable to write 2 ' +
                           destination_filename_muted)
 
             # is this an edit of a previous post?
@@ -3617,44 +3617,44 @@ def _inbox_second_stage(curr_post_json: {},
             acct_handle_dir(base_dir, handle) + '/.boldReading'
         if os.path.isfile(bold_reading_filename):
             bold_reading = True
-        _inbox_after_initial(server, inbox_start_time,
-                             recent_posts_cache,
-                             max_recent_posts,
-                             session, session_onion, session_i2p,
-                             session_yggdrasil,
-                             key_id, handle,
-                             curr_post_json,
-                             base_dir, http_prefix,
-                             send_threads, post_log,
-                             cached_webfingers,
-                             person_cache, domain,
-                             onion_domain, i2p_domain,
-                             yggdrasil_domain,
-                             port, federation_list,
-                             debug,
-                             queue_filename, destination,
-                             max_replies, allow_deletion,
-                             max_mentions, max_emoji,
-                             translate, unit_test,
-                             yt_replace_domain,
-                             twitter_replacement_domain,
-                             show_published_date_only,
-                             allow_local_network_access,
-                             peertube_instances,
-                             last_bounce_message,
-                             theme_name, system_language,
-                             max_like_count,
-                             signing_priv_key_pem,
-                             default_reply_interval_hrs,
-                             cw_lists, lists_enabled,
-                             dm_license_url,
-                             languages_understood, mitm,
-                             bold_reading, dogwhistles,
-                             max_hashtags, server.buy_sites,
-                             server.sites_unavailable,
-                             server.mitm_servers,
-                             server.instance_software)
-        fitness_performance(inbox_start_time, server.fitness,
+            _inbox_third_stage(server, inbox_start_time,
+                               recent_posts_cache,
+                               max_recent_posts,
+                               session, session_onion, session_i2p,
+                               session_yggdrasil,
+                               key_id, handle,
+                               curr_post_json,
+                               base_dir, http_prefix,
+                               send_threads, post_log,
+                               cached_webfingers,
+                               person_cache, domain,
+                               onion_domain, i2p_domain,
+                               yggdrasil_domain,
+                               port, federation_list,
+                               debug,
+                               queue_filename, destination,
+                               max_replies, allow_deletion,
+                               max_mentions, max_emoji,
+                               translate, unit_test,
+                               yt_replace_domain,
+                               twitter_replacement_domain,
+                               show_published_date_only,
+                               allow_local_network_access,
+                               peertube_instances,
+                               last_bounce_message,
+                               theme_name, system_language,
+                               max_like_count,
+                               signing_priv_key_pem,
+                               default_reply_interval_hrs,
+                               cw_lists, lists_enabled,
+                               dm_license_url,
+                               languages_understood, mitm,
+                               bold_reading, dogwhistles,
+                               max_hashtags, server.buy_sites,
+                               server.sites_unavailable,
+                               server.mitm_servers,
+                               server.instance_software)
+            fitness_performance(inbox_start_time, server.fitness,
                             'INBOX', 'handle_after_initial',
                             debug)
         inbox_start_time = time.time()
