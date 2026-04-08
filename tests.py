@@ -156,6 +156,7 @@ from media import get_attachment_media_type
 from delete import send_delete_via_server
 from inbox import valid_inbox
 from inbox import valid_inbox_filenames
+from inbox import split_post_collection
 from categories import guess_hashtag_category
 from content import remove_link_trackers_from_content
 from content import format_mixed_right_to_left
@@ -9698,6 +9699,62 @@ def _test_yggdrasil_addresses() -> None:
     assert not is_yggdrasil_url(text)
 
 
+def _test_post_collection() -> None:
+    # https://codeberg.org/fediverse/fep/src/branch/main/fep/1a11/fep-1a11.md
+    print('split post collection')
+    post_json = {
+        "actor": "https://lemmings/c/gargleblaster",
+        "to": [
+            "https://www.w3.org/ns/activitystreams#Public"
+        ],
+        "object": {
+            "type": "OrderedCollection",
+            "id": "https://lemmings/activities/12345",
+            "totalItems": 3,
+            "orderedItems": [
+                {
+                    "id": "https://lemmings/activities/like/6252183",
+                    "actor": "https://lemmings/u/SpaceNo",
+                    "object": "https://suckerpunch/comment/2965",
+                    "type": "Like",
+                    "audience": "https://lemmings/c/gargleblaster"
+                },
+                {
+                    "id": "https://lemmings/activities/like/3563",
+                    "actor": "https://lemmings/u/Peter",
+                    "object": "https://suckerpunch/comment/2965",
+                    "type": "Like",
+                    "audience": "https://lemmings/c/gargleblaster"
+                },
+                {
+                    "id": "https://lemmings/activities/like/7243",
+                    "actor": "https://lemmings/u/Rimu",
+                    "object": "https://suckerpunch/comment/2965",
+                    "type": "Like",
+                    "audience": "https://lemmings/c/gargleblaster"
+                }
+            ],
+        },
+        "cc": [
+            "https://lemmings/c/gargleblaster/followers"
+        ],
+        "type": "Announce",
+        "id": "https://lemmings/activities/announce/7643274",
+        "@context": []
+    }
+    posts_list = split_post_collection(post_json)
+    assert len(posts_list) == 3
+    assert posts_list[0]['type'] == "Announce"
+    assert posts_list[0]['object']['id'] == \
+        "https://lemmings/activities/like/6252183"
+    assert posts_list[1]['type'] == "Announce"
+    assert posts_list[1]['object']['id'] == \
+        "https://lemmings/activities/like/3563"
+    assert posts_list[2]['type'] == "Announce"
+    assert posts_list[2]['object']['id'] == \
+        "https://lemmings/activities/like/7243"
+
+
 def run_all_tests():
     base_dir = os.getcwd()
     data_dir_testing(base_dir)
@@ -9716,6 +9773,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_post_collection()
     _test_micron_blog(base_dir)
     _test_yggdrasil_addresses()
     _test_replace_gemini_links()

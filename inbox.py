@@ -3358,7 +3358,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                                     system_language, mitm_servers)
 
 
-def _split_post_collection(collection_post_json: {}) -> []:
+def split_post_collection(collection_post_json: {}) -> []:
     """Splits a collection post up into separate posts
     https://codeberg.org/fediverse/fep/src/branch/main/fep/1a11/fep-1a11.md
     """
@@ -3844,7 +3844,7 @@ def run_inbox_queue(server,
 
         # if the post contains a collection of posts then split it up
         remove_queue_item = False
-        posts_list_json = _split_post_collection(queue_json['post'])
+        posts_list_json = split_post_collection(queue_json['post'])
         for curr_post_json in posts_list_json:
 
             if receive_undo(base_dir, curr_post_json,
