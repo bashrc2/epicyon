@@ -14,6 +14,7 @@ from flags import is_quote_toot
 from status import actor_status_expired
 from quote import get_quote_toot_url
 from timeFunctions import get_account_timezone
+from utils import valid_nickname
 from utils import get_mutuals_of_person
 from utils import get_actor_from_post_id
 from utils import contains_invalid_actor_url_chars
@@ -1930,6 +1931,14 @@ def receive_announce(recent_posts_cache: {},
         if debug:
             print('DEBUG: announced domain is blocked')
         return False
+    object_nickname = get_nickname_from_actor(announce_url)
+    if object_nickname:
+        if not valid_nickname(object_domain, object_nickname):
+            print('WARN: receive_announce invalid nickname ' +
+                  str(object_nickname) + '@' + str(object_domain) + ' ' +
+                  str(announce_url))
+            return False
+
     handle_dir = acct_handle_dir(base_dir, handle)
     if not os.path.isdir(handle_dir):
         print('DEBUG: unknown recipient of announce - ' + handle)
