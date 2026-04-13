@@ -29,6 +29,7 @@ from posts import add_to_field
 from status import actor_status_expired
 from status import get_actor_status
 from mitm import detect_mitm
+from utils import valid_nickname
 from utils import is_yggdrasil_url
 from utils import data_dir
 from utils import load_json
@@ -271,6 +272,26 @@ def update_inbox_queue(self, nickname: str, message_json: {},
     if not isinstance(actor_url, str):
         print('INBOX: ' +
               'actor should be a string ' + str(actor_url))
+        http_400(self)
+        self.server.postreq_busy = False
+        return 3
+
+    actor_nickname = get_nickname_from_actor(actor_url)
+    if not actor_nickname:
+        print('INBOX: no actor nickname ' + actor_url)
+        http_400(self)
+        self.server.postreq_busy = False
+        return 3
+
+    actor_domain, _ = get_domain_from_actor(actor_url)
+    if not actor_domain:
+        print('INBOX: no actor domain ' + actor_url)
+        http_400(self)
+        self.server.postreq_busy = False
+        return 3
+
+    if not valid_nickname(actor_domain, actor_nickname):
+        print('INBOX: invalid nickname ' + actor_url)
         http_400(self)
         self.server.postreq_busy = False
         return 3
