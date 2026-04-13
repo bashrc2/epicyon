@@ -572,6 +572,9 @@ def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
                 return False
             post_url = remove_html(entry['url'])
         else:
+            if not isinstance(entry['text'], str):
+                print('podcast text is not a string ' + str(entry))
+                return False
             post_url = entry['text']
         if '://' not in post_url:
             return False
