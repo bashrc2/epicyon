@@ -1879,8 +1879,10 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     """
     if debug:
         print('get_actor_json for ' + handle)
-    original_actor = handle
+    original_actor: str = handle
     group_account = False
+    nickname: str = ''
+    domain: str = ''
 
     # try to determine the users path
     detected_users_path = _detect_users_path(handle)
@@ -1941,6 +1943,13 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
         domain = remove_eol(domain)
+
+    if not nickname or not domain:
+        return None, None
+
+    if not valid_nickname(domain, nickname):
+        print('WARN: get_actor_json invalid nickname ' + nickname)
+        return None, None
 
     cached_webfingers = {}
     proxy_type = None
