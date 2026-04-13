@@ -291,7 +291,7 @@ def update_inbox_queue(self, nickname: str, message_json: {},
         return 3
 
     if not valid_nickname(actor_domain, actor_nickname):
-        print('INBOX: invalid nickname ' + actor_url)
+        print('INBOX: invalid nickname ' + str(actor_url))
         http_400(self)
         self.server.postreq_busy = False
         return 3

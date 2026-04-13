@@ -3299,7 +3299,8 @@ def _command_options() -> None:
                 sys.exit()
 
         if not valid_nickname(domain, nickname):
-            print(nickname + ' is a reserved name. Use something different.')
+            print(str(nickname) +
+                  ' is an invalid nickname. Use something different.')
             sys.exit()
 
         if not argb.password:
@@ -3349,7 +3350,8 @@ def _command_options() -> None:
             # remove preceding group indicator
             nickname = nickname[1:]
         if not valid_nickname(domain, nickname):
-            print(nickname + ' is a reserved name. Use something different.')
+            print(str(nickname) +
+                  ' is an invalid nickname. Use something different.')
             sys.exit()
         if not argb.password:
             argb.password = getpass.getpass('Password: ')

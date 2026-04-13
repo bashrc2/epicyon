@@ -662,7 +662,7 @@ def register_account(base_dir: str, http_prefix: str, domain: str, port: int,
     if _account_exists(base_dir, nickname, domain):
         return False
     if not valid_nickname(domain, nickname):
-        print('REGISTER: Nickname ' + nickname + ' is invalid')
+        print('REGISTER: Nickname ' + str(nickname) + ' is invalid')
         return False
     if len(password) < 8:
         print('REGISTER: Password should be at least 8 characters')
@@ -1948,7 +1948,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
         return None, None
 
     if not valid_nickname(domain, nickname):
-        print('WARN: get_actor_json invalid nickname ' + nickname)
+        print('WARN: get_actor_json invalid nickname ' + str(nickname))
         return None, None
 
     cached_webfingers = {}
