@@ -559,7 +559,7 @@ def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
             print('WARN: podcast protocol is not a string ' +
                   str(entry))
             return False
-        if entry['protocol'].tolower() != 'activitypub':
+        if entry['protocol'].lower() != 'activitypub':
             return False
         if entry.get('uri'):
             if not isinstance(entry['uri'], str):
