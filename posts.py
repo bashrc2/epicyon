@@ -4603,71 +4603,6 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
     return box_items
 
 
-def is_image_media(session, base_dir: str, http_prefix: str,
-                   nickname: str, domain: str,
-                   post_json_object: {},
-                   yt_replace_domain: str,
-                   twitter_replacement_domain: str,
-                   allow_local_network_access: bool,
-                   recent_posts_cache: {}, debug: bool,
-                   system_language: str,
-                   domain_full: str, person_cache: {},
-                   signing_priv_key_pem: str,
-                   bold_reading: bool,
-                   show_vote_posts: bool,
-                   languages_understood: [],
-                   mitm_servers: []) -> bool:
-    """Returns true if the given post has attached image media
-    """
-    if post_json_object['type'] == 'Announce':
-        blocked_cache = {}
-        block_federated: list[str] = []
-        block_military = {}
-        block_government = {}
-        block_bluesky = {}
-        block_nostr = {}
-        post_json_announce = \
-            download_announce(session, base_dir, http_prefix,
-                              nickname, domain, post_json_object,
-                              __version__,
-                              yt_replace_domain,
-                              twitter_replacement_domain,
-                              allow_local_network_access,
-                              recent_posts_cache, debug,
-                              system_language,
-                              domain_full, person_cache,
-                              signing_priv_key_pem,
-                              blocked_cache, block_federated,
-                              bold_reading,
-                              show_vote_posts,
-                              languages_understood,
-                              mitm_servers,
-                              block_military,
-                              block_government,
-                              block_bluesky,
-                              block_nostr)
-        if post_json_announce:
-            post_json_object = post_json_announce
-    if post_json_object['type'] != 'Create':
-        return False
-    if not has_object_dict(post_json_object):
-        return False
-    if post_json_object['object'].get('moderationStatus'):
-        return False
-    if post_json_object['object']['type'] not in ('Note', 'Page', 'Event',
-                                                  'ChatMessage', 'Article'):
-        return False
-    post_attachments = get_post_attachments(post_json_object)
-    if not post_attachments:
-        return False
-    for attach in post_attachments:
-        if attach.get('mediaType') and attach.get('url'):
-            if string_starts_with(attach['mediaType'],
-                                  ('image/', 'audio/', 'video/')):
-                return True
-    return False
-
-
 def _add_post_string_to_timeline(post_str: str, boxname: str,
                                  posts_in_box: [], box_actor: str) -> bool:
     """ is this a valid timeline post?
@@ -6835,6 +6770,71 @@ def download_announce(session, base_dir: str, http_prefix: str,
         if save_json(post_json_object, announce_filename):
             return post_json_object
     return None
+
+
+def is_image_media(session, base_dir: str, http_prefix: str,
+                   nickname: str, domain: str,
+                   post_json_object: {},
+                   yt_replace_domain: str,
+                   twitter_replacement_domain: str,
+                   allow_local_network_access: bool,
+                   recent_posts_cache: {}, debug: bool,
+                   system_language: str,
+                   domain_full: str, person_cache: {},
+                   signing_priv_key_pem: str,
+                   bold_reading: bool,
+                   show_vote_posts: bool,
+                   languages_understood: [],
+                   mitm_servers: []) -> bool:
+    """Returns true if the given post has attached image media
+    """
+    if post_json_object['type'] == 'Announce':
+        blocked_cache = {}
+        block_federated: list[str] = []
+        block_military = {}
+        block_government = {}
+        block_bluesky = {}
+        block_nostr = {}
+        post_json_announce = \
+            download_announce(session, base_dir, http_prefix,
+                              nickname, domain, post_json_object,
+                              __version__,
+                              yt_replace_domain,
+                              twitter_replacement_domain,
+                              allow_local_network_access,
+                              recent_posts_cache, debug,
+                              system_language,
+                              domain_full, person_cache,
+                              signing_priv_key_pem,
+                              blocked_cache, block_federated,
+                              bold_reading,
+                              show_vote_posts,
+                              languages_understood,
+                              mitm_servers,
+                              block_military,
+                              block_government,
+                              block_bluesky,
+                              block_nostr)
+        if post_json_announce:
+            post_json_object = post_json_announce
+    if post_json_object['type'] != 'Create':
+        return False
+    if not has_object_dict(post_json_object):
+        return False
+    if post_json_object['object'].get('moderationStatus'):
+        return False
+    if post_json_object['object']['type'] not in ('Note', 'Page', 'Event',
+                                                  'ChatMessage', 'Article'):
+        return False
+    post_attachments = get_post_attachments(post_json_object)
+    if not post_attachments:
+        return False
+    for attach in post_attachments:
+        if attach.get('mediaType') and attach.get('url'):
+            if string_starts_with(attach['mediaType'],
+                                  ('image/', 'audio/', 'video/')):
+                return True
+    return False
 
 
 def is_muted_conv(base_dir: str, nickname: str, domain: str, post_id: str,
