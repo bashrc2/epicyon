@@ -6516,11 +6516,12 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   'valid domain or port number: ' +
                   str(post_json_object['object']))
             return None
-        if not valid_nickname(object_domain, object_nickname):
-            print('WARN: download_announce object invalid nickname ' +
-                  str(object_nickname) + '@' + str(object_domain) + ' ' +
-                  str(post_json_object).replace('\n', ' '))
-            return None
+        if object_nickname:
+            if not valid_nickname(object_domain, object_nickname):
+                print('WARN: download_announce object invalid nickname ' +
+                      str(object_nickname) + '@' + str(object_domain) + ' ' +
+                      str(post_json_object).replace('\n', ' '))
+                return None
         if is_blocked(base_dir, nickname, domain, object_nickname,
                       object_domain, None, block_federated):
             if object_nickname and object_domain:
