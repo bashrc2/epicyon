@@ -2627,6 +2627,8 @@ def _is_reserved_name(nickname: str) -> bool:
 def valid_nickname(domain: str, nickname: str) -> bool:
     """Is the given nickname valid?
     """
+    if not nickname or not domain:
+        return False
     if len(nickname) == 0:
         return False
     if len(nickname) > 30:
