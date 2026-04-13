@@ -5214,7 +5214,10 @@ def _test_valid_nick():
     nickname = 'myvalidnick'
     assert valid_nickname(domain, nickname)
 
-    nickname = 'my.invalid.nick'
+    nickname = 'my#invalid#nick'
+    assert not valid_nickname(domain, nickname)
+
+    nickname = 'invalid@nick'
     assert not valid_nickname(domain, nickname)
 
     nickname = 'myinvalidnick?'
