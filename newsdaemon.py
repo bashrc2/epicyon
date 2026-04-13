@@ -38,7 +38,6 @@ from utils import text_in_file
 from utils import data_dir
 from status import get_status_number
 from session import create_session
-from threads import begin_thread
 from threads import thread_with_trace
 from webapp_hashtagswarm import store_hash_tags
 from cache import clear_from_post_caches
