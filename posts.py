@@ -6499,7 +6499,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
             return None
         if not valid_nickname(actor_domain, actor_nickname):
             print('WARN: download_announce actor invalid nickname ' +
-                  str(actor_nickname) + '@' + str(actor_domain))
+                  str(actor_nickname) + '@' + str(actor_domain) + ' ' +
+                  str(post_json_object).replace('\n', ' '))
             return None
         if is_blocked(base_dir, nickname, domain,
                       actor_nickname, actor_domain,
@@ -6517,7 +6518,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
             return None
         if not valid_nickname(object_domain, object_nickname):
             print('WARN: download_announce object invalid nickname ' +
-                  str(object_nickname) + '@' + str(object_domain))
+                  str(object_nickname) + '@' + str(object_domain) + ' ' +
+                  str(post_json_object).replace('\n', ' '))
             return None
         if is_blocked(base_dir, nickname, domain, object_nickname,
                       object_domain, None, block_federated):
