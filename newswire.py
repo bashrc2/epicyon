@@ -555,12 +555,22 @@ def _valid_podcast_entry(base_dir: str, key: str, entry: {}) -> bool:
             if not entry.get('text'):
                 if not entry.get('url'):
                     return False
+        if not isinstance(entry['protocol'], str):
+            print('WARN: podcast protocol is not a string ' +
+                  str(entry))
+            return False
         if entry['protocol'].tolower() != 'activitypub':
             return False
         if entry.get('uri'):
+            if not isinstance(entry['uri'], str):
+                print('podcast uri is not a string ' + str(entry))
+                return False
             post_url = remove_html(entry['uri'])
         elif entry.get('url'):
-            post_url = remove_html(entry['uri'])
+            if not isinstance(entry['url'], str):
+                print('podcast url is not a string ' + str(entry))
+                return False
+            post_url = remove_html(entry['url'])
         else:
             post_url = entry['text']
         if '://' not in post_url:
