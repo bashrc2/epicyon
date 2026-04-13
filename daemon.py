@@ -1435,7 +1435,18 @@ def run_daemon(accounts_data_dir: str,
         print('THREAD: Creating inbox queue watchdog')
         httpd.thrWatchdog = \
             thread_with_trace(target=run_inbox_queue_watchdog,
-                              args=(project_version, httpd), daemon=True)
+                              args=(httpd, project_version,
+                                    base_dir, http_prefix,
+                                    domain, onion_domain, i2p_domain,
+                                    yggdrasil_domain,
+                                    port, proxy_type,
+                                    max_replies,
+                                    domain_max_posts_per_day,
+                                    account_max_posts_per_day,
+                                    allow_deletion, debug,
+                                    max_mentions, max_emoji,
+                                    unit_test,
+                                    verify_all_signatures), daemon=True)
         begin_thread(httpd.thrWatchdog, 'run_daemon thrWatchdog')
 
         print('THREAD: Creating scheduled post watchdog')

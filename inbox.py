@@ -118,6 +118,7 @@ from person import valid_sending_actor
 from fitnessFunctions import fitness_performance
 from content import reject_twitter_summary
 from content import load_dogwhistles
+from threads import thread_with_trace
 from threads import begin_thread
 from reading import store_book_events
 from inbox_receive import inbox_update_index
@@ -2851,11 +2852,21 @@ def _restore_queue_items(base_dir: str, queue: []) -> None:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
 
 
-def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
+def run_inbox_queue_watchdog(httpd, project_version: str,
+                             base_dir: str, http_prefix: str,
+                             domain: str, onion_domain: str, i2p_domain: str,
+                             yggdrasil_domain: str,
+                             port: int, proxy_type: str,
+                             max_replies: int,
+                             domain_max_posts_per_day: int,
+                             account_max_posts_per_day: int,
+                             allow_deletion: bool, debug: bool,
+                             max_mentions: int, max_emoji: int,
+                             unit_test: bool,
+                             verify_all_signatures: bool) -> None:
     """This tries to keep the inbox thread running even if it dies
     """
     print('THREAD: Starting inbox queue watchdog ' + project_version)
-    inbox_queue_original = httpd.thrInboxQueue.clone(run_inbox_queue)
     begin_thread(httpd.thrInboxQueue, 'run_inbox_queue_watchdog')
     while True:
         time.sleep(20)
@@ -2863,7 +2874,41 @@ def run_inbox_queue_watchdog(project_version: str, httpd) -> None:
             httpd.restart_inbox_queue_in_progress = True
             httpd.thrInboxQueue.kill()
             print('THREAD: restarting inbox queue watchdog')
-            httpd.thrInboxQueue = inbox_queue_original.clone(run_inbox_queue)
+
+            httpd.thrInboxQueue = \
+                thread_with_trace(target=run_inbox_queue,
+                                  args=(httpd, httpd.recent_posts_cache,
+                                        httpd.max_recent_posts,
+                                        project_version,
+                                        base_dir, http_prefix,
+                                        httpd.send_threads,
+                                        httpd.post_log,
+                                        httpd.cached_webfingers,
+                                        httpd.person_cache, httpd.inbox_queue,
+                                        domain, onion_domain, i2p_domain,
+                                        yggdrasil_domain,
+                                        port, proxy_type,
+                                        httpd.federation_list,
+                                        max_replies,
+                                        domain_max_posts_per_day,
+                                        account_max_posts_per_day,
+                                        allow_deletion, debug,
+                                        max_mentions, max_emoji,
+                                        httpd.translate, unit_test,
+                                        httpd.yt_replace_domain,
+                                        httpd.twitter_replacement_domain,
+                                        httpd.show_published_date_only,
+                                        httpd.max_followers,
+                                        httpd.allow_local_network_access,
+                                        httpd.peertube_instances,
+                                        verify_all_signatures,
+                                        httpd.theme_name,
+                                        httpd.system_language,
+                                        httpd.max_like_count,
+                                        httpd.signing_priv_key_pem,
+                                        httpd.default_reply_interval_hrs,
+                                        httpd.cw_lists,
+                                        httpd.max_hashtags), daemon=True)
             httpd.inbox_queue.clear()
             begin_thread(httpd.thrInboxQueue, 'run_inbox_queue_watchdog 2')
             print('Restarting inbox queue...')
