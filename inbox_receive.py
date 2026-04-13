@@ -1934,9 +1934,13 @@ def receive_announce(recent_posts_cache: {},
     object_nickname = get_nickname_from_actor(announce_url)
     if object_nickname:
         if not valid_nickname(object_domain, object_nickname):
-            print('WARN: receive_announce invalid nickname ' +
+            print('WARN: receive_announce object invalid nickname ' +
                   str(object_nickname) + '@' + str(object_domain) + ' ' +
                   str(announce_url))
+            return False
+        if is_blocked_nickname(base_dir, object_nickname):
+            if debug:
+                print('DEBUG: receive_announce object nickname is blocked')
             return False
 
     handle_dir = acct_handle_dir(base_dir, handle)
@@ -1970,21 +1974,14 @@ def receive_announce(recent_posts_cache: {},
               actor_nickname + '@' + actor_domain)
         return False
 
-    # also check the actor for the url being announced
-    announced_actor_nickname = get_nickname_from_actor(announce_url)
-    if not announced_actor_nickname:
-        print('WARN: _receive_announce no announced_actor_nickname')
-        return False
-    announced_actor_domain, _ = get_domain_from_actor(announce_url)
-    if not announced_actor_domain:
-        print('WARN: _receive_announce no announced_actor_domain')
-        return False
-    if is_blocked(base_dir, nickname, domain,
-                  announced_actor_nickname, announced_actor_domain,
-                  None, block_federated):
-        print('Receive announce object blocked for actor: ' +
-              announced_actor_nickname + '@' + announced_actor_domain)
-        return False
+    # also check the actor for the object url being announced
+    if object_nickname:
+        if is_blocked(base_dir, nickname, domain,
+                      object_nickname, object_domain,
+                      None, block_federated):
+            print('Receive announce object blocked for actor: ' +
+                  object_nickname + '@' + object_domain)
+            return False
 
     # is this post in the inbox or outbox of the account?
     post_filename = locate_post(base_dir, nickname, domain, announce_url)
