@@ -905,7 +905,7 @@ def run_newswire_watchdog(project_version: str, httpd) -> None:
         httpd.thrPostSchedule.clone(run_newswire_daemon)
     begin_thread(httpd.thrNewswireDaemon, 'run_newswire_watchdog')
     while True:
-        time.sleep(50)
+        time.sleep(200)
         if httpd.thrNewswireDaemon.is_alive():
             continue
         httpd.thrNewswireDaemon.kill()
