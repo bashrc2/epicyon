@@ -664,6 +664,17 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
                     podcast_properties[pod_key] = pod_entry
         ctr += 1
 
+    # itunes:duration rather than podcast:duration
+    if 'duration' not in podcast_properties:
+        if '<itunes:duration' in xml_item:
+            duration = xml_item.split('<itunes:duration')[1]
+            if '>' in duration:
+                duration = duration.split('>')[1]
+                if '<' in duration:
+                    duration = duration.split('<')[0]
+                    if duration.isdigit():
+                        podcast_properties['duration'] = duration
+
     # get the image for the podcast, if it exists
     podcast_episode_image = None
     episode_image_tags = ['<itunes:image', '<media:thumbnail']
