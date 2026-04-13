@@ -523,7 +523,7 @@ def _get_podcast_author(xml_item: str, xml_str: str) -> str:
     """ get podcast author if specified.
     """
     author = None
-    episode_author_tags = ['<itunes:author', '<author']
+    episode_author_tags = ['<podcast:person', '<itunes:author', '<author']
 
     for author_tag in episode_author_tags:
         item_str = xml_item
