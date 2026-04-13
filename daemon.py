@@ -1438,7 +1438,9 @@ def run_daemon(accounts_data_dir: str,
         print('THREAD: Creating newswire watchdog')
         httpd.thrNewswireWatchdog = \
             thread_with_trace(target=run_newswire_watchdog,
-                              args=(project_version, httpd), daemon=True)
+                              args=(base_dir, httpd,
+                                    http_prefix, domain, port,
+                                    httpd.translate), daemon=True)
         begin_thread(httpd.thrNewswireWatchdog,
                      'run_daemon thrNewswireWatchdog')
 

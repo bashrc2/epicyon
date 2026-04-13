@@ -39,6 +39,7 @@ from utils import data_dir
 from status import get_status_number
 from session import create_session
 from threads import begin_thread
+from threads import thread_with_trace
 from webapp_hashtagswarm import store_hash_tags
 from cache import clear_from_post_caches
 
@@ -897,13 +898,12 @@ def run_newswire_daemon(base_dir: str, httpd,
             break
 
 
-def run_newswire_watchdog(project_version: str, httpd) -> None:
+def run_newswire_watchdog(base_dir: str, httpd,
+                          http_prefix: str, domain: str, port: int,
+                          translate: {}) -> None:
     """This tries to keep the newswire update thread running even if it dies
     """
     print('THREAD: Starting newswire watchdog')
-    newswire_original = \
-        httpd.thrPostSchedule.clone(run_newswire_daemon)
-    begin_thread(httpd.thrNewswireDaemon, 'run_newswire_watchdog')
     while True:
         time.sleep(50)
         if httpd.thrNewswireDaemon.is_alive():
@@ -911,6 +911,8 @@ def run_newswire_watchdog(project_version: str, httpd) -> None:
         httpd.thrNewswireDaemon.kill()
         print('THREAD: restarting newswire watchdog')
         httpd.thrNewswireDaemon = \
-            newswire_original.clone(run_newswire_daemon)
-        begin_thread(httpd.thrNewswireDaemon, 'run_newswire_watchdog 2')
+            thread_with_trace(target=run_newswire_daemon,
+                              args=(base_dir, httpd,
+                                    http_prefix, domain, port,
+                                    translate), daemon=True)
         print('Restarting newswire daemon...')
