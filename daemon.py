@@ -532,20 +532,22 @@ def run_shares_expire(version_number: str, base_dir: str, httpd) -> None:
                       httpd.person_cache)
 
 
-def run_posts_watchdog(project_version: str, httpd) -> None:
+def run_posts_watchdog(base_dir: str, send_threads: [], debug: bool,
+                       timeout_mins: int, httpd) -> None:
     """This tries to keep the posts thread running even if it dies
     """
     print('THREAD: Starting posts queue watchdog')
-    posts_queue_original = httpd.thrPostsQueue.clone(run_posts_queue)
-    begin_thread(httpd.thrPostsQueue, 'run_posts_watchdog')
     while True:
         time.sleep(20)
         if httpd.thrPostsQueue.is_alive():
             continue
         httpd.thrPostsQueue.kill()
         print('THREAD: restarting posts queue')
-        httpd.thrPostsQueue = posts_queue_original.clone(run_posts_queue)
-        begin_thread(httpd.thrPostsQueue, 'run_posts_watchdog 2')
+        httpd.thrPostsQueue = \
+            thread_with_trace(target=run_posts_queue,
+                              args=(base_dir, send_threads, debug,
+                                    timeout_mins),
+                              daemon=True)
         print('Restarting posts queue...')
 
 
@@ -1296,7 +1298,10 @@ def run_daemon(accounts_data_dir: str,
         print('THREAD: run_posts_watchdog')
         httpd.thrPostsWatchdog = \
             thread_with_trace(target=run_posts_watchdog,
-                              args=(project_version, httpd), daemon=True)
+                              args=(base_dir, httpd.send_threads, debug,
+                                    httpd.send_threads_timeout_mins,
+                                    httpd),
+                              daemon=True)
         begin_thread(httpd.thrPostsWatchdog, 'run_daemon thrPostWatchdog')
     else:
         begin_thread(httpd.thrPostsQueue, 'run_daemon thrPostWatchdog 2')
