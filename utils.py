@@ -1023,11 +1023,11 @@ def get_invalid_characters() -> []:
     return INVALID_CHARACTERS
 
 
-def contains_invalid_chars(json_str: str) -> bool:
-    """Does the given json string contain invalid characters?
+def contains_invalid_chars(test_str: str) -> bool:
+    """Does the given string contain invalid characters?
     """
     for is_invalid in INVALID_CHARACTERS:
-        if is_invalid in json_str:
+        if is_invalid in test_str:
             return True
     return False
 
@@ -2637,6 +2637,8 @@ def valid_nickname(domain: str, nickname: str) -> bool:
     for char in forbidden_chars:
         if char in nickname:
             return False
+    if contains_invalid_actor_url_chars(nickname):
+        return False
     # this should only apply for the shared inbox
     if nickname == domain:
         return False
