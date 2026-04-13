@@ -537,6 +537,7 @@ def run_posts_watchdog(base_dir: str, send_threads: [], debug: bool,
     """This tries to keep the posts thread running even if it dies
     """
     print('THREAD: Starting posts queue watchdog')
+    begin_thread(httpd.thrPostsQueue, 'run_daemon thrPostsQueue')
     while True:
         time.sleep(20)
         if httpd.thrPostsQueue.is_alive():
@@ -551,20 +552,23 @@ def run_posts_watchdog(base_dir: str, send_threads: [], debug: bool,
         print('Restarting posts queue...')
 
 
-def run_shares_expire_watchdog(project_version: str, httpd) -> None:
+def run_shares_expire_watchdog(project_version: str, base_dir: str,
+                               httpd) -> None:
     """This tries to keep the shares expiry thread running even if it dies
     """
     print('THREAD: Starting shares expiry watchdog')
-    shares_expire_original = httpd.thrSharesExpire.clone(run_shares_expire)
-    begin_thread(httpd.thrSharesExpire, 'run_shares_expire_watchdog')
+    begin_thread(httpd.thrSharesExpire, 'run_daemon thrSharesExpire 1')
     while True:
         time.sleep(20)
         if httpd.thrSharesExpire.is_alive():
             continue
         httpd.thrSharesExpire.kill()
         print('THREAD: restarting shares watchdog')
-        httpd.thrSharesExpire = shares_expire_original.clone(run_shares_expire)
-        begin_thread(httpd.thrSharesExpire, 'run_shares_expire_watchdog 2')
+        httpd.thrSharesExpire = \
+            thread_with_trace(target=run_shares_expire,
+                              args=(project_version, base_dir,
+                                    httpd),
+                              daemon=True)
         print('Restarting shares expiry...')
 
 
@@ -1316,7 +1320,8 @@ def run_daemon(accounts_data_dir: str,
         print('THREAD: run_shares_expire_watchdog')
         httpd.thrSharesExpireWatchdog = \
             thread_with_trace(target=run_shares_expire_watchdog,
-                              args=(project_version, httpd), daemon=True)
+                              args=(project_version, base_dir, httpd),
+                              daemon=True)
         begin_thread(httpd.thrSharesExpireWatchdog,
                      'run_daemon thrSharesExpireWatchdog')
     else:

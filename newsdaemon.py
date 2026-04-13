@@ -38,6 +38,7 @@ from utils import text_in_file
 from utils import data_dir
 from status import get_status_number
 from session import create_session
+from threads import begin_thread
 from threads import thread_with_trace
 from webapp_hashtagswarm import store_hash_tags
 from cache import clear_from_post_caches
@@ -903,6 +904,7 @@ def run_newswire_watchdog(base_dir: str, httpd,
     """This tries to keep the newswire update thread running even if it dies
     """
     print('THREAD: Starting newswire watchdog')
+    begin_thread(httpd.thrNewswireDaemon, 'run_daemon thrNewswireDaemon')
     while True:
         time.sleep(50)
         if httpd.thrNewswireDaemon.is_alive():
