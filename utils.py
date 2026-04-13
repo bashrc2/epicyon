@@ -2635,7 +2635,7 @@ def valid_nickname(domain: str, nickname: str) -> bool:
         return False
     if not _is_valid_language(nickname):
         return False
-    forbidden_chars = ('.', ' ', '/', '?', ':', ';', '@', '#', '!')
+    forbidden_chars = ('.', ' ', '/', ':', '@')
     for char in forbidden_chars:
         if char in nickname:
             return False
