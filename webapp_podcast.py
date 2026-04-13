@@ -435,6 +435,11 @@ def html_podcast_episode(translate: {},
     podcast_title = \
         remove_html(html.unescape(urllib.parse.unquote_plus(newswire_item[0])))
     if podcast_title:
+        # if this is an "explicit" podcast then add a corresponding icon
+        # to the title
+        if 'explicit' in podcast_properties:
+            if podcast_properties['explicit'] is True:
+                podcast_title += ' 🔞'
         podcast_str += \
             '<p><label class="podcast-title">' + \
             '<span itemprop="headline">' + \
