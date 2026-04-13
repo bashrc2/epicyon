@@ -57,6 +57,7 @@ from siteactive import site_is_active
 from content import get_price_from_string
 from blocking import is_blocked
 from threads import begin_thread
+from threads import thread_with_trace
 from cache import remove_person_from_cache
 from cache import store_person_in_cache
 
@@ -1787,13 +1788,13 @@ def _update_federated_shares_cache(session, shared_items_federated_domains: [],
             time.sleep(2)
 
 
-def run_federated_shares_watchdog(project_version: str, httpd) -> None:
+def run_federated_shares_watchdog(base_dir: str, httpd,
+                                  http_prefix: str,
+                                  proxy_type: str, debug: bool) -> None:
     """This tries to keep the federated shares update thread
     running even if it dies
     """
     print('THREAD: Starting federated shares watchdog')
-    federated_shares_original = \
-        httpd.thrPostSchedule.clone(run_federated_shares_daemon)
     begin_thread(httpd.thrFederatedSharesDaemon,
                  'run_federated_shares_watchdog')
     while True:
@@ -1803,7 +1804,12 @@ def run_federated_shares_watchdog(project_version: str, httpd) -> None:
         httpd.thrFederatedSharesDaemon.kill()
         print('THREAD: restarting federated shares watchdog')
         httpd.thrFederatedSharesDaemon = \
-            federated_shares_original.clone(run_federated_shares_daemon)
+            thread_with_trace(target=run_federated_shares_daemon,
+                              args=(base_dir, httpd,
+                                    http_prefix, httpd.domain_full,
+                                    proxy_type, debug,
+                                    httpd.system_language,
+                                    httpd.mitm_servers), daemon=True)
         begin_thread(httpd.thrFederatedSharesDaemon,
                      'run_federated_shares_watchdog 2')
         print('Restarting federated shares daemon...')

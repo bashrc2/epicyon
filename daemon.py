@@ -1468,7 +1468,9 @@ def run_daemon(accounts_data_dir: str,
         print('THREAD: Creating federated shares watchdog')
         httpd.thrFederatedSharesWatchdog = \
             thread_with_trace(target=run_federated_shares_watchdog,
-                              args=(project_version, httpd), daemon=True)
+                              args=(base_dir, httpd,
+                                    http_prefix,
+                                    proxy_type, debug), daemon=True)
         begin_thread(httpd.thrFederatedSharesWatchdog,
                      'run_daemon thrFederatedSharesWatchdog')
         print('THREAD: Creating federated blocks thread')
