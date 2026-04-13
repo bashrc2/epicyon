@@ -462,6 +462,17 @@ def html_podcast_episode(translate: {},
                 '<p><span itemprop="description">' + \
                 podcast_description + '</span></p>\n'
 
+    if podcast_properties.get('duration'):
+        if podcast_properties['duration'].isdigit():
+            podcast_str += \
+                '<p><span itemprop="description">' + \
+                podcast_properties['duration'] + ' ' + \
+                translate['minutes'] + '</span></p>\n'
+        else:
+            podcast_str += \
+                '<p><span itemprop="description">' + \
+                podcast_properties['duration'] + '</span></p>\n'
+
     # donate button
     if podcast_properties.get('funding'):
         if podcast_properties['funding'].get('url'):

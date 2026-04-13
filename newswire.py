@@ -672,8 +672,7 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
                 duration = duration.split('>')[1]
                 if '<' in duration:
                     duration = duration.split('<')[0]
-                    if duration.isdigit():
-                        podcast_properties['duration'] = duration
+                    podcast_properties['duration'] = duration
 
     # get the image for the podcast, if it exists
     podcast_episode_image = None
