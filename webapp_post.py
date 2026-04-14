@@ -3085,6 +3085,14 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                   summary_str, content_str,
                                   auto_cw_cache)
 
+        # split up any long words in the content warning
+        summary_str = remove_long_words(summary_str, 40, [])
+
+        # truncate content warning if it is too long
+        if len(summary_str) > max_content_warning_length:
+            summary_str = summary_str[:max_content_warning_length]
+            summary_str = remove_html(summary_str) + '...'
+
         content_all_str: str = str(summary_str) + ' ' + content_str
         # does an emoji or lack of alt text on an image indicate a
         # no boost preference? if so then don't show the repeat/announce icon
@@ -3232,7 +3240,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 cw_str + '</span></label>\n'
             if is_moderation_post:
                 container_class = 'container report'
-        # get the content warning text
+        # get the text within the content warning
         cw_content_str: str = object_content + attachment_str
         if not is_patch:
             cw_content_str = add_embedded_elements(translate, cw_content_str,
@@ -3243,11 +3251,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                 cw_content_str, post_json_object, page_number)
             cw_content_str = \
                 switch_words(base_dir, nickname, domain, cw_content_str)
-        # truncate content warning if it is too long
-        if len(cw_content_str) > max_content_warning_length:
-            cw_content_str = \
-                remove_html(cw_content_str[:max_content_warning_length]) + \
-                '...'
         if not is_blog_post(post_json_object):
             # get the content warning button
             content_str += \
