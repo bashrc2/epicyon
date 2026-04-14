@@ -2365,16 +2365,16 @@ def individual_post_as_html(signing_priv_key_pem: str,
         return ''
 
     # maximum number of different emoji reactions which can be added to a post
-    max_reaction_types = 5
+    max_reaction_types: int = 5
 
     # if downloads of avatar images aren't enabled then we can do more
     # accurate timing of different parts of the code
-    enable_timing_log = not allow_downloads
+    enable_timing_log: bool = not allow_downloads
 
     # benchmark
     post_start_time = time.time()
 
-    post_actor = get_actor_from_post(post_json_object)
+    post_actor: str = get_actor_from_post(post_json_object)
 
     _log_post_timing(enable_timing_log, post_start_time, '0')
 
@@ -2384,8 +2384,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '1')
 
-    avatar_position = ''
-    message_id = ''
+    avatar_position: str = ''
+    message_id: str = ''
     if post_json_object.get('id'):
         message_id = remove_hash_from_post_id(post_json_object['id'])
         message_id = remove_id_ending(message_id)
@@ -2393,26 +2393,26 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '2')
 
     # does this post have edits?
-    edits_post_url = \
+    edits_post_url: str = \
         remove_id_ending(message_id.strip()).replace('/', '#') + '.edits'
-    account_dir = acct_dir(base_dir, nickname, domain) + '/'
+    account_dir: str = acct_dir(base_dir, nickname, domain) + '/'
 
-    message_id_str = ''
+    message_id_str: str = ''
     if message_id:
         message_id_str = ';' + message_id
 
-    domain_full = get_full_domain(domain, port)
+    domain_full: str = get_full_domain(domain, port)
 
-    page_number_param = ''
+    page_number_param: str = ''
     if page_number:
         page_number_param = '?page=' + str(page_number)
 
     # NOTE at the time when the post is generated we don't know what
     # browser will be used to access it
-    ua_str = ''
+    ua_str: str = ''
 
     # get the html post from the recent posts cache if it exists there
-    post_html = \
+    post_html: str = \
         _get_post_from_recent_cache(session, base_dir,
                                     http_prefix, nickname, domain,
                                     post_json_object,
@@ -2498,22 +2498,22 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '7')
 
-    avatar_link = \
+    avatar_link: str = \
         _get_avatar_image_html(show_avatar_options,
                                nickname, domain_full,
                                avatar_url, post_actor,
                                translate, avatar_position,
                                page_number, message_id_str)
 
-    avatar_image_in_post = \
+    avatar_image_in_post: str = \
         '      <div class="timeline-avatar">' + avatar_link + '</div>\n'
 
-    timeline_post_bookmark = bookmark_from_id(post_json_object['id'])
+    timeline_post_bookmark: str = bookmark_from_id(post_json_object['id'])
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
-    show_repeat_icon = show_repeats
-    is_public_repeat = False
-    post_is_dm = is_dm(post_json_object)
+    show_repeat_icon: bool = show_repeats
+    is_public_repeat: bool = False
+    post_is_dm: bool = is_dm(post_json_object)
     if show_repeats:
         if post_is_dm:
             show_repeat_icon = False
@@ -2521,26 +2521,27 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if is_public_post(post_json_object):
                 is_public_repeat = True
 
-    person_url = local_actor_url(http_prefix, nickname, domain_full)
-    actor_json = \
+    person_url: str = local_actor_url(http_prefix, nickname, domain_full)
+    actor_json: dict = \
         get_person_from_cache(base_dir, person_url, person_cache)
     languages_understood: list[str] = []
     if actor_json:
         languages_understood = get_actor_languages_list(actor_json)
 
-    title_str = ''
-    gallery_str = ''
-    is_announced = False
-    announce_json_object = None
+    title_str: str = ''
+    gallery_str: str = ''
+    is_announced: bool = False
+    announce_json_object: dict = None
     if post_json_object['type'] == 'Announce':
         announce_json_object = post_json_object.copy()
-        blocked_cache = {}
+        blocked_cache: dict = {}
         block_federated: list[str] = []
-        show_vote_posts = True
-        show_vote_file = acct_dir(base_dir, nickname, domain) + '/.noVotes'
+        show_vote_posts: bool = True
+        show_vote_file: str = \
+            acct_dir(base_dir, nickname, domain) + '/.noVotes'
         if os.path.isfile(show_vote_file):
             show_vote_posts = False
-        post_json_announce = \
+        post_json_announce: dict = \
             download_announce(session, base_dir, http_prefix,
                               nickname, domain, post_json_object,
                               project_version,
@@ -2569,7 +2570,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         post_json_object = post_json_announce
 
         # is the announced post in the html cache?
-        post_html = \
+        post_html: str = \
             _get_post_from_recent_cache(session, base_dir,
                                         http_prefix, nickname, domain,
                                         post_json_object,
@@ -2592,7 +2593,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if post_html:
             return post_html
 
-        announce_filename = \
+        announce_filename: str = \
             locate_post(base_dir, nickname, domain, post_json_object['id'])
         if announce_filename:
             update_announce_collection(recent_posts_cache,
@@ -2604,7 +2605,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if is_recent_post(post_json_object, 3):
                 if post_json_object.get('actor'):
                     if not os.path.isfile(announce_filename + '.tts'):
-                        actor_url = get_actor_from_post(post_json_object)
+                        actor_url: str = get_actor_from_post(post_json_object)
                         update_speaker(base_dir, http_prefix,
                                        nickname, domain, domain_full,
                                        post_json_object, person_cache,
@@ -2631,13 +2632,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not post_contains_public(post_json_object):
             return ''
 
-    is_moderation_post = False
+    is_moderation_post: bool = False
     if post_json_object['object'].get('moderationStatus'):
         is_moderation_post = True
-    container_class = 'container'
-    container_class_icons = 'containericons'
-    time_class = 'time-right'
-    actor_nickname = get_nickname_from_actor(post_actor)
+    container_class: str = 'container'
+    container_class_icons: str = 'containericons'
+    time_class: str = 'time-right'
+    actor_nickname: str = get_nickname_from_actor(post_actor)
     if not actor_nickname:
         # single user instance
         actor_nickname = 'dev'
@@ -2645,11 +2646,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     # indicate if the post has been proxied from a different protocol
     # (eg. diaspora/nostr)
-    post_proxied = ap_proxy_type(post_json_object['object'])
+    post_proxied: str = ap_proxy_type(post_json_object['object'])
     if post_proxied:
         post_proxied = remove_html(post_proxied)
         if resembles_url(post_proxied):
-            proxy_str = 'Proxy'
+            proxy_str: str = 'Proxy'
             if translate.get(proxy_str):
                 proxy_str = translate[proxy_str]
             post_proxied = '<a href="' + post_proxied + \
@@ -2680,26 +2681,26 @@ def individual_post_as_html(signing_priv_key_pem: str,
             translate['Scheduled note to yourself'] + ':"/>\n'
 
     # show the display name or handle
-    display_name = get_display_name(base_dir, post_actor, person_cache)
+    display_name: str = get_display_name(base_dir, post_actor, person_cache)
     if display_name:
         if len(display_name) < 2 or \
            display_name_is_emoji(display_name):
             display_name = None
-    actor_handle = actor_nickname + '@' + actor_domain
+    actor_handle: str = actor_nickname + '@' + actor_domain
 
     # MITM warning icon
-    mitm_str = ''
+    mitm_str: str = ''
     if mitm or actor_domain in mitm_servers:
         mitm_str = ' ' + mitm_warning_html(translate)
 
     # add mutual icon to the display name
-    mutual_prefix = ''
+    mutual_prefix: str = ''
     if actor_handle in mutuals_list:
         mutual_prefix = '⇆ '
 
-    actor_type = get_actor_type(base_dir, post_actor, person_cache)
-    bot_prefix = get_display_name_prefix(actor_type, actor_nickname,
-                                         translate)
+    actor_type: str = get_actor_type(base_dir, post_actor, person_cache)
+    bot_prefix: str = get_display_name_prefix(actor_type, actor_nickname,
+                                              translate)
 
     if display_name:
         display_name = _enforce_max_display_name_length(display_name)
@@ -3254,8 +3255,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '17')
 
-    map_str = ''
-    buy_links = {}
+    map_str: str = ''
+    buy_links: dict = {}
     if post_json_object['object'].get('tag'):
         if not is_patch:
             content_str = \
