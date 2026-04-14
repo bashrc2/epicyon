@@ -2748,7 +2748,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             'icons/dm.png" alt="(' + dm_str + ')" class="DMicon"/>\n'
 
     # check if replying is permitted
-    comments_enabled = True
+    comments_enabled: bool = True
     if isinstance(post_json_object['object'], dict) and \
        'commentsEnabled' in post_json_object['object']:
         if post_json_object['object']['commentsEnabled'] is False:
@@ -2757,8 +2757,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if post_json_object['object']['rejectReplies']:
                 comments_enabled = False
 
-    conversation_id = None
-    convthread_id = None
+    conversation_id: str = None
+    convthread_id: str = None
     if isinstance(post_json_object['object'], dict):
         # Due to lack of AP specification maintenance, a conversation can also
         # be referred to as a thread or (confusingly) "context"
@@ -2772,29 +2772,29 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if post_json_object['object']['thread']:
                 convthread_id = post_json_object['object']['thread']
 
-    public_reply = False
-    unlisted_reply = False
+    public_reply: bool = False
+    unlisted_reply: bool = False
     if is_public_post(post_json_object):
         public_reply = True
     if is_unlisted_post(post_json_object):
         public_reply = False
         unlisted_reply = True
-    reply_str = _get_reply_icon_html(base_dir, nickname, domain,
-                                     public_reply, unlisted_reply,
-                                     show_icons, comments_enabled,
-                                     post_json_object, page_number_param,
-                                     translate, system_language,
-                                     conversation_id, convthread_id)
+    reply_str: str = _get_reply_icon_html(base_dir, nickname, domain,
+                                          public_reply, unlisted_reply,
+                                          show_icons, comments_enabled,
+                                          post_json_object, page_number_param,
+                                          translate, system_language,
+                                          conversation_id, convthread_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '10')
 
-    edit_str = _get_edit_icon_html(base_dir, nickname, domain_full,
-                                   post_json_object, actor_nickname,
-                                   translate, False, first_post_id)
+    edit_str: str = _get_edit_icon_html(base_dir, nickname, domain_full,
+                                        post_json_object, actor_nickname,
+                                        translate, False, first_post_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '11')
 
-    announce_str = \
+    announce_str: str = \
         _get_announce_icon_html(is_announced,
                                 post_actor,
                                 nickname, domain_full,
@@ -2812,36 +2812,36 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '12')
 
     # whether to show a like button
-    hide_like_button_file = \
+    hide_like_button_file: str = \
         acct_dir(base_dir, nickname, domain) + '/.hideLikeButton'
-    show_like_button = True
+    show_like_button: bool = True
     if os.path.isfile(hide_like_button_file):
         show_like_button = False
 
     # whether to show a reaction button
-    hide_reaction_button_file = \
+    hide_reaction_button_file: str = \
         acct_dir(base_dir, nickname, domain) + '/.hideReactionButton'
-    show_reaction_button = True
+    show_reaction_button: bool = True
     if os.path.isfile(hide_reaction_button_file):
         show_reaction_button = False
 
-    like_json_object = post_json_object
+    like_json_object: dict = post_json_object
     if announce_json_object:
         like_json_object = announce_json_object
-    like_str = _get_like_icon_html(nickname, domain_full,
-                                   is_moderation_post,
-                                   show_like_button,
-                                   like_json_object,
-                                   enable_timing_log,
-                                   post_start_time,
-                                   translate, page_number_param,
-                                   timeline_post_bookmark,
-                                   box_name, max_like_count,
-                                   first_post_id)
+    like_str: str = _get_like_icon_html(nickname, domain_full,
+                                        is_moderation_post,
+                                        show_like_button,
+                                        like_json_object,
+                                        enable_timing_log,
+                                        post_start_time,
+                                        translate, page_number_param,
+                                        timeline_post_bookmark,
+                                        box_name, max_like_count,
+                                        first_post_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '12.5')
 
-    bookmark_str = \
+    bookmark_str: str = \
         _get_bookmark_icon_html(base_dir, nickname, domain,
                                 domain_full, post_json_object,
                                 is_moderation_post, translate,
@@ -2853,7 +2853,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '12.9')
 
-    reaction_str = \
+    reaction_str: str = \
         _get_reaction_icon_html(nickname, post_json_object,
                                 is_moderation_post,
                                 show_reaction_button,
@@ -2866,12 +2866,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '12.10')
 
-    is_muted = post_is_muted(base_dir, nickname, domain,
-                             post_json_object, message_id)
+    is_muted: bool = post_is_muted(base_dir, nickname, domain,
+                                   post_json_object, message_id)
 
     _log_post_timing(enable_timing_log, post_start_time, '13')
 
-    mute_str = \
+    mute_str: str = \
         _get_mute_icon_html(is_muted,
                             post_actor,
                             message_id,
@@ -2882,7 +2882,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             timeline_post_bookmark,
                             translate, first_post_id)
 
-    delete_str = \
+    delete_str: str = \
         _get_delete_icon_html(nickname, domain_full,
                               allow_deletion,
                               post_actor,
@@ -2894,17 +2894,17 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '13.1')
 
     # get the software instance type, such as "mastodon"
-    instance_actor = post_actor
+    instance_actor: str = post_actor
     if is_announced and post_json_object:
-        announce_obj = post_json_object
+        announce_obj: dict = post_json_object
         if has_object_dict(post_json_object):
             announce_obj = post_json_object['object']
         if announce_obj.get('attributedTo'):
             instance_actor = get_attributed_to(announce_obj['attributedTo'])
-    instance_http_prefix = http_prefix
+    instance_http_prefix: str = http_prefix
     if '://' in instance_actor:
         instance_http_prefix = instance_actor.split('://')[0]
-    software_name = \
+    software_name: str = \
         get_instance_software(base_dir, session,
                               instance_http_prefix,
                               instance_actor,
@@ -2943,8 +2943,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '14')
 
-    edits_filename = account_dir + box_name + '/' + edits_post_url
-    edits_str = ''
+    edits_filename: str = account_dir + box_name + '/' + edits_post_url
+    edits_str: str = ''
     if os.path.isfile(edits_filename):
         edits_json = load_json(edits_filename)
         if edits_json:
@@ -2952,13 +2952,13 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                           translate, timezone, system_language,
                                           languages_understood)
 
-    content_str = get_content_from_post(post_json_object, system_language,
-                                        languages_understood, "content")
+    content_str: str = get_content_from_post(post_json_object, system_language,
+                                             languages_understood, "content")
 
     # remove any css styling within the post itself
     content_str = remove_style_within_html(content_str)
 
-    content_language = \
+    content_language: str = \
         get_language_from_post(post_json_object, system_language,
                                languages_understood, "content")
     content_str = dont_speak_hashtags(content_str)
@@ -2975,15 +2975,15 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                      minimize_all_images,
                                      system_language)
 
-    published_str = \
+    published_str: str = \
         _get_published_date_str(post_json_object, show_published_date_only,
                                 timezone)
 
     _log_post_timing(enable_timing_log, post_start_time, '15')
 
-    published_link = message_id
+    published_link: str = message_id
     # blog posts should have no /statuses/ in their link
-    post_is_blog = False
+    post_is_blog: bool = False
     if is_blog_post(post_json_object):
         post_is_blog = True
         # is this a post to the local domain?
@@ -2995,17 +2995,17 @@ def individual_post_as_html(signing_priv_key_pem: str,
        domain + ':' + str(port) + '/users/' in published_link:
         published_link = '/users/' + published_link.split('/users/')[1]
 
-    content_license_url = _get_content_license(post_json_object)
+    content_license_url: str = _get_content_license(post_json_object)
     if not is_news_post(post_json_object):
         if show_icons:
-            footer_str = ''
+            footer_str: str = ''
         else:
-            footer_str = '<div class="' + container_class_icons + '">\n'
+            footer_str: str = '<div class="' + container_class_icons + '">\n'
         if content_license_url and not is_reminder(post_json_object):
             footer_str += _get_copyright_footer(content_license_url,
                                                 translate)
-        post_bookmark = '#' + bookmark_from_id(published_link)
-        conv_link = '/users/' + nickname + '?convthread=' + \
+        post_bookmark: str = '#' + bookmark_from_id(published_link)
+        conv_link: str = '/users/' + nickname + '?convthread=' + \
             published_link.replace('--', '/') + post_bookmark
         footer_str += '<a href="' + conv_link + \
             '" class="' + time_class + '" tabindex="10">' + \
@@ -3013,7 +3013,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if not show_icons:
             footer_str += '</div>\n'
     else:
-        footer_str = '<a href="' + \
+        footer_str: str = '<a href="' + \
             published_link.replace('/news/', '/news/statuses/') + \
             '" class="' + time_class + '" tabindex="10">' + \
             published_str + '</a>\n'
@@ -3027,12 +3027,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
     add_cw_from_lists(post_json_object, cw_lists, translate, lists_enabled,
                       system_language, languages_understood)
 
-    post_is_sensitive = False
+    post_is_sensitive: bool = False
     if post_json_object['object'].get('sensitive'):
         if isinstance(post_json_object['object']['sensitive'], bool):
             # sensitive posts should have a summary
             if post_json_object['object'].get('summary'):
-                possible_summary = \
+                possible_summary: str = \
                     get_summary_from_post(post_json_object,
                                           system_language,
                                           languages_understood)
@@ -3049,13 +3049,15 @@ def individual_post_as_html(signing_priv_key_pem: str,
             system_language: ''
         }
 
-    domain_full = get_full_domain(domain, port)
+    domain_full: str = get_full_domain(domain, port)
     if not content_str:
-        content_str = get_content_from_post(post_json_object, system_language,
-                                            languages_understood, "content")
+        content_str = get_content_from_post(post_json_object,
+                                            system_language,
+                                            languages_understood,
+                                            "content")
         # remove any css styling within the post itself
         content_str = remove_style_within_html(content_str)
-        content_language = \
+        content_language: str = \
             get_language_from_post(post_json_object, system_language,
                                    languages_understood, "content")
         content_str = dont_speak_hashtags(content_str)
@@ -3068,7 +3070,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     content_str = \
         replace_remote_hashtags(content_str, nickname, domain)
 
-    summary_str = ''
+    summary_str: str = ''
     if content_str:
         summary_str = get_summary_from_post(post_json_object, system_language,
                                             languages_understood)
@@ -3083,11 +3085,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                   summary_str, content_str,
                                   auto_cw_cache)
 
-        content_all_str = str(summary_str) + ' ' + content_str
+        content_all_str: str = str(summary_str) + ' ' + content_str
         # does an emoji or lack of alt text on an image indicate a
         # no boost preference? if so then don't show the repeat/announce icon
         attachment = get_post_attachments(post_json_object)
-        capabilities = {}
+        capabilities: dict = {}
         if post_json_object['object'].get('capabilities'):
             capabilities = post_json_object['object']['capabilities']
         if disallow_announce(content_all_str, attachment, capabilities):
@@ -3097,20 +3099,20 @@ def individual_post_as_html(signing_priv_key_pem: str,
         if disallow_reply(content_all_str):
             reply_str = ''
 
-    is_patch = is_git_patch(base_dir, nickname, domain,
-                            post_json_object['object']['type'],
-                            summary_str, content_str)
+    is_patch: bool = is_git_patch(base_dir, nickname, domain,
+                                  post_json_object['object']['type'],
+                                  summary_str, content_str)
 
     # html for the buy icon
-    buy_str = ''
-    post_attachments = get_post_attachments(post_json_object['object'])
+    buy_str: str = ''
+    post_attachments: dict = get_post_attachments(post_json_object['object'])
     if not post_attachments:
         post_json_object['object']['attachment']: list[dict] = []
     if not is_patch:
         buy_links = get_buy_links(post_json_object, translate, buy_sites)
         buy_str = _get_buy_footer(buy_links, translate)
 
-    new_footer_str = \
+    new_footer_str: str = \
         _get_footer_with_icons(show_icons,
                                container_class_icons,
                                reply_str, announce_str,
@@ -3207,7 +3209,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         '<article><span itemprop="articleBody">' + \
         object_content + '</span></article>'
 
-    post_id = None
+    post_id: str = None
     if not post_is_sensitive:
         content_str = object_content + attachment_str
         content_str = add_embedded_elements(translate, content_str,
@@ -3221,7 +3223,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
         content_str = ''
         if summary_str:
             # set the content warning
-            cw_str = \
+            cw_str: str = \
                 add_emoji_to_display_name(session, base_dir, http_prefix,
                                           nickname, domain,
                                           summary_str, False, translate)
@@ -3231,7 +3233,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if is_moderation_post:
                 container_class = 'container report'
         # get the content warning text
-        cw_content_str = object_content + attachment_str
+        cw_content_str: str = object_content + attachment_str
         if not is_patch:
             cw_content_str = add_embedded_elements(translate, cw_content_str,
                                                    peertube_instances,
@@ -3273,10 +3275,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
             if map_links:
                 location_str = map_links[0]
 
-        category_str = get_category_from_post(post_json_object, translate)
-        time_span_str = get_event_time_span_from_post(post_json_object)
+        category_str: str = get_category_from_post(post_json_object, translate)
+        time_span_str: str = get_event_time_span_from_post(post_json_object)
 
-        loc_str = location_str
+        loc_str: str = location_str
         if location_str:
             # if this is a location with an address then remove the address
             if '<br><address>' in location_str:
@@ -3410,12 +3412,12 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 '</code></pre></div>\n'
 
     # show blog citations
-    citations_str = \
+    citations_str: str = \
         _get_blog_citations_html(box_name, post_json_object, translate)
 
-    post_html = ''
+    post_html: str = ''
     if box_name != 'tlmedia':
-        reaction_str = ''
+        reaction_str: str = ''
         if show_icons:
             reaction_str = \
                 html_emoji_reactions(post_json_object, True, person_url,
@@ -3462,7 +3464,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     if not show_public_only and store_to_cache and \
        box_name != 'tlmedia' and box_name != 'tlbookmarks' and \
        box_name != 'bookmarks':
-        cached_json = post_json_object
+        cached_json: dict = post_json_object
         if announce_json_object:
             cached_json = announce_json_object
         _save_individual_post_as_html_to_cache(base_dir, nickname, domain,
