@@ -3243,7 +3243,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
         # truncate content warning if it is too long
         if len(cw_content_str) > max_content_warning_length:
             cw_content_str = \
-                remove_html(cw_content_str[:max_content_warning_length])
+                remove_html(cw_content_str[:max_content_warning_length]) + \
+                '...'
         if not is_blog_post(post_json_object):
             # get the content warning button
             content_str += \
