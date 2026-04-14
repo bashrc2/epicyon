@@ -2359,12 +2359,11 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             block_nostr: {}) -> str:
     """ Shows a single post as html
     """
-    max_content_warning_length: int = 120
     if not post_json_object:
         return ''
 
     # maximum number of different emoji reactions which can be added to a post
-    max_reaction_types: int = 5
+    max_reaction_types = 5
 
     # if downloads of avatar images aren't enabled then we can do more
     # accurate timing of different parts of the code
@@ -2373,7 +2372,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
     # benchmark
     post_start_time = time.time()
 
-    post_actor: str = get_actor_from_post(post_json_object)
+    post_actor = get_actor_from_post(post_json_object)
 
     _log_post_timing(enable_timing_log, post_start_time, '0')
 
@@ -2383,8 +2382,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
 
     _log_post_timing(enable_timing_log, post_start_time, '1')
 
-    avatar_position: str = ''
-    message_id: str = ''
+    avatar_position = ''
+    message_id = ''
     if post_json_object.get('id'):
         message_id = remove_hash_from_post_id(post_json_object['id'])
         message_id = remove_id_ending(message_id)
@@ -2392,23 +2391,23 @@ def individual_post_as_html(signing_priv_key_pem: str,
     _log_post_timing(enable_timing_log, post_start_time, '2')
 
     # does this post have edits?
-    edits_post_url: str = \
+    edits_post_url = \
         remove_id_ending(message_id.strip()).replace('/', '#') + '.edits'
     account_dir = acct_dir(base_dir, nickname, domain) + '/'
 
-    message_id_str: str = ''
+    message_id_str = ''
     if message_id:
         message_id_str = ';' + message_id
 
     domain_full = get_full_domain(domain, port)
 
-    page_number_param: str = ''
+    page_number_param = ''
     if page_number:
         page_number_param = '?page=' + str(page_number)
 
     # NOTE at the time when the post is generated we don't know what
     # browser will be used to access it
-    ua_str: str = ''
+    ua_str = ''
 
     # get the html post from the recent posts cache if it exists there
     post_html = \
@@ -3223,10 +3222,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 add_emoji_to_display_name(session, base_dir, http_prefix,
                                           nickname, domain,
                                           summary_str, False, translate)
-            cw_str = remove_long_words(cw_str, 40, [])
-            # truncate the content warning if it is too long
-            if len(cw_str) > max_content_warning_length:
-                cw_str = cw_str[:max_content_warning_length]
             content_str += \
                 '<label class="cw"><span itemprop="description">' + \
                 cw_str + '</span></label>\n'
@@ -3243,11 +3238,6 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                 cw_content_str, post_json_object, page_number)
             cw_content_str = \
                 switch_words(base_dir, nickname, domain, cw_content_str)
-        # break up excessively long words within content warning
-        cw_content_str = remove_long_words(cw_content_str, 40, [])
-        # truncate the content warning if it is too long
-        if len(cw_content_str) > max_content_warning_length:
-            cw_content_str = cw_content_str[:max_content_warning_length]
         if not is_blog_post(post_json_object):
             # get the content warning button
             content_str += \
