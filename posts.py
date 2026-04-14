@@ -6452,7 +6452,8 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   str(post_json_object['object']))
             return None
         if object_nickname:
-            if not valid_nickname(object_domain, object_nickname):
+            if not object_nickname.startswith('?p=') and \
+               not valid_nickname(object_domain, object_nickname):
                 print('WARN: download_announce object invalid nickname ' +
                       str(object_nickname) + '@' + str(object_domain) + ' ' +
                       str(post_json_object).replace('\n', ' '))

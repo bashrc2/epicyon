@@ -1933,7 +1933,8 @@ def receive_announce(recent_posts_cache: {},
         return False
     object_nickname = get_nickname_from_actor(announce_url)
     if object_nickname:
-        if not valid_nickname(object_domain, object_nickname):
+        if not object_nickname.startswith('?p=') and \
+           not valid_nickname(object_domain, object_nickname):
             print('WARN: receive_announce object invalid nickname ' +
                   str(object_nickname) + '@' + str(object_domain) + ' ' +
                   str(announce_url))
