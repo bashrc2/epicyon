@@ -2359,6 +2359,8 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             block_nostr: {}) -> str:
     """ Shows a single post as html
     """
+    max_content_warning_length: int = 120
+
     if not post_json_object:
         return ''
 
@@ -3238,6 +3240,10 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                 cw_content_str, post_json_object, page_number)
             cw_content_str = \
                 switch_words(base_dir, nickname, domain, cw_content_str)
+        # truncate content warning if it is too long
+        if len(cw_content_str) > max_content_warning_length:
+            cw_content_str = \
+                remove_html(cw_content_str[:max_content_warning_length])
         if not is_blog_post(post_json_object):
             # get the content warning button
             content_str += \
