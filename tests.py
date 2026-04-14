@@ -3906,6 +3906,14 @@ def _test_actor_parsing():
     nickname = get_nickname_from_actor(actor)
     assert nickname == 'othernick'
 
+    actor = 'https://bsky.brid.gy/ap/did:plc:abcdefg'
+    domain, port = get_domain_from_actor(actor)
+    assert domain == 'bsky.brid.gy'
+    nickname = get_nickname_from_actor(actor)
+    if nickname != 'abcdefg':
+        print(nickname)
+    assert nickname == 'abcdefg'
+
 
 def _test_web_links():
     print('test_web_links')
@@ -9460,9 +9468,9 @@ def _test_bridgy() -> None:
         'https://brid.gy/convert/ap/at://' + \
         'did:plc:dcbhwedfgwuyfgwfnj/app.bsky.feed.post/fchbuiweefwui'
     nickname = get_nickname_from_actor(bridgy_url)
-    if nickname != 'did:plc:dcbhwedfgwuyfgwfnj':
+    if nickname != 'dcbhwedfgwuyfgwfnj':
         print('nickname: ' + nickname)
-    assert nickname == 'did:plc:dcbhwedfgwuyfgwfnj'
+    assert nickname == 'dcbhwedfgwuyfgwfnj'
     domain, _ = get_domain_from_actor(bridgy_url)
     if domain != 'brid.gy':
         print('domain: ' + domain)
