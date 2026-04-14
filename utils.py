@@ -2618,7 +2618,9 @@ def get_nickname_validation_pattern() -> str:
 def _is_reserved_name(nickname: str) -> bool:
     """Is the given nickname reserved for some special function?
     """
-    reserved_names = _get_reserved_words()
+    reserved_names = ('users', 'accounts', 'profile', 'statuses',
+                      'search', 'channel',
+                      'http', 'https', 'ipfs', 'ipns')
     if nickname in reserved_names:
         return True
     return False
