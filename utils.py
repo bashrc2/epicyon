@@ -2567,7 +2567,7 @@ def _is_valid_language(text: str) -> bool:
     for _, lang_range in natural_languages.items():
         ok_lang = True
         for char in text:
-            if char.isdigit() or char == '_':
+            if char.isdigit() or char == '_' or char == '.':
                 continue
             if ord(char) not in range(lang_range[0], lang_range[1]):
                 ok_lang = False
@@ -3311,7 +3311,7 @@ def valid_hash_tag(hashtag: str) -> bool:
     if len(hashtag) >= 32:
         return False
     # numbers are not permitted to be hashtags
-    if hashtag.isdigit():
+    if hashtag.isdigit() or '.' in hashtag:
         return False
     if set(hashtag).issubset(VALID_HASHTAG_CHARS):
         return True

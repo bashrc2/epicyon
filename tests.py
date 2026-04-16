@@ -5238,6 +5238,9 @@ def _test_valid_nick():
     nickname = '你好'
     assert not valid_nickname(domain, nickname)
 
+    nickname = 'abc.def'
+    assert valid_nickname(domain, nickname)
+
 
 def _test_guess_tag_category() -> None:
     print('test_guess_hashtag_category')
