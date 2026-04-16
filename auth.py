@@ -18,6 +18,7 @@ from utils import data_dir
 from utils import has_users_path
 from utils import text_in_file
 from utils import remove_eol
+from utils import valid_nickname
 from timeFunctions import date_utcnow
 
 
@@ -89,7 +90,7 @@ def create_basic_auth_header(nickname: str, password: str) -> str:
 
 
 def authorize_basic(base_dir: str, path: str, auth_header: str,
-                    debug: bool) -> bool:
+                    debug: bool, domain: str) -> bool:
     """HTTP basic auth
     """
     if ' ' not in auth_header:
@@ -139,6 +140,10 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
             print('DEBUG: Nickname given in the path (' + nickname_from_path +
                   ') does not match the one in the Authorization header (' +
                   nickname + ')')
+        return False
+    if not valid_nickname(domain, nickname):
+        if debug:
+            print('AUTH: invalid nickname ' + nickname)
         return False
     if is_memorial_account(base_dir, nickname):
         print('basic auth - attempted login using memorial account ' +
@@ -248,11 +253,12 @@ def remove_password(base_dir: str, nickname: str) -> None:
             return
 
 
-def authorize(base_dir: str, path: str, auth_header: str, debug: bool) -> bool:
+def authorize(base_dir: str, path: str, auth_header: str, debug: bool,
+              domain: str) -> bool:
     """Authorize using http header
     """
     if auth_header.lower().startswith('basic '):
-        return authorize_basic(base_dir, path, auth_header, debug)
+        return authorize_basic(base_dir, path, auth_header, debug, domain)
     return False
 
 

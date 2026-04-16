@@ -141,7 +141,8 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                 print('Login attempt from IP: ' + str(ip_address))
         if not authorize_basic(base_dir, '/users/' +
                                login_nickname + '/outbox',
-                               auth_header, False):
+                               auth_header, False,
+                               domain):
             print('Login failed: ' + login_nickname)
             clear_login_details(self, login_nickname, calling_domain)
             fail_time = int(time.time())

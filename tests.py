@@ -3277,24 +3277,25 @@ def _test_authentication(base_dir: str) -> None:
     assert store_basic_credentials(base_dir, 'badnick', 'otherpa:ss') is False
     assert store_basic_credentials(base_dir, nickname, password)
 
+    domain = "test.domain"
     auth_header = create_basic_auth_header(nickname, password)
     assert authorize_basic(base_dir, '/users/' + nickname + '/inbox',
-                           auth_header, False)
+                           auth_header, False, domain)
     assert authorize_basic(base_dir, '/users/' + nickname,
-                           auth_header, False) is False
+                           auth_header, False, domain) is False
     assert authorize_basic(base_dir, '/users/othernick/inbox',
-                           auth_header, False) is False
+                           auth_header, False, domain) is False
 
     auth_header = create_basic_auth_header(nickname, password + '1')
     assert authorize_basic(base_dir, '/users/' + nickname + '/inbox',
-                           auth_header, False) is False
+                           auth_header, False, domain) is False
 
     password = 'someOtherPassword'
     assert store_basic_credentials(base_dir, nickname, password)
 
     auth_header = create_basic_auth_header(nickname, password)
     assert authorize_basic(base_dir, '/users/' + nickname + '/inbox',
-                           auth_header, False)
+                           auth_header, False, domain)
 
     os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False)

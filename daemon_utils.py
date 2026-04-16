@@ -626,7 +626,8 @@ def is_authorized(self) -> bool:
     if self.headers.get('Authorization'):
         if authorize(self.server.base_dir, self.path,
                      self.headers['Authorization'],
-                     self.server.debug):
+                     self.server.debug,
+                     self.server.domain):
             return True
         print('AUTH: C2S Basic auth did not authorize ' +
               self.headers['Authorization'])
