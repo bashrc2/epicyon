@@ -277,7 +277,8 @@ def contains_suspicious_headers(headers: {}) -> bool:
         return True
 
     headers_str = str(headers)
-    sus_strings = ('../../', '.php/', 'index.php', 'passwd=', 'PHPSESSID')
+    sus_strings = ('../../', '.php/', 'index.php', 'passwd=', 'PHPSESSID',
+                   '.local/')
     if string_contains(headers_str, sus_strings):
         return True
 
