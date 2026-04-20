@@ -31,8 +31,11 @@ def set_availability(base_dir: str, nickname: str, domain: str,
     # avoid giant strings
     if len(status) > 128:
         return False
+    actor_exists = False
+    if actor_json:
+        actor_exists = isinstance(actor_json, dict)
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not actor_json:
+    if not actor_exists:
         if os.path.isfile(actor_filename):
             actor_json = load_json(actor_filename)
     if actor_json:
@@ -48,8 +51,7 @@ def get_availability(base_dir: str, nickname: str, domain: str,
     """
     actor_exists = False
     if actor_json:
-        if isinstance(actor_json, dict):
-            actor_exists = True
+        actor_exists = isinstance(actor_json, dict)
     if not actor_exists:
         actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
         if not os.path.isfile(actor_filename):
