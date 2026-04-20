@@ -41,6 +41,7 @@ from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import minimizing_attached_images
 from blocking import allowed_announce
 from filters import is_filtered
+from availability import get_availability
 
 
 def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
@@ -328,6 +329,12 @@ def html_person_options(default_timeline: str,
     options_str += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + handle_shown + mitm_str + '</p>\n'
+
+    available = get_availability(base_dir, nickname, domain, options_actor)
+    if available:
+        options_str += \
+            '  <p class="optionsText">' + translate['Availability'] + \
+            ': ' + remove_html(available).title() + '</p>\n'
 
     # is sending posts to this account blocked?
     if sending_is_blocked2(base_dir, nickname, domain,

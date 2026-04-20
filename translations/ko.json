@@ -768,5 +768,6 @@
 	"Show Map": "지도 표시",
 	"Organisation": "조직",
 	"Group": "그룹",
-	"minutes": "분"
+	"minutes": "분",
+	"Availability": "유효성"
 }

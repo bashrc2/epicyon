@@ -6202,7 +6202,6 @@ def _test_functions():
         'run_posts_watchdog',
         'run_shares_expire_watchdog',
         'get_this_weeks_events',
-        'get_availability',
         '_test_threads_function',
         'create_server_group',
         'create_server_alice',
