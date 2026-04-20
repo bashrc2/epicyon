@@ -1475,7 +1475,8 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
 
 
 def _is_relayed_dm(post_json_object: {}) -> bool:
-    """Returns true if the DM is relayed
+    """Returns true if the DM is Signal encrypted and relayed
+       in a manner which won't be decrypted.
        See https://holos.fedilab.app/e2ee
     """
     if 'holos:e2eeEnabled' not in post_json_object['object']:
