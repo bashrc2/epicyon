@@ -41,17 +41,23 @@ def set_availability(base_dir: str, nickname: str, domain: str,
     return True
 
 
-def get_availability(base_dir: str, nickname: str, domain: str) -> str:
+def get_availability(base_dir: str, nickname: str, domain: str,
+                     actor_json: {}) -> str:
     """Returns the availability for a given person
     """
-    actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actor_filename):
-        return False
-    actor_json = load_json(actor_filename)
+    if not actor_json:
+        actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
+        if not os.path.isfile(actor_filename):
+            return False
+        actor_json = load_json(actor_filename)
     if actor_json:
-        if not actor_json.get('availability'):
-            return None
-        return actor_json['availability']
+        if actor_json.get('availability'):
+            return actor_json['availability']
+        if actor_json.get('holos:isOnline'):
+            if isinstance(actor_json['holos:isOnline'], bool):
+                if actor_json['holos:isOnline'] is True:
+                    return 'online'
+                return 'offline'
     return None
 
 
