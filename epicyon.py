@@ -3917,7 +3917,7 @@ def _command_options() -> None:
         set_skill_level(base_dir, nickname, domain, 'testing', 60)
         set_skill_level(base_dir, nickname, domain, 'typing', 50)
         set_role(base_dir, nickname, domain, 'admin')
-        set_availability(base_dir, nickname, domain, 'busy')
+        set_availability(base_dir, nickname, domain, 'busy', None)
 
         block_federated: list[str] = []
         add_share(base_dir,

@@ -790,7 +790,8 @@ def post_message_to_outbox(session, translate: {},
 
     if debug:
         print('DEBUG: handle availability changes requests')
-    outbox_availability(base_dir, post_to_nickname, message_json, debug)
+    outbox_availability(base_dir, post_to_nickname, message_json,
+                        debug, person_cache)
 
     if debug:
         print('DEBUG: handle any like requests')

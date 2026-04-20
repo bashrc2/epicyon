@@ -25,19 +25,20 @@ from utils import get_actor_from_post
 
 
 def set_availability(base_dir: str, nickname: str, domain: str,
-                     status: str) -> bool:
+                     status: str, actor_json: {}) -> bool:
     """Set an availability status
     """
     # avoid giant strings
     if len(status) > 128:
         return False
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
-    if not os.path.isfile(actor_filename):
-        return False
-    actor_json = load_json(actor_filename)
+    if not actor_json:
+        if os.path.isfile(actor_filename):
+            actor_json = load_json(actor_filename)
     if actor_json:
         actor_json['availability'] = status
-        save_json(actor_json, actor_filename)
+        if os.path.isfile(actor_filename):
+            save_json(actor_json, actor_filename)
     return True
 
 
@@ -62,8 +63,9 @@ def get_availability(base_dir: str, nickname: str, domain: str,
 
 
 def outbox_availability(base_dir: str, nickname: str, message_json: {},
-                        debug: bool) -> bool:
+                        debug: bool, person_cache: {}) -> bool:
     """Handles receiving an availability update
+    This is for setting your own availability
     """
     if not message_json.get('type'):
         return False
@@ -74,7 +76,10 @@ def outbox_availability(base_dir: str, nickname: str, message_json: {},
     if not has_object_string(message_json, debug):
         return False
 
+    actor_json = None
     actor_url = get_actor_from_post(message_json)
+    if person_cache.get(actor_url):
+        actor_json = person_cache[actor_url]
     actor_nickname = get_nickname_from_actor(actor_url)
     if not actor_nickname:
         return False
@@ -85,7 +90,7 @@ def outbox_availability(base_dir: str, nickname: str, message_json: {},
         return False
     status = message_json['object'].replace('"', '')
 
-    return set_availability(base_dir, nickname, domain, status)
+    return set_availability(base_dir, nickname, domain, status, actor_json)
 
 
 def send_availability_via_server(base_dir: str, session,
