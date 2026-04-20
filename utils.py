@@ -1239,7 +1239,7 @@ def _get_statuses_list() -> []:
             '/note/', '/notes/', '/comment/', '/post/', '/item/', '/videos/',
             '/button/', '/x/', '/o/', '/posts/', '/items/', '/object/', '/r/',
             '/content/', '/federation/', '/elsewhere/', '/article/',
-            '/activity/', '/blog/', '/app.bsky.feed.post/')
+            '/activity/', '/blog/', '/app.bsky.feed.post/', '/?p=')
 
 
 def contains_statuses(url: str) -> bool:

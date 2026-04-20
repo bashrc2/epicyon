@@ -6493,7 +6493,12 @@ def download_announce(session, base_dir: str, http_prefix: str,
                   post_json_object['object'] + ' ' +
                   str(announced_json))
             return None
-        if not announced_json.get('id'):
+
+        announced_id: str = ''
+        if announced_json.get('id'):
+            announced_id = remove_id_ending(announced_json['id'])
+
+        if not announced_id:
             print('WARN: announced post does not have an id ' +
                   str(announced_json))
             _reject_announce(announce_filename,
@@ -6501,7 +6506,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                              recent_posts_cache, debug)
             return None
 
-        announced_actor = announced_json['id']
+        announced_actor = announced_id
         if announced_json.get('attributedTo'):
             announced_actor = get_attributed_to(announced_json['attributedTo'])
 
@@ -6562,7 +6567,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
                                         languages_understood)
             if converted_json:
                 announced_json = converted_json
-        if not contains_statuses(announced_json['id']):
+        if not contains_statuses(announced_id):
             print('WARN: announced post id does not contain /statuses/ ' +
                   'or /objects/ or /p/ ' + str(announced_json))
             _reject_announce(announce_filename,
@@ -6668,9 +6673,9 @@ def download_announce(session, base_dir: str, http_prefix: str,
                 summary_str + ' ' + content_str + ' ' + media_descriptions
         if is_filtered(base_dir, nickname, domain, content_all,
                        system_language):
-            if announced_json.get('id'):
+            if announced_id:
                 print('REJECT: announced post has been filtered ' +
-                      str(announced_json['id']))
+                      str(announced_id))
             _reject_announce(announce_filename,
                              base_dir, nickname, domain, post_id,
                              recent_posts_cache, debug)
