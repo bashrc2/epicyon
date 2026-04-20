@@ -135,6 +135,7 @@ from session import get_json
 from shares import actor_attached_shares_as_html
 from git import get_repo_url
 from reading import html_profile_book_list
+from availability import get_availability
 
 THEME_FORMATS = '.zip, .gz'
 BLOCKFILE_FORMATS = '.csv'
@@ -485,6 +486,8 @@ def html_profile_after_search(authorized: bool,
         if 'T' in profile_json['published']:
             joined_date = remove_html(profile_json['published'])
 
+    available = get_availability(base_dir, nickname, domain, profile_json)
+
     actor_proxied = ap_proxy_type(profile_json)
 
     website_url = get_website(profile_json, translate)
@@ -521,7 +524,8 @@ def html_profile_after_search(authorized: bool,
                                          avatar_url, image_url,
                                          moved_to, profile_json['id'],
                                          also_known_as, access_keys,
-                                         joined_date, actor_proxied,
+                                         joined_date, available,
+                                         actor_proxied,
                                          attached_shared_items,
                                          website_url, blog_url,
                                          lxmf_address,
@@ -742,6 +746,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
                         attached_shared_items: str,
                         access_keys: {},
                         joined_date: str,
+                        available: str,
                         occupation_name: str,
                         actor_proxied: str,
                         person_url: str,
@@ -820,6 +825,10 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
         html_str += \
             '    <p>' + joined_str + ' ' + \
             joined_date.split('T')[0] + '<br>\n'
+    if available:
+        html_str += \
+            '    <p>' + translate['Availability'] + \
+            ': ' + remove_html(available).title() + '</p>\n'
     if moved_to:
         moved_to = remove_html(moved_to)
         new_nickname = get_nickname_from_actor(moved_to)
@@ -928,6 +937,7 @@ def _get_profile_header_after_search(base_dir: str,
                                      also_known_as: [],
                                      access_keys: {},
                                      joined_date: str,
+                                     available: str,
                                      actor_proxied: str,
                                      attached_shared_items: str,
                                      website_url: str,
@@ -1002,6 +1012,10 @@ def _get_profile_header_after_search(base_dir: str,
             joined_str = '<b>' + translate['New account'] + '</b>'
         html_str += '        <p>' + joined_str + ' ' + \
             joined_date.split('T')[0] + '</p>\n'
+    if available:
+        html_str += \
+            '        <p>' + translate['Availability'] + \
+            ': ' + remove_html(available).title() + '</p>\n'
     if follows_you:
         if not you_follow:
             html_str += '        <p><b>' + \
@@ -1595,6 +1609,9 @@ def html_profile(signing_priv_key_pem: str,
     if profile_json.get('published'):
         if 'T' in profile_json['published']:
             joined_date = profile_json['published']
+
+    available = get_availability(base_dir, nickname, domain, profile_json)
+
     occupation_name = None
     if profile_json.get('hasOccupation'):
         occupation_name = get_occupation_name(profile_json)
@@ -1640,7 +1657,7 @@ def html_profile(signing_priv_key_pem: str,
                             moved_to, also_known_as,
                             pinned_content,
                             attached_shared_items,
-                            access_keys, joined_date,
+                            access_keys, joined_date, available,
                             occupation_name,
                             actor_proxied, actor,
                             no_of_books, authorized,
