@@ -46,7 +46,11 @@ def get_availability(base_dir: str, nickname: str, domain: str,
                      actor_json: {}) -> str:
     """Returns the availability for a given person
     """
-    if not actor_json:
+    actor_exists = False
+    if actor_json:
+        if isinstance(actor_json, dict):
+            actor_exists = True
+    if not actor_exists:
         actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
         if not os.path.isfile(actor_filename):
             return False
