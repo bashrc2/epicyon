@@ -1474,6 +1474,17 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     return True
 
 
+def _is_relayed_dm(post_json_object: {}) -> bool:
+    """Returns true if the DM is relayed
+       See https://holos.fedilab.app/e2ee
+    """
+    if 'holos:e2eeEnabled' not in post_json_object['object']:
+        return False
+    if not isinstance(post_json_object['object']['holos:e2eeEnabled'], bool):
+        return True
+    return post_json_object['object']['holos:e2eeEnabled']
+
+
 def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                  post_json_object: {}, update_index_list: [],
                  session, http_prefix: str,
@@ -1542,6 +1553,10 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
 
     # Not sending to yourself
     if not sending_to_self:
+        obj_has_dict = has_object_dict(post_json_object)
+        if obj_has_dict:
+            if _is_relayed_dm(post_json_object):
+                return False
         # is this a vote on a question?
         if is_vote(base_dir, nickname, domain,
                    post_json_object, debug):
@@ -1567,7 +1582,6 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                 # send back a bounce DM
                 if post_json_object.get('id') and \
                    post_json_object.get('object'):
-                    obj_has_dict = has_object_dict(post_json_object)
                     # don't send bounces back to
                     # replies to bounce messages
                     obj = post_json_object['object']
