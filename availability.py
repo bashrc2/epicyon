@@ -53,7 +53,7 @@ def get_availability(base_dir: str, nickname: str, domain: str,
     if actor_json:
         if actor_json.get('availability'):
             return actor_json['availability']
-        if actor_json.get('holos:isOnline'):
+        if 'holos:isOnline' in actor_json:
             if isinstance(actor_json['holos:isOnline'], bool):
                 if actor_json['holos:isOnline'] is True:
                     return 'online'
