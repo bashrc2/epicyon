@@ -4132,7 +4132,7 @@ def check_bad_path(path: str):
     if '/.' in path_lower:
         good_starts = ('/.well-known/', '/users/.well-known/')
         if string_starts_with(path_lower, good_starts):
-            bad_strings = ('..', '%2e%2e', '%252e%252e')
+            bad_strings = ['..', '%2e%2e', '%252e%252e']
 
     if path_lower.startswith('/wp-'):
         return True
