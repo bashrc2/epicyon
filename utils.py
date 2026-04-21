@@ -4122,11 +4122,11 @@ def check_bad_path(path: str):
     """
     path_lower = path.lower()
 
-    bad_strings = ('..', '/.', '%2e%2e', '%252e%252e',
-                   '/sftp.', '/sftp-', '/statistics',
-                   '/config/', 'settings.', 'credentials',
-                   '/packs/', '/backend/', '/apis/',
-                   '/laravel/', '/js/', '/root/')
+    bad_strings = [
+        '..', '/.', '%2e%2e', '%252e%252e', '/sftp.', '/sftp-', '/statistics',
+        '/config/', 'settings.', 'credentials', '/packs/', '/backend/',
+        '/apis/', '/laravel/', '/js/', '/root/'
+    ]
 
     # allow /.well-known/...
     if '/.' in path_lower:
@@ -4145,12 +4145,7 @@ def check_bad_path(path: str):
         return True
 
     if '/.ghost/activitypub/' in path_lower:
-        # remove '/.'
-        bad_strings = ('..', '%2e%2e', '%252e%252e',
-                       '/sftp.', '/sftp-', '/statistics',
-                       '/config/', 'settings.', 'credentials',
-                       '/packs/', '/backend/', '/apis/',
-                       '/laravel/', '/js/', '/root/')
+        bad_strings.remove('/.')
 
     if string_contains(path_lower, bad_strings):
         return True
