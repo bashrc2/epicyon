@@ -4150,7 +4150,7 @@ def check_bad_path(path: str):
                        '/sftp.', '/sftp-', '/statistics',
                        '/config/', 'settings.', 'credentials',
                        '/packs/', '/backend/', '/apis/',
-                       '/laravel/', '/js/')
+                       '/laravel/', '/js/', '/root/')
 
     if string_contains(path_lower, bad_strings):
         return True
