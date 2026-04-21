@@ -4144,7 +4144,7 @@ def check_bad_path(path: str):
     if string_ends_with(path_lower, bad_endings):
         return True
 
-    if '/.ghost/activitypub/' in path_lower:
+    if '/.ghost/activitypub/' in path_lower and '/.' in bad_strings:
         bad_strings.remove('/.')
 
     if string_contains(path_lower, bad_strings):
