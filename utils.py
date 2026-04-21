@@ -4126,7 +4126,7 @@ def check_bad_path(path: str):
                    '/sftp.', '/sftp-', '/statistics',
                    '/config/', 'settings.', 'credentials',
                    '/packs/', '/backend/', '/apis/',
-                   '/laravel/', '/js/')
+                   '/laravel/', '/js/', '/root/')
 
     # allow /.well-known/...
     if '/.' in path_lower:
@@ -4139,7 +4139,7 @@ def check_bad_path(path: str):
 
     bad_endings = (
         '.js', '.ts', '.py', '.php', '.bak', '.env', '.local', '.yml',
-        '.rs', '.ru'
+        '.rs', '.ru', '.old', '.backup', '~', '.ini'
     )
     if string_ends_with(path_lower, bad_endings):
         return True
