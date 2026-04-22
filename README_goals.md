@@ -39,7 +39,9 @@
 
 The following are considered anti-features of other social network systems, since they encourage dysfunctional social interactions.
 
+ * Algorithmic timelines. No timeline ordering or filtering other than a chronological sequence.
  * AI features of any sort
+ * Post previews. Adding this puts unnecesary strain on upstream websites and also potentially adds more attack surface.
  * Features designed to scale to large numbers of accounts (say, more than 20 active users)
  * Trending hashtags, or trending anything (recent hashtags in alphabetical order are ok)
  * Ranking, rating or recommending mechanisms for posts or people (other than likes or repeats/boosts)
@@ -55,4 +57,4 @@ The following are considered anti-features of other social network systems, sinc
  * Collaborative editing of posts, although you could do that outside of this system using Etherpad, or similar
  * Anonymous posts from random internet users published under a single generic instance account. "Spam enabling features". De-personalisation.
  * Hierarchies of roles beyond ordinary moderation, such as X requires special agreement from Y before sending a post. Originally delegated roles were envisioned, but later abandoned due to the potential for creating elaborate hierarchies
- * Federated moderation. Under realistic conditions people could be pressured or bribed into giving federated moderation access, and the consequences could be very bad. Individuals going on power trips, controlling multiple instances and heading back towards centralization. Avoid creating technical routes which easily lead to power consolidation and centralization.
+ * Federated moderation by default. It is possible to apply federated blocklists, but there will be no default blocks applied from outside of your own instance.

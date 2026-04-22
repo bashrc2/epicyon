@@ -380,6 +380,7 @@ def inbox_permitted_message(domain: str, message_json: {},
             print("REJECT: inbox post attributed to AI agent " +
                   str(message_json['object']['id']))
         return False
+
     # if this is a reply check that replyTo is permitted
     reply_id = get_reply_to(message_json['object'])
     if reply_id:
