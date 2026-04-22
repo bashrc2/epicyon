@@ -338,10 +338,11 @@ def inbox_message_has_params(message_json: {}) -> bool:
             return False
 
     if not message_json.get('to'):
-        allowed_without_to_param = ['Like', 'EmojiReact',
-                                    'Follow', 'Join', 'Request',
-                                    'Accept', 'Capability', 'Undo',
-                                    'Move', 'sm:ActorStatus', 'ActorStatus']
+        allowed_without_to_param = [
+            'Like', 'EmojiReact', 'Follow', 'Join', 'Request',
+            'Accept', 'Capability', 'Undo', 'Move', 'sm:ActorStatus',
+            'ActorStatus'
+        ]
         if message_json['type'] not in allowed_without_to_param:
             return False
     return True
