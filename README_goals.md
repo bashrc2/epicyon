@@ -34,6 +34,7 @@
  * Integration with RSS feeds, for reading news or blogs
  * Moderation capabilities for posts, hashtags and blocks
  * Federated blocklist support
+ * Limited support for quote posts, but also with the ability to not show them, including for individual accounts.
 
 ## Non-goals
 
