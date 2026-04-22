@@ -310,7 +310,7 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
   echo '      proxy_redirect off;';
   echo '      proxy_request_buffering off;';
   echo '      proxy_buffering off;';
-  echo "      proxy_pass http://localhost:${EPICYON_PORT};";
+  echo "      proxy_pass http://127.0.0.1:${EPICYON_PORT};";
   echo '      tcp_nodelay on;';
   echo '    }';
   echo '}'; } > "/etc/nginx/sites-available/${username}"
