@@ -506,6 +506,15 @@ def update_inbox_queue(self, nickname: str, message_json: {},
     if self.headers.get('Collection-Synchronization'):
         headers_dict['Collection-Synchronization'] = \
             self.headers['Collection-Synchronization']
+    if self.headers.get('Collection-synchronization'):
+        headers_dict['Collection-synchronization'] = \
+            self.headers['Collection-synchronization']
+    if self.headers.get('User-Agent'):
+        headers_dict['User-Agent'] = self.headers['User-Agent']
+    if self.headers.get('User-agent'):
+        headers_dict['User-Agent'] = self.headers['User-agent']
+    if self.headers.get('user-agent'):
+        headers_dict['User-Agent'] = self.headers['user-agent']
     if self.headers.get('Content-type'):
         headers_dict['Content-type'] = self.headers['Content-type']
     if self.headers.get('Content-Length'):
