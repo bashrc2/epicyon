@@ -1,2 +1,2 @@
 #!/bin/bash
-journalctl -u epicyon | grep "invalid nickname\|invalid header\|invalid characters\|leech bounced\|LLM scraper\|suspicious\|contradictory browsers\|bad path\|not wordpress\|attempt to access passwords\|GET Unknown request"
+journalctl -u epicyon | grep "invalid expanded\|invalid nickname\|invalid header\|invalid characters\|leech bounced\|LLM scraper\|suspicious\|contradictory browsers\|bad path\|not wordpress\|attempt to access passwords\|GET Unknown request"

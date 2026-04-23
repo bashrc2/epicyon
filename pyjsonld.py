@@ -10,6 +10,8 @@ JSON-LD.
 .. moduleauthor:: Dave Longley
 .. moduleauthor:: Mike Johnson
 .. moduleauthor:: Tim McNamara <tim.mcnamara@okfn.org>
+
+23/04/2026 Modified to remove @graph and @reverse
 """
 
 __copyright__ = 'Copyright (c) 2011-2014 Digital Bazaar, Inc.'

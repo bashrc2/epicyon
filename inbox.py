@@ -352,6 +352,12 @@ def inbox_permitted_message(domain: str, message_json: {},
                             federation_list: []) -> bool:
     """ Initial validation of whether an incoming post is permitted
     """
+    if '@type' in message_json or \
+       'https://www.w3.org/ns/activitystreams#object' in message_json or \
+       'https://www.w3.org/ns/activitystreams#actor' in message_json:
+        print('WARN: invalid expanded json ' + str(message_json))
+        return False
+
     if not has_actor(message_json, False):
         return False
 
