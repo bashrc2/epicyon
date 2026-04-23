@@ -124,7 +124,6 @@ KEYWORDS = [
     '@default',
     '@embed',
     '@explicit',
-    '@graph',
     '@id',
     '@index',
     '@language',
@@ -132,7 +131,6 @@ KEYWORDS = [
     '@omitDefault',
     '@preserve',
     '@requireAll',
-    '@reverse',
     '@set',
     '@type',
     '@value',
@@ -788,16 +786,8 @@ class JsonLdProcessor(object):
         if ctx_length == 1:
             ctx = ctx[0]
 
-        # add context and/or @graph
-        if _is_array(compacted):
-            # use '@graph' keyword
-            kwgraph = self._compact_iri(active_ctx, '@graph')
-            graph = compacted
-            compacted = {}
-            if has_context:
-                compacted['@context'] = ctx
-            compacted[kwgraph] = graph
-        elif _is_object(compacted) and has_context:
+        # add context
+        if _is_object(compacted) and has_context:
             # reorder keys so @context is first
             graph = compacted
             compacted = {}
@@ -894,11 +884,7 @@ class JsonLdProcessor(object):
         # do expansion
         expanded = self._expand(active_ctx, None, document, options, False)
 
-        # optimize away @graph with no other properties
-        if (_is_object(expanded) and '@graph' in expanded and
-                len(expanded) == 1):
-            expanded = expanded['@graph']
-        elif expanded is None:
+        if expanded is None:
             expanded = []
 
         # normalize to an array
@@ -937,7 +923,7 @@ class JsonLdProcessor(object):
             return flattened
 
         # compact result (force @graph option to true, skip expansion)
-        options['graph'] = True
+        options['graph'] = False
         options['skipExpansion'] = True
         try:
             compacted = self.compact(flattened, ctx, options)
@@ -1037,7 +1023,7 @@ class JsonLdProcessor(object):
         try:
             # compact result (force @graph option to True, skip expansion,
             # check for linked embeds)
-            options['graph'] = True
+            options['graph'] = False
             options['skipExpansion'] = True
             options['link'] = {}
             options['activeCtx'] = True
@@ -1771,9 +1757,6 @@ class JsonLdProcessor(object):
                         {'expanded': element, 'compacted': rval})
                 return rval
 
-            # FIXME: avoid misuse of active property as an expanded property?
-            inside_reverse = (active_property == '@reverse')
-
             rval = {}
 
             if options['link'] and '@id' in element:
@@ -1806,35 +1789,6 @@ class JsonLdProcessor(object):
                         {'propertyIsArray': is_array})
                     continue
 
-                # handle @reverse
-                if expanded_property == '@reverse':
-                    # recursively compact expanded value
-                    compacted_value = self._compact(
-                        active_ctx, '@reverse', expanded_value, options)
-
-                    # handle double-reversed properties
-                    for compacted_property, value in \
-                            list(compacted_value.items()):
-                        mapping = active_ctx['mappings'].get(
-                            compacted_property)
-                        if mapping and mapping['reverse']:
-                            container = JsonLdProcessor.get_context_value(
-                                active_ctx, compacted_property, '@container')
-                            use_array = (container == '@set' or
-                                         not options['compactArrays'])
-                            JsonLdProcessor.add_value(
-                                rval, compacted_property, value,
-                                {'propertyIsArray': use_array})
-                            del compacted_value[compacted_property]
-
-                    if len(compacted_value.keys()) > 0:
-                        # use keyword alias and add value
-                        alias = self._compact_iri(
-                            active_ctx, expanded_property)
-                        JsonLdProcessor.add_value(rval, alias, compacted_value)
-
-                    continue
-
                 # handle @index
                 if expanded_property == '@index':
                     # drop @index if inside an @index container
@@ -1850,8 +1804,7 @@ class JsonLdProcessor(object):
 
                 # skip array processing for keywords that aren't
                 # @graph or @list
-                if expanded_property != '@graph' and \
-                   expanded_property != '@list' and \
+                if expanded_property != '@list' and \
                    _is_keyword(expanded_property):
                     # use keyword alias and add value as is
                     alias = self._compact_iri(active_ctx, expanded_property)
@@ -1865,7 +1818,7 @@ class JsonLdProcessor(object):
                 if len(expanded_value) == 0:
                     item_active_property = self._compact_iri(
                         active_ctx, expanded_property, expanded_value,
-                        vocab=True, reverse=inside_reverse)
+                        vocab=True, reverse=False)
                     JsonLdProcessor.add_value(
                         rval, item_active_property, [],
                         {'propertyIsArray': True})
@@ -1875,7 +1828,7 @@ class JsonLdProcessor(object):
                     # compact property and get container type
                     item_active_property = self._compact_iri(
                         active_ctx, expanded_property, expanded_item,
-                        vocab=True, reverse=inside_reverse)
+                        vocab=True, reverse=False)
                     container = JsonLdProcessor.get_context_value(
                         active_ctx, item_active_property, '@container')
 
@@ -1938,14 +1891,13 @@ class JsonLdProcessor(object):
                     else:
                         # use an array if compactArrays flag is false,
                         # @container is @set or @list, value is an empty
-                        # array, or key is @graph
+                        # array
                         is_array = (not options['compactArrays'] or
                                     container == '@set' or
                                     container == '@list' or
                                     (_is_array(compacted_item) and
                                      len(compacted_item) == 0) or
-                                    expanded_property == '@list' or
-                                    expanded_property == '@graph')
+                                    expanded_property == '@list')
 
                         # add compact value
                         JsonLdProcessor.add_value(
@@ -2017,10 +1969,6 @@ class JsonLdProcessor(object):
             active_ctx = self._process_context(
                 active_ctx, element['@context'], options)
 
-        # expand the active property
-        expanded_active_property = self._expand_iri(
-            active_ctx, active_property, vocab=True)
-
         rval = {}
         for key, value in sorted(element.items()):
             if key == '@context':
@@ -2037,12 +1985,6 @@ class JsonLdProcessor(object):
                 continue
 
             if _is_keyword(expanded_property):
-                if expanded_active_property == '@reverse':
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; a keyword cannot be used as '
-                        'a @reverse property.',
-                        'jsonld.SyntaxError', {'value': value},
-                        code='invalid reverse property map')
                 if expanded_property in rval:
                     raise JsonLdError(
                         'Invalid JSON-LD syntax; colliding keywords detected.',
@@ -2064,14 +2006,6 @@ class JsonLdProcessor(object):
 
             if expanded_property == '@type':
                 _validate_type_value(value)
-
-            # @graph must be an array or an object
-            if (expanded_property == '@graph' and
-                    not (_is_object(value) or _is_array(value))):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; "@graph" must not be an '
-                    'object or an array.', 'jsonld.SyntaxError',
-                    {'value': value}, code='invalid @graph value')
 
             # @value must not be an object or an array
             if (expanded_property == '@value' and
@@ -2102,48 +2036,6 @@ class JsonLdProcessor(object):
                     'a string.', 'jsonld.SyntaxError', {'value': value},
                     code='invalid @index value')
 
-            # reverse must be an object
-            if expanded_property == '@reverse':
-                if not _is_object(value):
-                    raise JsonLdError(
-                        'Invalid JSON-LD syntax; "@reverse" value must be '
-                        'an object.', 'jsonld.SyntaxError', {'value': value},
-                        code='invalid @reverse value')
-
-                expanded_value = self._expand(
-                    active_ctx, '@reverse', value, options, inside_list)
-
-                # properties double-reversed
-                if '@reverse' in expanded_value:
-                    for rprop, rvalue in expanded_value['@reverse'].items():
-                        JsonLdProcessor.add_value(
-                            rval, rprop, rvalue,
-                            {'propertyIsArray': True})
-
-                # merge in all reversed properties
-                reverse_map = rval.get('@reverse')
-                for property, items in expanded_value.items():
-                    if property == '@reverse':
-                        continue
-                    if reverse_map is None:
-                        reverse_map = rval['@reverse'] = {}
-                    JsonLdProcessor.add_value(
-                        reverse_map, property, [],
-                        {'propertyIsArray': True})
-                    for item in items:
-                        if _is_value(item) or _is_list(item):
-                            raise JsonLdError(
-                                'Invalid JSON-LD syntax; "@reverse" '
-                                'value must not be an @value or an @list',
-                                'jsonld.SyntaxError',
-                                {'value': expanded_value},
-                                code='invalid reverse property value')
-                        JsonLdProcessor.add_value(
-                            reverse_map, property, item,
-                            {'propertyIsArray': True})
-
-                continue
-
             container = JsonLdProcessor.get_context_value(
                 active_ctx, key, '@container')
 
@@ -2169,8 +2061,6 @@ class JsonLdProcessor(object):
                 is_list = (expanded_property == '@list')
                 if is_list or expanded_property == '@set':
                     next_active_property = active_property
-                    if is_list and expanded_active_property == '@graph':
-                        next_active_property = None
                     expanded_value = self._expand(
                         active_ctx, next_active_property, value, options,
                         is_list)
@@ -2195,23 +2085,6 @@ class JsonLdProcessor(object):
                 expanded_value = {
                     '@list': JsonLdProcessor.arrayify(expanded_value)
                 }
-
-            # merge in reverse properties
-            mapping = active_ctx['mappings'].get(key)
-            if mapping and mapping['reverse']:
-                reverse_map = rval.setdefault('@reverse', {})
-                expanded_value = JsonLdProcessor.arrayify(expanded_value)
-                for item in expanded_value:
-                    if _is_value(item) or _is_list(item):
-                        raise JsonLdError(
-                            'Invalid JSON-LD syntax; "@reverse" value must '
-                            'not be an @value or an @list.',
-                            'jsonld.SyntaxError', {'value': expanded_value},
-                            code='invalid reverse property value')
-                    JsonLdProcessor.add_value(
-                        reverse_map, expanded_property, item,
-                        {'propertyIsArray': True})
-                continue
 
             # add value for property, use an array exception for certain
             # key words
@@ -2283,9 +2156,10 @@ class JsonLdProcessor(object):
             rval = None
 
         # drop certain top-level objects that do not occur in lists
-        if (_is_object(rval) and not options.get('keepFreeFloatingNodes') and
-            not inside_list and (active_property is None or
-                                 expanded_active_property == '@graph')):
+        if _is_object(rval) and \
+           not options.get('keepFreeFloatingNodes') and \
+           not inside_list and \
+           active_property is None:
             # drop empty object or top-level @value/@list,
             # or object with only @id
             if (count == 0 or '@value' in rval or '@list' in rval or
@@ -2309,14 +2183,6 @@ class JsonLdProcessor(object):
 
         # add all non-default graphs to default graph
         default_graph = graphs['@default']
-        for graph_name, node_map in graphs.items():
-            if graph_name == '@default':
-                continue
-            graph_subject = default_graph.setdefault(
-                graph_name, {'@id': graph_name, '@graph': []})
-            graph_subject.setdefault('@graph', []).extend(
-                [v for k, v in sorted(node_map.items())
-                    if not _is_subject_reference(v)])
 
         # produce flattened output
         return [value for key, value in sorted(default_graph.items())
@@ -2615,12 +2481,6 @@ class JsonLdProcessor(object):
 
         result = []
         for subject, node in sorted(default_graph.items()):
-            if subject in graph_map:
-                graph = node['@graph'] = []
-                for s, n in sorted(graph_map[subject].items()):
-                    # only add full subjects to top-level
-                    if not _is_subject_reference(n):
-                        graph.append(n)
             # only add full subjects to top-level
             if not _is_subject_reference(node):
                 result.append(node)
@@ -2796,9 +2656,8 @@ class JsonLdProcessor(object):
         type_ = JsonLdProcessor.get_context_value(
             active_ctx, active_property, '@type')
 
-        # do @id expansion (automatic for @graph)
-        if (type_ == '@id' or (expanded_property == '@graph'
-                               and _is_string(value))):
+        # do @id expansion
+        if type_ == '@id':
             return {'@id': self._expand_iri(active_ctx, value, base=True)}
         # do @id expansion w/vocab
         if type_ == '@vocab':
@@ -3078,31 +2937,6 @@ class JsonLdProcessor(object):
         for property, objects in sorted(input_.items()):
             # skip @id
             if property == '@id':
-                continue
-
-            # handle reverse properties
-            if property == '@reverse':
-                referenced_node = {'@id': name}
-                reverse_map = input_['@reverse']
-                for reverse_property, items in reverse_map.items():
-                    for item in items:
-                        item_name = item.get('@id')
-                        if _is_bnode(item):
-                            item_name = namer.get_name(item_name)
-                        self._create_node_map(
-                            item, graphs, graph, namer, item_name)
-                        JsonLdProcessor.add_value(
-                            graphs[graph][item_name], reverse_property,
-                            referenced_node,
-                            {'propertyIsArray': True, 'allowDuplicate': False})
-                continue
-
-            # recurse into graph
-            if property == '@graph':
-                # add graph subjects map entry
-                graphs.setdefault(name, {})
-                g = graph if graph == '@merged' else name
-                self._create_node_map(objects, graphs, g, namer)
                 continue
 
             # copy non-@type keywords
@@ -3755,12 +3589,7 @@ class JsonLdProcessor(object):
         prefs = []
 
         # determine prefs for @id based on whether value compacts to term
-        if ((type_or_language_value == '@id' or
-                type_or_language_value == '@reverse') and
-                _is_subject_reference(value)):
-            # prefer @reverse first
-            if type_or_language_value == '@reverse':
-                prefs.append('@reverse')
+        if type_or_language_value == '@id' and _is_subject_reference(value):
             # try to compact value to a term
             term = self._compact_iri(
                 active_ctx, value['@id'], None, vocab=True)
@@ -3825,12 +3654,8 @@ class JsonLdProcessor(object):
             type_or_language = '@language'
             type_or_language_value = '@null'
 
-            if reverse:
-                type_or_language = '@type'
-                type_or_language_value = '@reverse'
-                containers.append('@set')
             # choose most specific term that works for all elements in @list
-            elif _is_list(value):
+            if _is_list(value):
                 # only select @list containers if @index is NOT in value
                 if '@index' not in value:
                     containers.append('@list')
@@ -4012,15 +3837,13 @@ class JsonLdProcessor(object):
             return rval
 
         # value is a subject reference
-        expanded_property = self._expand_iri(
-            active_ctx, active_property, vocab=True)
         type_ = JsonLdProcessor.get_context_value(
             active_ctx, active_property, '@type')
         compacted = self._compact_iri(
             active_ctx, value['@id'], vocab=(type_ == '@vocab'))
 
         # compact to scalar
-        if type_ in ['@id', '@vocab'] or expanded_property == '@graph':
+        if type_ in ('@id', '@vocab'):
             return compacted
 
         rval = {}
@@ -4091,32 +3914,7 @@ class JsonLdProcessor(object):
         # create new mapping
         mapping = active_ctx['mappings'][term] = {'reverse': False}
 
-        if '@reverse' in value:
-            if '@id' in value:
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; an @reverse term definition must '
-                    'not contain @id.', 'jsonld.SyntaxError',
-                    {'context': local_ctx}, code='invalid reverse property')
-            reverse = value['@reverse']
-            if not _is_string(reverse):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; @context @reverse value must be '
-                    'a string.', 'jsonld.SyntaxError', {'context': local_ctx},
-                    code='invalid IRI mapping')
-
-            # expand and add @id mapping
-            id_ = self._expand_iri(
-                active_ctx, reverse, vocab=True, base=False,
-                local_ctx=local_ctx, defined=defined)
-            if not _is_absolute_iri(id_):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; @context @reverse value must be '
-                    'an absolute IRI or a blank node identifier.',
-                    'jsonld.SyntaxError', {'context': local_ctx},
-                    code='invalid IRI mapping')
-            mapping['@id'] = id_
-            mapping['reverse'] = True
-        elif '@id' in value:
+        if '@id' in value:
             id_ = value['@id']
             if not _is_string(id_):
                 raise JsonLdError(
@@ -4202,13 +4000,6 @@ class JsonLdProcessor(object):
                     'must be one of the following: @list, @set, @index, or '
                     '@language.', 'jsonld.SyntaxError',
                     {'context': local_ctx}, code='invalid container mapping')
-            if (mapping['reverse'] and container != '@index' and
-                    container != '@set' and container is not None):
-                raise JsonLdError(
-                    'Invalid JSON-LD syntax; @context @container value for '
-                    'an @reverse type definition must be @index or @set.',
-                    'jsonld.SyntaxError', {'context': local_ctx},
-                    code='invalid reverse property')
 
             # add @container to mapping
             mapping['@container'] = container
@@ -4493,11 +4284,8 @@ class JsonLdProcessor(object):
                 entry = container_map.setdefault(
                     container, {'@language': {}, '@type': {}})
 
-                # term is preferred for values using @reverse
-                if mapping['reverse']:
-                    entry['@type'].setdefault('@reverse', term)
                 # term is preferred for values using specific type
-                elif '@type' in mapping:
+                if '@type' in mapping:
                     entry['@type'].setdefault(mapping['@type'], term)
                 # term is preferred for values using specific language
                 elif '@language' in mapping:
