@@ -45,6 +45,7 @@ from timeFunctions import date_utcnow
 from timeFunctions import date_from_string_format
 from timeFunctions import date_epoch
 from timeFunctions import valid_post_date
+from utils import resembles_domain
 from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import resembles_url
@@ -2770,7 +2771,7 @@ def get_mentioned_people(base_dir: str, http_prefix: str,
                 continue
         else:
             external_domain = handle.split('@')[1]
-            if not (('.' in external_domain or
+            if not ((resembles_domain(external_domain) or
                      is_yggdrasil_address(external_domain)) or
                     external_domain == 'localhost'):
                 continue

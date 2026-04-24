@@ -20,6 +20,7 @@ from flags import is_pgp_encrypted
 from flags import contains_pgp_public_key
 from flags import is_float
 from flags import is_right_to_left_text
+from utils import resembles_domain
 from utils import string_starts_with
 from utils import replace_strings
 from utils import data_dir
@@ -1078,7 +1079,7 @@ def _add_mention(base_dir: str, word_str: str, http_prefix: str,
             return True
     # @nick@domain
     if not (possible_domain == 'localhost' or
-            '.' in possible_domain or
+            resembles_domain(possible_domain) or
             is_yggdrasil_address(possible_domain)):
         return False
     recipient_actor = \

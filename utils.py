@@ -4035,8 +4035,8 @@ def resembles_domain(text: str) -> bool:
     Why not use validators? It's so that exotic, potentially p2p domains
     may be used.
     """
-    if ' ' in text or '-' in text or '<' in text or ';' in text or \
-       '"' in text or '(' in text or ')' in text:
+    if ' ' in text or '/' in text or '-' in text or '<' in text or \
+       ';' in text or '"' in text or '(' in text or ')' in text:
         return False
 
     # conventional domain

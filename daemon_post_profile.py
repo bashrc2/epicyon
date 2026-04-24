@@ -23,6 +23,7 @@ from flags import is_premium_account
 from flags import is_moderator
 from timeFunctions import get_account_timezone
 from timeFunctions import set_account_timezone
+from utils import resembles_domain
 from utils import is_yggdrasil_url
 from utils import is_yggdrasil_address
 from utils import data_dir
@@ -2509,7 +2510,7 @@ def _profile_post_twitter_alt_domain(base_dir: str, fields: {},
                 new_twitter_domain = new_twitter_domain.split('://')[1]
             if '/' in new_twitter_domain:
                 new_twitter_domain = new_twitter_domain.split('/')[0]
-            if '.' in new_twitter_domain or \
+            if resembles_domain(new_twitter_domain) or \
                is_yggdrasil_address(new_twitter_domain):
                 set_config_param(base_dir, 'twitterdomain',
                                  new_twitter_domain)
@@ -2531,7 +2532,7 @@ def _profile_post_youtube_alt_domain(base_dir: str, fields: {},
                 new_yt_domain = new_yt_domain.split('://')[1]
             if '/' in new_yt_domain:
                 new_yt_domain = new_yt_domain.split('/')[0]
-            if '.' in new_yt_domain or \
+            if resembles_domain(new_yt_domain) or \
                is_yggdrasil_address(new_yt_domain):
                 set_config_param(base_dir, 'youtubedomain',
                                  new_yt_domain)

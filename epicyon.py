@@ -75,6 +75,7 @@ from tests import test_update_actor
 from tests import run_all_tests
 from auth import store_basic_credentials
 from auth import create_password
+from utils import resembles_domain
 from utils import string_starts_with
 from utils import is_yggdrasil_url
 from utils import is_yggdrasil_address
@@ -4366,7 +4367,7 @@ def _command_options() -> None:
             yt_domain = yt_domain.split('://')[1]
         if '/' in yt_domain:
             yt_domain = yt_domain.split('/')[0]
-        if '.' in yt_domain or is_yggdrasil_address(yt_domain):
+        if resembles_domain(yt_domain) or is_yggdrasil_address(yt_domain):
             argb.yt_replace_domain = yt_domain
 
     twitter_domain = get_config_param(base_dir, 'twitterdomain')
@@ -4375,7 +4376,8 @@ def _command_options() -> None:
             twitter_domain = twitter_domain.split('://')[1]
         if '/' in twitter_domain:
             twitter_domain = twitter_domain.split('/')[0]
-        if '.' in twitter_domain or is_yggdrasil_address(twitter_domain):
+        if resembles_domain(twitter_domain) or \
+           is_yggdrasil_address(twitter_domain):
             argb.twitter_replacement_domain = twitter_domain
 
     if set_theme(base_dir, theme_name, domain,

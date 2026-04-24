@@ -11,6 +11,7 @@ import os
 import errno
 import urllib.parse
 from socket import error as SocketError
+from utils import resembles_domain
 from utils import string_starts_with
 from utils import data_dir
 from utils import delete_post
@@ -247,7 +248,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                 else:
                     # assume the text is a domain name
                     if (not full_block_domain and
-                        ('.' in moderation_domain or
+                        (resembles_domain(moderation_domain) or
                          is_yggdrasil_address(moderation_domain))):
                         nickname = '*'
                         full_block_domain = \
@@ -282,7 +283,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                 else:
                     # assume the text is a domain name
                     if (not full_block_domain and
-                        ('.' in moderation_domain or
+                        (resembles_domain(moderation_domain) or
                          is_yggdrasil_address(moderation_domain))):
                         nickname = '*'
                         full_block_domain = moderation_domain.strip()
