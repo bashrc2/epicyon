@@ -9770,7 +9770,7 @@ def _test_post_collection() -> None:
         "https://lemmings/activities/like/7243"
 
 
-def test_domain_check() -> None:
+def _test_domain_check() -> None:
     print('test domain check')
     assert not resembles_domain('')
     assert not resembles_domain('abcdef')
@@ -9799,6 +9799,7 @@ def run_all_tests():
     _test_checkbox_names()
     _test_thread_functions()
     _test_functions()
+    _test_domain_check()
     _test_post_collection()
     _test_micron_blog(base_dir)
     _test_yggdrasil_addresses()
