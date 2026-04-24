@@ -4039,10 +4039,11 @@ def resembles_domain(text: str) -> bool:
        '"' in text or '(' in text or ')' in text:
         return False
 
-    # conventional domain or yggdrasil address
+    # conventional domain
     if '.' in text and '[' not in text and ']' not in text:
         return True
 
+    # yggdrasil address
     if (text.startswith('[') and text.endswith(']') and ':' in text):
         return True
 
