@@ -578,7 +578,8 @@ def edit_profile2(self, calling_domain: str, path: str,
                   block_government: {},
                   block_bluesky: {},
                   block_nostr: {},
-                  block_federated_endpoints: []) -> bool:
+                  block_federated_endpoints: [],
+                  debug: bool) -> bool:
     """Show the edit profile screen
     """
     if '/users/' in path and path.endswith('/editprofile'):
@@ -609,7 +610,8 @@ def edit_profile2(self, calling_domain: str, path: str,
                                 block_government,
                                 block_bluesky,
                                 block_nostr,
-                                block_federated_endpoints)
+                                block_federated_endpoints,
+                                debug)
         if msg:
             msg = msg.encode('utf-8')
             msglen = len(msg)

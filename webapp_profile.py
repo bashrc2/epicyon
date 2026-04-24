@@ -2648,7 +2648,8 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
                                  block_government: {},
                                  block_bluesky: {},
                                  block_nostr: {},
-                                 block_federated_endpoints: []) -> str:
+                                 block_federated_endpoints: [],
+                                 debug: bool) -> str:
     """Filtering and blocking section of edit profile screen
     """
     filter_str = ''
@@ -2707,7 +2708,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
             print('EX: _html_edit_profile_filtering unable to read ' +
                   auto_cw_filename)
 
-    blocked_str = get_account_blocks(base_dir, nickname, domain)
+    blocked_str = get_account_blocks(base_dir, nickname, domain, debug)
 
     dm_allowed_instances_str = ''
     dm_allowed_instances_filename = \
@@ -3553,7 +3554,8 @@ def html_edit_profile(server, translate: {},
                       block_government: {},
                       block_bluesky: {},
                       block_nostr: {},
-                      block_federated_endpoints: []) -> str:
+                      block_federated_endpoints: [],
+                      debug: bool) -> str:
     """Shows the edit profile screen
     """
     replacements = {
@@ -3895,7 +3897,8 @@ def html_edit_profile(server, translate: {},
                                      cw_lists, lists_enabled, buy_sites,
                                      block_military, block_government,
                                      block_bluesky, block_nostr,
-                                     block_federated_endpoints)
+                                     block_federated_endpoints,
+                                     debug)
 
     # git projects section
     edit_profile_form += \

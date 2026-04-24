@@ -1073,7 +1073,8 @@ def daemon_http_get(self) -> None:
             blocked_json = \
                 blocked_timeline_json(actor, page_number,
                                       blocked_items_per_page, base_dir,
-                                      nickname, self.server.domain)
+                                      nickname, self.server.domain,
+                                      self.server.debug)
         msg_str = json.dumps(blocked_json,
                              ensure_ascii=False)
         msg_str = convert_domains(calling_domain,
@@ -4542,7 +4543,8 @@ def daemon_http_get(self) -> None:
                          self.server.block_government,
                          self.server.block_bluesky,
                          self.server.block_nostr,
-                         self.server.block_federated_endpoints):
+                         self.server.block_federated_endpoints,
+                         self.server.debug):
             self.server.getreq_busy = False
             return
 

@@ -82,7 +82,8 @@ def get_global_block_reason(search_text: str,
 
 
 def get_account_blocks(base_dir: str,
-                       nickname: str, domain: str) -> str:
+                       nickname: str, domain: str,
+                       debug: bool) -> str:
     """Return the text for the textarea for "blocked accounts"
     when editing profile
     """
@@ -101,7 +102,8 @@ def get_account_blocks(base_dir: str,
         with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
             blocking_file_text = fp_block.read()
     except OSError:
-        print('EX: Failed to read account blocks ' + blocking_filename)
+        if debug:
+            print('EX: Failed to read account blocks ' + blocking_filename)
         return ''
 
     blocklist = blocking_file_text.split('\n')
@@ -123,12 +125,13 @@ def get_account_blocks(base_dir: str,
 
 def blocked_timeline_json(actor: str, page_number: int, items_per_page: int,
                           base_dir: str,
-                          nickname: str, domain: str) -> {}:
+                          nickname: str, domain: str,
+                          debug: bool) -> {}:
     """Returns blocked collection for an account
     https://codeberg.org/fediverse/fep/src/branch/main/fep/c648/fep-c648.md
     """
     blocked_accounts_textarea = \
-        get_account_blocks(base_dir, nickname, domain)
+        get_account_blocks(base_dir, nickname, domain, debug)
     blocked_list: list[str] = []
     if blocked_accounts_textarea:
         blocked_list = blocked_accounts_textarea.split('\n')
