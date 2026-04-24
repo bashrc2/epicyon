@@ -282,7 +282,8 @@ def _accept_follow(base_dir: str, message_json: {},
     if debug:
         print('DEBUG: receiving Follow activity')
     if not message_json['object'].get('actor'):
-        print('DEBUG: no actor in Follow activity')
+        if debug:
+            print('DEBUG: no actor in Follow activity')
         return
     # no, this isn't a mistake
     if not has_object_string_object(message_json, debug):
@@ -296,7 +297,8 @@ def _accept_follow(base_dir: str, message_json: {},
     this_actor = get_actor_from_post(message_json['object'])
     nickname = get_nickname_from_actor(this_actor)
     if not nickname:
-        print('WARN: no nickname found in ' + this_actor)
+        if debug:
+            print('WARN: no nickname found in ' + this_actor)
         return
     accepted_domain, accepted_port = get_domain_from_actor(this_actor)
     if not accepted_domain:

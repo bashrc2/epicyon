@@ -1160,14 +1160,16 @@ def outbox_block(base_dir: str, nickname: str, domain: str,
         return False
     nickname_blocked = get_nickname_from_actor(message_json['object'])
     if not nickname_blocked:
-        print('WARN: outbox_block unable to find nickname in ' +
-              message_json['object'])
+        if debug:
+            print('WARN: outbox_block unable to find nickname in ' +
+                  message_json['object'])
         return False
     domain_blocked, port_blocked = \
         get_domain_from_actor(message_json['object'])
     if not domain_blocked:
-        print('WARN: outbox_block unable to find domain in ' +
-              message_json['object'])
+        if debug:
+            print('WARN: outbox_block unable to find domain in ' +
+                  message_json['object'])
         return False
     domain_blocked_full = get_full_domain(domain_blocked, port_blocked)
 
@@ -1222,14 +1224,16 @@ def outbox_undo_block(base_dir: str, nickname: str, domain: str,
     nickname_blocked = \
         get_nickname_from_actor(message_json['object']['object'])
     if not nickname_blocked:
-        print('WARN: outbox_undo_block unable to find nickname in ' +
-              message_json['object']['object'])
+        if debug:
+            print('WARN: outbox_undo_block unable to find nickname in ' +
+                  message_json['object']['object'])
         return
     domain_object = message_json['object']['object']
     domain_blocked, port_blocked = get_domain_from_actor(domain_object)
     if not domain_blocked:
-        print('WARN: outbox_undo_block unable to find domain in ' +
-              message_json['object']['object'])
+        if debug:
+            print('WARN: outbox_undo_block unable to find domain in ' +
+                  message_json['object']['object'])
         return
     domain_blocked_full = get_full_domain(domain_blocked, port_blocked)
 
@@ -1564,8 +1568,9 @@ def outbox_mute(base_dir: str, http_prefix: str,
         return
     nickname_muted = get_nickname_from_actor(message_json['object'])
     if not nickname_muted:
-        print('WARN: outbox_mute unable to find nickname in ' +
-              message_json['object'])
+        if debug:
+            print('WARN: outbox_mute unable to find nickname in ' +
+                  message_json['object'])
         return
 
     mute_post(base_dir, nickname, domain, port,
@@ -1629,8 +1634,9 @@ def outbox_undo_mute(base_dir: str, http_prefix: str,
         return
     nickname_muted = get_nickname_from_actor(message_json['object']['object'])
     if not nickname_muted:
-        print('WARN: outbox_undo_mute unable to find nickname in ' +
-              message_json['object']['object'])
+        if debug:
+            print('WARN: outbox_undo_mute unable to find nickname in ' +
+                  message_json['object']['object'])
         return
 
     unmute_post(base_dir, nickname, domain, port,
@@ -1909,7 +1915,8 @@ def get_blocks_via_server(session, nickname: str, password: str,
     https://codeberg.org/fediverse/fep/src/branch/main/fep/c648/fep-c648.md
     """
     if not session:
-        print('WARN: No session for get_blocks_via_server')
+        if debug:
+            print('WARN: No session for get_blocks_via_server')
         return 6
 
     auth_header = create_basic_auth_header(nickname, password)
@@ -2216,8 +2223,9 @@ def _update_federated_blocks(session, base_dir: str,
     debug = True
 
     if not session:
-        print('WARN: federated blocklist ' +
-              'no session for update_federated_blocks')
+        if debug:
+            print('WARN: federated blocklist ' +
+                  'no session for update_federated_blocks')
         return block_federated
 
     headers = {

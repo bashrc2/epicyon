@@ -112,7 +112,8 @@ def send_availability_via_server(base_dir: str, session,
     """Sets the availability for a person via c2s
     """
     if not session:
-        print('WARN: No session for send_availability_via_server')
+        if debug:
+            print('WARN: No session for send_availability_via_server')
         return 6
 
     domain_full = get_full_domain(domain, port)
@@ -140,8 +141,9 @@ def send_availability_via_server(base_dir: str, session,
             print('DEBUG: availability webfinger failed for ' + handle)
         return 1
     if not isinstance(wf_request, dict):
-        print('WARN: availability webfinger for ' + handle +
-              ' did not return a dict. ' + str(wf_request))
+        if debug:
+            print('WARN: availability webfinger for ' + handle +
+                  ' did not return a dict. ' + str(wf_request))
         return 1
 
     post_to_box: str = 'outbox'
@@ -178,7 +180,8 @@ def send_availability_via_server(base_dir: str, session,
                             session, new_availability_json, [],
                             inbox_url, headers, 30, True)
     if not post_result:
-        print('WARN: availability failed to post')
+        if debug:
+            print('WARN: availability failed to post')
 
     if debug:
         print('DEBUG: c2s POST availability success')

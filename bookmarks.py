@@ -265,8 +265,9 @@ def update_bookmarks_collection(recent_posts_cache: {},
                         if debug:
                             print('DEBUG: bookmark added to index')
             except OSError as ex:
-                print('WARN: Failed to write entry to bookmarks index ' +
-                      bookmarks_index_filename + ' ' + str(ex))
+                if debug:
+                    print('WARN: Failed to write entry to bookmarks index ' +
+                          bookmarks_index_filename + ' ' + str(ex))
     else:
         try:
             with open(bookmarks_index_filename, 'w+',
@@ -405,7 +406,8 @@ def send_bookmark_via_server(base_dir: str, session,
     """Creates a bookmark via c2s
     """
     if not session:
-        print('WARN: No session for send_bookmark_via_server')
+        if debug:
+            print('WARN: No session for send_bookmark_via_server')
         return 6
 
     domain_full = get_full_domain(domain, from_port)
@@ -441,8 +443,9 @@ def send_bookmark_via_server(base_dir: str, session,
             print('DEBUG: bookmark webfinger failed for ' + handle)
         return 1
     if not isinstance(wf_request, dict):
-        print('WARN: bookmark webfinger for ' + handle +
-              ' did not return a dict. ' + str(wf_request))
+        if debug:
+            print('WARN: bookmark webfinger for ' + handle +
+                  ' did not return a dict. ' + str(wf_request))
         return 1
 
     post_to_box: str = 'outbox'
@@ -502,7 +505,8 @@ def send_undo_bookmark_via_server(base_dir: str, session,
     """Removes a bookmark via c2s
     """
     if not session:
-        print('WARN: No session for send_undo_bookmark_via_server')
+        if debug:
+            print('WARN: No session for send_undo_bookmark_via_server')
         return 6
 
     domain_full = get_full_domain(domain, from_port)
@@ -538,8 +542,9 @@ def send_undo_bookmark_via_server(base_dir: str, session,
             print('DEBUG: unbookmark webfinger failed for ' + handle)
         return 1
     if not isinstance(wf_request, dict):
-        print('WARN: unbookmark webfinger for ' + handle +
-              ' did not return a dict. ' + str(wf_request))
+        if debug:
+            print('WARN: unbookmark webfinger for ' + handle +
+                  ' did not return a dict. ' + str(wf_request))
         return 1
 
     post_to_box: str = 'outbox'

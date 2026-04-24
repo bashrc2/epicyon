@@ -108,11 +108,13 @@ def outbox_announce(recent_posts_cache: {},
         actor_url = get_actor_from_post(message_json)
         nickname = get_nickname_from_actor(actor_url)
         if not nickname:
-            print('WARN: no nickname found in ' + actor_url)
+            if debug:
+                print('WARN: no nickname found in ' + actor_url)
             return False
         domain, _ = get_domain_from_actor(actor_url)
         if not domain:
-            print('WARN: no domain found in ' + actor_url)
+            if debug:
+                print('WARN: no domain found in ' + actor_url)
             return False
         post_filename = locate_post(base_dir, nickname, domain,
                                     message_json['object'])
@@ -131,11 +133,13 @@ def outbox_announce(recent_posts_cache: {},
             actor_url = get_actor_from_post(message_json)
             nickname = get_nickname_from_actor(actor_url)
             if not nickname:
-                print('WARN: no nickname found in ' + actor_url)
+                if debug:
+                    print('WARN: no nickname found in ' + actor_url)
                 return False
             domain, _ = get_domain_from_actor(actor_url)
             if not domain:
-                print('WARN: no domain found in ' + actor_url)
+                if debug:
+                    print('WARN: no domain found in ' + actor_url)
                 return False
             post_filename = locate_post(base_dir, nickname, domain,
                                         message_json['object']['object'])
@@ -294,7 +298,8 @@ def send_announce_via_server(base_dir: str, session,
     """Creates an announce message via c2s
     """
     if not session:
-        print('WARN: No session for send_announce_via_server')
+        if debug:
+            print('WARN: No session for send_announce_via_server')
         return 6
 
     from_domain_full = get_full_domain(from_domain, from_port)
@@ -332,8 +337,9 @@ def send_announce_via_server(base_dir: str, session,
             print('DEBUG: announce webfinger failed for ' + handle)
         return 1
     if not isinstance(wf_request, dict):
-        print('WARN: announce webfinger for ' + handle +
-              ' did not return a dict. ' + str(wf_request))
+        if debug:
+            print('WARN: announce webfinger for ' + handle +
+                  ' did not return a dict. ' + str(wf_request))
         return 1
 
     post_to_box: str = 'outbox'
@@ -371,7 +377,8 @@ def send_announce_via_server(base_dir: str, session,
                             session, new_announce_json, [], inbox_url,
                             headers, 3, True)
     if not post_result:
-        print('WARN: announce not posted')
+        if debug:
+            print('WARN: announce not posted')
 
     if debug:
         print('DEBUG: c2s POST announce success')
@@ -391,7 +398,8 @@ def send_undo_announce_via_server(base_dir: str, session,
     """Undo an announce message via c2s
     """
     if not session:
-        print('WARN: No session for send_undo_announce_via_server')
+        if debug:
+            print('WARN: No session for send_undo_announce_via_server')
         return 6
 
     domain_full = get_full_domain(domain, port)
@@ -421,8 +429,9 @@ def send_undo_announce_via_server(base_dir: str, session,
             print('DEBUG: undo announce webfinger failed for ' + handle)
         return 1
     if not isinstance(wf_request, dict):
-        print('WARN: undo announce webfinger for ' + handle +
-              ' did not return a dict. ' + str(wf_request))
+        if debug:
+            print('WARN: undo announce webfinger for ' + handle +
+                  ' did not return a dict. ' + str(wf_request))
         return 1
 
     post_to_box: str = 'outbox'
@@ -460,7 +469,8 @@ def send_undo_announce_via_server(base_dir: str, session,
                             session, unannounce_json, [], inbox_url,
                             headers, 3, True)
     if not post_result:
-        print('WARN: undo announce not posted')
+        if debug:
+            print('WARN: undo announce not posted')
 
     if debug:
         print('DEBUG: c2s POST undo announce success')

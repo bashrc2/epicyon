@@ -1818,8 +1818,9 @@ def save_media_in_form_post(media_bytes, debug: bool,
     image_extension_types = get_image_extensions()
     if detected_extension in image_extension_types:
         if not binary_is_image(filename, media_bytes[start_pos:]):
-            print('WARN: save_media_in_form_post ' +
-                  'image binary not recognized ' + filename)
+            if debug:
+                print('WARN: save_media_in_form_post ' +
+                      'image binary not recognized ' + filename)
             return None, None
 
     try:
@@ -1829,7 +1830,9 @@ def save_media_in_form_post(media_bytes, debug: bool,
         print('EX: save_media_in_form_post unable to write media')
 
     if not os.path.isfile(filename):
-        print('WARN: Media file could not be written to file: ' + filename)
+        if debug:
+            print('WARN: Media file could not be written to file: ' +
+                  filename)
         return None, None
     print('Uploaded media file written: ' + filename)
 

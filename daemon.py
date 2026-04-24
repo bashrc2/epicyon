@@ -255,7 +255,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.starting_daemon:
             return
         if check_bad_path(self.path):
-            print('WARN: bad pathx PROPFIND ' + self.path)
+            print('WARN: bad path PROPFIND ' + self.path)
             http_400(self)
             return
 
@@ -265,7 +265,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.starting_daemon:
             return
         if check_bad_path(self.path):
-            print('WARN: bad path PROPFIND ' + self.path)
+            print('WARN: bad path PUT ' + self.path)
             http_400(self)
             return
 
