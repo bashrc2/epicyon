@@ -2304,7 +2304,7 @@ class JsonLdProcessor(object):
                     bnode_path = self._hash_paths(
                         bnode, bnodes, namer, path_namer)
                 except BaseException:
-                    print('WARN: jsonld bnode_path failed ' + str(bnode))
+                    pass
                 if bnode_path:
                     results.append(bnode_path)
 
