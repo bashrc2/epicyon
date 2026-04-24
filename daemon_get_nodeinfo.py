@@ -13,6 +13,7 @@ from httpcodes import http_404
 from httpcodes import http_503
 from httpcodes import write2
 from httpheaders import set_headers
+from utils import resembles_domain
 from utils import string_starts_with
 from utils import convert_domains
 from utils import get_instance_url
@@ -73,9 +74,7 @@ def get_nodeinfo(self, ua_str: str, calling_domain: str,
     # is this a real website making the call ?
     if not debug and not unit_test and referer_domain:
         # Does calling_domain look like a domain?
-        if ' ' in referer_domain or \
-           ';' in referer_domain or \
-           '.' not in referer_domain:
+        if not resembles_domain(referer_domain):
             print('nodeinfo referer domain does not look like a domain ' +
                   referer_domain)
             http_400(self)

@@ -96,6 +96,7 @@ from flags import is_artist
 from flags import is_blog_post
 from timeFunctions import date_utcnow
 from timeFunctions import get_current_time_int
+from utils import resembles_domain
 from utils import string_starts_with
 from utils import is_yggdrasil_address
 from utils import replace_strings
@@ -6364,9 +6365,7 @@ def _security_txt(self, ua_str: str, calling_domain: str,
     # is this a real website making the call ?
     if not debug and not self.server.unit_test and referer_domain:
         # Does calling_domain look like a domain?
-        if ' ' in referer_domain or \
-           ';' in referer_domain or \
-           '.' not in referer_domain:
+        if not resembles_domain(referer_domain):
             print('security.txt ' +
                   'referer domain does not look like a domain ' +
                   referer_domain)

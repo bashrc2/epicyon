@@ -114,7 +114,7 @@ def _masto_api_v1(self, path: str, calling_domain: str,
     # is this a real website making the call ?
     if not debug and not unit_test and referer_domain:
         # Does calling_domain look like a domain?
-        if resembles_domain(referer_domain):
+        if not resembles_domain(referer_domain):
             print('mastodon api ' +
                   'referer does not look like a domain ' +
                   referer_domain)
