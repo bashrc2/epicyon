@@ -4044,7 +4044,7 @@ def resembles_domain(text: str) -> bool:
         return True
 
     # yggdrasil address
-    if (text.startswith('[') and text.endswith(']') and ':' in text):
+    if text.startswith('[') and text.endswith(']') and ':' in text:
         return True
 
     return False
