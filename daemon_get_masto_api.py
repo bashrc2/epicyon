@@ -96,8 +96,8 @@ def _masto_api_v1(self, path: str, calling_domain: str,
 
     if not referer_domain:
         if not (debug and unit_test):
-            print('mastodon api request has no referer domain ' +
-                  str(ua_str))
+            print('mastodon api request has no referer domain, ' +
+                  'user agent is ' + str(ua_str))
             http_400(self)
             return True
     if referer_domain == domain_full:
@@ -139,10 +139,11 @@ def _masto_api_v1(self, path: str, calling_domain: str,
             self.server.masto_api_is_active = False
             return True
 
-    print('mastodon api v1: ' + path)
-    print('mastodon api v1: authorized ' + str(authorized))
-    print('mastodon api v1: nickname ' + str(nickname))
-    print('mastodon api v1: referer ' + str(referer_domain))
+    if debug:
+        print('mastodon api v1: ' + path)
+        print('mastodon api v1: authorized ' + str(authorized))
+        print('mastodon api v1: referer ' + str(referer_domain))
+
     crawl_time = \
         update_known_crawlers(ua_str, base_dir,
                               known_crawlers,
@@ -271,10 +272,11 @@ def _masto_api_v2(self, path: str, calling_domain: str,
             self.server.masto_api_is_active = False
             return True
 
-    print('mastodon api v2: ' + path)
-    print('mastodon api v2: authorized ' + str(authorized))
-    print('mastodon api v2: nickname ' + str(nickname))
-    print('mastodon api v2: referer ' + str(referer_domain))
+    if debug:
+        print('mastodon api v2: ' + path)
+        print('mastodon api v2: authorized ' + str(authorized))
+        print('mastodon api v2: referer ' + str(referer_domain))
+
     crawl_time = \
         update_known_crawlers(ua_str, base_dir,
                               known_crawlers,
