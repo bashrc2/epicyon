@@ -67,6 +67,7 @@ from flags import is_right_to_left_text
 from status import actor_status_expired
 from status import get_actor_status
 from unicodetext import uninvert_text
+from utils import resembles_domain
 from utils import remove_domain_port
 from utils import get_port_from_domain
 from utils import is_yggdrasil_url
@@ -9767,6 +9768,17 @@ def _test_post_collection() -> None:
     assert posts_list[2]['type'] == "Announce"
     assert posts_list[2]['object']['id'] == \
         "https://lemmings/activities/like/7243"
+
+
+def test_domain_check() -> None:
+    print('test domain check')
+    assert not resembles_domain('')
+    assert not resembles_domain('abcdef')
+    assert resembles_domain('192.168.3.9')
+    assert resembles_domain('somedomain.onion')
+    assert not resembles_domain('somedomain.onion and something else')
+    assert not resembles_domain('[abc.def.abc]')
+    assert resembles_domain('[abc:def:abc]')
 
 
 def run_all_tests():

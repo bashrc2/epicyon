@@ -16,6 +16,7 @@ from siteactive import referer_is_active
 from httpcodes import http_400
 from httpcodes import http_404
 from httpcodes import http_503
+from utils import resembles_domain
 from utils import get_json_content_from_accept
 from utils import convert_domains
 from utils import local_network_host
@@ -113,9 +114,7 @@ def _masto_api_v1(self, path: str, calling_domain: str,
     # is this a real website making the call ?
     if not debug and not unit_test and referer_domain:
         # Does calling_domain look like a domain?
-        if ' ' in referer_domain or \
-           ';' in referer_domain or \
-           '.' not in referer_domain:
+        if resembles_domain(referer_domain):
             print('mastodon api ' +
                   'referer does not look like a domain ' +
                   referer_domain)
@@ -246,9 +245,7 @@ def _masto_api_v2(self, path: str, calling_domain: str,
     # is this a real website making the call ?
     if not debug and not unit_test and referer_domain:
         # Does calling_domain look like a domain?
-        if ' ' in referer_domain or \
-           ';' in referer_domain or \
-           '.' not in referer_domain:
+        if not resembles_domain(referer_domain):
             print('mastodon api v2 ' +
                   'referer does not look like a domain ' +
                   referer_domain)
