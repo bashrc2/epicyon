@@ -20,6 +20,8 @@ from utils import text_in_file
 from utils import remove_eol
 from utils import valid_nickname
 from timeFunctions import date_utcnow
+from data import append_string
+from data import save_string
 
 
 def _hash_password(password: str) -> str:
@@ -213,18 +215,12 @@ def store_basic_credentials(base_dir: str,
                 return False
         else:
             # append to password file
-            try:
-                with open(password_file, 'a+', encoding='utf-8') as fp_pass:
-                    fp_pass.write(store_str + '\n')
-            except OSError:
-                print('EX: unable to append password')
+            if not append_string(store_str + '\n', password_file,
+                                 'EX: unable to append password'):
                 return False
     else:
-        try:
-            with open(password_file, 'w+', encoding='utf-8') as fp_pass:
-                fp_pass.write(store_str + '\n')
-        except OSError:
-            print('EX: unable to create password file')
+        if not save_string(store_str + '\n', password_file,
+                           'EX: unable to create password file'):
             return False
     return True
 
@@ -305,14 +301,15 @@ def record_login_failure(base_dir: str, ip_address: str,
         write_type: str = 'w+'
     curr_time = date_utcnow()
     curr_time_str = curr_time.strftime("%Y-%m-%d %H:%M:%SZ")
-    try:
-        with open(failure_log, write_type, encoding='utf-8') as fp_fail:
-            # here we use a similar format to an ssh log, so that
-            # systems such as fail2ban can parse it
-            fp_fail.write(curr_time_str + ' ' +
-                          'ip-127-0-0-1 sshd[20710]: ' +
-                          'Disconnecting invalid user epicyon ' +
-                          ip_address + ' port 443: ' +
-                          'Too many authentication failures [preauth]\n')
-    except OSError:
-        print('EX: record_login_failure failed ' + str(failure_log))
+    log_str = \
+        curr_time_str + ' ' + 'ip-127-0-0-1 sshd[20710]: ' + \
+        'Disconnecting invalid user epicyon ' + ip_address + ' port 443: ' + \
+        'Too many authentication failures [preauth]\n'
+    # here we use a similar format to an ssh log, so that
+    # systems such as fail2ban can parse it
+    if write_type == 'a+':
+        append_string(log_str, failure_log,
+                      'EX: record_login_failure failed ' + str(failure_log))
+    else:
+        save_string(log_str, failure_log,
+                    'EX: record_login_failure failed ' + str(failure_log))
