@@ -19,6 +19,8 @@ from blocking import get_bsky_domains_list
 from blocking import get_nostr_domains_list
 from blocking import update_blocked_cache
 from blocking import is_blocked_domain
+from data import load_string
+from data import save_string
 
 default_user_agent_blocks = [
     'fedilist', 'ncsc scan', 'fedifetcher'
@@ -64,13 +66,9 @@ def load_known_web_bots(base_dir: str) -> []:
     known_bots_filename = data_dir(base_dir) + '/knownBots.txt'
     if not os.path.isfile(known_bots_filename):
         return []
-    crawlers_str = None
-    try:
-        with open(known_bots_filename, 'r', encoding='utf-8') as fp_crawlers:
-            crawlers_str = fp_crawlers.read()
-    except OSError:
-        print('EX: unable to load web bots from ' +
-              known_bots_filename)
+    crawlers_str = load_string(known_bots_filename,
+                               'EX: unable to load web bots from ' +
+                               known_bots_filename)
     if not crawlers_str:
         return []
     known_bots: list[str] = []
@@ -93,12 +91,9 @@ def _save_known_web_bots(base_dir: str, known_bots: []) -> bool:
     known_bots_str: str = ''
     for crawler in known_bots:
         known_bots_str += crawler.strip() + '\n'
-    try:
-        with open(known_bots_filename, 'w+', encoding='utf-8') as fp_crawlers:
-            fp_crawlers.write(known_bots_str)
-    except OSError:
-        print("EX: unable to save known web bots to " +
-              known_bots_filename)
+    if not save_string(known_bots_str, known_bots_filename,
+                       "EX: unable to save known web bots to " +
+                       known_bots_filename):
         return False
     return True
 

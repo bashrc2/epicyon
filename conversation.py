@@ -21,6 +21,8 @@ from utils import resembles_url
 from keys import get_instance_actor_key
 from session import get_json
 from session import get_json_valid
+from data import save_string
+from data import append_string
 
 
 def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
@@ -63,23 +65,17 @@ def update_conversation(base_dir: str, nickname: str, domain: str,
         return False
     post_id = remove_id_ending(post_json_object['object']['id'])
     if not os.path.isfile(conversation_filename):
-        try:
-            with open(conversation_filename, 'w+',
-                      encoding='utf-8') as fp_conv:
-                fp_conv.write(post_id + '\n')
-                return True
-        except OSError:
-            print('EX: update_conversation ' +
-                  'unable to write to ' + conversation_filename)
+        if save_string(post_id + '\n', conversation_filename,
+                       'EX: update_conversation ' +
+                       'unable to write to ' +
+                       conversation_filename):
+            return True
     elif not text_in_file(post_id + '\n', conversation_filename):
-        try:
-            with open(conversation_filename, 'a+',
-                      encoding='utf-8') as fp_conv:
-                fp_conv.write(post_id + '\n')
-                return True
-        except OSError:
-            print('EX: update_conversation 2 ' +
-                  'unable to write to ' + conversation_filename)
+        if append_string(post_id + '\n', conversation_filename,
+                         'EX: update_conversation 2 ' +
+                         'unable to write to ' +
+                         conversation_filename):
+            return True
     return False
 
 
@@ -97,12 +93,8 @@ def mute_conversation(base_dir: str, nickname: str, domain: str,
         return
     if os.path.isfile(conversation_filename + '.muted'):
         return
-    try:
-        with open(conversation_filename + '.muted', 'w+',
-                  encoding='utf-8') as fp_conv:
-            fp_conv.write('\n')
-    except OSError:
-        print('EX: unable to write mute ' + conversation_filename)
+    save_string('\n', conversation_filename + '.muted',
+                'EX: unable to write mute ' + conversation_filename)
 
 
 def unmute_conversation(base_dir: str, nickname: str, domain: str,
