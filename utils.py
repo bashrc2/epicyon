@@ -2640,7 +2640,7 @@ def valid_nickname(domain: str, nickname: str) -> bool:
         return False
     if len(nickname) == 0:
         return False
-    if len(nickname) > 30:
+    if len(nickname) > 64:
         return False
     if not _is_valid_language(nickname):
         return False
