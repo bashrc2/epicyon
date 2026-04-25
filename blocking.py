@@ -1740,24 +1740,20 @@ def import_blocking_file(base_dir: str, nickname: str, domain: str,
     if not append_blocks:
         return True
 
-    try:
-        with open(blocking_filename, 'a+', encoding='utf-8') as fp_blocks:
-            for new_block in append_blocks:
-                fp_blocks.write(new_block + '\n')
-    except OSError:
-        print('EX: ' +
-              'unable to append imported blocks to ' +
-              blocking_filename)
-
-    try:
-        with open(blocking_reasons_filename, 'a+',
-                  encoding='utf-8') as fp_blocks:
-            for new_reason in append_reasons:
-                fp_blocks.write(new_reason + '\n')
-    except OSError:
-        print('EX: ' +
-              'unable to append imported block reasons to ' +
-              blocking_reasons_filename)
+    text = ''
+    for new_block in append_blocks:
+        text += new_block + '\n'
+    append_string(text, blocking_filename,
+                  'EX: ' +
+                  'unable to append imported blocks to ' +
+                  blocking_filename)
+    text = ''
+    for new_reason in append_reasons:
+        text += new_reason + '\n'
+    append_string(text, blocking_reasons_filename,
+                  'EX: ' +
+                  'unable to append imported block reasons to ' +
+                  blocking_reasons_filename)
 
     return True
 
