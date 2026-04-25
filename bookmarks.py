@@ -35,6 +35,8 @@ from utils import remove_html
 from utils import get_actor_from_post
 from posts import get_person_box
 from session import post_json
+from data import load_string
+from data import save_string
 
 
 def undo_bookmarks_collection_entry(recent_posts_cache: {},
@@ -79,21 +81,16 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
     if not text_in_file(bookmark_index, bookmarks_index_filename):
         return
     index_str: str = ''
-    try:
-        with open(bookmarks_index_filename, 'r',
-                  encoding='utf-8') as fp_index:
-            index_str = fp_index.read().replace(bookmark_index + '\n', '')
-    except OSError:
-        print('EX: undo_bookmarks_collection_entry unable to read ' +
-              bookmarks_index_filename)
+    index_str2 = \
+        load_string(bookmarks_index_filename,
+                    'EX: undo_bookmarks_collection_entry unable to read ' +
+                    bookmarks_index_filename)
+    if index_str2:
+        index_str = index_str2.replace(bookmark_index + '\n', '')
     if index_str:
-        try:
-            with open(bookmarks_index_filename, 'w+',
-                      encoding='utf-8') as fp_bmi:
-                fp_bmi.write(index_str)
-        except OSError:
-            print('EX: unable to write bookmarks index ' +
-                  bookmarks_index_filename)
+        save_string(index_str, bookmarks_index_filename,
+                    'EX: unable to write bookmarks index ' +
+                    bookmarks_index_filename)
     if not post_json_object.get('type'):
         return
     if post_json_object['type'] != 'Create':
@@ -269,13 +266,9 @@ def update_bookmarks_collection(recent_posts_cache: {},
                     print('WARN: Failed to write entry to bookmarks index ' +
                           bookmarks_index_filename + ' ' + str(ex))
     else:
-        try:
-            with open(bookmarks_index_filename, 'w+',
-                      encoding='utf-8') as fp_bm:
-                fp_bm.write(bookmark_index + '\n')
-        except OSError:
-            print('EX: unable to write bookmarks index ' +
-                  bookmarks_index_filename)
+        save_string(bookmark_index + '\n', bookmarks_index_filename,
+                    'EX: unable to write bookmarks index ' +
+                    bookmarks_index_filename)
 
 
 def bookmark_post(recent_posts_cache: {},
