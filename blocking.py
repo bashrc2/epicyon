@@ -53,6 +53,9 @@ from conversation import mute_conversation
 from conversation import unmute_conversation
 from auth import create_basic_auth_header
 from session import get_json
+from data import load_string
+from data import save_string
+from data import append_string
 
 
 def get_global_block_reason(search_text: str,
@@ -62,14 +65,10 @@ def get_global_block_reason(search_text: str,
     if not text_in_file(search_text, blocking_reasons_filename):
         return ''
 
-    reasons_str: str = ''
-    try:
-        with open(blocking_reasons_filename, 'r',
-                  encoding='utf-8') as fp_reas:
-            reasons_str = fp_reas.read()
-    except OSError:
-        print('WARN: Failed to read blocking reasons ' +
-              blocking_reasons_filename)
+    reasons_str: str = \
+        load_string(blocking_reasons_filename,
+                    'WARN: Failed to read blocking reasons ' +
+                    blocking_reasons_filename)
     if not reasons_str:
         return ''
 
@@ -97,13 +96,11 @@ def get_account_blocks(base_dir: str,
         return ''
 
     blocked_accounts_textarea: str = ''
-    blocking_file_text: str = ''
-    try:
-        with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
-            blocking_file_text = fp_block.read()
-    except OSError:
-        if debug:
-            print('EX: Failed to read account blocks ' + blocking_filename)
+    blocking_file_text: str = \
+        load_string(blocking_filename,
+                    'EX: Failed to read account blocks ' +
+                    blocking_filename)
+    if blocking_file_text is None:
         return ''
 
     blocklist = blocking_file_text.split('\n')
@@ -230,18 +227,10 @@ def add_account_blocks(base_dir: str,
                       blocking_reasons_filename)
         return True
 
-    try:
-        with open(blocking_filename, 'w+', encoding='utf-8') as fp_block:
-            fp_block.write(blocking_file_text)
-    except OSError:
-        print('EX: Failed to write ' + blocking_filename)
-
-    try:
-        with open(blocking_reasons_filename, 'w+',
-                  encoding='utf-8') as fp_block:
-            fp_block.write(blocking_reasons_file_text)
-    except OSError:
-        print('EX: Failed to write ' + blocking_reasons_filename)
+    save_string(blocking_file_text, blocking_filename,
+                'EX: Failed to write ' + blocking_filename)
+    save_string(blocking_reasons_file_text, blocking_reasons_filename,
+                'EX: Failed to write ' + blocking_reasons_filename)
     return True
 
 
@@ -268,21 +257,15 @@ def _add_global_block_reason(base_dir: str,
     if os.path.isfile(blocking_reasons_filename):
         if not text_in_file(block_id,
                             blocking_reasons_filename):
-            try:
-                with open(blocking_reasons_filename, 'a+',
-                          encoding='utf-8') as fp_reas:
-                    fp_reas.write(reason_line)
-            except OSError:
-                print('EX: unable to add blocking reason ' +
-                      block_id)
+            append_string(reason_line, blocking_reasons_filename,
+                          'EX: unable to add blocking reason ' +
+                          block_id)
         else:
-            reasons_str: str = ''
-            try:
-                with open(blocking_reasons_filename, 'r',
-                          encoding='utf-8') as fp_reas:
-                    reasons_str = fp_reas.read()
-            except OSError:
-                print('EX: unable to read blocking reasons')
+            reasons_str: str = \
+                load_string(blocking_reasons_filename,
+                            'EX: unable to read blocking reasons')
+            if reasons_str is None:
+                reasons_str = ''
             reasons_lines = reasons_str.split('\n')
             new_reasons_str: str = ''
             for line in reasons_lines:
@@ -290,21 +273,13 @@ def _add_global_block_reason(base_dir: str,
                     new_reasons_str += line + '\n'
                     continue
                 new_reasons_str += reason_line
-            try:
-                with open(blocking_reasons_filename, 'w+',
-                          encoding='utf-8') as fp_reas:
-                    fp_reas.write(new_reasons_str)
-            except OSError:
-                print('EX: unable to save blocking reasons' +
-                      blocking_reasons_filename)
+            save_string(new_reasons_str, blocking_reasons_filename,
+                        'EX: unable to save blocking reasons' +
+                        blocking_reasons_filename)
     else:
-        try:
-            with open(blocking_reasons_filename, 'w+',
-                      encoding='utf-8') as fp_reas:
-                fp_reas.write(reason_line)
-        except OSError:
-            print('EX: unable to save blocking reason ' +
-                  block_id + ' ' + blocking_reasons_filename)
+        save_string(reason_line, blocking_reasons_filename,
+                    'EX: unable to save blocking reason ' +
+                    block_id + ' ' + blocking_reasons_filename)
     return True
 
 
@@ -325,11 +300,9 @@ def add_global_block(base_dir: str,
             if text_in_file(block_handle, blocking_filename):
                 return False
         # block an account handle or domain
-        try:
-            with open(blocking_filename, 'a+', encoding='utf-8') as fp_block:
-                fp_block.write(block_handle + '\n')
-        except OSError:
-            print('EX: unable to save blocked handle ' + block_handle)
+        if not append_string(block_handle + '\n', blocking_filename,
+                             'EX: unable to save blocked handle ' +
+                             block_handle):
             return False
     else:
         block_hashtag = block_nickname
@@ -338,11 +311,9 @@ def add_global_block(base_dir: str,
             if text_in_file(block_hashtag + '\n', blocking_filename):
                 return False
         # block a hashtag
-        try:
-            with open(blocking_filename, 'a+', encoding='utf-8') as fp_block:
-                fp_block.write(block_hashtag + '\n')
-        except OSError:
-            print('EX: unable to save blocked hashtag ' + block_hashtag)
+        if not append_string(block_hashtag + '\n', blocking_filename,
+                             'EX: unable to save blocked hashtag ' +
+                             block_hashtag):
             return False
     return True
 
@@ -372,21 +343,15 @@ def _add_block_reason(base_dir: str,
     if os.path.isfile(blocking_reasons_filename):
         if not text_in_file(block_id,
                             blocking_reasons_filename):
-            try:
-                with open(blocking_reasons_filename, 'a+',
-                          encoding='utf-8') as fp_reas:
-                    fp_reas.write(reason_line)
-            except OSError:
-                print('EX: unable to add blocking reason 2 ' +
-                      block_id)
+            append_string(reason_line, blocking_reasons_filename,
+                          'EX: unable to add blocking reason 2 ' +
+                          block_id)
         else:
-            reasons_str: str = ''
-            try:
-                with open(blocking_reasons_filename, 'r',
-                          encoding='utf-8') as fp_reas:
-                    reasons_str = fp_reas.read()
-            except OSError:
-                print('EX: unable to read blocking reasons 2')
+            reasons_str: str = \
+                load_string(blocking_reasons_filename,
+                            'EX: unable to read blocking reasons 2')
+            if reasons_str is None:
+                reasons_str = ''
             reasons_lines = reasons_str.split('\n')
             new_reasons_str: str = ''
             for line in reasons_lines:
@@ -394,21 +359,13 @@ def _add_block_reason(base_dir: str,
                     new_reasons_str += line + '\n'
                     continue
                 new_reasons_str += reason_line
-            try:
-                with open(blocking_reasons_filename, 'w+',
-                          encoding='utf-8') as fp_reas:
-                    fp_reas.write(new_reasons_str)
-            except OSError:
-                print('EX: unable to save blocking reasons 2' +
-                      blocking_reasons_filename)
+            save_string(new_reasons_str, blocking_reasons_filename,
+                        'EX: unable to save blocking reasons 2' +
+                        blocking_reasons_filename)
     else:
-        try:
-            with open(blocking_reasons_filename, 'w+',
-                      encoding='utf-8') as fp_reas:
-                fp_reas.write(reason_line)
-        except OSError:
-            print('EX: unable to save blocking reason 2 ' +
-                  block_id + ' ' + blocking_reasons_filename)
+        save_string(reason_line, blocking_reasons_filename,
+                    'EX: unable to save blocking reason 2 ' +
+                    block_id + ' ' + blocking_reasons_filename)
     return True
 
 
@@ -433,24 +390,19 @@ def add_block(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(following_filename):
         if text_in_file(block_handle + '\n', following_filename):
-            following_str: str = ''
-            try:
-                with open(following_filename, 'r',
-                          encoding='utf-8') as fp_foll:
-                    following_str = fp_foll.read()
-            except OSError:
-                print('EX: Unable to read following ' + following_filename)
+            following_str: str = \
+                load_string(following_filename,
+                            'EX: Unable to read following ' +
+                            following_filename)
+            if following_str is None:
                 return False
 
             if following_str:
                 following_str = following_str.replace(block_handle + '\n', '')
 
-            try:
-                with open(following_filename, 'w+',
-                          encoding='utf-8') as fp_foll:
-                    fp_foll.write(following_str)
-            except OSError:
-                print('EX: Unable to write following ' + following_str)
+            if not save_string(following_str, following_filename,
+                               'EX: Unable to write following ' +
+                               following_str):
                 return False
 
     # if they are a follower then remove them
@@ -458,31 +410,23 @@ def add_block(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followers_filename):
         if text_in_file(block_handle + '\n', followers_filename):
-            followers_str: str = ''
-            try:
-                with open(followers_filename, 'r',
-                          encoding='utf-8') as fp_foll:
-                    followers_str = fp_foll.read()
-            except OSError:
-                print('EX: Unable to read followers ' + followers_filename)
+            followers_str: str = \
+                load_string(followers_filename,
+                            'EX: Unable to read followers ' +
+                            followers_filename)
+            if followers_str is None:
                 return False
 
             if followers_str:
                 followers_str = followers_str.replace(block_handle + '\n', '')
 
-            try:
-                with open(followers_filename, 'w+',
-                          encoding='utf-8') as fp_foll:
-                    fp_foll.write(followers_str)
-            except OSError:
-                print('EX: Unable to write followers ' + followers_str)
+            if not save_string(followers_str, followers_filename,
+                               'EX: Unable to write followers ' +
+                               followers_str):
                 return False
-
-    try:
-        with open(blocking_filename, 'a+', encoding='utf-8') as fp_block:
-            fp_block.write(block_handle + '\n')
-    except OSError:
-        print('EX: unable to append block handle ' + block_handle)
+    if not append_string(block_handle + '\n', blocking_filename,
+                         'EX: unable to append block handle ' +
+                         block_handle):
         return False
 
     if reason:
@@ -509,26 +453,20 @@ def _remove_global_block_reason(base_dir: str,
     if not text_in_file(unblock_id + ' ', unblocking_filename):
         return False
 
-    reasons_str: str = ''
-    try:
-        with open(unblocking_filename, 'r',
-                  encoding='utf-8') as fp_reas:
-            reasons_str = fp_reas.read()
-    except OSError:
-        print('EX: unable to read blocking reasons 3')
+    reasons_str: str = \
+        load_string(unblocking_filename,
+                    'EX: unable to read blocking reasons 3')
+    if reasons_str is None:
+        reasons_str = ''
     reasons_lines = reasons_str.split('\n')
     new_reasons_str: str = ''
     for line in reasons_lines:
         if line.startswith(unblock_id + ' '):
             continue
         new_reasons_str += line + '\n'
-    try:
-        with open(unblocking_filename, 'w+',
-                  encoding='utf-8') as fp_reas:
-            fp_reas.write(new_reasons_str)
-    except OSError:
-        print('EX: unable to save blocking reasons 2' +
-              unblocking_filename)
+    save_string(new_reasons_str, unblocking_filename,
+                'EX: unable to save blocking reasons 2' +
+                unblocking_filename)
     return True
 
 
@@ -719,13 +657,12 @@ def is_blocked_domain(base_dir: str, domain: str,
             # instance block list
             global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
             if os.path.isfile(global_blocking_filename):
-                try:
-                    with open(global_blocking_filename, 'r',
-                              encoding='utf-8') as fp_blocked:
-                        blocked_cache = fp_blocked.read().split('\n')
-                except OSError as ex:
-                    print('EX: is_blocked_domain unable to read ' +
-                          global_blocking_filename + ' ' + str(ex))
+                blocked_cache_str = \
+                    load_string(global_blocking_filename,
+                                'EX: is_blocked_domain unable to read ' +
+                                global_blocking_filename + ' [ex]')
+                if blocked_cache_str:
+                    blocked_cache = blocked_cache_str.split('\n')
             if blocked_cache:
                 blocked_cache_list = blocked_cache
         else:
@@ -783,13 +720,12 @@ def is_blocked_nickname(base_dir: str, nickname: str,
         blocked_cache = []
         global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
         if os.path.isfile(global_blocking_filename):
-            try:
-                with open(global_blocking_filename, 'r',
-                          encoding='utf-8') as fp_blocked:
-                    blocked_cache = fp_blocked.read().split('\n')
-            except OSError as ex:
-                print('EX: is_blocked_nickname unable to read ' +
-                      global_blocking_filename + ' ' + str(ex))
+            blocked_cache_str = \
+                load_string(global_blocking_filename,
+                            'EX: is_blocked_nickname unable to read ' +
+                            global_blocking_filename + ' [ex]')
+            if blocked_cache_str:
+                blocked_cache = blocked_cache_str.split('\n')
 
     if blocked_cache:
         search_str = nickname + '@*'
@@ -877,13 +813,12 @@ def is_blocked(base_dir: str, nickname: str, domain: str,
                     data_dir(base_dir) + '/block_api.txt'
                 if os.path.isfile(federated_blocks_filename):
                     block_federated: list[str] = []
-                    try:
-                        with open(federated_blocks_filename, 'r',
-                                  encoding='utf-8') as fp_fed:
-                            block_federated = fp_fed.read().split('\n')
-                    except OSError:
-                        print('EX: is_blocked unable to load ' +
-                              federated_blocks_filename)
+                    block_federated_str = \
+                        load_string(federated_blocks_filename,
+                                    'EX: is_blocked unable to load ' +
+                                    federated_blocks_filename)
+                    if block_federated_str:
+                        block_federated = block_federated_str.split('\n')
                     if block_domain in block_federated:
                         return True
                     if block_handle:
@@ -997,14 +932,12 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
 
     handle = following_nickname + '@' + following_domain
     if text_in_file(handle + '\n', blocking_filename, False):
-        file_text: str = ''
-        try:
-            with open(blocking_filename, 'r',
-                      encoding='utf-8') as fp_noannounce:
-                file_text = fp_noannounce.read()
-        except OSError:
-            print('EX: unable to read noannounce add: ' +
-                  blocking_filename + ' ' + handle)
+        file_text: str = \
+            load_string(blocking_filename,
+                        'EX: unable to read noannounce add: ' +
+                        blocking_filename + ' ' + handle)
+        if file_text is None:
+            file_text = ''
 
         new_file_text: str = ''
         file_text_list = file_text.split('\n')
@@ -1014,13 +947,9 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
                 new_file_text += allowed + '\n'
         file_text = new_file_text
 
-        try:
-            with open(blocking_filename, 'w+',
-                      encoding='utf-8') as fp_noannounce:
-                fp_noannounce.write(file_text)
-        except OSError:
-            print('EX: unable to write noannounce add: ' +
-                  blocking_filename + ' ' + handle)
+        save_string(file_text, blocking_filename,
+                    'EX: unable to write noannounce add: ' +
+                    blocking_filename + ' ' + handle)
 
 
 def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
@@ -1035,32 +964,22 @@ def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
     # if the noannounce.txt file doesn't yet exist
     if not os.path.isfile(blocking_filename):
         file_text = handle + '\n'
-        try:
-            with open(blocking_filename, 'w+',
-                      encoding='utf-8') as fp_noannounce:
-                fp_noannounce.write(file_text)
-        except OSError:
-            print('EX: unable to write initial noannounce remove: ' +
-                  blocking_filename + ' ' + handle)
+        save_string(file_text, blocking_filename,
+                    'EX: unable to write initial noannounce remove: ' +
+                    blocking_filename + ' ' + handle)
         return
 
     file_text: str = ''
     if not text_in_file(handle + '\n', blocking_filename, False):
-        try:
-            with open(blocking_filename, 'r',
-                      encoding='utf-8') as fp_noannounce:
-                file_text = fp_noannounce.read()
-        except OSError:
-            print('EX: unable to read noannounce remove: ' +
-                  blocking_filename + ' ' + handle)
+        file_text = load_string(blocking_filename,
+                                'EX: unable to read noannounce remove: ' +
+                                blocking_filename + ' ' + handle)
+        if file_text is None:
+            file_text = ''
         file_text += handle + '\n'
-        try:
-            with open(blocking_filename, 'w+',
-                      encoding='utf-8') as fp_noannounce:
-                fp_noannounce.write(file_text)
-        except OSError:
-            print('EX: unable to write noannounce: ' +
-                  blocking_filename + ' ' + handle)
+        save_string(file_text, blocking_filename,
+                    'EX: unable to write noannounce: ' +
+                    blocking_filename + ' ' + handle)
 
 
 def blocked_quote_toots_add(base_dir: str, nickname: str, domain: str,
@@ -1077,23 +996,17 @@ def blocked_quote_toots_add(base_dir: str, nickname: str, domain: str,
 
     handle = following_nickname + '@' + following_domain
     if not text_in_file(handle + '\n', blocking_filename, False):
-        file_text: str = ''
-        try:
-            with open(blocking_filename, 'r',
-                      encoding='utf-8') as fp_quotes:
-                file_text = fp_quotes.read()
-        except OSError:
-            print('EX: unable to read quotesblocked add: ' +
-                  blocking_filename + ' ' + handle)
+        file_text: str = \
+            load_string(blocking_filename,
+                        'EX: unable to read quotesblocked add: ' +
+                        blocking_filename + ' ' + handle)
+        if file_text is None:
+            file_text = ''
         file_text += handle + '\n'
 
-        try:
-            with open(blocking_filename, 'w+',
-                      encoding='utf-8') as fp_quotes:
-                fp_quotes.write(file_text)
-        except OSError:
-            print('EX: unable to write quotesblocked add: ' +
-                  blocking_filename + ' ' + handle)
+        save_string(file_text, blocking_filename,
+                    'EX: unable to write quotesblocked add: ' +
+                    blocking_filename + ' ' + handle)
 
 
 def blocked_quote_toots_remove(base_dir: str, nickname: str, domain: str,
@@ -1111,21 +1024,15 @@ def blocked_quote_toots_remove(base_dir: str, nickname: str, domain: str,
 
     file_text: str = ''
     if text_in_file(handle + '\n', blocking_filename, False):
-        try:
-            with open(blocking_filename, 'r',
-                      encoding='utf-8') as fp_quotes:
-                file_text = fp_quotes.read()
-        except OSError:
-            print('EX: unable to read quotesblocked remove: ' +
-                  blocking_filename + ' ' + handle)
+        file_text = load_string(blocking_filename,
+                                'EX: unable to read quotesblocked remove: ' +
+                                blocking_filename + ' ' + handle)
+        if file_text is None:
+            file_text = ''
         file_text = file_text.replace(handle + '\n', '')
-        try:
-            with open(blocking_filename, 'w+',
-                      encoding='utf-8') as fp_quotes:
-                fp_quotes.write(file_text)
-        except OSError:
-            print('EX: unable to write quotesblocked remove: ' +
-                  blocking_filename + ' ' + handle)
+        save_string(file_text, blocking_filename,
+                    'EX: unable to write quotesblocked remove: ' +
+                    blocking_filename + ' ' + handle)
 
 
 def outbox_block(base_dir: str, nickname: str, domain: str,
@@ -1340,12 +1247,9 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
         else:
             print('MUTE: cached post not found ' + cached_post_filename)
 
-    try:
-        with open(post_filename + '.muted', 'w+',
-                  encoding='utf-8') as fp_mute:
-            fp_mute.write('\n')
-    except OSError:
-        print('EX: Failed to save mute file ' + post_filename + '.muted')
+    if not save_string('\n', post_filename + '.muted',
+                       'EX: Failed to save mute file ' +
+                       post_filename + '.muted'):
         return
     print('MUTE: ' + post_filename + '.muted file added')
 
@@ -1784,24 +1688,24 @@ def import_blocking_file(base_dir: str, nickname: str, domain: str,
 
     existing_lines: list[str] = []
     if os.path.isfile(blocking_filename):
-        try:
-            with open(blocking_filename, 'r', encoding='utf-8') as fp_blocks:
-                existing_lines = fp_blocks.read().splitlines()
-        except OSError:
-            print('EX: ' +
-                  'unable to import existing blocked instances from file ' +
-                  blocking_filename)
+        existing_lines_str = \
+            load_string(blocking_filename,
+                        'EX: ' +
+                        'unable to import existing ' +
+                        'blocked instances from file ' +
+                        blocking_filename)
+        if existing_lines_str:
+            existing_lines = existing_lines_str.splitlines()
     existing_reasons: list[str] = []
     if os.path.isfile(blocking_reasons_filename):
-        try:
-            with open(blocking_reasons_filename,
-                      'r', encoding='utf-8') as fp_blocks:
-                existing_reasons = fp_blocks.read().splitlines()
-        except OSError:
-            print('EX: ' +
-                  'unable to import existing ' +
-                  'blocked instance reasons from file ' +
-                  blocking_reasons_filename)
+        existing_reasons_str = \
+            load_string(blocking_reasons_filename,
+                        'EX: ' +
+                        'unable to import existing ' +
+                        'blocked instance reasons from file ' +
+                        blocking_reasons_filename)
+        if existing_reasons_str:
+            existing_reasons = existing_reasons_str.splitlines()
 
     append_blocks: list[str] = []
     append_reasons: list[str] = []
@@ -1876,21 +1780,21 @@ def export_blocking_file(base_dir: str, nickname: str, domain: str) -> str:
 
     blocking_lines: list[str] = []
     if os.path.isfile(blocking_filename):
-        try:
-            with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
-                blocking_lines = fp_block.read().splitlines()
-        except OSError:
-            print('EX: export_blocks failed to read ' + blocking_filename)
+        blocking_lines_str = \
+            load_string(blocking_filename,
+                        'EX: export_blocks failed to read ' +
+                        blocking_filename)
+        if blocking_lines_str:
+            blocking_lines = blocking_lines_str.splitlines()
 
     blocking_reasons: list[str] = []
     if os.path.isfile(blocking_reasons_filename):
-        try:
-            with open(blocking_reasons_filename, 'r',
-                      encoding='utf-8') as fp_block:
-                blocking_reasons = fp_block.read().splitlines()
-        except OSError:
-            print('EX: export_blocks failed to read ' +
-                  blocking_reasons_filename)
+        blocking_reasons_str = \
+            load_string(blocking_reasons_filename,
+                        'EX: export_blocks failed to read ' +
+                        blocking_reasons_filename)
+        if blocking_reasons_str:
+            blocking_reasons = blocking_reasons_str.splitlines()
 
     blocks_str = blocks_header
     for blocked_domain in blocking_lines:
@@ -1954,15 +1858,13 @@ def load_blocked_military(base_dir: str) -> {}:
     block_military_filename = data_dir(base_dir) + '/block_military.txt'
     nicknames_list: list[str] = []
     if os.path.isfile(block_military_filename):
-        try:
-            with open(block_military_filename, 'r',
-                      encoding='utf-8') as fp_mil:
-                nicknames_list = fp_mil.read()
-        except OSError:
-            print('EX: error while reading block military file')
+        nicknames_list_str = \
+            load_string(block_military_filename,
+                        'EX: error while reading block military file')
+        if nicknames_list_str:
+            nicknames_list = nicknames_list_str.split('\n')
     if not nicknames_list:
         return {}
-    nicknames_list = nicknames_list.split('\n')
     nicknames_dict = {}
     for nickname in nicknames_list:
         nicknames_dict[nickname] = True
@@ -1975,15 +1877,13 @@ def load_blocked_government(base_dir: str) -> {}:
     block_government_filename = data_dir(base_dir) + '/block_government.txt'
     nicknames_list: list[str] = []
     if os.path.isfile(block_government_filename):
-        try:
-            with open(block_government_filename, 'r',
-                      encoding='utf-8') as fp_gov:
-                nicknames_list = fp_gov.read()
-        except OSError:
-            print('EX: error while reading block government file')
+        nicknames_list_str = \
+            load_string(block_government_filename,
+                        'EX: error while reading block government file')
+        if nicknames_list_str:
+            nicknames_list = nicknames_list_str.split('\n')
     if not nicknames_list:
         return {}
-    nicknames_list = nicknames_list.split('\n')
     nicknames_dict = {}
     for nickname in nicknames_list:
         nicknames_dict[nickname] = True
@@ -1996,15 +1896,13 @@ def load_blocked_bluesky(base_dir: str) -> {}:
     block_bluesky_filename = data_dir(base_dir) + '/block_bluesky.txt'
     nicknames_list: list[str] = []
     if os.path.isfile(block_bluesky_filename):
-        try:
-            with open(block_bluesky_filename, 'r',
-                      encoding='utf-8') as fp_bsky:
-                nicknames_list = fp_bsky.read()
-        except OSError:
-            print('EX: error while reading block bluesky file')
+        nicknames_list_str = \
+            load_string(block_bluesky_filename,
+                        'EX: error while reading block bluesky file')
+        if nicknames_list_str:
+            nicknames_list = nicknames_list_str.split('\n')
     if not nicknames_list:
         return {}
-    nicknames_list = nicknames_list.split('\n')
     nicknames_dict = {}
     for nickname in nicknames_list:
         nicknames_dict[nickname] = True
@@ -2017,15 +1915,13 @@ def load_blocked_nostr(base_dir: str) -> {}:
     block_nostr_filename = data_dir(base_dir) + '/block_nostr.txt'
     nicknames_list: list[str] = []
     if os.path.isfile(block_nostr_filename):
-        try:
-            with open(block_nostr_filename, 'r',
-                      encoding='utf-8') as fp_nostr:
-                nicknames_list = fp_nostr.read()
-        except OSError:
-            print('EX: error while reading block nostr file')
+        nicknames_list_str = \
+            load_string(block_nostr_filename,
+                        'EX: error while reading block nostr file')
+        if nicknames_list_str:
+            nicknames_list = nicknames_list_str.split('\n')
     if not nicknames_list:
         return {}
-    nicknames_list = nicknames_list.split('\n')
     nicknames_dict = {}
     for nickname in nicknames_list:
         nicknames_dict[nickname] = True
@@ -2040,12 +1936,8 @@ def save_blocked_military(base_dir: str, block_military: {}) -> None:
         nicknames_str += nickname + '\n'
 
     block_military_filename = data_dir(base_dir) + '/block_military.txt'
-    try:
-        with open(block_military_filename, 'w+',
-                  encoding='utf-8') as fp_mil:
-            fp_mil.write(nicknames_str)
-    except OSError:
-        print('EX: error while saving block military file')
+    save_string(nicknames_str, block_military_filename,
+                'EX: error while saving block military file')
 
 
 def save_blocked_government(base_dir: str, block_government: {}) -> None:
@@ -2056,12 +1948,8 @@ def save_blocked_government(base_dir: str, block_government: {}) -> None:
         nicknames_str += nickname + '\n'
 
     block_government_filename = data_dir(base_dir) + '/block_government.txt'
-    try:
-        with open(block_government_filename, 'w+',
-                  encoding='utf-8') as fp_gov:
-            fp_gov.write(nicknames_str)
-    except OSError:
-        print('EX: error while saving block government file')
+    save_string(nicknames_str, block_government_filename,
+                'EX: error while saving block government file')
 
 
 def save_blocked_bluesky(base_dir: str, block_bluesky: {}) -> None:
@@ -2072,12 +1960,8 @@ def save_blocked_bluesky(base_dir: str, block_bluesky: {}) -> None:
         nicknames_str += nickname + '\n'
 
     block_bluesky_filename = data_dir(base_dir) + '/block_bluesky.txt'
-    try:
-        with open(block_bluesky_filename, 'w+',
-                  encoding='utf-8') as fp_bsky:
-            fp_bsky.write(nicknames_str)
-    except OSError:
-        print('EX: error while saving block bluesky file')
+    save_string(nicknames_str, block_bluesky_filename,
+                'EX: error while saving block bluesky file')
 
 
 def save_blocked_nostr(base_dir: str, block_nostr: {}) -> None:
@@ -2088,12 +1972,8 @@ def save_blocked_nostr(base_dir: str, block_nostr: {}) -> None:
         nicknames_str += nickname + '\n'
 
     block_nostr_filename = data_dir(base_dir) + '/block_nostr.txt'
-    try:
-        with open(block_nostr_filename, 'w+',
-                  encoding='utf-8') as fp_nostr:
-            fp_nostr.write(nicknames_str)
-    except OSError:
-        print('EX: error while saving block nostr file')
+    save_string(nicknames_str, block_nostr_filename,
+                'EX: error while saving block nostr file')
 
 
 def get_mil_domains_list() -> []:
@@ -2183,12 +2063,12 @@ def load_federated_blocks_endpoints(base_dir: str) -> []:
         data_dir(base_dir) + '/block_api_endpoints.txt'
     if os.path.isfile(block_api_endpoints_filename):
         new_block_federated_endpoints: list[str] = []
-        try:
-            with open(block_api_endpoints_filename, 'r',
-                      encoding='utf-8') as fp_ep:
-                new_block_federated_endpoints = fp_ep.read().split('\n')
-        except OSError:
-            print('EX: unable to load block_api_endpoints.txt')
+        new_block_federated_endpoints_str = \
+            load_string(block_api_endpoints_filename,
+                        'EX: unable to load block_api_endpoints.txt')
+        if new_block_federated_endpoints_str:
+            new_block_federated_endpoints = \
+                new_block_federated_endpoints_str.split('\n')
         for endpoint in new_block_federated_endpoints:
             if endpoint:
                 if '#' not in endpoint:
@@ -2305,11 +2185,8 @@ def _update_federated_blocks(session, base_dir: str,
                 print('EX: unable to remove block api: ' + block_api_filename)
     else:
         print('DEBUG: federated blocklist loaded: ' + str(block_federated))
-        try:
-            with open(block_api_filename, 'w+', encoding='utf-8') as fp_api:
-                fp_api.write(new_block_api_str)
-        except OSError:
-            print('EX: unable to write block_api.txt')
+        save_string(new_block_api_str, block_api_filename,
+                    'EX: unable to write block_api.txt')
 
     return block_federated
 
@@ -2348,12 +2225,9 @@ def save_block_federated_endpoints(base_dir: str,
             except OSError:
                 print('EX: unable to delete block_api.txt')
     else:
-        try:
-            with open(block_api_endpoints_filename, 'w+',
-                      encoding='utf-8') as fp_api:
-                fp_api.write(block_federated_endpoints_str)
-        except OSError:
-            print('EX: unable to write block_api_endpoints.txt')
+        save_string(block_federated_endpoints_str,
+                    block_api_endpoints_filename,
+                    'EX: unable to write block_api_endpoints.txt')
     return result
 
 
