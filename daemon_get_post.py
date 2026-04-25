@@ -49,6 +49,7 @@ from fitnessFunctions import fitness_performance
 from securemode import secure_mode
 from context import get_individual_post_context
 from conversation import convthread_id_to_conversation_tag
+from data import load_string
 
 
 def _show_post_from_file(self, post_filename: str, liked_by: str,
@@ -308,12 +309,9 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
         if not os.path.isfile(ssml_filename):
             http_404(self, 74)
             return True
-        ssml_str = None
-        try:
-            with open(ssml_filename, 'r', encoding='utf-8') as fp_ssml:
-                ssml_str = fp_ssml.read()
-        except OSError:
-            print('EX: unable to read ssml file ' + ssml_filename)
+        ssml_str = load_string(ssml_filename,
+                               'EX: unable to read ssml file ' +
+                               ssml_filename)
         if ssml_str:
             msg = ssml_str.encode('utf-8')
             msglen = len(msg)
@@ -661,12 +659,9 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
         if not os.path.isfile(ssml_filename):
             http_404(self, 67)
             return True
-        ssml_str = None
-        try:
-            with open(ssml_filename, 'r', encoding='utf-8') as fp_ssml:
-                ssml_str = fp_ssml.read()
-        except OSError:
-            print('EX: unable to read ssml file 2 ' + ssml_filename)
+        ssml_str = load_string(ssml_filename,
+                               'EX: unable to read ssml file 2 ' +
+                               ssml_filename)
         if ssml_str:
             msg = ssml_str.encode('utf-8')
             msglen = len(msg)

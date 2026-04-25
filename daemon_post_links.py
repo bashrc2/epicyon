@@ -18,6 +18,7 @@ from utils import get_nickname_from_actor
 from utils import get_config_param
 from httpheaders import redirect_headers
 from content import extract_text_fields_in_post
+from data import save_string
 
 
 def _links_update_edited(fields: {}, links_filename: str) -> None:
@@ -30,24 +31,16 @@ def _links_update_edited(fields: {}, links_filename: str) -> None:
                 if not links_str.endswith('\n'):
                     links_str += '\n'
             links_str += fields['newColLink'] + '\n'
-        try:
-            with open(links_filename, 'w+',
-                      encoding='utf-8') as fp_links:
-                fp_links.write(links_str)
-        except OSError:
-            print('EX: _links_update unable to write ' +
-                  links_filename)
+        save_string(links_str, links_filename,
+                    'EX: _links_update unable to write ' +
+                    links_filename)
     else:
         if fields.get('newColLink'):
             # the text area is empty but there is a new link added
             links_str = fields['newColLink'] + '\n'
-            try:
-                with open(links_filename, 'w+',
-                          encoding='utf-8') as fp_links:
-                    fp_links.write(links_str)
-            except OSError:
-                print('EX: _links_update unable to write ' +
-                      links_filename)
+            save_string(links_str, links_filename,
+                        'EX: _links_update unable to write ' +
+                        links_filename)
         else:
             if os.path.isfile(links_filename):
                 try:
@@ -65,13 +58,9 @@ def _links_update_about(fields: {}, allow_local_network_access: bool,
         about_str = fields['editedAbout']
         if not dangerous_markup(about_str,
                                 allow_local_network_access, []):
-            try:
-                with open(about_filename, 'w+',
-                          encoding='utf-8') as fp_about:
-                    fp_about.write(about_str)
-            except OSError:
-                print('EX: unable to write about ' +
-                      about_filename)
+            save_string(about_str, about_filename,
+                        'EX: unable to write about ' +
+                        about_filename)
     else:
         if os.path.isfile(about_filename):
             try:
@@ -89,11 +78,8 @@ def _links_update_tos(fields: {}, allow_local_network_access: bool,
         tos_str = fields['editedTOS']
         if not dangerous_markup(tos_str,
                                 allow_local_network_access, []):
-            try:
-                with open(tos_filename, 'w+', encoding='utf-8') as fp_tos:
-                    fp_tos.write(tos_str)
-            except OSError:
-                print('EX: unable to write TOS ' + tos_filename)
+            save_string(tos_str, tos_filename,
+                        'EX: unable to write TOS ' + tos_filename)
     else:
         if os.path.isfile(tos_filename):
             try:
@@ -109,13 +95,9 @@ def _links_update_sepcification(fields: {},
     """
     if fields.get('editedSpecification'):
         specification_str = fields['editedSpecification']
-        try:
-            with open(specification_filename, 'w+',
-                      encoding='utf-8') as fp_specification:
-                fp_specification.write(specification_str)
-        except OSError:
-            print('EX: unable to write specification ' +
-                  specification_filename)
+        save_string(specification_str, specification_filename,
+                    'EX: unable to write specification ' +
+                    specification_filename)
     else:
         if os.path.isfile(specification_filename):
             try:

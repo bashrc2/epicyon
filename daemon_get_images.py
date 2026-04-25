@@ -29,6 +29,7 @@ from daemon_utils import etag_exists
 from fitnessFunctions import fitness_performance
 from person import save_person_qrcode
 from lxmf import save_lxmf_qrcode
+from data import load_string
 
 
 def show_avatar_or_banner(self, referer_domain: str, path: str,
@@ -442,16 +443,12 @@ def show_media(self, path: str, base_dir: str,
                 last_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
             if media_filename.endswith('.vtt'):
-                media_transcript = None
-                try:
-                    with open(media_filename, 'r',
-                              encoding='utf-8') as fp_vtt:
-                        media_transcript = fp_vtt.read()
-                        media_file_type = 'text/vtt; charset=utf-8'
-                except OSError:
-                    print('EX: unable to read media binary ' +
-                          media_filename)
+                media_transcript = \
+                    load_string(media_filename,
+                                'EX: unable to read media binary ' +
+                                media_filename)
                 if media_transcript:
+                    media_file_type = 'text/vtt; charset=utf-8'
                     media_transcript = media_transcript.encode('utf-8')
                     set_headers_etag(self, media_filename, media_file_type,
                                      media_transcript, None,

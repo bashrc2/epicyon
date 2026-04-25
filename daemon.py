@@ -105,6 +105,7 @@ from daemon_utils import has_accept
 from daemon_utils import is_authorized
 from poison import load_dictionary
 from poison import load_2grams
+from data import load_string
 
 
 class PubServer(BaseHTTPRequestHandler):
@@ -583,14 +584,9 @@ def load_tokens(base_dir: str, tokens_dict: {}, tokens_lookup: {}) -> None:
                 if not os.path.isfile(token_filename):
                     continue
                 nickname = handle.split('@')[0]
-                token = None
-                try:
-                    with open(token_filename, 'r',
-                              encoding='utf-8') as fp_tok:
-                        token = fp_tok.read()
-                except OSError as ex:
-                    print('WARN: Unable to read token for ' +
-                          nickname + ' ' + str(ex))
+                token = load_string(token_filename,
+                                    'WARN: Unable to read token for ' +
+                                    nickname + ' [ex]')
                 if not token:
                     continue
                 tokens_dict[nickname] = token
@@ -753,13 +749,9 @@ def run_daemon(accounts_data_dir: str,
     robots_txt_filename = data_dir(base_dir) + '/robots.txt'
     httpd.robots_txt = None
     if os.path.isfile(robots_txt_filename):
-        new_robots_txt = ''
-        try:
-            with open(robots_txt_filename, 'r',
-                      encoding='utf-8') as fp_robots:
-                new_robots_txt = fp_robots.read()
-        except OSError:
-            print('EX: error reading 1 ' + robots_txt_filename)
+        new_robots_txt = \
+            load_string(robots_txt_filename,
+                        'EX: error reading 1 ' + robots_txt_filename)
         if new_robots_txt:
             httpd.robots_txt = new_robots_txt
 
