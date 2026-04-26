@@ -36,6 +36,9 @@ from context import get_individual_post_context
 from session import get_method
 from auth import create_basic_auth_header
 from conversation import post_id_to_convthread_id
+from data import load_string
+from data import save_string
+from data import append_string
 
 
 def _strings_are_digits(strings_list: []) -> bool:
@@ -86,18 +89,15 @@ def _remove_event_from_timeline(event_id: str,
     """
     if not text_in_file(event_id + '\n', tl_events_filename):
         return
-    events_timeline = ''
-    with open(tl_events_filename, 'r',
-              encoding='utf-8') as fp_tl:
-        events_timeline = fp_tl.read().replace(event_id + '\n', '')
+    events_timeline = \
+        load_string(tl_events_filename,
+                    'EX: _remove_event_from_timeline ' + tl_events_filename)
 
     if events_timeline:
-        try:
-            with open(tl_events_filename, 'w+',
-                      encoding='utf-8') as fp2:
-                fp2.write(events_timeline)
-        except OSError:
-            print('EX: ERROR: unable to save events timeline')
+        events_timeline = events_timeline.replace(event_id + '\n', '')
+    if events_timeline:
+        save_string(events_timeline, tl_events_filename,
+                    'EX: ERROR: unable to save events timeline')
     elif os.path.isfile(tl_events_filename):
         try:
             os.remove(tl_events_filename)
@@ -170,13 +170,9 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
                       tl_events_filename + ' ' + str(ex))
                 return False
         else:
-            try:
-                with open(tl_events_filename, 'w+',
-                          encoding='utf-8') as fp_tl_events:
-                    fp_tl_events.write(event_id + '\n')
-            except OSError:
-                print('EX: save_event_post unable to write ' +
-                      tl_events_filename)
+            save_string(event_id + '\n', tl_events_filename,
+                        'EX: save_event_post unable to write ' +
+                        tl_events_filename)
 
     # create a directory for the calendar year
     if not os.path.isdir(calendar_path + '/' + str(event_year)):
@@ -193,11 +189,8 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
             return False
 
     # append the post Id to the file for the calendar month
-    try:
-        with open(calendar_filename, 'a+', encoding='utf-8') as fp_calendar:
-            fp_calendar.write(post_id + '\n')
-    except OSError:
-        print('EX: unable to append to calendar ' + calendar_filename)
+    append_string(post_id + '\n', calendar_filename,
+                  'EX: unable to append to calendar ' + calendar_filename)
 
     # create a file which will trigger a notification that
     # a new event has been added
@@ -205,11 +198,9 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
     notify_str = \
         '/calendar?year=' + str(event_year) + '?month=' + \
         str(event_month_number) + '?day=' + str(event_day_of_month)
-    try:
-        with open(cal_notify_filename, 'w+', encoding='utf-8') as fp_cal:
-            fp_cal.write(notify_str)
-    except OSError:
-        print('EX: save_event_post unable to write ' + cal_notify_filename)
+    if not save_string(notify_str, cal_notify_filename,
+                       'EX: save_event_post unable to write ' +
+                       cal_notify_filename):
         return False
     return True
 
@@ -870,13 +861,10 @@ def remove_calendar_event(base_dir: str, nickname: str, domain: str,
         message_id = message_id.replace('#', '/')
         if not text_in_file(message_id, calendar_filename):
             return
-    lines_str = ''
-    try:
-        with open(calendar_filename, 'r', encoding='utf-8') as fp_cal:
-            lines_str = fp_cal.read()
-    except OSError:
-        print('EX: remove_calendar_event unable to read calendar file ' +
-              calendar_filename)
+    lines_str: str = \
+        load_string(calendar_filename,
+                    'EX: remove_calendar_event unable to read calendar file ' +
+                    calendar_filename)
     if not lines_str:
         return
     lines = lines_str.split('\n')

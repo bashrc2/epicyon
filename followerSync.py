@@ -12,6 +12,7 @@ import hashlib
 from hashlib import sha256
 from utils import acct_dir
 from utils import get_user_paths
+from data import load_string
 
 
 def remove_followers_sync(followers_sync_cache: {},
@@ -37,13 +38,12 @@ def _get_followers_for_domain(base_dir: str,
     if not os.path.isfile(followers_filename):
         return []
     lines: list[str] = []
-    foll_text = ''
-    try:
-        with open(followers_filename, 'r', encoding='utf-8') as fp_foll:
-            foll_text = fp_foll.read()
-    except OSError:
-        print('EX: get_followers_for_domain unable to read followers ' +
-              followers_filename)
+    foll_text: str = \
+        load_string(followers_filename,
+                    'EX: get_followers_for_domain unable to read followers ' +
+                    followers_filename)
+    if foll_text is None:
+        foll_text = ''
     if search_domain not in foll_text:
         return []
     lines = foll_text.splitlines()

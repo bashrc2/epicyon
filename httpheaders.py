@@ -17,6 +17,8 @@ from utils import save_json
 from utils import remove_id_ending
 from utils import has_object_dict
 from utils import get_attributed_to
+from data import load_string
+from data import save_string
 
 
 def login_headers(self, file_format: str, length: int,
@@ -224,22 +226,14 @@ def set_headers_etag(self, media_filename: str, file_format: str,
                       permissive)
     etag = None
     if os.path.isfile(media_filename + '.etag'):
-        try:
-            with open(media_filename + '.etag', 'r',
-                      encoding='utf-8') as fp_media:
-                etag = fp_media.read()
-        except OSError:
-            print('EX: _set_headers_etag ' +
-                  'unable to read ' + media_filename + '.etag')
+        etag = load_string(media_filename + '.etag',
+                           'EX: _set_headers_etag ' +
+                           'unable to read ' + media_filename + '.etag')
     if not etag:
         etag = md5(data).hexdigest()  # nosec
-        try:
-            with open(media_filename + '.etag', 'w+',
-                      encoding='utf-8') as fp_media:
-                fp_media.write(etag)
-        except OSError:
-            print('EX: _set_headers_etag ' +
-                  'unable to write ' + media_filename + '.etag')
+        save_string(etag, media_filename,
+                    'EX: _set_headers_etag ' +
+                    'unable to write ' + media_filename + '.etag')
     # if etag:
     #     self.send_header('ETag', '"' + etag + '"')
     if last_modified:

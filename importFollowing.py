@@ -22,6 +22,8 @@ from session import create_session
 from session import set_session_for_sender
 from threads import begin_thread
 from person import set_person_notes
+from data import load_string
+from data import save_string
 
 
 def _establish_import_session(httpd,
@@ -47,12 +49,10 @@ def _update_import_following(base_dir: str,
                              import_filename: str) -> bool:
     """Send out follow requests from the import csv file
     """
-    following_str = ''
-    try:
-        with open(import_filename, 'r', encoding='utf-8') as fp_import:
-            following_str = fp_import.read()
-    except OSError:
-        print('Ex: failed to load import file ' + import_filename)
+    following_str = \
+        load_string(import_filename,
+                    'Ex: failed to load import file ' + import_filename)
+    if following_str is None:
         return False
     if following_str:
         main_session = None
@@ -97,13 +97,9 @@ def _update_import_following(base_dir: str,
                                   following_handle_full):
                 # remove the followed handle from the import list
                 following_str = following_str.replace(orig_line + '\n', '')
-                try:
-                    with open(import_filename, 'w+',
-                              encoding='utf-8') as fp_import:
-                        fp_import.write(following_str)
-                except OSError:
-                    print('EX: unable to remove import 1 ' + line +
-                          ' from ' + import_filename)
+                save_string(following_str, import_filename,
+                            'EX: unable to remove import 1 ' + line +
+                            ' from ' + import_filename)
                 continue
 
             # send follow request
@@ -185,13 +181,9 @@ def _update_import_following(base_dir: str,
 
             # remove the followed handle from the import list
             following_str = following_str.replace(orig_line + '\n', '')
-            try:
-                with open(import_filename, 'w+',
-                          encoding='utf-8') as fp_import:
-                    fp_import.write(following_str)
-            except OSError:
-                print('EX: unable to remove import 2 ' + line +
-                      ' from ' + import_filename)
+            save_string(following_str, import_filename,
+                        'EX: unable to remove import 2 ' + line +
+                        ' from ' + import_filename)
             print('FOLLOW: import sent follow to ' + line +
                   ' from ' + import_filename)
             return True

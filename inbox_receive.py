@@ -86,6 +86,7 @@ from announce import is_self_announce
 from speaker import update_speaker
 from webapp_post import individual_post_as_html
 from webapp_hashtagswarm import store_hash_tags
+from data import save_string
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -119,12 +120,10 @@ def inbox_update_index(boxname: str, base_dir: str, handle: str,
         except OSError as ex:
             print('EX: Failed to write entry to index ' + str(ex))
     else:
-        try:
-            with open(index_filename, 'w+', encoding='utf-8') as fp_index:
-                fp_index.write(destination_filename + '\n')
-                written = True
-        except OSError as ex:
-            print('EX: Failed to write initial entry to index ' + str(ex))
+        if save_string(destination_filename + '\n',
+                       index_filename,
+                       'EX: Failed to write initial entry to index [ex]'):
+            written = True
 
     return written
 

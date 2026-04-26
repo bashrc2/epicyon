@@ -8,6 +8,8 @@ __status__ = "Production"
 __module_group__ = "Calendar"
 
 import os
+from data import load_string
+from data import save_string
 
 
 def _data_dir2(base_dir) -> str:
@@ -22,12 +24,9 @@ def _text_in_file2(text: str, filename: str,
     """
     if not case_sensitive:
         text = text.lower()
-    content = ''
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_file:
-            content = fp_file.read()
-    except OSError:
-        print('EX: unable to find text in missing file 2 ' + filename)
+    content: str = \
+        load_string(filename,
+                    'EX: unable to find text in missing file 2 ' + filename)
     if content:
         if not case_sensitive:
             content = content.lower()
@@ -76,20 +75,12 @@ def receiving_calendar_events(base_dir: str, nickname: str, domain: str,
         if not os.path.isfile(following_filename):
             return False
         # create a new calendar file from the following file
-        following_handles = None
-        try:
-            with open(following_filename, 'r',
-                      encoding='utf-8') as fp_following:
-                following_handles = fp_following.read()
-        except OSError:
-            print('EX: receiving_calendar_events ' + following_filename)
+        following_handles = \
+            load_string(following_filename,
+                        'EX: receiving_calendar_events ' + following_filename)
         if following_handles:
-            try:
-                with open(calendar_filename, 'w+',
-                          encoding='utf-8') as fp_cal:
-                    fp_cal.write(following_handles)
-            except OSError:
-                print('EX: receiving_calendar_events 2 ' + calendar_filename)
+            save_string(following_handles, calendar_filename,
+                        'EX: receiving_calendar_events 2 ' + calendar_filename)
     return _text_in_file2(handle + '\n', calendar_filename, False)
 
 
@@ -120,33 +111,25 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
 
     # get the contents of the calendar file, which is
     # a set of handles
-    following_handles = ''
+    following_handles: str = ''
     if os.path.isfile(calendar_filename):
         print('Calendar file exists')
-        try:
-            with open(calendar_filename, 'r',
-                      encoding='utf-8') as fp_calendar:
-                following_handles = fp_calendar.read()
-        except OSError:
-            print('EX: _receive_calendar_events ' + calendar_filename)
+        following_handles = \
+            load_string(calendar_filename,
+                        'EX: _receive_calendar_events ' + calendar_filename)
+        if following_handles is None:
+            following_handles = ''
     else:
         # create a new calendar file from the following file
         print('Creating calendar file ' + calendar_filename)
-        following_handles = ''
-        try:
-            with open(following_filename, 'r',
-                      encoding='utf-8') as fp_following:
-                following_handles = fp_following.read()
-        except OSError:
-            print('EX: _receive_calendar_events 2 ' + calendar_filename)
+        following_handles = \
+            load_string(following_filename,
+                        'EX: _receive_calendar_events 2 ' + calendar_filename)
         if add:
-            try:
-                with open(calendar_filename, 'w+',
-                          encoding='utf-8') as fp_cal:
-                    fp_cal.write(following_handles + handle + '\n')
-            except OSError:
-                print('EX: _receive_calendar_events unable to write ' +
-                      calendar_filename)
+            save_string(following_handles + handle + '\n',
+                        calendar_filename,
+                        'EX: _receive_calendar_events unable to write ' +
+                        calendar_filename)
 
     # already in the calendar file?
     if handle + '\n' in following_handles or \
@@ -164,24 +147,16 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
                 new_following_handles += followed + '\n'
         following_handles = new_following_handles
         # save the result
-        try:
-            with open(calendar_filename, 'w+',
-                      encoding='utf-8') as fp_cal:
-                fp_cal.write(following_handles)
-        except OSError:
-            print('EX: _receive_calendar_events 3 ' + calendar_filename)
+        save_string(following_handles, calendar_filename,
+                    'EX: _receive_calendar_events 3 ' + calendar_filename)
     else:
         print(handle + ' not in followingCalendar.txt')
         # not already in the calendar file
         if add:
             # append to the list of handles
             following_handles += handle + '\n'
-            try:
-                with open(calendar_filename, 'w+',
-                          encoding='utf-8') as fp_cal:
-                    fp_cal.write(following_handles)
-            except OSError:
-                print('EX: _receive_calendar_events 4 ' + calendar_filename)
+            save_string(following_handles, calendar_filename,
+                        'EX: _receive_calendar_events 4 ' + calendar_filename)
 
 
 def add_person_to_calendar(base_dir: str, nickname: str, domain: str,

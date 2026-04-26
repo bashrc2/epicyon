@@ -17,6 +17,7 @@ from utils import get_url_from_post
 from utils import get_gemini_blog_title
 from utils import get_gemini_blog_published
 from utils import get_gemini_blog_filename
+from data import save_string
 
 
 def blog_to_gemini(base_dir: str, nickname: str, domain: str,
@@ -120,14 +121,11 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
         for link_str in links:
             content_text += '=> ' + link_str + '\n'
 
-    try:
-        with open(gemini_blog_filename, 'w+',
-                  encoding='utf-8') as fp_gemini:
-            fp_gemini.write(title_text + '\n\n' +
-                            published.replace('-', '/') + '\n\n' +
-                            content_text)
-    except OSError:
-        print('EX: blog_to_gemini unable to write ' + gemini_blog_filename)
+    text = title_text + '\n\n' + \
+        published.replace('-', '/') + '\n\n' + content_text
+    if not save_string(text, gemini_blog_filename,
+                       'EX: blog_to_gemini unable to write ' +
+                       gemini_blog_filename):
         return False
 
     return True
