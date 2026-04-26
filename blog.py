@@ -47,7 +47,6 @@ from newswire import rss2header
 from newswire import rss2footer
 from cache import get_person_from_cache
 from flags import is_image_file
-from data import load_string
 
 
 def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
@@ -149,11 +148,12 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                     '/postcache/' + \
                     post_id.replace('/', '#') + '.html'
                 if os.path.isfile(post_filename):
-                    blog_text = load_string(post_filename,
-                                            'EX: unable to read blog 3 ' +
-                                            post_filename)
-                    if blog_text is not None:
-                        return blog_text + '\n'
+                    try:
+                        with open(post_filename, 'r',
+                                  encoding='utf-8') as fp_post:
+                            return fp_post.read() + '\n'
+                    except OSError:
+                        print('EX: unable to read blog 3 ' + post_filename)
         return ''
 
     lines: list[str] = []
@@ -177,11 +177,11 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                 reply_post_id.replace('/', '#') + '.html'
             if not os.path.isfile(post_filename):
                 continue
-            reply_text = load_string(post_filename,
-                                     'EX: unable to read blog replies ' +
-                                     post_filename)
-            if reply_text:
-                replies_str += reply_text + '\n'
+            try:
+                with open(post_filename, 'r', encoding='utf-8') as fp_post:
+                    replies_str += fp_post.read() + '\n'
+            except OSError:
+                print('EX: unable to read blog replies ' + post_filename)
             rply = _get_blog_replies(base_dir, http_prefix, translate,
                                      nickname, domain, domain_full,
                                      reply_post_id, depth+1)
@@ -934,12 +934,13 @@ def html_edit_blog(media_instance: bool, translate: {},
     # load blog template if it exists
     dir_str = data_dir(base_dir)
     if os.path.isfile(dir_str + '/newblog.txt'):
-        edit_blog_text_str = \
-            load_string(dir_str + '/newblog.txt',
-                        'EX: html_edit_blog unable to read ' +
-                        dir_str + '/newblog.txt')
-        if edit_blog_text_str:
-            edit_blog_text: str = '<p>' + edit_blog_text_str + '</p>'
+        try:
+            with open(dir_str + '/newblog.txt', 'r',
+                      encoding='utf-8') as fp_blog:
+                edit_blog_text: str = '<p>' + fp_blog.read() + '</p>'
+        except OSError:
+            print('EX: html_edit_blog unable to read ' +
+                  dir_str + '/newblog.txt')
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):

@@ -19,7 +19,6 @@ import math
 from random import randint
 from utils import acct_dir
 from utils import remove_eol
-from data import load_string
 
 # states which the simulated city dweller can be in
 PERSON_SLEEP = 0
@@ -231,11 +230,11 @@ def spoof_geolocation(base_dir: str,
                     default_latdirection, default_longdirection,
                     "", "", 0)
         cities: list[str] = []
-        cities_str = load_string(locations_filename,
-                                 'EX: unable to read locations ' +
-                                 locations_filename)
-        if cities_str:
-            cities = cities_str.split('\n')
+        try:
+            with open(locations_filename, 'r', encoding='utf-8') as fp_loc:
+                cities = fp_loc.readlines()
+        except OSError:
+            print('EX: unable to read locations ' + locations_filename)
 
     nogo = []
     if nogo_list:
@@ -243,12 +242,11 @@ def spoof_geolocation(base_dir: str,
     else:
         if os.path.isfile(nogo_filename):
             nogo_list: list[str] = []
-            nogo_list_str = \
-                load_string(nogo_filename,
-                            'EX: spoof_geolocation unable to read ' +
-                            nogo_filename)
-            if nogo_list_str:
-                nogo_list = nogo_list_str.split('\n')
+            try:
+                with open(nogo_filename, 'r', encoding='utf-8') as fp_nogo:
+                    nogo_list = fp_nogo.readlines()
+            except OSError:
+                print('EX: spoof_geolocation unable to read ' + nogo_filename)
             for line in nogo_list:
                 if line.startswith(city + ':'):
                     polygon = parse_nogo_string(line)
@@ -340,11 +338,12 @@ def get_spoofed_city(city: str, base_dir: str,
     city: str = ''
     city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
     if os.path.isfile(city_filename):
-        city1 = load_string(city_filename,
-                            'EX: get_spoofed_city unable to read ' +
-                            city_filename)
-        if city1:
-            city = remove_eol(city1)
+        try:
+            with open(city_filename, 'r', encoding='utf-8') as fp_city:
+                city1 = fp_city.read()
+                city = remove_eol(city1)
+        except OSError:
+            print('EX: get_spoofed_city unable to read ' + city_filename)
     return city
 
 

@@ -14,8 +14,6 @@ from timeFunctions import date_epoch
 from utils import data_dir
 from utils import replace_strings
 from utils import get_invalid_characters
-from data import load_string
-from data import save_string
 
 MAX_TAG_LENGTH = 42
 
@@ -71,12 +69,11 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
             if not os.path.isfile(cities_filename):
                 continue
             cities: list[str] = []
-            cities_str = \
-                load_string(cities_filename,
-                            'EX: unable to load cities file ' +
-                            cities_filename)
-            if cities_str:
-                cities = cities_str.split('\n')
+            try:
+                with open(cities_filename, 'r', encoding='utf-8') as fp_cities:
+                    cities = fp_cities.read().split('\n')
+            except OSError:
+                print('EX: unable to load cities file ' + cities_filename)
             if not cities:
                 continue
             for hashtag in cities:
@@ -86,9 +83,13 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
                 hashtag2 = replace_strings(hashtag, replacements2)
                 city_filename = base_dir + '/tags/' + hashtag2 + '.category'
                 if not os.path.isfile(city_filename):
-                    save_string(category_str, city_filename,
-                                'EX: unable to write city category ' +
-                                city_filename)
+                    try:
+                        with open(city_filename, 'w+',
+                                  encoding='utf-8') as fp_city:
+                            fp_city.write(category_str)
+                    except OSError:
+                        print('EX: unable to write city category ' +
+                              city_filename)
                 if '-' in hashtag:
                     section = hashtag.split('-')
                     new_hashtag: str = ''
@@ -98,9 +99,13 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
                     city_filename = \
                         base_dir + '/tags/' + hashtag2 + '.category'
                     if not os.path.isfile(city_filename):
-                        save_string(category_str, city_filename,
-                                    'EX: unable to write city category2 ' +
-                                    city_filename)
+                        try:
+                            with open(city_filename, 'w+',
+                                      encoding='utf-8') as fp_city:
+                                fp_city.write(category_str)
+                        except OSError:
+                            print('EX: unable to write city category2 ' +
+                                  city_filename)
                 if ' ' in hashtag:
                     section = hashtag.split(' ')
                     new_hashtag: str = ''
@@ -110,9 +115,13 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
                     city_filename = \
                         base_dir + '/tags/' + hashtag2 + '.category'
                     if not os.path.isfile(city_filename):
-                        save_string(category_str, city_filename,
-                                    'EX: unable to write city category3 ' +
-                                    city_filename)
+                        try:
+                            with open(city_filename, 'w+',
+                                      encoding='utf-8') as fp_city:
+                                fp_city.write(category_str)
+                        except OSError:
+                            print('EX: unable to write city category3 ' +
+                                  city_filename)
 
 
 def get_hashtag_categories(base_dir: str,
@@ -204,9 +213,12 @@ def update_hashtag_categories(base_dir: str) -> None:
         category_list_str += category_str + '\n'
 
     # save a list of available categories for quick lookup
-    save_string(category_list_str, category_list_filename,
-                'EX: unable to write category ' +
-                category_list_filename)
+    try:
+        with open(category_list_filename, 'w+',
+                  encoding='utf-8') as fp_category:
+            fp_category.write(category_list_str)
+    except OSError:
+        print('EX: unable to write category ' + category_list_filename)
 
 
 def _valid_hashtag_category(category: str) -> bool:
