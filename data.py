@@ -16,9 +16,7 @@ def _store_base(text: str, filename: str, exception_text: str,
         with open(filename, mode, encoding='utf-8') as fp:
             fp.write(text)
             return True
-    except OSError as exc:
-        if '[ex]' in exception_text:
-            exception_text = exception_text.replace('[ex]', str(exc))
+    except OSError:
         print(exception_text)
     return False
 
@@ -30,9 +28,7 @@ def load_string(filename: str, exception_text: str) -> str:
         with open(filename, 'r', encoding='utf-8') as fp:
             text = fp.read()
             return text
-    except OSError as exc:
-        if '[ex]' in exception_text:
-            exception_text = exception_text.replace('[ex]', str(exc))
+    except OSError:
         print(exception_text)
     return None
 
