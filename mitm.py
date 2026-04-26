@@ -16,6 +16,8 @@ __module_group__ = "Core"
 
 import os
 from utils import data_dir
+from data import load_string
+from data import save_string
 
 
 def detect_mitm(self) -> bool:
@@ -55,15 +57,13 @@ def load_mitm_servers(base_dir: str) -> []:
     mitm_servers_filename = data_dir(base_dir) + '/mitm_servers.txt'
     mitm_servers: list[str] = []
     if os.path.isfile(mitm_servers_filename):
-        try:
-            with open(mitm_servers_filename, 'r',
-                      encoding='utf-8') as fp_mitm:
-                mitm_servers = fp_mitm.read()
-        except OSError:
-            print('EX: error while reading mitm_servers.txt')
+        mitm_servers_str = \
+            load_string(mitm_servers_filename,
+                        'EX: error while reading mitm_servers.txt')
+        if mitm_servers_str:
+            mitm_servers = mitm_servers_str.split('\n')
     if not mitm_servers:
         return []
-    mitm_servers = mitm_servers.split('\n')
     return mitm_servers
 
 
@@ -76,9 +76,5 @@ def save_mitm_servers(base_dir: str, mitm_servers: []) -> None:
             mitm_servers_str += domain + '\n'
 
     mitm_servers_filename = data_dir(base_dir) + '/mitm_servers.txt'
-    try:
-        with open(mitm_servers_filename, 'w+',
-                  encoding='utf-8') as fp_mitm:
-            fp_mitm.write(mitm_servers_str)
-    except OSError:
-        print('EX: error while saving mitm_servers.txt')
+    save_string(mitm_servers_str, mitm_servers_filename,
+                'EX: error while saving mitm_servers.txt')

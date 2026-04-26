@@ -11,6 +11,8 @@ import os
 from utils import remove_domain_port
 from utils import acct_dir
 from utils import text_in_file
+from data import load_string
+from data import save_string
 
 
 def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
@@ -40,35 +42,29 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
 
     # get the contents of the notifyOnPost file, which is
     # a set of handles
-    following_handles = ''
+    following_handles: str = ''
     if os.path.isfile(notify_on_post_filename):
         print('notify file exists')
-        try:
-            with open(notify_on_post_filename, 'r',
-                      encoding='utf-8') as fp_calendar:
-                following_handles = fp_calendar.read()
-        except OSError:
-            print('EX: _notify_on_post_arrival unable to read 1 ' +
-                  notify_on_post_filename)
+        following_handles = \
+            load_string(notify_on_post_filename,
+                        'EX: _notify_on_post_arrival unable to read 1 ' +
+                        notify_on_post_filename)
+        if following_handles is None:
+            following_handles = ''
     else:
         # create a new notifyOnPost file from the following file
         print('Creating notifyOnPost file ' + notify_on_post_filename)
-        following_handles = ''
-        try:
-            with open(following_filename, 'r',
-                      encoding='utf-8') as fp_following:
-                following_handles = fp_following.read()
-        except OSError:
-            print('EX: _notify_on_post_arrival unable to read 2 ' +
-                  following_filename)
+        following_handles = \
+            load_string(following_filename,
+                        'EX: _notify_on_post_arrival unable to read 2 ' +
+                        following_filename)
+        if following_handles is None:
+            following_handles = ''
         if add:
-            try:
-                with open(notify_on_post_filename, 'w+',
-                          encoding='utf-8') as fp_notify:
-                    fp_notify.write(following_handles + handle + '\n')
-            except OSError:
-                print('EX: _notify_on_post_arrival unable to write  1' +
-                      notify_on_post_filename)
+            save_string(following_handles + handle + '\n',
+                        notify_on_post_filename,
+                        'EX: _notify_on_post_arrival unable to write  1' +
+                        notify_on_post_filename)
 
     # already in the notifyOnPost file?
     if handle + '\n' in following_handles or \
@@ -86,26 +82,18 @@ def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
                 new_following_handles += followed + '\n'
         following_handles = new_following_handles
 
-        try:
-            with open(notify_on_post_filename, 'w+',
-                      encoding='utf-8') as fp_notify:
-                fp_notify.write(following_handles)
-        except OSError:
-            print('EX: _notify_on_post_arrival unable to write  2' +
-                  notify_on_post_filename)
+        save_string(following_handles, notify_on_post_filename,
+                    'EX: _notify_on_post_arrival unable to write  2' +
+                    notify_on_post_filename)
     else:
         print(handle + ' not in notifyOnPost.txt')
         # not already in the notifyOnPost file
         if add:
             # append to the list of handles
             following_handles += handle + '\n'
-            try:
-                with open(notify_on_post_filename, 'w+',
-                          encoding='utf-8') as fp_notify:
-                    fp_notify.write(following_handles)
-            except OSError:
-                print('EX: _notify_on_post_arrival unable to write  3' +
-                      notify_on_post_filename)
+            save_string(following_handles, notify_on_post_filename,
+                        'EX: _notify_on_post_arrival unable to write  3' +
+                        notify_on_post_filename)
 
 
 def add_notify_on_post(base_dir: str, nickname: str, domain: str,
@@ -138,11 +126,7 @@ def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
     handle = following_nickname + '@' + following_domain
     if not os.path.isfile(notify_on_post_filename):
         # create a new notifyOnPost file
-        try:
-            with open(notify_on_post_filename, 'w+',
-                      encoding='utf-8') as fp_notify:
-                fp_notify.write('')
-        except OSError:
-            print('EX: notify_when_person_posts unable to write ' +
-                  notify_on_post_filename)
+        save_string('\n', notify_on_post_filename,
+                    'EX: notify_when_person_posts unable to write ' +
+                    notify_on_post_filename)
     return text_in_file(handle + '\n', notify_on_post_filename, False)

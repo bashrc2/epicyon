@@ -92,6 +92,9 @@ from cache import remove_person_from_cache
 from filters import is_filtered_bio
 from follow import is_following_actor
 from data import load_list
+from data import save_string
+from data import load_string
+from data import append_string
 
 
 def generate_rsa_key() -> (str, str):
@@ -631,22 +634,16 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         if not os.path.isdir(base_dir + private_keys_subdir):
             os.mkdir(base_dir + private_keys_subdir)
         filename = base_dir + private_keys_subdir + '/' + handle + '.key'
-        try:
-            with open(filename, 'w+', encoding='utf-8') as fp_text:
-                print(private_key_pem, file=fp_text)
-        except OSError:
-            print('EX: _create_person_base unable to save ' + filename)
+        save_string(private_key_pem, filename,
+                    'EX: _create_person_base unable to save 1 ' + filename)
 
         # save the public key
         public_keys_subdir = '/keys/public'
         if not os.path.isdir(base_dir + public_keys_subdir):
             os.mkdir(base_dir + public_keys_subdir)
         filename = base_dir + public_keys_subdir + '/' + handle + '.pem'
-        try:
-            with open(filename, 'w+', encoding='utf-8') as fp_text:
-                print(public_key_pem, file=fp_text)
-        except OSError:
-            print('EX: _create_person_base unable to save 2 ' + filename)
+        save_string(public_key_pem, filename,
+                    'EX: _create_person_base unable to save 2 ' + filename)
 
         if password:
             password = remove_eol(password).strip()
@@ -788,34 +785,24 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
     if manual_follower_approval:
         follow_dms_filename = \
             acct_dir(base_dir, nickname, domain) + '/.followDMs'
-        try:
-            with open(follow_dms_filename, 'w+', encoding='utf-8') as fp_foll:
-                fp_foll.write('\n')
-        except OSError:
-            print('EX: create_person unable to write ' + follow_dms_filename)
+        save_string('\n', follow_dms_filename,
+                    'EX: create_person unable to write ' + follow_dms_filename)
 
     # notify when posts are liked
     if nickname != 'news':
         notify_likes_filename = \
             acct_dir(base_dir, nickname, domain) + '/.notifyLikes'
-        try:
-            with open(notify_likes_filename, 'w+', encoding='utf-8') as fp_lik:
-                fp_lik.write('\n')
-        except OSError:
-            print('EX: create_person unable to write 2 ' +
-                  notify_likes_filename)
+        save_string('\n', notify_likes_filename,
+                    'EX: create_person unable to write 2 ' +
+                    notify_likes_filename)
 
     # notify when posts have emoji reactions
     if nickname != 'news':
         notify_reactions_filename = \
             acct_dir(base_dir, nickname, domain) + '/.notifyReactions'
-        try:
-            with open(notify_reactions_filename, 'w+',
-                      encoding='utf-8') as fp_notify:
-                fp_notify.write('\n')
-        except OSError:
-            print('EX: create_person unable to write 3 ' +
-                  notify_reactions_filename)
+        save_string('\n', notify_reactions_filename,
+                    'EX: create_person unable to write 3 ' +
+                    notify_reactions_filename)
 
     theme = get_config_param(base_dir, 'theme')
     if not theme:
@@ -1310,13 +1297,12 @@ def _unsuspend_media_for_account(base_dir: str, account_dir: str) -> None:
     if not os.path.isfile(account_media_log_filename):
         return
 
-    media_log = []
-    try:
-        with open(account_media_log_filename, 'r',
-                  encoding='utf-8') as fp_log:
-            media_log = fp_log.read().split('\n')
-    except OSError:
-        print('EX: suspend unable to read media log for ' + account_dir)
+    media_log: list[str] = []
+    media_log_str = load_string(account_media_log_filename,
+                                'EX: suspend unable to read media log for ' +
+                                account_dir)
+    if media_log_str:
+        media_log = media_log_str.split('\n')
 
     for filename in media_log:
         media_filename = base_dir + filename
@@ -1356,13 +1342,12 @@ def _suspend_media_for_account(base_dir: str, account_dir: str) -> None:
     if not os.path.isfile(account_media_log_filename):
         return
 
-    media_log = []
-    try:
-        with open(account_media_log_filename, 'r',
-                  encoding='utf-8') as fp_log:
-            media_log = fp_log.read().split('\n')
-    except OSError:
-        print('EX: suspend unable to read media log for ' + account_dir)
+    media_log: list[str] = []
+    media_log_str = load_string(account_media_log_filename,
+                                'EX: suspend unable to read media log for ' +
+                                account_dir)
+    if media_log_str:
+        media_log = media_log_str.split('\n')
 
     for filename in media_log:
         media_filename = base_dir + filename
@@ -1418,17 +1403,13 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return
-        try:
-            with open(suspended_filename, 'a+', encoding='utf-8') as fp_sus:
-                fp_sus.write(nickname + '\n')
-        except OSError:
-            print('EX: suspend_account unable to append ' + suspended_filename)
+        append_string(nickname + '\n', suspended_filename,
+                      'EX: suspend_account unable to append ' +
+                      suspended_filename)
     else:
-        try:
-            with open(suspended_filename, 'w+', encoding='utf-8') as fp_sus:
-                fp_sus.write(nickname + '\n')
-        except OSError:
-            print('EX: suspend_account unable to write ' + suspended_filename)
+        save_string(nickname + '\n', suspended_filename,
+                    'EX: suspend_account unable to write ' +
+                    suspended_filename)
     _suspend_media_for_account(base_dir, account_dir)
 
 
@@ -1505,14 +1486,14 @@ def _remove_account_media(base_dir: str, nickname: str, domain: str) -> None:
     account_dir = acct_dir(base_dir, nickname, domain)
     account_media_log_filename = account_dir + '/media_log.txt'
 
-    media_log = []
+    media_log: list[str] = []
     if os.path.isfile(account_media_log_filename):
-        try:
-            with open(account_media_log_filename, 'r',
-                      encoding='utf-8') as fp_log:
-                media_log = fp_log.read().split('\n')
-        except OSError:
-            print('EX: remove unable to read media log for ' + nickname)
+        media_log_str = \
+            load_string(account_media_log_filename,
+                        'EX: remove unable to read media log for ' +
+                        nickname)
+        if media_log_str:
+            media_log = media_log_str.split('\n')
 
     for filename in media_log:
         media_filename = base_dir + filename
@@ -1690,20 +1671,15 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
     except OSError:
         print('EX: is_person_snoozed unable to read ' + snoozed_filename)
     if replace_str:
-        content = None
-        try:
-            with open(snoozed_filename, 'r', encoding='utf-8') as fp_snoozed:
-                content = fp_snoozed.read().replace(replace_str, '')
-        except OSError:
-            print('EX: is_person_snoozed unable to read 2 ' + snoozed_filename)
+        content = load_string(snoozed_filename,
+                              'EX: is_person_snoozed unable to read 2 ' +
+                              snoozed_filename)
         if content:
-            try:
-                with open(snoozed_filename, 'w+',
-                          encoding='utf-8') as fp_snooze:
-                    fp_snooze.write(content)
-            except OSError:
-                print('EX: is_person_snoozed unable to write ' +
-                      snoozed_filename)
+            content = content.replace(replace_str, '')
+        if content:
+            save_string(content, snoozed_filename,
+                        'EX: is_person_snoozed unable to write ' +
+                        snoozed_filename)
 
     if text_in_file(snooze_actor + ' ', snoozed_filename):
         return True
@@ -1722,12 +1698,9 @@ def person_snooze(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(snoozed_filename):
         if text_in_file(snooze_actor + ' ', snoozed_filename):
             return
-    try:
-        with open(snoozed_filename, 'a+', encoding='utf-8') as fp_snoozed:
-            fp_snoozed.write(snooze_actor + ' ' +
-                             str(int(time.time())) + '\n')
-    except OSError:
-        print('EX: person_snooze unable to append ' + snoozed_filename)
+    text = snooze_actor + ' ' + str(int(time.time())) + '\n'
+    append_string(text, snoozed_filename,
+                  'EX: person_snooze unable to append ' + snoozed_filename)
 
 
 def person_unsnooze(base_dir: str, nickname: str, domain: str,
@@ -1753,19 +1726,15 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
     except OSError:
         print('EX: person_unsnooze unable to read ' + snoozed_filename)
     if replace_str:
-        content = None
-        try:
-            with open(snoozed_filename, 'r', encoding='utf-8') as fp_snoozed:
-                content = fp_snoozed.read().replace(replace_str, '')
-        except OSError:
-            print('EX: person_unsnooze unable to read 2 ' + snoozed_filename)
+        content = load_string(snoozed_filename,
+                              'EX: person_unsnooze unable to read 2 ' +
+                              snoozed_filename)
+        if content:
+            content = content.replace(replace_str, '')
         if content is not None:
-            try:
-                with open(snoozed_filename, 'w+',
-                          encoding='utf-8') as fp_snooze:
-                    fp_snooze.write(content)
-            except OSError:
-                print('EX: unable to write ' + snoozed_filename)
+            save_string(content, snoozed_filename,
+                        'EX: person_unsnooze unable to write ' +
+                        snoozed_filename)
 
 
 def set_person_notes(base_dir: str, nickname: str, domain: str,
@@ -1780,11 +1749,9 @@ def set_person_notes(base_dir: str, nickname: str, domain: str,
     if not os.path.isdir(notes_dir):
         os.mkdir(notes_dir)
     notes_filename = notes_dir + '/' + handle + '.txt'
-    try:
-        with open(notes_filename, 'w+', encoding='utf-8') as fp_notes:
-            fp_notes.write(notes)
-    except OSError:
-        print('EX: unable to write ' + notes_filename)
+    if not save_string(notes, notes_filename,
+                       'EX: set_person_notes unable to write ' +
+                       notes_filename):
         return False
     return True
 
@@ -1793,18 +1760,16 @@ def get_person_notes(base_dir: str, nickname: str, domain: str,
                      handle: str) -> str:
     """Returns notes about a person
     """
-    person_notes = ''
+    person_notes: str = ''
     person_notes_filename = \
         acct_dir(base_dir, nickname, domain) + \
         '/notes/' + handle + '.txt'
     if os.path.isfile(person_notes_filename):
-        try:
-            with open(person_notes_filename, 'r',
-                      encoding='utf-8') as fp_notes:
-                person_notes = fp_notes.read()
-        except OSError:
-            print('EX: get_person_notes unable to read ' +
-                  person_notes_filename)
+        person_notes = load_string(person_notes_filename,
+                                   'EX: get_person_notes unable to read ' +
+                                   person_notes_filename)
+        if person_notes is None:
+            person_notes = ''
     return person_notes
 
 
@@ -2117,12 +2082,12 @@ def get_person_avatar_url(base_dir: str, person_url: str,
                 continue
         if ext != 'svg':
             return im_path
-        content = ''
-        try:
-            with open(im_filename, 'r', encoding='utf-8') as fp_im:
-                content = fp_im.read()
-        except OSError:
-            print('EX: get_person_avatar_url unable to read ' + im_filename)
+        content: str = \
+            load_string(im_filename,
+                        'EX: get_person_avatar_url unable to read ' +
+                        im_filename)
+        if content is None:
+            content = ''
         if not dangerous_svg(content, False):
             return im_path
 

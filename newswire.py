@@ -55,6 +55,7 @@ from filters import is_filtered
 from session import download_image_any_mime_type
 from content import remove_script
 from data import load_list
+from data import load_string
 
 
 def _remove_cdata(text: str) -> str:
@@ -403,14 +404,11 @@ def load_hashtag_categories(base_dir: str, language: str) -> None:
         if not os.path.isfile(hashtag_categories_filename):
             return
 
-    try:
-        with open(hashtag_categories_filename, 'r',
-                  encoding='utf-8') as fp_cat:
-            xml_str = fp_cat.read()
-            _xml2str_to_hashtag_categories(base_dir, xml_str, 1024, True)
-    except OSError:
-        print('EX: load_hashtag_categories unable to read ' +
-              hashtag_categories_filename)
+    xml_str = load_string(hashtag_categories_filename,
+                          'EX: load_hashtag_categories unable to read ' +
+                          hashtag_categories_filename)
+    if xml_str:
+        _xml2str_to_hashtag_categories(base_dir, xml_str, 1024, True)
 
 
 def _xml2str_to_hashtag_categories(base_dir: str, xml_str: str,
