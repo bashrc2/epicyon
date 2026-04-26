@@ -72,8 +72,6 @@ from bookmarks import send_undo_bookmark_via_server
 from delete import send_delete_via_server
 from person import get_actor_json
 from cache import get_person_from_cache
-from data import save_string
-from data import load_string
 
 
 def _desktop_help() -> None:
@@ -200,8 +198,12 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
         except OSError as ex:
             print('EX: Failed to mark post as read 1 ' + str(ex))
     else:
-        save_string(post_id + '\n', read_posts_filename,
-                    'EX: Failed to mark post as read 2 [ex]')
+        try:
+            with open(read_posts_filename, 'w+',
+                      encoding='utf-8') as fp_read:
+                fp_read.write(post_id + '\n')
+        except OSError as ex:
+            print('EX: Failed to mark post as read 2 ' + str(ex))
 
 
 def _has_read_post(actor: str, post_id: str, post_category: str) -> bool:
@@ -330,10 +332,13 @@ def _desktop_show_banner() -> None:
         banner_filename = 'theme/' + banner_theme + '/banner.txt'
         if not os.path.isfile(banner_filename):
             return
-    banner = load_string(banner_filename,
-                         'EX: unable to read banner file ' + banner_filename)
-    if banner:
-        print(banner + '\n')
+    try:
+        with open(banner_filename, 'r', encoding='utf-8') as fp_banner:
+            banner = fp_banner.read()
+            if banner:
+                print(banner + '\n')
+    except OSError:
+        print('EX: unable to read banner file ' + banner_filename)
 
 
 def _desktop_wait_for_cmd(timeout: int, debug: bool) -> str:

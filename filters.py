@@ -16,7 +16,6 @@ from utils import remove_eol
 from unicodetext import standardize_text
 from unicodetext import remove_inverted_text
 from unicodetext import remove_square_capitals
-from data import append_string
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
@@ -27,8 +26,12 @@ def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
     if os.path.isfile(filters_filename):
         if text_in_file(words, filters_filename):
             return False
-    if not append_string(words + '\n', filters_filename,
-                         'EX: unable to append filters ' + filters_filename):
+    try:
+        with open(filters_filename, 'a+',
+                  encoding='utf-8') as fp_filters:
+            fp_filters.write(words + '\n')
+    except OSError:
+        print('EX: unable to append filters ' + filters_filename)
         return False
     return True
 
@@ -45,8 +48,11 @@ def add_global_filter(base_dir: str, words: str) -> bool:
     if os.path.isfile(filters_filename):
         if text_in_file(words, filters_filename):
             return False
-    if not append_string(words + '\n', filters_filename,
-                         'EX: unable to append filters ' + filters_filename):
+    try:
+        with open(filters_filename, 'a+', encoding='utf-8') as fp_filters:
+            fp_filters.write(words + '\n')
+    except OSError:
+        print('EX: unable to append filters ' + filters_filename)
         return False
     return True
 

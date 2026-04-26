@@ -135,7 +135,6 @@ from poison import load_2grams
 from webapp_post import get_instance_software
 from siteactive import site_is_active
 from siteactive import is_online
-from data import save_string
 
 
 def str2bool(value_str) -> bool:
@@ -1298,9 +1297,12 @@ def _command_options() -> None:
                                     http_prefix, debug,
                                     __version__, argb.language,
                                     signing_priv_key_pem, mitm_servers)
-        if save_string(dot_graph, 'socnet.dot',
-                       'EX: commandline unable to write socnet.dot'):
-            print('Saved to socnet.dot')
+        try:
+            with open('socnet.dot', 'w+', encoding='utf-8') as fp_soc:
+                fp_soc.write(dot_graph)
+                print('Saved to socnet.dot')
+        except OSError:
+            print('EX: commandline unable to write socnet.dot')
         sys.exit()
 
     if argb.postsraw:

@@ -31,7 +31,6 @@ from utils import text_in_file
 from utils import get_group_paths
 from formats import get_image_extensions
 from quote import get_quote_toot_url
-from data import load_string
 
 
 def is_featured_writer(base_dir: str, nickname: str, domain: str) -> bool:
@@ -54,10 +53,13 @@ def is_dormant(base_dir: str, nickname: str, domain: str, actor: str,
     if not os.path.isfile(last_seen_filename):
         return False
 
-    days_since_epoch_str = \
-        load_string(last_seen_filename, 'EX: failed to read last seen ' +
-                    last_seen_filename)
-    if days_since_epoch_str is None:
+    days_since_epoch_str = None
+    try:
+        with open(last_seen_filename, 'r',
+                  encoding='utf-8') as fp_last_seen:
+            days_since_epoch_str = fp_last_seen.read()
+    except OSError:
+        print('EX: failed to read last seen ' + last_seen_filename)
         return False
 
     if days_since_epoch_str:
@@ -83,11 +85,12 @@ def is_editor(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    lines: list[str] = \
-        load_string(editors_file,
-                    'EX: is_editor unable to read ' + editors_file)
-    if lines is not None:
-        lines = lines.split('\n')
+    lines: list[str] = []
+    try:
+        with open(editors_file, 'r', encoding='utf-8') as fp_editors:
+            lines = fp_editors.readlines()
+    except OSError:
+        print('EX: is_editor unable to read ' + editors_file)
 
     if not lines:
         admin_name = get_config_param(base_dir, 'admin')
@@ -113,11 +116,12 @@ def is_artist(base_dir: str, nickname: str) -> bool:
                 return True
         return False
 
-    lines: list[str] = \
-        load_string(artists_file,
-                    'EX: is_artist unable to read ' + artists_file)
-    if lines is not None:
-        lines = lines.split('\n')
+    lines: list[str] = []
+    try:
+        with open(artists_file, 'r', encoding='utf-8') as fp_artists:
+            lines = fp_artists.readlines()
+    except OSError:
+        print('EX: is_artist unable to read ' + artists_file)
 
     if not lines:
         admin_name = get_config_param(base_dir, 'admin')
@@ -154,11 +158,12 @@ def is_memorial_account(base_dir: str, nickname: str) -> bool:
     memorial_file = data_dir(base_dir) + '/memorial'
     if not os.path.isfile(memorial_file):
         return False
-    memorial_list: list[str] = \
-        load_string(memorial_file,
-                    'EX: unable to read ' + memorial_file)
-    if memorial_list is not None:
-        memorial_list = memorial_list.split('\n')
+    memorial_list: list[str] = []
+    try:
+        with open(memorial_file, 'r', encoding='utf-8') as fp_memorial:
+            memorial_list = fp_memorial.read().split('\n')
+    except OSError:
+        print('EX: unable to read ' + memorial_file)
     if nickname in memorial_list:
         return True
     return False
@@ -175,12 +180,12 @@ def is_suspended(base_dir: str, nickname: str) -> bool:
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        lines: list[str] = \
-            load_string(suspended_filename,
-                        'EX: is_suspended unable to read ' +
-                        suspended_filename)
-        if lines is not None:
-            lines = lines.split('\n')
+        lines: list[str] = []
+        try:
+            with open(suspended_filename, 'r', encoding='utf-8') as fp_susp:
+                lines = fp_susp.readlines()
+        except OSError:
+            print('EX: is_suspended unable to read ' + suspended_filename)
 
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
@@ -729,11 +734,12 @@ def is_moderator(base_dir: str, nickname: str) -> bool:
             return True
         return False
 
-    lines: list[str] = \
-        load_string(moderators_file,
-                    'EX: is_moderator unable to read ' + moderators_file)
-    if lines is not None:
-        lines = lines.split('\n')
+    lines: list[str] = []
+    try:
+        with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
+            lines = fp_mod.readlines()
+    except OSError:
+        print('EX: is_moderator unable to read ' + moderators_file)
 
     if not lines:
         admin_name = get_config_param(base_dir, 'admin')

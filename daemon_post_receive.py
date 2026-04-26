@@ -65,7 +65,6 @@ from cache import get_person_from_cache
 from shares import add_shares_to_actor
 from person import get_actor_update_json
 from maps import geocoords_to_osm_link
-from data import save_string
 
 NEW_POST_SUCCESS = 1
 NEW_POST_FAILED = -1
@@ -2029,10 +2028,13 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         # This is then used for active monthly users counts
         last_used_filename = \
             acct_dir(base_dir, nickname, domain) + '/.lastUsed'
-        text = str(int(time.time()))
-        save_string(text, last_used_filename,
-                    'EX: _receive_new_post_process unable to write ' +
-                    last_used_filename)
+        try:
+            with open(last_used_filename, 'w+',
+                      encoding='utf-8') as fp_last:
+                fp_last.write(str(int(time.time())))
+        except OSError:
+            print('EX: _receive_new_post_process unable to write ' +
+                  last_used_filename)
 
     mentions_str = ''
     if fields.get('mentions'):

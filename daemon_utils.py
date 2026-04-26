@@ -78,7 +78,6 @@ from httpheaders import redirect_headers
 from httpheaders import set_headers
 from fitnessFunctions import fitness_performance
 from siteactive import is_online
-from data import load_string
 
 
 def post_to_outbox(self, message_json: {}, version: str,
@@ -905,13 +904,17 @@ def etag_exists(self, media_filename: str) -> bool:
         old_etag = self.headers[etag_header].replace('"', '')
         if os.path.isfile(media_filename + '.etag'):
             # load the etag from file
-            exc_str = 'EX: _etag_exists unable to read ' + \
-                str(media_filename)
-            curr_etag = load_string(media_filename + '.etag', exc_str)
-            if curr_etag:
-                if old_etag == curr_etag:
-                    # The file has not changed
-                    return True
+            curr_etag = ''
+            try:
+                with open(media_filename + '.etag', 'r',
+                          encoding='utf-8') as fp_media:
+                    curr_etag = fp_media.read()
+            except OSError:
+                print('EX: _etag_exists unable to read ' +
+                      str(media_filename))
+            if curr_etag and old_etag == curr_etag:
+                # The file has not changed
+                return True
     return False
 
 

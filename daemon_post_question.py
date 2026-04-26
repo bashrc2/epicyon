@@ -28,7 +28,6 @@ from languages import get_understood_languages
 from posts import create_direct_message_post
 from daemon_utils import post_to_outbox
 from inbox import populate_replies
-from data import append_string
 
 
 def receive_vote(self, calling_domain: str, cookie: str,
@@ -290,9 +289,13 @@ def _send_reply_to_question(self, base_dir: str,
                                      max_replies,
                                      debug)
                     # record the vote
-                    append_string(message_id + '\n', votes_filename,
-                                  'EX: unable to write vote ' +
-                                  votes_filename)
+                    try:
+                        with open(votes_filename, 'a+',
+                                  encoding='utf-8') as fp_votes:
+                            fp_votes.write(message_id + '\n')
+                    except OSError:
+                        print('EX: unable to write vote ' +
+                              votes_filename)
 
                     # ensure that the cached post is removed if it exists,
                     # so that it then will be recreated
