@@ -9,6 +9,9 @@ __module_group__ = "Core"
 
 import os
 from utils import acct_dir
+from data import load_string
+from data import save_string
+from data import append_string
 
 
 def set_pet_name(base_dir: str, nickname: str, domain: str,
@@ -28,13 +31,11 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
 
     # does this entry already exist?
     if os.path.isfile(petnames_filename):
-        petnames_str = ''
-        try:
-            with open(petnames_filename, 'r',
-                      encoding='utf-8') as fp_petnames:
-                petnames_str = fp_petnames.read()
-        except OSError:
-            print('EX: set_pet_name unable to read ' + petnames_filename)
+        petnames_str: str = \
+            load_string(petnames_filename,
+                        'EX: set_pet_name unable to read ' + petnames_filename)
+        if petnames_str is None:
+            petnames_str = ''
         if entry in petnames_str:
             return True
         if ' ' + handle + '\n' in petnames_str:
@@ -46,30 +47,22 @@ def set_pet_name(base_dir: str, nickname: str, domain: str,
                 else:
                     new_petnames_str += entry
             # save the updated petnames file
-            try:
-                with open(petnames_filename, 'w+',
-                          encoding='utf-8') as fp_petnames:
-                    fp_petnames.write(new_petnames_str)
-            except OSError:
-                print('EX: set_pet_name unable to save ' + petnames_filename)
+            if not save_string(new_petnames_str, petnames_filename,
+                               'EX: set_pet_name unable to save ' +
+                               petnames_filename):
                 return False
             return True
         # entry does not exist in the petnames file
-        try:
-            with open(petnames_filename, 'a+',
-                      encoding='utf-8') as fp_petnames:
-                fp_petnames.write(entry)
-        except OSError:
-            print('EX: set_pet_name unable to append ' + petnames_filename)
+        if not append_string(entry, petnames_filename,
+                             'EX: set_pet_name unable to append ' +
+                             petnames_filename):
             return False
         return True
 
     # first entry
-    try:
-        with open(petnames_filename, 'w+', encoding='utf-8') as fp_petnames:
-            fp_petnames.write(entry)
-    except OSError:
-        print('EX: set_pet_name unable to write ' + petnames_filename)
+    if not save_string(entry, petnames_filename,
+                       'EX: set_pet_name unable to write ' +
+                       petnames_filename):
         return False
     return True
 
@@ -86,12 +79,11 @@ def get_pet_name(base_dir: str, nickname: str, domain: str,
 
     if not os.path.isfile(petnames_filename):
         return ''
-    petnames_str = ''
-    try:
-        with open(petnames_filename, 'r', encoding='utf-8') as fp_petnames:
-            petnames_str = fp_petnames.read()
-    except OSError:
-        print('EX: get_pet_name unable to read ' + petnames_filename)
+    petnames_str: str = \
+        load_string(petnames_filename,
+                    'EX: get_pet_name unable to read ' + petnames_filename)
+    if petnames_str is None:
+        petnames_str = ''
     if ' ' + handle + '\n' in petnames_str:
         petnames_list = petnames_str.split('\n')
         for pet in petnames_list:
@@ -117,12 +109,12 @@ def _get_pet_name_handle(base_dir: str, nickname: str, domain: str,
 
     if not os.path.isfile(petnames_filename):
         return ''
-    petnames_str = ''
-    try:
-        with open(petnames_filename, 'r', encoding='utf-8') as fp_petnames:
-            petnames_str = fp_petnames.read()
-    except OSError:
-        print('EX: _get_pet_name_handle unable to read ' + petnames_filename)
+    petnames_str: str = \
+        load_string(petnames_filename,
+                    'EX: _get_pet_name_handle unable to read ' +
+                    petnames_filename)
+    if petnames_str is None:
+        petnames_str = ''
     if petname + ' ' in petnames_str:
         petnames_list = petnames_str.split('\n')
         for pet in petnames_list:

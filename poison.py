@@ -11,6 +11,7 @@ __module_group__ = "Core"
 import os
 import random
 from random import randint
+from data import load_string
 
 common_nouns = (
     "time",
@@ -1979,11 +1980,10 @@ def load_dictionary(base_dir: str) -> []:
         return []
 
     words: list[str] = []
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_dict:
-            words = fp_dict.read().split('\n')
-    except OSError:
-        print('EX: unable to load dictionary ' + filename)
+    words_str = load_string(filename,
+                            'EX: unable to load dictionary ' + filename)
+    if words_str:
+        words = words_str.split('\n')
     return words
 
 
@@ -1998,11 +1998,10 @@ def load_2grams(base_dir: str) -> {}:
 
     twograms = {}
     lines: list[str] = []
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_dict:
-            lines = fp_dict.read().split('\n')
-    except OSError:
-        print('EX: unable to load 2-grams ' + filename)
+    lines_str = load_string(filename,
+                            'EX: unable to load 2-grams ' + filename)
+    if lines_str:
+        lines = lines_str.split('\n')
     for line_str in lines:
         words = line_str.split('\t')
         if len(words) != 3:
