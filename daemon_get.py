@@ -220,7 +220,6 @@ from daemon_get_links import edit_links2
 from daemon_get_login import redirect_to_login_screen
 from daemon_get_login import show_login_screen
 from poison import html_poisoned
-from data import load_string
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -6256,8 +6255,12 @@ def daemon_http_get(self) -> None:
         return
 
     if os.path.isfile(filename):
-        content = load_string(filename,
-                              'EX: unable to read file ' + filename)
+        content = None
+        try:
+            with open(filename, 'r', encoding='utf-8') as fp_rfile:
+                content = fp_rfile.read()
+        except OSError:
+            print('EX: unable to read file ' + filename)
         if content:
             try:
                 content_json = json.loads(content)
@@ -6497,10 +6500,13 @@ def _get_ontology(self, calling_domain: str,
         if ontology_str.endswith('.json'):
             ontology_file_type = 'application/ld+json'
         if os.path.isfile(ontology_filename):
-            ontology_file = \
-                load_string(ontology_filename,
-                            'EX: unable to read ontology ' +
-                            ontology_filename)
+            ontology_file = None
+            try:
+                with open(ontology_filename, 'r',
+                          encoding='utf-8') as fp_ont:
+                    ontology_file = fp_ont.read()
+            except OSError:
+                print('EX: unable to read ontology ' + ontology_filename)
             if ontology_file:
                 ontology_file = \
                     ontology_file.replace('static.datafoodconsortium.org',

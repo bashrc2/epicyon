@@ -23,8 +23,6 @@ from media import path_is_video
 from media import path_is_audio
 from daemon_utils import get_user_agent
 from daemon_utils import log_epicyon_instances
-from data import load_string
-from data import save_string
 
 
 def daemon_http_head(self) -> None:
@@ -120,11 +118,13 @@ def daemon_http_head(self) -> None:
                     last_modified_time.strftime(time_format_str)
                 media_tag_filename = media_filename + '.etag'
                 if os.path.isfile(media_tag_filename):
-                    etag_str = load_string(media_tag_filename,
-                                           'EX: do_HEAD unable to read ' +
-                                           media_tag_filename)
-                    if etag_str:
-                        etag = etag_str
+                    try:
+                        with open(media_tag_filename, 'r',
+                                  encoding='utf-8') as fp_efile:
+                            etag = fp_efile.read()
+                    except OSError:
+                        print('EX: do_HEAD unable to read ' +
+                              media_tag_filename)
                 else:
                     media_binary = None
                     try:
@@ -135,9 +135,13 @@ def daemon_http_head(self) -> None:
                               media_filename)
                     if media_binary:
                         etag = md5(media_binary).hexdigest()  # nosec
-                        save_string(etag, media_tag_filename,
-                                    'EX: do_HEAD unable to write ' +
-                                    media_tag_filename)
+                        try:
+                            with open(media_tag_filename, 'w+',
+                                      encoding='utf-8') as fp_efile:
+                                fp_efile.write(etag)
+                        except OSError:
+                            print('EX: do_HEAD unable to write ' +
+                                  media_tag_filename)
             else:
                 http_404(self, 151)
                 return

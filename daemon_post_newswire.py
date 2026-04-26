@@ -26,7 +26,6 @@ from timeFunctions import date_from_string_format
 from httpheaders import redirect_headers
 from content import extract_text_fields_in_post
 from content import load_dogwhistles
-from data import save_string
 
 
 def newswire_update(self, calling_domain: str, cookie: str,
@@ -117,14 +116,22 @@ def newswire_update(self, calling_domain: str, cookie: str,
                     if not newswire_str.endswith('\n'):
                         newswire_str += '\n'
                 newswire_str += fields['newNewswireFeed'] + '\n'
-            save_string(newswire_str, newswire_filename,
-                        'EX: unable to write ' + newswire_filename)
+            try:
+                with open(newswire_filename, 'w+',
+                          encoding='utf-8') as fp_news:
+                    fp_news.write(newswire_str)
+            except OSError:
+                print('EX: unable to write ' + newswire_filename)
         else:
             if fields.get('newNewswireFeed'):
                 # the text area is empty but there is a new feed added
                 newswire_str = fields['newNewswireFeed'] + '\n'
-                save_string(newswire_str, newswire_filename,
-                            'EX: unable to write ' + newswire_filename)
+                try:
+                    with open(newswire_filename, 'w+',
+                              encoding='utf-8') as fp_news:
+                        fp_news.write(newswire_str)
+                except OSError:
+                    print('EX: unable to write ' + newswire_filename)
             else:
                 # text area has been cleared and there is no new feed
                 if os.path.isfile(newswire_filename):
@@ -138,10 +145,13 @@ def newswire_update(self, calling_domain: str, cookie: str,
         filter_newswire_filename = \
             data_dir(base_dir) + '/' + 'news@' + domain + '/filters.txt'
         if fields.get('filteredWordsNewswire'):
-            save_string(fields['filteredWordsNewswire'],
-                        filter_newswire_filename,
-                        'EX: newswire_update unable to write ' +
-                        filter_newswire_filename)
+            try:
+                with open(filter_newswire_filename, 'w+',
+                          encoding='utf-8') as fp_filter:
+                    fp_filter.write(fields['filteredWordsNewswire'])
+            except OSError:
+                print('EX: newswire_update unable to write ' +
+                      filter_newswire_filename)
         else:
             if os.path.isfile(filter_newswire_filename):
                 try:
@@ -153,26 +163,36 @@ def newswire_update(self, calling_domain: str, cookie: str,
         # save dogwhistle words list
         dogwhistles_filename = data_dir(base_dir) + '/dogwhistles.txt'
         if fields.get('dogwhistleWords'):
-            save_string(fields['dogwhistleWords'],
-                        dogwhistles_filename,
-                        'EX: newswire_update unable to write 2 ' +
-                        dogwhistles_filename)
+            try:
+                with open(dogwhistles_filename, 'w+',
+                          encoding='utf-8') as fp_dogwhistles:
+                    fp_dogwhistles.write(fields['dogwhistleWords'])
+            except OSError:
+                print('EX: newswire_update unable to write 2 ' +
+                      dogwhistles_filename)
             self.server.dogwhistles = \
                 load_dogwhistles(dogwhistles_filename)
         else:
             # save an empty file
-            save_string('', dogwhistles_filename,
-                        'EX: newswire_update unable unable to write 3 ' +
-                        dogwhistles_filename)
+            try:
+                with open(dogwhistles_filename, 'w+',
+                          encoding='utf-8') as fp_dogwhistles:
+                    fp_dogwhistles.write('')
+            except OSError:
+                print('EX: newswire_update unable unable to write 3 ' +
+                      dogwhistles_filename)
             self.server.dogwhistles = {}
 
         # save news tagging rules
         hashtag_rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
         if fields.get('hashtagRulesList'):
-            save_string(fields['hashtagRulesList'],
-                        hashtag_rules_filename,
-                        'EX: newswire_update unable to write 4 ' +
-                        hashtag_rules_filename)
+            try:
+                with open(hashtag_rules_filename, 'w+',
+                          encoding='utf-8') as fp_rules:
+                    fp_rules.write(fields['hashtagRulesList'])
+            except OSError:
+                print('EX: newswire_update unable to write 4 ' +
+                      hashtag_rules_filename)
         else:
             if os.path.isfile(hashtag_rules_filename):
                 try:
@@ -186,9 +206,13 @@ def newswire_update(self, calling_domain: str, cookie: str,
             newswire_trusted = fields['trustedNewswire']
             if not newswire_trusted.endswith('\n'):
                 newswire_trusted += '\n'
-            save_string(newswire_trusted, newswire_tusted_filename,
-                        'EX: newswire_update unable to write 5 ' +
-                        newswire_tusted_filename)
+            try:
+                with open(newswire_tusted_filename, 'w+',
+                          encoding='utf-8') as fp_trust:
+                    fp_trust.write(newswire_trusted)
+            except OSError:
+                print('EX: newswire_update unable to write 5 ' +
+                      newswire_tusted_filename)
         else:
             if os.path.isfile(newswire_tusted_filename):
                 try:
@@ -291,9 +315,13 @@ def citations_update(self, calling_domain: str, cookie: str,
                 citations_str += citation_date + '\n'
             # save citations dates, so that they can be added when
             # reloading the newblog screen
-            save_string(citations_str, citations_filename,
-                        'EX: citations_update unable to write ' +
-                        citations_filename)
+            try:
+                with open(citations_filename, 'w+',
+                          encoding='utf-8') as fp_cit:
+                    fp_cit.write(citations_str)
+            except OSError:
+                print('EX: citations_update unable to write ' +
+                      citations_filename)
 
     # redirect back to the default timeline
     redirect_headers(self, actor_str + '/newblog',

@@ -49,7 +49,6 @@ from blocking import blocked_quote_toots_remove
 from notifyOnPost import add_notify_on_post
 from notifyOnPost import remove_notify_on_post
 from flags import is_moderator
-from data import save_string
 
 
 def _person_options_page_number(options_confirm_params: str) -> int:
@@ -612,9 +611,16 @@ def _person_options_post_to_news(self, options_confirm_params: str,
             else:
                 if os.path.isdir(account_dir):
                     nw_filename = newswire_blocked_filename
-                    if save_string('\n', nw_filename,
-                                   'EX: _person_options_post_to_news unable ' +
-                                   'to write ' + nw_filename + ' [ex]'):
+                    nw_written = False
+                    try:
+                        with open(nw_filename, 'w+',
+                                  encoding='utf-8') as fp_no:
+                            fp_no.write('\n')
+                            nw_written = True
+                    except OSError as ex:
+                        print('EX: _person_options_post_to_news unable ' +
+                              'to write ' + nw_filename + ' ' + str(ex))
+                    if nw_written:
                         refresh_newswire(base_dir)
         users_path_str = \
             users_path + '/' + default_timeline + \
@@ -665,10 +671,17 @@ def _person_options_post_to_features(self, options_confirm_params: str,
             else:
                 if os.path.isdir(account_dir):
                     feat_filename = features_blocked_filename
-                    if save_string('\n', feat_filename,
-                                   'EX: _person_options_post_to_features ' +
-                                   'unable to write ' + feat_filename +
-                                   ' [ex]'):
+                    feat_written = False
+                    try:
+                        with open(feat_filename, 'w+',
+                                  encoding='utf-8') as fp_no:
+                            fp_no.write('\n')
+                            feat_written = True
+                    except OSError as ex:
+                        print('EX: _person_options_post_to_features ' +
+                              'unable to write ' + feat_filename +
+                              ' ' + str(ex))
+                    if feat_written:
                         refresh_newswire(base_dir)
         users_path_str = \
             users_path + '/' + default_timeline + \
@@ -718,9 +731,13 @@ def _person_options_mod_news(self, options_confirm_params: str,
             else:
                 if os.path.isdir(account_dir):
                     nw_filename = newswire_mod_filename
-                    save_string('\n', nw_filename,
-                                'EX: _person_options_mod_news ' +
-                                'unable to write ' + nw_filename)
+                    try:
+                        with open(nw_filename, 'w+',
+                                  encoding='utf-8') as fp_mod:
+                            fp_mod.write('\n')
+                    except OSError:
+                        print('EX: _person_options_mod_news ' +
+                              'unable to write ' + nw_filename)
         users_path_str = \
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)

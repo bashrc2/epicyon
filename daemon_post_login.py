@@ -36,8 +36,6 @@ from flags import is_system_account
 from person import person_upgrade_actor
 from person import activate_account2
 from person import register_account
-from data import load_string
-from data import save_string
 
 
 def post_login_screen(self, calling_domain: str, cookie: str,
@@ -182,15 +180,21 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                 acct_dir(base_dir, login_nickname, domain) + '/.salt'
             salt = create_password(32)
             if os.path.isfile(salt_filename):
-                salt_str = load_string(salt_filename,
-                                       'EX: Unable to read salt for ' +
-                                       login_nickname + ' [ex]')
-                if salt_str:
-                    salt = salt_str
+                try:
+                    with open(salt_filename, 'r',
+                              encoding='utf-8') as fp_salt:
+                        salt = fp_salt.read()
+                except OSError as ex:
+                    print('EX: Unable to read salt for ' +
+                          login_nickname + ' ' + str(ex))
             else:
-                save_string(salt, salt_filename,
-                            'EX: Unable to save salt for ' +
-                            login_nickname + ' [ex]')
+                try:
+                    with open(salt_filename, 'w+',
+                              encoding='utf-8') as fp_salt:
+                        fp_salt.write(salt)
+                except OSError as ex:
+                    print('EX: Unable to save salt for ' +
+                          login_nickname + ' ' + str(ex))
 
             token_text = login_nickname + login_password + salt
             token = sha256(token_text.encode('utf-8')).hexdigest()
@@ -198,9 +202,13 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             login_handle = login_nickname + '@' + domain
             token_filename = \
                 data_dir(base_dir) + '/' + login_handle + '/.token'
-            save_string(token, token_filename,
-                        'EX: Unable to save token for ' +
-                        login_nickname + ' [ex]')
+            try:
+                with open(token_filename, 'w+',
+                          encoding='utf-8') as fp_tok:
+                    fp_tok.write(token)
+            except OSError as ex:
+                print('EX: Unable to save token for ' +
+                      login_nickname + ' ' + str(ex))
 
             dir_str = data_dir(base_dir)
             person_upgrade_actor(base_dir, None,
