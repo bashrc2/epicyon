@@ -46,6 +46,7 @@ from session import get_json_valid
 from session import post_json
 from followerSync import remove_followers_sync
 from data import load_string
+from data import append_string
 from data import load_list
 from data import save_string
 
@@ -347,21 +348,13 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(unfollowed_filename):
         if not text_in_file(handle_to_unfollow_lower,
                             unfollowed_filename, False):
-            try:
-                with open(unfollowed_filename, 'a+',
-                          encoding='utf-8') as fp_unfoll:
-                    fp_unfoll.write(handle_to_unfollow + '\n')
-            except OSError:
-                print('EX: unfollow_account unable to append ' +
-                      unfollowed_filename)
+            append_string(handle_to_unfollow + '\n', unfollowed_filename,
+                          'EX: unfollow_account unable to append ' +
+                          unfollowed_filename)
     else:
-        try:
-            with open(unfollowed_filename, 'w+',
-                      encoding='utf-8') as fp_unfoll:
-                fp_unfoll.write(handle_to_unfollow + '\n')
-        except OSError:
-            print('EX: unfollow_account unable to write ' +
-                  unfollowed_filename)
+        save_string(handle_to_unfollow + '\n', unfollowed_filename,
+                    'EX: unfollow_account unable to write ' +
+                    unfollowed_filename)
 
     return True
 
@@ -656,13 +649,11 @@ def store_follow_request(base_dir: str,
     if os.path.isfile(followers_filename):
         already_following = False
 
-        followers_str = ''
-        try:
-            with open(followers_filename, 'r',
-                      encoding='utf-8') as fp_foll:
-                followers_str = fp_foll.read()
-        except OSError:
-            print('EX: store_follow_request ' + followers_filename)
+        followers_str = \
+            load_string(followers_filename,
+                        'EX: store_follow_request ' + followers_filename)
+        if followers_str is None:
+            followers_str = ''
 
         if approve_handle in followers_str:
             already_following = True
@@ -708,23 +699,18 @@ def store_follow_request(base_dir: str,
 
     if os.path.isfile(approve_follows_filename):
         if not text_in_file(approve_handle, approve_follows_filename):
-            try:
-                with open(approve_follows_filename, 'a+',
-                          encoding='utf-8') as fp_approve:
-                    fp_approve.write(approve_handle_stored + '\n')
-            except OSError:
-                print('EX: store_follow_request 2 ' + approve_follows_filename)
+            append_string(approve_handle_stored + '\n',
+                          approve_follows_filename,
+                          'EX: store_follow_request 2 ' +
+                          approve_follows_filename)
         else:
             if debug:
                 print('DEBUG: ' + approve_handle_stored +
                       ' is already awaiting approval')
     else:
-        try:
-            with open(approve_follows_filename, 'w+',
-                      encoding='utf-8') as fp_approve:
-                fp_approve.write(approve_handle_stored + '\n')
-        except OSError:
-            print('EX: store_follow_request 3 ' + approve_follows_filename)
+        save_string(approve_handle_stored + '\n',
+                    approve_follows_filename,
+                    'EX: store_follow_request 3 ' + approve_follows_filename)
 
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
@@ -957,23 +943,15 @@ def send_follow_request(session, base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/unfollowed.txt'
     if os.path.isfile(unfollowed_filename):
         if text_in_file(follow_handle, unfollowed_filename):
-            unfollowed_file = None
-            try:
-                with open(unfollowed_filename, 'r',
-                          encoding='utf-8') as fp_unfoll:
-                    unfollowed_file = fp_unfoll.read()
-            except OSError:
-                print('EX: send_follow_request ' + unfollowed_filename)
+            unfollowed_file = \
+                load_string(unfollowed_filename,
+                            'EX: send_follow_request ' + unfollowed_filename)
             if unfollowed_file:
                 unfollowed_file = \
                     unfollowed_file.replace(follow_handle + '\n', '')
-                try:
-                    with open(unfollowed_filename, 'w+',
-                              encoding='utf-8') as fp_unfoll:
-                        fp_unfoll.write(unfollowed_file)
-                except OSError:
-                    print('EX: send_follow_request unable to write ' +
-                          unfollowed_filename)
+                save_string(unfollowed_file, unfollowed_filename,
+                            'EX: send_follow_request unable to write ' +
+                            unfollowed_filename)
 
     new_follow_json = {
         "@context": [
@@ -1554,13 +1532,11 @@ def remove_follower(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if not os.path.isfile(followers_filename):
         return False
-    followers_str = ''
-    try:
-        with open(followers_filename, 'r', encoding='utf-8') as fp_foll:
-            followers_str = fp_foll.read()
-    except OSError:
-        print('EX: remove_follower unable to read followers ' +
-              followers_filename)
+    followers_str = \
+        load_string(followers_filename,
+                    'EX: remove_follower unable to read followers ' +
+                    followers_filename)
+    if followers_str is None:
         return False
     followers_list = followers_str.split('\n')
 
@@ -1577,12 +1553,9 @@ def remove_follower(base_dir: str,
             found = True
     if not found:
         return False
-    try:
-        with open(followers_filename, 'w+', encoding='utf-8') as fp_foll:
-            fp_foll.write(new_followers_str)
-    except OSError:
-        print('EX: remove_follower unable to write followers ' +
-              followers_filename)
+    save_string(new_followers_str, followers_filename,
+                'EX: remove_follower unable to write followers ' +
+                followers_filename)
     return True
 
 
