@@ -4144,11 +4144,6 @@ def check_bad_path(path: str):
     """
     path_lower = path.lower()
 
-    if '%' in path:
-        sections = path.split('%')
-        if len(sections) > 2:
-            return True
-
     bad_strings = [
         '..', '/.', '%2e%2e', '%252e%252e', '/sftp.', '/sftp-', '/statistics',
         '/config/', 'settings.', 'credentials', '/packs/', '/backend/',
