@@ -26,6 +26,8 @@ from utils import is_yggdrasil_url
 from formats import image_mime_types_dict
 from mitm import detect_mitm
 from httpsig import create_signed_header
+from data import append_string
+from data import save_string
 
 
 def create_session(proxy_type: str):
@@ -562,13 +564,14 @@ def site_is_verified(session, base_dir: str, http_prefix: str,
         write_type = 'a+'
         if not verified_file_exists:
             write_type = 'w+'
-        try:
-            with open(verified_sites_filename, write_type,
-                      encoding='utf-8') as fp_verified:
-                fp_verified.write(url + '\n')
-        except OSError:
-            print('EX: Verified sites could not be updated ' +
-                  verified_sites_filename)
+        if write_type == 'a+':
+            append_string(url + '\n', verified_sites_filename,
+                          'EX: Verified sites could not be updated 1 ' +
+                          verified_sites_filename)
+        else:
+            save_string(url + '\n', verified_sites_filename,
+                        'EX: Verified sites could not be updated 2 ' +
+                        verified_sites_filename)
     return verified
 
 

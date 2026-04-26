@@ -33,6 +33,8 @@ from utils import get_actor_from_post
 from content import html_replace_quote_marks
 from content import html_replace_inline_quotes
 from data import load_list
+from data import load_string
+from data import save_string
 
 SPEAKER_REMOVE_CHARS = ('.\n', '. ', ',', ';', '?', '!')
 
@@ -560,12 +562,11 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     liked_by = ''
     like_filename = accounts_dir + '/.newLike'
     if os.path.isfile(like_filename):
-        try:
-            with open(like_filename, 'r', encoding='utf-8') as fp_like:
-                liked_by = fp_like.read()
-        except OSError:
-            print('EX: _post_to_speaker_json unable to read 2 ' +
-                  like_filename)
+        liked_by = load_string(like_filename,
+                               'EX: _post_to_speaker_json unable to read 2 ' +
+                               like_filename)
+        if liked_by is None:
+            liked_by = ''
     calendar_filename = accounts_dir + '/.newCalendar'
     post_cal = os.path.isfile(calendar_filename)
     share_filename = accounts_dir + '/.newShare'
@@ -622,8 +623,5 @@ def update_speaker(base_dir: str, http_prefix: str,
                                speaker_json['say'],
                                system_language,
                                gender, box_name)
-    try:
-        with open(cached_ssml_filename, 'w+', encoding='utf-8') as fp_ssml:
-            fp_ssml.write(ssml_str)
-    except OSError:
-        print('EX: unable to write ssml ' + cached_ssml_filename)
+    save_string(ssml_str, cached_ssml_filename,
+                'EX: unable to write ssml ' + cached_ssml_filename)

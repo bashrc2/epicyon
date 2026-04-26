@@ -39,6 +39,7 @@ from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from posts import get_person_box
 from data import load_list
+from data import save_string
 
 # the maximum number of reactions from individual actors which can be
 # added to a post. Hence an adversary can't bombard you with sockpuppet
@@ -519,12 +520,8 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
             return
     else:
         line = str(1).zfill(16) + ' ' + emoji_content + '\n'
-        try:
-            with open(common_reactions_filename, 'w+',
-                      encoding='utf-8') as fp_react:
-                fp_react.write(line)
-        except OSError:
-            print('EX: error writing common reactions 2')
+        if not save_string(line, common_reactions_filename,
+                           'EX: error writing common reactions 2'):
             return
 
 

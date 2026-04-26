@@ -60,6 +60,8 @@ from threads import begin_thread
 from threads import thread_with_trace
 from cache import remove_person_from_cache
 from cache import store_person_in_cache
+from data import save_string
+from data import load_string
 
 
 def _load_dfc_ids(base_dir: str, system_language: str,
@@ -318,15 +320,15 @@ def _indicate_new_share_available(base_dir: str, http_prefix: str,
                     continue
             local_actor = \
                 local_actor_url(http_prefix, account_nickname, domain_full)
-            try:
-                with open(new_share_file, 'w+', encoding='utf-8') as fp_new:
-                    if shares_file_type == 'shares':
-                        fp_new.write(local_actor + '/tlshares')
-                    else:
-                        fp_new.write(local_actor + '/tlwanted')
-            except OSError:
-                print('EX: _indicate_new_share_available unable to write ' +
-                      str(new_share_file))
+            exc_text = \
+                'EX: _indicate_new_share_available unable to write ' + \
+                str(new_share_file)
+            if shares_file_type == 'shares':
+                save_string(local_actor + '/tlshares', new_share_file,
+                            exc_text)
+            else:
+                save_string(local_actor + '/tlwanted', new_share_file,
+                            exc_text)
         break
 
 
@@ -1828,15 +1830,14 @@ def _generate_next_shares_token_update(base_dir: str,
     token_update_filename = token_update_dir + '/.tokenUpdate'
     next_update_sec = None
     if os.path.isfile(token_update_filename):
-        try:
-            with open(token_update_filename, 'r', encoding='utf-8') as fp_tok:
-                next_update_str = fp_tok.read()
-                if next_update_str:
-                    if next_update_str.isdigit():
-                        next_update_sec = int(next_update_str)
-        except OSError:
-            print('EX: _generate_next_shares_token_update unable to read ' +
-                  token_update_filename)
+        next_update_str = \
+            load_string(token_update_filename,
+                        'EX: _generate_next_shares_token_update ' +
+                        'unable to read ' +
+                        token_update_filename)
+        if next_update_str:
+            if next_update_str.isdigit():
+                next_update_sec = int(next_update_str)
     curr_time = get_current_time_int()
     updated = False
     if next_update_sec:
@@ -1851,12 +1852,10 @@ def _generate_next_shares_token_update(base_dir: str,
         next_update_sec = curr_time + next_update_interval
         updated = True
     if updated:
-        try:
-            with open(token_update_filename, 'w+', encoding='utf-8') as fp_tok:
-                fp_tok.write(str(next_update_sec))
-        except OSError:
-            print('EX: _generate_next_shares_token_update unable to write' +
-                  token_update_filename)
+        text = str(next_update_sec)
+        save_string(text, token_update_filename,
+                    'EX: _generate_next_shares_token_update unable to write' +
+                    token_update_filename)
 
 
 def _regenerate_shares_token(base_dir: str, domain_full: str,
@@ -1880,15 +1879,13 @@ def _regenerate_shares_token(base_dir: str, domain_full: str,
     if not os.path.isfile(token_update_filename):
         return
     next_update_sec = None
-    try:
-        with open(token_update_filename, 'r', encoding='utf-8') as fp_tok:
-            next_update_str = fp_tok.read()
-            if next_update_str:
-                if next_update_str.isdigit():
-                    next_update_sec = int(next_update_str)
-    except OSError:
-        print('EX: _regenerate_shares_token unable to read ' +
-              token_update_filename)
+    next_update_str = \
+        load_string(token_update_filename,
+                    'EX: _regenerate_shares_token unable to read ' +
+                    token_update_filename)
+    if next_update_str:
+        if next_update_str.isdigit():
+            next_update_sec = int(next_update_str)
     if not next_update_sec:
         return
     curr_time = get_current_time_int()

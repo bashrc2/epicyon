@@ -22,6 +22,8 @@ from utils import remove_html
 from formats import get_image_extensions
 from timeFunctions import date_epoch
 from timeFunctions import date_from_string_format
+from data import save_string
+from data import load_string
 
 
 def get_book_link_from_content(content: str) -> str:
@@ -407,13 +409,9 @@ def _update_recent_books_list(base_dir: str, book_id: str,
             print('WARN: Failed to write entry to recent books ' +
                   recent_books_filename + ' ' + str(ex))
     else:
-        try:
-            with open(recent_books_filename, 'w+',
-                      encoding='utf-8') as fp_recent:
-                fp_recent.write(book_id + '\n')
-        except OSError:
-            print('EX: unable to write recent books ' +
-                  recent_books_filename)
+        save_string(book_id + '\n', recent_books_filename,
+                    'EX: unable to write recent books ' +
+                    recent_books_filename)
 
 
 def _deduplicate_recent_books_list(base_dir: str,
@@ -426,13 +424,12 @@ def _deduplicate_recent_books_list(base_dir: str,
 
     # load recent books as a list
     recent_lines: list[str] = []
-    try:
-        with open(recent_books_filename, 'r',
-                  encoding='utf-8') as fp_recent:
-            recent_lines = fp_recent.read().split('\n')
-    except OSError as ex:
-        print('WARN: Failed to read recent books trim ' +
-              recent_books_filename + ' ' + str(ex))
+    recent_lines_str = \
+        load_string(recent_books_filename,
+                    'WARN: Failed to read recent books trim ' +
+                    recent_books_filename + ' [ex]')
+    if recent_lines_str:
+        recent_lines = recent_lines_str.split('\n')
 
     # deduplicate the list
     new_recent_lines: list[str] = []
@@ -444,26 +441,18 @@ def _deduplicate_recent_books_list(base_dir: str,
         result = ''
         for line in recent_lines:
             result += line + '\n'
-        try:
-            with open(recent_books_filename, 'w+',
-                      encoding='utf-8') as fp_recent:
-                fp_recent.write(result)
-        except OSError:
-            print('EX: unable to deduplicate recent books ' +
-                  recent_books_filename)
+        save_string(result, recent_books_filename,
+                    'EX: unable to deduplicate recent books ' +
+                    recent_books_filename)
 
     # remove excess lines from the list
     if len(recent_lines) > max_recent_books:
         result = ''
         for ctr in range(max_recent_books):
             result += recent_lines[ctr] + '\n'
-        try:
-            with open(recent_books_filename, 'w+',
-                      encoding='utf-8') as fp_recent:
-                fp_recent.write(result)
-        except OSError:
-            print('EX: unable to trim recent books ' +
-                  recent_books_filename)
+        save_string(result, recent_books_filename,
+                    'EX: unable to trim recent books ' +
+                    recent_books_filename)
 
 
 def store_book_events(base_dir: str,

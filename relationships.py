@@ -22,6 +22,8 @@ from utils import is_account_dir
 from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import load_json
+from data import load_string
+from data import save_string
 
 
 def get_moved_accounts(base_dir: str, nickname: str, domain: str,
@@ -31,27 +33,23 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
     moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
     if not os.path.isfile(moved_accounts_filename):
         return {}
-    refollow_str = ''
-    try:
-        with open(moved_accounts_filename, 'r',
-                  encoding='utf-8') as fp_refollow:
-            refollow_str = fp_refollow.read()
-    except OSError:
-        print('EX: get_moved_accounts unable to read 1 ' +
-              moved_accounts_filename)
+    refollow_str = \
+        load_string(moved_accounts_filename,
+                    'EX: get_moved_accounts unable to read 1 ' +
+                    moved_accounts_filename)
+    if refollow_str is None:
+        refollow_str = ''
     refollow_list = refollow_str.split('\n')
     refollow_dict = {}
 
     follow_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + filename
-    follow_str = ''
-    try:
-        with open(follow_filename, 'r',
-                  encoding='utf-8') as fp_follow:
-            follow_str = fp_follow.read()
-    except OSError:
-        print('EX: get_moved_accounts unable to read 2 ' +
-              follow_filename)
+    follow_str = \
+        load_string(follow_filename,
+                    'EX: get_moved_accounts unable to read 2 ' +
+                    follow_filename)
+    if follow_str is None:
+        follow_str = ''
     follow_list = follow_str.split('\n')
 
     ctr = 0
@@ -248,14 +246,11 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
             following_filename = dir_str + '/' + account + '/following.txt'
             if not os.path.isfile(following_filename):
                 continue
-            following_str = ''
-            try:
-                with open(following_filename, 'r',
-                          encoding='utf-8') as fp_foll:
-                    following_str = fp_foll.read()
-            except OSError:
-                print('EX: update_moved_actors unable to read ' +
-                      following_filename)
+            following_str = \
+                load_string(following_filename,
+                            'EX: update_moved_actors unable to read ' +
+                            following_filename)
+            if following_str is None:
                 continue
             following_list = following_str.split('\n')
             for handle in following_list:
@@ -318,13 +313,9 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
                       moved_accounts_filename)
         return
 
-    try:
-        with open(moved_accounts_filename, 'w+',
-                  encoding='utf-8') as fp_moved:
-            fp_moved.write(moved_str)
-    except OSError:
-        print('EX: update_moved_actors unable to save ' +
-              moved_accounts_filename)
+    save_string(moved_str, moved_accounts_filename,
+                'EX: update_moved_actors unable to save ' +
+                moved_accounts_filename)
 
 
 def _get_inactive_accounts(base_dir: str, nickname: str, domain: str,
@@ -335,14 +326,12 @@ def _get_inactive_accounts(base_dir: str, nickname: str, domain: str,
     # get the list of followers
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
-    followers_str = ''
-    try:
-        with open(followers_filename, 'r',
-                  encoding='utf-8') as fp_follow:
-            followers_str = fp_follow.read()
-    except OSError:
-        print('EX: get_moved_accounts unable to read ' +
-              followers_filename)
+    followers_str = \
+        load_string(followers_filename,
+                    'EX: get_moved_accounts unable to read ' +
+                    followers_filename)
+    if followers_str is None:
+        followers_str = ''
     followers_list = followers_str.split('\n')
 
     result: list[str] = []

@@ -20,6 +20,8 @@ from utils import get_domain_from_actor
 from utils import get_full_domain
 from utils import get_followers_list
 from utils import get_mutuals_of_person
+from data import load_string
+from data import save_string
 
 
 def load_searchable_by_default(base_dir: str) -> {}:
@@ -34,11 +36,11 @@ def load_searchable_by_default(base_dir: str) -> {}:
             nickname = account.split('@')[0]
             filename = os.path.join(dir_str, account) + '/.searchableByDefault'
             if os.path.isfile(filename):
-                try:
-                    with open(filename, 'r', encoding='utf-8') as fp_search:
-                        result[nickname] = fp_search.read().strip()
-                except OSError:
-                    print('EX: unable to load searchableByDefault ' + filename)
+                text = load_string(filename,
+                                   'EX: unable to load searchableByDefault ' +
+                                   filename)
+                if text:
+                    result[nickname] = text.strip()
         break
     return result
 
@@ -58,11 +60,8 @@ def set_searchable_by(base_dir: str, nickname: str, domain: str,
             return
 
     # write the new state
-    try:
-        with open(filename, 'w+', encoding='utf-8') as fp_search:
-            fp_search.write(searchable_by)
-    except OSError:
-        print('EX: unable to write searchableByDropdown ' + filename)
+    save_string(searchable_by, filename,
+                'EX: unable to write searchableByDropdown ' + filename)
 
 
 def _actor_in_searchable_by(searchable_by: str, following_list: []) -> bool:

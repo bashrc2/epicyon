@@ -14,6 +14,7 @@ import socket
 from urllib.parse import urlparse
 from utils import data_dir
 from utils import string_starts_with
+from data import load_string
 
 
 class Result:
@@ -177,13 +178,12 @@ def load_unavailable_sites(base_dir: str) -> []:
     """
     unavailable_sites_filename = data_dir(base_dir) + '/unavailable_sites.txt'
     sites_unavailable: list[str] = []
-    try:
-        with open(unavailable_sites_filename, 'r',
-                  encoding='utf-8') as fp_sites:
-            sites_unavailable = fp_sites.read().split('\n')
-    except OSError:
-        print('EX: unable to read unavailable sites ' +
-              unavailable_sites_filename)
+    sites_unavailable_str = \
+        load_string(unavailable_sites_filename,
+                    'EX: unable to read unavailable sites ' +
+                    unavailable_sites_filename)
+    if sites_unavailable_str:
+        sites_unavailable = sites_unavailable_str.split('\n')
     return sites_unavailable
 
 

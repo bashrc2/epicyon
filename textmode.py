@@ -10,6 +10,7 @@ __module_group__ = "Web Interface"
 import os
 from shutil import copyfile
 from utils import data_dir
+from data import load_string
 
 
 def text_mode_browser(ua_str: str) -> bool:
@@ -43,11 +44,11 @@ def get_text_mode_banner(base_dir: str) -> str:
     """
     text_mode_banner_filename = data_dir(base_dir) + '/banner.txt'
     if os.path.isfile(text_mode_banner_filename):
-        with open(text_mode_banner_filename, 'r',
-                  encoding='utf-8') as fp_text:
-            banner_str = fp_text.read()
-            if banner_str:
-                return banner_str.replace('\n', '<br>')
+        banner_str = load_string(text_mode_banner_filename,
+                                 'EX: unable to load text mode banner ' +
+                                 text_mode_banner_filename)
+        if banner_str:
+            return banner_str.replace('\n', '<br>')
     return None
 
 
@@ -58,10 +59,11 @@ def get_text_mode_logo(base_dir: str) -> str:
     if not os.path.isfile(text_mode_logo_filename):
         text_mode_logo_filename = base_dir + '/img/logo.txt'
 
-    with open(text_mode_logo_filename, 'r', encoding='utf-8') as fp_text:
-        logo_str = fp_text.read()
-        if logo_str:
-            return logo_str.replace('\n', '<br>')
+    logo_str = load_string(text_mode_logo_filename,
+                           'EX: unable to load text mode logo ' +
+                           text_mode_logo_filename)
+    if logo_str:
+        return logo_str.replace('\n', '<br>')
     return None
 
 

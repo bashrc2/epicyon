@@ -17,6 +17,8 @@ from utils import dangerous_markup
 from utils import get_reply_to
 from utils import get_actor_from_post
 from data import load_list
+from data import save_string
+from data import append_string
 
 
 def is_vote(base_dir: str, nickname: str, domain: str,
@@ -125,25 +127,17 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
     actor_url = get_actor_from_post(reply_json)
     if not os.path.isfile(voters_filename):
         # create a new voters file
-        try:
-            with open(voters_filename, 'w+',
-                      encoding='utf-8') as fp_voters:
-                fp_voters.write(actor_url +
-                                voters_file_separator +
-                                reply_vote + '\n')
-        except OSError:
-            print('EX: unable to write voters file ' + voters_filename)
+        save_string(actor_url + voters_file_separator + reply_vote + '\n',
+                    voters_filename,
+                    'EX: unable to write voters file ' + voters_filename)
     else:
         if not text_in_file(actor_url, voters_filename):
             # append to the voters file
-            try:
-                with open(voters_filename, 'a+',
-                          encoding='utf-8') as fp_voters:
-                    fp_voters.write(actor_url +
-                                    voters_file_separator +
-                                    reply_vote + '\n')
-            except OSError:
-                print('EX: unable to append to voters file ' + voters_filename)
+            append_string(actor_url + voters_file_separator +
+                          reply_vote + '\n',
+                          voters_filename,
+                          'EX: unable to append to voters file ' +
+                          voters_filename)
         else:
             # change an entry in the voters file
             lines: list[str] = \

@@ -17,6 +17,7 @@ from utils import text_in_file
 from utils import get_config_param
 from status import get_status_number
 from data import load_list
+from data import save_string
 
 
 def _clear_role_status(base_dir: str, role: str) -> None:
@@ -78,13 +79,11 @@ def _add_role(base_dir: str, nickname: str, domain: str,
         except OSError:
             print('EX: _add_role, failed to write roles file1 ' + role_file)
     else:
-        try:
-            with open(role_file, 'w+', encoding='utf-8') as fp_role:
-                account_dir = acct_dir(base_dir, nickname, domain)
-                if os.path.isdir(account_dir):
-                    fp_role.write(nickname + '\n')
-        except OSError:
-            print('EX: _add_role, failed to write roles file2 ' + role_file)
+        account_dir = acct_dir(base_dir, nickname, domain)
+        if os.path.isdir(account_dir):
+            save_string(nickname + '\n', role_file,
+                        'EX: _add_role, failed to write roles file2 ' +
+                        role_file)
 
 
 def _remove_role(base_dir: str, nickname: str, role_filename: str) -> None:
