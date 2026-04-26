@@ -4146,7 +4146,7 @@ def check_bad_path(path: str):
 
     if '%' in path:
         sections = path.split('%')
-        if len(sections) > 1:
+        if len(sections) > 2:
             return True
 
     bad_strings = [
