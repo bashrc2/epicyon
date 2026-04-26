@@ -35,6 +35,7 @@ from webapp_utils import html_post_separator
 from webapp_utils import header_buttons_front_screen
 from webapp_utils import edit_text_field
 from textmode import text_mode_browser
+from data import load_list
 
 
 def _votes_indicator(total_votes: int, positive_voting: bool) -> str:
@@ -383,13 +384,10 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     citations_selected: list[str] = []
     if os.path.isfile(citations_filename):
         citations_separator = '#####'
-        citations: list[str] = []
-        try:
-            with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
-                citations = fp_cit.readlines()
-        except OSError as exc:
-            print('EX: html_citations unable to read ' +
-                  citations_filename + ' ' + str(exc))
+        citations: list[str] = \
+            load_list(citations_filename,
+                      'EX: html_citations unable to read ' +
+                      citations_filename + ' [ex]')
         for line in citations:
             if citations_separator not in line:
                 continue

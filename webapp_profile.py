@@ -136,6 +136,7 @@ from shares import actor_attached_shares_as_html
 from git import get_repo_url
 from reading import html_profile_book_list
 from availability import get_availability
+from data import load_list
 
 THEME_FORMATS = '.zip, .gz'
 BLOCKFILE_FORMATS = '.csv'
@@ -2762,14 +2763,11 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
     locations_filename = base_dir + '/custom_locations.txt'
     if not os.path.isfile(locations_filename):
         locations_filename = base_dir + '/locations.txt'
-    cities: list[str] = []
-    try:
-        with open(locations_filename, 'r', encoding='utf-8') as fp_loc:
-            cities = fp_loc.readlines()
-            cities.sort()
-    except OSError:
-        print('EX: _html_edit_profile_filtering unable to read ' +
-              locations_filename)
+    cities: list[str] = \
+        load_list(locations_filename,
+                  'EX: _html_edit_profile_filtering unable to read ' +
+                  locations_filename)
+    cities.sort()
     edit_profile_form += '  <select id="cityDropdown" ' + \
         'name="cityDropdown" class="theme">\n'
     city = city.lower()

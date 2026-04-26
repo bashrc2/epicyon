@@ -25,6 +25,7 @@ from webapp_utils import html_footer
 from webapp_utils import get_banner_file
 from webapp_utils import edit_text_field
 from shares import share_category_icon
+from data import load_list
 
 
 def _links_exist(base_dir: str) -> bool:
@@ -222,14 +223,12 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
 
     links_filename = data_dir(base_dir) + '/links.txt'
     links_file_contains_entries = False
-    links_list = None
+    links_list: list[str] = None
     if os.path.isfile(links_filename):
-        try:
-            with open(links_filename, 'r', encoding='utf-8') as fp_links:
-                links_list = fp_links.readlines()
-        except OSError:
-            print('EX: get_left_column_content unable to read ' +
-                  links_filename)
+        links_list = \
+            load_list(links_filename,
+                      'EX: get_left_column_content unable to read ' +
+                      links_filename)
 
     if not front_page:
         # show a number of shares

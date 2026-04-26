@@ -21,6 +21,7 @@ from utils import lines_in_file
 from utils import data_dir
 from utils import account_is_indexable
 from utils import is_yggdrasil_address
+from data import load_list
 
 
 def _meta_data_instance_v1(show_accounts: bool,
@@ -46,24 +47,21 @@ def _meta_data_instance_v1(show_accounts: bool,
     rules_list: list[str] = []
     rules_filename = data_dir(base_dir) + '/tos.md'
     if os.path.isfile(rules_filename):
-        try:
-            with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
-                rules_lines = fp_rules.readlines()
-                rule_ctr = 1
-                for line in rules_lines:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    if line.startswith('#'):
-                        continue
-                    rules_list.append({
-                        'id': str(rule_ctr),
-                        'text': line
-                    })
-                    rule_ctr += 1
-        except OSError:
-            print('EX: _meta_data_instance_v1 unable to read ' +
-                  rules_filename)
+        rules_lines = load_list(rules_filename,
+                                'EX: _meta_data_instance_v1 unable to read ' +
+                                rules_filename)
+        rule_ctr = 1
+        for line in rules_lines:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith('#'):
+                continue
+            rules_list.append({
+                'id': str(rule_ctr),
+                'text': line
+            })
+            rule_ctr += 1
 
     is_bot = False
     is_group = False

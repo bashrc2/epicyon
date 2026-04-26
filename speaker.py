@@ -32,6 +32,7 @@ from utils import local_actor_url
 from utils import get_actor_from_post
 from content import html_replace_quote_marks
 from content import html_replace_inline_quotes
+from data import load_list
 
 SPEAKER_REMOVE_CHARS = ('.\n', '. ', ',', ';', '?', '!')
 
@@ -151,13 +152,10 @@ def _speaker_pronounce(base_dir: str, say_text: str, translate: {}) -> str:
             ")": ","
         }
     if os.path.isfile(pronounce_filename):
-        pronounce_list: list[str] = []
-        try:
-            with open(pronounce_filename, 'r', encoding='utf-8') as fp_pro:
-                pronounce_list = fp_pro.readlines()
-        except OSError:
-            print('EX: _speaker_pronounce unable to read ' +
-                  pronounce_filename)
+        pronounce_list: list[str] = \
+            load_list(pronounce_filename,
+                      'EX: _speaker_pronounce unable to read ' +
+                      pronounce_filename)
         if pronounce_list:
             for conversion in pronounce_list:
                 separator = None
@@ -542,14 +540,10 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     accounts_dir = acct_dir(base_dir, nickname, domain_full)
     approve_follows_filename = accounts_dir + '/followrequests.txt'
     if os.path.isfile(approve_follows_filename):
-        follows: list[str] = []
-        try:
-            with open(approve_follows_filename, 'r',
-                      encoding='utf-8') as fp_foll:
-                follows = fp_foll.readlines()
-        except OSError:
-            print('EX: _post_to_speaker_json unable to read ' +
-                  approve_follows_filename)
+        follows: list[str] = \
+            load_list(approve_follows_filename,
+                      'EX: _post_to_speaker_json unable to read ' +
+                      approve_follows_filename)
         if follows:
             follow_requests_exist = True
             for i, _ in enumerate(follows):

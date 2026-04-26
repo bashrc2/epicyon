@@ -57,6 +57,7 @@ from webapp_hashtagswarm import html_hash_tag_swarm
 from maps import html_hashtag_maps
 from session import get_json_valid
 from session import get_json
+from data import load_list
 
 
 def html_search_emoji(translate: {}, base_dir: str, search_str: str,
@@ -928,12 +929,10 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
             nickname = None
 
     # read the index
-    lines: list[str] = []
-    try:
-        with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
-            lines = fp_hash.readlines()
-    except OSError:
-        print('EX: html_hashtag_search unable to read ' + hashtag_index_file)
+    lines: list[str] = \
+        load_list(hashtag_index_file,
+                  'EX: html_hashtag_search unable to read ' +
+                  hashtag_index_file)
 
     # read the css
     css_filename = base_dir + '/epicyon-profile.css'
@@ -1383,12 +1382,10 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
             nickname = None
 
     # read the index
-    lines: list[str] = []
-    try:
-        with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
-            lines = fp_hash.readlines()
-    except OSError:
-        print('EX: hashtag_search_rss unable to read ' + hashtag_index_file)
+    lines: list[str] = \
+        load_list(hashtag_index_file,
+                  'EX: hashtag_search_rss unable to read ' +
+                  hashtag_index_file)
     if not lines:
         return None
 
@@ -1396,8 +1393,8 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
 
     max_feed_length = 10
     hashtag_feed = rss2tag_header(hashtag, http_prefix, domain_full)
-    for index, _ in enumerate(lines):
-        post_id = lines[index].strip('\n').strip('\r')
+    for index, item in enumerate(lines):
+        post_id = item.strip('\n').strip('\r')
         if '  ' not in post_id:
             nickname = get_nickname_from_actor(post_id)
             if not nickname:
@@ -1497,13 +1494,10 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
             nickname = None
 
     # read the index
-    lines: list[str] = []
-    try:
-        with open(hashtag_index_file, 'r', encoding='utf-8') as fp_hash:
-            lines = fp_hash.readlines()
-    except OSError:
-        print('EX: hashtag_search_json unable to read ' +
-              hashtag_index_file)
+    lines: list[str] = \
+        load_list(hashtag_index_file,
+                  'EX: hashtag_search_json unable to read ' +
+                  hashtag_index_file)
     if not lines:
         return None
 

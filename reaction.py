@@ -38,6 +38,7 @@ from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from posts import get_person_box
+from data import load_list
 
 # the maximum number of reactions from individual actors which can be
 # added to a post. Hence an adversary can't bombard you with sockpuppet
@@ -484,13 +485,10 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
     common_reactions_filename = data_dir(base_dir) + '/common_reactions.txt'
     common_reactions = None
     if os.path.isfile(common_reactions_filename):
-        try:
-            with open(common_reactions_filename, 'r',
-                      encoding='utf-8') as fp_react:
-                common_reactions = fp_react.readlines()
-        except OSError:
-            print('EX: unable to load common reactions file' +
-                  common_reactions_filename)
+        common_reactions: list[str] = \
+            load_list(common_reactions_filename,
+                      'EX: unable to load common reactions file' +
+                      common_reactions_filename)
     if common_reactions:
         new_common_reactions: list[str] = []
         reaction_found = False

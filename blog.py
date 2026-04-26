@@ -48,6 +48,7 @@ from newswire import rss2footer
 from cache import get_person_from_cache
 from flags import is_image_file
 from data import load_string
+from data import load_list
 
 
 def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
@@ -82,12 +83,9 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
 
     removals: list[str] = []
     replies = 0
-    lines: list[str] = []
-    try:
-        with open(post_filename, 'r', encoding='utf-8') as fp_post:
-            lines = fp_post.readlines()
-    except OSError:
-        print('EX: failed to read blog ' + post_filename)
+    lines: list[str] = \
+        load_list(post_filename,
+                  'EX: failed to read blog ' + post_filename)
 
     for reply_post_id in lines:
         reply_post_id = remove_eol(reply_post_id)
@@ -156,12 +154,9 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
                         return blog_text + '\n'
         return ''
 
-    lines: list[str] = []
-    try:
-        with open(post_filename, 'r', encoding='utf-8') as fp_post:
-            lines = fp_post.readlines()
-    except OSError:
-        print('EX: unable to read blog 4 ' + post_filename)
+    lines: list[str] = \
+        load_list(post_filename,
+                  'EX: unable to read blog 4 ' + post_filename)
 
     if lines:
         replies_str: str = ''

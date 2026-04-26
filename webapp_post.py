@@ -145,6 +145,7 @@ from session import get_json_valid
 from session import get_json
 from blog import html_blog_post_markdown
 from blog import html_blog_post_gemini_links
+from data import load_list
 
 # maximum length for display name within html posts
 MAX_DISPLAY_NAME_LENGTH = 42
@@ -2111,14 +2112,10 @@ def _substitute_onion_domains(base_dir: str, content: str) -> str:
 
     onion_domains_filename = data_dir(base_dir) + '/onion_domains.txt'
     if os.path.isfile(onion_domains_filename):
-        onion_domains_list: list[str] = []
-        try:
-            with open(onion_domains_filename, 'r',
-                      encoding='utf-8') as fp_onions:
-                onion_domains_list = fp_onions.readlines()
-        except OSError:
-            print('EX: unable to load onion domains file ' +
-                  onion_domains_filename)
+        onion_domains_list: list[str] = \
+            load_list(onion_domains_filename,
+                      'EX: unable to load onion domains file ' +
+                      onion_domains_filename)
         if onion_domains_list:
             onion_domains = {}
             separators = (' ', ',', '->')

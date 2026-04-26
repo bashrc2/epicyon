@@ -22,6 +22,7 @@ from cryptography.hazmat.primitives import hashes
 from followingCalendar import add_person_to_calendar
 from unicodetext import standardize_text
 from formats import get_image_extensions
+from data import load_list
 
 VALID_HASHTAG_CHARS = \
     set('_0123456789' +
@@ -797,12 +798,9 @@ def get_followers_list(base_dir: str,
     if not os.path.isfile(filename):
         return []
 
-    lines: list[str] = []
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_foll:
-            lines = fp_foll.readlines()
-    except OSError:
-        print('EX: get_followers_list unable to read ' + filename)
+    lines: list[str] = \
+        load_list(filename,
+                  'EX: get_followers_list unable to read ' + filename)
 
     if lines:
         for i, _ in enumerate(lines):
@@ -1640,16 +1638,13 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         if text_in_file(handle_to_follow, unfollowed_filename):
             # remove them from the unfollowed file
             new_lines = ''
-            try:
-                with open(unfollowed_filename, 'r',
-                          encoding='utf-8') as fp_unfoll:
-                    lines = fp_unfoll.readlines()
-                    for line in lines:
-                        if handle_to_follow not in line:
-                            new_lines += line
-            except OSError:
-                print('EX: follow_person unable to read ' +
-                      unfollowed_filename)
+            lines: list[str] = \
+                load_list(unfollowed_filename,
+                          'EX: follow_person unable to read ' +
+                          unfollowed_filename)
+            for line in lines:
+                if handle_to_follow not in line:
+                    new_lines += line
             try:
                 with open(unfollowed_filename, 'w+',
                           encoding='utf-8') as fp_unfoll:
@@ -1897,13 +1892,10 @@ def remove_post_from_index(post_url: str, debug: bool,
     post_id = remove_id_ending(post_url)
     if not text_in_file(post_id, index_file):
         return
-    lines: list[str] = []
-    try:
-        with open(index_file, 'r', encoding='utf-8') as fp_mod1:
-            lines = fp_mod1.readlines()
-    except OSError as exc:
-        print('EX: remove_post_from_index unable to read ' +
-              index_file + ' ' + str(exc))
+    lines: list[str] = \
+        load_list(index_file,
+                  'EX: remove_post_from_index unable to read ' +
+                  index_file + ' [ex]')
 
     if not lines:
         return
@@ -2072,13 +2064,10 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
                                    post_id: str) -> None:
     """Remove post_id from the tag index file
     """
-    lines = None
-    try:
-        with open(tag_index_filename, 'r', encoding='utf-8') as fp_index:
-            lines = fp_index.readlines()
-    except OSError:
-        print('EX: _remove_post_id_from_tag_index unable to read ' +
-              tag_index_filename)
+    lines: list[str] = \
+        load_list(tag_index_filename,
+                  'EX: _remove_post_id_from_tag_index unable to read ' +
+                  tag_index_filename)
     if not lines:
         return
     newlines = ''

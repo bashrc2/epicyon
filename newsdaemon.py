@@ -42,6 +42,7 @@ from threads import begin_thread
 from threads import thread_with_trace
 from webapp_hashtagswarm import store_hash_tags
 from cache import clear_from_post_caches
+from data import load_list
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,
@@ -396,13 +397,10 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
     rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
     if not os.path.isfile(rules_filename):
         return True
-    rules: list[str] = []
-    try:
-        with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
-            rules = fp_rules.readlines()
-    except OSError:
-        print('EX: _newswire_hashtag_processing unable to read ' +
-              rules_filename)
+    rules: list[str] = \
+        load_list(rules_filename,
+                  'EX: _newswire_hashtag_processing unable to read ' +
+                  rules_filename)
 
     domain_full = get_full_domain(domain, port)
 

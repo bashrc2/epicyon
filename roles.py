@@ -16,6 +16,7 @@ from utils import acct_dir
 from utils import text_in_file
 from utils import get_config_param
 from status import get_status_number
+from data import load_list
 
 
 def _clear_role_status(base_dir: str, role: str) -> None:
@@ -54,12 +55,9 @@ def _add_role(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(role_file):
         # is this nickname already in the file?
 
-        lines: list[str] = []
-        try:
-            with open(role_file, 'r', encoding='utf-8') as fp_role:
-                lines = fp_role.readlines()
-        except OSError:
-            print('EX: _add_role, failed to read roles file ' + role_file)
+        lines: list[str] = \
+            load_list(role_file,
+                      'EX: _add_role, failed to read roles file ' + role_file)
 
         for role_nickname in lines:
             role_nickname = role_nickname.strip('\n').strip('\r')
@@ -97,11 +95,9 @@ def _remove_role(base_dir: str, nickname: str, role_filename: str) -> None:
     if not os.path.isfile(role_file):
         return
 
-    try:
-        with open(role_file, 'r', encoding='utf-8') as fp_role:
-            lines = fp_role.readlines()
-    except OSError:
-        print('EX: _remove_role, failed to read roles file ' + role_file)
+    lines: list[str] = \
+        load_list(role_file,
+                  'EX: _remove_role, failed to read roles file ' + role_file)
 
     try:
         with open(role_file, 'w+', encoding='utf-8') as fp_role:
@@ -283,12 +279,9 @@ def is_devops(base_dir: str, nickname: str) -> bool:
             return True
         return False
 
-    lines: list[str] = []
-    try:
-        with open(devops_file, 'r', encoding='utf-8') as fp_mod:
-            lines = fp_mod.readlines()
-    except OSError:
-        print('EX: is_devops unable to read ' + devops_file)
+    lines: list[str] = \
+        load_list(devops_file,
+                  'EX: is_devops unable to read ' + devops_file)
     if not lines:
         # if there is nothing in the file
         admin_name = get_config_param(base_dir, 'admin')

@@ -54,6 +54,7 @@ from blocking import is_blocked_hashtag
 from filters import is_filtered
 from session import download_image_any_mime_type
 from content import remove_script
+from data import load_list
 
 
 def _remove_cdata(text: str) -> str:
@@ -1826,13 +1827,10 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
     max_posts_per_source = 5
 
     # add rss feeds
-    rss_feed: list[str] = []
-    try:
-        with open(subscriptions_filename, 'r', encoding='utf-8') as fp_sub:
-            rss_feed = fp_sub.readlines()
-    except OSError:
-        print('EX: get_dict_from_newswire unable to read ' +
-              subscriptions_filename)
+    rss_feed: list[str] = \
+        load_list(subscriptions_filename,
+                  'EX: get_dict_from_newswire unable to read ' +
+                  subscriptions_filename)
     result = {}
     for url in rss_feed:
         url = url.strip()

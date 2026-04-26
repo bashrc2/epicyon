@@ -53,6 +53,7 @@ from maps import get_location_from_post
 from cache import get_person_from_cache
 from person import get_person_notes
 from textmode import text_mode_browser
+from data import load_list
 
 
 def _html_new_post_drop_down(scope_icon: str, scope_description: str,
@@ -937,14 +938,10 @@ def html_new_post(edit_post_params: {},
                 translate['Citations'] + ':</label></p>\n'
             citations_str += '  <ul>\n'
             citations_separator = '#####'
-            citations: list[str] = []
-            try:
-                with open(citations_filename, 'r',
-                          encoding='utf-8') as fp_cit:
-                    citations = fp_cit.readlines()
-            except OSError as exc:
-                print('EX: html_new_post unable to read ' +
-                      citations_filename + ' ' + str(exc))
+            citations: list[str] = \
+                load_list(citations_filename,
+                          'EX: html_new_post unable to read ' +
+                          citations_filename + ' [ex]')
             for line in citations:
                 if citations_separator not in line:
                     continue

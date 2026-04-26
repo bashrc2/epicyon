@@ -91,6 +91,7 @@ from cache import store_person_in_cache
 from cache import remove_person_from_cache
 from filters import is_filtered_bio
 from follow import is_following_actor
+from data import load_list
 
 
 def generate_rsa_key() -> (str, str):
@@ -1332,12 +1333,10 @@ def reenable_account(base_dir: str, nickname: str, domain: str) -> None:
     """
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        lines: list[str] = []
-        try:
-            with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
-                lines = fp_sus.readlines()
-        except OSError:
-            print('EX: reenable_account unable to read ' + suspended_filename)
+        lines: list[str] = \
+            load_list(suspended_filename,
+                      'EX: reenable_account unable to read ' +
+                      suspended_filename)
         try:
             with open(suspended_filename, 'w+', encoding='utf-8') as fp_sus:
                 for suspended in lines:
@@ -1388,11 +1387,10 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
     # Don't suspend moderators
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        try:
-            with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
-                lines = fp_mod.readlines()
-        except OSError:
-            print('EX: suspend_account unable too read ' + moderators_file)
+        lines: list[str] = \
+            load_list(moderators_file,
+                      'EX: suspend_account unable too read ' +
+                      moderators_file)
         for moderator in lines:
             if moderator.strip('\n').strip('\r') == nickname:
                 return
@@ -1413,11 +1411,10 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        try:
-            with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
-                lines = fp_sus.readlines()
-        except OSError:
-            print('EX: suspend_account unable to read 2 ' + suspended_filename)
+        lines: list[str] = \
+            load_list(suspended_filename,
+                      'EX: suspend_account unable to read 2 ' +
+                      suspended_filename)
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return
@@ -1454,12 +1451,10 @@ def can_remove_post(base_dir: str,
     # is the post by a moderator?
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        lines: list[str] = []
-        try:
-            with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
-                lines = fp_mod.readlines()
-        except OSError:
-            print('EX: can_remove_post unable to read ' + moderators_file)
+        lines: list[str] = \
+            load_list(moderators_file,
+                      'EX: can_remove_post unable to read ' +
+                      moderators_file)
         for moderator in lines:
             if domain_full + '/users/' + \
                moderator.strip('\n') + '/' in post_id:
@@ -1490,13 +1485,10 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
             continue
         if not text_in_file(match_str, tag_filename):
             continue
-        lines: list[str] = []
-        try:
-            with open(tag_filename, 'r', encoding='utf-8') as fp_tag:
-                lines = fp_tag.readlines()
-        except OSError:
-            print('EX: _remove_tags_for_nickname unable to read ' +
-                  tag_filename)
+        lines: list[str] = \
+            load_list(tag_filename,
+                      'EX: _remove_tags_for_nickname unable to read ' +
+                      tag_filename)
         try:
             with open(tag_filename, 'w+', encoding='utf-8') as fp_tag:
                 for tagline in lines:
@@ -1546,12 +1538,9 @@ def remove_account(base_dir: str, nickname: str,
     # Don't remove moderators
     moderators_file = data_dir(base_dir) + '/moderators.txt'
     if os.path.isfile(moderators_file):
-        lines: list[str] = []
-        try:
-            with open(moderators_file, 'r', encoding='utf-8') as fp_mod:
-                lines = fp_mod.readlines()
-        except OSError:
-            print('EX: remove_account unable to read ' + moderators_file)
+        lines: list[str] = \
+            load_list(moderators_file,
+                      'EX: remove_account unable to read ' + moderators_file)
         for moderator in lines:
             if moderator.strip('\n') == nickname:
                 return False

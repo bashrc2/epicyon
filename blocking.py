@@ -54,6 +54,7 @@ from conversation import unmute_conversation
 from auth import create_basic_auth_header
 from session import get_json
 from data import load_string
+from data import load_list
 from data import save_string
 from data import append_string
 
@@ -605,19 +606,15 @@ def update_blocked_cache(base_dir: str,
     global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
     if not os.path.isfile(global_blocking_filename):
         return blocked_cache_last_updated
-    try:
-        with open(global_blocking_filename, 'r',
-                  encoding='utf-8') as fp_blocked:
-            blocked_lines = fp_blocked.readlines()
-            # remove newlines
-            for index, _ in enumerate(blocked_lines):
-                blocked_lines[index] = remove_eol(blocked_lines[index])
-            # update the cache
-            blocked_cache.clear()
-            blocked_cache += evil_incarnate() + blocked_lines
-    except OSError as ex:
-        print('EX: update_blocked_cache unable to read ' +
-              global_blocking_filename + ' ' + str(ex))
+    blocked_lines = load_list(global_blocking_filename,
+                              'EX: update_blocked_cache unable to read ' +
+                              global_blocking_filename + ' [ex]')
+    # remove newlines
+    for index, _ in enumerate(blocked_lines):
+        blocked_lines[index] = remove_eol(blocked_lines[index])
+    # update the cache
+    blocked_cache.clear()
+    blocked_cache += evil_incarnate() + blocked_lines
     return curr_time
 
 
@@ -1599,20 +1596,17 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
                     following_filename = account_dir + '/' + follow_file_type
                     if not os.path.isfile(following_filename):
                         continue
-                    try:
-                        with open(following_filename, 'r',
-                                  encoding='utf-8') as fp_foll:
-                            follow_list = fp_foll.readlines()
-                            for handle in follow_list:
-                                if '@' not in handle:
-                                    continue
-                                handle = remove_eol(handle)
-                                handle_domain = handle.split('@')[1]
-                                if handle_domain not in allowed_domains:
-                                    allowed_domains.append(handle_domain)
-                    except OSError as ex:
-                        print('EX: set_broch_mode failed to read ' +
-                              following_filename + ' ' + str(ex))
+                    follow_list = \
+                        load_list(following_filename,
+                                  'EX: set_broch_mode failed to read ' +
+                                  following_filename + ' [ex]')
+                    for handle in follow_list:
+                        if '@' not in handle:
+                            continue
+                        handle = remove_eol(handle)
+                        handle_domain = handle.split('@')[1]
+                        if handle_domain not in allowed_domains:
+                            allowed_domains.append(handle_domain)
             break
 
         # write the allow file

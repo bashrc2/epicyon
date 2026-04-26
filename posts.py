@@ -144,6 +144,7 @@ from pyjsonld import JsonLdError
 from conversation import conversation_tag_to_convthread_id
 from conversation import post_id_to_convthread_id
 from quote import quote_toots_allowed
+from data import load_list
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -2443,13 +2444,10 @@ def _append_citations_to_blog_post(base_dir: str,
     if not os.path.isfile(citations_filename):
         return
     citations_separator = '#####'
-    citations: list[str] = []
-    try:
-        with open(citations_filename, 'r', encoding='utf-8') as fp_cit:
-            citations = fp_cit.readlines()
-    except OSError:
-        print('EX: _append_citations_to_blog_post unable to read ' +
-              citations_filename)
+    citations: list[str] = \
+        load_list(citations_filename,
+                  'EX: _append_citations_to_blog_post unable to read ' +
+                  citations_filename)
     for line in citations:
         if citations_separator not in line:
             continue
@@ -4565,14 +4563,10 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
     if is_moderator(base_dir, nickname):
         moderation_index_file = data_dir(base_dir) + '/moderation.txt'
         if os.path.isfile(moderation_index_file):
-            lines: list[str] = []
-            try:
-                with open(moderation_index_file, 'r',
-                          encoding='utf-8') as fp_index:
-                    lines = fp_index.readlines()
-            except OSError:
-                print('EX: create_moderation unable to read ' +
-                      moderation_index_file)
+            lines: list[str] = \
+                load_list(moderation_index_file,
+                          'EX: create_moderation unable to read ' +
+                          moderation_index_file)
             box_header['totalItems'] = len(lines)
             if header_only:
                 return box_header

@@ -59,6 +59,7 @@ from blocking import is_blocked
 from blocking import allowed_announce
 from shares import vf_proposal_from_share
 from webapp_pwa import get_pwa_theme_colors
+from data import load_list
 
 
 def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
@@ -2215,13 +2216,9 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
     common_emoji_filename = data_dir(base_dir) + '/common_emoji.txt'
     if not os.path.isfile(common_emoji_filename):
         return ''
-    common_emoji = None
-    try:
-        with open(common_emoji_filename, 'r', encoding='utf-8') as fp_emoji:
-            common_emoji = fp_emoji.readlines()
-    except OSError:
-        print('EX: html_common_emoji unable to load file')
-        return ''
+    common_emoji: list[str] = \
+        load_list(common_emoji_filename,
+                  'EX: html_common_emoji unable to load file')
     if not common_emoji:
         return ''
     line_ctr = 0

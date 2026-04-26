@@ -23,6 +23,7 @@ from formats import get_image_mime_type
 from formats import get_image_extensions
 from formats import get_audio_extensions
 from formats import get_video_extensions
+from data import load_list
 
 
 def _get_masto_api_v2id_from_nickname(nickname: str) -> int:
@@ -53,12 +54,9 @@ def _meta_data_instance_v2(show_accounts: bool,
     rules_list: list[str] = []
     rules_filename = data_dir(base_dir) + '/tos.md'
     if os.path.isfile(rules_filename):
-        rules_lines: list[str] = []
-        try:
-            with open(rules_filename, 'r', encoding='utf-8') as fp_rules:
-                rules_lines = fp_rules.readlines()
-        except OSError:
-            print('EX: _meta_data_instance_v2 unable to read rules')
+        rules_lines: list[str] = \
+            load_list(rules_filename,
+                      'EX: _meta_data_instance_v2 unable to read rules')
         rule_ctr = 1
         for line in rules_lines:
             line = line.strip()

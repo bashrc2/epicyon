@@ -244,6 +244,8 @@ from blocking import is_blocked_domain
 from filters import filtered_match
 from gemini import blog_to_gemini
 from blog import html_blog_post_gemini_links
+from data import load_list
+from data import load_string
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -2123,9 +2125,11 @@ def test_shared_items_federation(base_dir: str) -> None:
     assert valid_inbox(bob_dir, 'bob', bob_domain)
     assert valid_inbox_filenames(bob_dir, 'bob', bob_domain,
                                  alice_domain, alice_port)
-    assert text_in_file('alice@' + alice_domain,
-                        bob_dir_str + '/bob@' +
-                        bob_domain + '/followers.txt')
+    filename = bob_dir_str + '/bob@' + bob_domain + '/followers.txt'
+    if not text_in_file('alice@' + alice_domain, filename):
+        text = load_string(filename, '')
+        print('alice@' + alice_domain + ' not in\n' + str(text))
+    assert text_in_file('alice@' + alice_domain, filename)
     assert text_in_file('bob@' + bob_domain,
                         alice_dir_str + '/alice@' +
                         alice_domain + '/following.txt')
@@ -5762,9 +5766,8 @@ def _test_thread_functions():
                 modules[mod_name]['source'] = source_str
                 if 'thread_with_trace(' in source_str:
                     threads_called_in_modules.append(mod_name)
-            with open(source_file, 'r', encoding='utf-8') as fp_src:
-                lines = fp_src.readlines()
-                modules[mod_name]['lines'] = lines
+            lines: list[str] = load_list(source_file, '')
+            modules[mod_name]['lines'] = lines
 
     for mod_name in threads_called_in_modules:
         thread_sections = \
@@ -5919,152 +5922,149 @@ def _test_functions():
                 'functions': []
             }
             # load the module source
-            source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as fp_src:
-                source_str = fp_src.read()
-                modules[mod_name]['source'] = source_str
+            source_str: str = load_string(source_file, '')
+            modules[mod_name]['source'] = source_str
             # go through the source line by line
-            with open(source_file, 'r', encoding='utf-8') as fp_src:
-                lines = fp_src.readlines()
-                modules[mod_name]['lines'] = lines
-                line_count = 0
-                prev_line = 'start'
-                method_name = ''
-                method_args: list[str] = []
-                module_line = 0
-                curr_return_types = ''
-                is_comment = False
-                for line in lines:
-                    if '"""' in line:
-                        is_comment = not is_comment
-                    module_line += 1
-                    # what group is this module in?
-                    if '__module_group__' in line:
-                        if '=' in line:
-                            group_name = line.split('=')[1].strip()
-                            group_name = group_name.replace('"', '')
-                            group_name = group_name.replace("'", '')
-                            modules[mod_name]['group'] = group_name
-                            if not mod_groups.get(group_name):
-                                mod_groups[group_name] = [mod_name]
-                            else:
-                                if mod_name not in mod_groups[group_name]:
-                                    mod_groups[group_name].append(mod_name)
-                    # reading function lines
-                    if not line.strip().startswith('def '):
-                        if 'self.server.' in line:
-                            assert _check_self_variables(mod_name,
-                                                         method_name,
-                                                         method_args, line,
-                                                         module_line)
-                        if line_count > 0:
-                            line_count += 1
-                        # add LOC count for this function
-                        if len(prev_line.strip()) == 0 and \
-                           len(line.strip()) == 0 and \
-                           line_count > 2:
-                            line_count -= 2
-                            if line_count > 80:
-                                loc_str = str(line_count) + ';' + method_name
-                                if line_count < 1000:
-                                    loc_str = '0' + loc_str
-                                if line_count < 100:
-                                    loc_str = '0' + loc_str
-                                if line_count < 10:
-                                    loc_str = '0' + loc_str
-                                if loc_str not in method_loc:
-                                    method_loc.append(loc_str)
-                                    line_count = 0
+            lines: list[str] = load_list(source_file, '')
+            modules[mod_name]['lines'] = lines
+            line_count = 0
+            prev_line = 'start'
+            method_name = ''
+            method_args: list[str] = []
+            module_line = 0
+            curr_return_types = ''
+            is_comment = False
+            for line in lines:
+                if '"""' in line:
+                    is_comment = not is_comment
+                module_line += 1
+                # what group is this module in?
+                if '__module_group__' in line:
+                    if '=' in line:
+                        group_name = line.split('=')[1].strip()
+                        group_name = group_name.replace('"', '')
+                        group_name = group_name.replace("'", '')
+                        modules[mod_name]['group'] = group_name
+                        if not mod_groups.get(group_name):
+                            mod_groups[group_name] = [mod_name]
+                        else:
+                            if mod_name not in mod_groups[group_name]:
+                                mod_groups[group_name].append(mod_name)
+                # reading function lines
+                if not line.strip().startswith('def '):
+                    if 'self.server.' in line:
+                        assert _check_self_variables(mod_name,
+                                                     method_name,
+                                                     method_args, line,
+                                                     module_line)
+                    if line_count > 0:
+                        line_count += 1
+                    # add LOC count for this function
+                    if len(prev_line.strip()) == 0 and \
+                       len(line.strip()) == 0 and \
+                       line_count > 2:
+                        line_count -= 2
+                        if line_count > 80:
+                            loc_str = str(line_count) + ';' + method_name
+                            if line_count < 1000:
+                                loc_str = '0' + loc_str
+                            if line_count < 100:
+                                loc_str = '0' + loc_str
+                            if line_count < 10:
+                                loc_str = '0' + loc_str
+                            if loc_str not in method_loc:
+                                method_loc.append(loc_str)
+                                line_count = 0
 
-                        is_return_statement = False
-                        if ' return' in line:
-                            before_return = line.split(' return')[0].strip()
-                            if not before_return:
-                                is_return_statement = True
+                    is_return_statement = False
+                    if ' return' in line:
+                        before_return = line.split(' return')[0].strip()
+                        if not before_return:
+                            is_return_statement = True
 
-                        if curr_return_types and is_return_statement and \
-                           not is_comment and '#' not in line and \
-                           '"""' not in line:
-                            # check return statements are of the expected type
-                            if line.endswith(' return\n'):
-                                if curr_return_types != 'None':
-                                    print(method_name + ' in module ' +
-                                          mod_name + ' has unexpected return')
-                                    print('Expected: return ' +
-                                          str(curr_return_types))
-                                    print('Actual:   ' + line.strip())
-                                    assert False
-                            elif (' return' in line and
-                                  not line.endswith(',\n') and
-                                  not line.endswith('\\\n') and
-                                  ',' in curr_return_types):
-                                # check the number of return values
-                                ret_types = line.split(' return', 1)[1]
-                                no_of_args1 = \
-                                    len(curr_return_types.split(','))
-                                no_of_args2 = \
-                                    len(ret_types.split(','))
-                                if no_of_args1 != no_of_args2:
-                                    print(method_name + ' in module ' +
-                                          mod_name +
-                                          ' has unexpected ' +
-                                          'number of arguments')
-                                    print('Expected: return ' +
-                                          str(curr_return_types))
-                                    print('Actual:   ' + line.strip())
-                                    assert False
+                    if curr_return_types and is_return_statement and \
+                       not is_comment and '#' not in line and \
+                       '"""' not in line:
+                        # check return statements are of the expected type
+                        if line.endswith(' return\n'):
+                            if curr_return_types != 'None':
+                                print(method_name + ' in module ' +
+                                      mod_name + ' has unexpected return')
+                                print('Expected: return ' +
+                                      str(curr_return_types))
+                                print('Actual:   ' + line.strip())
+                                assert False
+                        elif (' return' in line and
+                              not line.endswith(',\n') and
+                              not line.endswith('\\\n') and
+                              ',' in curr_return_types):
+                            # check the number of return values
+                            ret_types = line.split(' return', 1)[1]
+                            no_of_args1 = \
+                                len(curr_return_types.split(','))
+                            no_of_args2 = \
+                                len(ret_types.split(','))
+                            if no_of_args1 != no_of_args2:
+                                print(method_name + ' in module ' +
+                                      mod_name +
+                                      ' has unexpected ' +
+                                      'number of arguments')
+                                print('Expected: return ' +
+                                      str(curr_return_types))
+                                print('Actual:   ' + line.strip())
+                                assert False
 
-                        prev_line = line
-                        continue
-                    # reading function def
                     prev_line = line
-                    line_count = 1
-                    method_name = line.split('def ', 1)[1].split('(')[0]
-                    # get list of arguments with spaces removed
-                    method_args = \
-                        source_str.split('def ' + method_name + '(')[1]
-                    return_types = method_args.split(')', 1)[1]
-                    if ':' in return_types:
-                        return_types = return_types.split(':')[0]
-                    if '->' in return_types:
-                        return_types = return_types.split('->')[1].strip()
-                        if return_types.startswith('(') and \
-                           not return_types.endswith(')'):
-                            return_types += ')'
-                    else:
-                        return_types: list[str] = []
-                    curr_return_types = return_types
-                    method_args = method_args.split(')', 1)[0]
-                    method_args = method_args.replace(' ', '').split(',')
-                    if function.get(mod_name):
-                        function[mod_name].append(method_name)
-                    else:
-                        function[mod_name] = [method_name]
-                    if method_name not in modules[mod_name]['functions']:
-                        modules[mod_name]['functions'].append(method_name)
-                    if not _check_method_args(mod_name, method_name,
-                                              method_args):
-                        assert False
-                    # create an entry for this function
-                    function_properties[method_name] = {
-                        "args": method_args,
-                        "module": mod_name,
-                        "calledInModule": [],
-                        "returns": return_types
-                    }
-                # LOC count for the last function
-                if line_count > 2:
-                    line_count -= 2
-                    if line_count > 80:
-                        loc_str = str(line_count) + ';' + method_name
-                        if line_count < 1000:
-                            loc_str = '0' + loc_str
-                        if line_count < 100:
-                            loc_str = '0' + loc_str
-                        if line_count < 10:
-                            loc_str = '0' + loc_str
-                        if loc_str not in method_loc:
-                            method_loc.append(loc_str)
+                    continue
+                # reading function def
+                prev_line = line
+                line_count = 1
+                method_name = line.split('def ', 1)[1].split('(')[0]
+                # get list of arguments with spaces removed
+                method_args = \
+                    source_str.split('def ' + method_name + '(')[1]
+                return_types = method_args.split(')', 1)[1]
+                if ':' in return_types:
+                    return_types = return_types.split(':')[0]
+                if '->' in return_types:
+                    return_types = return_types.split('->')[1].strip()
+                    if return_types.startswith('(') and \
+                       not return_types.endswith(')'):
+                        return_types += ')'
+                else:
+                    return_types: list[str] = []
+                curr_return_types = return_types
+                method_args = method_args.split(')', 1)[0]
+                method_args = method_args.replace(' ', '').split(',')
+                if function.get(mod_name):
+                    function[mod_name].append(method_name)
+                else:
+                    function[mod_name] = [method_name]
+                if method_name not in modules[mod_name]['functions']:
+                    modules[mod_name]['functions'].append(method_name)
+                if not _check_method_args(mod_name, method_name,
+                                          method_args):
+                    assert False
+                # create an entry for this function
+                function_properties[method_name] = {
+                    "args": method_args,
+                    "module": mod_name,
+                    "calledInModule": [],
+                    "returns": return_types
+                }
+            # LOC count for the last function
+            if line_count > 2:
+                line_count -= 2
+                if line_count > 80:
+                    loc_str = str(line_count) + ';' + method_name
+                    if line_count < 1000:
+                        loc_str = '0' + loc_str
+                    if line_count < 100:
+                        loc_str = '0' + loc_str
+                    if line_count < 10:
+                        loc_str = '0' + loc_str
+                    if loc_str not in method_loc:
+                        method_loc.append(loc_str)
         break
 
     print('LOC counts:')

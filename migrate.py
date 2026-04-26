@@ -20,6 +20,7 @@ from blocking import is_blocked
 from posts import get_user_url
 from follow import unfollow_account
 from person import get_actor_json
+from data import load_list
 
 
 def _move_following_handles_for_account(base_dir: str,
@@ -38,20 +39,18 @@ def _move_following_handles_for_account(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(following_filename):
         return ctr
-    try:
-        with open(following_filename, 'r', encoding='utf-8') as fp_foll:
-            following_handles = fp_foll.readlines()
-            for follow_handle in following_handles:
-                follow_handle = follow_handle.strip("\n").strip("\r")
-                ctr += \
-                    _update_moved_handle(base_dir, nickname, domain,
-                                         follow_handle, session,
-                                         http_prefix, cached_webfingers,
-                                         debug, signing_priv_key_pem,
-                                         block_federated, mitm_servers)
-    except OSError:
-        print('EX: _move_following_handles_for_account unable to read ' +
-              following_filename)
+    following_handles = \
+        load_list(following_filename,
+                  'EX: _move_following_handles_for_account unable to read ' +
+                  following_filename)
+    for follow_handle in following_handles:
+        follow_handle = follow_handle.strip("\n").strip("\r")
+        ctr += \
+            _update_moved_handle(base_dir, nickname, domain,
+                                 follow_handle, session,
+                                 http_prefix, cached_webfingers,
+                                 debug, signing_priv_key_pem,
+                                 block_federated, mitm_servers)
     return ctr
 
 
@@ -152,13 +151,10 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if os.path.isfile(following_filename):
-        following_handles: list[str] = []
-        try:
-            with open(following_filename, 'r', encoding='utf-8') as fp_foll1:
-                following_handles = fp_foll1.readlines()
-        except OSError:
-            print('EX: _update_moved_handle unable to read ' +
-                  following_filename)
+        following_handles: list[str] = \
+            load_list(following_filename,
+                      'EX: _update_moved_handle unable to read ' +
+                      following_filename)
 
         moved_to_handle = moved_to_nickname + '@' + moved_to_domain_full
         handle_lower = handle.lower()
@@ -205,13 +201,10 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
     if os.path.isfile(followers_filename):
-        follower_handles: list[str] = []
-        try:
-            with open(followers_filename, 'r', encoding='utf-8') as fp_foll3:
-                follower_handles = fp_foll3.readlines()
-        except OSError:
-            print('EX: _update_moved_handle unable to read ' +
-                  followers_filename)
+        follower_handles: list[str] = \
+            load_list(followers_filename,
+                      'EX: _update_moved_handle unable to read ' +
+                      followers_filename)
 
         handle_lower = handle.lower()
 

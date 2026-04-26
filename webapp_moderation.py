@@ -35,6 +35,7 @@ from blocking import get_global_block_reason
 from blocking import is_blocked_domain
 from blocking import is_blocked
 from session import create_session
+from data import load_list
 
 
 def html_moderation(default_timeline: str,
@@ -473,42 +474,40 @@ def html_moderation_info(translate: {}, base_dir: str,
         blocking_reasons_exist = False
         if os.path.isfile(blocking_reasons_filename):
             blocking_reasons_exist = True
-        try:
-            with open(blocking_filename, 'r', encoding='utf-8') as fp_block:
-                blocked_lines = fp_block.readlines()
-                blocked_str = ''
-                if blocked_lines:
-                    blocked_lines.sort()
-                    for line in blocked_lines:
-                        if not line:
-                            continue
-                        line = remove_eol(line).strip()
-                        if blocking_reasons_exist:
-                            blocking_reasons_file = blocking_reasons_filename
-                            reason = \
-                                get_global_block_reason(line,
-                                                        blocking_reasons_file)
-                            if reason:
-                                blocked_str += \
-                                    line + ' - ' + reason + '\n'
-                                continue
-                        blocked_str += line + '\n'
-                info_form += '<div class="container">\n'
-                info_form += \
-                    '  <br><b>' + \
-                    translate['Blocked accounts and hashtags'] + '</b>'
-                info_form += \
-                    '  <br>' + \
-                    translate[msg_str1]
-                info_form += \
-                    '  <textarea id="message" ' + \
-                    'name="blocked" style="height:2000px" ' + \
-                    'spellcheck="false">' + blocked_str + '</textarea>\n'
-                info_form += '</div>\n'
-                info_shown = True
-        except OSError as exc:
-            print('EX: html_moderation_info unable to read 2 ' +
-                  blocking_filename + ' ' + str(exc))
+        blocked_lines: list[str] = \
+            load_list(blocking_filename,
+                      'EX: html_moderation_info unable to read 2 ' +
+                      blocking_filename + ' [ex]')
+        blocked_str = ''
+        if blocked_lines:
+            blocked_lines.sort()
+            for line in blocked_lines:
+                if not line:
+                    continue
+                line = remove_eol(line).strip()
+                if blocking_reasons_exist:
+                    blocking_reasons_file = blocking_reasons_filename
+                    reason = \
+                        get_global_block_reason(line,
+                                                blocking_reasons_file)
+                    if reason:
+                        blocked_str += \
+                            line + ' - ' + reason + '\n'
+                        continue
+                blocked_str += line + '\n'
+        info_form += '<div class="container">\n'
+        info_form += \
+            '  <br><b>' + \
+            translate['Blocked accounts and hashtags'] + '</b>'
+        info_form += \
+            '  <br>' + \
+            translate[msg_str1]
+        info_form += \
+            '  <textarea id="message" ' + \
+            'name="blocked" style="height:2000px" ' + \
+            'spellcheck="false">' + blocked_str + '</textarea>\n'
+        info_form += '</div>\n'
+        info_shown = True
 
     filters_filename = dir_str + '/filters.txt'
     if os.path.isfile(filters_filename):
