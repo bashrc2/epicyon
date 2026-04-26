@@ -87,6 +87,8 @@ from speaker import update_speaker
 from webapp_post import individual_post_as_html
 from webapp_hashtagswarm import store_hash_tags
 from data import save_string
+from data import append_string
+from data import load_string
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -161,20 +163,16 @@ def _notify_moved(base_dir: str, domain_full: str,
                 prev_actor_handle + ' ' + new_actor_handle + ' ' + url
 
             if os.path.isfile(moved_file):
-                try:
-                    with open(moved_file, 'r',
-                              encoding='utf-8') as fp_move:
-                        prev_moved_str = fp_move.read()
-                        if prev_moved_str == moved_str:
-                            continue
-                except OSError:
-                    print('EX: _notify_moved unable to read ' + moved_file)
-            try:
-                with open(moved_file, 'w+', encoding='utf-8') as fp_move:
-                    fp_move.write(moved_str)
-            except OSError:
-                print('EX: ERROR: unable to save moved notification ' +
-                      moved_file)
+                prev_moved_str = \
+                    load_string(moved_file,
+                                'EX: _notify_moved unable to read ' +
+                                moved_file)
+                if prev_moved_str:
+                    if prev_moved_str == moved_str:
+                        continue
+            save_string(moved_str, moved_file,
+                        'EX: ERROR: unable to save moved notification ' +
+                        moved_file)
         break
 
 
@@ -277,29 +275,29 @@ def _person_receive_update(base_dir: str,
            new_nickname and new_domain_full:
             new_actor = prev_nickname + '@' + prev_domain_full + ' ' + \
                 new_nickname + '@' + new_domain_full
-            refollow_str = ''
+            refollow_str: str = ''
             refollow_filename = data_dir(base_dir) + '/actors_moved.txt'
             refollow_file_exists = False
             if os.path.isfile(refollow_filename):
-                try:
-                    with open(refollow_filename, 'r',
-                              encoding='utf-8') as fp_refollow:
-                        refollow_str = fp_refollow.read()
-                        refollow_file_exists = True
-                except OSError:
-                    print('EX: _person_receive_update unable to read ' +
-                          refollow_filename)
+                refollow_str = \
+                    load_string(refollow_filename,
+                                'EX: _person_receive_update unable to read ' +
+                                refollow_filename)
+                if refollow_str is not None:
+                    refollow_file_exists = True
             if new_actor not in refollow_str:
                 refollow_type = 'w+'
                 if refollow_file_exists:
                     refollow_type = 'a+'
-                try:
-                    with open(refollow_filename, refollow_type,
-                              encoding='utf-8') as fp_refollow:
-                        fp_refollow.write(new_actor + '\n')
-                except OSError:
-                    print('EX: _person_receive_update unable to write to ' +
-                          refollow_filename)
+                if refollow_type == 'w+':
+                    save_string(new_actor + '\n', refollow_filename,
+                                'EX: ' +
+                                '_person_receive_update unable to write to ' +
+                                refollow_filename)
+                else:
+                    append_string(new_actor + '\n', refollow_filename,
+                                  'EX: _person_receive_update ' +
+                                  'unable to write to ' + refollow_filename)
                 prev_avatar_url = \
                     get_person_avatar_url(base_dir, person_json['id'],
                                           person_cache)
@@ -897,26 +895,18 @@ def _like_notify(base_dir: str, domain: str,
     # was there a previous like notification?
     if os.path.isfile(prev_like_file):
         # is it the same as the current notification ?
-        try:
-            with open(prev_like_file, 'r', encoding='utf-8') as fp_like:
-                prev_like_str = fp_like.read()
-                if prev_like_str == like_str:
-                    return
-        except OSError:
-            print('EX: _like_notify unable to read ' + prev_like_file)
-    try:
-        with open(prev_like_file, 'w+', encoding='utf-8') as fp_like:
-            fp_like.write(like_str)
-    except OSError:
-        print('EX: ERROR: unable to save previous like notification ' +
-              prev_like_file)
-
-    try:
-        with open(like_file, 'w+', encoding='utf-8') as fp_like:
-            fp_like.write(like_str)
-    except OSError:
-        print('EX: ERROR: unable to write like notification file ' +
-              like_file)
+        prev_like_str = \
+            load_string(prev_like_file,
+                        'EX: _like_notify unable to read ' + prev_like_file)
+        if prev_like_str:
+            if prev_like_str == like_str:
+                return
+    save_string(like_str, prev_like_file,
+                'EX: ERROR: unable to save previous like notification ' +
+                prev_like_file)
+    save_string(like_str, like_file,
+                'EX: ERROR: unable to write like notification file ' +
+                like_file)
 
 
 def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
@@ -965,26 +955,19 @@ def _reaction_notify(base_dir: str, domain: str, onion_domain: str,
     # was there a previous reaction notification?
     if os.path.isfile(prev_reaction_file):
         # is it the same as the current notification ?
-        try:
-            with open(prev_reaction_file, 'r', encoding='utf-8') as fp_react:
-                prev_reaction_str = fp_react.read()
-                if prev_reaction_str == reaction_str:
-                    return
-        except OSError:
-            print('EX: _reaction_notify unable to read ' + prev_reaction_file)
-    try:
-        with open(prev_reaction_file, 'w+', encoding='utf-8') as fp_react:
-            fp_react.write(reaction_str)
-    except OSError:
-        print('EX: ERROR: unable to save previous reaction notification ' +
-              prev_reaction_file)
-
-    try:
-        with open(reaction_file, 'w+', encoding='utf-8') as fp_react:
-            fp_react.write(reaction_str)
-    except OSError:
-        print('EX: ERROR: unable to write reaction notification file ' +
-              reaction_file)
+        prev_reaction_str = \
+            load_string(prev_reaction_file,
+                        'EX: _reaction_notify unable to read ' +
+                        prev_reaction_file)
+        if prev_reaction_str is not None:
+            if prev_reaction_str == reaction_str:
+                return
+    save_string(reaction_str, prev_reaction_file,
+                'EX: ERROR: unable to save previous reaction notification ' +
+                prev_reaction_file)
+    save_string(reaction_str, reaction_file,
+                'EX: ERROR: unable to write reaction notification file ' +
+                reaction_file)
 
 
 def receive_like(recent_posts_cache: {},
@@ -2013,12 +1996,8 @@ def receive_announce(recent_posts_cache: {},
     if mitm:
         post_filename_mitm = \
             post_filename.replace('.json', '') + '.mitm'
-        try:
-            with open(post_filename_mitm, 'w+',
-                      encoding='utf-8') as fp_mitm:
-                fp_mitm.write('\n')
-        except OSError:
-            print('EX: unable to write mitm ' + post_filename_mitm)
+        save_string('\n', post_filename_mitm,
+                    'EX: unable to write mitm ' + post_filename_mitm)
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
@@ -2156,13 +2135,9 @@ def receive_announce(recent_posts_cache: {},
                                        translate, lookup_actor,
                                        theme_name, system_language,
                                        'inbox')
-                        try:
-                            with open(post_filename + '.tts', 'w+',
-                                      encoding='utf-8') as fp_tts:
-                                fp_tts.write('\n')
-                        except OSError:
-                            print('EX: unable to write recent post ' +
-                                  post_filename)
+                        save_string('\n', post_filename + '.tts',
+                                    'EX: unable to write recent post ' +
+                                    post_filename)
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
