@@ -148,6 +148,7 @@ from cwlists import get_cw_list_variable
 from cache import remove_avatar_from_cache
 from cache import store_person_in_cache
 from daemon_utils import post_to_outbox
+from data import save_string
 
 
 def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
@@ -250,12 +251,9 @@ def _profile_post_git_projects(base_dir: str, nickname: str, domain: str,
     git_projects_filename = \
         acct_dir(base_dir, nickname, domain) + '/gitprojects.txt'
     if fields.get('gitProjects'):
-        try:
-            with open(git_projects_filename, 'w+',
-                      encoding='utf-8') as fp_git:
-                fp_git.write(fields['gitProjects'].lower())
-        except OSError:
-            print('EX: unable to write git ' + git_projects_filename)
+        text = fields['gitProjects'].lower()
+        save_string(text, git_projects_filename,
+                    'EX: unable to write git ' + git_projects_filename)
     else:
         if os.path.isfile(git_projects_filename):
             try:
@@ -272,13 +270,9 @@ def _profile_post_peertube_instances(base_dir: str, fields: {}, self,
     peertube_instances_file = data_dir(base_dir) + '/peertube.txt'
     if fields.get('ptInstances'):
         peertube_instances.clear()
-        try:
-            with open(peertube_instances_file, 'w+',
-                      encoding='utf-8') as fp_peertube:
-                fp_peertube.write(fields['ptInstances'])
-        except OSError:
-            print('EX: unable to write peertube ' +
-                  peertube_instances_file)
+        save_string(fields['ptInstances'], peertube_instances_file,
+                    'EX: unable to write peertube ' +
+                    peertube_instances_file)
         pt_instances_list = fields['ptInstances'].split('\n')
         if pt_instances_list:
             for url in pt_instances_list:
@@ -331,13 +325,9 @@ def _profile_post_robots_txt(base_dir: str, fields: {}, self) -> None:
                           ' unable to delete ' +
                           robots_txt_filename)
         else:
-            try:
-                with open(robots_txt_filename, 'w+',
-                          encoding='utf-8') as fp_robots:
-                    fp_robots.write(new_robots_txt)
-            except OSError:
-                print('EX: _profile_post_robots_txt unable to save ' +
-                      robots_txt_filename)
+            save_string(new_robots_txt, robots_txt_filename,
+                        'EX: _profile_post_robots_txt unable to save ' +
+                        robots_txt_filename)
 
             self.server.robots_txt = new_robots_txt
 
@@ -449,13 +439,9 @@ def _profile_post_allowed_instances(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/allowedinstances.txt'
     if fields.get('allowedInstances'):
         inst_filename = allowed_instances_filename
-        try:
-            with open(inst_filename, 'w+',
-                      encoding='utf-8') as fp_inst:
-                fp_inst.write(fields['allowedInstances'])
-        except OSError:
-            print('EX: unable to write allowed instances ' +
-                  allowed_instances_filename)
+        save_string(fields['allowedInstances'], inst_filename,
+                    'EX: unable to write allowed instances ' +
+                    allowed_instances_filename)
     else:
         if os.path.isfile(allowed_instances_filename):
             try:
@@ -475,13 +461,10 @@ def _profile_post_dm_instances(base_dir: str, nickname: str, domain: str,
     dm_allowed_instances_filename = \
         acct_dir(base_dir, nickname, domain) + '/dmAllowedInstances.txt'
     if fields.get('dmAllowedInstances'):
-        try:
-            with open(dm_allowed_instances_filename, 'w+',
-                      encoding='utf-8') as fp_dm:
-                fp_dm.write(fields['dmAllowedInstances'])
-        except OSError:
-            print('EX: unable to write allowed DM instances ' +
-                  dm_allowed_instances_filename)
+        save_string(fields['dmAllowedInstances'],
+                    dm_allowed_instances_filename,
+                    'EX: unable to write allowed DM instances ' +
+                    dm_allowed_instances_filename)
     else:
         if os.path.isfile(dm_allowed_instances_filename):
             try:
@@ -523,13 +506,9 @@ def _profile_post_import_follows(base_dir: str, nickname: str, domain: str,
         follows_str = fields['importFollows']
         while follows_str.startswith('\n'):
             follows_str = follows_str[1:]
-        try:
-            with open(filename_base, 'w+',
-                      encoding='utf-8') as fp_foll:
-                fp_foll.write(follows_str)
-        except OSError:
-            print('EX: unable to write imported follows ' +
-                  filename_base)
+        save_string(follows_str, filename_base,
+                    'EX: unable to write imported follows ' +
+                    filename_base)
 
 
 def _profile_post_import_blocks_csv(base_dir: str, nickname: str, domain: str,
@@ -555,13 +534,9 @@ def _profile_post_auto_cw(base_dir: str, nickname: str, domain: str,
     auto_cw_filename = \
         acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if fields.get('autoCW'):
-        try:
-            with open(auto_cw_filename, 'w+',
-                      encoding='utf-8') as fp_auto_cw:
-                fp_auto_cw.write(fields['autoCW'])
-        except OSError:
-            print('EX: unable to write auto CW ' +
-                  auto_cw_filename)
+        save_string(fields['autoCW'], auto_cw_filename,
+                    'EX: unable to write auto CW ' +
+                    auto_cw_filename)
         self.server.auto_cw_cache[nickname] = fields['autoCW'].split('\n')
     else:
         if os.path.isfile(auto_cw_filename):
@@ -582,13 +557,9 @@ def _profile_post_autogenerated_tags(base_dir: str,
     auto_tags_filename = \
         acct_dir(base_dir, nickname, domain) + '/autotags.txt'
     if fields.get('autoTags'):
-        try:
-            with open(auto_tags_filename, 'w+',
-                      encoding='utf-8') as fp_auto:
-                fp_auto.write(fields['autoTags'])
-        except OSError:
-            print('EX: unable to write auto tags ' +
-                  auto_tags_filename)
+        save_string(fields['autoTags'], auto_tags_filename,
+                    'EX: unable to write auto tags ' +
+                    auto_tags_filename)
     else:
         if os.path.isfile(auto_tags_filename):
             try:
@@ -606,13 +577,9 @@ def _profile_post_word_replacements(base_dir: str,
     switch_filename = \
         acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
     if fields.get('switchwords'):
-        try:
-            with open(switch_filename, 'w+',
-                      encoding='utf-8') as fp_switch:
-                fp_switch.write(fields['switchwords'])
-        except OSError:
-            print('EX: unable to write switches ' +
-                  switch_filename)
+        save_string(fields['switchwords'], switch_filename,
+                    'EX: unable to write switches ' +
+                    switch_filename)
     else:
         if os.path.isfile(switch_filename):
             try:
@@ -631,13 +598,9 @@ def _profile_post_filtered_words_within_bio(base_dir: str,
     filter_bio_filename = \
         acct_dir(base_dir, nickname, domain) + '/filters_bio.txt'
     if fields.get('filteredWordsBio'):
-        try:
-            with open(filter_bio_filename, 'w+',
-                      encoding='utf-8') as fp_filter:
-                fp_filter.write(fields['filteredWordsBio'])
-        except OSError:
-            print('EX: unable to write bio filter ' +
-                  filter_bio_filename)
+        save_string(fields['filteredWordsBio'], filter_bio_filename,
+                    'EX: unable to write bio filter ' +
+                    filter_bio_filename)
     else:
         if os.path.isfile(filter_bio_filename):
             try:
@@ -654,13 +617,9 @@ def _profile_post_filtered_words(base_dir: str, nickname: str, domain: str,
     """
     filter_filename = acct_dir(base_dir, nickname, domain) + '/filters.txt'
     if fields.get('filteredWords'):
-        try:
-            with open(filter_filename, 'w+',
-                      encoding='utf-8') as fp_filter:
-                fp_filter.write(fields['filteredWords'])
-        except OSError:
-            print('EX: unable to write filter ' +
-                  filter_filename)
+        save_string(fields['filteredWords'], filter_filename,
+                    'EX: unable to write filter ' +
+                    filter_filename)
     else:
         if os.path.isfile(filter_filename):
             try:
@@ -773,13 +732,9 @@ def _profile_post_notify_reactions(base_dir: str,
     if on_final_welcome_screen:
         # default setting from welcome screen
         notify_react_filename = notify_reactions_filename
-        try:
-            with open(notify_react_filename, 'w+',
-                      encoding='utf-8') as fp_notify:
-                fp_notify.write('\n')
-        except OSError:
-            print('EX: unable to write notify reactions ' +
-                  notify_reactions_filename)
+        save_string('\n', notify_react_filename,
+                    'EX: unable to write notify reactions ' +
+                    notify_reactions_filename)
         actor_changed = True
     else:
         notify_reactions_active = False
@@ -787,14 +742,10 @@ def _profile_post_notify_reactions(base_dir: str,
             if fields['notifyReactions'] == 'on' and \
                not hide_reaction_button_active:
                 notify_reactions_active = True
-                try:
-                    with open(notify_reactions_filename, 'w+',
-                              encoding='utf-8') as fp_notify:
-                        fp_notify.write('\n')
-                except OSError:
-                    print('EX: unable to write ' +
-                          'notify reactions ' +
-                          notify_reactions_filename)
+                save_string('\n', notify_reactions_filename,
+                            'EX: unable to write ' +
+                            'notify reactions ' +
+                            notify_reactions_filename)
         if not notify_reactions_active:
             if os.path.isfile(notify_reactions_filename):
                 try:
@@ -815,13 +766,9 @@ def _profile_post_notify_likes(on_final_welcome_screen: bool,
     """
     if on_final_welcome_screen:
         # default setting from welcome screen
-        try:
-            with open(notify_likes_filename, 'w+',
-                      encoding='utf-8') as fp_notify:
-                fp_notify.write('\n')
-        except OSError:
-            print('EX: unable to write notify likes ' +
-                  notify_likes_filename)
+        save_string('\n', notify_likes_filename,
+                    'EX: unable to write notify likes ' +
+                    notify_likes_filename)
         actor_changed = True
     else:
         notify_likes_active = False
@@ -829,13 +776,9 @@ def _profile_post_notify_likes(on_final_welcome_screen: bool,
             if fields['notifyLikes'] == 'on' and \
                not hide_like_button_active:
                 notify_likes_active = True
-                try:
-                    with open(notify_likes_filename, 'w+',
-                              encoding='utf-8') as fp_notify:
-                        fp_notify.write('\n')
-                except OSError:
-                    print('EX: unable to write notify likes ' +
-                          notify_likes_filename)
+                save_string('\n', notify_likes_filename,
+                            'EX: unable to write notify likes ' +
+                            notify_likes_filename)
         if not notify_likes_active:
             if os.path.isfile(notify_likes_filename):
                 try:
@@ -935,13 +878,9 @@ def _profile_post_no_reply_boosts(base_dir: str, nickname: str, domain: str,
             no_reply_boosts = True
     if no_reply_boosts:
         if not os.path.isfile(no_reply_boosts_filename):
-            try:
-                with open(no_reply_boosts_filename, 'w+',
-                          encoding='utf-8') as fp_reply:
-                    fp_reply.write('\n')
-            except OSError:
-                print('EX: unable to write noReplyBoosts ' +
-                      no_reply_boosts_filename)
+            save_string('\n', no_reply_boosts_filename,
+                        'EX: unable to write noReplyBoosts ' +
+                        no_reply_boosts_filename)
     if not no_reply_boosts:
         if os.path.isfile(no_reply_boosts_filename):
             try:
@@ -964,13 +903,9 @@ def _profile_post_no_seen_posts(base_dir: str, nickname: str, domain: str,
             no_seen_posts = True
     if no_seen_posts:
         if not os.path.isfile(no_seen_posts_filename):
-            try:
-                with open(no_seen_posts_filename, 'w+',
-                          encoding='utf-8') as fp_seen:
-                    fp_seen.write('\n')
-            except OSError:
-                print('EX: unable to write noSeenPosts ' +
-                      no_seen_posts_filename)
+            save_string('\n', no_seen_posts_filename,
+                        'EX: unable to write noSeenPosts ' +
+                        no_seen_posts_filename)
     if not no_seen_posts:
         if os.path.isfile(no_seen_posts_filename):
             try:
@@ -994,13 +929,9 @@ def _profile_post_watermark_enabled(base_dir: str,
             watermark_enabled = True
     if watermark_enabled:
         if not os.path.isfile(watermark_enabled_filename):
-            try:
-                with open(watermark_enabled_filename, 'w+',
-                          encoding='utf-8') as fp_wm:
-                    fp_wm.write('\n')
-            except OSError:
-                print('EX: unable to write watermarkEnabled ' +
-                      watermark_enabled_filename)
+            save_string('\n', watermark_enabled_filename,
+                        'EX: unable to write watermarkEnabled ' +
+                        watermark_enabled_filename)
     if not watermark_enabled:
         if os.path.isfile(watermark_enabled_filename):
             try:
@@ -1029,13 +960,9 @@ def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
         actor_json['hideFollows'] = True
         actor_changed = True
         if not os.path.isfile(hide_follows_filename):
-            try:
-                with open(hide_follows_filename, 'w+',
-                          encoding='utf-8') as fp_hide:
-                    fp_hide.write('\n')
-            except OSError:
-                print('EX: unable to write hideFollows ' +
-                      hide_follows_filename)
+            save_string('\n', hide_follows_filename,
+                        'EX: unable to write hideFollows ' +
+                        hide_follows_filename)
     if not hide_follows:
         actor_json['hideFollows'] = False
         if self.server.hide_follows.get(nickname):
@@ -1069,13 +996,9 @@ def _profile_post_hide_recent_posts(base_dir: str, nickname: str, domain: str,
         actor_json['hideRecentPosts'] = True
         actor_changed = True
         if not os.path.isfile(hide_recent_posts_filename):
-            try:
-                with open(hide_recent_posts_filename, 'w+',
-                          encoding='utf-8') as fp_hide:
-                    fp_hide.write('\n')
-            except OSError:
-                print('EX: unable to write hideRecentPosts ' +
-                      hide_recent_posts_filename)
+            save_string('\n', hide_recent_posts_filename,
+                        'EX: unable to write hideRecentPosts ' +
+                        hide_recent_posts_filename)
     if not hide_recent_posts:
         actor_json['hideRecentPosts'] = False
         if self.server.hide_recent_posts.get(nickname):
@@ -1108,13 +1031,9 @@ def _profile_post_mutuals_replies(account_dir: str, fields: {}) -> None:
                       show_replies_mutuals_file)
     else:
         if show_replies_mutuals:
-            try:
-                with open(show_replies_mutuals_file, 'w+',
-                          encoding='utf-8') as fp_replies:
-                    fp_replies.write('\n')
-            except OSError:
-                print('EX: unable to write repliesFromMutualsOnly file ' +
-                      show_replies_mutuals_file)
+            save_string('\n', show_replies_mutuals_file,
+                        'EX: unable to write repliesFromMutualsOnly file ' +
+                        show_replies_mutuals_file)
 
 
 def _profile_post_only_follower_replies(fields: {},
@@ -1136,14 +1055,10 @@ def _profile_post_only_follower_replies(fields: {},
                       show_replies_followers_file)
     else:
         if show_replies_followers:
-            try:
-                with open(show_replies_followers_file, 'w+',
-                          encoding='utf-8') as fp_replies:
-                    fp_replies.write('\n')
-            except OSError:
-                print('EX: unable to write ' +
-                      'repliesFromFollowersOnly file ' +
-                      show_replies_followers_file)
+            save_string('\n', show_replies_followers_file,
+                        'EX: unable to write ' +
+                        'repliesFromFollowersOnly file ' +
+                        show_replies_followers_file)
 
 
 def _profile_post_show_quote_toots(fields: {}, account_dir: str) -> None:
@@ -1163,13 +1078,9 @@ def _profile_post_show_quote_toots(fields: {}, account_dir: str) -> None:
                       show_quote_toots_file)
     else:
         if show_quote_toots:
-            try:
-                with open(show_quote_toots_file, 'w+',
-                          encoding='utf-8') as fp_quotes:
-                    fp_quotes.write('\n')
-            except OSError:
-                print('EX: unable to write allowQuotes file ' +
-                      show_quote_toots_file)
+            save_string('\n', show_quote_toots_file,
+                        'EX: unable to write allowQuotes file ' +
+                        show_quote_toots_file)
 
 
 def _profile_post_show_questions(fields: {}, account_dir: str) -> None:
@@ -1189,13 +1100,9 @@ def _profile_post_show_questions(fields: {}, account_dir: str) -> None:
                       show_vote_file)
     else:
         if not show_vote_posts:
-            try:
-                with open(show_vote_file, 'w+',
-                          encoding='utf-8') as fp_votes:
-                    fp_votes.write('\n')
-            except OSError:
-                print('EX: unable to write noVotes file ' +
-                      show_vote_file)
+            save_string('\n', show_vote_file,
+                        'EX: unable to write noVotes file ' +
+                        show_vote_file)
 
 
 def _profile_post_reverse_timelines(base_dir: str, nickname: str,
@@ -1229,13 +1136,9 @@ def _profile_post_bold_reading(base_dir: str,
         if fields['boldReading'] == 'on':
             bold_reading = True
             self.server.bold_reading[nickname] = True
-            try:
-                with open(bold_reading_filename, 'w+',
-                          encoding='utf-8') as fp_bold:
-                    fp_bold.write('\n')
-            except OSError:
-                print('EX: unable to write bold reading ' +
-                      bold_reading_filename)
+            save_string('\n', bold_reading_filename,
+                        'EX: unable to write bold reading ' +
+                        bold_reading_filename)
     if not bold_reading:
         if self.server.bold_reading.get(nickname):
             del self.server.bold_reading[nickname]
@@ -1260,13 +1163,9 @@ def _profile_post_hide_reaction_button2(base_dir: str,
     if fields.get('hideReactionButton'):
         if fields['hideReactionButton'] == 'on':
             hide_reaction_button_active = True
-            try:
-                with open(hide_reaction_button_file, 'w+',
-                          encoding='utf-8') as fp_hide:
-                    fp_hide.write('\n')
-            except OSError:
-                print('EX: unable to write hide reaction ' +
-                      hide_reaction_button_file)
+            save_string('\n', hide_reaction_button_file,
+                        'EX: unable to write hide reaction ' +
+                        hide_reaction_button_file)
             # remove notify Reaction selection
             if os.path.isfile(notify_reactions_filename):
                 try:
@@ -1319,13 +1218,9 @@ def _profile_post_hide_like_button2(base_dir: str, nickname: str, domain: str,
     if fields.get('hideLikeButton'):
         if fields['hideLikeButton'] == 'on':
             hide_like_button_active = True
-            try:
-                with open(hide_like_button_file, 'w+',
-                          encoding='utf-8') as rfil:
-                    rfil.write('\n')
-            except OSError:
-                print('EX: unable to write hide like ' +
-                      hide_like_button_file)
+            save_string('\n', hide_like_button_file,
+                        'EX: unable to write hide like ' +
+                        hide_like_button_file)
             # remove notify likes selection
             if os.path.isfile(notify_likes_filename):
                 try:
@@ -1352,13 +1247,9 @@ def _profile_post_remove_retweets(base_dir: str, nickname: str, domain: str,
     if fields.get('removeTwitter'):
         if fields['removeTwitter'] == 'on':
             remove_twitter_active = True
-            try:
-                with open(remove_twitter_filename, 'w+',
-                          encoding='utf-8') as fp_remove:
-                    fp_remove.write('\n')
-            except OSError:
-                print('EX: unable to write remove twitter ' +
-                      remove_twitter_filename)
+            save_string('\n', remove_twitter_filename,
+                        'EX: unable to write remove twitter ' +
+                        remove_twitter_filename)
     if not remove_twitter_active:
         if os.path.isfile(remove_twitter_filename):
             try:
@@ -1378,26 +1269,18 @@ def _profile_post_dms_from_followers(base_dir: str, nickname: str, domain: str,
     if on_final_welcome_screen:
         # initial default setting created via
         # the welcome screen
-        try:
-            with open(follow_dms_filename, 'w+',
-                      encoding='utf-8') as fp_foll:
-                fp_foll.write('\n')
-        except OSError:
-            print('EX: unable to write follow DMs ' +
-                  follow_dms_filename)
+        save_string('\n', follow_dms_filename,
+                    'EX: unable to write follow DMs ' +
+                    follow_dms_filename)
         actor_changed = True
     else:
         follow_dms_active = False
         if fields.get('followDMs'):
             if fields['followDMs'] == 'on':
                 follow_dms_active = True
-                try:
-                    with open(follow_dms_filename, 'w+',
-                              encoding='utf-8') as fp_foll:
-                        fp_foll.write('\n')
-                except OSError:
-                    print('EX: unable to write follow DMs 2 ' +
-                          follow_dms_filename)
+                save_string('\n', follow_dms_filename,
+                            'EX: unable to write follow DMs 2 ' +
+                            follow_dms_filename)
         if not follow_dms_active:
             if os.path.isfile(follow_dms_filename):
                 try:
@@ -1492,12 +1375,8 @@ def _profile_post_reject_spam_actors(base_dir: str,
         curr_reject_spam_actors = True
     if reject_spam_actors != curr_reject_spam_actors:
         if reject_spam_actors:
-            try:
-                with open(actor_spam_filter_filename, 'w+',
-                          encoding='utf-8') as fp_spam:
-                    fp_spam.write('\n')
-            except OSError:
-                print('EX: unable to write reject spam actors')
+            save_string('\n', actor_spam_filter_filename,
+                        'EX: unable to write reject spam actors')
         else:
             try:
                 os.remove(actor_spam_filter_filename)
@@ -1897,13 +1776,9 @@ def _profile_post_ntfy_topic(base_dir: str, nickname: str, domain: str,
     """
     if fields.get('ntfyTopic'):
         ntfy_topic_file = acct_dir(base_dir, nickname, domain) + '/.ntfy_topic'
-        try:
-            with open(ntfy_topic_file, 'w+',
-                      encoding='utf-8') as fp_ntfy:
-                fp_ntfy.write(fields['ntfyTopic'])
-        except OSError:
-            print('EX: unable to save ntfy topic ' +
-                  ntfy_topic_file)
+        save_string(fields['ntfyTopic'], ntfy_topic_file,
+                    'EX: unable to save ntfy topic ' +
+                    ntfy_topic_file)
 
 
 def _profile_post_ntfy_url(base_dir: str, nickname: str, domain: str,
@@ -1912,13 +1787,9 @@ def _profile_post_ntfy_url(base_dir: str, nickname: str, domain: str,
     """
     if fields.get('ntfyUrl'):
         ntfy_url_file = acct_dir(base_dir, nickname, domain) + '/.ntfy_url'
-        try:
-            with open(ntfy_url_file, 'w+',
-                      encoding='utf-8') as fp_ntfy:
-                fp_ntfy.write(fields['ntfyUrl'])
-        except OSError:
-            print('EX: unable to save ntfy url ' +
-                  ntfy_url_file)
+        save_string(fields['ntfyUrl'], ntfy_url_file,
+                    'EX: unable to save ntfy url ' +
+                    ntfy_url_file)
 
 
 def _profile_post_cwtch_address(fields: {}, actor_json: {},
@@ -2699,12 +2570,8 @@ def _profile_post_change_city(base_dir: str, nickname: str, domain: str,
     """
     if fields.get('cityDropdown'):
         city_filename = acct_dir(base_dir, nickname, domain) + '/city.txt'
-        try:
-            with open(city_filename, 'w+',
-                      encoding='utf-8') as fp_city:
-                fp_city.write(fields['cityDropdown'])
-        except OSError:
-            print('EX: edit profile unable to write city ' + city_filename)
+        save_string(fields['cityDropdown'], city_filename,
+                    'EX: edit profile unable to write city ' + city_filename)
 
 
 def _profile_post_set_reply_interval(base_dir: str, nickname: str, domain: str,
