@@ -51,9 +51,6 @@ from utils import is_yggdrasil_address
 from formats import get_image_extensions
 from petnames import get_pet_name
 from session import download_image
-from data import load_string
-from data import save_string
-from data import append_string
 
 MUSIC_SITES = ('soundcloud.com', 'bandcamp.com', 'resonate.coop')
 
@@ -279,11 +276,12 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
     if not os.path.isfile(filename):
         return False
 
-    content = load_string(filename,
-                          'EX: unable to read css file ' + filename)
-    if content is None:
-        content = ''
-    content = content.lower()
+    content = None
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_css:
+            content = fp_css.read().lower()
+    except OSError:
+        print('EX: unable to read css file ' + filename)
 
     if not content:
         return False
@@ -332,11 +330,12 @@ def switch_words(base_dir: str, nickname: str, domain: str, content: str,
             acct_dir(base_dir, nickname, domain) + '/replacewords.txt'
         if not os.path.isfile(switch_words_filename):
             return content
-        rules_str = load_string(switch_words_filename,
-                                'EX: unable to read switches ' +
-                                switch_words_filename)
-        if rules_str:
-            rules = rules_str.split('\n')
+        try:
+            with open(switch_words_filename, 'r',
+                      encoding='utf-8') as fp_words:
+                rules = fp_words.readlines()
+        except OSError:
+            print('EX: unable to read switches ' + switch_words_filename)
 
     for line in rules:
         replace_str = remove_eol(line)
@@ -427,10 +426,12 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
     common_emoji_filename = data_dir(base_dir) + '/common_emoji.txt'
     common_emoji = None
     if os.path.isfile(common_emoji_filename):
-        common_emoji_str = load_string(common_emoji_filename,
-                                       'EX: unable to load common emoji file')
-        if common_emoji_str:
-            common_emoji = common_emoji_str.split('\n')
+        try:
+            with open(common_emoji_filename, 'r',
+                      encoding='utf-8') as fp_emoji:
+                common_emoji = fp_emoji.readlines()
+        except OSError:
+            print('EX: unable to load common emoji file')
     if common_emoji:
         new_common_emoji: list[str] = []
         emoji_found = False
@@ -451,17 +452,22 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
         if not emoji_found:
             new_common_emoji.append(str(1).zfill(16) + ' ' + emoji_content)
         new_common_emoji.sort(reverse=True)
-
-        text = ''
-        for line in new_common_emoji:
-            text += line + '\n'
-        if not save_string(text, common_emoji_filename,
-                           'EX: error writing common emoji 1'):
+        try:
+            with open(common_emoji_filename, 'w+',
+                      encoding='utf-8') as fp_emoji:
+                for line in new_common_emoji:
+                    fp_emoji.write(line + '\n')
+        except OSError:
+            print('EX: error writing common emoji 1')
             return
     else:
         line = str(1).zfill(16) + ' ' + emoji_content + '\n'
-        if not save_string(line, common_emoji_filename,
-                           'EX: error writing common emoji 2'):
+        try:
+            with open(common_emoji_filename, 'w+',
+                      encoding='utf-8') as fp_emoji:
+                fp_emoji.write(line)
+        except OSError:
+            print('EX: error writing common emoji 2')
             return
 
 
@@ -1268,10 +1274,11 @@ def _load_auto_tags(base_dir: str, nickname: str, domain: str) -> []:
     filename = acct_dir(base_dir, nickname, domain) + '/autotags.txt'
     if not os.path.isfile(filename):
         return []
-    fp_tags_str = load_string(filename,
-                              'EX: unable to read auto tags ' + filename)
-    if fp_tags_str:
-        return fp_tags_str.split('\n')
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_tags:
+            return fp_tags.readlines()
+    except OSError:
+        print('EX: unable to read auto tags ' + filename)
     return []
 
 
@@ -1412,13 +1419,12 @@ def load_dogwhistles(filename: str) -> {}:
     if not os.path.isfile(filename):
         return {}
     dogwhistle_lines: list[str] = []
-    dogwhistle_lines_str = \
-        load_string(filename,
-                    'EX: unable to load dogwhistles from ' + filename)
-    if dogwhistle_lines_str is None:
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp_dogwhistles:
+            dogwhistle_lines = fp_dogwhistles.readlines()
+    except OSError:
+        print('EX: unable to load dogwhistles from ' + filename)
         return {}
-    if dogwhistle_lines_str:
-        dogwhistle_lines = dogwhistle_lines_str.split('\n')
     separators = ('->', '=>', ',', ';', '|', '=')
     dogwhistles = {}
     for line in dogwhistle_lines:
@@ -1496,11 +1502,13 @@ def add_html_tags(base_dir: str, http_prefix: str,
     if '@' in words:
         if os.path.isfile(following_filename):
             following: list[str] = []
-            following_str = load_string(following_filename,
-                                        'EX: add_html_tags unable to read ' +
-                                        following_filename)
-            if following_str:
-                following = following_str.split('\n')
+            try:
+                with open(following_filename, 'r',
+                          encoding='utf-8') as fp_foll:
+                    following = fp_foll.readlines()
+            except OSError:
+                print('EX: add_html_tags unable to read ' +
+                      following_filename)
             for handle in following:
                 pet = get_pet_name(base_dir, nickname, domain, handle)
                 if pet:
@@ -2137,10 +2145,8 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
         return
     emoji_dict = load_json(base_dir + '/emoji/default_emoji.json')
     added = 0
-    lines_str = load_string(import_filename,
-                            'EX: import_emoji failed ' + import_filename)
-    if lines_str:
-        lines = lines_str.split('\n')
+    with open(import_filename, "r", encoding='utf-8') as fp_emoji:
+        lines = fp_emoji.readlines()
         for line in lines:
             if ', ' not in line:
                 continue
@@ -2284,12 +2290,12 @@ def remove_script(content: str, log_filename: str,
                     write_type: str = 'a+'
                     if os.path.isfile(log_filename):
                         write_type = 'w+'
-                    if write_type == 'a+':
-                        append_string(log_str, log_filename,
-                                      'EX: cannot append to svg script log')
-                    else:
-                        save_string(log_str, log_filename,
-                                    'EX: cannot save to svg script log')
+                    try:
+                        with open(log_filename, write_type,
+                                  encoding='utf-8') as fp_log:
+                            fp_log.write(log_str)
+                    except OSError:
+                        print('EX: cannot append to svg script log')
             content = content.replace(text, '')
     return content
 
@@ -2442,11 +2448,11 @@ def _load_auto_cw(base_dir: str, nickname: str, domain: str) -> []:
     auto_cw_filename = acct_dir(base_dir, nickname, domain) + '/autocw.txt'
     if not os.path.isfile(auto_cw_filename):
         return []
-    fp_auto_str = load_string(auto_cw_filename,
-                              'EX: unable to load auto cw file ' +
-                              auto_cw_filename)
-    if fp_auto_str:
-        return fp_auto_str.split('\n')
+    try:
+        with open(auto_cw_filename, 'r', encoding='utf-8') as fp_auto:
+            return fp_auto.read().split('\n')
+    except OSError:
+        print('EX: unable to load auto cw file ' + auto_cw_filename)
     return []
 
 
