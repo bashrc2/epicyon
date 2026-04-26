@@ -45,6 +45,8 @@ from session import get_json
 from session import get_json_valid
 from session import post_json
 from followerSync import remove_followers_sync
+from data import load_string
+from data import save_string
 
 
 def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
@@ -65,12 +67,16 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
             if not os.path.isdir(last_seen_dir):
                 os.mkdir(last_seen_dir)
             following_handles: list[str] = []
-            try:
-                with open(following_filename, 'r',
-                          encoding='utf-8') as fp_foll:
-                    following_handles = fp_foll.readlines()
-            except OSError:
-                print('EX: create_initial_last_seen ' + following_filename)
+            following_handles_str = \
+                load_string(following_filename,
+                            'EX: create_initial_last_seen ' +
+                            following_filename)
+            if following_handles_str:
+                following_handles2 = following_handles_str.split('\n')
+                for follhandle in following_handles2:
+                    if not follhandle:
+                        continue
+                    following_handles.append(follhandle + '\n')
             for handle in following_handles:
                 if '#' in handle:
                     continue
@@ -86,13 +92,10 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                     last_seen_dir + '/' + actor.replace('/', '#') + '.txt'
                 if os.path.isfile(last_seen_filename):
                     continue
-                try:
-                    with open(last_seen_filename, 'w+',
-                              encoding='utf-8') as fp_last:
-                        fp_last.write(str(100))
-                except OSError:
-                    print('EX: create_initial_last_seen 2 ' +
-                          last_seen_filename)
+                text = str(100)
+                save_string(text, last_seen_filename,
+                            'EX: create_initial_last_seen 2 ' +
+                            last_seen_filename)
         break
 
 
@@ -242,11 +245,14 @@ def get_follower_domains(base_dir: str, nickname: str, domain: str) -> []:
         return []
 
     lines: list[str] = []
-    try:
-        with open(followers_file, 'r', encoding='utf-8') as fp_foll:
-            lines = fp_foll.readlines()
-    except OSError:
-        print('EX: get_follower_domains ' + followers_file)
+    lines_str = load_string(followers_file,
+                            'EX: get_follower_domains ' + followers_file)
+    if lines_str:
+        lines2 = lines_str.split('\n')
+        for line in lines2:
+            if not line:
+                continue
+            lines.append(line + '\n')
 
     domains_list: list[str] = []
     for handle in lines:
@@ -278,12 +284,11 @@ def is_follower_of_person(base_dir: str, nickname: str, domain: str,
 
     already_following = False
 
-    followers_str = ''
-    try:
-        with open(followers_file, 'r', encoding='utf-8') as fp_foll:
-            followers_str = fp_foll.read()
-    except OSError:
-        print('EX: is_follower_of_person ' + followers_file)
+    followers_str = load_string(followers_file,
+                                'EX: is_follower_of_person ' +
+                                followers_file)
+    if followers_str is None:
+        followers_str = ''
 
     if handle in followers_str:
         already_following = True
@@ -333,11 +338,16 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
                   ' is not in ' + filename)
         return False
     lines: list[str] = []
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_unfoll:
-            lines = fp_unfoll.readlines()
-    except OSError:
-        print('EX: unfollow_account ' + filename)
+
+    lines_str = load_string(filename,
+                            'EX: unfollow_account ' + filename)
+    if lines_str:
+        lines2 = lines_str.split('\n')
+        for line in lines2:
+            if not line:
+                continue
+            lines.append(line + '\n')
+
     if lines:
         try:
             with open(filename, 'w+', encoding='utf-8') as fp_unfoll:
@@ -423,11 +433,14 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
         return 0
     ctr = 0
     lines: list[str] = []
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_foll:
-            lines = fp_foll.readlines()
-    except OSError:
-        print('EX: _get_no_of_follows ' + filename)
+    lines_str = load_string(filename,
+                            'EX: _get_no_of_follows ' + filename)
+    if lines_str:
+        lines2 = lines_str.split('\n')
+        for line in lines2:
+            if not line:
+                continue
+            lines.append(line + '\n')
     if lines:
         for line in lines:
             if '#' in line:
@@ -545,11 +558,14 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     page_ctr = 0
     total_ctr = 0
     lines: list[str] = []
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_foll:
-            lines = fp_foll.readlines()
-    except OSError:
-        print('EX: get_following_feed ' + filename)
+    lines_str = load_string(filename,
+                            'EX: get_following_feed ' + filename)
+    if lines_str:
+        lines2 = lines_str.split('\n')
+        for line in lines2:
+            if not line:
+                continue
+            lines.append(line + '\n')
     for line in lines:
         if '#' not in line:
             if '@' in line and not line.startswith('http'):
@@ -631,12 +647,15 @@ def no_of_follow_requests(base_dir: str,
         return 0
     ctr = 0
     lines: list[str] = []
-    try:
-        with open(approve_follows_filename, 'r',
-                  encoding='utf-8') as fp_approve:
-            lines = fp_approve.readlines()
-    except OSError:
-        print('EX: no_of_follow_requests ' + approve_follows_filename)
+    lines_str = load_string(approve_follows_filename,
+                            'EX: no_of_follow_requests ' +
+                            approve_follows_filename)
+    if lines_str:
+        lines2 = lines_str.split('\n')
+        for line in lines2:
+            if not line:
+                continue
+            lines.append(line + '\n')
     if lines:
         if follow_type == "onion":
             for file_line in lines:
