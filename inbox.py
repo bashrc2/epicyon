@@ -138,9 +138,6 @@ from inbox_receive_undo import receive_undo_reaction
 from inbox_receive_undo import receive_undo_bookmark
 from inbox_receive_undo import receive_undo_announce
 from inbox_receive_undo import receive_undo
-from data import save_string
-from data import load_string
-from data import append_string
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -170,8 +167,11 @@ def _store_last_post_id(base_dir: str, nickname: str, domain: str,
         if os.path.isdir(account_dir):
             os.mkdir(lastpost_dir)
     actor_filename = lastpost_dir + '/' + actor.replace('/', '#')
-    save_string(post_id, actor_filename,
-                'EX: Unable to write last post id to ' + actor_filename)
+    try:
+        with open(actor_filename, 'w+', encoding='utf-8') as fp_actor:
+            fp_actor.write(post_id)
+    except OSError:
+        print('EX: Unable to write last post id to ' + actor_filename)
 
 
 def _inbox_store_post_to_html_cache(recent_posts_cache: {},
@@ -1005,13 +1005,21 @@ def populate_replies(base_dir: str, http_prefix: str, domain: str,
         if num_lines > max_replies:
             return False
         if not text_in_file(message_id, post_replies_filename):
-            append_string(message_id + '\n', post_replies_filename,
-                          'EX: populate_replies unable to append ' +
-                          post_replies_filename)
+            try:
+                with open(post_replies_filename, 'a+',
+                          encoding='utf-8') as fp_replies:
+                    fp_replies.write(message_id + '\n')
+            except OSError:
+                print('EX: populate_replies unable to append ' +
+                      post_replies_filename)
     else:
-        save_string(message_id + '\n', post_replies_filename,
-                    'EX: populate_replies unable to write ' +
-                    post_replies_filename)
+        try:
+            with open(post_replies_filename, 'w+',
+                      encoding='utf-8') as fp_replies:
+                fp_replies.write(message_id + '\n')
+        except OSError:
+            print('EX: populate_replies unable to write ' +
+                  post_replies_filename)
     return True
 
 
@@ -1084,7 +1092,11 @@ def _dm_notify(base_dir: str, handle: str, url: str) -> None:
         return
     dm_file = account_dir + '/.newDM'
     if not os.path.isfile(dm_file):
-        save_string(url, dm_file, 'EX: _dm_notify unable to write ' + dm_file)
+        try:
+            with open(dm_file, 'w+', encoding='utf-8') as fp_dm:
+                fp_dm.write(url)
+        except OSError:
+            print('EX: _dm_notify unable to write ' + dm_file)
 
 
 def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
@@ -1098,15 +1110,18 @@ def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
     notify_file = account_dir + '/.newNotifiedPost'
     if os.path.isfile(notify_file):
         # check that the same notification is not repeatedly sent
-        existing_notification_message = \
-            load_string(notify_file,
-                        'EX: _notify_post_arrival unable to read ' +
-                        notify_file)
-        if existing_notification_message:
-            if url in existing_notification_message:
-                return
-    save_string(url, notify_file,
-                'EX: _notify_post_arrival unable to write ' + notify_file)
+        try:
+            with open(notify_file, 'r', encoding='utf-8') as fp_notify:
+                existing_notification_message = fp_notify.read()
+                if url in existing_notification_message:
+                    return
+        except OSError:
+            print('EX: _notify_post_arrival unable to read ' + notify_file)
+    try:
+        with open(notify_file, 'w+', encoding='utf-8') as fp_notify:
+            fp_notify.write(url)
+    except OSError:
+        print('EX: _notify_post_arrival unable to write ' + notify_file)
 
 
 def _reply_notify(base_dir: str, handle: str, url: str) -> None:
@@ -1117,8 +1132,11 @@ def _reply_notify(base_dir: str, handle: str, url: str) -> None:
         return
     reply_file = account_dir + '/.newReply'
     if not os.path.isfile(reply_file):
-        save_string(url, reply_file,
-                    'EX: _reply_notify unable to write ' + reply_file)
+        try:
+            with open(reply_file, 'w+', encoding='utf-8') as fp_reply:
+                fp_reply.write(url)
+        except OSError:
+            print('EX: _reply_notify unable to write ' + reply_file)
 
 
 def _git_patch_notify(base_dir: str, handle: str, subject: str,
@@ -1131,8 +1149,11 @@ def _git_patch_notify(base_dir: str, handle: str, subject: str,
     patch_file = account_dir + '/.newPatch'
     subject = subject.replace('[PATCH]', '').strip()
     handle = '@' + from_nickname + '@' + from_domain
-    save_string('git ' + handle + ' ' + subject, patch_file,
-                'EX: _git_patch_notify unable to write ' + patch_file)
+    try:
+        with open(patch_file, 'w+', encoding='utf-8') as fp_patch:
+            fp_patch.write('git ' + handle + ' ' + subject)
+    except OSError:
+        print('EX: _git_patch_notify unable to write ' + patch_file)
 
 
 def _group_handle(base_dir: str, handle: str) -> bool:
@@ -1341,18 +1362,22 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
     days_since_epoch = (curr_time - date_epoch()).days
     # has the value changed?
     if os.path.isfile(last_seen_filename):
-        days_since_epoch_file = \
-            load_string(last_seen_filename,
-                        'EX: _update_last_seen unable to read ' +
-                        last_seen_filename)
-        if days_since_epoch_file:
-            if int(days_since_epoch_file) == days_since_epoch:
-                # value hasn't changed, so we can save writing
-                # anything to file
-                return
-    days_since_epoch_str = str(days_since_epoch)
-    save_string(days_since_epoch_str, last_seen_filename,
-                'EX: _update_last_seen unable to write ' + last_seen_filename)
+        try:
+            with open(last_seen_filename, 'r',
+                      encoding='utf-8') as fp_last_seen:
+                days_since_epoch_file = fp_last_seen.read()
+                if int(days_since_epoch_file) == days_since_epoch:
+                    # value hasn't changed, so we can save writing
+                    # anything to file
+                    return
+        except OSError:
+            print('EX: _update_last_seen unable to read ' + last_seen_filename)
+    try:
+        with open(last_seen_filename, 'w+',
+                  encoding='utf-8') as fp_last_seen:
+            fp_last_seen.write(str(days_since_epoch))
+    except OSError:
+        print('EX: _update_last_seen unable to write ' + last_seen_filename)
 
 
 def _bounce_dm(sender_post_id: str, session, http_prefix: str,
@@ -2529,9 +2554,13 @@ def _inbox_after_initial(server, inbox_start_time,
                 # via a third party
                 destination_filename_mitm = \
                     destination_filename.replace('.json', '') + '.mitm'
-                save_string('\n', destination_filename_mitm,
-                            'EX: _inbox_after_initial unable to write ' +
-                            destination_filename_mitm)
+                try:
+                    with open(destination_filename_mitm, 'w+',
+                              encoding='utf-8') as fp_mitm:
+                        fp_mitm.write('\n')
+                except OSError:
+                    print('EX: _inbox_after_initial unable to write ' +
+                          destination_filename_mitm)
 
             _low_frequency_post_notification(base_dir, http_prefix,
                                              nickname, domain, port,
@@ -2546,9 +2575,13 @@ def _inbox_after_initial(server, inbox_start_time,
             if is_reply_to_muted_post:
                 print('MUTE REPLY: ' + destination_filename)
                 destination_filename_muted = destination_filename + '.muted'
-                save_string('\n', destination_filename_muted,
-                            'EX: _inbox_after_initial unable to write 2 ' +
-                            destination_filename_muted)
+                try:
+                    with open(destination_filename_muted, 'w+',
+                              encoding='utf-8') as fp_mute:
+                        fp_mute.write('\n')
+                except OSError:
+                    print('EX: _inbox_after_initial unable to write 2 ' +
+                          destination_filename_muted)
 
             # is this an edit of a previous post?
             # in Mastodon "delete and redraft"
@@ -3049,9 +3082,13 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
                     already_unknown = True
 
             if not already_unknown:
-                append_string(unknown_context + '\n', unknown_contexts_file,
-                              'EX: _check_json_signature unable to append ' +
-                              unknown_contexts_file)
+                try:
+                    with open(unknown_contexts_file, 'a+',
+                              encoding='utf-8') as fp_unknown:
+                        fp_unknown.write(unknown_context + '\n')
+                except OSError:
+                    print('EX: _check_json_signature unable to append ' +
+                          unknown_contexts_file)
     else:
         print('Unrecognized jsonld signature type: ' + jwebsig_type)
 
@@ -3064,9 +3101,13 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
                 already_unknown = True
 
         if not already_unknown:
-            append_string(jwebsig_type + '\n', unknown_signatures_file,
-                          'EX: _check_json_signature unable to append ' +
-                          unknown_signatures_file)
+            try:
+                with open(unknown_signatures_file, 'a+',
+                          encoding='utf-8') as fp_unknown:
+                    fp_unknown.write(jwebsig_type + '\n')
+            except OSError:
+                print('EX: _check_json_signature unable to append ' +
+                      unknown_signatures_file)
     return has_json_signature, jwebsig_type
 
 
@@ -3363,9 +3404,13 @@ def _receive_follow_request(session, session_onion, session_i2p,
                               'Failed to write entry to followers file ' +
                               str(ex))
             else:
-                save_string(approve_handle + '\n', followers_filename,
-                            'EX: _receive_follow_request unable to write ' +
-                            followers_filename)
+                try:
+                    with open(followers_filename, 'w+',
+                              encoding='utf-8') as fp_followers:
+                        fp_followers.write(approve_handle + '\n')
+                except OSError:
+                    print('EX: _receive_follow_request unable to write ' +
+                          followers_filename)
         else:
             print('ACCEPT: Follow Accept account directory not found: ' +
                   account_to_be_followed)
