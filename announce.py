@@ -40,7 +40,6 @@ from posts import get_person_box
 from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
-from data import save_string
 
 
 def no_of_announces(post_json_object: {}) -> int:
@@ -566,8 +565,11 @@ def mark_announce_as_seen(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(seen_filename):
         return
     announce_id = remove_id_ending(message_json['id'])
-    save_string(announce_id, seen_filename,
-                'EX: mark_announce_as_seen unable to write ' + seen_filename)
+    try:
+        with open(seen_filename, 'w+', encoding='utf-8') as fp_seen:
+            fp_seen.write(announce_id)
+    except OSError:
+        print('EX: mark_announce_as_seen unable to write ' + seen_filename)
 
 
 def undo_announce_collection_entry(recent_posts_cache: {},
