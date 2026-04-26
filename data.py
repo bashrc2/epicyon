@@ -37,21 +37,6 @@ def load_string(filename: str, exception_text: str) -> str:
     return None
 
 
-def load_list(filename: str, exception_text: str) -> str:
-    """Loads a list from file
-    This is used to replace readlines
-    """
-    lines: list[str] = []
-    lines_str = load_string(filename, exception_text)
-    if lines_str:
-        lines2 = lines_str.split('\n')
-        for line in lines2:
-            if not line:
-                continue
-            lines.append(line + '\n')
-    return lines
-
-
 def save_string(text: str, filename: str, exception_text: str) -> bool:
     """Saves a string to file
     """
