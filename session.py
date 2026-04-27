@@ -28,6 +28,8 @@ from mitm import detect_mitm
 from httpsig import create_signed_header
 from data import append_string
 from data import save_string
+from data import save_binary
+from data import load_binary
 
 
 def create_session(proxy_type: str):
@@ -765,14 +767,9 @@ def post_image(session, attach_image_filename: str, federation_list: [],
         content_type = 'image/svg+xml'
     headers['Content-type'] = content_type
 
-    media_binary = None
-    try:
-        with open(attach_image_filename, 'rb') as fp_av:
-            media_binary = fp_av.read()
-    except OSError:
-        print('EX: post_image unable to read binary ' +
-              attach_image_filename)
-
+    media_binary = load_binary(attach_image_filename,
+                               'EX: post_image unable to read binary ' +
+                               attach_image_filename)
     if media_binary:
         _set_user_agent(session, http_prefix, domain_full)
 
@@ -857,8 +854,8 @@ def download_image(session, url: str, image_filename: str, debug: bool,
             else:
                 media_binary = result.content
                 if binary_is_image(image_filename, media_binary):
-                    with open(image_filename, 'wb') as fp_im:
-                        fp_im.write(media_binary)
+                    if save_binary(media_binary, image_filename,
+                                   'EX: download image ' + url):
                         if debug:
                             print('Image downloaded from ' + url)
                         return True

@@ -14,6 +14,7 @@ from httpheaders import set_headers
 from httpheaders import set_headers_etag
 from utils import get_nickname_from_actor
 from blocking import export_blocking_file
+from data import load_binary
 
 
 def get_exported_blocks(self, path: str, base_dir: str,
@@ -43,12 +44,9 @@ def get_exported_theme(self, path: str, base_dir: str,
     filename = path.split('/exports/', 1)[1]
     filename = base_dir + '/exports/' + filename
     if os.path.isfile(filename):
-        export_binary = None
-        try:
-            with open(filename, 'rb') as fp_exp:
-                export_binary = fp_exp.read()
-        except OSError:
-            print('EX: unable to read theme export ' + filename)
+        export_binary = load_binary(filename,
+                                    'EX: unable to read theme export ' +
+                                    filename)
         if export_binary:
             export_type = 'application/zip'
             set_headers_etag(self, filename, export_type,

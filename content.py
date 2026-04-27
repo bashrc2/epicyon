@@ -53,6 +53,7 @@ from petnames import get_pet_name
 from session import download_image
 from data import load_string
 from data import save_string
+from data import save_binary
 from data import append_string
 
 MUSIC_SITES = ('soundcloud.com', 'bandcamp.com', 'resonate.coop')
@@ -1816,11 +1817,8 @@ def save_media_in_form_post(media_bytes, debug: bool,
                       'image binary not recognized ' + filename)
             return None, None
 
-    try:
-        with open(filename, 'wb') as fp_media:
-            fp_media.write(media_bytes[start_pos:])
-    except OSError:
-        print('EX: save_media_in_form_post unable to write media')
+    save_binary(media_bytes[start_pos:], filename,
+                'EX: save_media_in_form_post unable to write media')
 
     if not os.path.isfile(filename):
         if debug:

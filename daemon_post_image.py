@@ -14,6 +14,7 @@ from httpcodes import http_404
 from utils import acct_dir
 from utils import binary_is_image
 from formats import get_image_extension_from_mime_type
+from data import save_binary
 
 
 def receive_image_attachment(self, length: int, path: str, base_dir: str,
@@ -67,11 +68,9 @@ def receive_image_attachment(self, length: int, path: str, base_dir: str,
     if not binary_is_image(media_filename, media_bytes):
         print('WARN: _receive_image image binary is not recognized ' +
               media_filename)
-    try:
-        with open(media_filename, 'wb') as fp_av:
-            fp_av.write(media_bytes)
-    except OSError:
-        print('EX: receive_image_attachment unable to write ' + media_filename)
+    save_binary(media_bytes, media_filename,
+                'EX: receive_image_attachment unable to write ' +
+                media_filename)
     if debug:
         print('DEBUG: image saved to ' + media_filename)
     self.send_response(201)

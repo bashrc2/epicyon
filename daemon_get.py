@@ -221,6 +221,7 @@ from daemon_get_login import redirect_to_login_screen
 from daemon_get_login import show_login_screen
 from poison import html_poisoned
 from data import load_string
+from data import load_binary
 
 # Blogs can be longer, so don't show many per page
 MAX_POSTS_IN_BLOGS_FEED = 4
@@ -2642,15 +2643,12 @@ def daemon_http_get(self) -> None:
             tries = 0
             media_binary = None
             while tries < 5:
-                try:
-                    with open(media_filename, 'rb') as fp_av:
-                        media_binary = fp_av.read()
-                        break
-                except OSError as ex:
-                    print('EX: manifest logo ' +
-                          str(tries) + ' ' + str(ex))
-                    time.sleep(1)
-                    tries += 1
+                exc_str = 'EX: manifest logo ' + str(tries) + ' [ex]'
+                media_binary = load_binary(media_filename, exc_str)
+                if media_binary is not None:
+                    break
+                time.sleep(1)
+                tries += 1
             if media_binary:
                 mime_type = media_file_mime_type(media_filename)
                 set_headers_etag(self, media_filename, mime_type,
@@ -2683,15 +2681,12 @@ def daemon_http_get(self) -> None:
             tries = 0
             media_binary = None
             while tries < 5:
-                try:
-                    with open(screen_filename, 'rb') as fp_av:
-                        media_binary = fp_av.read()
-                        break
-                except OSError as ex:
-                    print('EX: manifest screenshot ' +
-                          str(tries) + ' ' + str(ex))
-                    time.sleep(1)
-                    tries += 1
+                exc_str = 'EX: manifest screenshot ' + str(tries) + ' [ex]'
+                media_binary = load_binary(screen_filename, exc_str)
+                if media_binary is not None:
+                    break
+                time.sleep(1)
+                tries += 1
             if media_binary:
                 mime_type = media_file_mime_type(screen_filename)
                 set_headers_etag(self, screen_filename, mime_type,
@@ -2724,15 +2719,12 @@ def daemon_http_get(self) -> None:
             tries = 0
             media_binary = None
             while tries < 5:
-                try:
-                    with open(icon_filename, 'rb') as fp_av:
-                        media_binary = fp_av.read()
-                        break
-                except OSError as ex:
-                    print('EX: login screen image ' +
-                          str(tries) + ' ' + str(ex))
-                    time.sleep(1)
-                    tries += 1
+                exc_str = 'EX: login screen image ' + str(tries) + ' [ex]'
+                media_binary = load_binary(icon_filename, exc_str)
+                if media_binary is not None:
+                    break
+                time.sleep(1)
+                tries += 1
             if media_binary:
                 mime_type_str = media_file_mime_type(icon_filename)
                 set_headers_etag(self, icon_filename,

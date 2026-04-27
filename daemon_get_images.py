@@ -30,6 +30,7 @@ from fitnessFunctions import fitness_performance
 from person import save_person_qrcode
 from lxmf import save_lxmf_qrcode
 from data import load_string
+from data import load_binary
 
 
 def show_avatar_or_banner(self, referer_domain: str, path: str,
@@ -109,12 +110,9 @@ def show_avatar_or_banner(self, referer_domain: str, path: str,
         last_modified_time.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
     media_image_type = get_image_mime_type(avatar_file)
-    media_binary = None
-    try:
-        with open(avatar_filename, 'rb') as fp_av:
-            media_binary = fp_av.read()
-    except OSError:
-        print('EX: unable to read avatar ' + avatar_filename)
+    media_binary = load_binary(avatar_filename,
+                               'EX: unable to read avatar ' +
+                               avatar_filename)
     if media_binary:
         set_headers_etag(self, avatar_filename, media_image_type,
                          media_binary, None,
@@ -138,12 +136,9 @@ def show_cached_avatar(self, referer_domain: str, path: str,
             # The file has not changed
             http_304(self)
             return
-        media_binary = None
-        try:
-            with open(media_filename, 'rb') as fp_av:
-                media_binary = fp_av.read()
-        except OSError:
-            print('EX: unable to read cached avatar ' + media_filename)
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read cached avatar ' +
+                                   media_filename)
         if media_binary:
             mime_type = media_file_mime_type(media_filename)
             set_headers_etag(self, media_filename,
@@ -188,12 +183,9 @@ def show_help_screen_image(self, path: str,
         http_304(self)
         return
     if os.path.isfile(media_filename):
-        media_binary = None
-        try:
-            with open(media_filename, 'rb') as fp_av:
-                media_binary = fp_av.read()
-        except OSError:
-            print('EX: unable to read help image ' + media_filename)
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read help image ' +
+                                   media_filename)
         if media_binary:
             mime_type = media_file_mime_type(media_filename)
             set_headers_etag(self, media_filename,
@@ -239,13 +231,9 @@ def show_manual_image(self, path: str,
                             debug)
         return
     if os.path.isfile(media_filename):
-        media_binary = None
-        try:
-            with open(media_filename, 'rb') as fp_av:
-                media_binary = fp_av.read()
-        except OSError:
-            print('EX: unable to read manual image ' +
-                  media_filename)
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read manual image ' +
+                                   media_filename)
         if media_binary:
             mime_type = media_file_mime_type(media_filename)
             set_headers_etag(self, media_filename,
@@ -292,13 +280,9 @@ def show_specification_image(self, path: str,
                             debug)
         return
     if os.path.isfile(media_filename):
-        media_binary = None
-        try:
-            with open(media_filename, 'rb') as fp_av:
-                media_binary = fp_av.read()
-        except OSError:
-            print('EX: unable to read specification image ' +
-                  media_filename)
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read specification image ' +
+                                   media_filename)
         if media_binary:
             mime_type = media_file_mime_type(media_filename)
             set_headers_etag(self, media_filename,
@@ -337,12 +321,9 @@ def show_share_image(self, path: str,
         return True
 
     media_file_type = get_image_mime_type(media_filename)
-    media_binary = None
-    try:
-        with open(media_filename, 'rb') as fp_av:
-            media_binary = fp_av.read()
-    except OSError:
-        print('EX: unable to read binary ' + media_filename)
+    media_binary = load_binary(media_filename,
+                               'EX: unable to read binary ' +
+                               media_filename)
     if media_binary:
         set_headers_etag(self, media_filename,
                          media_file_type,
@@ -395,12 +376,9 @@ def show_icon(self, path: str,
                             '_GET', 'show_icon', debug)
         return
     if os.path.isfile(media_filename):
-        media_binary = None
-        try:
-            with open(media_filename, 'rb') as fp_av:
-                media_binary = fp_av.read()
-        except OSError:
-            print('EX: unable to read icon image ' + media_filename)
+        media_binary = load_binary(media_filename,
+                                   'EX: unable to read icon image ' +
+                                   media_filename)
         if media_binary:
             mime_type = media_file_mime_type(media_filename)
             set_headers_etag(self, media_filename,
@@ -463,12 +441,9 @@ def show_media(self, path: str, base_dir: str,
                 http_404(self, 32)
                 return
 
-            media_binary = None
-            try:
-                with open(media_filename, 'rb') as fp_av:
-                    media_binary = fp_av.read()
-            except OSError:
-                print('EX: unable to read media binary ' + media_filename)
+            media_binary = load_binary(media_filename,
+                                       'EX: unable to read media binary ' +
+                                       media_filename)
             if media_binary:
                 set_headers_etag(self, media_filename, media_file_type,
                                  media_binary, None,
@@ -522,14 +497,12 @@ def show_qrcode(self, calling_domain: str, path: str,
         tries = 0
         media_binary = None
         while tries < 5:
-            try:
-                with open(qr_filename, 'rb') as fp_av:
-                    media_binary = fp_av.read()
-                    break
-            except OSError as ex:
-                print('EX: _show_qrcode ' + str(tries) + ' ' + str(ex))
-                time.sleep(1)
-                tries += 1
+            exc_str = 'EX: _show_qrcode ' + str(tries) + ' [ex]'
+            media_binary = load_binary(qr_filename, exc_str)
+            if media_binary is not None:
+                break
+            time.sleep(1)
+            tries += 1
         if media_binary:
             mime_type = media_file_mime_type(qr_filename)
             set_headers_etag(self, qr_filename, mime_type,
@@ -571,15 +544,12 @@ def search_screen_banner(self, path: str,
         tries = 0
         media_binary = None
         while tries < 5:
-            try:
-                with open(banner_filename, 'rb') as fp_av:
-                    media_binary = fp_av.read()
-                    break
-            except OSError as ex:
-                print('EX: _search_screen_banner ' +
-                      str(tries) + ' ' + str(ex))
-                time.sleep(1)
-                tries += 1
+            exc_str = 'EX: _search_screen_banner ' + str(tries) + ' [ex]'
+            media_binary = load_binary(banner_filename, exc_str)
+            if media_binary is not None:
+                break
+            time.sleep(1)
+            tries += 1
         if media_binary:
             mime_type = media_file_mime_type(banner_filename)
             set_headers_etag(self, banner_filename, mime_type,
@@ -616,14 +586,12 @@ def column_image(self, side: str, path: str, base_dir: str, domain: str,
         tries = 0
         media_binary = None
         while tries < 5:
-            try:
-                with open(banner_filename, 'rb') as fp_av:
-                    media_binary = fp_av.read()
-                    break
-            except OSError as ex:
-                print('EX: _column_image ' + str(tries) + ' ' + str(ex))
-                time.sleep(1)
-                tries += 1
+            exc_str = 'EX: _column_image ' + str(tries) + ' [ex]'
+            media_binary = load_binary(banner_filename, exc_str)
+            if media_binary is not None:
+                break
+            time.sleep(1)
+            tries += 1
         if media_binary:
             mime_type = media_file_mime_type(banner_filename)
             set_headers_etag(self, banner_filename, mime_type,
@@ -659,15 +627,13 @@ def show_default_profile_background(self, base_dir: str, theme_name: str,
             tries = 0
             bg_binary = None
             while tries < 5:
-                try:
-                    with open(bg_filename, 'rb') as fp_av:
-                        bg_binary = fp_av.read()
-                        break
-                except OSError as ex:
-                    print('EX: _show_default_profile_background ' +
-                          str(tries) + ' ' + str(ex))
-                    time.sleep(1)
-                    tries += 1
+                exc_str = 'EX: _show_default_profile_background ' + \
+                    str(tries) + ' [ex]'
+                bg_binary = load_binary(bg_filename, exc_str)
+                if bg_binary is not None:
+                    break
+                time.sleep(1)
+                tries += 1
             if bg_binary:
                 if ext == 'jpg':
                     ext = 'jpeg'
@@ -711,15 +677,13 @@ def show_background_image(self, path: str,
                     tries = 0
                     bg_binary = None
                     while tries < 5:
-                        try:
-                            with open(bg_filename, 'rb') as fp_av:
-                                bg_binary = fp_av.read()
-                                break
-                        except OSError as ex:
-                            print('EX: _show_background_image ' +
-                                  str(tries) + ' ' + str(ex))
-                            time.sleep(1)
-                            tries += 1
+                        exc_str = 'EX: _show_background_image ' + \
+                            str(tries) + ' [ex]'
+                        bg_binary = load_binary(bg_filename, exc_str)
+                        if bg_binary is not None:
+                            break
+                        time.sleep(1)
+                        tries += 1
                     if bg_binary:
                         if ext == 'jpg':
                             ext = 'jpeg'
@@ -756,12 +720,9 @@ def show_emoji(self, path: str,
                 return
 
             media_image_type = get_image_mime_type(emoji_filename)
-            media_binary = None
-            try:
-                with open(emoji_filename, 'rb') as fp_av:
-                    media_binary = fp_av.read()
-            except OSError:
-                print('EX: unable to read emoji image ' + emoji_filename)
+            media_binary = load_binary(emoji_filename,
+                                       'EX: unable to read emoji image ' +
+                                       emoji_filename)
             if media_binary:
                 set_headers_etag(self, emoji_filename,
                                  media_image_type,

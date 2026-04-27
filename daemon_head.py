@@ -24,6 +24,7 @@ from media import path_is_audio
 from daemon_utils import get_user_agent
 from daemon_utils import log_epicyon_instances
 from data import load_string
+from data import load_binary
 from data import save_string
 
 
@@ -126,13 +127,10 @@ def daemon_http_head(self) -> None:
                     if etag_str:
                         etag = etag_str
                 else:
-                    media_binary = None
-                    try:
-                        with open(media_filename, 'rb') as fp_av:
-                            media_binary = fp_av.read()
-                    except OSError:
-                        print('EX: unable to read media binary ' +
-                              media_filename)
+                    media_binary = \
+                        load_binary(media_filename,
+                                    'EX: unable to read media binary ' +
+                                    media_filename)
                     if media_binary:
                         etag = md5(media_binary).hexdigest()  # nosec
                         save_string(etag, media_tag_filename,

@@ -18,6 +18,7 @@ from utils import string_ends_with
 from utils import get_css
 from fitnessFunctions import fitness_performance
 from daemon_utils import etag_exists
+from data import load_binary
 
 
 def get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
@@ -101,12 +102,9 @@ def get_fonts(self, calling_domain: str, path: str,
                                 debug)
             return
         if os.path.isfile(font_filename):
-            font_binary = None
-            try:
-                with open(font_filename, 'rb') as fp_font:
-                    font_binary = fp_font.read()
-            except OSError:
-                print('EX: unable to load font ' + font_filename)
+            font_binary = load_binary(font_filename,
+                                      'EX: unable to load font ' +
+                                      font_filename)
             if font_binary:
                 set_headers_etag(self, font_filename,
                                  font_type,

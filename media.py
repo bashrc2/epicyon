@@ -31,6 +31,7 @@ from shutil import copyfile
 from shutil import rmtree
 from shutil import move
 from city import spoof_geolocation
+from data import load_binary
 
 
 # music file ID3 v1 genres
@@ -593,13 +594,9 @@ def _update_etag(media_filename: str) -> None:
         return
 
     # read the binary data
-    data = None
-    try:
-        with open(media_filename, 'rb') as fp_media:
-            data = fp_media.read()
-    except OSError:
-        print('EX: _update_etag unable to read ' + str(media_filename))
-
+    data = load_binary(media_filename,
+                       'EX: _update_etag unable to read ' +
+                       media_filename)
     if not data:
         return
     # calculate hash

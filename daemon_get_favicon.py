@@ -19,6 +19,7 @@ from daemon_utils import etag_exists
 from utils import get_config_param
 from utils import binary_is_image
 from formats import media_file_mime_type
+from data import load_binary
 
 
 def get_favicon(self, calling_domain: str,
@@ -81,12 +82,9 @@ def get_favicon(self, calling_domain: str,
             print('Sent favicon from cache: ' + calling_domain)
         return
     if os.path.isfile(favicon_filename):
-        fav_binary = None
-        try:
-            with open(favicon_filename, 'rb') as fp_fav:
-                fav_binary = fp_fav.read()
-        except OSError:
-            print('EX: unable to read favicon ' + favicon_filename)
+        fav_binary = load_binary(favicon_filename,
+                                 'EX: unable to read favicon ' +
+                                 favicon_filename)
         if fav_binary:
             set_headers_etag(self, favicon_filename,
                              fav_type,
@@ -131,12 +129,9 @@ def show_cached_favicon(self, referer_domain: str, path: str,
         # The file has not changed
         http_304(self)
         return
-    media_binary = None
-    try:
-        with open(fav_filename, 'rb') as fp_av:
-            media_binary = fp_av.read()
-    except OSError:
-        print('EX: unable to read cached favicon ' + fav_filename)
+    media_binary = load_binary(fav_filename,
+                               'EX: unable to read cached favicon ' +
+                               fav_filename)
     if media_binary:
         if binary_is_image(fav_filename, media_binary):
             mime_type = media_file_mime_type(fav_filename)

@@ -56,6 +56,7 @@ from session import download_image_any_mime_type
 from content import remove_script
 from data import load_list
 from data import load_string
+from data import save_binary
 
 
 def _remove_cdata(text: str) -> str:
@@ -198,11 +199,8 @@ def _download_newswire_feed_favicon(session, base_dir: str,
     fav_filename = get_fav_filename_from_url(base_dir, fav_url)
     if os.path.isfile(fav_filename):
         return True
-    try:
-        with open(fav_filename, 'wb+') as fp_fav:
-            fp_fav.write(image_data)
-    except OSError:
-        print('EX: failed writing favicon ' + fav_filename)
+    if not save_binary(image_data, fav_filename,
+                       'EX: failed writing favicon ' + fav_filename):
         return False
 
     return True

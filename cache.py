@@ -31,6 +31,8 @@ from formats import get_image_extensions
 from timeFunctions import date_from_string_format
 from timeFunctions import date_utcnow
 from content import remove_script
+from data import save_binary
+from data import load_binary
 
 
 def remove_person_from_cache(base_dir: str, person_url: str,
@@ -334,12 +336,8 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
                     continue
             else:
                 image_filename = test_image_filename
-            image_data = None
-            try:
-                with open(image_filename, 'rb') as fp_svg:
-                    image_data = fp_svg.read()
-            except OSError:
-                print('EX: unable to read svg file data')
+            image_data = load_binary(image_filename,
+                                     'EX: unable to read svg file data')
             if not image_data:
                 continue
             image_data = image_data.decode()
@@ -347,15 +345,9 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
                 remove_script(image_data, log_filename, actor, url)
             if cleaned_up != image_data:
                 # write the cleaned up svg image
-                svg_written = False
                 cleaned_up = cleaned_up.encode('utf-8')
-                try:
-                    with open(image_filename, 'wb') as fp_im:
-                        fp_im.write(cleaned_up)
-                        svg_written = True
-                except OSError:
-                    print('EX: unable to write cleaned up svg ' + url)
-                if svg_written:
+                if save_binary(cleaned_up, image_filename,
+                               'EX: unable to write cleaned up svg ' + url):
                     # convert to list if needed
                     if isinstance(obj['attachment'], dict):
                         obj['attachment'] = [obj['attachment']]

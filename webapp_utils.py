@@ -61,6 +61,7 @@ from shares import vf_proposal_from_share
 from webapp_pwa import get_pwa_theme_colors
 from data import load_list
 from data import save_string
+from data import save_binary
 from data import load_string
 
 
@@ -431,8 +432,9 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
             else:
                 media_binary = result.content
                 if binary_is_image(avatar_image_filename, media_binary):
-                    with open(avatar_image_filename, 'wb') as fp_av:
-                        fp_av.write(media_binary)
+                    if save_binary(media_binary, avatar_image_filename,
+                                   'EX: update_avatar_image_cache ' +
+                                   actor):
                         if debug:
                             print('avatar image downloaded for ' + actor)
                         return avatar_image_filename.replace(base_dir +
