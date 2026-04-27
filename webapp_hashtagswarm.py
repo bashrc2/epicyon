@@ -67,7 +67,7 @@ def get_hashtag_categories_feed(base_dir: str,
         rss_str += \
             '<item>\n' + \
             '  <title>' + escape_text(category_str) + '</title>\n'
-        list_str = ''
+        list_str: str = ''
         for hashtag in hashtag_list:
             if ':' in hashtag:
                 continue
@@ -104,7 +104,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
 
     # Load the blocked hashtags into memory.
     # This avoids needing to repeatedly load the blocked file for each hashtag
-    blocked_str = ''
+    blocked_str: str = ''
     global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
     if os.path.isfile(global_blocking_filename):
         blocked_str = \
@@ -112,7 +112,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
                         'EX: html_hash_tag_swarm unable to read ' +
                         global_blocking_filename)
         if blocked_str is None:
-            blocked_str = ''
+            blocked_str: str = ''
 
     for _, _, files in os.walk(base_dir + '/tags'):
         for fname in files:
@@ -215,7 +215,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     tag_swarm.sort()
 
     # swarm of categories
-    category_swarm_str = ''
+    category_swarm_str: str = ''
     if category_swarm:
         if len(category_swarm) > 3:
             category_swarm.sort()
@@ -232,7 +232,7 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
             category_swarm_str += '<br>\n'
 
     # swarm of tags
-    tag_swarm_str = ''
+    tag_swarm_str: str = ''
     for tag_name in tag_swarm:
         tag_display_name = tag_name
         tag_map_filename = \
@@ -382,7 +382,7 @@ def _store_tag_name(base_dir: str, nickname: str,
                               'EX: store_hash_tags failed to read ' +
                               tags_filename)
         if content is None:
-            content = ''
+            content: str = ''
         if post_url not in content:
             content = tag_line + content
             if save_string(content, tags_filename,

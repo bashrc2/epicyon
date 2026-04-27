@@ -128,7 +128,7 @@ def html_account_info(translate: {},
     signing_priv_key_pem = None
     msg_str1 = 'This account interacts with the following instances'
 
-    info_form = ''
+    info_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -232,7 +232,7 @@ def html_account_info(translate: {},
             'target="_blank" rel="nofollow noopener noreferrer">' + \
             post_domain + '</a> '
         if is_blocked_domain(base_dir, post_domain, None, block_federated):
-            blocked_posts_links = ''
+            blocked_posts_links: str = ''
             url_ctr = 0
             for url in blocked_post_urls:
                 if url_ctr > 0:
@@ -242,7 +242,7 @@ def html_account_info(translate: {},
                     'target="_blank" rel="nofollow noopener noreferrer">' + \
                     url + '</a>'
                 url_ctr += 1
-            blocked_posts_html = ''
+            blocked_posts_html: str = ''
             if blocked_posts_links:
                 block_no_str = 'blockNumber' + str(ctr)
                 blocked_posts_html = \
@@ -324,7 +324,7 @@ def html_account_info(translate: {},
         if minimum_word_count >= 3:
             info_form += '<div class="accountInfoDomains">\n'
             info_form += '<h1>' + translate['Word frequencies'] + '</h1>\n'
-            word_swarm = ''
+            word_swarm: str = ''
             ctr = 0
             for word, count in word_frequency.items():
                 if count >= minimum_word_count:
@@ -353,7 +353,7 @@ def html_moderation_info(translate: {}, base_dir: str,
     msg_str2 = \
         'Any blocks or suspensions made by moderators will be shown here.'
 
-    info_form = ''
+    info_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -418,8 +418,8 @@ def html_moderation_info(translate: {}, base_dir: str,
         if not actor_json:
             continue
         actor = actor_json['id']
-        avatar_url = ''
-        ext = ''
+        avatar_url: str = ''
+        ext: str = ''
         if actor_json.get('icon'):
             url_str = get_person_icon(actor_json)
             if url_str:
@@ -478,7 +478,7 @@ def html_moderation_info(translate: {}, base_dir: str,
             load_list(blocking_filename,
                       'EX: html_moderation_info unable to read 2 ' +
                       blocking_filename + ' [ex]')
-        blocked_str = ''
+        blocked_str: str = ''
         if blocked_lines:
             blocked_lines.sort()
             for line in blocked_lines:

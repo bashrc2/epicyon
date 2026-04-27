@@ -85,7 +85,7 @@ def html_conversation_view(authorized: bool, post_id: str,
         get_config_param(base_dir, 'instanceTitle')
     preload_images: list[str] = []
 
-    metadata_str = ''
+    metadata_str: str = ''
     if post_id:
         # https://swicg.github.io/activitypub-html-discovery/#html-link-element
         # link to the activitypub post
@@ -119,7 +119,7 @@ def html_conversation_view(authorized: bool, post_id: str,
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
-    current_reading_str = ''
+    current_reading_str: str = ''
     for post_json_object in conv_posts:
         show_individual_post_icons = True
         # if not authorized then only show public posts
@@ -180,7 +180,7 @@ def html_conversation_view(authorized: bool, post_id: str,
                 separator_str + post_str
 
         # show separator at the current reading point
-        current_reading_str = ''
+        current_reading_str: str = ''
         if post_json_object.get('id'):
             if isinstance(post_json_object['id'], str):
                 id_str = remove_id_ending(post_json_object['id'])

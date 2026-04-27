@@ -237,7 +237,7 @@ def remove_markup_tag(html: str, tag: str) -> str:
         return html
 
     section = html.split('<' + tag)
-    result = ''
+    result: str = ''
     for text in section:
         if not result:
             if html.startswith('<' + tag) and '>' in text:
@@ -249,7 +249,7 @@ def remove_markup_tag(html: str, tag: str) -> str:
 
     html = result
     section = html.split('</' + tag)
-    result = ''
+    result: str = ''
     for text in section:
         if not result:
             if html.startswith('</' + tag) and '>' in text:
@@ -292,8 +292,8 @@ def get_content_from_post(post_json_object: {}, system_language: str,
     if not this_post_json.get(content_type) and \
        not has_contentmap_dict:
         return ''
-    content = ''
-    replacements = {
+    content: str = ''
+    replacements: dict = {
         '&amp;': '&',
         '<u>': '',
         '</u>': ''
@@ -378,7 +378,7 @@ def get_media_descriptions_from_post(post_json_object: {}) -> str:
     post_attachments = get_post_attachments(post_json_object)
     if not post_attachments:
         return ''
-    descriptions = ''
+    descriptions: str = ''
     for attach in post_attachments:
         if not isinstance(attach, dict):
             print('WARN: attachment is not a dict ' + str(attach))
@@ -426,7 +426,7 @@ def get_summary_from_post(post_json_object: {}, system_language: str,
     if summary_str:
         summary_str = summary_str.strip()
         if not _valid_summary(summary_str):
-            summary_str = ''
+            summary_str: str = ''
     return summary_str
 
 
@@ -626,7 +626,7 @@ def remove_html(content: str) -> str:
         '<br>': '\n'
     }
     content = replace_strings(content, replacements)
-    result = ''
+    result: str = ''
     for char in content:
         if char == '<':
             removing = True
@@ -639,7 +639,7 @@ def remove_html(content: str) -> str:
 
     # insert spaces after full stops
     str_len = len(plain_text)
-    result = ''
+    result: str = ''
     for i in range(str_len):
         result += plain_text[i]
         if plain_text[i] == '.' and i < str_len - 1:
@@ -668,8 +668,8 @@ def remove_style_within_html(content: str) -> str:
     if ' style="' not in content:
         return content
     sections = content.split(' style="')
-    result = ''
-    ctr = 0
+    result: str = ''
+    ctr: int = 0
     for section_text in sections:
         if ctr > 0:
             result += section_text.split('"', 1)[1]
@@ -701,7 +701,7 @@ def get_memorials(base_dir: str) -> str:
     memorial_str = load_string(memorial_file,
                                'EX: unable to read ' + memorial_file)
     if memorial_str is None:
-        memorial_str = ''
+        memorial_str: str = ''
     return memorial_str
 
 
@@ -710,7 +710,7 @@ def set_memorials(base_dir: str, domain: str, memorial_str) -> None:
     """
     # check that the accounts exist
     memorial_list = memorial_str.split('\n')
-    new_memorial_str = ''
+    new_memorial_str: str = ''
     for memorial_item in memorial_list:
         memorial_nick = memorial_item.strip()
         check_dir = acct_dir(base_dir, memorial_nick, domain)
@@ -1600,7 +1600,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
     if os.path.isfile(unfollowed_filename):
         if text_in_file(handle_to_follow, unfollowed_filename):
             # remove them from the unfollowed file
-            new_lines = ''
+            new_lines: str = ''
             lines: list[str] = \
                 load_list(unfollowed_filename,
                           'EX: follow_person unable to read ' +
@@ -1804,7 +1804,7 @@ def _remove_attachment(base_dir: str, http_prefix: str,
             load_string(account_media_log_filename,
                         'EX: _remove unable to read media log for ' + nickname)
         if media_log_text is None:
-            media_log_text = ''
+            media_log_text: str = ''
         if search_filename + '\n' in media_log_text:
             media_log_text = media_log_text.replace(search_filename + '\n', '')
             save_string(media_log_text, account_media_log_filename,
@@ -2106,7 +2106,7 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
                     'EX: _delete_conversation_post unable to read ' +
                     conversation_filename)
     if conversation_str is None:
-        conversation_str = ''
+        conversation_str: str = ''
     if post_id + '\n' not in conversation_str:
         return False
     conversation_str = conversation_str.replace(post_id + '\n', '')
@@ -2182,7 +2182,7 @@ def _is_remote_dm(domain_full: str, post_json_object: {}) -> bool:
 def get_gemini_blog_title(message_json: dict, system_language: str) -> str:
     """Returns the title for a gemini blog post
     """
-    title_text = ''
+    title_text: str = ''
     title_str = get_summary_from_post(message_json, system_language, [])
     if title_str:
         title_text = remove_html(title_str)
@@ -2540,7 +2540,7 @@ def get_nickname_validation_pattern() -> str:
     """Returns a html text input validation pattern for nickname
     """
     reserved_names = _get_reserved_words()
-    pattern = ''
+    pattern: str = ''
     for word in reserved_names:
         if pattern:
             pattern += '(?!.*\\b' + word + '\\b)'
@@ -2706,7 +2706,7 @@ def camel_case_split(text: str) -> str:
                           '(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
     if not matches:
         return text
-    result_str = ''
+    result_str: str = ''
     for word in matches:
         result_str += word.group(0) + ' '
     return result_str.strip()
@@ -2723,9 +2723,9 @@ def _convert_to_camel_case(text: str) -> str:
     """
     if '_' not in text:
         return text
-    words = text.split('_')
-    result = ''
-    ctr = 0
+    words: list = text.split('_')
+    result: str = ''
+    ctr: int = 0
     for wrd in words:
         if ctr > 0:
             result += wrd.title()
@@ -2842,7 +2842,7 @@ def user_agent_domain(user_agent: str, debug: bool) -> str:
     """
     if 'https://' not in user_agent and 'http://' not in user_agent:
         return None
-    agent_domain = ''
+    agent_domain: str = ''
     if 'https://' in user_agent:
         agent_domain = user_agent.split('https://')[1].strip()
     else:
@@ -2950,7 +2950,7 @@ def get_port_from_domain(domain: str) -> int:
     if ':' in domain:
         if domain.startswith('did:'):
             return None
-        port_str = ''
+        port_str: str = ''
         if ']:' not in domain:
             if '[' not in domain:
                 port_str = domain.split(':')[1]
@@ -4148,8 +4148,8 @@ def get_image_file(base_dir: str, name: str, directory: str,
     """returns the filenames for an image with the given name
     """
     banner_extensions = get_image_extensions()
-    banner_file = ''
-    banner_filename = ''
+    banner_file: str = ''
+    banner_filename: str = ''
     im_name = name
     for ext in banner_extensions:
         banner_file_test = im_name + '.' + ext

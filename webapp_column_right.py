@@ -68,7 +68,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
                              access_keys: {}) -> str:
     """Returns html content for the right column
     """
-    html_str = ''
+    html_str: str = ''
 
     domain = remove_domain_port(domain_full)
 
@@ -98,7 +98,7 @@ def get_right_column_content(base_dir: str, nickname: str, domain_full: str,
         html_str += '<center>' + publish_button_str + '</center>'
 
     # show a column header image, eg. title of the theme or newswire banner
-    edit_image_class = ''
+    edit_image_class: str = ''
     if show_header_image:
         right_image_file, right_column_image_filename = \
             get_right_image_file(base_dir, nickname, domain, theme)
@@ -236,12 +236,12 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
     """Converts a newswire dict into html
     """
     separator_str = html_post_separator(base_dir, 'right')
-    html_str = ''
-    replacements1 = {
+    html_str: str = ''
+    replacements1: dict = {
         'T': ' ',
         'Z': ''
     }
-    replacements2 = {
+    replacements2: dict = {
         ' ': '__',
         ':': 'aa'
     }
@@ -265,7 +265,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
         date_str_link = replace_strings(date_str, replacements1)
         url = item[1]
         favicon_url = get_newswire_favicon_url(url)
-        favicon_link = ''
+        favicon_link: str = ''
         if favicon_url:
             cached_favicon_filename = \
                 get_fav_filename_from_url(base_dir, favicon_url)
@@ -302,7 +302,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
 
         html_str += separator_str
         if moderated_item and 'vote:' + nickname in item[2]:
-            total_votes_str = ''
+            total_votes_str: str = ''
             total_votes = 0
             if moderator:
                 total_votes = votes_on_newswire_item(item[2])
@@ -330,7 +330,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                 html_str += ' <span class="newswireDateVotedOn">'
                 html_str += date_shown + '</span></p>\n'
         else:
-            total_votes_str = ''
+            total_votes_str: str = ''
             total_votes = 0
             if moderator:
                 if moderated_item:
@@ -376,7 +376,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
                    theme: str) -> str:
     """Show the citations screen when creating a blog
     """
-    html_str = ''
+    html_str: str = ''
 
     # create a list of dates for citations
     # these can then be used to re-select checkboxes later
@@ -430,12 +430,12 @@ def html_citations(base_dir: str, nickname: str, domain: str,
     html_str += translate['Choose newswire items ' +
                           'referenced in your article'] + '<br>'
     if blog_title is None:
-        blog_title = ''
+        blog_title: str = ''
     html_str += \
         '    <input type="hidden" name="blogTitle" value="' + \
         blog_title + '">\n'
     if blog_content is None:
-        blog_content = ''
+        blog_content: str = ''
     html_str += \
         '    <input type="hidden" name="blogContent" value="' + \
         blog_content + '">\n'
@@ -460,7 +460,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
                 if ']' in item[0]:
                     item[0] = item[0].split(']')[0]
             # should this checkbox be selected?
-            selected_str = ''
+            selected_str: str = ''
             if date_str in citations_selected:
                 selected_str = ' checked'
 
@@ -502,7 +502,7 @@ def html_newswire_mobile(base_dir: str, nickname: str,
                          ua_str: str) -> str:
     """Shows the mobile version of the newswire right column
     """
-    html_str = ''
+    html_str: str = ''
 
     # the css filename
     css_filename = base_dir + '/epicyon-profile.css'
@@ -637,14 +637,14 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
         '    </div>\n'
 
     newswire_filename = data_dir(base_dir) + '/newswire.txt'
-    newswire_str = ''
+    newswire_str: str = ''
     if os.path.isfile(newswire_filename):
         newswire_str = \
             load_string(newswire_filename,
                         'EX: html_edit_newswire unable to read ' +
                         newswire_filename)
         if newswire_str is None:
-            newswire_str = ''
+            newswire_str: str = ''
 
     edit_newswire_form += \
         '<div class="container">'
@@ -661,7 +661,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
         'style="height:80vh" spellcheck="false">' + \
         newswire_str + '</textarea>'
 
-    filter_str = ''
+    filter_str: str = ''
     filter_filename = \
         data_dir(base_dir) + '/news@' + domain + '/filters.txt'
     if os.path.isfile(filter_filename):
@@ -670,7 +670,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
                         'EX: html_edit_newswire unable to read 2 ' +
                         filter_filename)
         if filter_str is None:
-            filter_str = ''
+            filter_str: str = ''
 
     edit_newswire_form += \
         '      <br><b><label class="labels">' + \
@@ -681,7 +681,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
         'name="filteredWordsNewswire" style="height:50vh" ' + \
         'spellcheck="true">' + filter_str + '</textarea>\n'
 
-    dogwhistle_str = ''
+    dogwhistle_str: str = ''
     for whistle, category in dogwhistles.items():
         if not category:
             continue
@@ -697,7 +697,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
         'name="dogwhistleWords" style="height:50vh" ' + \
         'spellcheck="true">' + dogwhistle_str + '</textarea>\n'
 
-    hashtag_rules_str = ''
+    hashtag_rules_str: str = ''
     hashtag_rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
     if os.path.isfile(hashtag_rules_filename):
         hashtag_rules_str = \
@@ -705,7 +705,7 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
                         'EX: html_edit_newswire unable to read 3 ' +
                         hashtag_rules_filename)
         if hashtag_rules_str is None:
-            hashtag_rules_str = ''
+            hashtag_rules_str: str = ''
 
     edit_newswire_form += \
         '      <br><b><label class="labels">' + \

@@ -73,14 +73,14 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
 
     # get the contents of the minimize file, which is
     # a set of handles
-    minimize_handles = ''
+    minimize_handles: str = ''
     if os.path.isfile(minimize_filename):
         print('Minimize file exists')
         minimize_handles = \
             load_string(minimize_filename,
                         'EX: minimize_attached_images ' + minimize_filename)
         if minimize_handles is None:
-            minimize_handles = ''
+            minimize_handles: str = ''
     else:
         # create a new minimize file from the following file
         print('Creating minimize file ' + minimize_filename)
@@ -177,7 +177,7 @@ def html_person_options(default_timeline: str,
                         system_language: str) -> str:
     """Show options for a person: view/follow/block/report
     """
-    options_link_str = ''
+    options_link_str: str = ''
     options_domain, options_port = get_domain_from_actor(options_actor)
     if not options_domain:
         return None
@@ -243,7 +243,7 @@ def html_person_options(default_timeline: str,
         if is_person_snoozed(base_dir, nickname, domain, options_actor):
             snooze_button_str = 'Unsnooze'
 
-    donate_str = ''
+    donate_str: str = ''
     if donate_url:
         donate_str = \
             '    <a href="' + donate_url + \
@@ -312,7 +312,7 @@ def html_person_options(default_timeline: str,
         handle_shown += ' 💤'
     if offline:
         handle_shown += ' [' + translate['offline'].upper() + ']'
-    mitm_str = ''
+    mitm_str: str = ''
     if options_domain in mitm_servers:
         mitm_str = ' ' + mitm_warning_html(translate)
     options_str += \
@@ -347,7 +347,7 @@ def html_person_options(default_timeline: str,
         new_domain, _ = get_domain_from_actor(moved_to)
         if new_nickname and new_domain:
             new_handle = new_nickname + '@' + new_domain
-            blocked_icon_str = ''
+            blocked_icon_str: str = ''
             if is_blocked(base_dir, nickname, domain,
                           new_nickname, new_domain, blocked_cache,
                           None):
@@ -728,7 +728,7 @@ def html_person_options(default_timeline: str,
             block_str + '" accesskey="' + access_keys['blockButton'] + '">' + \
             translate[block_str] + '</button>\n'
 
-        person_notes = ''
+        person_notes: str = ''
         if origin_path_str == '/users/' + nickname:
             person_notes = \
                 get_person_notes(base_dir, nickname, domain, handle)

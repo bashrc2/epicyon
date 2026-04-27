@@ -42,7 +42,7 @@ def get_pwa_theme_colors(css_filename: str) -> (str, str):
                           'EX: get_pwa_theme_colors unable to read ' +
                           css_filename)
     if css_str is None:
-        css_str = ''
+        css_str: str = ''
 
     pwa_theme_color = \
         _get_variable_from_css(css_str, 'pwa-theme-color')

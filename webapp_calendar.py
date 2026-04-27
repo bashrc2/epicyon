@@ -189,14 +189,14 @@ def _html_calendar_day(person_cache: {}, translate: {},
             event_time = None
             event_time_markup = None
             event_end_time = None
-            start_time_str = ''
-            end_time_str = ''
+            start_time_str: str = ''
+            end_time_str: str = ''
             event_description = None
             event_language = system_language
             event_place = None
             event_address = None
             post_id = None
-            sender_name = ''
+            sender_name: str = ''
             sender_actor = None
             event_is_public = False
             # get the time place and description
@@ -271,7 +271,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     event_description = \
                         translate['Reminder'] + ': ' + event_description
 
-            delete_button_str = ''
+            delete_button_str: str = ''
             if post_id:
                 delete_button_str = \
                     '<td class="calendar__day__icons"><a href="' + \
@@ -398,12 +398,12 @@ def html_calendar(person_cache: {}, translate: {},
     """
     domain = remove_domain_port(domain_full)
 
-    text_match = ''
-    default_year = 1970
-    default_month = 0
+    text_match: str = ''
+    default_year: int = 1970
+    default_month: int = 0
     month_number = default_month
     day_number = None
-    year = default_year
+    year: int = default_year
     actor = http_prefix + '://' + domain_full + path.replace('/calendar', '')
     only_show_reminders = False
     if '?' in actor:

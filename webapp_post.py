@@ -407,7 +407,7 @@ def prepare_html_post_nickname(nickname: str, post_html: str) -> str:
 
     user_found = True
     post_str = post_html
-    new_post_str = ''
+    new_post_str: str = ''
     while user_found:
         if users_str not in post_str:
             new_post_str += post_str
@@ -439,7 +439,7 @@ def replace_link_variable(link: str, variable_name: str, value: str,
         return link
 
     curr_str = link
-    result = ''
+    result: str = ''
     while full_var in curr_str:
         prefix = curr_str.split(full_var, 1)[0] + full_var
         next_str = curr_str.split(full_var, 1)[1]
@@ -449,7 +449,7 @@ def replace_link_variable(link: str, variable_name: str, value: str,
             curr_str = next_str
         else:
             result += prefix + value
-            curr_str = ''
+            curr_str: str = ''
     return result + curr_str
 
 
@@ -461,7 +461,7 @@ def _prepare_media_post_from_html_cache(post_html: str,
     'this tag is not supported in your browser'
     """
     sections = post_html.split('<' + media_type)
-    new_post_html = ''
+    new_post_html: str = ''
     for section_str in sections:
         ending_tag = '</' + media_type + '>'
         if ending_tag not in section_str:
@@ -469,8 +469,8 @@ def _prepare_media_post_from_html_cache(post_html: str,
             continue
         markup = section_str.split(ending_tag)[0]
         ending = section_str.split(ending_tag)[1]
-        url = ''
-        description = ''
+        url: str = ''
+        description: str = ''
         # get the video/audio url if it exists
         if ' src="' in markup:
             url = markup.split(' src="')[1]
@@ -534,7 +534,7 @@ def prepare_post_from_html_cache(nickname: str, post_html: str, box_name: str,
 
     # add first post in the timeline
     if first_post_id is None:
-        first_post_id = ''
+        first_post_id: str = ''
 
     first_post_id = first_post_id.replace('#', '/')
     if '?firstpost=' in with_page_number:
@@ -657,7 +657,7 @@ def _get_avatar_image_html(show_avatar_options: bool,
     if avatar_url.endswith('.svg'):
         avatar_url = '/icons/avatar_default.png'
 
-    avatar_link = ''
+    avatar_link: str = ''
     if '/users/news/' not in avatar_url:
         avatar_link = \
             '        <a class="imageAnchor" href="' + \
@@ -710,7 +710,7 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
                          conversation_id: str, convthread_id: str) -> str:
     """Returns html for the reply icon/button
     """
-    reply_str = ''
+    reply_str: str = ''
     if not (show_icons and comments_enabled):
         return reply_str
 
@@ -759,11 +759,11 @@ def _get_reply_icon_html(base_dir: str, nickname: str, domain: str,
 
     reply_to_link += page_number_param
 
-    reply_str = ''
+    reply_str: str = ''
     reply_to_this_post_str = 'Reply to this post'
     if translate.get(reply_to_this_post_str):
         reply_to_this_post_str = translate[reply_to_this_post_str]
-    conversation_str = ''
+    conversation_str: str = ''
     if conversation_id:
         if isinstance(conversation_id, str):
             conversation_str = '?conversationId=' + conversation_id
@@ -819,7 +819,7 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
                         first_post_id: str) -> str:
     """Returns html for the edit icon/button
     """
-    edit_str = ''
+    edit_str: str = ''
     actor = get_actor_from_post(post_json_object)
     # This should either be a post which you created,
     # or it could be generated from the newswire (see
@@ -834,12 +834,12 @@ def _get_edit_icon_html(base_dir: str, nickname: str, domain_full: str,
         if '/statuses/' not in post_id:
             return edit_str
 
-        reply_to = ''
+        reply_to: str = ''
         reply_id = get_reply_to(post_json_object['object'])
         if reply_id:
             reply_to = ';replyTo=' + reply_id
 
-        first_post_str = ''
+        first_post_str: str = ''
         if first_post_id:
             first_post_str = ';firstpost=' + first_post_id
 
@@ -978,7 +978,7 @@ def _get_announce_icon_html(is_announced: bool,
                             first_post_id: str) -> str:
     """Returns html for announce icon/button at the bottom of the post
     """
-    announce_str = ''
+    announce_str: str = ''
 
     if not show_repeat_icon:
         return announce_str
@@ -989,17 +989,17 @@ def _get_announce_icon_html(is_announced: bool,
     # don't allow announce/repeat of your own posts
     announce_icon = 'repeat_inactive.png'
     announce_link = 'repeat'
-    announce_emoji = ''
+    announce_emoji: str = ''
     if not is_public_repeat:
         announce_link = 'repeatprivate'
     repeat_this_post_str = 'Repeat this post'
     if translate.get(repeat_this_post_str):
         repeat_this_post_str = translate[repeat_this_post_str]
     announce_title = repeat_this_post_str
-    unannounce_link_str = ''
+    unannounce_link_str: str = ''
     announce_count = no_of_announces(post_json_object)
 
-    announce_count_str = ''
+    announce_count_str: str = ''
     if announce_count > 0:
         if announce_count <= max_announce_count:
             announce_count_str = ' (' + str(announce_count) + ')'
@@ -1009,7 +1009,7 @@ def _get_announce_icon_html(is_announced: bool,
                            post_actor, nickname, domain_full):
         if announce_count == 1:
             # announced by the reader only
-            announce_count_str = ''
+            announce_count_str: str = ''
         announce_icon = 'repeat.png'
         announce_emoji = '🔁 '
         announce_link = 'unrepeat'
@@ -1027,7 +1027,7 @@ def _get_announce_icon_html(is_announced: bool,
         remove_hash_from_post_id(post_json_object['object']['id'])
     announce_post_id = remove_id_ending(announce_post_id)
 
-    announce_str = ''
+    announce_str: str = ''
     if announce_count_str:
         announcers_post_id = announce_post_id.replace('/', '--')
         announcers_screen_link = \
@@ -1042,7 +1042,7 @@ def _get_announce_icon_html(is_announced: bool,
             announce_count_str.replace('(', '').replace(')', '').strip()
         announce_str += '</a></label>\n'
 
-    first_post_str = ''
+    first_post_str: str = ''
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
@@ -1079,18 +1079,18 @@ def _get_like_icon_html(nickname: str, domain_full: str,
     """
     if not show_like_button or is_moderation_post:
         return ''
-    like_str = ''
+    like_str: str = ''
     like_icon = 'like_inactive.png'
     like_link = 'like'
     like_title = 'Like this post'
     if translate.get(like_title):
         like_title = translate[like_title]
-    like_emoji = ''
+    like_emoji: str = ''
     like_count = no_of_likes(post_json_object)
 
     _log_post_timing(enable_timing_log, post_start_time, '12.1')
 
-    like_count_str = ''
+    like_count_str: str = ''
     if like_count > 0:
         if like_count <= max_like_count:
             like_count_str = ' (' + str(like_count) + ')'
@@ -1099,7 +1099,7 @@ def _get_like_icon_html(nickname: str, domain_full: str,
         if liked_by_person(post_json_object, nickname, domain_full):
             if like_count == 1:
                 # liked by the reader only
-                like_count_str = ''
+                like_count_str: str = ''
             like_icon = 'like.png'
             like_link = 'unlike'
             like_title = 'Undo the like'
@@ -1112,7 +1112,7 @@ def _get_like_icon_html(nickname: str, domain_full: str,
     like_post_id = remove_hash_from_post_id(post_json_object['id'])
     like_post_id = remove_id_ending(like_post_id)
 
-    like_str = ''
+    like_str: str = ''
     if like_count_str:
         likers_post_id = like_post_id.replace('/', '--')
         likers_screen_link = \
@@ -1129,7 +1129,7 @@ def _get_like_icon_html(nickname: str, domain_full: str,
         like_str += like_count_str.replace('(', '').replace(')', '').strip()
         like_str += '</a></label>\n'
 
-    first_post_str = ''
+    first_post_str: str = ''
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
@@ -1165,7 +1165,7 @@ def _get_bookmark_icon_html(base_dir: str,
                             post_url: str) -> str:
     """Returns html for bookmark icon/button
     """
-    bookmark_str = ''
+    bookmark_str: str = ''
 
     if is_moderation_post:
         return bookmark_str
@@ -1175,7 +1175,7 @@ def _get_bookmark_icon_html(base_dir: str,
 
     bookmark_icon = 'bookmark_inactive.png'
     bookmark_link = 'bookmark'
-    bookmark_emoji = ''
+    bookmark_emoji: str = ''
     bookmark_title = 'Bookmark this post'
     if translate.get(bookmark_title):
         bookmark_title = translate[bookmark_title]
@@ -1191,7 +1191,7 @@ def _get_bookmark_icon_html(base_dir: str,
         remove_hash_from_post_id(post_json_object['object']['id'])
     bookmark_post_id = remove_id_ending(bookmark_post_id)
 
-    first_post_str = ''
+    first_post_str: str = ''
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
@@ -1224,7 +1224,7 @@ def _get_reaction_icon_html(nickname: str, post_json_object: {},
                             first_post_id: str) -> str:
     """Returns html for reaction icon/button
     """
-    reaction_str = ''
+    reaction_str: str = ''
 
     if not show_reaction_button or is_moderation_post:
         return reaction_str
@@ -1238,7 +1238,7 @@ def _get_reaction_icon_html(nickname: str, post_json_object: {},
         remove_hash_from_post_id(post_json_object['object']['id'])
     reaction_post_id = remove_id_ending(reaction_post_id)
 
-    first_post_str = ''
+    first_post_str: str = ''
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
@@ -1271,13 +1271,13 @@ def _get_mute_icon_html(is_muted: bool,
                         first_post_id: str) -> str:
     """Returns html for mute icon/button
     """
-    mute_str = ''
+    mute_str: str = ''
     if (allow_deletion or
         ('/' + domain_full + '/' in post_actor and
          message_id.startswith(post_actor))):
         return mute_str
 
-    first_post_str = ''
+    first_post_str: str = ''
     if first_post_id:
         first_post_str = '?firstpost=' + first_post_id.replace('#', '/')
 
@@ -1326,7 +1326,7 @@ def _get_delete_icon_html(nickname: str, domain_full: str,
                           first_post_id: str) -> str:
     """Returns html for delete icon/button
     """
-    delete_str = ''
+    delete_str: str = ''
     if (allow_deletion or
         ('/' + domain_full + '/' in post_actor and
          message_id.startswith(post_actor))):
@@ -1336,7 +1336,7 @@ def _get_delete_icon_html(nickname: str, domain_full: str,
                 if translate.get(delete_this_post_str):
                     delete_this_post_str = translate[delete_this_post_str]
 
-                first_post_str = ''
+                first_post_str: str = ''
                 if first_post_id:
                     first_post_str = \
                         '?firstpost=' + first_post_id.replace('#', '/')
@@ -1360,7 +1360,7 @@ def _get_published_date_str(post_json_object: {},
                             timezone: str) -> str:
     """Return the html for the published date on a post
     """
-    published_str = ''
+    published_str: str = ''
 
     if not post_json_object['object'].get('published'):
         return published_str
@@ -1402,7 +1402,7 @@ def _get_blog_citations_html(box_name: str,
     """Returns blog citations as html
     """
     # show blog citations
-    citations_str = ''
+    citations_str: str = ''
     if box_name not in ('tlblogs', 'tlfeatures'):
         return citations_str
 
@@ -1517,8 +1517,8 @@ def _get_post_title_announce_html(base_dir: str,
     """Returns the announce title of a post containing names of participants
     x announces y
     """
-    title_str = ''
-    reply_avatar_image_in_post = ''
+    title_str: str = ''
+    reply_avatar_image_in_post: str = ''
     obj_json = post_json_object['object']
 
     # has no attribution
@@ -1530,7 +1530,7 @@ def _get_post_title_announce_html(base_dir: str,
 
     attributed_to = get_attributed_to(obj_json['attributedTo'])
     if attributed_to is None:
-        attributed_to = ''
+        attributed_to: str = ''
 
     # boosting your own post
     if attributed_to.startswith(post_actor):
@@ -1551,7 +1551,7 @@ def _get_post_title_announce_html(base_dir: str,
 
     announce_domain, _ = get_domain_from_actor(attributed_to)
     get_person_from_cache(base_dir, attributed_to, person_cache)
-    announce_handle = ''
+    announce_handle: str = ''
     if announce_nickname and announce_domain:
         announce_handle = announce_nickname + '@' + announce_domain
     announce_display_name = \
@@ -1577,7 +1577,7 @@ def _get_post_title_announce_html(base_dir: str,
                                       announce_display_name, False,
                                       translate)
     # add mutual icon to the display name
-    mutual_prefix = ''
+    mutual_prefix: str = ''
     if announce_handle in mutuals_list:
         mutual_prefix = '⇆ '
 
@@ -1606,7 +1606,7 @@ def _get_post_title_announce_html(base_dir: str,
     _log_post_timing(enable_timing_log, post_start_time, '13.4')
 
     if not announce_avatar_url:
-        announce_avatar_url = ''
+        announce_avatar_url: str = ''
 
     idx = 'Show options for this person'
     if '/users/news/' not in announce_avatar_url:
@@ -1700,7 +1700,7 @@ def _reply_with_unknown_path_html(translate: {},
     post_bookmark = '#' + bookmark_from_id(post_id)
     post_link = '/users/' + nickname + '?convthread=' + \
         post_id.replace('--', '/') + post_bookmark
-    mitm_str = ''
+    mitm_str: str = ''
     if post_domain in mitm_servers:
         mitm_str = ' ' + mitm_warning_html(translate)
     title_str = \
@@ -1728,11 +1728,11 @@ def _get_reply_html(translate: {},
     """Returns html title for a reply
     """
     # add mutual icon to the display name
-    mutual_prefix = ''
+    mutual_prefix: str = ''
     if reply_handle in mutuals_list:
         mutual_prefix = '⇆ '
 
-    reply_nickname = ''
+    reply_nickname: str = ''
     if '@' in reply_nickname:
         reply_nickname = reply_handle.split('@')[0]
     bot_prefix = get_display_name_prefix(actor_type, reply_nickname,
@@ -1781,8 +1781,8 @@ def _get_post_title_reply_html(base_dir: str,
     """Returns the reply title of a post containing names of participants
     x replies to y
     """
-    title_str = ''
-    reply_avatar_image_in_post = ''
+    title_str: str = ''
+    reply_avatar_image_in_post: str = ''
     obj_json = post_json_object['object']
 
     # not a reply
@@ -1877,7 +1877,7 @@ def _get_post_title_reply_html(base_dir: str,
         return (title_str, reply_avatar_image_in_post,
                 container_class_icons, container_class)
 
-    reply_handle = ''
+    reply_handle: str = ''
     if reply_nickname and reply_domain:
         reply_handle = reply_nickname + '@' + reply_domain
     get_person_from_cache(base_dir, reply_actor, person_cache)
@@ -2239,7 +2239,7 @@ def _get_buy_footer(buy_links: {}, translate: {}) -> str:
         return ''
     icon_filename = 'buy.png'
     description = translate['Buy']
-    buy_str = ''
+    buy_str: str = ''
     for _, buy_url in buy_links.items():
         buy_str = \
             '        ' + \
@@ -3291,7 +3291,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                          translate, session,
                                          session, session, session)
                 if map_str:
-                    event_category = ''
+                    event_category: str = ''
                     if category_str:
                         category_text = 'Category'
                         if translate.get('Category'):
@@ -3304,7 +3304,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                             time_text = translate['Time']
                         time_span_str = \
                             '<br>' + time_text + ': ' + time_span_str
-                    map_addr_str = ''
+                    map_addr_str: str = ''
                     if '<br><address>' in location_str:
                         # append the address after the map
                         addrstr = location_str.split('<br><address>')[1]
@@ -3391,7 +3391,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                 map_str += '<p>' + time_text + ': ' + time_span_str + '</p>\n'
 
     if is_muted:
-        content_str = ''
+        content_str: str = ''
     else:
         if not is_patch:
             message_class = 'message'
@@ -3503,10 +3503,10 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
     """Show an individual post as html
     """
     original_post_json = post_json_object
-    post_str = ''
-    by_str = ''
-    by_text = ''
-    by_text_extra = ''
+    post_str: str = ''
+    by_str: str = ''
+    by_text: str = ''
+    by_text_extra: str = ''
     if liked_by:
         by_str = liked_by
         by_text = 'Liked by'
@@ -3532,7 +3532,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
 
         # get the list of mutuals for the current account
         mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
-        mutual_prefix = ''
+        mutual_prefix: str = ''
         if by_str_handle in mutuals_list:
             if not text_mode_browser(ua_str):
                 mutual_prefix = '⇆ '
@@ -3769,7 +3769,7 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
                       block_nostr: {}) -> str:
     """Show the replies to an individual post as html
     """
-    replies_str = ''
+    replies_str: str = ''
     if replies_json.get('orderedItems'):
         minimize_all_images = False
         if nickname in min_images_for_accounts:
@@ -3812,7 +3812,7 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
         css_filename = base_dir + '/epicyon.css'
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    metadata = ''
+    metadata: str = ''
     preload_images: list[str] = []
     header_str = \
         html_header_with_external_style(css_filename, instance_title, metadata,
@@ -3888,7 +3888,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
     if not os.path.isfile(reactions_filename):
         reactions_filename = base_dir + '/emoji/default_reactions.json'
     reactions_json = load_json(reactions_filename)
-    emoji_picks_str = ''
+    emoji_picks_str: str = ''
     base_url = '/users/' + nickname
     post_id = remove_id_ending(post_json_object['id'])
     actor_url = get_actor_from_post(post_json_object)
@@ -3917,7 +3917,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
         get_banner_file(base_dir, nickname, domain, theme_name)
 
     instance_title = get_config_param(base_dir, 'instanceTitle')
-    metadata = ''
+    metadata: str = ''
     preload_images: list[str] = []
     header_str = \
         html_header_with_external_style(css_filename, instance_title, metadata,

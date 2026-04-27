@@ -161,7 +161,7 @@ def html_likers_of_post(base_dir: str, nickname: str,
     mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
     is_text_mode = text_mode_browser(ua_str)
 
-    likers_list = ''
+    likers_list: str = ''
     for like_item in obj[dict_name]['items']:
         if not like_item.get('actor'):
             continue
@@ -189,12 +189,12 @@ def html_likers_of_post(base_dir: str, nickname: str,
         liker_avatar_url = \
             get_person_avatar_url(base_dir, liker_actor, person_cache)
         if not liker_avatar_url:
-            liker_avatar_url = ''
+            liker_avatar_url: str = ''
         else:
             liker_avatar_url = ';' + liker_avatar_url
 
         # get the mutual icon prefix
-        mutual_prefix = ''
+        mutual_prefix: str = ''
         if liker_username:
             liker_domain, _ = get_domain_from_actor(liker_actor)
             if liker_domain:

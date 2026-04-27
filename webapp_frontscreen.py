@@ -55,10 +55,10 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
     which is the blog timeline of the news actor
     """
     separator_str = html_post_separator(base_dir, None)
-    profile_str = ''
-    max_items = 4
-    ctr = 0
-    curr_page = 1
+    profile_str: str = ''
+    max_items: int = 4
+    ctr: int = 0
+    curr_page: int = 1
     box_name = 'tlfeatures'
     authorized = True
     while ctr < max_items and curr_page < 4:
@@ -210,7 +210,7 @@ def html_front_screen(signing_priv_key_pem: str,
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    license_str = ''
+    license_str: str = ''
     banner_file, _ = \
         get_banner_file(base_dir, nickname, domain, theme)
     profile_str += \

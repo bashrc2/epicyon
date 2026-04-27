@@ -197,7 +197,7 @@ def header_buttons_timeline(default_timeline: str,
                     translate['Inbox'] + '</span></button></a>'
 
     # show todays events buttons on the first inbox page
-    happening_str = ''
+    happening_str: str = ''
     if box_name == 'inbox' and page_number == 1:
         now = datetime.now()
         tomorrow = datetime.now() + timedelta(1)

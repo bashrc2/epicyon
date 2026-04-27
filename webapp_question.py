@@ -27,7 +27,7 @@ def insert_question(base_dir: str, translate: {},
     message_id = remove_id_ending(post_json_object['id'])
     if '#' in message_id:
         message_id = message_id.split('#', 1)[0]
-    page_number_str = ''
+    page_number_str: str = ''
     if page_number:
         page_number_str = '?page=' + str(page_number)
 

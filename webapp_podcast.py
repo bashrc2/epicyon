@@ -55,7 +55,7 @@ def _html_podcast_chapters(link_url: str,
         chapters_url = podcast_properties[key]['uri']
     else:
         return ''
-    html_str = ''
+    html_str: str = ''
     if podcast_properties[key].get('type'):
         url_type = podcast_properties[key]['type']
 
@@ -82,7 +82,7 @@ def _html_podcast_chapters(link_url: str,
                 return ''
             if not isinstance(chapters_json['chapters'], list):
                 return ''
-            chapters_html = ''
+            chapters_html: str = ''
             for chapter in chapters_json['chapters']:
                 if not isinstance(chapter, dict):
                     continue
@@ -91,7 +91,7 @@ def _html_podcast_chapters(link_url: str,
                 if not chapter.get('startTime'):
                     continue
                 chapter_title = chapter['title']
-                chapter_url = ''
+                chapter_url: str = ''
                 if chapter.get('url'):
                     url_str = get_url_from_post(chapter['url'])
                     chapter_url = remove_html(url_str)
@@ -131,8 +131,8 @@ def _html_podcast_transcripts(podcast_properties: {}, translate: {}) -> str:
         return ''
     if not isinstance(podcast_properties[key], list):
         return ''
-    ctr = 1
-    html_str = ''
+    ctr: int = 1
+    html_str: str = ''
     for _ in podcast_properties[key]:
         transcript_url = None
         if podcast_properties[key].get('url'):
@@ -176,7 +176,7 @@ def _html_podcast_social_interactions(podcast_properties: {},
         episode_post_url = podcast_properties[key]['text']
     else:
         return ''
-    actor_str = ''
+    actor_str: str = ''
     podcast_account_id = None
     if podcast_properties[key].get('accountId'):
         podcast_account_id = podcast_properties[key]['accountId']
@@ -233,11 +233,11 @@ def _html_podcast_performers(podcast_properties: {}) -> str:
             performer_title += ', <i>' + performer['group'] + '</i>'
         performer_title = remove_html(performer_title)
 
-        performer_url = ''
+        performer_url: str = ''
         if performer.get('href'):
             performer_url = remove_html(performer['href'])
 
-        performer_img = ''
+        performer_img: str = ''
         if performer.get('img'):
             performer_img = performer['img']
 
@@ -336,7 +336,7 @@ def html_podcast_episode(translate: {},
                                         preload_images)
 
     podcast_properties = newswire_item[8]
-    image_url = ''
+    image_url: str = ''
     image_src = 'src'
     if podcast_properties.get('images'):
         if podcast_properties['images'].get('srcset'):
@@ -483,7 +483,7 @@ def html_podcast_episode(translate: {},
                 '" rel="donation"><button class="donateButton">' + \
                 translate['Donate'] + '</button></a></span></p>\n'
 
-    fediverse_handle = ''
+    fediverse_handle: str = ''
     if len(newswire_item) > 9:
         fediverse_handle = newswire_item[9]
         podcast_nickname = get_nickname_from_actor(fediverse_handle)
@@ -497,7 +497,7 @@ def html_podcast_episode(translate: {},
     if len(newswire_item) > 10:
         extra_links = newswire_item[10]
         if extra_links:
-            links_text = ''
+            links_text: str = ''
             for link_str in extra_links:
                 link_str = remove_html(link_str)
                 if not resembles_url(link_str):
@@ -518,7 +518,7 @@ def html_podcast_episode(translate: {},
                 podcast_str += links_text
 
     if podcast_properties['categories']:
-        tags_str = ''
+        tags_str: str = ''
         for tag in podcast_properties['categories']:
             tag = tag.replace('#', '')
             if not tag:

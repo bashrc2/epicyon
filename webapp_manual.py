@@ -43,7 +43,7 @@ def html_manual(base_dir: str, http_prefix: str,
             md_text = markdown_example_numbers(md_text)
             manual_text = markdown_to_html(md_text)
 
-    manual_form = ''
+    manual_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'

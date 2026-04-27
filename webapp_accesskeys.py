@@ -59,7 +59,7 @@ def html_access_keys(base_dir: str,
     timeline_key = access_keys['menuTimeline']
     submit_key = access_keys['submitButton']
 
-    access_keys_form = ''
+    access_keys_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'

@@ -147,14 +147,14 @@ def html_login(translate: {},
                                  'EX: html_login unable to read ' + dir_str +
                                  '/login.txt')
         if login_text is None:
-            login_text = ''
+            login_text: str = ''
 
     css_filename = base_dir + '/epicyon-login.css'
     if os.path.isfile(base_dir + '/login.css'):
         css_filename = base_dir + '/login.css'
 
     # show the register button
-    register_button_str = ''
+    register_button_str: str = ''
     if get_config_param(base_dir, 'registration') == 'open':
         remaining = 0
         if get_config_param(base_dir, 'registrationsRemaining'):
@@ -178,7 +178,7 @@ def html_login(translate: {},
         '<p class="login-text"><a href="/terms" tabindex="2">' + \
         translate['Terms of Service'] + '</a></p>'
 
-    login_button_str = ''
+    login_button_str: str = ''
     if accounts > 0:
         login_button_str = \
             '<button type="submit" name="submit" tabindex="1">' + \

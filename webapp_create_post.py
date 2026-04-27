@@ -231,7 +231,7 @@ def _remove_initial_mentions_from_content(content: str) -> str:
     if not content.startswith('@'):
         return content
     words = content.split(' ')
-    new_content = ''
+    new_content: str = ''
     for wrd in words:
         if wrd.startswith('@'):
             continue
@@ -291,7 +291,7 @@ def html_new_post(edit_post_params: {},
     """
     # get the json if this is an edited post
     edited_post_json = None
-    edited_published = ''
+    edited_published: str = ''
     if edit_post_params:
         if edit_post_params.get('post_url'):
             edited_post_filename = \
@@ -328,13 +328,13 @@ def html_new_post(edit_post_params: {},
             edited_post_json['object']['published']
 
     # default subject line or content warning
-    default_subject = ''
+    default_subject: str = ''
     if share_description:
         default_subject = share_description
 
-    default_location = ''
-    default_start_time = ''
-    default_end_time = ''
+    default_location: str = ''
+    default_start_time: str = ''
+    default_end_time: str = ''
     if default_month and default_year:
         default_month_str = str(default_month)
         if default_month < 10:
@@ -358,7 +358,7 @@ def html_new_post(edit_post_params: {},
             default_start_time, default_end_time = \
                 _get_date_from_tags(edited_post_json['object']['tag'])
 
-    reply_str = ''
+    reply_str: str = ''
 
     is_new_reminder = False
     if path.endswith('/newreminder'):
@@ -373,12 +373,12 @@ def html_new_post(edit_post_params: {},
     # select a date and time for this post
     date_and_time_str += '<label class="labels">' + \
         translate['Date'] + ': </label>\n'
-    date_default = ''
-    time_default = ''
+    date_default: str = ''
+    time_default: str = ''
     if default_start_time:
         date_default = ' value="' + default_start_time.split('T')[0] + '"'
         time_default = ' value="' + default_start_time.split('T')[1] + '"'
-    end_time_default = ''
+    end_time_default: str = ''
     if default_end_time:
         end_time_default = ' value="' + default_end_time.split('T')[1] + '"'
     date_and_time_str += \
@@ -410,7 +410,7 @@ def html_new_post(edit_post_params: {},
                 new_post_text = '<h1>' + \
                     translate['Write your post text below.'] + '</h1>\n'
             else:
-                new_post_text = ''
+                new_post_text: str = ''
                 if category != 'accommodation':
                     new_post_text = \
                         '<p class="new-post-text">' + \
@@ -572,7 +572,7 @@ def html_new_post(edit_post_params: {},
                                 'EX: html_new_post unable to read ' +
                                 dir_str + '/report.txt [ex]')
                 if custom_report_text is None:
-                    custom_report_text = ''
+                    custom_report_text: str = ''
                 if '</p>' not in custom_report_text:
                     custom_report_text = \
                         '<p class="login-subtext">' + \
@@ -615,7 +615,7 @@ def html_new_post(edit_post_params: {},
                         'EX: html_new_post unable to read ' +
                         dir_str + '/newpost.txt')
         if new_post_text is None:
-            new_post_text = ''
+            new_post_text: str = ''
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
@@ -664,7 +664,7 @@ def html_new_post(edit_post_params: {},
         '" spellcheck="true" autocomplete="on"></textarea>\n'
     new_post_image_section += end_edit_section()
 
-    new_post_emoji_section = ''
+    new_post_emoji_section: str = ''
     if not path.endswith('/newreadingstatus'):
         common_emoji_str = html_common_emoji(base_dir, 16)
         if common_emoji_str:
@@ -686,11 +686,11 @@ def html_new_post(edit_post_params: {},
     else:
         placeholder_subject = \
             translate['Subject or Content Warning (optional)'] + '...'
-    placeholder_mentions = ''
+    placeholder_mentions: str = ''
     if in_reply_to:
         placeholder_mentions = \
             translate['Replying to'] + '...'
-    placeholder_message = ''
+    placeholder_message: str = ''
     if category != 'accommodation':
         if default_timeline == 'tlfeatures':
             placeholder_message = translate['Write your news report'] + '...'
@@ -700,7 +700,7 @@ def html_new_post(edit_post_params: {},
         idx = 'Introduce yourself and specify the date ' + \
             'and time when you wish to stay'
         placeholder_message = translate[idx]
-    extra_fields = ''
+    extra_fields: str = ''
     premium = is_premium_account(base_dir, nickname, domain)
     endpoint = 'newpost'
     if path.endswith('/newblog'):
@@ -927,7 +927,7 @@ def html_new_post(edit_post_params: {},
                               'bookrating', '', 1, 5, None)
         extra_fields += '</div>\n'
 
-    citations_str = ''
+    citations_str: str = ''
     if endpoint == 'newblog':
         citations_filename = \
             acct_dir(base_dir, nickname, domain) + '/.citations.txt'
@@ -956,8 +956,8 @@ def html_new_post(edit_post_params: {},
             citations_str += '  </ul>\n'
             citations_str += '</div>\n'
 
-    replies_section = ''
-    date_and_location = ''
+    replies_section: str = ''
+    date_and_location: str = ''
     if endpoint not in ('newshare', 'newwanted', 'newreport',
                         'newquestion', 'newreadingstatus'):
 
@@ -1159,7 +1159,7 @@ def html_new_post(edit_post_params: {},
         banner_path + '" alt="" /></a>\n' + \
         '</header>\n'
 
-    mentions_str = ''
+    mentions_str: str = ''
     for ment in mentions:
         mention_nickname = get_nickname_from_actor(ment)
         if not mention_nickname:
@@ -1186,13 +1186,13 @@ def html_new_post(edit_post_params: {},
     dropdown_reminder_suffix = '/newreminder'
     dropdown_report_suffix = '/newreport'
     if in_reply_to or mentions:
-        dropdown_new_post_suffix = ''
-        dropdown_new_blog_suffix = ''
-        dropdown_unlisted_suffix = ''
-        dropdown_followers_suffix = ''
-        dropdown_dm_suffix = ''
-        dropdown_reminder_suffix = ''
-        dropdown_report_suffix = ''
+        dropdown_new_post_suffix: str = ''
+        dropdown_new_blog_suffix: str = ''
+        dropdown_unlisted_suffix: str = ''
+        dropdown_followers_suffix: str = ''
+        dropdown_dm_suffix: str = ''
+        dropdown_reminder_suffix: str = ''
+        dropdown_report_suffix: str = ''
     if in_reply_to:
         dropdown_new_post_suffix += '?replyto=' + in_reply_to
         dropdown_new_blog_suffix += '?replyto=' + in_reply_to
@@ -1224,7 +1224,7 @@ def html_new_post(edit_post_params: {},
             dropdown_followers_suffix += '?convthreadId=' + convthread_id
             dropdown_dm_suffix += '?convthreadId=' + convthread_id
 
-    drop_down_content = ''
+    drop_down_content: str = ''
     if not report_url and not share_description:
         account_dir = acct_dir(base_dir, nickname, domain)
         drop_down_content = \
@@ -1352,7 +1352,7 @@ def html_new_post(edit_post_params: {},
             html_following_data_list(base_dir, nickname, domain, domain_full,
                                      'following', True)
         new_post_form += ''
-        selected_str = ''
+        selected_str: str = ''
 
     if endpoint != 'newreadingstatus':
         new_post_form += \
@@ -1366,7 +1366,7 @@ def html_new_post(edit_post_params: {},
         message_box_height = 800
 
     # get the default message text
-    default_message = ''
+    default_message: str = ''
     if edited_post_json:
         content_str = \
             get_content_from_post(edited_post_json, system_language,

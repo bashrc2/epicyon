@@ -41,7 +41,7 @@ def html_about(base_dir: str, http_prefix: str,
         if about_text:
             about_text = markdown_to_html(about_text)
 
-    about_form = ''
+    about_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'

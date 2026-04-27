@@ -129,12 +129,12 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
                             known_epicyon_instances: []) -> str:
     """Returns html content for the left column
     """
-    html_str = ''
+    html_str: str = ''
 
     separator_str = html_post_separator(base_dir, 'left')
     domain = remove_domain_port(domain_full)
 
-    edit_image_class = ''
+    edit_image_class: str = ''
     if show_header_image:
         left_image_file, left_column_image_filename = \
             get_left_image_file(base_dir, nickname, domain, theme)
@@ -386,7 +386,7 @@ def html_links_mobile(base_dir: str,
                       known_epicyon_instances: []) -> str:
     """Show the left column links within mobile view
     """
-    html_str = ''
+    html_str: str = ''
 
     # the css filename
     css_filename = base_dir + '/epicyon-profile.css'
@@ -514,13 +514,13 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
         '    </div>\n'
 
     links_filename = data_dir(base_dir) + '/links.txt'
-    links_str = ''
+    links_str: str = ''
     if os.path.isfile(links_filename):
         links_str = load_string(links_filename,
                                 'EX: html_edit_links unable to read ' +
                                 links_filename)
         if links_str is None:
-            links_str = ''
+            links_str: str = ''
 
     edit_links_form += \
         '<div class="container">'
@@ -542,14 +542,14 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
     if admin_nickname:
         if nickname == admin_nickname:
             about_filename = data_dir(base_dir) + '/about.md'
-            about_str = ''
+            about_str: str = ''
             if os.path.isfile(about_filename):
                 about_str = \
                     load_string(about_filename,
                                 'EX: html_edit_links unable to read 2 ' +
                                 about_filename)
                 if about_str is None:
-                    about_str = ''
+                    about_str: str = ''
 
             edit_links_form += \
                 '<div class="container">'
@@ -565,13 +565,13 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
                 '</div>'
 
             tos_filename = data_dir(base_dir) + '/tos.md'
-            tos_str = ''
+            tos_str: str = ''
             if os.path.isfile(tos_filename):
                 tos_str = load_string(tos_filename,
                                       'EX: html_edit_links unable to read 3 ' +
                                       tos_filename)
                 if tos_str is None:
-                    tos_str = ''
+                    tos_str: str = ''
 
             edit_links_form += \
                 '<div class="container">'
@@ -587,14 +587,14 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
                 '</div>'
 
             specification_filename = data_dir(base_dir) + '/activitypub.md'
-            specification_str = ''
+            specification_str: str = ''
             if os.path.isfile(specification_filename):
                 specification_str = \
                     load_string(specification_filename,
                                 'EX: html_edit_links unable to read 4 ' +
                                 specification_filename)
                 if specification_str is None:
-                    specification_str = ''
+                    specification_str: str = ''
 
             edit_links_form += \
                 '<div class="container">'

@@ -188,7 +188,7 @@ def _add_embedded_video_from_sites(content: str,
         if '"' in url:
             url = url.split('"')[0]
             if url:
-                video_site_settings = ''
+                video_site_settings: str = ''
                 if '#' in url:
                     video_site_settings = '#' + url.split('#', 1)[1]
                     url = url.split('#')[0]
