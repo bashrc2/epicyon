@@ -22,6 +22,7 @@ from utils import valid_nickname
 from timeFunctions import date_utcnow
 from data import append_string
 from data import save_string
+from data import load_list
 
 
 def _hash_password(password: str) -> str:
@@ -194,19 +195,30 @@ def store_basic_credentials(base_dir: str,
     store_str = nickname + ':' + _hash_password(password)
     if os.path.isfile(password_file):
         if text_in_file(nickname + ':', password_file):
-            try:
-                with open(password_file, 'r', encoding='utf-8') as fp_in:
-                    with open(password_file + '.new', 'w+',
-                              encoding='utf-8') as fout:
-                        for line in fp_in:
-                            if not line.startswith(nickname + ':'):
-                                fout.write(line)
-                            else:
-                                fout.write(store_str + '\n')
-            except OSError as ex:
-                print('EX: unable to save password ' + password_file +
-                      ' ' + str(ex))
+            # get the existing passwords
+            passwords_list = \
+                load_list(password_file,
+                          'EX: unable to load passwords ' + password_file +
+                          ' [ex]')
+            if passwords_list is None:
                 return False
+
+            # create the altered passwords list
+            passwords_list_new = ''
+            for login_str in passwords_list:
+                if not login_str.startswith(nickname + ':'):
+                    passwords_list_new += login_str
+                else:
+                    passwords_list_new += store_str + '\n'
+
+            # save the altered passwords list
+            if not save_string(passwords_list_new, password_file + '.new',
+                               'EX: unable to update password ' +
+                               password_file + '.new' + ' [ex]'):
+                passwords_list.clear()
+                return False
+
+            passwords_list.clear()
 
             try:
                 os.rename(password_file + '.new', password_file)

@@ -71,6 +71,8 @@ def load_list(filename: str, exception_text: str) -> str:
     """
     lines: list[str] = []
     lines_str = load_string(filename, exception_text)
+    if lines_str is None:
+        return None
     if lines_str:
         lines2 = lines_str.split('\n')
         for line in lines2:
