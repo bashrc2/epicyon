@@ -60,6 +60,9 @@ def _add_role(base_dir: str, nickname: str, domain: str,
             load_list(role_file,
                       'EX: _add_role, failed to read roles file ' + role_file)
 
+        if lines is None:
+            return
+
         for role_nickname in lines:
             role_nickname = role_nickname.strip('\n').strip('\r')
             if role_nickname == nickname:
@@ -97,6 +100,8 @@ def _remove_role(base_dir: str, nickname: str, role_filename: str) -> None:
     lines: list[str] = \
         load_list(role_file,
                   'EX: _remove_role, failed to read roles file ' + role_file)
+    if lines is None:
+        return
 
     try:
         with open(role_file, 'w+', encoding='utf-8') as fp_role:
@@ -281,6 +286,9 @@ def is_devops(base_dir: str, nickname: str) -> bool:
     lines: list[str] = \
         load_list(devops_file,
                   'EX: is_devops unable to read ' + devops_file)
+    if lines is None:
+        return False
+
     if not lines:
         # if there is nothing in the file
         admin_name = get_config_param(base_dir, 'admin')
@@ -288,10 +296,11 @@ def is_devops(base_dir: str, nickname: str) -> bool:
             return False
         if admin_name == nickname:
             return True
-    for devops in lines:
-        devops = devops.strip('\n').strip('\r')
-        if devops == nickname:
-            return True
+    else:
+        for devops in lines:
+            devops = devops.strip('\n').strip('\r')
+            if devops == nickname:
+                return True
     return False
 
 

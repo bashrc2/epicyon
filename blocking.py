@@ -609,6 +609,8 @@ def update_blocked_cache(base_dir: str,
     blocked_lines = load_list(global_blocking_filename,
                               'EX: update_blocked_cache unable to read ' +
                               global_blocking_filename + ' [ex]')
+    if blocked_lines is None:
+        return blocked_cache_last_updated
     # remove newlines
     for index, _ in enumerate(blocked_lines):
         blocked_lines[index] = remove_eol(blocked_lines[index])
@@ -1600,6 +1602,8 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
                         load_list(following_filename,
                                   'EX: set_broch_mode failed to read ' +
                                   following_filename + ' [ex]')
+                    if follow_list is None:
+                        continue
                     for handle in follow_list:
                         if '@' not in handle:
                             continue

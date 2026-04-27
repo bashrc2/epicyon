@@ -43,6 +43,9 @@ def _move_following_handles_for_account(base_dir: str,
         load_list(following_filename,
                   'EX: _move_following_handles_for_account unable to read ' +
                   following_filename)
+    if following_handles is None:
+        return ctr
+
     for follow_handle in following_handles:
         follow_handle = follow_handle.strip("\n").strip("\r")
         ctr += \
@@ -155,6 +158,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
             load_list(following_filename,
                       'EX: _update_moved_handle unable to read ' +
                       following_filename)
+        if following_handles is None:
+            return ctr
 
         moved_to_handle = moved_to_nickname + '@' + moved_to_domain_full
         handle_lower = handle.lower()
@@ -205,6 +210,8 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
             load_list(followers_filename,
                       'EX: _update_moved_handle unable to read ' +
                       followers_filename)
+        if follower_handles is None:
+            return ctr
 
         handle_lower = handle.lower()
 

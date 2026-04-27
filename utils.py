@@ -1605,12 +1605,13 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                 load_list(unfollowed_filename,
                           'EX: follow_person unable to read ' +
                           unfollowed_filename)
-            for line in lines:
-                if handle_to_follow not in line:
-                    new_lines += line
-            save_string(new_lines, unfollowed_filename,
-                        'EX: follow_person unable to write ' +
-                        unfollowed_filename)
+            if lines is not None:
+                for line in lines:
+                    if handle_to_follow not in line:
+                        new_lines += line
+                save_string(new_lines, unfollowed_filename,
+                            'EX: follow_person unable to write ' +
+                            unfollowed_filename)
 
     dir_str = data_dir(base_dir)
     if not os.path.isdir(dir_str):

@@ -72,6 +72,8 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                 load_list(following_filename,
                           'EX: create_initial_last_seen ' +
                           following_filename)
+            if following_handles is None:
+                continue
             for handle in following_handles:
                 if '#' in handle:
                     continue
@@ -242,6 +244,8 @@ def get_follower_domains(base_dir: str, nickname: str, domain: str) -> []:
     lines: list[str] = \
         load_list(followers_file,
                   'EX: get_follower_domains ' + followers_file)
+    if lines is None:
+        return []
 
     domains_list: list[str] = []
     for handle in lines:
@@ -329,6 +333,8 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
     lines: list[str] = \
         load_list(filename,
                   'EX: unfollow_account ' + filename)
+    if lines is None:
+        return False
 
     if lines:
         try:
@@ -409,6 +415,9 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
     lines: list[str] = \
         load_list(filename,
                   'EX: _get_no_of_follows ' + filename)
+    if lines is None:
+        return False
+
     if lines:
         for line in lines:
             if '#' in line:
@@ -528,6 +537,9 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     lines: list[str] = \
         load_list(filename,
                   'EX: get_following_feed ' + filename)
+    if lines is None:
+        return following
+
     for line in lines:
         if '#' not in line:
             if '@' in line and not line.startswith('http'):
@@ -612,6 +624,9 @@ def no_of_follow_requests(base_dir: str,
         load_list(approve_follows_filename,
                   'EX: no_of_follow_requests ' +
                   approve_follows_filename)
+    if lines is None:
+        return 0
+
     if lines:
         if follow_type == "onion":
             for file_line in lines:

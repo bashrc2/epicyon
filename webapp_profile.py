@@ -2761,24 +2761,25 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         load_list(locations_filename,
                   'EX: _html_edit_profile_filtering unable to read ' +
                   locations_filename)
-    cities.sort()
-    edit_profile_form += '  <select id="cityDropdown" ' + \
-        'name="cityDropdown" class="theme">\n'
-    city = city.lower()
-    for city_name in cities:
-        if ':' not in city_name:
-            continue
-        city_selected = ''
-        city_name = city_name.split(':')[0]
-        city_name = city_name.lower()
-        if city:
-            if city in city_name:
-                city_selected = ' selected'
-        edit_profile_form += \
-            '    <option value="' + city_name + \
-            '"' + city_selected + '>' + \
-            city_name.title() + '</option>\n'
-    edit_profile_form += '  </select><br>\n'
+    if cities:
+        cities.sort()
+        edit_profile_form += '  <select id="cityDropdown" ' + \
+            'name="cityDropdown" class="theme">\n'
+        city = city.lower()
+        for city_name in cities:
+            if ':' not in city_name:
+                continue
+            city_selected = ''
+            city_name = city_name.split(':')[0]
+            city_name = city_name.lower()
+            if city:
+                if city in city_name:
+                    city_selected = ' selected'
+            edit_profile_form += \
+                '    <option value="' + city_name + \
+                '"' + city_selected + '>' + \
+                city_name.title() + '</option>\n'
+        edit_profile_form += '  </select><br>\n'
 
     edit_profile_form += \
         '      <b><label class="labels">' + \

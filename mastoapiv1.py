@@ -50,6 +50,9 @@ def _meta_data_instance_v1(show_accounts: bool,
         rules_lines = load_list(rules_filename,
                                 'EX: _meta_data_instance_v1 unable to read ' +
                                 rules_filename)
+        if rules_lines is None:
+            return {}
+
         rule_ctr = 1
         for line in rules_lines:
             line = line.strip()

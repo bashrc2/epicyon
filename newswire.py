@@ -1827,6 +1827,9 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
         load_list(subscriptions_filename,
                   'EX: get_dict_from_newswire unable to read ' +
                   subscriptions_filename)
+    if rss_feed is None:
+        return {}
+
     result = {}
     for url in rss_feed:
         url = url.strip()

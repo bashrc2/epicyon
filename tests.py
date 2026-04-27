@@ -5767,6 +5767,7 @@ def _test_thread_functions():
                 if 'thread_with_trace(' in source_str:
                     threads_called_in_modules.append(mod_name)
             lines: list[str] = load_list(source_file, '')
+            assert lines is not None
             modules[mod_name]['lines'] = lines
 
     for mod_name in threads_called_in_modules:
@@ -5926,6 +5927,7 @@ def _test_functions():
             modules[mod_name]['source'] = source_str
             # go through the source line by line
             lines: list[str] = load_list(source_file, '')
+            assert lines is not None
             modules[mod_name]['lines'] = lines
             line_count = 0
             prev_line = 'start'

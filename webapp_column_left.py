@@ -230,6 +230,8 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
             load_list(links_filename,
                       'EX: get_left_column_content unable to read ' +
                       links_filename)
+        if links_list is None:
+            links_list = []
 
     if not front_page:
         # show a number of shares

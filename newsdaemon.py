@@ -401,6 +401,8 @@ def _newswire_hashtag_processing(base_dir: str, post_json_object: {},
         load_list(rules_filename,
                   'EX: _newswire_hashtag_processing unable to read ' +
                   rules_filename)
+    if rules is None:
+        return True
 
     domain_full = get_full_domain(domain, port)
 

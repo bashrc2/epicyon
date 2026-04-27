@@ -2432,6 +2432,8 @@ def _append_citations_to_blog_post(base_dir: str,
         load_list(citations_filename,
                   'EX: _append_citations_to_blog_post unable to read ' +
                   citations_filename)
+    if citations is None:
+        return
     for line in citations:
         if citations_separator not in line:
             continue
@@ -4527,6 +4529,7 @@ def create_moderation(base_dir: str, nickname: str, domain: str, port: int,
                 load_list(moderation_index_file,
                           'EX: create_moderation unable to read ' +
                           moderation_index_file)
+
             box_header['totalItems'] = len(lines)
             if header_only:
                 return box_header

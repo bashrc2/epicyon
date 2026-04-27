@@ -389,14 +389,15 @@ def html_citations(base_dir: str, nickname: str, domain: str,
             load_list(citations_filename,
                       'EX: html_citations unable to read ' +
                       citations_filename + ' [ex]')
-        for line in citations:
-            if citations_separator not in line:
-                continue
-            sections = line.strip().split(citations_separator)
-            if len(sections) != 3:
-                continue
-            date_str = sections[0]
-            citations_selected.append(date_str)
+        if citations:
+            for line in citations:
+                if citations_separator not in line:
+                    continue
+                sections = line.strip().split(citations_separator)
+                if len(sections) != 3:
+                    continue
+                date_str = sections[0]
+                citations_selected.append(date_str)
 
     # the css filename
     css_filename = base_dir + '/epicyon-profile.css'

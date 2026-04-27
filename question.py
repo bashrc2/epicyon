@@ -147,17 +147,18 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
 
             newlines: list[str] = []
             save_voters_file = False
-            for vote_line in lines:
-                if vote_line.startswith(actor_url +
-                                        voters_file_separator):
-                    new_vote_line = actor_url + \
-                        voters_file_separator + reply_vote + '\n'
-                    if vote_line == new_vote_line:
-                        break
-                    save_voters_file = True
-                    newlines.append(new_vote_line)
-                else:
-                    newlines.append(vote_line)
+            if lines:
+                for vote_line in lines:
+                    if vote_line.startswith(actor_url +
+                                            voters_file_separator):
+                        new_vote_line = actor_url + \
+                            voters_file_separator + reply_vote + '\n'
+                        if vote_line == new_vote_line:
+                            break
+                        save_voters_file = True
+                        newlines.append(new_vote_line)
+                    else:
+                        newlines.append(vote_line)
             if save_voters_file:
                 try:
                     with open(voters_filename, 'w+',
@@ -180,10 +181,11 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
             load_list(voters_filename,
                       'EX: question_update_votes unable to read ' +
                       voters_filename)
-        for vote_line in lines:
-            if vote_line.endswith(voters_file_separator +
-                                  possible_answer['name'] + '\n'):
-                total_items += 1
+        if lines:
+            for vote_line in lines:
+                if vote_line.endswith(voters_file_separator +
+                                      possible_answer['name'] + '\n'):
+                    total_items += 1
         if possible_answer['replies']['totalItems'] != total_items:
             possible_answer['replies']['totalItems'] = total_items
             question_totals_changed = True

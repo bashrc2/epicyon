@@ -1323,6 +1323,8 @@ def reenable_account(base_dir: str, nickname: str, domain: str) -> None:
             load_list(suspended_filename,
                       'EX: reenable_account unable to read ' +
                       suspended_filename)
+        if lines is None:
+            return
         try:
             with open(suspended_filename, 'w+', encoding='utf-8') as fp_sus:
                 for suspended in lines:
@@ -1376,6 +1378,8 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
             load_list(moderators_file,
                       'EX: suspend_account unable too read ' +
                       moderators_file)
+        if lines is None:
+            return
         for moderator in lines:
             if moderator.strip('\n').strip('\r') == nickname:
                 return
@@ -1400,6 +1404,8 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
             load_list(suspended_filename,
                       'EX: suspend_account unable to read 2 ' +
                       suspended_filename)
+        if lines is None:
+            return
         for suspended in lines:
             if suspended.strip('\n').strip('\r') == nickname:
                 return
@@ -1436,6 +1442,8 @@ def can_remove_post(base_dir: str,
             load_list(moderators_file,
                       'EX: can_remove_post unable to read ' +
                       moderators_file)
+        if lines is None:
+            return False
         for moderator in lines:
             if domain_full + '/users/' + \
                moderator.strip('\n') + '/' in post_id:
@@ -1470,6 +1478,8 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
             load_list(tag_filename,
                       'EX: _remove_tags_for_nickname unable to read ' +
                       tag_filename)
+        if lines is None:
+            continue
         try:
             with open(tag_filename, 'w+', encoding='utf-8') as fp_tag:
                 for tagline in lines:
@@ -1522,6 +1532,8 @@ def remove_account(base_dir: str, nickname: str,
         lines: list[str] = \
             load_list(moderators_file,
                       'EX: remove_account unable to read ' + moderators_file)
+        if lines is None:
+            return False
         for moderator in lines:
             if moderator.strip('\n') == nickname:
                 return False

@@ -86,6 +86,8 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
     lines: list[str] = \
         load_list(post_filename,
                   'EX: failed to read blog ' + post_filename)
+    if lines is None:
+        return 0
 
     for reply_post_id in lines:
         reply_post_id = remove_eol(reply_post_id)
@@ -157,6 +159,8 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
     lines: list[str] = \
         load_list(post_filename,
                   'EX: unable to read blog 4 ' + post_filename)
+    if lines is None:
+        return ''
 
     if lines:
         replies_str: str = ''

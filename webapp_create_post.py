@@ -941,17 +941,18 @@ def html_new_post(edit_post_params: {},
                 load_list(citations_filename,
                           'EX: html_new_post unable to read ' +
                           citations_filename + ' [ex]')
-            for line in citations:
-                if citations_separator not in line:
-                    continue
-                sections = line.strip().split(citations_separator)
-                if len(sections) != 3:
-                    continue
-                title = sections[1]
-                link = sections[2]
-                citations_str += \
-                    '    <li><a href="' + link + '"><cite>' + \
-                    title + '</cite></a></li>'
+            if citations:
+                for line in citations:
+                    if citations_separator not in line:
+                        continue
+                    sections = line.strip().split(citations_separator)
+                    if len(sections) != 3:
+                        continue
+                    title = sections[1]
+                    link = sections[2]
+                    citations_str += \
+                        '    <li><a href="' + link + '"><cite>' + \
+                        title + '</cite></a></li>'
             citations_str += '  </ul>\n'
             citations_str += '</div>\n'
 
