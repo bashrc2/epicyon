@@ -121,7 +121,7 @@ def _html_timeline_new_post(manually_approve_followers: bool,
                             access_keys: {}) -> str:
     """Returns html for the new post button
     """
-    new_post_button_str = ''
+    new_post_button_str: str = ''
     if box_name == 'dm':
         new_post_button_str += \
             '<a class="imageAnchor" href="' + users_path + \
@@ -191,7 +191,7 @@ def _html_timeline_moderation_buttons(moderator: bool, box_name: str,
                                       translate: {}) -> str:
     """Returns html for the moderation screen buttons
     """
-    tl_str = ''
+    tl_str: str = ''
     if moderator and box_name == 'moderation':
         tl_str += \
             '<form id="modtimeline" method="POST" action="/users/' + \
@@ -379,7 +379,7 @@ def _html_timeline_end(base_dir: str, nickname: str, domain_full: str,
     tl_str += '  </td>\n'
 
     # right column
-    right_column_str = ''
+    right_column_str: str = ''
     if not text_mode_browser(ua_str):
         right_column_str = \
             get_right_column_content(base_dir, nickname, domain_full,
@@ -416,15 +416,15 @@ def page_number_buttons(users_path: str, box_name: str,
     min_page_number = page_number - pages_width
     min_page_number = max(min_page_number, 1)
     max_page_number = min_page_number + 1 + (pages_width * 2)
-    num_str = ''
+    num_str: str = ''
     for page in range(min_page_number, max_page_number):
         if num_str:
             separator_str = \
                 '<label class="pageslistDash">────</label>'
             num_str += html_hide_from_screen_reader(separator_str)
-        aria_page_str = ''
+        aria_page_str: str = ''
         page_str = ' ' + str(page) + ' '
-        curr_page_str = ''
+        curr_page_str: str = ''
         if page == page_number:
             page_str = '[<mark>' + str(page) + '</mark>]'
             aria_page_str = ' aria-current="true"'
@@ -574,7 +574,7 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(show_vote_file):
         show_vote_posts = False
 
-    separator_str = ''
+    separator_str: str = ''
     if box_name != 'tlmedia':
         separator_str = html_post_separator(base_dir, None)
 
@@ -660,7 +660,7 @@ def html_timeline(default_timeline: str,
     show_individual_post_icons = True
 
     # show an icon for new follow approvals
-    follow_approvals = ''
+    follow_approvals: str = ''
     follow_requests_filename = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(follow_requests_filename):
@@ -690,7 +690,7 @@ def html_timeline(default_timeline: str,
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '3')
 
     # moderation / reports button
-    moderation_button_str = ''
+    moderation_button_str: str = ''
     if moderator and not minimal:
         moderation_button_str = \
             '<a href="' + users_path + '/moderation"'
@@ -703,10 +703,10 @@ def html_timeline(default_timeline: str,
             ' </span></button></a>'
 
     # shares, bookmarks and events buttons
-    shares_button_str = ''
-    wanted_button_str = ''
-    bookmarks_button_str = ''
-    events_button_str = ''
+    shares_button_str: str = ''
+    wanted_button_str: str = ''
+    bookmarks_button_str: str = ''
+    events_button_str: str = ''
     if not minimal:
         shares_button_str = \
             '<a href="' + users_path + '/tlshares"'
@@ -781,7 +781,7 @@ def html_timeline(default_timeline: str,
     if default_timeline == 'tlfeatures' and box_name == 'tlfeatures':
         news_header = True
 
-    header_icons_str = ''
+    header_icons_str: str = ''
     # start of headericons div
     if not news_header:
         header_icons_str = '<div class="headericons">'
@@ -848,7 +848,7 @@ def html_timeline(default_timeline: str,
     domain_full = get_full_domain(domain, port)
 
     # left column
-    left_column_str = ''
+    left_column_str: str = ''
     if not is_text_browser:
         left_column_str = \
             get_left_column_content(base_dir, nickname, domain_full,
@@ -972,7 +972,7 @@ def html_timeline(default_timeline: str,
         text_mode_separator = \
             '<div class="transparent"><hr></div>'
     else:
-        text_mode_separator = ''
+        text_mode_separator: str = ''
 
     # page up arrow
     if page_number > 1 or is_text_browser:
@@ -980,7 +980,7 @@ def html_timeline(default_timeline: str,
         tl_str += '<br>' + \
             page_number_buttons(users_path, box_name, page_number,
                                 'timelineposts')
-        first_post_str = ''
+        first_post_str: str = ''
         if page_number > 2:
             if last_post_id:
                 first_post_str = ';firstpost=' + last_post_id
@@ -1009,10 +1009,10 @@ def html_timeline(default_timeline: str,
     if box_name == 'inbox':
         use_cache_only = True
 
-    first_post_id = ''
-    last_post_id = ''
+    first_post_id: str = ''
+    last_post_id: str = ''
 
-    last_item_str = ''
+    last_item_str: str = ''
     if timeline_json:
         # if this is the media timeline then add an extra gallery container
         if box_name == 'tlmedia':
@@ -1033,7 +1033,7 @@ def html_timeline(default_timeline: str,
         mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
 
         # show each post in the timeline
-        tl_items_str = ''
+        tl_items_str: str = ''
         for item in timeline_json['orderedItems']:
             if item['type'] in ('Create', 'Announce'):
                 # is the actor who sent this post snoozed?
@@ -1162,10 +1162,10 @@ def html_timeline(default_timeline: str,
             if item_ctr > items_per_page / 2:
                 tl_str = tl_str.replace(last_item_str, '')
         tl_str += text_mode_separator
-        first_post = ''
+        first_post: str = ''
         if last_post_id:
             first_post = ';firstpost=' + last_post_id.replace('#', '--')
-        last_post = ''
+        last_post: str = ''
         if first_post_id:
             last_post = ';lastpost=' + first_post_id.replace('#', '--')
         tl_str += \
@@ -1303,11 +1303,11 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
     domain_full = get_full_domain(domain, port)
     actor = local_actor_url(http_prefix, nickname, domain_full)
     admin_nickname = get_config_param(base_dir, 'admin')
-    admin_actor = ''
+    admin_actor: str = ''
     if admin_nickname:
         admin_actor = \
             local_actor_url(http_prefix, admin_nickname, domain_full)
-    timeline_str = ''
+    timeline_str: str = ''
 
     if page_number > 1:
         timeline_str += '<br>' + \

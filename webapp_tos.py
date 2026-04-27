@@ -42,7 +42,7 @@ def html_terms_of_service(base_dir: str,
         if tos_text_str:
             tos_text = markdown_to_html(tos_text_str)
 
-    tos_form = ''
+    tos_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'

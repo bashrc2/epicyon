@@ -138,7 +138,7 @@ def csv_following_list(following_filename: str,
         following_list = msg.split('\n')
         following_list.sort()
         if following_list:
-            following_list_csv = ''
+            following_list_csv: str = ''
             for following_address in following_list:
                 if not following_address:
                     continue
@@ -153,7 +153,7 @@ def csv_following_list(following_filename: str,
                                      following_nickname,
                                      following_domain)
                 notify_on_new = 'false'
-                languages = ''
+                languages: str = ''
                 person_notes = \
                     get_person_notes(base_dir, nickname, domain,
                                      following_address)
@@ -184,7 +184,7 @@ def csv_following_list(following_filename: str,
 def html_hashtag_blocked(base_dir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
-    blocked_hashtag_form = ''
+    blocked_hashtag_form: str = ''
     css_filename = base_dir + '/epicyon-suspended.css'
     if os.path.isfile(base_dir + '/suspended.css'):
         css_filename = base_dir + '/suspended.css'
@@ -212,7 +212,7 @@ def header_buttons_front_screen(translate: {},
                                 authorized: bool) -> str:
     """Returns the header buttons for the front page of a news instance
     """
-    header_str = ''
+    header_str: str = ''
     if nickname == 'news':
         button_features = 'buttonMobile'
         if box_name == 'features':
@@ -729,11 +729,11 @@ def html_header_with_external_style(css_filename: str, instance_title: str,
                                     metadata: str, preload_images: [],
                                     lang: str = 'en') -> str:
     if metadata is None:
-        metadata = ''
+        metadata: str = ''
     css_file = '/' + css_filename.split('/')[-1]
     pwa_theme_color, pwa_theme_background_color = \
         get_pwa_theme_colors(css_filename)
-    preload_images_str = ''
+    preload_images_str: str = ''
     if preload_images:
         for image_path in preload_images:
             preload_images_str += \
@@ -784,11 +784,11 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
                                             preload_images, lang)
         return html_str
 
-    city_markup = ''
+    city_markup: str = ''
     if city:
         city = city.lower().title()
-        add_comma = ''
-        country_markup = ''
+        add_comma: str = ''
+        country_markup: str = ''
         if ',' in city:
             country = city.split(',', 1)[1].strip().title()
             city = city.split(',', 1)[0]
@@ -801,7 +801,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
             '          "addressLocality": "' + city + '"' + \
             add_comma + '\n' + country_markup + '        },\n'
 
-    skills_markup = ''
+    skills_markup: str = ''
     if actor_json.get('hasOccupation'):
         if isinstance(actor_json['hasOccupation'], list):
             skills_markup = '        "hasOccupation": [\n'
@@ -872,7 +872,7 @@ def html_header_with_person_markup(css_filename: str, instance_title: str,
                 first_entry = False
             skills_markup += '\n        ],\n'
 
-    description = ''
+    description: str = ''
     if actor_json.get('summary'):
         description = remove_html(actor_json['summary'])
     name_str = remove_html(actor_json['name'])
@@ -1103,7 +1103,7 @@ def load_individual_post_as_html_from_cache(base_dir: str,
     cached_post_filename = \
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
 
-    post_html = ''
+    post_html: str = ''
     if not cached_post_filename:
         return post_html
 
@@ -1278,9 +1278,9 @@ def get_post_attachments_as_html(base_dir: str,
                                  system_language: str) -> (str, str):
     """Returns a string representing any attachments
     """
-    attachment_str = ''
-    attachment_ctr = 0
-    gallery_str = ''
+    attachment_str: str = ''
+    attachment_ctr: int = 0
+    gallery_str: str = ''
     attachment_dict: list[dict] = []
 
     # handle peertube-style video posts, where the media links
@@ -1342,7 +1342,7 @@ def get_post_attachments_as_html(base_dir: str,
            '.' not in url:
             continue
         # get the domain for the chat link
-        chat_domain_str = ''
+        chat_domain_str: str = ''
         attach_url = remove_html(url)
         if attach_url in attached_urls:
             continue
@@ -1355,7 +1355,7 @@ def get_post_attachments_as_html(base_dir: str,
             chat_domain_str = ' (' + chat_domain + ')'
             # avoid displaying very long domains
             if len(chat_domain_str) > 50:
-                chat_domain_str = ''
+                chat_domain_str: str = ''
         chat_url = remove_html(url)
         attachment_str += \
             '<p><a href="' + chat_url + \
@@ -1428,7 +1428,7 @@ def get_post_attachments_as_html(base_dir: str,
         if not isinstance(media_type, str):
             continue
 
-        media_license = ''
+        media_license: str = ''
         if attach.get('schema:license'):
             if not dangerous_markup(attach['schema:license'], False, []):
                 if not is_filtered(base_dir, nickname, domain,
@@ -1449,7 +1449,7 @@ def get_post_attachments_as_html(base_dir: str,
                             media_license = attach['license']
                     else:
                         media_license = attach['license']
-        media_creator = ''
+        media_creator: str = ''
         if attach.get('schema:creator'):
             if len(attach['schema:creator']) < 120:
                 if not dangerous_markup(attach['schema:creator'], False, []):
@@ -1466,7 +1466,7 @@ def get_post_attachments_as_html(base_dir: str,
                                            attrib_str, system_language):
                             media_creator = attrib_str
 
-        image_description = ''
+        image_description: str = ''
         if attach.get('name'):
             image_description = attach['name'].replace('"', "'")
             image_description = remove_html(image_description)
@@ -1511,7 +1511,7 @@ def get_post_attachments_as_html(base_dir: str,
                             'decoding="async" src="' + \
                             image_url + '" alt="" title="">\n'
                         gallery_str += '  </a>\n'
-                        license_str = ''
+                        license_str: str = ''
                         if media_license and media_creator:
                             media_license = remove_html(media_license)
                             if resembles_url(media_license):
@@ -1544,7 +1544,7 @@ def get_post_attachments_as_html(base_dir: str,
                     # don't show the announce icon if there is no image
                     # description
                     if not image_description:
-                        announce_str = ''
+                        announce_str: str = ''
                     gallery_str += \
                         '    ' + reply_str + announce_str + like_str + \
                         bookmark_str + delete_str + mute_str + '\n'
@@ -1600,7 +1600,7 @@ def get_post_attachments_as_html(base_dir: str,
                     '" alt="' + image_description + '" title="' + \
                     image_description + '" class="attachment"></a>\n'
                 if media_license and media_creator:
-                    license_str = ''
+                    license_str: str = ''
                     attachment_str += '<figcaption>'
                     media_license = remove_html(media_license)
                     if resembles_url(media_license):
@@ -1793,7 +1793,7 @@ def html_post_separator(base_dir: str, column: str) -> str:
         filename = 'separator_' + column + '.png'
     separator_image_filename = \
         base_dir + '/theme/' + theme + '/icons/' + filename
-    separator_str = ''
+    separator_str: str = ''
     if os.path.isfile(separator_image_filename):
         separator_str = \
             '<div class="' + separator_class + '"><center>' + \
@@ -1873,7 +1873,7 @@ def html_keyboard_navigation(banner: str, links: {}, access_keys: {},
 
     # show the list of links
     for title, url in links.items():
-        access_key_str = ''
+        access_key_str: str = ''
         if access_keys.get(title):
             access_key_str = 'accesskey="' + access_keys[title] + '"'
 
@@ -1904,14 +1904,14 @@ def edit_text_field(label: str, name: str, value: str = "",
     """Returns html for editing a text field
     """
     if value is None:
-        value = ''
-    placeholder_str = ''
+        value: str = ''
+    placeholder_str: str = ''
     if placeholder:
         placeholder_str = ' placeholder="' + placeholder + '"'
-    required_str = ''
+    required_str: str = ''
     if required:
         required_str = ' required'
-    text_field_str = ''
+    text_field_str: str = ''
     if label:
         text_field_str = \
             '<label class="labels">' + label + '</label><br>\n'
@@ -1927,8 +1927,8 @@ def edit_number_field(label: str, name: str, value: int,
     """Returns html for editing an integer number field
     """
     if value is None:
-        value = ''
-    placeholder_str = ''
+        value: str = ''
+    placeholder_str: str = ''
     if placeholder:
         placeholder_str = ' placeholder="' + str(placeholder) + '"'
     return \
@@ -1944,11 +1944,11 @@ def edit_currency_field(label: str, name: str, value: str,
     """
     if value is None:
         value = '0.00'
-    placeholder_str = ''
+    placeholder_str: str = ''
     if placeholder:
         if placeholder.isdigit():
             placeholder_str = ' placeholder="' + str(placeholder) + '"'
-    required_str = ''
+    required_str: str = ''
     if required:
         required_str = ' required'
     return \
@@ -1962,7 +1962,7 @@ def edit_currency_field(label: str, name: str, value: str,
 def edit_check_box(label: str, name: str, checked: bool) -> str:
     """Returns html for editing a checkbox field
     """
-    checked_str = ''
+    checked_str: str = ''
     if checked:
         checked_str = ' checked'
 
@@ -1976,8 +1976,8 @@ def edit_text_area(label: str, subtitle: str, name: str, value: str,
     """Returns html for editing a textarea field
     """
     if value is None:
-        value = ''
-    text = ''
+        value: str = ''
+    text: str = ''
     if label:
         text = '<label class="labels">' + label + '</label><br>\n'
         if subtitle:
@@ -2215,7 +2215,7 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
         return ''
     line_ctr = 0
     ctr = 0
-    html_str = ''
+    html_str: str = ''
     while ctr < no_of_emoji and line_ctr < len(common_emoji):
         name_initial = common_emoji[line_ctr].split(' ')
         if len(name_initial) < 2:
@@ -2278,7 +2278,7 @@ def html_following_data_list(base_dir: str, nickname: str,
     list_str = '<datalist id="' + following_type + 'Handles">\n'
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + following_type + '.txt'
-    msg = ''
+    msg: str = ''
     if os.path.isfile(following_filename):
         msg = load_string(following_filename,
                           'EX: html_following_data_list unable to read ' +
@@ -2288,7 +2288,7 @@ def html_following_data_list(base_dir: str, nickname: str,
             # to yourself as reminders
             msg += nickname + '@' + domain_full + '\n'
         else:
-            msg = ''
+            msg: str = ''
     if msg:
         # include petnames
         petnames_filename = \
@@ -2331,7 +2331,7 @@ def html_following_dropdown(base_dir: str, nickname: str,
     list_str = '<select name="searchtext">\n'
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + following_type + '.txt'
-    msg = ''
+    msg: str = ''
     if os.path.isfile(following_filename):
         msg = load_string(following_filename,
                           'EX: html_following_dropdown unable to read ' +
@@ -2341,7 +2341,7 @@ def html_following_dropdown(base_dir: str, nickname: str,
             # to yourself as reminders
             msg += nickname + '@' + domain_full + '\n'
         else:
-            msg = ''
+            msg: str = ''
     if msg:
         # include petnames
         petnames_filename = \
@@ -2377,7 +2377,7 @@ def html_following_dropdown(base_dir: str, nickname: str,
                                           foll_nick + '@' + foll_domain)
             domain_sorted_list.sort()
 
-            prev_foll_domain = ''
+            prev_foll_domain: str = ''
             for following_line in domain_sorted_list:
                 following_address = following_line.split(' ')[1]
                 foll_domain, _ = get_domain_from_actor(following_address)
@@ -2475,7 +2475,7 @@ def html_known_epicyon_instances(base_dir: str, http_prefix: str,
                                  translate: {}) -> str:
     """Show a list of known epicyon instances
     """
-    html_str = ''
+    html_str: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -2486,7 +2486,7 @@ def html_known_epicyon_instances(base_dir: str, http_prefix: str,
                                         http_prefix, domain_full,
                                         system_language)
     if known_epicyon_instances:
-        instances_text = ''
+        instances_text: str = ''
         newswire_str = translate['Newswire RSS Feed']
         for instance in known_epicyon_instances:
             http_prefix = 'https'
@@ -2529,7 +2529,7 @@ def get_display_name_prefix(actor_type: str,
     """
     if not actor_type:
         return ''
-    display_name_prefix = ''
+    display_name_prefix: str = ''
     if actor_type in ('Organization', 'Organisation'):
         display_name_prefix = '<b>[' + translate['Organisation'] + ']</b> '
     elif actor_type == 'Group':

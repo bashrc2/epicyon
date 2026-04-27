@@ -43,7 +43,7 @@ def html_specification(base_dir: str, http_prefix: str,
             md_text = markdown_example_numbers(md_text)
             specification_text = markdown_to_html(md_text)
 
-    specification_form = ''
+    specification_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'

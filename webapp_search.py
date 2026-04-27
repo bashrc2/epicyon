@@ -222,7 +222,7 @@ def _html_shares_result(base_dir: str, shares_json: {}, page_number: int,
                         shares_file_type: str) -> (bool, int, int, str):
     """Result for shared items search
     """
-    shared_items_form = ''
+    shared_items_form: str = ''
     if curr_page > page_number:
         return results_exist, curr_page, ctr, shared_items_form
 
@@ -276,7 +276,7 @@ def html_search_shared_items(translate: {},
     """
     curr_page = 1
     ctr = 0
-    shared_items_form = ''
+    shared_items_form: str = ''
     search_str_lower = urllib.parse.unquote(search_str)
     search_str_lower = search_str_lower.lower().strip('\n').strip('\r')
     search_str_lower_list = search_str_lower.split('+')
@@ -491,7 +491,7 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
     text_mode_banner_str = html_keyboard_navigation(text_mode_banner, {}, {},
                                                     None, None, None, False)
     if text_mode_banner_str is None:
-        text_mode_banner_str = ''
+        text_mode_banner_str: str = ''
 
     if os.path.isfile(search_banner_filename):
         timeline_key = access_keys['menuTimeline']
@@ -525,7 +525,7 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
 
     cached_hashtag_swarm_filename = \
         acct_dir(base_dir, search_nickname, domain) + '/.hashtagSwarm'
-    swarm_str = ''
+    swarm_str: str = ''
     if os.path.isfile(cached_hashtag_swarm_filename):
         swarm_str = \
             load_string(cached_hashtag_swarm_filename,
@@ -533,7 +533,7 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
                         'html_search unable to read cached hashtag swarm ' +
                         cached_hashtag_swarm_filename)
         if swarm_str is None:
-            swarm_str = ''
+            swarm_str: str = ''
     if not swarm_str:
         swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
         if swarm_str:

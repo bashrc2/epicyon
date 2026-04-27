@@ -16,7 +16,7 @@ from webapp_utils import html_footer
 def html_suspended(base_dir: str) -> str:
     """Show the screen for suspended accounts
     """
-    suspended_form = ''
+    suspended_form: str = ''
     css_filename = base_dir + '/epicyon-suspended.css'
     if os.path.isfile(base_dir + '/suspended.css'):
         css_filename = base_dir + '/suspended.css'

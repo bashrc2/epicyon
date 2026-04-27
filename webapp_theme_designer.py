@@ -186,7 +186,7 @@ def html_theme_designer(base_dir: str,
             for variable_name, value in custom_theme_params.items():
                 theme_json[variable_name] = value
 
-    theme_form = ''
+    theme_form: str = ''
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
@@ -228,7 +228,7 @@ def html_theme_designer(base_dir: str,
         'name="submitThemeDesigner" accesskey="' + submit_key + '">' + \
         translate['Save'] + '</button>\n    </center>\n'
 
-    contrast_warning = ''
+    contrast_warning: str = ''
     if theme_json.get('main-bg-color'):
         background = theme_json['main-bg-color']
         if theme_json.get('main-fg-color'):
@@ -320,7 +320,7 @@ def html_theme_designer(base_dir: str,
             switch_str += \
                 '      <tr><td><label class="labels">' + \
                 variable_name_str + '</label></td>'
-            checked_str = ''
+            checked_str: str = ''
             if value.title() == 'True':
                 checked_str = ' checked'
             switch_str += \
