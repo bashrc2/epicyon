@@ -28,6 +28,8 @@ from utils import language_right_to_left
 from formats import get_image_extensions
 from content import dangerous_css
 from textmode import set_text_mode_theme
+from data import load_string
+from data import save_string
 
 
 def import_theme(base_dir: str, filename: str) -> bool:
@@ -47,14 +49,10 @@ def import_theme(base_dir: str, filename: str) -> bool:
                   ' missing from imported theme')
             return False
     new_theme_name = None
-    new_theme_name1 = None
-    try:
-        with open(temp_theme_dir + '/name.txt', 'r',
-                  encoding='utf-8') as fp_theme:
-            new_theme_name1 = fp_theme.read()
-    except OSError:
-        print('EX: import_theme unable to read ' +
-              temp_theme_dir + '/name.txt')
+    new_theme_name1 = \
+        load_string(temp_theme_dir + '/name.txt',
+                    'EX: import_theme unable to read ' +
+                    temp_theme_dir + '/name.txt')
 
     if new_theme_name1:
         new_theme_name = remove_eol(new_theme_name1)
@@ -389,11 +387,8 @@ def _set_theme_from_dict(base_dir: str, name: str,
                 css = set_css_param(css, 'language-direction', 'rtl')
 
             filename = base_dir + '/' + filename
-            try:
-                with open(filename, 'w+', encoding='utf-8') as fp_css:
-                    fp_css.write(css)
-            except OSError:
-                print('EX: _set_theme_from_dict unable to write ' + filename)
+            save_string(css, filename,
+                        'EX: _set_theme_from_dict unable to write ' + filename)
 
     screen_name = (
         'login', 'follow', 'options', 'search', 'welcome'
@@ -413,21 +408,13 @@ def _set_background_format(base_dir: str,
     if not os.path.isfile(css_filename):
         return
 
-    css = None
-    try:
-        with open(css_filename, 'r', encoding='utf-8') as fp_css:
-            css = fp_css.read()
-    except OSError as exc:
-        print('EX: _set_background_format 1 ' + css_filename + ' ' + str(exc))
-
+    css = load_string(css_filename,
+                      'EX: _set_background_format 1 ' + css_filename + ' [ex]')
     if css:
         css = css.replace('background.jpg', 'background.' + extension)
-        try:
-            with open(css_filename, 'w+', encoding='utf-8') as fp_css2:
-                fp_css2.write(css)
-        except OSError as exc:
-            print('EX: _set_background_format 2 ' +
-                  css_filename + ' ' + str(exc))
+        save_string(css, css_filename,
+                    'EX: _set_background_format 2 ' +
+                    css_filename + ' [ex]')
 
 
 def enable_grayscale(base_dir: str) -> None:
@@ -438,28 +425,25 @@ def enable_grayscale(base_dir: str) -> None:
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        try:
-            with open(template_filename, 'r', encoding='utf-8') as fp_css:
-                css = fp_css.read()
-                if 'grayscale' not in css:
-                    css = \
-                        css.replace('body, html {',
-                                    'body, html {\n' +
-                                    '    filter: grayscale(100%);')
-                    filename = base_dir + '/' + filename
-                    with open(filename, 'w+', encoding='utf-8') as fp_css:
-                        fp_css.write(css)
-        except OSError as ex:
-            print('EX: enable_grayscale unable to read ' +
-                  template_filename + ' ' + str(ex))
+        css = load_string(template_filename,
+                          'EX: enable_grayscale unable to read ' +
+                          template_filename + ' [ex]')
+        if css is None:
+            continue
+        if 'grayscale' in css:
+            continue
+        css = \
+            css.replace('body, html {', 'body, html {\n' +
+                        '    filter: grayscale(100%);')
+        filename = base_dir + '/' + filename
+        save_string(css, filename,
+                    'EX: enable_grayscale unable to save ' +
+                    filename + ' [ex]')
     grayscale_filename = data_dir(base_dir) + '/.grayscale'
     if not os.path.isfile(grayscale_filename):
-        try:
-            with open(grayscale_filename, 'w+', encoding='utf-8') as fp_gray:
-                fp_gray.write(' ')
-        except OSError as ex:
-            print('EX: enable_grayscale unable to write ' +
-                  grayscale_filename + ' ' + str(ex))
+        save_string(' ', grayscale_filename,
+                    'EX: enable_grayscale unable to write ' +
+                    grayscale_filename + ' [ex]')
 
 
 def disable_grayscale(base_dir: str) -> None:
@@ -470,18 +454,18 @@ def disable_grayscale(base_dir: str) -> None:
         template_filename = base_dir + '/' + filename
         if not os.path.isfile(template_filename):
             continue
-        try:
-            with open(template_filename, 'r', encoding='utf-8') as fp_css:
-                css = fp_css.read()
-                if 'grayscale' in css:
-                    css = \
-                        css.replace('\n    filter: grayscale(100%);', '')
-                    filename = base_dir + '/' + filename
-                    with open(filename, 'w+', encoding='utf-8') as fp_css:
-                        fp_css.write(css)
-        except OSError as ex:
-            print('EX: disable_grayscale unable to read ' +
-                  template_filename + ' ' + str(ex))
+        css = load_string(template_filename,
+                          'EX: disable_grayscale unable to read ' +
+                          template_filename + ' [ex]')
+        if css is None:
+            continue
+        if 'grayscale' not in css:
+            continue
+        css = css.replace('\n    filter: grayscale(100%);', '')
+        filename = base_dir + '/' + filename
+        save_string(css, filename,
+                    'EX: disable_grayscale unable to save ' +
+                    filename + ' [ex]')
     grayscale_filename = data_dir(base_dir) + '/.grayscale'
     if os.path.isfile(grayscale_filename):
         try:
@@ -500,25 +484,20 @@ def _set_dyslexic_font(base_dir: str) -> bool:
         if not os.path.isfile(template_filename):
             continue
 
-        css = None
-        try:
-            with open(template_filename, 'r', encoding='utf-8') as fp_css:
-                css = fp_css.read()
-        except OSError:
-            print('EX: _set_dyslexic_font unable to read ' + template_filename)
+        css = load_string(template_filename,
+                          'EX: _set_dyslexic_font unable to read ' +
+                          template_filename)
 
-        if css:
-            css = \
-                set_css_param(css, "*src",
-                              "url('./fonts/OpenDyslexic-Regular.woff2" +
-                              "') format('woff2')")
-            css = set_css_param(css, "*font-family", "'OpenDyslexic'")
-            filename = base_dir + '/' + filename
-            try:
-                with open(filename, 'w+', encoding='utf-8') as fp_css:
-                    fp_css.write(css)
-            except OSError:
-                print('EX: _set_dyslexic_font unable to write ' + filename)
+        if not css:
+            continue
+        css = \
+            set_css_param(css, "*src",
+                          "url('./fonts/OpenDyslexic-Regular.woff2" +
+                          "') format('woff2')")
+        css = set_css_param(css, "*font-family", "'OpenDyslexic'")
+        filename = base_dir + '/' + filename
+        save_string(css, filename,
+                    'EX: _set_dyslexic_font unable to write ' + filename)
     return False
 
 
@@ -547,27 +526,22 @@ def _set_custom_font(base_dir: str):
         if not os.path.isfile(template_filename):
             continue
 
-        css = None
-        try:
-            with open(template_filename, 'r', encoding='utf-8') as fp_css:
-                css = fp_css.read()
-        except OSError:
-            print('EX: _set_custom_font unable to read ' + template_filename)
+        css = load_string(template_filename,
+                          'EX: _set_custom_font unable to read ' +
+                          template_filename)
 
-        if css:
-            css = \
-                set_css_param(css, "*src",
-                              "url('./fonts/custom." +
-                              custom_font_ext + "') format('" +
-                              custom_font_type + "')")
-            css = set_css_param(css, "*font-family", "'CustomFont'")
-            css = set_css_param(css, "header-font", "'CustomFont'")
-            filename = base_dir + '/' + filename
-            try:
-                with open(filename, 'w+', encoding='utf-8') as fp_css:
-                    fp_css.write(css)
-            except OSError:
-                print('EX: _set_custom_font unable to write ' + filename)
+        if not css:
+            continue
+        css = \
+            set_css_param(css, "*src",
+                          "url('./fonts/custom." +
+                          custom_font_ext + "') format('" +
+                          custom_font_type + "')")
+        css = set_css_param(css, "*font-family", "'CustomFont'")
+        css = set_css_param(css, "header-font", "'CustomFont'")
+        filename = base_dir + '/' + filename
+        save_string(css, filename,
+                    'EX: _set_custom_font unable to write ' + filename)
 
 
 def set_theme_from_designer(base_dir: str, theme_name: str, domain: str,
@@ -832,11 +806,8 @@ def _set_clear_cache_flag(base_dir: str) -> None:
     if not os.path.isdir(dir_str):
         return
     flag_filename = dir_str + '/.clear_cache'
-    try:
-        with open(flag_filename, 'w+', encoding='utf-8') as fp_flag:
-            fp_flag.write('\n')
-    except OSError:
-        print('EX: _set_clear_cache_flag unable to write ' + flag_filename)
+    save_string('\n', flag_filename,
+                'EX: _set_clear_cache_flag unable to write ' + flag_filename)
 
 
 def set_theme(base_dir: str, name: str, domain: str,
@@ -932,13 +903,12 @@ def scan_themes_for_scripts(base_dir: str) -> bool:
             if not fname.endswith('.svg'):
                 continue
             svg_filename = os.path.join(subdir, fname)
-            content = ''
-            try:
-                with open(svg_filename, 'r', encoding='utf-8') as fp_svg:
-                    content = fp_svg.read()
-            except OSError:
-                print('EX: scan_themes_for_scripts unable to read ' +
-                      svg_filename)
+            content = \
+                load_string(svg_filename,
+                            'EX: scan_themes_for_scripts unable to read ' +
+                            svg_filename)
+            if not content:
+                continue
             svg_dangerous = dangerous_svg(content, False)
             if svg_dangerous:
                 print('svg file contains script: ' + svg_filename)

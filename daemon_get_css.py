@@ -38,7 +38,7 @@ def get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
         tries = 0
         while tries < 5:
             try:
-                css = get_css(base_dir, path)
+                css = get_css(path)
                 if css:
                     css_cache[path] = css
                     break

@@ -12,6 +12,7 @@ import sys
 import time
 from socket import error as SocketError
 from timeFunctions import date_utcnow
+from data import append_string
 
 
 class thread_with_trace(threading.Thread):
@@ -157,14 +158,12 @@ def remove_dormant_threads(base_dir: str, threads_list: [], debug: bool,
 
     if debug:
         send_log_filename = base_dir + '/send.csv'
-        try:
-            with open(send_log_filename, 'a+', encoding='utf-8') as fp_log:
-                fp_log.write(curr_time.strftime("%Y-%m-%dT%H:%M:%SZ") +
-                             ',' + str(no_of_active_threads) +
-                             ',' + str(len(threads_list)) + '\n')
-        except OSError:
-            print('EX: remove_dormant_threads unable to write ' +
-                  send_log_filename)
+        text = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ") + \
+            ',' + str(no_of_active_threads) + \
+            ',' + str(len(threads_list)) + '\n'
+        append_string(text, send_log_filename,
+                      'EX: remove_dormant_threads unable to write ' +
+                      send_log_filename)
 
 
 def begin_thread(thread, calling_function: str) -> bool:

@@ -23,6 +23,9 @@ from followingCalendar import add_person_to_calendar
 from unicodetext import standardize_text
 from formats import get_image_extensions
 from data import load_list
+from data import save_string
+from data import load_string
+from data import append_string
 
 VALID_HASHTAG_CHARS = \
     set('_0123456789' +
@@ -145,13 +148,9 @@ def text_in_file(text: str, filename: str,
     if not case_sensitive:
         text = text.lower()
 
-    content = None
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_file:
-            content = fp_file.read()
-    except OSError:
-        print('EX: unable to find text in missing file ' + filename)
-
+    content = \
+        load_string(filename,
+                    'EX: unable to find text in missing file ' + filename)
     if content:
         if not case_sensitive:
             content = content.lower()
@@ -469,23 +468,16 @@ def set_accounts_data_dir(base_dir: str, accounts_data_path: str) -> None:
     accounts_data_path_filename = base_dir + '/data_path.txt'
     if os.path.isfile(accounts_data_path_filename):
         # read the existing path
-        path = None
-        try:
-            with open(accounts_data_path_filename, 'r',
-                      encoding='utf-8') as fp_accounts:
-                path = fp_accounts.read()
-        except OSError:
-            print('EX: unable to read ' + accounts_data_path_filename)
-        if path.strip() == accounts_data_path:
-            # path is already set, so avoid writing it again
-            return
+        path = load_string(accounts_data_path_filename,
+                           'EX: unable to read ' +
+                           accounts_data_path_filename)
+        if path:
+            if path.strip() == accounts_data_path:
+                # path is already set, so avoid writing it again
+                return
 
-    try:
-        with open(accounts_data_path_filename, 'w+',
-                  encoding='utf-8') as fp_accounts:
-            fp_accounts.write(accounts_data_path)
-    except OSError:
-        print('EX: unable to write ' + accounts_data_path_filename)
+    save_string(accounts_data_path, accounts_data_path_filename,
+                'EX: unable to write ' + accounts_data_path_filename)
 
 
 def data_dir(base_dir: str) -> str:
@@ -504,13 +496,9 @@ def data_dir(base_dir: str) -> str:
         # is an alternative path set?
         accounts_data_path_filename = base_dir + '/data_path.txt'
         if os.path.isfile(accounts_data_path_filename):
-            path = None
-            try:
-                with open(accounts_data_path_filename, 'r',
-                          encoding='utf-8') as fp_accounts:
-                    path = fp_accounts.read()
-            except OSError:
-                print('EX: unable to read ' + accounts_data_path_filename)
+            path = load_string(accounts_data_path_filename,
+                               'EX: unable to read ' +
+                               accounts_data_path_filename)
             if path:
                 __accounts_data_path__ = path.strip()
                 print('Accounts data path set to ' + __accounts_data_path__)
@@ -536,13 +524,9 @@ def refresh_newswire(base_dir: str) -> None:
     refresh_newswire_filename = data_dir(base_dir) + '/.refresh_newswire'
     if os.path.isfile(refresh_newswire_filename):
         return
-    try:
-        with open(refresh_newswire_filename, 'w+',
-                  encoding='utf-8') as fp_refresh:
-            fp_refresh.write('\n')
-    except OSError:
-        print('EX: refresh_newswire unable to write ' +
-              refresh_newswire_filename)
+    save_string('\n', refresh_newswire_filename,
+                'EX: refresh_newswire unable to write ' +
+                refresh_newswire_filename)
 
 
 def get_sha_256(msg: str):
@@ -714,12 +698,10 @@ def get_memorials(base_dir: str) -> str:
     if not os.path.isfile(memorial_file):
         return ''
 
-    memorial_str = ''
-    try:
-        with open(memorial_file, 'r', encoding='utf-8') as fp_memorial:
-            memorial_str = fp_memorial.read()
-    except OSError:
-        print('EX: unable to read ' + memorial_file)
+    memorial_str = load_string(memorial_file,
+                               'EX: unable to read ' + memorial_file)
+    if memorial_str is None:
+        memorial_str = ''
     return memorial_str
 
 
@@ -738,11 +720,8 @@ def set_memorials(base_dir: str, domain: str, memorial_str) -> None:
 
     # save the accounts
     memorial_file = data_dir(base_dir) + '/memorial'
-    try:
-        with open(memorial_file, 'w+', encoding='utf-8') as fp_memorial:
-            fp_memorial.write(memorial_str)
-    except OSError:
-        print('EX: unable to write ' + memorial_file)
+    save_string(memorial_str, memorial_file,
+                'EX: unable to write ' + memorial_file)
 
 
 def _create_config(base_dir: str) -> None:
@@ -949,14 +928,9 @@ def load_json(filename: str) -> {}:
         filename = filename.replace('/Actor@', '/inbox@')
 
     json_object = None
-    data = None
-
-    # load from file
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_json:
-            data = fp_json.read()
-    except OSError as exc:
-        print('EX: load_json exception ' + str(filename) + ' ' + str(exc))
+    data = load_string(filename,
+                       'EX: load_json exception ' + str(filename) + ' [ex]')
+    if data is None:
         return json_object
 
     # check that something was loaded
@@ -982,19 +956,18 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
     json_object = None
     tries = 0
     while tries < 5:
-        try:
-            with open(filename, 'r', encoding='utf-8') as fp_json:
-                data = fp_json.read()
-                if data:
-                    data = data.replace(domain, onion_domain)
-                    data = data.replace('https:', 'http:')
-                json_object = json.loads(data)
-                break
-        except BaseException:
-            print('EX: load_json_onionify exception ' + str(filename))
+        data = load_string(filename,
+                           'EX: load_json_onionify exception ' + filename)
+        if data is None:
             if delay_sec > 0:
                 time.sleep(delay_sec)
             tries += 1
+            continue
+        if data:
+            data = data.replace(domain, onion_domain)
+            data = data.replace('https:', 'http:')
+        json_object = json.loads(data)
+        break
     return json_object
 
 
@@ -1564,34 +1537,24 @@ def _set_default_pet_name(base_dir: str, nickname: str, domain: str,
         follow_nickname + '@' + follow_domain + '\n'
     if not os.path.isfile(petnames_filename):
         # if there is no existing petnames lookup file
-        try:
-            with open(petnames_filename, 'w+',
-                      encoding='utf-8') as fp_petnames:
-                fp_petnames.write(petname_lookup_entry)
-        except OSError:
-            print('EX: _set_default_pet_name unable to write ' +
-                  petnames_filename)
+        save_string(petname_lookup_entry, petnames_filename,
+                    'EX: _set_default_pet_name unable to write ' +
+                    petnames_filename)
         return
 
-    try:
-        with open(petnames_filename, 'r', encoding='utf-8') as fp_petnames:
-            petnames_str = fp_petnames.read()
-            if petnames_str:
-                petnames_list = petnames_str.split('\n')
-                for pet in petnames_list:
-                    if pet.startswith(follow_nickname + ' '):
-                        # petname already exists
-                        return
-    except OSError:
-        print('EX: _set_default_pet_name unable to read 1 ' +
-              petnames_filename)
+    petnames_str = load_string(petnames_filename,
+                               'EX: _set_default_pet_name unable to read 1 ' +
+                               petnames_filename)
+    if petnames_str:
+        petnames_list = petnames_str.split('\n')
+        for pet in petnames_list:
+            if pet.startswith(follow_nickname + ' '):
+                # petname already exists
+                return
     # petname doesn't already exist
-    try:
-        with open(petnames_filename, 'a+', encoding='utf-8') as fp_petnames:
-            fp_petnames.write(petname_lookup_entry)
-    except OSError:
-        print('EX: _set_default_pet_name unable to read 2 ' +
-              petnames_filename)
+    append_string(petname_lookup_entry, petnames_filename,
+                  'EX: _set_default_pet_name unable to read 2 ' +
+                  petnames_filename)
 
 
 def follow_person(base_dir: str, nickname: str, domain: str,
@@ -1645,13 +1608,9 @@ def follow_person(base_dir: str, nickname: str, domain: str,
             for line in lines:
                 if handle_to_follow not in line:
                     new_lines += line
-            try:
-                with open(unfollowed_filename, 'w+',
-                          encoding='utf-8') as fp_unfoll:
-                    fp_unfoll.write(new_lines)
-            except OSError:
-                print('EX: follow_person unable to write ' +
-                      unfollowed_filename)
+            save_string(new_lines, unfollowed_filename,
+                        'EX: follow_person unable to write ' +
+                        unfollowed_filename)
 
     dir_str = data_dir(base_dir)
     if not os.path.isdir(dir_str):
@@ -1683,11 +1642,8 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                   ' creating new following file to follow ' +
                   handle_to_follow +
                   ', filename is ' + filename)
-        try:
-            with open(filename, 'w+', encoding='utf-8') as fp_foll:
-                fp_foll.write(handle_to_follow + '\n')
-        except OSError:
-            print('EX: follow_person unable to write ' + filename)
+        save_string(handle_to_follow + '\n', filename,
+                    'EX: follow_person unable to write ' + filename)
 
     if follow_file.endswith('following.txt'):
         # Default to adding new follows to the calendar.
@@ -1786,15 +1742,13 @@ def get_reply_interval_hours(base_dir: str, nickname: str, domain: str,
     reply_interval_filename = \
         acct_dir(base_dir, nickname, domain) + '/.reply_interval_hours'
     if os.path.isfile(reply_interval_filename):
-        try:
-            with open(reply_interval_filename, 'r',
-                      encoding='utf-8') as fp_interval:
-                hours_str = fp_interval.read()
-                if hours_str.isdigit():
-                    return int(hours_str)
-        except OSError:
-            print('EX: get_reply_interval_hours unable to read ' +
-                  reply_interval_filename)
+        hours_str = \
+            load_string(reply_interval_filename,
+                        'EX: get_reply_interval_hours unable to read ' +
+                        reply_interval_filename)
+        if hours_str:
+            if hours_str.isdigit():
+                return int(hours_str)
     return default_reply_interval_hrs
 
 
@@ -1806,15 +1760,13 @@ def set_reply_interval_hours(base_dir: str, nickname: str, domain: str,
     """
     reply_interval_filename = \
         acct_dir(base_dir, nickname, domain) + '/.reply_interval_hours'
-    try:
-        with open(reply_interval_filename, 'w+',
-                  encoding='utf-8') as fp_interval:
-            fp_interval.write(str(reply_interval_hours))
-            return True
-    except OSError:
-        print('EX: set_reply_interval_hours unable to save reply interval ' +
-              str(reply_interval_filename) + ' ' +
-              str(reply_interval_hours))
+    text = str(reply_interval_hours)
+    if save_string(text, reply_interval_filename,
+                   'EX: set_reply_interval_hours ' +
+                   'unable to save reply interval ' +
+                   str(reply_interval_filename) + ' ' +
+                   str(reply_interval_hours)):
+        return True
     return False
 
 
@@ -1847,22 +1799,16 @@ def _remove_attachment(base_dir: str, http_prefix: str,
     account_media_log_filename = account_dir + '/media_log.txt'
     if os.path.isfile(account_media_log_filename):
         search_filename = media_filename.replace(base_dir, '')
-        media_log_text = ''
-        try:
-            with open(account_media_log_filename, 'r',
-                      encoding='utf-8') as fp_log:
-                media_log_text = fp_log.read()
-        except OSError:
-            print('EX: _remove unable to read media log for ' + nickname)
+        media_log_text = \
+            load_string(account_media_log_filename,
+                        'EX: _remove unable to read media log for ' + nickname)
+        if media_log_text is None:
+            media_log_text = ''
         if search_filename + '\n' in media_log_text:
             media_log_text = media_log_text.replace(search_filename + '\n', '')
-            try:
-                with open(account_media_log_filename, 'w+',
-                          encoding='utf-8') as fp_log:
-                    fp_log.write(media_log_text)
-            except OSError:
-                print('EX: unable to write media log after removal for ' +
-                      nickname)
+            save_string(media_log_text, account_media_log_filename,
+                        'EX: unable to write media log after removal for ' +
+                        nickname)
 
     # remove the transcript
     if os.path.isfile(media_filename + '.vtt'):
@@ -2085,13 +2031,9 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
                   'unable to delete tag index ' + str(tag_index_filename))
     else:
         # write the new hashtag index without the given post in it
-        try:
-            with open(tag_index_filename, 'w+',
-                      encoding='utf-8') as fp_index:
-                fp_index.write(newlines)
-        except OSError:
-            print('EX: _remove_post_id_from_tag_index unable to write ' +
-                  tag_index_filename)
+        save_string(newlines, tag_index_filename,
+                    'EX: _remove_post_id_from_tag_index unable to write ' +
+                    tag_index_filename)
 
 
 def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
@@ -2158,24 +2100,19 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
     conversation_filename = conversation_dir + '/' + conversation_id
     if not os.path.isfile(conversation_filename):
         return False
-    conversation_str = ''
-    try:
-        with open(conversation_filename, 'r', encoding='utf-8') as fp_conv:
-            conversation_str = fp_conv.read()
-    except OSError:
-        print('EX: _delete_conversation_post unable to read ' +
-              conversation_filename)
+    conversation_str = \
+        load_string(conversation_filename,
+                    'EX: _delete_conversation_post unable to read ' +
+                    conversation_filename)
+    if conversation_str is None:
+        conversation_str = ''
     if post_id + '\n' not in conversation_str:
         return False
     conversation_str = conversation_str.replace(post_id + '\n', '')
     if conversation_str:
-        try:
-            with open(conversation_filename, 'w+',
-                      encoding='utf-8') as fp_conv:
-                fp_conv.write(conversation_str)
-        except OSError:
-            print('EX: _delete_conversation_post unable to write ' +
-                  conversation_filename)
+        save_string(conversation_str, conversation_filename,
+                    'EX: _delete_conversation_post unable to write ' +
+                    conversation_filename)
     else:
         if os.path.isfile(conversation_filename + '.muted'):
             try:
@@ -2677,17 +2614,15 @@ def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
                 dir_str + '/' + account + '/.lastUsed'
             if not os.path.isfile(last_used_filename):
                 continue
-            try:
-                with open(last_used_filename, 'r',
-                          encoding='utf-8') as fp_last_used:
-                    last_used = fp_last_used.read()
-                    if last_used.isdigit():
-                        time_diff = curr_time - int(last_used)
-                        if time_diff < month_seconds:
-                            account_ctr += 1
-            except OSError:
-                print('EX: no_of_active_accounts_monthly unable to read ' +
-                      last_used_filename)
+            last_used = \
+                load_string(last_used_filename,
+                            'EX: no_of_active_accounts_monthly ' +
+                            'unable to read ' + last_used_filename)
+            if last_used:
+                if last_used.isdigit():
+                    time_diff = curr_time - int(last_used)
+                    if time_diff < month_seconds:
+                        account_ctr += 1
         break
     return account_ctr
 
@@ -2738,20 +2673,17 @@ def file_last_modified(filename: str) -> str:
     return modified_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def get_css(base_dir: str, css_filename: str) -> str:
+def get_css(css_filename: str) -> str:
     """Retrieves the css for a given file, or from a cache
     """
     # does the css file exist?
     if not os.path.isfile(css_filename):
         return None
 
-    try:
-        with open(css_filename, 'r', encoding='utf-8') as fp_css:
-            css = fp_css.read()
-            return css
-    except OSError:
-        print('EX: get_css unable to read ' + css_filename)
-
+    css = load_string(css_filename,
+                      'EX: get_css unable to read ' + css_filename)
+    if css:
+        return css
     return None
 
 
@@ -2831,13 +2763,9 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
             if recent_posts_cache['html'].get(post_url):
                 del recent_posts_cache['html'][post_url]
 
-    try:
-        with open(post_filename + '.reject', 'w+',
-                  encoding='utf-8') as fp_reject:
-            fp_reject.write('\n')
-    except OSError:
-        print('EX: reject_post_id unable to write ' +
-              post_filename + '.reject')
+    save_string('\n', post_filename + '.reject',
+                'EX: reject_post_id unable to write ' +
+                post_filename + '.reject')
 
     # if the post is in the inbox index then remove it
     index_file = \
@@ -3560,11 +3488,9 @@ def set_minimize_all_images(base_dir: str,
         if nickname not in min_images_for_accounts:
             min_images_for_accounts.append(nickname)
         if not os.path.isfile(filename):
-            try:
-                with open(filename, 'w+', encoding='utf-8') as fp_min:
-                    fp_min.write('\n')
-            except OSError:
-                print('EX: unable to write ' + filename)
+            save_string('\n', filename,
+                        'EX: set_minimize_all_images unable to write ' +
+                        filename)
         return
 
     if nickname in min_images_for_accounts:
@@ -3612,12 +3538,9 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> None:
                 acct_dir(base_dir, nickname, domain) + '/.reverse_timeline'
             if nickname in reverse_sequence:
                 if not os.path.isfile(reverse_filename):
-                    try:
-                        with open(reverse_filename, 'w+',
-                                  encoding='utf-8') as fp_reverse:
-                            fp_reverse.write('\n')
-                    except OSError:
-                        print('EX: failed to save reverse ' + reverse_filename)
+                    save_string('\n', reverse_filename,
+                                'EX: failed to save reverse ' +
+                                reverse_filename)
             else:
                 if os.path.isfile(reverse_filename):
                     try:
@@ -3858,11 +3781,10 @@ def lines_in_file(filename: str) -> int:
     """Returns the number of lines in a file
     """
     if os.path.isfile(filename):
-        try:
-            with open(filename, 'r', encoding='utf-8') as fp_lines:
-                return len(fp_lines.read().split('\n'))
-        except OSError:
-            print('EX: lines_in_file error reading ' + filename)
+        text = load_string(filename,
+                           'EX: lines_in_file error reading ' + filename)
+        if text:
+            return len(text.split('\n'))
     return 0
 
 
@@ -4177,12 +4099,9 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
                 return False
     else:
         if flag_state:
-            try:
-                with open(premium_filename, 'w+',
-                          encoding='utf-8') as fp_premium:
-                    fp_premium.write('\n')
-            except OSError:
-                print('EX: unable to set premium flag ' + premium_filename)
+            if not save_string('\n', premium_filename,
+                               'EX: unable to set premium flag ' +
+                               premium_filename):
                 return False
     return True
 

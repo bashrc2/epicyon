@@ -14,6 +14,8 @@ from dateutil.tz import tz
 from utils import acct_dir
 from utils import data_dir
 from utils import has_object_dict
+from data import load_string
+from data import save_string
 
 
 def convert_published_to_local_timezone(published, timezone: str) -> str:
@@ -126,12 +128,11 @@ def get_account_timezone(base_dir: str, nickname: str, domain: str) -> str:
         acct_dir(base_dir, nickname, domain) + '/timezone.txt'
     if not os.path.isfile(tz_filename):
         return None
-    timezone = None
-    try:
-        with open(tz_filename, 'r', encoding='utf-8') as fp_timezone:
-            timezone = fp_timezone.read().strip()
-    except OSError:
-        print('EX: get_account_timezone unable to read ' + tz_filename)
+    timezone = load_string(tz_filename,
+                           'EX: get_account_timezone unable to read ' +
+                           tz_filename)
+    if timezone:
+        timezone = timezone.strip()
     return timezone
 
 
@@ -142,12 +143,9 @@ def set_account_timezone(base_dir: str, nickname: str, domain: str,
     tz_filename = \
         acct_dir(base_dir, nickname, domain) + '/timezone.txt'
     timezone = timezone.strip()
-    try:
-        with open(tz_filename, 'w+', encoding='utf-8') as fp_timezone:
-            fp_timezone.write(timezone)
-    except OSError:
-        print('EX: set_account_timezone unable to write ' +
-              tz_filename)
+    save_string(timezone, tz_filename,
+                'EX: set_account_timezone unable to write ' +
+                tz_filename)
 
 
 def load_account_timezones(base_dir: str) -> {}:
@@ -165,16 +163,15 @@ def load_account_timezones(base_dir: str) -> {}:
             tz_filename = acct_directory + '/timezone.txt'
             if not os.path.isfile(tz_filename):
                 continue
-            timezone = None
-            try:
-                with open(tz_filename, 'r', encoding='utf-8') as fp_timezone:
-                    timezone = fp_timezone.read().strip()
-            except OSError:
-                print('EX: load_account_timezones unable to read ' +
-                      tz_filename)
-            if timezone:
-                nickname = acct.split('@')[0]
-                account_timezone[nickname] = timezone
+            timezone = \
+                load_string(tz_filename,
+                            'EX: load_account_timezones unable to read ' +
+                            tz_filename)
+            if not timezone:
+                continue
+            timezone = timezone.strip()
+            nickname = acct.split('@')[0]
+            account_timezone[nickname] = timezone
         break
     return account_timezone
 
