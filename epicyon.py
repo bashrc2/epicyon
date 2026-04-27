@@ -961,7 +961,7 @@ def _command_options() -> None:
             domain, _ = get_domain_from_actor(url)
             url = http_prefix + '://' + domain + '/users/' + nickname
         timeout = 15
-        sites_unavailable = []
+        sites_unavailable: list[str] = []
         active = site_is_active(url, timeout,
                                 sites_unavailable)
         if active:
@@ -1857,7 +1857,7 @@ def _command_options() -> None:
         session_yggdrasil = None
         session = create_session(proxy_type)
         send_threads = []
-        post_log = []
+        post_log: list[str] = []
         cached_webfingers = {}
         person_cache = {}
         if not domain:
@@ -1918,7 +1918,7 @@ def _command_options() -> None:
         session_yggdrasil = None
         session = create_session(proxy_type)
         send_threads = []
-        post_log = []
+        post_log: list[str] = []
         cached_webfingers = {}
         person_cache = {}
         if not domain:
@@ -2052,7 +2052,7 @@ def _command_options() -> None:
         attached_image_description = remove_html(argb.imageDescription)
         city = 'London, England'
         send_threads = []
-        post_log = []
+        post_log: list[str] = []
         person_cache = {}
         cached_webfingers = {}
         subject = argb.subject

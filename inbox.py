@@ -3401,7 +3401,7 @@ def split_post_collection(collection_post_json: {}) -> []:
         return [collection_post_json]
     if not isinstance(collection_post_json['object']['orderedItems'], list):
         return [collection_post_json]
-    posts_list = []
+    posts_list: list[dict] = []
     for post_dict in collection_post_json['object']['orderedItems']:
         if not isinstance(post_dict, dict):
             continue

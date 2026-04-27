@@ -203,7 +203,7 @@ def html_address_book_list(base_dir: str, nickname: str, domain: str) -> str:
         if address_book_dict2:
             address_book_dict = address_book_dict2
 
-    addresses_list = []
+    addresses_list: list[str] = []
     for _, address in address_book_dict.items():
         addresses_list.append(address)
     addresses_list.sort()

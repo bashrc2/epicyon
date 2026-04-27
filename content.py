@@ -1511,7 +1511,7 @@ def add_html_tags(base_dir: str, http_prefix: str,
     long_words_list: list[str] = []
     prev_word_str: str = ''
     auto_tags_list = _load_auto_tags(base_dir, nickname, domain)
-    append_tags = []
+    append_tags: list[str] = []
     for word_str in words:
         word_len = len(word_str)
         if word_len <= 2:

@@ -73,7 +73,7 @@ def html_calendar_delete_confirm(translate: {}, base_dir: str,
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     delete_post_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

@@ -417,7 +417,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         return
     if not has_object_dict(post_json_object):
         return
-    object_tags = []
+    object_tags: list[dict] = []
     if post_json_object['object'].get('tag'):
         object_tags = post_json_object['object']['tag']
     if not post_json_object.get('id'):

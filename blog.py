@@ -667,7 +667,7 @@ def html_blog_page(authorized: bool, session,
         css_filename = base_dir + '/epicyon.css'
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     blog_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -873,7 +873,7 @@ def html_blog_view(authorized: bool,
         css_filename = base_dir + '/epicyon.css'
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     blog_str = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
@@ -986,7 +986,7 @@ def html_edit_blog(media_instance: bool, translate: {},
 
     instance_title = \
         get_config_param(base_dir, 'instanceTitle')
-    preload_images = []
+    preload_images: list[str] = []
     edit_blog_form = \
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)

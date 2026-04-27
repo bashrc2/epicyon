@@ -237,7 +237,7 @@ def spoof_geolocation(base_dir: str,
         if cities_str:
             cities = cities_str.split('\n')
 
-    nogo = []
+    nogo: list[list] = []
     if nogo_list:
         nogo = nogo_list
     else:

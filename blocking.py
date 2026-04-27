@@ -714,7 +714,7 @@ def is_blocked_nickname(base_dir: str, nickname: str,
 
     if not blocked_cache:
         # instance-wide block list
-        blocked_cache = []
+        blocked_cache: list[str] = []
         global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
         if os.path.isfile(global_blocking_filename):
             blocked_cache_str = \

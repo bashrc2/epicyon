@@ -431,7 +431,7 @@ class EpicyonServer(ThreadingHTTPServer):
     received_message: bool = False
     inbox_queue: list[dict] = []
     send_threads = None
-    post_log = []
+    post_log: list[str] = []
     max_queue_length = 64
     allow_deletion: bool = True
     last_login_time = 0
@@ -443,7 +443,7 @@ class EpicyonServer(ThreadingHTTPServer):
     tokens_lookup = {}
     instance_only_skills_search: bool = True
     followers_threads = []
-    blocked_cache = []
+    blocked_cache: list[str] = []
     blocked_cache_last_updated = 0
     blocked_cache_update_secs = 120
     blocked_cache_last_updated = 0
@@ -468,7 +468,7 @@ class EpicyonServer(ThreadingHTTPServer):
     fontsCache = {}
     shared_item_federation_tokens = None
     shared_item_federation_tokens = None
-    peertube_instances = []
+    peertube_instances: list[str] = []
     max_mentions = 10
     max_emoji = 10
     max_hashtags = 10
@@ -491,16 +491,16 @@ class EpicyonServer(ThreadingHTTPServer):
     instance_description_short: str = 'Epicyon'
     robots_txt = None
     last_llm_time = None
-    mitm_servers = []
+    mitm_servers: list[str] = []
     log_unknown_requests: bool = False
     watermark_width_percent = 0
     watermark_position = 0
     watermark_opacity = 0
     headers_catalog = {}
-    dictionary = []
+    dictionary: list[str] = []
     twograms = {}
     searchable_by_default = {}
-    known_epicyon_instances = []
+    known_epicyon_instances: list[str] = []
 
     def handle_error(self, request, client_address):
         # surpress connection reset errors
