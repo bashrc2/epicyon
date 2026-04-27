@@ -158,21 +158,20 @@ def authorize_basic(base_dir: str, path: str, auth_header: str,
             print('DEBUG: passwords file missing')
         return False
     provided_password = plain.split(':')[1]
-    try:
-        with open(password_file, 'r', encoding='utf-8') as fp_pass:
-            for line in fp_pass:
-                if not line.startswith(nickname + ':'):
-                    continue
-                stored_password_base = line.split(':')[1]
-                stored_password = remove_eol(stored_password_base)
-                success = _verify_password(stored_password, provided_password)
-                if not success:
-                    if debug:
-                        print('DEBUG: Password check failed for ' + nickname)
-                return success
-    except OSError:
-        print('EX: failed to open password file')
+    passwords_list = load_list(password_file,
+                               'EX: failed to open password file')
+    if passwords_list is None:
         return False
+    for login_str in passwords_list:
+        if not login_str.startswith(nickname + ':'):
+            continue
+        stored_password_base = login_str.split(':')[1]
+        stored_password = remove_eol(stored_password_base)
+        success = _verify_password(stored_password, provided_password)
+        if not success:
+            if debug:
+                print('DEBUG: Password check failed for ' + nickname)
+        return success
     print('DEBUG: Did not find credentials for ' + nickname +
           ' in ' + password_file)
     return False
