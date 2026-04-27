@@ -242,16 +242,36 @@ def remove_password(base_dir: str, nickname: str) -> None:
     """
     password_file = data_dir(base_dir) + '/passwords'
     if os.path.isfile(password_file):
-        try:
-            with open(password_file, 'r', encoding='utf-8') as fp_in:
-                with open(password_file + '.new', 'w+',
-                          encoding='utf-8') as fp_out:
-                    for line in fp_in:
-                        if not line.startswith(nickname + ':'):
-                            fp_out.write(line)
-        except OSError as ex:
-            print('EX: unable to remove password from file ' + str(ex))
+        # load the passwords file
+        passwords_list = \
+            load_list(password_file,
+                      'EX: remove_password failed to open password file')
+        if passwords_list is None:
             return
+
+        # create the new passwords file
+        passwords_list_new = ''
+        account_found = False
+        for login_str in passwords_list:
+            if not login_str.startswith(nickname + ':'):
+                passwords_list_new += login_str
+            else:
+                account_found = True
+        if not account_found:
+            # the account doesn't exist
+            passwords_list.clear()
+            passwords_list_new = ''
+            return
+
+        # save the new passwords file
+        if not save_string(passwords_list_new, password_file + '.new',
+                           'EX: unable to remove password from file [ex]'):
+            passwords_list.clear()
+            passwords_list_new = ''
+            return
+
+        passwords_list.clear()
+        passwords_list_new = ''
 
         try:
             os.rename(password_file + '.new', password_file)
