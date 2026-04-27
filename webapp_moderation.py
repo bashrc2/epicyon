@@ -36,6 +36,7 @@ from blocking import is_blocked_domain
 from blocking import is_blocked
 from session import create_session
 from data import load_list
+from data import load_string
 
 
 def html_moderation(default_timeline: str,
@@ -450,23 +451,22 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     suspended_filename = dir_str + '/suspended.txt'
     if os.path.isfile(suspended_filename):
-        try:
-            with open(suspended_filename, 'r', encoding='utf-8') as fp_sus:
-                suspended_str = fp_sus.read()
-                info_form += '<div class="container">\n'
-                info_form += '  <br><b>' + \
-                    translate['Suspended accounts'] + '</b>'
-                info_form += '  <br>' + \
-                    translate['These are currently suspended']
-                info_form += \
-                    '  <textarea id="message" ' + \
-                    'name="suspended" style="height:200px" ' + \
-                    'spellcheck="false">' + suspended_str + '</textarea>\n'
-                info_form += '</div>\n'
-                info_shown = True
-        except OSError as exc:
-            print('EX: html_moderation_info unable to read ' +
-                  suspended_filename + ' ' + str(exc))
+        suspended_str = \
+            load_string(suspended_filename,
+                        'EX: html_moderation_info unable to read ' +
+                        suspended_filename + ' [ex]')
+        if suspended_str:
+            info_form += '<div class="container">\n'
+            info_form += '  <br><b>' + \
+                translate['Suspended accounts'] + '</b>'
+            info_form += '  <br>' + \
+                translate['These are currently suspended']
+            info_form += \
+                '  <textarea id="message" ' + \
+                'name="suspended" style="height:200px" ' + \
+                'spellcheck="false">' + suspended_str + '</textarea>\n'
+            info_form += '</div>\n'
+            info_shown = True
 
     blocking_filename = dir_str + '/blocking.txt'
     if os.path.isfile(blocking_filename):
@@ -511,22 +511,21 @@ def html_moderation_info(translate: {}, base_dir: str,
 
     filters_filename = dir_str + '/filters.txt'
     if os.path.isfile(filters_filename):
-        try:
-            with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
-                filtered_str = fp_filt.read()
-                info_form += '<div class="container">\n'
-                info_form += \
-                    '  <br><b>' + \
-                    translate['Filtered words'] + '</b>'
-                info_form += \
-                    '  <textarea id="message" ' + \
-                    'name="filtered" style="height:700px" ' + \
-                    'spellcheck="true">' + filtered_str + '</textarea>\n'
-                info_form += '</div>\n'
-                info_shown = True
-        except OSError as exc:
-            print('EX: html_moderation_info unable to read ' +
-                  filters_filename + ' ' + str(exc))
+        filtered_str = \
+            load_string(filters_filename,
+                        'EX: html_moderation_info unable to read ' +
+                        filters_filename + ' [ex]')
+        if filtered_str:
+            info_form += '<div class="container">\n'
+            info_form += \
+                '  <br><b>' + \
+                translate['Filtered words'] + '</b>'
+            info_form += \
+                '  <textarea id="message" ' + \
+                'name="filtered" style="height:700px" ' + \
+                'spellcheck="true">' + filtered_str + '</textarea>\n'
+            info_form += '</div>\n'
+            info_shown = True
 
     if not info_shown:
         info_form += \

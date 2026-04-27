@@ -15,6 +15,7 @@ from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
 from markdown import markdown_example_numbers
 from markdown import markdown_to_html
+from data import load_string
 
 
 def html_specification(base_dir: str, http_prefix: str,
@@ -35,14 +36,12 @@ def html_specification(base_dir: str, http_prefix: str,
 
     specification_text = 'ActivityPub Protocol Specification.'
     if os.path.isfile(specification_filename):
-        try:
-            with open(specification_filename, 'r',
-                      encoding='utf-8') as fp_specification:
-                md_text = markdown_example_numbers(fp_specification.read())
-                specification_text = markdown_to_html(md_text)
-        except OSError:
-            print('EX: html_specification unable to read ' +
-                  specification_filename)
+        md_text = load_string(specification_filename,
+                              'EX: html_specification unable to read ' +
+                              specification_filename)
+        if md_text:
+            md_text = markdown_example_numbers(md_text)
+            specification_text = markdown_to_html(md_text)
 
     specification_form = ''
     css_filename = base_dir + '/epicyon-profile.css'

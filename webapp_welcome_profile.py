@@ -22,6 +22,7 @@ from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from webapp_utils import edit_text_field
 from markdown import markdown_to_html
+from data import load_string
 
 
 def html_welcome_profile(base_dir: str, nickname: str, domain: str,
@@ -60,14 +61,14 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
         instance_title = 'Epicyon'
 
     if os.path.isfile(profile_filename):
-        try:
-            with open(profile_filename, 'r', encoding='utf-8') as fp_pro:
-                profile_text = fp_pro.read()
-                profile_text = profile_text.replace('INSTANCE', instance_title)
-                profile_text = markdown_to_html(remove_html(profile_text))
-        except OSError:
-            print('EX: html_welcome_profile unable to read ' +
-                  profile_filename)
+        profile_text = load_string(profile_filename,
+                                   'EX: html_welcome_profile unable to read ' +
+                                   profile_filename)
+        if profile_text is not None:
+            profile_text = profile_text.replace('INSTANCE', instance_title)
+            profile_text = markdown_to_html(remove_html(profile_text))
+        else:
+            profile_text = ''
 
     profile_form = ''
     css_filename = base_dir + '/epicyon-welcome.css'

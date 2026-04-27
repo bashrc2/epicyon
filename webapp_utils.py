@@ -60,6 +60,8 @@ from blocking import allowed_announce
 from shares import vf_proposal_from_share
 from webapp_pwa import get_pwa_theme_colors
 from data import load_list
+from data import save_string
+from data import load_string
 
 
 def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
@@ -80,12 +82,8 @@ def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
         if not os.path.isfile(following_filename):
             return False
         # create a new minimize file from the following file
-        try:
-            with open(minimize_filename, 'w+',
-                      encoding='utf-8') as fp_min:
-                fp_min.write('')
-        except OSError:
-            print('EX: minimizing_attached_images 2 ' + minimize_filename)
+        save_string('\n', minimize_filename,
+                    'EX: minimizing_attached_images 2 ' + minimize_filename)
     return text_in_file(handle + '\n', minimize_filename, False)
 
 
@@ -100,12 +98,9 @@ def get_broken_link_substitute() -> str:
 def html_following_list(base_dir: str, following_filename: str) -> str:
     """Returns a list of handles being followed
     """
-    msg = ''
-    try:
-        with open(following_filename, 'r', encoding='utf-8') as fp_following:
-            msg = fp_following.read()
-    except OSError:
-        print('EX: html_following_list unable to read ' + following_filename)
+    msg = load_string(following_filename,
+                      'EX: html_following_list unable to read ' +
+                      following_filename)
     if msg:
         following_list = msg.split('\n')
         following_list.sort()
@@ -135,12 +130,9 @@ def csv_following_list(following_filename: str,
                        base_dir: str, nickname: str, domain: str) -> str:
     """Returns a csv of handles being followed
     """
-    msg = ''
-    try:
-        with open(following_filename, 'r', encoding='utf-8') as fp_following:
-            msg = fp_following.read()
-    except OSError:
-        print('EX: csv_following_list unable to read ' + following_filename)
+    msg = load_string(following_filename,
+                      'EX: csv_following_list unable to read ' +
+                      following_filename)
     if msg:
         following_list = msg.split('\n')
         following_list.sort()
@@ -1118,16 +1110,14 @@ def load_individual_post_as_html_from_cache(base_dir: str,
 
     tries = 0
     while tries < 3:
-        try:
-            with open(cached_post_filename, 'r',
-                      encoding='utf-8') as fp_cached:
-                post_html = fp_cached.read()
-                break
-        except OSError as ex:
-            print('ERROR: load_individual_post_as_html_from_cache ' +
-                  str(tries) + ' ' + str(ex))
-            # no sleep
-            tries += 1
+        post_html = \
+            load_string(cached_post_filename,
+                        'ERROR: load_individual_post_as_html_from_cache ' +
+                        str(tries) + ' [ex]')
+        if post_html is not None:
+            break
+        # no sleep
+        tries += 1
     if post_html:
         return post_html
 
@@ -2288,33 +2278,30 @@ def html_following_data_list(base_dir: str, nickname: str,
         acct_dir(base_dir, nickname, domain) + '/' + following_type + '.txt'
     msg = ''
     if os.path.isfile(following_filename):
-        try:
-            with open(following_filename, 'r',
-                      encoding='utf-8') as fp_following:
-                msg = fp_following.read()
-                # add your own handle, so that you can send DMs
-                # to yourself as reminders
-                msg += nickname + '@' + domain_full + '\n'
-        except OSError:
-            print('EX: html_following_data_list unable to read ' +
-                  following_filename)
+        msg = load_string(following_filename,
+                          'EX: html_following_data_list unable to read ' +
+                          following_filename)
+        if msg is not None:
+            # add your own handle, so that you can send DMs
+            # to yourself as reminders
+            msg += nickname + '@' + domain_full + '\n'
+        else:
+            msg = ''
     if msg:
         # include petnames
         petnames_filename = \
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
         if use_petnames and os.path.isfile(petnames_filename):
             following_list: list[str] = []
-            try:
-                with open(petnames_filename, 'r',
-                          encoding='utf-8') as fp_petnames:
-                    pet_str = fp_petnames.read()
-                    # extract each petname and append it
-                    petnames_list = pet_str.split('\n')
-                    for pet in petnames_list:
-                        following_list.append(pet.split(' ')[0])
-            except OSError:
-                print('EX: html_following_data_list unable to read ' +
-                      petnames_filename)
+            pet_str = \
+                load_string(petnames_filename,
+                            'EX: html_following_data_list unable to read ' +
+                            petnames_filename)
+            if pet_str is not None:
+                # extract each petname and append it
+                petnames_list = pet_str.split('\n')
+                for pet in petnames_list:
+                    following_list.append(pet.split(' ')[0])
             # add the following.txt entries
             following_list += msg.split('\n')
         else:
@@ -2344,33 +2331,30 @@ def html_following_dropdown(base_dir: str, nickname: str,
         acct_dir(base_dir, nickname, domain) + '/' + following_type + '.txt'
     msg = ''
     if os.path.isfile(following_filename):
-        try:
-            with open(following_filename, 'r',
-                      encoding='utf-8') as fp_following:
-                msg = fp_following.read()
-                # add your own handle, so that you can send DMs
-                # to yourself as reminders
-                msg += nickname + '@' + domain_full + '\n'
-        except OSError:
-            print('EX: html_following_dropdown unable to read ' +
-                  following_filename)
+        msg = load_string(following_filename,
+                          'EX: html_following_dropdown unable to read ' +
+                          following_filename)
+        if msg is not None:
+            # add your own handle, so that you can send DMs
+            # to yourself as reminders
+            msg += nickname + '@' + domain_full + '\n'
+        else:
+            msg = ''
     if msg:
         # include petnames
         petnames_filename = \
             acct_dir(base_dir, nickname, domain) + '/petnames.txt'
         if use_petnames and os.path.isfile(petnames_filename):
             following_list: list[str] = []
-            try:
-                with open(petnames_filename, 'r',
-                          encoding='utf-8') as fp_petnames:
-                    pet_str = fp_petnames.read()
-                    # extract each petname and append it
-                    petnames_list = pet_str.split('\n')
-                    for pet in petnames_list:
-                        following_list.append(pet.split(' ')[0])
-            except OSError:
-                print('EX: html_following_dropdown unable to read ' +
-                      petnames_filename)
+            pet_str = \
+                load_string(petnames_filename,
+                            'EX: html_following_dropdown unable to read ' +
+                            petnames_filename)
+            if pet_str is not None:
+                # extract each petname and append it
+                petnames_list = pet_str.split('\n')
+                for pet in petnames_list:
+                    following_list.append(pet.split(' ')[0])
             # add the following.txt entries
             following_list += msg.split('\n')
         else:

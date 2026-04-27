@@ -37,6 +37,20 @@ def load_string(filename: str, exception_text: str) -> str:
     return None
 
 
+def load_line(filename: str, exception_text: str) -> str:
+    """Loads a line of text from file
+    """
+    try:
+        with open(filename, 'r', encoding='utf-8') as fp:
+            text = fp.readline()
+            return text
+    except OSError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        print(exception_text)
+    return None
+
+
 def load_list(filename: str, exception_text: str) -> str:
     """Loads a list from file
     This is used to replace readlines

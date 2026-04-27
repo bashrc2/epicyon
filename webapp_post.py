@@ -146,6 +146,7 @@ from session import get_json
 from blog import html_blog_post_markdown
 from blog import html_blog_post_gemini_links
 from data import load_list
+from data import save_string
 
 # maximum length for display name within html posts
 MAX_DISPLAY_NAME_LENGTH = 42
@@ -571,12 +572,9 @@ def _save_individual_post_as_html_to_cache(base_dir: str,
     if not os.path.isdir(html_post_cache_dir):
         os.mkdir(html_post_cache_dir)
 
-    try:
-        with open(cached_post_filename, 'w+', encoding='utf-8') as fp_cache:
-            fp_cache.write(post_html)
-            return True
-    except OSError as ex:
-        print('ERROR: saving post to cache, ' + str(ex))
+    if save_string(post_html, cached_post_filename,
+                   'ERROR: saving post to cache, [ex]'):
+        return True
     return False
 
 
@@ -2609,13 +2607,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                        translate, actor_url,
                                        theme_name, system_language,
                                        box_name)
-                        try:
-                            with open(announce_filename + '.tts', 'w+',
-                                      encoding='utf-8') as fp_tts:
-                                fp_tts.write('\n')
-                        except OSError:
-                            print('EX: unable to write tts ' +
-                                  announce_filename + '.tts')
+                        save_string('\n', announce_filename + '.tts',
+                                    'EX: unable to write tts ' +
+                                    announce_filename + '.tts')
 
         is_announced = True
 

@@ -15,6 +15,7 @@ from utils import get_config_param
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from markdown import markdown_to_html
+from data import load_string
 
 
 def html_welcome_final(base_dir: str, nickname: str,
@@ -52,13 +53,14 @@ def html_welcome_final(base_dir: str, nickname: str,
         instance_title = 'Epicyon'
 
     if os.path.isfile(final_filename):
-        try:
-            with open(final_filename, 'r', encoding='utf-8') as fp_final:
-                final_text = fp_final.read()
-                final_text = final_text.replace('INSTANCE', instance_title)
-                final_text = markdown_to_html(remove_html(final_text))
-        except OSError:
-            print('EX: html_welcome_final unable to read ' + final_filename)
+        final_text = load_string(final_filename,
+                                 'EX: html_welcome_final unable to read ' +
+                                 final_filename)
+        if final_text is not None:
+            final_text = final_text.replace('INSTANCE', instance_title)
+            final_text = markdown_to_html(remove_html(final_text))
+        else:
+            final_text = ''
 
     final_form = ''
     css_filename = base_dir + '/epicyon-welcome.css'

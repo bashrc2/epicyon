@@ -36,6 +36,7 @@ from webapp_utils import header_buttons_front_screen
 from webapp_utils import edit_text_field
 from textmode import text_mode_browser
 from data import load_list
+from data import load_string
 
 
 def _votes_indicator(total_votes: int, positive_voting: bool) -> str:
@@ -637,12 +638,12 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
     newswire_filename = data_dir(base_dir) + '/newswire.txt'
     newswire_str = ''
     if os.path.isfile(newswire_filename):
-        try:
-            with open(newswire_filename, 'r', encoding='utf-8') as fp_news:
-                newswire_str = fp_news.read()
-        except OSError:
-            print('EX: html_edit_newswire unable to read ' +
-                  newswire_filename)
+        newswire_str = \
+            load_string(newswire_filename,
+                        'EX: html_edit_newswire unable to read ' +
+                        newswire_filename)
+        if newswire_str is None:
+            newswire_str = ''
 
     edit_newswire_form += \
         '<div class="container">'
@@ -663,12 +664,12 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
     filter_filename = \
         data_dir(base_dir) + '/news@' + domain + '/filters.txt'
     if os.path.isfile(filter_filename):
-        try:
-            with open(filter_filename, 'r', encoding='utf-8') as fp_filter:
-                filter_str = fp_filter.read()
-        except OSError:
-            print('EX: html_edit_newswire unable to read 2 ' +
-                  filter_filename)
+        filter_str = \
+            load_string(filter_filename,
+                        'EX: html_edit_newswire unable to read 2 ' +
+                        filter_filename)
+        if filter_str is None:
+            filter_str = ''
 
     edit_newswire_form += \
         '      <br><b><label class="labels">' + \
@@ -698,13 +699,12 @@ def html_edit_newswire(translate: {}, base_dir: str, path: str,
     hashtag_rules_str = ''
     hashtag_rules_filename = data_dir(base_dir) + '/hashtagrules.txt'
     if os.path.isfile(hashtag_rules_filename):
-        try:
-            with open(hashtag_rules_filename, 'r',
-                      encoding='utf-8') as fp_rules:
-                hashtag_rules_str = fp_rules.read()
-        except OSError:
-            print('EX: html_edit_newswire unable to read 3 ' +
-                  hashtag_rules_filename)
+        hashtag_rules_str = \
+            load_string(hashtag_rules_filename,
+                        'EX: html_edit_newswire unable to read 3 ' +
+                        hashtag_rules_filename)
+        if hashtag_rules_str is None:
+            hashtag_rules_str = ''
 
     edit_newswire_form += \
         '      <br><b><label class="labels">' + \

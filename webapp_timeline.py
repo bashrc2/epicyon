@@ -51,6 +51,7 @@ from announce import is_announce
 from announce import is_self_announce
 from question import is_html_question
 from question import is_question
+from data import load_string
 
 
 def _log_timeline_timing(enable_timing_log: bool, timeline_start_time,
@@ -100,12 +101,10 @@ def _get_help_for_timeline(base_dir: str, box_name: str) -> str:
             get_config_param(base_dir, 'instanceTitle')
         if not instance_title:
             instance_title = 'Epicyon'
-        help_text = ''
-        try:
-            with open(help_filename, 'r', encoding='utf-8') as fp_help:
-                help_text = fp_help.read()
-        except OSError:
-            print('EX: _get_help_for_timeline unable to read ' + help_filename)
+        help_text = \
+            load_string(help_filename,
+                        'EX: _get_help_for_timeline unable to read ' +
+                        help_filename)
         if help_text:
             if dangerous_markup(help_text, False, []):
                 return ''
@@ -504,14 +503,15 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(calendar_file):
         new_calendar_event = True
         calendar_image = 'calendar_notify.png'
-        try:
-            with open(calendar_file, 'r', encoding='utf-8') as fp_cal:
-                calendar_path = fp_cal.read().replace('##sent##', '')
-                calendar_path = remove_eol(calendar_path)
-                if '/calendar' not in calendar_path:
-                    calendar_path = '/calendar'
-        except OSError:
-            print('EX: html_timeline unable to read ' + calendar_file)
+        calendar_path_str = \
+            load_string(calendar_file,
+                        'EX: html_timeline unable to read ' +
+                        calendar_file)
+        if calendar_path_str:
+            calendar_path = calendar_path_str.replace('##sent##', '')
+            calendar_path = remove_eol(calendar_path)
+            if '/calendar' not in calendar_path:
+                calendar_path = '/calendar'
 
     # should the DM button be highlighted?
     new_dm = False

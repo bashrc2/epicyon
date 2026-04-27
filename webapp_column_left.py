@@ -26,6 +26,7 @@ from webapp_utils import get_banner_file
 from webapp_utils import edit_text_field
 from shares import share_category_icon
 from data import load_list
+from data import load_string
 
 
 def _links_exist(base_dir: str) -> bool:
@@ -513,12 +514,11 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
     links_filename = data_dir(base_dir) + '/links.txt'
     links_str = ''
     if os.path.isfile(links_filename):
-        try:
-            with open(links_filename, 'r', encoding='utf-8') as fp_links:
-                links_str = fp_links.read()
-        except OSError:
-            print('EX: html_edit_links unable to read ' +
-                  links_filename)
+        links_str = load_string(links_filename,
+                                'EX: html_edit_links unable to read ' +
+                                links_filename)
+        if links_str is None:
+            links_str = ''
 
     edit_links_form += \
         '<div class="container">'
@@ -542,13 +542,12 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
             about_filename = data_dir(base_dir) + '/about.md'
             about_str = ''
             if os.path.isfile(about_filename):
-                try:
-                    with open(about_filename, 'r',
-                              encoding='utf-8') as fp_about:
-                        about_str = fp_about.read()
-                except OSError:
-                    print('EX: html_edit_links unable to read 2 ' +
-                          about_filename)
+                about_str = \
+                    load_string(about_filename,
+                                'EX: html_edit_links unable to read 2 ' +
+                                about_filename)
+                if about_str is None:
+                    about_str = ''
 
             edit_links_form += \
                 '<div class="container">'
@@ -566,12 +565,11 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
             tos_filename = data_dir(base_dir) + '/tos.md'
             tos_str = ''
             if os.path.isfile(tos_filename):
-                try:
-                    with open(tos_filename, 'r', encoding='utf-8') as fp_tos:
-                        tos_str = fp_tos.read()
-                except OSError:
-                    print('EX: html_edit_links unable to read 3 ' +
-                          tos_filename)
+                tos_str = load_string(tos_filename,
+                                      'EX: html_edit_links unable to read 3 ' +
+                                      tos_filename)
+                if tos_str is None:
+                    tos_str = ''
 
             edit_links_form += \
                 '<div class="container">'
@@ -589,13 +587,12 @@ def html_edit_links(translate: {}, base_dir: str, path: str,
             specification_filename = data_dir(base_dir) + '/activitypub.md'
             specification_str = ''
             if os.path.isfile(specification_filename):
-                try:
-                    with open(specification_filename, 'r',
-                              encoding='utf-8') as fp_specification:
-                        specification_str = fp_specification.read()
-                except OSError:
-                    print('EX: html_edit_links unable to read 4 ' +
-                          specification_filename)
+                specification_str = \
+                    load_string(specification_filename,
+                                'EX: html_edit_links unable to read 4 ' +
+                                specification_filename)
+                if specification_str is None:
+                    specification_str = ''
 
             edit_links_form += \
                 '<div class="container">'

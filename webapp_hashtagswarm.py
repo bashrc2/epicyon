@@ -40,6 +40,9 @@ from webapp_utils import get_search_banner_file
 from webapp_utils import get_content_warning_button
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
+from data import load_string
+from data import save_string
+from data import load_line
 
 
 def get_hashtag_categories_feed(base_dir: str,
@@ -104,13 +107,12 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
     blocked_str = ''
     global_blocking_filename = data_dir(base_dir) + '/blocking.txt'
     if os.path.isfile(global_blocking_filename):
-        try:
-            with open(global_blocking_filename, 'r',
-                      encoding='utf-8') as fp_block:
-                blocked_str = fp_block.read()
-        except OSError:
-            print('EX: html_hash_tag_swarm unable to read ' +
-                  global_blocking_filename)
+        blocked_str = \
+            load_string(global_blocking_filename,
+                        'EX: html_hash_tag_swarm unable to read ' +
+                        global_blocking_filename)
+        if blocked_str is None:
+            blocked_str = ''
 
     for _, _, files in os.walk(base_dir + '/tags'):
         for fname in files:
@@ -142,17 +144,15 @@ def html_hash_tag_swarm(base_dir: str, actor: str, translate: {}) -> str:
             if '#' + hash_tag_name + '\n' in blocked_str:
                 continue
 
-            try:
-                with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
-                    # only read one line, which saves time and memory
-                    last_tag = fp_tags.readline()
-                    if not last_tag.startswith(days_since_epoch_str):
-                        if not last_tag.startswith(days_since_epoch_str2):
-                            continue
-            except OSError:
-                print('EX: html_hash_tag_swarm unable to read 2 ' +
-                      tags_filename)
+            last_tag = \
+                load_line(tags_filename,
+                          'EX: html_hash_tag_swarm unable to read 2 ' +
+                          tags_filename)
+            if last_tag is None:
                 continue
+            if not last_tag.startswith(days_since_epoch_str):
+                if not last_tag.startswith(days_since_epoch_str2):
+                    continue
 
             try:
                 with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
@@ -348,14 +348,10 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
         actor = local_actor_url(http_prefix, nickname, domain_full)
         new_swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
         if new_swarm_str:
-            try:
-                with open(cached_hashtag_swarm_filename, 'w+',
-                          encoding='utf-8') as fp_swarm:
-                    fp_swarm.write(new_swarm_str)
-                    return True
-            except OSError:
-                print('EX: unable to write cached hashtag swarm ' +
-                      cached_hashtag_swarm_filename)
+            if save_string(new_swarm_str, cached_hashtag_swarm_filename,
+                           'EX: unable to write cached hashtag swarm ' +
+                           cached_hashtag_swarm_filename):
+                return True
         remove_old_hashtags(base_dir, 3)
     return False
 
@@ -378,29 +374,21 @@ def _store_tag_name(base_dir: str, nickname: str,
                           published, post_url)
     hashtag_added = False
     if not os.path.isfile(tags_filename):
-        try:
-            with open(tags_filename, 'w+', encoding='utf-8') as fp_tags:
-                fp_tags.write(tag_line)
-                hashtag_added = True
-        except OSError:
-            print('EX: store_hash_tags unable to write ' + tags_filename)
+        if save_string(tag_line, tags_filename,
+                       'EX: store_hash_tags unable to write ' + tags_filename):
+            hashtag_added = True
     else:
-        content = ''
-        try:
-            with open(tags_filename, 'r', encoding='utf-8') as fp_tags:
-                content = fp_tags.read()
-        except OSError:
-            print('EX: store_hash_tags failed to read ' + tags_filename)
+        content = load_string(tags_filename,
+                              'EX: store_hash_tags failed to read ' +
+                              tags_filename)
+        if content is None:
+            content = ''
         if post_url not in content:
             content = tag_line + content
-            try:
-                with open(tags_filename, 'w+',
-                          encoding='utf-8') as fp_tags2:
-                    fp_tags2.write(content)
-                    hashtag_added = True
-            except OSError as ex:
-                print('EX: Failed to write entry to tags file ' +
-                      tags_filename + ' ' + str(ex))
+            if save_string(content, tags_filename,
+                           'EX: Failed to write entry to tags file ' +
+                           tags_filename + ' [ex]'):
+                hashtag_added = True
 
     if not hashtag_added:
         return False

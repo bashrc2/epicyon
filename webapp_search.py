@@ -58,6 +58,8 @@ from maps import html_hashtag_maps
 from session import get_json_valid
 from session import get_json
 from data import load_list
+from data import load_string
+from data import save_string
 
 
 def html_search_emoji(translate: {}, base_dir: str, search_str: str,
@@ -525,23 +527,20 @@ def html_search(translate: {}, base_dir: str, path: str, domain: str,
         acct_dir(base_dir, search_nickname, domain) + '/.hashtagSwarm'
     swarm_str = ''
     if os.path.isfile(cached_hashtag_swarm_filename):
-        try:
-            with open(cached_hashtag_swarm_filename, 'r',
-                      encoding='utf-8') as fp_swarm:
-                swarm_str = fp_swarm.read()
-        except OSError:
-            print('EX: html_search unable to read cached hashtag swarm ' +
-                  cached_hashtag_swarm_filename)
+        swarm_str = \
+            load_string(cached_hashtag_swarm_filename,
+                        'EX: ' +
+                        'html_search unable to read cached hashtag swarm ' +
+                        cached_hashtag_swarm_filename)
+        if swarm_str is None:
+            swarm_str = ''
     if not swarm_str:
         swarm_str = html_hash_tag_swarm(base_dir, actor, translate)
         if swarm_str:
-            try:
-                with open(cached_hashtag_swarm_filename, 'w+',
-                          encoding='utf-8') as fp_hash:
-                    fp_hash.write(swarm_str)
-            except OSError:
-                print('EX: html_search unable to save cached hashtag swarm ' +
-                      cached_hashtag_swarm_filename)
+            save_string(swarm_str, cached_hashtag_swarm_filename,
+                        'EX: ' +
+                        'html_search unable to save cached hashtag swarm ' +
+                        cached_hashtag_swarm_filename)
 
     follow_str += '  <p class="hashtagswarm">' + swarm_str + '</p><br>\n'
     follow_str += '  </center>\n'

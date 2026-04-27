@@ -15,6 +15,7 @@ from utils import local_actor_url
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from markdown import markdown_to_html
+from data import load_string
 
 
 def html_terms_of_service(base_dir: str,
@@ -34,12 +35,12 @@ def html_terms_of_service(base_dir: str,
 
     tos_text = 'Terms of Service go here.'
     if os.path.isfile(dir_str + '/tos.md'):
-        try:
-            with open(dir_str + '/tos.md', 'r', encoding='utf-8') as fp_tos:
-                tos_text = markdown_to_html(fp_tos.read())
-        except OSError:
-            print('EX: html_terms_of_service unable to read ' +
-                  dir_str + '/tos.md')
+        tos_text_str = \
+            load_string(dir_str + '/tos.md',
+                        'EX: html_terms_of_service unable to read ' +
+                        dir_str + '/tos.md')
+        if tos_text_str:
+            tos_text = markdown_to_html(tos_text_str)
 
     tos_form = ''
     css_filename = base_dir + '/epicyon-profile.css'

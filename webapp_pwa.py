@@ -9,6 +9,7 @@ __module_group__ = "Web Interface"
 
 import os
 from utils import remove_html
+from data import load_string
 
 
 def _get_variable_from_css(css_str: str, variable: str) -> str:
@@ -37,12 +38,11 @@ def get_pwa_theme_colors(css_filename: str) -> (str, str):
     if not os.path.isfile(css_filename):
         return pwa_theme_color, pwa_theme_background_color
 
-    css_str = ''
-    try:
-        with open(css_filename, 'r', encoding='utf-8') as fp_css:
-            css_str = fp_css.read()
-    except OSError:
-        print('EX: get_pwa_theme_colors unable to read ' + css_filename)
+    css_str = load_string(css_filename,
+                          'EX: get_pwa_theme_colors unable to read ' +
+                          css_filename)
+    if css_str is None:
+        css_str = ''
 
     pwa_theme_color = \
         _get_variable_from_css(css_str, 'pwa-theme-color')

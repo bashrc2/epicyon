@@ -54,6 +54,7 @@ from cache import get_person_from_cache
 from person import get_person_notes
 from textmode import text_mode_browser
 from data import load_list
+from data import load_string
 
 
 def _html_new_post_drop_down(scope_icon: str, scope_description: str,
@@ -566,21 +567,20 @@ def html_new_post(edit_post_params: {},
             # custom report header with any additional instructions
             dir_str = data_dir(base_dir)
             if os.path.isfile(dir_str + '/report.txt'):
-                try:
-                    with open(dir_str + '/report.txt', 'r',
-                              encoding='utf-8') as fp_report:
-                        custom_report_text = fp_report.read()
-                        if '</p>' not in custom_report_text:
-                            custom_report_text = \
-                                '<p class="login-subtext">' + \
-                                custom_report_text + '</p>\n'
-                            rep_str = '<p class="login-subtext">'
-                            custom_report_text = \
-                                custom_report_text.replace('<p>', rep_str)
-                            new_post_text += custom_report_text
-                except OSError as exc:
-                    print('EX: html_new_post unable to read ' +
-                          dir_str + '/report.txt ' + str(exc))
+                custom_report_text = \
+                    load_string(dir_str + '/report.txt',
+                                'EX: html_new_post unable to read ' +
+                                dir_str + '/report.txt [ex]')
+                if custom_report_text is None:
+                    custom_report_text = ''
+                if '</p>' not in custom_report_text:
+                    custom_report_text = \
+                        '<p class="login-subtext">' + \
+                        custom_report_text + '</p>\n'
+                    rep_str = '<p class="login-subtext">'
+                    custom_report_text = \
+                        custom_report_text.replace('<p>', rep_str)
+                    new_post_text += custom_report_text
 
             idx = 'This message only goes to moderators, even if it ' + \
                 'mentions other fediverse addresses.'
@@ -610,13 +610,12 @@ def html_new_post(edit_post_params: {},
     # load post template if it exists
     dir_str = data_dir(base_dir)
     if os.path.isfile(dir_str + '/newpost.txt'):
-        try:
-            with open(dir_str + '/newpost.txt', 'r',
-                      encoding='utf-8') as fp_new:
-                new_post_text = '<p>' + fp_new.read() + '</p>\n'
-        except OSError:
-            print('EX: html_new_post unable to read ' +
-                  dir_str + '/newpost.txt')
+        new_post_text = \
+            load_string(dir_str + '/newpost.txt',
+                        'EX: html_new_post unable to read ' +
+                        dir_str + '/newpost.txt')
+        if new_post_text is None:
+            new_post_text = ''
 
     css_filename = base_dir + '/epicyon-profile.css'
     if os.path.isfile(base_dir + '/epicyon.css'):

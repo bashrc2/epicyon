@@ -16,6 +16,8 @@ from utils import acct_dir
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from markdown import markdown_to_html
+from data import save_string
+from data import load_string
 
 
 def is_welcome_screen_complete(base_dir: str,
@@ -37,12 +39,9 @@ def welcome_screen_is_complete(base_dir: str,
     if not os.path.isdir(account_path):
         return
     complete_filename = account_path + '/.welcome_complete'
-    try:
-        with open(complete_filename, 'w+', encoding='utf-8') as fp_comp:
-            fp_comp.write('\n')
-    except OSError:
-        print('EX: welcome_screen_is_complete unable to write ' +
-              complete_filename)
+    save_string('\n', complete_filename,
+                'EX: welcome_screen_is_complete unable to write ' +
+                complete_filename)
 
 
 def html_welcome_screen(base_dir: str, nickname: str,
@@ -83,14 +82,14 @@ def html_welcome_screen(base_dir: str, nickname: str,
         instance_title = 'Epicyon'
 
     if os.path.isfile(welcome_filename):
-        try:
-            with open(welcome_filename, 'r', encoding='utf-8') as fp_wel:
-                welcome_text = fp_wel.read()
-                welcome_text = welcome_text.replace('INSTANCE', instance_title)
-                welcome_text = markdown_to_html(remove_html(welcome_text))
-        except OSError:
-            print('EX: html_welcome_screen unable to read ' + welcome_filename)
-
+        welcome_text = load_string(welcome_filename,
+                                   'EX: html_welcome_screen unable to read ' +
+                                   welcome_filename)
+        if welcome_text is not None:
+            welcome_text = welcome_text.replace('INSTANCE', instance_title)
+            welcome_text = markdown_to_html(remove_html(welcome_text))
+        else:
+            welcome_text = ''
     welcome_form = ''
     css_filename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):

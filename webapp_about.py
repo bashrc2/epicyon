@@ -14,6 +14,7 @@ from utils import get_config_param
 from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
 from markdown import markdown_to_html
+from data import load_string
 
 
 def html_about(base_dir: str, http_prefix: str,
@@ -34,12 +35,11 @@ def html_about(base_dir: str, http_prefix: str,
 
     about_text = 'Information about this instance goes here.'
     if os.path.isfile(dir_str + '/about.md'):
-        try:
-            with open(dir_str + '/about.md', 'r',
-                      encoding='utf-8') as fp_about:
-                about_text = markdown_to_html(fp_about.read())
-        except OSError:
-            print('EX: html_about unable to read ' + dir_str + '/about.md')
+        about_text = load_string(dir_str + '/about.md',
+                                 'EX: html_about unable to read ' +
+                                 dir_str + '/about.md')
+        if about_text:
+            about_text = markdown_to_html(about_text)
 
     about_form = ''
     css_filename = base_dir + '/epicyon-profile.css'

@@ -22,6 +22,7 @@ from webapp_utils import html_footer
 from webapp_utils import html_keyboard_navigation
 from textmode import text_mode_browser
 from textmode import get_text_mode_logo
+from data import load_string
 
 
 def html_get_login_credentials(login_params: str,
@@ -142,13 +143,11 @@ def html_login(translate: {},
     dir_str = data_dir(base_dir)
     if os.path.isfile(dir_str + '/login.txt'):
         # custom login message
-        try:
-            with open(dir_str + '/login.txt', 'r',
-                      encoding='utf-8') as fp_login:
-                login_text = \
-                    '<p class="login-text">' + fp_login.read() + '</p>'
-        except OSError:
-            print('EX: html_login unable to read ' + dir_str + '/login.txt')
+        login_text = load_string(dir_str + '/login.txt',
+                                 'EX: html_login unable to read ' + dir_str +
+                                 '/login.txt')
+        if login_text is None:
+            login_text = ''
 
     css_filename = base_dir + '/epicyon-login.css'
     if os.path.isfile(base_dir + '/login.css'):

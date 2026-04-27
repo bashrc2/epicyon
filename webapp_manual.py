@@ -15,6 +15,7 @@ from webapp_utils import html_header_with_website_markup
 from webapp_utils import html_footer
 from markdown import markdown_example_numbers
 from markdown import markdown_to_html
+from data import load_string
 
 
 def html_manual(base_dir: str, http_prefix: str,
@@ -35,13 +36,12 @@ def html_manual(base_dir: str, http_prefix: str,
 
     manual_text = 'User Manual.'
     if os.path.isfile(manual_filename):
-        try:
-            with open(manual_filename, 'r',
-                      encoding='utf-8') as fp_manual:
-                md_text = markdown_example_numbers(fp_manual.read())
-                manual_text = markdown_to_html(md_text)
-        except OSError:
-            print('EX: html_manual unable to read ' + manual_filename)
+        md_text = load_string(manual_filename,
+                              'EX: html_manual unable to read ' +
+                              manual_filename)
+        if md_text:
+            md_text = markdown_example_numbers(md_text)
+            manual_text = markdown_to_html(md_text)
 
     manual_form = ''
     css_filename = base_dir + '/epicyon-profile.css'

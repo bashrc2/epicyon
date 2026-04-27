@@ -42,6 +42,8 @@ from webapp_utils import minimizing_attached_images
 from blocking import allowed_announce
 from filters import is_filtered
 from availability import get_availability
+from data import load_string
+from data import save_string
 
 
 def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
@@ -74,23 +76,18 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
     minimize_handles = ''
     if os.path.isfile(minimize_filename):
         print('Minimize file exists')
-        try:
-            with open(minimize_filename, 'r',
-                      encoding='utf-8') as fp_minimize:
-                minimize_handles = fp_minimize.read()
-        except OSError:
-            print('EX: minimize_attached_images ' + minimize_filename)
+        minimize_handles = \
+            load_string(minimize_filename,
+                        'EX: minimize_attached_images ' + minimize_filename)
+        if minimize_handles is None:
+            minimize_handles = ''
     else:
         # create a new minimize file from the following file
         print('Creating minimize file ' + minimize_filename)
         if add:
-            try:
-                with open(minimize_filename, 'w+',
-                          encoding='utf-8') as fp_min:
-                    fp_min.write('')
-            except OSError:
-                print('EX: minimize_attached_images unable to write ' +
-                      minimize_filename)
+            save_string('\n', minimize_filename,
+                        'EX: minimize_attached_images unable to write ' +
+                        minimize_filename)
 
     # already in the minimize file?
     if handle + '\n' in minimize_handles:
@@ -100,24 +97,16 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
             return
         # remove from minimize file
         minimize_handles = minimize_handles.replace(handle + '\n', '')
-        try:
-            with open(minimize_filename, 'w+',
-                      encoding='utf-8') as fp_min:
-                fp_min.write(minimize_handles)
-        except OSError:
-            print('EX: minimize_attached_images 3 ' + minimize_filename)
+        save_string(minimize_handles, minimize_filename,
+                    'EX: minimize_attached_images 3 ' + minimize_filename)
     else:
         print(handle + ' not in followingMinimizeImages.txt')
         # not already in the minimize file
         if add:
             # append to the list of handles
             minimize_handles += handle + '\n'
-            try:
-                with open(minimize_filename, 'w+',
-                          encoding='utf-8') as fp_min:
-                    fp_min.write(minimize_handles)
-            except OSError:
-                print('EX: minimize_attached_images 4 ' + minimize_filename)
+            save_string(minimize_handles, minimize_filename,
+                        'EX: minimize_attached_images 4 ' + minimize_filename)
 
 
 def person_minimize_images(base_dir: str, nickname: str, domain: str,

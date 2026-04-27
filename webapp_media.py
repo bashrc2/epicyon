@@ -11,6 +11,7 @@ import os
 from utils import data_dir
 from utils import string_ends_with
 from utils import valid_url_prefix
+from data import load_string
 
 
 def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
@@ -19,16 +20,13 @@ def load_peertube_instances(base_dir: str, peertube_instances: []) -> None:
     peertube_list = None
     peertube_instances_filename = data_dir(base_dir) + '/peertube.txt'
     if os.path.isfile(peertube_instances_filename):
-        try:
-            with open(peertube_instances_filename, 'r',
-                      encoding='utf-8') as fp_inst:
-                peertube_str = fp_inst.read()
-                if peertube_str:
-                    peertube_str = peertube_str.replace('\r', '')
-                    peertube_list = peertube_str.split('\n')
-        except OSError as exc:
-            print('EX: load_peertube_instances unable to read ' +
-                  peertube_instances_filename + ' ' + str(exc))
+        peertube_str = \
+            load_string(peertube_instances_filename,
+                        'EX: load_peertube_instances unable to read ' +
+                        peertube_instances_filename + ' [ex]')
+        if peertube_str:
+            peertube_str = peertube_str.replace('\r', '')
+            peertube_list = peertube_str.split('\n')
     if not peertube_list:
         return
     for url in peertube_list:
