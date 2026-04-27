@@ -53,11 +53,11 @@ def reaction_picker2(self, calling_domain: str, path: str,
                      instance_software: {}) -> None:
     """Press the emoji reaction picker icon at the bottom of the post
     """
-    page_number = 1
+    page_number: int = 1
     reaction_url = path.split('?selreact=')[1]
     if '?' in reaction_url:
         reaction_url = reaction_url.split('?')[0]
-    timeline_bookmark = ''
+    timeline_bookmark: str = ''
     if '?bm=' in path:
         timeline_bookmark = path.split('?bm=')[1]
         if '?' in timeline_bookmark:

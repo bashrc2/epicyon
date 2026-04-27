@@ -128,9 +128,9 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                                 search_handle = \
                                     search_nickname + '@' + search_domain
                             else:
-                                search_handle = ''
+                                search_handle: str = ''
                         else:
-                            search_handle = ''
+                            search_handle: str = ''
                     if '@' not in search_handle or \
                        '/@/' in search_handle:
                         if string_starts_with(search_handle,
@@ -145,9 +145,9 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                                         search_nickname + '@' + \
                                         search_domain
                                 else:
-                                    search_handle = ''
+                                    search_handle: str = ''
                             else:
-                                search_handle = ''
+                                search_handle: str = ''
                     if '@' not in search_handle:
                         # is this a local nickname on this instance?
                         local_handle = \
@@ -156,9 +156,9 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                         if os.path.isdir(dir_str + '/' + local_handle):
                             search_handle = local_handle
                         else:
-                            search_handle = ''
+                            search_handle: str = ''
                 if search_handle is None:
-                    search_handle = ''
+                    search_handle: str = ''
                 if '@' in search_handle:
                     msg = \
                         html_account_info(translate,

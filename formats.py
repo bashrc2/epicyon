@@ -87,7 +87,7 @@ def get_image_formats() -> str:
     """
     image_ext = get_image_extensions()
 
-    image_formats = ''
+    image_formats: str = ''
     for ext in image_ext:
         if image_formats:
             image_formats += ', '
@@ -101,7 +101,7 @@ def get_media_formats() -> str:
     """
     media_ext = get_media_extensions()
 
-    media_formats = ''
+    media_formats: str = ''
     for ext in media_ext:
         if media_formats:
             media_formats += ', '

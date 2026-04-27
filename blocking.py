@@ -458,7 +458,7 @@ def _remove_global_block_reason(base_dir: str,
         load_string(unblocking_filename,
                     'EX: unable to read blocking reasons 3')
     if reasons_str is None:
-        reasons_str = ''
+        reasons_str: str = ''
     reasons_lines = reasons_str.split('\n')
     new_reasons_str: str = ''
     for line in reasons_lines:
@@ -936,7 +936,7 @@ def allowed_announce_add(base_dir: str, nickname: str, domain: str,
                         'EX: unable to read noannounce add: ' +
                         blocking_filename + ' ' + handle)
         if file_text is None:
-            file_text = ''
+            file_text: str = ''
 
         new_file_text: str = ''
         file_text_list = file_text.split('\n')
@@ -974,7 +974,7 @@ def allowed_announce_remove(base_dir: str, nickname: str, domain: str,
                                 'EX: unable to read noannounce remove: ' +
                                 blocking_filename + ' ' + handle)
         if file_text is None:
-            file_text = ''
+            file_text: str = ''
         file_text += handle + '\n'
         save_string(file_text, blocking_filename,
                     'EX: unable to write noannounce: ' +
@@ -1000,7 +1000,7 @@ def blocked_quote_toots_add(base_dir: str, nickname: str, domain: str,
                         'EX: unable to read quotesblocked add: ' +
                         blocking_filename + ' ' + handle)
         if file_text is None:
-            file_text = ''
+            file_text: str = ''
         file_text += handle + '\n'
 
         save_string(file_text, blocking_filename,
@@ -1027,7 +1027,7 @@ def blocked_quote_toots_remove(base_dir: str, nickname: str, domain: str,
                                 'EX: unable to read quotesblocked remove: ' +
                                 blocking_filename + ' ' + handle)
         if file_text is None:
-            file_text = ''
+            file_text: str = ''
         file_text = file_text.replace(handle + '\n', '')
         save_string(file_text, blocking_filename,
                     'EX: unable to write quotesblocked remove: ' +
@@ -1738,14 +1738,14 @@ def import_blocking_file(base_dir: str, nickname: str, domain: str,
     if not append_blocks:
         return True
 
-    text = ''
+    text: str = ''
     for new_block in append_blocks:
         text += new_block + '\n'
     append_string(text, blocking_filename,
                   'EX: ' +
                   'unable to append imported blocks to ' +
                   blocking_filename)
-    text = ''
+    text: str = ''
     for new_reason in append_reasons:
         text += new_reason + '\n'
     append_string(text, blocking_reasons_filename,

@@ -113,7 +113,7 @@ def sign_post_headers(date_str: str, private_key_pem: str,
     # })
     # build a digest for signing
     signed_header_keys = headers.keys()
-    signed_header_text = ''
+    signed_header_text: str = ''
     for header_key in signed_header_keys:
         signed_header_text += f'{header_key}: {headers[header_key]}\n'
     # strip the trailing linefeed
@@ -198,7 +198,7 @@ def sign_post_headers_new(date_str: str, private_key_pem: str,
                                None, backend=default_backend())
     # build a digest for signing
     signed_header_keys = headers.keys()
-    signed_header_text = ''
+    signed_header_text: str = ''
     for header_key in signed_header_keys:
         signed_header_text += f'{header_key}: {headers[header_key]}\n'
     signed_header_text = signed_header_text.strip()
@@ -208,7 +208,7 @@ def sign_post_headers_new(date_str: str, private_key_pem: str,
               signed_header_text + '\nEND\n')
 
     # Sign the digest. Potentially other signing algorithms can be added here.
-    signature = ''
+    signature: str = ''
     if algorithm == 'rsa-sha512':
         header_digest = get_sha_512(signed_header_text.encode('ascii'))
         raw_signature = key.sign(header_digest,
@@ -557,7 +557,7 @@ def verify_post_headers(http_prefix: str,
         header_digest = get_sha_512(signed_header_text.encode('ascii'))
     else:
         print('Unknown http digest algorithm: ' + digest_algorithm)
-        header_digest = ''
+        header_digest: str = ''
     padding_str = padding.PKCS1v15()
 
     try:

@@ -310,7 +310,7 @@ def _profile_post_block_federated(base_dir: str, fields: {}, self) -> None:
 def _profile_post_robots_txt(base_dir: str, fields: {}, self) -> None:
     """ HTTP POST save robots.txt file
     """
-    new_robots_txt = ''
+    new_robots_txt: str = ''
     if fields.get('robotsTxt'):
         new_robots_txt = fields['robotsTxt']
     if str(self.server.robots_txt) != str(new_robots_txt):
@@ -381,7 +381,7 @@ def _profile_post_crawlers_allowed(base_dir: str, fields: {}, self) -> None:
             crawlers_allowed.append(uagent.strip())
     if str(self.server.crawlers_allowed) != str(crawlers_allowed):
         self.server.crawlers_allowed = crawlers_allowed
-        crawlers_allowed_str = ''
+        crawlers_allowed_str: str = ''
         for uagent in crawlers_allowed:
             if crawlers_allowed_str:
                 crawlers_allowed_str += ','
@@ -403,7 +403,7 @@ def _profile_post_blocked_user_agents(base_dir: str, fields: {}, self) -> None:
             user_agents_blocked.append(uagent.strip())
     if str(self.server.user_agents_blocked) != str(user_agents_blocked):
         self.server.user_agents_blocked = user_agents_blocked
-        user_agents_blocked_str = ''
+        user_agents_blocked_str: str = ''
         for uagent in user_agents_blocked:
             if user_agents_blocked_str:
                 user_agents_blocked_str += ','
@@ -415,7 +415,7 @@ def _profile_post_blocked_user_agents(base_dir: str, fields: {}, self) -> None:
 def _profile_post_cw_lists(fields: {}, self) -> None:
     """ HTTP POST set selected content warning lists
     """
-    new_lists_enabled = ''
+    new_lists_enabled: str = ''
     for name, _ in self.server.cw_lists.items():
         list_var_name = get_cw_list_variable(name)
         if fields.get(list_var_name):
@@ -1424,12 +1424,12 @@ def _profile_post_shared_item_federation_domains(base_dir: str, fields: {},
     """ HTTP POST shared item federation domains
     """
     # shared item federation domains
-    si_domain_updated = False
-    fed_domains_variable = "sharedItemsFederatedDomains"
-    fed_domains_str = get_config_param(base_dir, fed_domains_variable)
+    si_domain_updated: bool = False
+    fed_domains_variable: str = "sharedItemsFederatedDomains"
+    fed_domains_str: str = get_config_param(base_dir, fed_domains_variable)
     if not fed_domains_str:
-        fed_domains_str = ''
-    shared_items_form_str = ''
+        fed_domains_str: str = ''
+    shared_items_form_str: str = ''
     if fields.get('shareDomainList'):
         shared_it_list = fed_domains_str.split(',')
         for shared_federated_domain in shared_it_list:
@@ -1564,8 +1564,8 @@ def _profile_post_alsoknownas(actor_json: {}, fields: {},
     if actor_json.get('alsoKnownAs'):
         also_known_as = actor_json['alsoKnownAs']
     if fields.get('alsoKnownAs'):
-        also_known_as_str = ''
-        also_known_as_ctr = 0
+        also_known_as_str: str = ''
+        also_known_as_ctr: int = 0
         for alt_actor in also_known_as:
             if also_known_as_ctr > 0:
                 also_known_as_str += ', '
@@ -1639,7 +1639,7 @@ def _profile_post_moved(actor_json: {}, fields: {},
     """
     fieldnames = ('movedTo', 'copiedTo')
     for fieldname in fieldnames:
-        moved_to = ''
+        moved_to: str = ''
         if actor_json.get(fieldname):
             if isinstance(actor_json[fieldname], str):
                 moved_to = remove_html(actor_json[fieldname])
@@ -1869,7 +1869,7 @@ def _profile_post_birthday(fields: {}, actor_json: {},
                            actor_changed: bool) -> bool:
     """ HTTP POST birthday on edit profile screen
     """
-    birth_date = ''
+    birth_date: str = ''
     if actor_json.get('vcard:bday'):
         birth_date = actor_json['vcard:bday']
     if fields.get('birthDate'):
@@ -2883,7 +2883,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                       post_image_filename)
 
         post_bytes_str = post_bytes.decode('utf-8')
-        redirect_path = ''
+        redirect_path: str = ''
         check_name_and_bio = False
         on_final_welcome_screen = False
         if 'name="previewAvatar"' in post_bytes_str:

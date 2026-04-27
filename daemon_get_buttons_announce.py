@@ -82,14 +82,14 @@ def announce_button(self, calling_domain: str, path: str,
     repeat_url = path.split('?repeat=')[1]
     if '?' in repeat_url:
         repeat_url = repeat_url.split('?')[0]
-    first_post_id = ''
+    first_post_id: str = ''
     if '?firstpost=' in path:
         first_post_id = path.split('?firstpost=')[1]
         if '?' in first_post_id:
             first_post_id = first_post_id.split('?')[0]
         first_post_id = first_post_id.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
-    timeline_bookmark = ''
+    timeline_bookmark: str = ''
     if '?bm=' in path:
         timeline_bookmark = path.split('?bm=')[1]
         if '?' in timeline_bookmark:
@@ -323,7 +323,7 @@ def announce_button_undo(self, calling_domain: str, path: str,
     if '?' in repeat_url:
         repeat_url = repeat_url.split('?')[0]
 
-    first_post_id = ''
+    first_post_id: str = ''
     if '?firstpost=' in path:
         first_post_id = path.split('?firstpost=')[1]
         if '?' in first_post_id:
@@ -331,7 +331,7 @@ def announce_button_undo(self, calling_domain: str, path: str,
         first_post_id = first_post_id.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
-    timeline_bookmark = ''
+    timeline_bookmark: str = ''
     if '?bm=' in path:
         timeline_bookmark = path.split('?bm=')[1]
         if '?' in timeline_bookmark:

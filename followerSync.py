@@ -43,7 +43,7 @@ def _get_followers_for_domain(base_dir: str,
                     'EX: get_followers_for_domain unable to read followers ' +
                     followers_filename)
     if foll_text is None:
-        foll_text = ''
+        foll_text: str = ''
     if search_domain not in foll_text:
         return []
     lines = foll_text.splitlines()

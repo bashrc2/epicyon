@@ -229,7 +229,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             login_str = login_params
             if '=' in login_params:
                 login_params_list = login_params.split('=')
-                login_str = ''
+                login_str: str = ''
                 skip_param = False
                 for login_prm in login_params_list:
                     if not skip_param:
@@ -238,7 +238,7 @@ def post_login_screen(self, calling_domain: str, cookie: str,
                         len_str = login_prm.split('&')[0]
                         if len_str:
                             login_str += login_prm + '*'
-                        len_str = ''
+                        len_str: str = ''
                         if '&' in login_prm:
                             login_str += \
                                 '&' + login_prm.split('&')[1] + '='

@@ -118,7 +118,7 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
             load_string(calendar_filename,
                         'EX: _receive_calendar_events ' + calendar_filename)
         if following_handles is None:
-            following_handles = ''
+            following_handles: str = ''
     else:
         # create a new calendar file from the following file
         print('Creating calendar file ' + calendar_filename)
@@ -139,7 +139,7 @@ def _receive_calendar_events(base_dir: str, nickname: str, domain: str,
             # already added
             return
         # remove from calendar file
-        new_following_handles = ''
+        new_following_handles: str = ''
         following_handles_list = following_handles.split('\n')
         handle_lower = handle.lower()
         for followed in following_handles_list:

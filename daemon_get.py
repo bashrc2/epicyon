@@ -756,7 +756,7 @@ def daemon_http_get(self) -> None:
         ('/private_account_notes/' in self.path or
          self.path.endswith('/private_account_notes'))):
         nickname = get_nickname_from_actor(self.path)
-        handle = ''
+        handle: str = ''
         if '/private_account_notes/' in self.path:
             handle = self.path.split('/private_account_notes/', 1)[1]
         if nickname:
@@ -785,7 +785,7 @@ def daemon_http_get(self) -> None:
         return
 
     if authorized and self.path.endswith('/bots.txt'):
-        known_bots_str = ''
+        known_bots_str: str = ''
         for bot_name in self.server.known_bots:
             known_bots_str += bot_name + '\n'
         msg = known_bots_str.encode('utf-8')
@@ -2066,7 +2066,7 @@ def daemon_http_get(self) -> None:
         item_id = self.path.split('?showshare=')[1]
         if '?' in item_id:
             item_id = item_id.split('?')[0]
-        category = ''
+        category: str = ''
         if '?category=' in self.path:
             category = self.path.split('?category=')[1]
         if '?' in category:
@@ -4286,7 +4286,7 @@ def daemon_http_get(self) -> None:
     in_reply_to_url = None
     reply_to_list: list[str] = []
     reply_page_number = 1
-    reply_category = ''
+    reply_category: str = ''
     share_description = None
     conversation_id = None
     convthread_id = None
@@ -6599,7 +6599,7 @@ def _show_known_crawlers(self, calling_domain: str, path: str,
             hits_str = str(item['hits']).zfill(8)
             crawlers_list.append(hits_str + ' ' + ua_str)
     crawlers_list.sort(reverse=True)
-    msg = ''
+    msg: str = ''
     for line_str in crawlers_list:
         msg += line_str + '\n'
     msg = msg.encode('utf-8')

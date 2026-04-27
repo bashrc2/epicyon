@@ -597,7 +597,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     curr_time = date_utcnow()
 
     post_id = None
-    published = ''
+    published: str = ''
     if post_json_object.get('id'):
         post_id = remove_id_ending(post_json_object['id'])
         published = curr_time.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -1200,7 +1200,7 @@ def _send_to_group_members(server, session, session_onion,
     else:
         if group_actor != post_json_object['to']:
             return
-    cc_str = ''
+    cc_str: str = ''
     nickname = handle.split('@')[0].replace('!', '')
 
     # save to the group outbox so that replies will be to the group
@@ -1406,7 +1406,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     comments_enabled = False
     attach_image_filename = None
     media_type = None
-    image_description = ''
+    image_description: str = ''
     video_transcript = None
     city = 'London, England'
     in_reply_to = remove_id_ending(sender_post_id)
@@ -1415,13 +1415,13 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     event_date = None
     event_time = None
     event_end_time = None
-    event_category = ''
+    event_category: str = ''
     location = None
     conversation_id = None
     convthread_id = None
     low_bandwidth = False
-    buy_url = ''
-    chat_url = ''
+    buy_url: str = ''
+    chat_url: str = ''
     auto_cw_cache = {}
     post_json_object = \
         create_direct_message_post(base_dir, nickname, domain, port,
@@ -4077,7 +4077,7 @@ def run_inbox_queue(server,
                 inbox_start_time = time.time()
 
             lists_enabled = get_config_param(base_dir, "listsEnabled")
-            dm_license_url = ''
+            dm_license_url: str = ''
 
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'distribute_post',

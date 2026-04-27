@@ -60,9 +60,9 @@ def html_welcome_final(base_dir: str, nickname: str,
             final_text = final_text.replace('INSTANCE', instance_title)
             final_text = markdown_to_html(remove_html(final_text))
         else:
-            final_text = ''
+            final_text: str = ''
 
-    final_form = ''
+    final_form: str = ''
     css_filename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):
         css_filename = base_dir + '/welcome.css'

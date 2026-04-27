@@ -498,7 +498,7 @@ def show_new_post(self, edit_post_params: {},
                                      nickname,
                                      domain_full,
                                      person_cache)
-        default_buy_site = ''
+        default_buy_site: str = ''
         msg = \
             html_new_post(edit_post_params, media_instance,
                           translate,

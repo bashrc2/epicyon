@@ -302,7 +302,7 @@ def _person_receive_update(base_dir: str,
                     get_person_avatar_url(base_dir, person_json['id'],
                                           person_cache)
                 if prev_avatar_url is None:
-                    prev_avatar_url = ''
+                    prev_avatar_url: str = ''
                 _notify_moved(base_dir, domain_full,
                               prev_nickname + '@' + prev_domain_full,
                               new_nickname + '@' + new_domain_full,

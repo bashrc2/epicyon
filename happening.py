@@ -420,13 +420,13 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
                    day_events: [], person_cache: {}) -> str:
     """Returns a day's events in icalendar format
     """
-    ical_str = ''
+    ical_str: str = ''
     print('icalendar: ' + str(day_events))
     for event_post in day_events:
         event_description = None
         event_place = None
         post_id = None
-        sender_name = ''
+        sender_name: str = ''
         sender_actor = None
         event_is_public = False
         event_start = None
@@ -979,7 +979,7 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
     if not end_time:
         return False
 
-    post_id = ''
+    post_id: str = ''
     post_context = get_individual_post_context()
     # create the status number from DTSTAMP
     status_number, published = get_status_number(published)
@@ -1056,7 +1056,7 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
     }
     if location:
         # get the location link
-        location_url = ''
+        location_url: str = ''
         if '://' in location:
             location_words = location.split(' ')
             for loc_wrd in location_words:
@@ -1200,7 +1200,7 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                 query_end_time_str = end_time_str.split('"')[1]
                 query_end_time = _dav_date_from_string(query_end_time_str)
 
-    text_match = ''
+    text_match: str = ''
     if ':text-match' in xml_str_lower:
         match_str = xml_str_lower.split(':text-match')[1]
         if '>' in match_str and '<' in match_str:
@@ -1208,12 +1208,12 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
             if '<' in text_match:
                 text_match = text_match.split('<')[0]
             else:
-                text_match = ''
+                text_match: str = ''
 
     ical_events = None
     etag = None
-    events_href = ''
-    responses = ''
+    events_href: str = ''
+    responses: str = ''
     search_date = datetime.now()
     if query_start_time and query_end_time:
         query_start_year = int(query_start_time.split('-')[0])
@@ -1297,7 +1297,7 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
                             '        </d:propstat>\n' + \
                             '    </d:response>\n'
         if not responses:
-            all_events = ''
+            all_events: str = ''
             for year in range(query_start_year, query_end_year+1):
                 if query_start_year == query_end_year:
                     start_month_number = query_start_month

@@ -36,7 +36,7 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
     the category for that tag
     """
     users_path = path.replace('/sethashtagcategory', '')
-    hashtag = ''
+    hashtag: str = ''
     if '/tags/' not in users_path:
         # no hashtag is specified within the path
         http_404(self, 14)

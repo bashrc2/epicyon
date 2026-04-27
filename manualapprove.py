@@ -193,7 +193,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
         return
 
     # is the handle in the requests file?
-    approve_follows_str = ''
+    approve_follows_str: str = ''
     try:
         with open(approve_follows_filename, 'r', encoding='utf-8') as fp_foll:
             approve_follows_str = fp_foll.read()

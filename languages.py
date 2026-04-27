@@ -28,7 +28,7 @@ def get_actor_languages(actor_json: {}) -> str:
     lang_list = get_actor_languages_list(actor_json)
     if not lang_list:
         return ''
-    languages_str = ''
+    languages_str: str = ''
     for lang in lang_list:
         if languages_str:
             languages_str += ' / ' + lang
@@ -65,7 +65,7 @@ def set_actor_languages(actor_json: {}, languages_str: str) -> None:
         lang_list = languages_str.lower().split(separator)
     else:
         lang_list = [languages_str.lower()]
-    lang_list2 = ''
+    lang_list2: str = ''
     for lang in lang_list:
         lang = lang.strip()
         if lang_list2:
@@ -169,7 +169,7 @@ def libretranslate_languages(url: str, api_key: str) -> []:
 
     req = request.Request(url, data=url_params.encode())
 
-    response_str = ''
+    response_str: str = ''
     with request.urlopen(req) as response:
         response_str = response.read().decode()
 

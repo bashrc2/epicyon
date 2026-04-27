@@ -2017,7 +2017,7 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
                   tag_index_filename)
     if not lines:
         return
-    newlines = ''
+    newlines: str = ''
     for file_line in lines:
         if post_id in file_line:
             # skip over the deleted post

@@ -155,10 +155,10 @@ def _receive_new_post_process_newpost(self, fields: {},
         if '://' not in media_license_url:
             media_license_url = \
                 license_link_from_name(media_license_url)
-    media_creator = ''
+    media_creator: str = ''
     if fields.get('mediaCreator'):
         media_creator = fields['mediaCreator']
-    video_transcript = ''
+    video_transcript: str = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
     if fields.get('searchableByDropdown'):
@@ -168,7 +168,7 @@ def _receive_new_post_process_newpost(self, fields: {},
     # Append the address to the location if needed
     if fields.get('locationAddress'):
         location_str += ' <address>' + fields['locationAddress'] + '</address>'
-    event_category = ''
+    event_category: str = ''
     if fields.get('eventCategory'):
         event_category = fields['eventCategory']
     message_json = \
@@ -337,10 +337,10 @@ def _receive_new_post_process_newblog(self, fields: {},
         if '://' not in media_license_url:
             media_license_url = \
                 license_link_from_name(media_license_url)
-    media_creator = ''
+    media_creator: str = ''
     if fields.get('mediaCreator'):
         media_creator = fields['mediaCreator']
-    video_transcript = ''
+    video_transcript: str = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
     if fields.get('searchableByDropdown'):
@@ -350,7 +350,7 @@ def _receive_new_post_process_newblog(self, fields: {},
     # Append the address to the location if needed
     if fields.get('locationAddress'):
         location_str += ' <address>' + fields['locationAddress'] + '</address>'
-    event_category = ''
+    event_category: str = ''
     if fields.get('eventCategory'):
         event_category = fields['eventCategory']
     message_json = \
@@ -463,10 +463,10 @@ def _receive_new_post_process_editblog(self, fields: {},
             content_map[system_language] = \
                 fields['message']
 
-            img_description = ''
+            img_description: str = ''
             if fields.get('imageDescription'):
                 img_description = fields['imageDescription']
-            video_transcript = ''
+            video_transcript: str = ''
             if fields.get('videoTranscript'):
                 video_transcript = fields['videoTranscript']
 
@@ -479,7 +479,7 @@ def _receive_new_post_process_editblog(self, fields: {},
                     if '://' not in license_url:
                         license_url = \
                             license_link_from_name(license_url)
-                creator = ''
+                creator: str = ''
                 if fields.get('mediaCreator'):
                     creator = fields['mediaCreator']
                 post_json_object['object'] = \
@@ -590,17 +590,17 @@ def _receive_new_post_process_newunlisted(self, fields: {},
         if '://' not in media_license_url:
             media_license_url = \
                 license_link_from_name(media_license_url)
-    media_creator = ''
+    media_creator: str = ''
     if fields.get('mediaCreator'):
         media_creator = fields['mediaCreator']
-    video_transcript = ''
+    video_transcript: str = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
     location_str = fields['location']
     # Append the address to the location if needed
     if fields.get('locationAddress'):
         location_str += ' <address>' + fields['locationAddress'] + '</address>'
-    event_category = ''
+    event_category: str = ''
     if fields.get('eventCategory'):
         event_category = fields['eventCategory']
     message_json = \
@@ -764,10 +764,10 @@ def _receive_new_post_process_newfollowers(self, fields: {},
         if '://' not in media_license_url:
             media_license_url = \
                 license_link_from_name(media_license_url)
-    media_creator = ''
+    media_creator: str = ''
     if fields.get('mediaCreator'):
         media_creator = fields['mediaCreator']
-    video_transcript = ''
+    video_transcript: str = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
     if fields.get('searchableByDropdown'):
@@ -777,7 +777,7 @@ def _receive_new_post_process_newfollowers(self, fields: {},
     # Append the address to the location if needed
     if fields.get('locationAddress'):
         location_str += ' <address>' + fields['locationAddress'] + '</address>'
-    event_category = ''
+    event_category: str = ''
     if fields.get('eventCategory'):
         event_category = fields['eventCategory']
     message_json = \
@@ -954,10 +954,10 @@ def _receive_new_post_process_newdm(self, fields: {},
             if '://' not in media_license_url:
                 media_license_url = \
                     license_link_from_name(media_license_url)
-        media_creator = ''
+        media_creator: str = ''
         if fields.get('mediaCreator'):
             media_creator = fields['mediaCreator']
-        video_transcript = ''
+        video_transcript: str = ''
         if fields.get('videoTranscript'):
             video_transcript = fields['videoTranscript']
         location_str = fields['location']
@@ -965,7 +965,7 @@ def _receive_new_post_process_newdm(self, fields: {},
         if fields.get('locationAddress'):
             location_str += \
                 ' <address>' + fields['locationAddress'] + '</address>'
-        event_category = ''
+        event_category: str = ''
         if fields.get('eventCategory'):
             event_category = fields['eventCategory']
         message_json = \
@@ -1130,11 +1130,11 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
         get_understood_languages(base_dir, http_prefix,
                                  nickname, domain_full,
                                  person_cache)
-    media_license_url = ''
-    media_creator = ''
+    media_license_url: str = ''
+    media_creator: str = ''
     if fields.get('mediaCreator'):
         media_creator = fields['mediaCreator']
-    video_transcript = ''
+    video_transcript: str = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
     location_str = fields['location']
@@ -1142,7 +1142,7 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
     if fields.get('locationAddress'):
         location_str += \
             ' <address>' + fields['locationAddress'] + '</address>'
-    event_category = ''
+    event_category: str = ''
     if fields.get('eventCategory'):
         event_category = fields['eventCategory']
     message_json = \
@@ -1268,10 +1268,10 @@ def _receive_new_post_process_newreport(self, fields: {},
         if '://' not in media_license_url:
             media_license_url = \
                 license_link_from_name(media_license_url)
-    media_creator = ''
+    media_creator: str = ''
     if fields.get('mediaCreator'):
         media_creator = fields['mediaCreator']
-    video_transcript = ''
+    video_transcript: str = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
     message_json = \
@@ -1369,10 +1369,10 @@ def _receive_new_post_process_newquestion(self, fields: {},
         if '://' not in media_license_url:
             media_license_url = \
                 license_link_from_name(media_license_url)
-    media_creator = ''
+    media_creator: str = ''
     if fields.get('mediaCreator'):
         media_creator = fields['mediaCreator']
-    video_transcript = ''
+    video_transcript: str = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
     message_json = \
@@ -1482,10 +1482,10 @@ def _receive_new_post_process_newreading(self, fields: {},
         if '://' not in media_license_url:
             media_license_url = \
                 license_link_from_name(media_license_url)
-    media_creator = ''
+    media_creator: str = ''
     if fields.get('mediaCreator'):
         media_creator = fields['mediaCreator']
-    video_transcript = ''
+    video_transcript: str = ''
     if fields.get('videoTranscript'):
         video_transcript = fields['videoTranscript']
     conversation_id = None
@@ -1505,7 +1505,7 @@ def _receive_new_post_process_newreading(self, fields: {},
     if fields.get('locationAddress'):
         location_str += \
             ' <address>' + fields['locationAddress'] + '</address>'
-    event_category = ''
+    event_category: str = ''
     if fields.get('eventCategory'):
         event_category = fields['eventCategory']
     # reading status
@@ -2034,7 +2034,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
                     'EX: _receive_new_post_process unable to write ' +
                     last_used_filename)
 
-    mentions_str = ''
+    mentions_str: str = ''
     if fields.get('mentions'):
         mentions_str = fields['mentions'].strip() + ' '
     if not fields.get('commentsEnabled'):
@@ -2042,11 +2042,11 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
     else:
         comments_enabled = True
 
-    buy_url = ''
+    buy_url: str = ''
     if fields.get('buyUrl'):
         buy_url = fields['buyUrl']
 
-    chat_url = ''
+    chat_url: str = ''
     if fields.get('chatUrl'):
         chat_url = fields['chatUrl']
 

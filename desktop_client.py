@@ -568,10 +568,10 @@ def _desktop_reply_to_post(session, post_id: str,
     event_date = None
     event_time = None
     event_end_time = None
-    event_category = ''
+    event_category: str = ''
     location = None
-    buy_url = ''
-    chat_url = ''
+    buy_url: str = ''
+    chat_url: str = ''
     video_transcript = None
     auto_cw_cache = {}
     # TODO searchable status
@@ -657,10 +657,10 @@ def _desktop_new_post(session,
     event_date = None
     event_time = None
     event_end_time = None
-    event_category = ''
+    event_category: str = ''
     location = None
-    buy_url = ''
-    chat_url = ''
+    buy_url: str = ''
+    chat_url: str = ''
     video_transcript = None
     auto_cw_cache = {}
     # TODO searchable status
@@ -730,7 +730,7 @@ def _text_only_content(content: str) -> str:
 def _get_image_description(post_json_object: {}) -> str:
     """Returns a image description/s on a post
     """
-    image_description = ''
+    image_description: str = ''
     post_attachments = get_post_attachments(post_json_object)
     if not post_attachments:
         return image_description
@@ -1014,7 +1014,7 @@ def _desktop_show_actor(http_prefix: str,
         say_str = 'Copied to ' + remove_html(moved_url)
         _say_command(say_str, say_str, screenreader, system_language, espeak)
     if actor_json.get('alsoKnownAs'):
-        also_known_as_str = ''
+        also_known_as_str: str = ''
         ctr = 0
         for alt_actor in actor_json['alsoKnownAs']:
             if ctr > 0:
@@ -1184,7 +1184,7 @@ def _desktop_show_box(indent: str,
     _desktop_clear_screen()
     _desktop_show_banner()
 
-    notification_icons = ''
+    notification_icons: str = ''
     if box_name.startswith('tl'):
         box_name_str = box_name[2:]
     else:
@@ -1499,10 +1499,10 @@ def _desktop_new_dm_base(session, to_handle: str,
     event_date = None
     event_time = None
     event_end_time = None
-    event_category = ''
+    event_category: str = ''
     location = None
-    buy_url = ''
-    chat_url = ''
+    buy_url: str = ''
+    chat_url: str = ''
     video_transcript = None
 
     say_str = 'Sending'
@@ -1611,7 +1611,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
 
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_creator = ''
+    media_creator: str = ''
 
     blocked_cache = {}
     block_federated: list[str] = []
@@ -1620,7 +1620,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
 
     indent = '   '
     if show_new_posts:
-        indent = ''
+        indent: str = ''
 
     _desktop_clear_screen()
     _desktop_show_banner()
@@ -1654,10 +1654,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     post_json_object = {}
     original_screen_reader = screenreader
     sounds_dir = 'theme/default/sounds/'
-    # prev_say = ''
+    # prev_say: str = ''
     # prev_calendar = False
     # prev_follow = False
-    # prev_like = ''
+    # prev_like: str = ''
     # prev_share = False
     dm_sound_filename = sounds_dir + 'dm.ogg'
     reply_sound_filename = sounds_dir + 'reply.ogg'
@@ -1701,7 +1701,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
         "repliesNotify": False,
         "repliesNotifyChanged": False
     }
-    prev_timeline_first_id = ''
+    prev_timeline_first_id: str = ''
     desktop_shown = False
     while (1):
         if not pgp_key_upload:
@@ -1789,6 +1789,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     print('You may need to run the desktop client ' +
                           'with the --http option')
 
+        command_str: str = ''
         # wait for a while, or until a key is pressed
         if no_key_press:
             time.sleep(10)
@@ -1808,7 +1809,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 break
             if command_str.startswith('show dm'):
                 page_number = 1
-                prev_timeline_first_id = ''
+                prev_timeline_first_id: str = ''
                 curr_timeline = 'dm'
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
@@ -1823,7 +1824,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       page_number)
             elif command_str.startswith('show rep'):
                 page_number = 1
-                prev_timeline_first_id = ''
+                prev_timeline_first_id: str = ''
                 curr_timeline = 'tlreplies'
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
@@ -1838,7 +1839,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       page_number)
             elif command_str.startswith('show b'):
                 page_number = 1
-                prev_timeline_first_id = ''
+                prev_timeline_first_id: str = ''
                 curr_timeline = 'tlbookmarks'
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
@@ -1854,7 +1855,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
             elif string_starts_with(command_str,
                                     ('show sen', 'show out')):
                 page_number = 1
-                prev_timeline_first_id = ''
+                prev_timeline_first_id: str = ''
                 curr_timeline = 'outbox'
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
@@ -1870,17 +1871,17 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
             elif (command_str == 'show' or command_str.startswith('show in') or
                   command_str == 'clear'):
                 page_number = 1
-                prev_timeline_first_id = ''
+                prev_timeline_first_id: str = ''
                 curr_timeline = 'inbox'
                 refresh_timeline = True
             elif command_str.startswith('next'):
                 page_number += 1
-                prev_timeline_first_id = ''
+                prev_timeline_first_id: str = ''
                 refresh_timeline = True
             elif command_str.startswith('prev'):
                 page_number -= 1
                 page_number = max(page_number, 1)
-                prev_timeline_first_id = ''
+                prev_timeline_first_id: str = ''
                 box_json = c2s_box_json(session, nickname, password,
                                         domain, port, http_prefix,
                                         curr_timeline, page_number,
@@ -1928,7 +1929,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     _say_command(say_str2, say_str,
                                  screenreader, system_language, espeak)
                     input()
-                    prev_timeline_first_id = ''
+                    prev_timeline_first_id: str = ''
                     refresh_timeline = True
                 print('')
             elif (command_str.startswith('profile ') or
@@ -1972,7 +1973,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     _say_command(say_str2, say_str,
                                  screenreader, system_language, espeak)
                     input()
-                    prev_timeline_first_id = ''
+                    prev_timeline_first_id: str = ''
                     refresh_timeline = True
                 elif not actor_json and box_json:
                     _desktop_clear_screen()
@@ -1994,15 +1995,15 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     _say_command(say_str2, say_str,
                                  screenreader, system_language, espeak)
                     input()
-                    prev_timeline_first_id = ''
+                    prev_timeline_first_id: str = ''
                     refresh_timeline = True
                 print('')
             elif command_str in ('reply', 'r'):
                 if post_json_object:
-                    post_content = ''
+                    post_content: str = ''
                     if post_json_object['object'].get('content'):
                         post_content = post_json_object['object']['content']
-                    post_summary = ''
+                    post_summary: str = ''
                     if post_json_object['object'].get('summary'):
                         post_summary = post_json_object['object']['summary']
                     if not disallow_reply(post_summary + ' ' + post_content):
@@ -2464,10 +2465,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     post_json_object = \
                         _desktop_get_box_post_object(box_json, curr_index)
                 if post_json_object:
-                    post_content = ''
+                    post_content: str = ''
                     if post_json_object['object'].get('content'):
                         post_content = post_json_object['object']['content']
-                    post_summary = ''
+                    post_summary: str = ''
                     if post_json_object['object'].get('summary'):
                         post_summary = post_json_object['object']['summary']
                     attachment = get_post_attachments(post_json_object)
@@ -2620,7 +2621,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     if actor_json:
                         follow_handle = actor_json['id']
                     else:
-                        follow_handle = ''
+                        follow_handle: str = ''
                 else:
                     follow_handle = command_str.replace('follow ', '').strip()
                     if follow_handle.startswith('@'):
@@ -2893,7 +2894,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 _say_command(say_str2, say_str,
                              screenreader, system_language, espeak)
                 input()
-                prev_timeline_first_id = ''
+                prev_timeline_first_id: str = ''
                 refresh_timeline = True
             elif (command_str in ('delete', 'rm') or
                   string_starts_with(command_str, ('delete ', 'rm '))):

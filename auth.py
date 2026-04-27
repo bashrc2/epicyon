@@ -203,7 +203,7 @@ def store_basic_credentials(base_dir: str,
                 return False
 
             # create the altered passwords list
-            passwords_list_new = ''
+            passwords_list_new: str = ''
             for login_str in passwords_list:
                 if not login_str.startswith(nickname + ':'):
                     passwords_list_new += login_str
@@ -250,7 +250,7 @@ def remove_password(base_dir: str, nickname: str) -> None:
             return
 
         # create the new passwords file
-        passwords_list_new = ''
+        passwords_list_new: str = ''
         account_found = False
         for login_str in passwords_list:
             if not login_str.startswith(nickname + ':'):
@@ -260,18 +260,18 @@ def remove_password(base_dir: str, nickname: str) -> None:
         if not account_found:
             # the account doesn't exist
             passwords_list.clear()
-            passwords_list_new = ''
+            passwords_list_new: str = ''
             return
 
         # save the new passwords file
         if not save_string(passwords_list_new, password_file + '.new',
                            'EX: unable to remove password from file [ex]'):
             passwords_list.clear()
-            passwords_list_new = ''
+            passwords_list_new: str = ''
             return
 
         passwords_list.clear()
-        passwords_list_new = ''
+        passwords_list_new: str = ''
 
         try:
             os.rename(password_file + '.new', password_file)

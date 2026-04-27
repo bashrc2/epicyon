@@ -50,7 +50,7 @@ def receive_vote(self, calling_domain: str, cookie: str,
                  auto_cw_cache: {}) -> None:
     """Receive a vote on a question via POST
     """
-    first_post_id = ''
+    first_post_id: str = ''
     if '?firstpost=' in path:
         first_post_id = path.split('?firstpost=')[1]
         path = path.split('?firstpost=')[0]
@@ -65,7 +65,7 @@ def receive_vote(self, calling_domain: str, cookie: str,
         first_post_id = first_post_id.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
 
-    last_post_id = ''
+    last_post_id: str = ''
     if '?lastpost=' in path:
         last_post_id = path.split('?lastpost=')[1]
         path = path.split('?lastpost=')[0]
@@ -225,12 +225,12 @@ def _send_reply_to_question(self, base_dir: str,
     event_date = None
     event_time = None
     event_end_time = None
-    event_category = ''
+    event_category: str = ''
     location = None
     conversation_id = None
     convthread_id = None
-    buy_url = ''
-    chat_url = ''
+    buy_url: str = ''
+    chat_url: str = ''
     city = get_spoofed_city(city_name, base_dir, nickname, domain)
     languages_understood = \
         get_understood_languages(base_dir, http_prefix,

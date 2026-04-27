@@ -61,7 +61,7 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
     if '://' in content_text:
         sections = content_text.split('://')
         ctr = 0
-        prev_section = ''
+        prev_section: str = ''
         for section in sections:
             if ctr > 0:
                 link_str = section
@@ -100,7 +100,7 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
     # get attachments
     post_attachments = get_post_attachments(message_json)
     if post_attachments:
-        descriptions = ''
+        descriptions: str = ''
         for attach in post_attachments:
             if not isinstance(attach, dict):
                 continue

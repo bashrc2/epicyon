@@ -1739,7 +1739,7 @@ def show_mod_timeline(self, authorized: bool,
                                             True,
                                             0, positive_voting,
                                             voting_time_mins)
-                    moderation_action_str = ''
+                    moderation_action_str: str = ''
 
                     if key_shortcuts.get(nickname):
                         access_keys = key_shortcuts[nickname]

@@ -653,7 +653,7 @@ def show_person_options(self, calling_domain: str, path: str,
                         curr_session) -> None:
     """Show person options screen
     """
-    back_to_path = ''
+    back_to_path: str = ''
     options_str = path.split('?options=')[1]
     origin_path_str = path.split('?options=')[0]
     if ';' in options_str and '/users/news/' not in path:
@@ -664,7 +664,7 @@ def show_person_options(self, calling_domain: str, path: str,
         options_page_number = 1
         if len(options_list) > 1:
             options_page_number = options_list[1]
-        options_profile_url = ''
+        options_profile_url: str = ''
         if len(options_list) > 2:
             options_profile_url = options_list[2]
         if ('.' in options_profile_url or
@@ -710,7 +710,7 @@ def show_person_options(self, calling_domain: str, path: str,
         deltachat_invite = None
         locked_account = False
         also_known_as = None
-        moved_to = ''
+        moved_to: str = ''
         repo_url = None
         status = None
         actor_json = \
@@ -765,7 +765,7 @@ def show_person_options(self, calling_domain: str, path: str,
             status = get_actor_status(actor_json)
             if status:
                 if actor_status_expired(actor_json['sm:status']):
-                    status = ''
+                    status: str = ''
 
         access_keys = self.server.access_keys
         nickname = 'instance'

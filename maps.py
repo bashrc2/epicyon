@@ -74,7 +74,7 @@ def _get_event_dict_from_tags(tags: []) -> str:
 def _location_address_from_dict(location: {}) -> str:
     """returns location address as a string
     """
-    location_str = ''
+    location_str: str = ''
     address_section_name = (
         'streetAddress',
         'addressLocality',
@@ -129,7 +129,7 @@ def _get_category_from_tags(tags: [], translate: {}) -> str:
                 if translate.get(category_str):
                     return translate[category_str]
             if isinstance(evnt['category'], list):
-                category_str = ''
+                category_str: str = ''
                 for category_item in evnt['category']:
                     if not isinstance(category_item, str):
                         continue
@@ -359,7 +359,7 @@ def get_location_from_post(post_json_object: {}) -> str:
 def get_category_from_post(post_json_object: {}, translate: {}) -> str:
     """Returns the location category for the given post
     """
-    catstr = ''
+    catstr: str = ''
 
     # location represented via a tag
     post_obj = post_json_object
@@ -376,7 +376,7 @@ def get_category_from_post(post_json_object: {}, translate: {}) -> str:
                 if translate.get(text):
                     catstr = translate[text]
             elif isinstance(text, list):
-                catstr = ''
+                catstr: str = ''
                 for cat_text in text:
                     if not isinstance(cat_text, str):
                         continue
@@ -1005,7 +1005,7 @@ def get_map_links_from_post_content(content: str, session) -> []:
             continue
         if ',' not in link_str:
             continue
-        coords_str = ''
+        coords_str: str = ''
         for char in link_str:
             if not char.isnumeric() and char not in (',', '-', '.'):
                 break
@@ -1058,7 +1058,7 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
 
     # sort the list of map links
     existing_map_links.sort(reverse=True)
-    map_links_str = ''
+    map_links_str: str = ''
     ctr = 0
     for link in existing_map_links:
         if not link:
@@ -1264,7 +1264,7 @@ def html_hashtag_maps(base_dir: str, tag_name: str,
 
     time_period = _get_tagmaps_time_periods()
 
-    html_str = ''
+    html_str: str = ''
     map_str = None
     ua_str_lower = ua_str.lower()
     for period_str, hours in time_period.items():

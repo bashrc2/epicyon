@@ -1286,7 +1286,7 @@ def _command_options() -> None:
             argb.language = 'en'
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
-        domain = ''
+        domain: str = ''
         if argb.domain:
             domain = argb.domain
         signing_priv_key_pem = None
@@ -1371,7 +1371,7 @@ def _command_options() -> None:
         }
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
-        domain = ''
+        domain: str = ''
         if argb.domain:
             domain = argb.domain
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
@@ -1449,13 +1449,13 @@ def _command_options() -> None:
         session = create_session(proxy_type)
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
-        domain = ''
+        domain: str = ''
         if argb.domain:
             domain = argb.domain
         if not domain:
             print('Please specify a domain with the --domain option')
             sys.exit()
-        nickname = ''
+        nickname: str = ''
         if argb.nickname:
             nickname = argb.nickname
         if not nickname:
@@ -1479,7 +1479,7 @@ def _command_options() -> None:
         }
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
-        domain = ''
+        domain: str = ''
         if argb.domain:
             domain = argb.domain
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
@@ -1502,7 +1502,7 @@ def _command_options() -> None:
         session = create_session(None)
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
-        domain = ''
+        domain: str = ''
         if argb.domain:
             domain = argb.domain
         test_vcard = get_vcard(False, session, argb.vcard,
@@ -1516,7 +1516,7 @@ def _command_options() -> None:
         session = create_session(None)
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
-        domain = ''
+        domain: str = ''
         if argb.domain:
             domain = argb.domain
         test_vcard = get_vcard(True, session, argb.xmlvcard,
@@ -1534,7 +1534,7 @@ def _command_options() -> None:
         }
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
-        domain = ''
+        domain: str = ''
         if argb.domain:
             domain = argb.domain
         signing_priv_key_pem = get_instance_actor_key(base_dir, domain)
@@ -1565,7 +1565,7 @@ def _command_options() -> None:
         }
         if not argb.domain:
             argb.domain = get_config_param(base_dir, 'domain')
-        domain = ''
+        domain: str = ''
         if argb.domain:
             domain = argb.domain
         if not domain:
@@ -3959,7 +3959,7 @@ def _command_options() -> None:
         test_event_date = None
         test_event_time = None
         test_event_end_time = None
-        test_event_category = ''
+        test_event_category: str = ''
         test_location = None
         test_is_article = False
         conversation_id = None
@@ -3967,10 +3967,10 @@ def _command_options() -> None:
         low_bandwidth = False
         languages_understood = [argb.language]
         translate = {}
-        buy_url = ''
-        chat_url = ''
+        buy_url: str = ''
+        chat_url: str = ''
         auto_cw_cache = {}
-        test_video_transcript = ''
+        test_video_transcript: str = ''
         searchable_by: list[str] = []
         curr_session = None
 
@@ -4165,7 +4165,7 @@ def _command_options() -> None:
     if no_of_books:
         argb.no_of_books = int(no_of_books)
 
-    content_license_url = ''
+    content_license_url: str = ''
     if argb.content_license_url:
         content_license_url = argb.content_license_url
         set_config_param(base_dir, 'contentLicenseUrl', content_license_url)
@@ -4347,7 +4347,7 @@ def _command_options() -> None:
         for crawlers_allowed_str2 in crawlers_allowed_list:
             crawlers_allowed.append(crawlers_allowed_str2.strip())
 
-    lists_enabled = ''
+    lists_enabled: str = ''
     if argb.lists_enabled:
         lists_enabled = argb.lists_enabled
         set_config_param(base_dir, 'listsEnabled', lists_enabled)

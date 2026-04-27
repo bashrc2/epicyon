@@ -192,7 +192,7 @@ def _person_options_receive_notes(self, options_confirm_params: str,
             print('Change person notes')
         handle = options_nickname + '@' + options_domain_full
         if not person_notes:
-            person_notes = ''
+            person_notes: str = ''
         set_person_notes(base_dir,
                          chooser_nickname,
                          domain,
@@ -952,7 +952,7 @@ def _person_options_dm(self, options_confirm_params: str,
         default_post_language2 = system_language
         if default_post_language.get(nickname):
             default_post_language2 = default_post_language[nickname]
-        default_buy_site = ''
+        default_buy_site: str = ''
         searchable_by_default = 'yourself'
         msg = \
             html_new_post({}, False, translate,
@@ -1206,7 +1206,7 @@ def _person_options_report(self, options_confirm_params: str,
         default_post_language2 = system_language
         if default_post_language.get(nickname):
             default_post_language2 = default_post_language[nickname]
-        default_buy_site = ''
+        default_buy_site: str = ''
         searchable_by_default = 'yourself'
         msg = \
             html_new_post({}, False, translate,

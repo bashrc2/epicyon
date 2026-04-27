@@ -453,7 +453,7 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
             new_common_emoji.append(str(1).zfill(16) + ' ' + emoji_content)
         new_common_emoji.sort(reverse=True)
 
-        text = ''
+        text: str = ''
         for line in new_common_emoji:
             text += line + '\n'
         if not save_string(text, common_emoji_filename,
@@ -1833,8 +1833,8 @@ def save_media_in_form_post(media_bytes, debug: bool,
 def combine_textarea_lines(text: str) -> str:
     """Combines separate lines
     """
-    result = ''
-    ctr = 0
+    result: str = ''
+    ctr: int = 0
     paragraphs = text.split('\n\n')
     replacements = {
         '\n* ': '***BULLET POINT*** ',
@@ -1953,7 +1953,7 @@ def limit_repeated_words(text: str, max_repeats: int) -> str:
                 new_text = ((prev_word + ' ') * max_repeats).strip()
                 replacements[prev_word] = [repeated_text, new_text]
             repeat_ctr = 0
-            repeated_text = ''
+            repeated_text: str = ''
         prev_word = word
 
     if repeat_ctr > max_repeats:

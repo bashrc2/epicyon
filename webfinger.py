@@ -299,7 +299,7 @@ def wellknown_protocol_handler(path: str, http_prefix: str,
             domain_and_path = domain_full
         # not an open redirect
         if domain_and_path.startswith(domain_full):
-            command = ''
+            command: str = ''
             if '/' in nickname:
                 command = nickname.split('/')[0]
                 nickname = nickname.split('/')[1]

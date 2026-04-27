@@ -286,7 +286,7 @@ def citations_update(self, calling_domain: str, cookie: str,
             citations.append(fields[field_name])
 
         if citations:
-            citations_str = ''
+            citations_str: str = ''
             for citation_date in citations:
                 citations_str += citation_date + '\n'
             # save citations dates, so that they can be added when

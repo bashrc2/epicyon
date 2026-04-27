@@ -281,7 +281,7 @@ def is_follower_of_person(base_dir: str, nickname: str, domain: str,
                                 'EX: is_follower_of_person ' +
                                 followers_file)
     if followers_str is None:
-        followers_str = ''
+        followers_str: str = ''
 
     if handle in followers_str:
         already_following = True
@@ -668,7 +668,7 @@ def store_follow_request(base_dir: str,
             load_string(followers_filename,
                         'EX: store_follow_request ' + followers_filename)
         if followers_str is None:
-            followers_str = ''
+            followers_str: str = ''
 
         if approve_handle in followers_str:
             already_following = True
@@ -1557,7 +1557,7 @@ def remove_follower(base_dir: str,
 
     handle = remove_nickname + '@' + remove_domain
     handle = handle.lower()
-    new_followers_str = ''
+    new_followers_str: str = ''
     found = False
     for handle2 in followers_list:
         if not handle2:

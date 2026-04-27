@@ -97,7 +97,7 @@ def get_rss2site(self, calling_domain: str, path: str,
         http_404(self, 23)
         return
 
-    msg = ''
+    msg: str = ''
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:

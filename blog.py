@@ -206,7 +206,7 @@ def html_blog_post_gemini_links(content: str) -> str:
         return content
     ctr = 0
     sections = content.split('=> ')
-    new_content = ''
+    new_content: str = ''
     for section in sections:
         if ctr == 0:
             new_content = section
@@ -231,8 +231,8 @@ def html_blog_post_gemini_links(content: str) -> str:
             after_web_link = section.split(end_character, 1)[1]
         else:
             after_web_link = section.split(web_link_str, 1)[1]
-        after_str = ''
-        after_link_str = ''
+        after_str: str = ''
+        after_link_str: str = ''
         if '<' in after_web_link:
             after_str = after_web_link.split('<', 1)[0]
             after_link_str = '<' + after_web_link.split('<', 1)[1]
@@ -241,7 +241,7 @@ def html_blog_post_gemini_links(content: str) -> str:
             after_link_str = '\n' + after_web_link.split('\n', 1)[1]
         else:
             after_str = after_web_link
-            after_link_str = ''
+            after_link_str: str = ''
         after_str = after_str.strip()
         after_link_str = after_link_str.strip()
         if is_image_file(web_link_str) and \
@@ -278,7 +278,7 @@ def html_blog_post_markdown(content: str) -> str:
             continue
         sections = new_content.split(markdown_text)
         ctr = 0
-        new_content2 = ''
+        new_content2: str = ''
         for section in sections:
             if ctr == 0:
                 new_content2 = section

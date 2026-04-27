@@ -103,7 +103,7 @@ def _get_patch_description(patch_str: str) -> str:
     """Returns the description from a given patch
     """
     patch_lines = patch_str.split('\n')
-    description = ''
+    description: str = ''
     started = False
     for line in patch_lines:
         if started:
@@ -167,7 +167,7 @@ def _git_add_from_handle(patch_str: str, handle: str) -> str:
         return patch_str
 
     patch_lines = patch_str.split('\n')
-    patch_str = ''
+    patch_str: str = ''
     for line in patch_lines:
         patch_str += line + '\n'
         if line.startswith('From:'):

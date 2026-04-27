@@ -348,7 +348,7 @@ class EpicyonServer(ThreadingHTTPServer):
     signing_priv_key_pem = None
     show_node_info_accounts: bool = False
     show_node_info_version: bool = False
-    text_mode_banner = ''
+    text_mode_banner: str = ''
     access_keys = {}
     rss_timeout_sec = 20
     check_actor_timeout = 2
@@ -375,7 +375,7 @@ class EpicyonServer(ThreadingHTTPServer):
     blogs_instance: bool = False
     translate = {}
     system_language: str = 'en'
-    city = ''
+    city: str = ''
     voting_time_mins = 30
     positive_voting: bool = False
     newswire_votes_threshold = 1

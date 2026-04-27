@@ -68,9 +68,9 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
             profile_text = profile_text.replace('INSTANCE', instance_title)
             profile_text = markdown_to_html(remove_html(profile_text))
         else:
-            profile_text = ''
+            profile_text: str = ''
 
-    profile_form = ''
+    profile_form: str = ''
     css_filename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):
         css_filename = base_dir + '/welcome.css'
@@ -120,7 +120,7 @@ def html_welcome_profile(base_dir: str, nickname: str, domain: str,
         edit_text_field(translate['Nickname'], 'displayNickname',
                         display_nickname)
 
-    bio_str = ''
+    bio_str: str = ''
     if actor_json.get('summary'):
         replacements = {
             '<p>': '',

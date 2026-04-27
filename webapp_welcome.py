@@ -89,8 +89,8 @@ def html_welcome_screen(base_dir: str, nickname: str,
             welcome_text = welcome_text.replace('INSTANCE', instance_title)
             welcome_text = markdown_to_html(remove_html(welcome_text))
         else:
-            welcome_text = ''
-    welcome_form = ''
+            welcome_text: str = ''
+    welcome_form: str = ''
     css_filename = base_dir + '/epicyon-welcome.css'
     if os.path.isfile(base_dir + '/welcome.css'):
         css_filename = base_dir + '/welcome.css'

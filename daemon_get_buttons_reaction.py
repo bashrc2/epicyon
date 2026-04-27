@@ -80,14 +80,14 @@ def reaction_button(self, calling_domain: str, path: str,
     reaction_url = path.split('?react=')[1]
     if '?' in reaction_url:
         reaction_url = reaction_url.split('?')[0]
-    first_post_id = ''
+    first_post_id: str = ''
     if '?firstpost=' in path:
         first_post_id = path.split('?firstpost=')[1]
         if '?' in first_post_id:
             first_post_id = first_post_id.split('?')[0]
         first_post_id = first_post_id.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
-    timeline_bookmark = ''
+    timeline_bookmark: str = ''
     if '?bm=' in path:
         timeline_bookmark = path.split('?bm=')[1]
         if '?' in timeline_bookmark:
@@ -386,14 +386,14 @@ def reaction_button_undo(self, calling_domain: str, path: str,
     reaction_url = path.split('?unreact=')[1]
     if '?' in reaction_url:
         reaction_url = reaction_url.split('?')[0]
-    first_post_id = ''
+    first_post_id: str = ''
     if '?firstpost=' in path:
         first_post_id = path.split('?firstpost=')[1]
         if '?' in first_post_id:
             first_post_id = first_post_id.split('?')[0]
         first_post_id = first_post_id.replace('/', '--')
         first_post_id = ';firstpost=' + first_post_id.replace('#', '--')
-    timeline_bookmark = ''
+    timeline_bookmark: str = ''
     if '?bm=' in path:
         timeline_bookmark = path.split('?bm=')[1]
         if '?' in timeline_bookmark:
