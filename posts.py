@@ -5873,9 +5873,9 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
     if not person_id:
         return
 
-    max_mentions = 10
-    max_emoji = 10
-    max_attachments = 5
+    max_mentions: int = 10
+    max_emoji: int = 10
+    max_attachments: int = 5
     _get_posts(session, person_url, 30, max_mentions, max_emoji,
                max_attachments, federation_list, raw, simple, debug,
                project_version, http_prefix, origin_domain, system_language,
@@ -7020,7 +7020,7 @@ def get_max_profile_posts(base_dir: str, nickname: str, domain: str,
     """
     max_posts_filename = \
         acct_dir(base_dir, nickname, domain) + '/max_profile_posts.txt'
-    max_profile_posts = 4
+    max_profile_posts: int = 4
     if not os.path.isfile(max_posts_filename):
         return max_profile_posts
     max_posts_str = \

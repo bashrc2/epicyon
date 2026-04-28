@@ -33,15 +33,17 @@ def meta_data_node_info(base_dir: str,
     sensitive
     """
     if show_accounts:
-        active_accounts = no_of_accounts(base_dir)
-        active_accounts_monthly = no_of_active_accounts_monthly(base_dir, 1)
-        active_accounts_half_year = no_of_active_accounts_monthly(base_dir, 6)
-        local_posts = get_status_count(base_dir)
+        active_accounts: int = no_of_accounts(base_dir)
+        active_accounts_monthly: int = \
+            no_of_active_accounts_monthly(base_dir, 1)
+        active_accounts_half_year: int = \
+            no_of_active_accounts_monthly(base_dir, 6)
+        local_posts: int = get_status_count(base_dir)
     else:
-        active_accounts = 1
-        active_accounts_monthly = 1
-        active_accounts_half_year = 1
-        local_posts = 1
+        active_accounts: int = 1
+        active_accounts_monthly: int = 1
+        active_accounts_half_year: int = 1
+        local_posts: int = 1
 
     nodeinfo = {
         "version": "2.2",

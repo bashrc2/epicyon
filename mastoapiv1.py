@@ -53,7 +53,7 @@ def _meta_data_instance_v1(show_accounts: bool,
         if rules_lines is None:
             return {}
 
-        rule_ctr = 1
+        rule_ctr: int = 1
         for line in rules_lines:
             line = line.strip()
             if not line:
@@ -78,11 +78,11 @@ def _meta_data_instance_v1(show_accounts: bool,
         admin_actor['preferredUsername']
 
     if show_accounts:
-        active_accounts = no_of_accounts(base_dir)
-        local_posts = get_status_count(base_dir)
+        active_accounts: int = no_of_accounts(base_dir)
+        local_posts: int = get_status_count(base_dir)
     else:
-        active_accounts = 1
-        local_posts = 1
+        active_accounts: int = 1
+        local_posts: int = 1
 
     created_at = ''
     if admin_actor.get('published'):

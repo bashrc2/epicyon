@@ -107,7 +107,7 @@ def show_media_timeline(self, authorized: bool,
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlmedia', '')
-                page_number = 1
+                page_number: int = 1
                 if '?page=' in nickname:
                     page_number = nickname.split('?page=')[1]
                     if ';' in page_number:
@@ -329,7 +329,7 @@ def show_blogs_timeline(self, authorized: bool,
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlblogs', '')
-                page_number = 1
+                page_number: int = 1
                 if '?page=' in nickname:
                     page_number = nickname.split('?page=')[1]
                     if ';' in page_number:
@@ -548,7 +548,7 @@ def show_news_timeline(self, authorized: bool,
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlnews', '')
-                page_number = 1
+                page_number: int = 1
                 if '?page=' in nickname:
                     page_number = nickname.split('?page=')[1]
                     if ';' in page_number:
@@ -769,7 +769,7 @@ def show_features_timeline(self, authorized: bool,
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlfeatures', '')
-                page_number = 1
+                page_number: int = 1
                 if '?page=' in nickname:
                     page_number = nickname.split('?page=')[1]
                     if ';' in page_number:
@@ -968,7 +968,7 @@ def show_shares_timeline(self, authorized: bool,
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlshares', '')
-                page_number = 1
+                page_number: int = 1
                 if '?page=' in nickname:
                     page_number = nickname.split('?page=')[1]
                     if ';' in page_number:
@@ -1120,7 +1120,7 @@ def show_wanted_timeline(self, authorized: bool,
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlwanted', '')
-                page_number = 1
+                page_number: int = 1
                 if '?page=' in nickname:
                     page_number = nickname.split('?page=')[1]
                     if ';' in page_number:
@@ -1289,7 +1289,7 @@ def show_bookmarks_timeline(self, authorized: bool,
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlbookmarks', '')
                     nickname = nickname.replace('/bookmarks', '')
-                    page_number = 1
+                    page_number: int = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         if ';' in page_number:
@@ -1713,7 +1713,7 @@ def show_mod_timeline(self, authorized: bool,
                 if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/moderation', '')
-                    page_number = 1
+                    page_number: int = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         if ';' in page_number:
@@ -1922,7 +1922,7 @@ def show_dms(self, authorized: bool,
                 if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/dm', '')
-                    page_number = 1
+                    page_number: int = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         if ';' in page_number:
@@ -2139,7 +2139,7 @@ def show_replies(self, authorized: bool,
             if request_http(self.headers, debug):
                 nickname = path.replace('/users/', '')
                 nickname = nickname.replace('/tlreplies', '')
-                page_number = 1
+                page_number: int = 1
                 if '?page=' in nickname:
                     page_number = nickname.split('?page=')[1]
                     if ';' in page_number:
@@ -2360,7 +2360,7 @@ def show_inbox(self, authorized: bool,
                 if request_http(self.headers, debug):
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/inbox', '')
-                    page_number = 1
+                    page_number: int = 1
                     if '?page=' in nickname:
                         page_number = nickname.split('?page=')[1]
                         if ';' in page_number:

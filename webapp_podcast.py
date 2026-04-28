@@ -274,7 +274,7 @@ def _html_podcast_soundbites(link_url: str, extension: str,
     podcast_str = '<div class="performers">\n'
     podcast_str += '  <center>\n'
     podcast_str += '<ul>\n'
-    ctr = 1
+    ctr: int = 1
     for performer in podcast_properties['soundbites']:
         if not performer.get('startTime'):
             continue

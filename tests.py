@@ -488,7 +488,7 @@ def _test_http_sig_new(algorithm: str, digest_algorithm: str):
     body_digest = \
         message_content_digest(message_body_json_str, digest_algorithm)
     assert body_digest in digest_str
-    content_length = 18
+    content_length: int = 18
     content_type = 'application/activity+json'
     public_key_pem = \
         '-----BEGIN RSA PUBLIC KEY-----\n' + \
@@ -773,17 +773,17 @@ def create_server_alice(path: str, domain: str, port: int,
     os.mkdir(path)
     os.chdir(path)
     shared_items_federated_domains: list[str] = []
-    system_language = 'en'
-    languages_understood = [system_language]
-    nickname = 'alice'
-    http_prefix = 'http'
+    system_language: str = 'en'
+    languages_understood: list[str] = [system_language]
+    nickname: str = 'alice'
+    http_prefix: str = 'http'
     proxy_type = None
-    password = 'alicepass'
-    max_replies = 64
-    domain_max_posts_per_day = 1000
-    account_max_posts_per_day = 1000
-    allow_deletion = True
-    low_bandwidth = True
+    password: str = 'alicepass'
+    max_replies: int = 64
+    domain_max_posts_per_day: int = 1000
+    account_max_posts_per_day: int = 1000
+    allow_deletion: bool = True
+    low_bandwidth: bool = True
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix, True,
                       False, password)
@@ -807,7 +807,7 @@ def create_server_alice(path: str, domain: str, port: int,
         test_attach_image_filename = None
         test_media_type = None
         test_image_description = None
-        test_city = 'London, England'
+        test_city: str = 'London, England'
         test_in_reply_to = None
         test_in_reply_to_atom_uri = None
         test_subject = None
@@ -815,19 +815,21 @@ def create_server_alice(path: str, domain: str, port: int,
         test_event_date = None
         test_event_time = None
         test_event_end_time = None
-        test_event_category = ''
+        test_event_category: str = ''
         test_location = None
         test_is_article: bool = False
         conversation_id = None
         convthread_id = None
-        translate = {}
-        content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-        media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-        media_creator = 'Mr Blobby'
-        buy_url = ''
-        chat_url = ''
-        auto_cw_cache = {}
-        test_video_transcript = ''
+        translate: dict = {}
+        content_license_url: str = \
+            'https://creativecommons.org/licenses/by-nc/4.0'
+        media_license_url: str = \
+            'https://creativecommons.org/licenses/by-nc/4.0'
+        media_creator: str = 'Mr Blobby'
+        buy_url: str = ''
+        chat_url: str = ''
+        auto_cw_cache: dict = {}
+        test_video_transcript: str = ''
         searchable_by: list[str] = []
         session = None
         create_public_post(path, nickname, domain, port, http_prefix,
@@ -4389,8 +4391,8 @@ def _test_theme():
 
 def _test_recent_posts_cache():
     print('test_recent_posts_cache')
-    recent_posts_cache = {}
-    max_recent_posts = 3
+    recent_posts_cache: dict = {}
+    max_recent_posts: int = 3
     html_str = '<html></html>'
     for i in range(5):
         post_json_object = {
@@ -4928,8 +4930,8 @@ def _test_constant_time_string():
     assert not constant_time_string_check('testing', '1234')
     assert not constant_time_string_check('testing', '1234567')
 
-    time_threshold_microseconds = 10
-    itterations = 256
+    time_threshold_microseconds: int = 10
+    itterations: int = 256
 
     start = time.time()
     test_str = 'nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy'
@@ -7630,7 +7632,7 @@ def _test_can_replyto(base_dir: str) -> None:
 
     # test a post within the reply interval
     post_url = post_json_object['object']['id']
-    reply_interval_hours = 2
+    reply_interval_hours: int = 2
     curr_date_str = "2021-09-08T21:32:10Z"
     assert can_reply_to(base_dir, nickname, domain,
                         post_url, reply_interval_hours,
@@ -9210,15 +9212,18 @@ def _test_book_link(base_dir: str):
     expected_readers += 1
     print('reader_list 3: ' + str(books_cache['reader_list']))
 
-    title = 'Pirate Enlightenment, or the Real Libertalia'
-    image_url = 'https://bookwyrm.instance/images/previews/covers/5283.jpg'
-    book_url = 'https://bookwyrm.instance/book/78252'
-    content = 'rated <a href="' + book_url + \
+    title: str = \
+        'Pirate Enlightenment, or the Real Libertalia'
+    image_url: str = \
+        'https://bookwyrm.instance/images/previews/covers/5283.jpg'
+    book_url: str = \
+        'https://bookwyrm.instance/book/78252'
+    content: str = 'rated <a href="' + book_url + \
         '"><i>' + title + '</i></a>'
-    actor = 'https://bookwyrm.instance/user/ghi'
-    rating = 3.5
-    id_str = actor + '/generatednote/73467834576'
-    published = '2024-01-03T12:30:00.2+00:00'
+    actor: str = 'https://bookwyrm.instance/user/ghi'
+    rating: float = 3.5
+    id_str: str = actor + '/generatednote/73467834576'
+    published: str = '2024-01-03T12:30:00.2+00:00'
     post_json_object = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'attachment': [{'@context': 'https://www.w3.org/ns/activitystreams',

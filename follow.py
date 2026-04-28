@@ -456,7 +456,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     header_only = True
     page_number = None
     if '?page=' in path:
-        page_number = path.split('?page=')[1]
+        page_number: int = path.split('?page=')[1]
         if len(page_number) > 5:
             page_number = "1"
         if page_number == 'true' or not authorized:

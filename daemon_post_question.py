@@ -80,7 +80,7 @@ def receive_vote(self, calling_domain: str, cookie: str,
         last_post_id = last_post_id.replace('/', '--')
         last_post_id = ';lastpost=' + last_post_id.replace('#', '--')
 
-    page_number = 1
+    page_number: int = 1
     if '?page=' in path:
         page_number_str = path.split('?page=')[1]
         if '#' in page_number_str:

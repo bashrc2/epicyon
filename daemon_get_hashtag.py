@@ -93,7 +93,7 @@ def hashtag_search_json2(self, calling_domain: str,
                          fitness: {}, debug: bool) -> None:
     """Return a json collection for a hashtag
     """
-    page_number = 1
+    page_number: int = 1
     if '?page=' in path:
         page_number_str = path.split('?page=')[1]
         if page_number_str.isdigit():
@@ -185,7 +185,7 @@ def hashtag_search2(self, calling_domain: str,
                     instance_software: {}) -> None:
     """Return the result of a hashtag search
     """
-    page_number = 1
+    page_number: int = 1
     if '?page=' in path:
         page_number_str = path.split('?page=')[1]
         if '#' in page_number_str:

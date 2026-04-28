@@ -817,7 +817,7 @@ def receive_search_query(self, calling_domain: str, cookie: str,
     """Receive a search query
     """
     # get the page number
-    page_number = 1
+    page_number: int = 1
     if '/searchhandle?page=' in path:
         page_number_str = path.split('/searchhandle?page=')[1]
         if '#' in page_number_str:

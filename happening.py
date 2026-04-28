@@ -1300,17 +1300,17 @@ def dav_report_response(base_dir: str, nickname: str, domain: str,
             all_events: str = ''
             for year in range(query_start_year, query_end_year+1):
                 if query_start_year == query_end_year:
-                    start_month_number = query_start_month
-                    end_month_number = query_end_month
+                    start_month_number: int = query_start_month
+                    end_month_number: int = query_end_month
                 elif year == query_end_year:
-                    start_month_number = 1
-                    end_month_number = query_end_month
+                    start_month_number: int = 1
+                    end_month_number: int = query_end_month
                 elif year == query_start_year:
-                    start_month_number = query_start_month
-                    end_month_number = 12
+                    start_month_number: int = query_start_month
+                    end_month_number: int = 12
                 else:
-                    start_month_number = 1
-                    end_month_number = 12
+                    start_month_number: int = 1
+                    end_month_number: int = 12
                 for month in range(start_month_number, end_month_number+1):
                     ical_events = \
                         get_month_events_icalendar(base_dir,

@@ -960,7 +960,7 @@ def _command_options() -> None:
             nickname = get_nickname_from_actor(url)
             domain, _ = get_domain_from_actor(url)
             url = http_prefix + '://' + domain + '/users/' + nickname
-        timeout = 15
+        timeout: int = 15
         sites_unavailable: list[str] = []
         active = site_is_active(url, timeout,
                                 sites_unavailable)
@@ -1672,7 +1672,7 @@ def _command_options() -> None:
             preferred_podcast_formats.append(pod_format)
 
     if argb.rss:
-        timeout_sec = 20
+        timeout_sec: int = 20
         session = create_session(None)
         if not argb.language:
             argb.language = 'en'
@@ -1733,7 +1733,7 @@ def _command_options() -> None:
     if not argb.maxRegistrations:
         max_registrations = get_config_param(base_dir, 'maxRegistrations')
         if not max_registrations:
-            max_registrations = 10
+            max_registrations: int = 10
             set_config_param(base_dir, 'maxRegistrations',
                              str(max_registrations))
         else:
@@ -1796,7 +1796,7 @@ def _command_options() -> None:
         yggdrasil_domain = None
 
     # get port number from configuration
-    config_port = get_config_param(base_dir, 'port')
+    config_port: int = get_config_param(base_dir, 'port')
     if config_port:
         port = config_port
     else:
@@ -1806,7 +1806,7 @@ def _command_options() -> None:
         else:
             port = 443
 
-    config_proxy_port = get_config_param(base_dir, 'proxyPort')
+    config_proxy_port: int = get_config_param(base_dir, 'proxyPort')
     if config_proxy_port:
         proxy_port = config_proxy_port
     else:

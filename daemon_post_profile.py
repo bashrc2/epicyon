@@ -2284,7 +2284,7 @@ def _profile_post_registrations_remaining(base_dir: str, fields: {}) -> None:
     remaining = get_config_param(base_dir, reg_str)
     if fields.get('regRemaining'):
         if fields['regRemaining'] != remaining:
-            remaining = int(fields['regRemaining'])
+            remaining: int = int(fields['regRemaining'])
             if remaining < 0:
                 remaining = 0
             elif remaining > 10:
@@ -2608,7 +2608,7 @@ def _profile_post_skill_level(actor_json: {},
                               actor_changed: bool) -> bool:
     """ HTTP POST set skill levels
     """
-    skill_ctr = 1
+    skill_ctr: int = 1
     actor_skills_ctr = no_of_actor_skills(actor_json)
     while skill_ctr < 10:
         skill_name = fields.get('skillName' + str(skill_ctr))

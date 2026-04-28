@@ -412,10 +412,10 @@ def page_number_buttons(users_path: str, box_name: str,
                         page_number: int, header: str) -> str:
     """Shows selactable page numbers at the bottom of the screen
     """
-    pages_width = 2
-    min_page_number = page_number - pages_width
-    min_page_number = max(min_page_number, 1)
-    max_page_number = min_page_number + 1 + (pages_width * 2)
+    pages_width: int = 2
+    min_page_number: int = page_number - pages_width
+    min_page_number: int = max(min_page_number, 1)
+    max_page_number: int = min_page_number + 1 + (pages_width * 2)
     num_str: str = ''
     for page in range(min_page_number, max_page_number):
         if num_str:

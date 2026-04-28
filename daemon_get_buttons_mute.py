@@ -85,7 +85,7 @@ def mute_button(self, calling_domain: str, path: str,
         timeline_str = path.split('?tl=')[1]
         if '?' in timeline_str:
             timeline_str = timeline_str.split('?')[0]
-    page_number = 1
+    page_number: int = 1
     if '?page=' in path:
         page_number_str = path.split('?page=')[1]
         if ';' in page_number_str:
@@ -275,7 +275,7 @@ def mute_button_undo(self, calling_domain: str, path: str,
         timeline_str = path.split('?tl=')[1]
         if '?' in timeline_str:
             timeline_str = timeline_str.split('?')[0]
-    page_number = 1
+    page_number: int = 1
     if '?page=' in path:
         page_number_str = path.split('?page=')[1]
         if ';' in page_number_str:

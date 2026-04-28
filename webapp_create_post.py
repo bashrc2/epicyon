@@ -394,10 +394,10 @@ def html_new_post(edit_post_params: {},
         '<input type="time" name="eventEndTime"' + \
         end_time_default + '></label>\n</p>\n'
 
-    show_public_on_dropdown = True
-    message_box_height = 400
-    image_description_height = 150
-    transcript_height = 1000
+    show_public_on_dropdown: bool = True
+    message_box_height: int = 400
+    image_description_height: int = 150
+    transcript_height: int = 1000
 
     # filename of the banner shown at the top
     banner_file, _ = \

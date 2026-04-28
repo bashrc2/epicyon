@@ -86,8 +86,8 @@ def newswire_vote(self, calling_domain: str, path: str,
         if is_moderator(base_dir, nickname):
             newswire_item = newswire[date_str]
             print('Voting on newswire item: ' + str(newswire_item))
-            votes_index = 2
-            filename_index = 3
+            votes_index: int = 2
+            filename_index: int = 3
             if 'vote:' + nickname not in newswire_item[votes_index]:
                 newswire_item[votes_index].append('vote:' + nickname)
                 filename = newswire_item[filename_index]
@@ -144,8 +144,8 @@ def newswire_unvote(self, calling_domain: str, path: str,
         nickname = nickname.split('/')[0]
     if newswire.get(date_str):
         if is_moderator(base_dir, nickname):
-            votes_index = 2
-            filename_index = 3
+            votes_index: int = 2
+            filename_index: int = 3
             newswire_item = newswire[date_str]
             if 'vote:' + nickname in newswire_item[votes_index]:
                 newswire_item[votes_index].remove('vote:' + nickname)

@@ -116,11 +116,11 @@ def _get_city_pulse(curr_time_of_day, decoy_seed: int) -> (float, float):
     Angle is in radians
     """
     randgen = random.Random(decoy_seed)
-    variance = 3
+    variance: int = 3
     data_decoy_state = PERSON_SLEEP
     weekday = curr_time_of_day.weekday()
-    min_hour = 7 + randint(0, variance)
-    max_hour = 17 + randint(0, variance)
+    min_hour: int = 7 + randint(0, variance)
+    max_hour: int = 17 + randint(0, variance)
     if curr_time_of_day.hour > min_hour:
         if curr_time_of_day.hour <= max_hour:
             if weekday < 5:

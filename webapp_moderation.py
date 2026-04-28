@@ -225,7 +225,7 @@ def html_account_info(translate: {},
 
     info_form += '<div class="accountInfoDomains">\n'
     users_path = '/users/' + nickname + '/accountinfo'
-    ctr = 1
+    ctr: int = 1
     for post_domain, blocked_post_urls in domain_dict.items():
         info_form += '<a href="' + \
             http_prefix + '://' + post_domain + '" ' + \

@@ -73,7 +73,7 @@ def bookmark_button(self, calling_domain: str, path: str,
                     instance_software: {}) -> None:
     """Bookmark button was pressed
     """
-    page_number = 1
+    page_number: int = 1
     bookmark_url = path.split('?bookmark=')[1]
     if '?' in bookmark_url:
         bookmark_url = bookmark_url.split('?')[0]
@@ -301,7 +301,7 @@ def bookmark_button_undo(self, calling_domain: str, path: str,
                          instance_software: {}) -> None:
     """Button pressed to undo a bookmark
     """
-    page_number = 1
+    page_number: int = 1
     bookmark_url = path.split('?unbookmark=')[1]
     if '?' in bookmark_url:
         bookmark_url = bookmark_url.split('?')[0]

@@ -1660,8 +1660,8 @@ def _receive_new_post_process_newshare(self, fields: {},
     if duration_str:
         if ' ' not in duration_str:
             duration_str = duration_str + ' days'
-    city = get_spoofed_city(city, base_dir, nickname, domain)
-    item_qty = 1
+    city: str = get_spoofed_city(city, base_dir, nickname, domain)
+    item_qty: int = 1
     if fields['itemQty']:
         if is_float(fields['itemQty']):
             item_qty = float(fields['itemQty'])
@@ -2008,7 +2008,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             if latitude is not None and \
                longitude is not None:
                 osm_domain = 'osm.org'
-                zoom = 17
+                zoom: int = 17
                 fields['location'] = \
                     geocoords_to_osm_link(osm_domain, zoom,
                                           latitude, longitude)
@@ -2465,7 +2465,7 @@ def receive_new_post(self, post_type, path: str,
     """A new post has been created
     This creates a thread to send the new post
     """
-    page_number = 1
+    page_number: int = 1
     original_path = path
 
     if '/users/' not in path:

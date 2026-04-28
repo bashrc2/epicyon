@@ -44,7 +44,7 @@ def _get_left_column_shares(base_dir: str,
                             shared_items_federated_domains: []) -> []:
     """get any shares and turn them into the left column links format
     """
-    page_number = 1
+    page_number: int = 1
     actor = local_actor_url(http_prefix, nickname, domain_full)
     # NOTE: this could potentially be slow if the number of federated
     # shared items is large
@@ -87,7 +87,7 @@ def _get_left_column_wanted(base_dir: str,
                             shared_items_federated_domains: []) -> []:
     """get any wanted items and turn them into the left column links format
     """
-    page_number = 1
+    page_number: int = 1
     actor = local_actor_url(http_prefix, nickname, domain_full)
     # NOTE: this could potentially be slow if the number of federated
     # wanted items is large

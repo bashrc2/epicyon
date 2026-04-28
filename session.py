@@ -240,8 +240,8 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
     if '://' not in url:
         print('Invalid url: ' + url)
         return None
-    http_prefix = url.split('://')[0]
-    to_domain_full = url.split('://')[1]
+    http_prefix: str = url.split('://')[0]
+    to_domain_full: str = url.split('://')[1]
     if '/' in to_domain_full:
         to_domain_full = to_domain_full.split('/')[0]
 

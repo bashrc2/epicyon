@@ -319,7 +319,7 @@ def receive_remove_post(self, calling_domain: str, cookie: str,
                         curr_session, proxy_type: str) -> None:
     """Endpoint for removing posts after confirmation
     """
-    page_number = 1
+    page_number: int = 1
     users_path = path.split('/rmpost')[0]
     origin_path_str = \
         http_prefix + '://' + \

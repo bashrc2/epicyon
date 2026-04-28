@@ -44,8 +44,8 @@ def get_speaker_pitch(display_name: str, screenreader: str,
     """Returns the speech synthesis pitch for the given name
     """
     random.seed(display_name)
-    range_min = 1
-    range_max = 100
+    range_min: int = 1
+    range_max: int = 100
     if 'She' in gender:
         range_min = 50
     elif 'Him' in gender:

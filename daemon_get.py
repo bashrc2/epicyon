@@ -961,7 +961,7 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-        page_number = 1
+        page_number: int = 1
         if '?page=' in self.path:
             page_number_str = self.path.split('?page=')[1]
             if ';' in page_number_str:
@@ -1002,7 +1002,7 @@ def daemon_http_get(self) -> None:
             if self.server.debug:
                 print('Offers collection for account: ' + nickname)
             base_dir = self.server.base_dir
-            offers_items_per_page = 12
+            offers_items_per_page: int = 12
             max_shares_per_account = offers_items_per_page
             shared_items_federated_domains = \
                 self.server.shared_items_federated_domains
@@ -1041,7 +1041,7 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-        page_number = 1
+        page_number: int = 1
         if '?page=' in self.path:
             page_number_str = self.path.split('?page=')[1]
             if ';' in page_number_str:
@@ -1072,7 +1072,7 @@ def daemon_http_get(self) -> None:
             if self.server.debug:
                 print('Blocked collection for account: ' + nickname)
             base_dir = self.server.base_dir
-            blocked_items_per_page = 12
+            blocked_items_per_page: int = 12
             blocked_json = \
                 blocked_timeline_json(actor, page_number,
                                       blocked_items_per_page, base_dir,
@@ -1104,7 +1104,7 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-        page_number = 1
+        page_number: int = 1
         if '?page=' in self.path:
             page_number_str = self.path.split('?page=')[1]
             if ';' in page_number_str:
@@ -1166,7 +1166,7 @@ def daemon_http_get(self) -> None:
         nickname = self.path.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-        page_number = 1
+        page_number: int = 1
         if '?page=' in self.path:
             page_number_str = self.path.split('?page=')[1]
             if ';' in page_number_str:
@@ -1210,7 +1210,7 @@ def daemon_http_get(self) -> None:
             if self.server.debug:
                 print('Wanted collection for account: ' + nickname)
             base_dir = self.server.base_dir
-            wanted_items_per_page = 12
+            wanted_items_per_page: int = 12
             max_shares_per_account = wanted_items_per_page
             shared_items_federated_domains = \
                 self.server.shared_items_federated_domains
@@ -3131,7 +3131,7 @@ def daemon_http_get(self) -> None:
             hashtag_url = hashtag_url.split(';')[0]
         hashtag_url = hashtag_url.replace('--', '/')
 
-        page_number = 1
+        page_number: int = 1
         if ';page=' in self.path:
             page_number_str = self.path.split(';page=')[1]
             if ';' in page_number_str:
@@ -4285,7 +4285,7 @@ def daemon_http_get(self) -> None:
     # reply from the web interface icon
     in_reply_to_url = None
     reply_to_list: list[str] = []
-    reply_page_number = 1
+    reply_page_number: int = 1
     reply_category: str = ''
     share_description = None
     conversation_id = None

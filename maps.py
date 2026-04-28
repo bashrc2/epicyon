@@ -332,8 +332,8 @@ def get_location_from_post(post_json_object: {}) -> str:
 
     if locn_exists:
         # location geocoordinate
-        osm_domain = 'osm.org'
-        zoom = 17
+        osm_domain: str = 'osm.org'
+        zoom: int = 17
         locn = geocoords_to_osm_link(osm_domain, zoom,
                                      locn2['latitude'],
                                      locn2['longitude'])
@@ -567,7 +567,7 @@ def _geocoords_from_osmand_link(url: str) -> (int, float, float):
     """
     latitude = None
     longitude = None
-    zoom = 10
+    zoom: int = 10
 
     if 'pin=' in url:
         pin_coords_str = url.split('pin=')[1]
@@ -602,7 +602,7 @@ def _geocoords_from_geo_link(url: str) -> (int, float, float):
     """
     latitude = None
     longitude = None
-    zoom = 10
+    zoom: int = 10
 
     coords_str = url.split('geo:')[1]
     if ',' in coords_str:
@@ -648,7 +648,7 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
     coords = coords_str.split(',')
     if len(coords) not in (2, 3):
         return None, None, None
-    zoom = 100
+    zoom: int = 100
     if zoom_exists:
         zoom = coords[2]
         if not zoom.isdigit():
@@ -702,7 +702,7 @@ def _geocoords_from_bmaps_link(url: str) -> (int, float, float):
         coords[1] = coords[1].split('"')[0]
     if not is_float(longitude):
         return None, None, None
-    zoom = 17
+    zoom: int = 17
     if 'lvl=' in orig_coords_str:
         zoom = orig_coords_str.split('lvl=')[1]
         if '&' in zoom:
@@ -750,7 +750,7 @@ def _geocoords_from_waze_link(url: str) -> (int, float, float):
         coords[1] = coords[1].split('"')[0]
     if not is_float(longitude):
         return None, None, None
-    zoom = 17
+    zoom: int = 17
     if 'zoom=' in orig_coords_str:
         zoom = orig_coords_str.split('zoom=')[1]
         if '&' in zoom:

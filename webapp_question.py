@@ -67,7 +67,7 @@ def insert_question(base_dir: str, translate: {},
         content += '<div class="questionresult">\n'
 
         # get the maximum number of votes
-        max_votes = 1
+        max_votes: int = 1
         for question_option in post_json_object['object']['oneOf']:
             if not question_option.get('name'):
                 continue

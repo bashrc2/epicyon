@@ -30,7 +30,7 @@ def show_blog_page(self, authorized: bool,
                    fitness: {}) -> bool:
     """Shows a blog page
     """
-    page_number = 1
+    page_number: int = 1
     nickname = path.split('/blog/')[1]
     if '/' in nickname:
         nickname = nickname.split('/')[0]

@@ -1168,7 +1168,7 @@ def person_box_json(recent_posts_cache: {},
     # handle page numbers
     page_number = None
     if '?page=' in path:
-        page_number = path.split('?page=')[1]
+        page_number: int = path.split('?page=')[1]
         if ';' in page_number:
             page_number = page_number.split(';')[0]
         if len(page_number) > 5:

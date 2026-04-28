@@ -499,7 +499,7 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     # remove from memory cache
     remove_post_from_cache(message_json, recent_posts_cache)
     # regenerate html for the post
-    page_number = 1
+    page_number: int = 1
     show_published_date_only: bool = False
     show_individual_post_icons: bool = True
     manually_approve_followers = \
@@ -1080,7 +1080,7 @@ def receive_like(recent_posts_cache: {},
                 print('Liked post json: ' + str(liked_post_json))
                 print('Liked post nickname: ' + handle_name + ' ' + domain)
                 print('Liked post cache: ' + str(cached_post_filename))
-            page_number = 1
+            page_number: int = 1
             show_published_date_only: bool = False
             show_individual_post_icons: bool = True
             manually_approve_followers = \
@@ -1330,7 +1330,7 @@ def receive_reaction(recent_posts_cache: {},
                 print('Reaction post json: ' + str(reaction_post_json))
                 print('Reaction post nickname: ' + handle_name + ' ' + domain)
                 print('Reaction post cache: ' + str(cached_post_filename))
-            page_number = 1
+            page_number: int = 1
             show_published_date_only: bool = False
             show_individual_post_icons: bool = True
             manually_approve_followers = \
@@ -1529,7 +1529,7 @@ def receive_zot_reaction(recent_posts_cache: {},
                 print('Reaction post json: ' + str(reaction_post_json))
                 print('Reaction post nickname: ' + handle_name + ' ' + domain)
                 print('Reaction post cache: ' + str(cached_post_filename))
-            page_number = 1
+            page_number: int = 1
             show_published_date_only: bool = False
             show_individual_post_icons: bool = True
             manually_approve_followers = \
@@ -1671,7 +1671,7 @@ def receive_bookmark(recent_posts_cache: {},
             print('Bookmarked post json: ' + str(bookmarked_post_json))
             print('Bookmarked post nickname: ' + nickname + ' ' + domain)
             print('Bookmarked post cache: ' + str(cached_post_filename))
-        page_number = 1
+        page_number: int = 1
         show_published_date_only: bool = False
         show_individual_post_icons: bool = True
         manually_approve_followers = \
@@ -1983,7 +1983,7 @@ def receive_announce(recent_posts_cache: {},
     domain_full = get_full_domain(domain, port)
 
     # Generate html. This also downloads the announced post.
-    page_number: bool = 1
+    page_number: int = 1
     show_published_date_only: bool = False
     show_individual_post_icons: bool = True
     manually_approve_followers = \

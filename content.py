@@ -124,7 +124,7 @@ def _remove_quotes_within_quotes(content: str) -> str:
         return content
     if '</blockquote>' not in content:
         return content
-    ctr = 1
+    ctr: int = 1
     found: bool = True
     while found:
         prefix = content.split('<blockquote>', ctr)[0] + '<blockquote>'
@@ -439,7 +439,7 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
             if ' ' + emoji_content in line:
                 if not emoji_found:
                     emoji_found = True
-                    counter = 1
+                    counter: int = 1
                     count_str = line.split(' ')[0]
                     if count_str.isdigit():
                         counter = int(count_str) + 1

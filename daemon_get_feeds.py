@@ -80,7 +80,7 @@ def show_shares_feed(self, authorized: bool,
                                    shares_per_page)
     if shares:
         if request_http(self.headers, debug):
-            page_number = 1
+            page_number: int = 1
             if '?page=' not in path:
                 search_path = path
                 # get a page of shares, not the summary
@@ -273,7 +273,7 @@ def show_following_feed(self, authorized: bool,
                            'following')
     if following:
         if request_http(self.headers, debug):
-            page_number = 1
+            page_number: int = 1
             if '?page=' not in path:
                 search_path = path
                 # get a page of following, not the summary
@@ -478,7 +478,7 @@ def show_moved_feed(self, authorized: bool,
                        http_prefix, authorized, follows_per_page)
     if following:
         if request_http(self.headers, debug):
-            page_number = 1
+            page_number: int = 1
             if '?page=' not in path:
                 search_path = path
                 # get a page of following, not the summary
@@ -673,7 +673,7 @@ def show_inactive_feed(self, authorized: bool,
                           follows_per_page, sites_unavailable)
     if following:
         if request_http(self.headers, debug):
-            page_number = 1
+            page_number: int = 1
             if '?page=' not in path:
                 search_path = path
                 # get a page of following, not the summary
@@ -867,7 +867,7 @@ def show_followers_feed(self, authorized: bool,
                            authorized, follows_per_page, 'followers')
     if followers:
         if request_http(self.headers, debug):
-            page_number = 1
+            page_number: int = 1
             if '?page=' not in path:
                 search_path = path
                 # get a page of followers, not the summary

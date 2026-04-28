@@ -75,7 +75,7 @@ def like_button(self, calling_domain: str, path: str,
                 instance_software: {}) -> None:
     """Press the like button
     """
-    page_number = 1
+    page_number: int = 1
     like_url = path.split('?like=')[1]
     if '?' in like_url:
         like_url = like_url.split('?')[0]
@@ -355,7 +355,7 @@ def like_button_undo(self, calling_domain: str, path: str,
                      instance_software: {}) -> None:
     """A button is pressed to undo
     """
-    page_number = 1
+    page_number: int = 1
     like_url = path.split('?unlike=')[1]
     if '?' in like_url:
         like_url = like_url.split('?')[0]

@@ -78,7 +78,7 @@ def announce_button(self, calling_domain: str, path: str,
                     instance_software: {}) -> None:
     """The announce/repeat button was pressed on a post
     """
-    page_number = 1
+    page_number: int = 1
     repeat_url = path.split('?repeat=')[1]
     if '?' in repeat_url:
         repeat_url = repeat_url.split('?')[0]
@@ -316,7 +316,7 @@ def announce_button_undo(self, calling_domain: str, path: str,
                          session_yggdrasil) -> None:
     """Undo announce/repeat button was pressed
     """
-    page_number = 1
+    page_number: int = 1
 
     # the post which was referenced by the announce post
     repeat_url = path.split('?unrepeat=')[1]

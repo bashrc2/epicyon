@@ -904,7 +904,7 @@ def save_json(json_object: {}, filename: str) -> bool:
             print('EX: save_json object is not json ' + str(json_object))
             return False
 
-    tries = 1
+    tries: int = 1
     while tries <= 5:
         try:
             with open(filename, 'w+', encoding='utf-8') as fp_json:

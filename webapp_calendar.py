@@ -404,7 +404,8 @@ def html_calendar(person_cache: {}, translate: {},
     month_number = default_month
     day_number = None
     year: int = default_year
-    actor = http_prefix + '://' + domain_full + path.replace('/calendar', '')
+    actor: str = \
+        http_prefix + '://' + domain_full + path.replace('/calendar', '')
     only_show_reminders: bool = False
     if '?' in actor:
         first = True
@@ -494,14 +495,14 @@ def html_calendar(person_cache: {}, translate: {},
         get_calendar_events(base_dir, nickname, domain, year, month_number,
                             text_match, only_show_reminders)
 
-    prev_year = year
-    prev_month_number = month_number - 1
+    prev_year: int = year
+    prev_month_number: int = month_number - 1
     if prev_month_number < 1:
         prev_month_number = 12
         prev_year = year - 1
 
-    next_year = year
-    next_month_number = month_number + 1
+    next_year: int = year
+    next_month_number: int = month_number + 1
     if next_month_number > 12:
         next_month_number = 1
         next_year = year + 1

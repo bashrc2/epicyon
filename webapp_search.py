@@ -1392,7 +1392,7 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
 
     domain_full = get_full_domain(domain, port)
 
-    max_feed_length = 10
+    max_feed_length: int = 10
     hashtag_feed = rss2tag_header(hashtag, http_prefix, domain_full)
     for index, item in enumerate(lines):
         post_id = item.strip('\n').strip('\r')

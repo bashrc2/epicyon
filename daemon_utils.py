@@ -658,11 +658,11 @@ def show_person_options(self, calling_domain: str, path: str,
     options_str = path.split('?options=')[1]
     origin_path_str = path.split('?options=')[0]
     if ';' in options_str and '/users/news/' not in path:
-        page_number = 1
+        page_number: int = 1
         options_list = options_str.split(';')
         options_actor = options_list[0]
         options_actor_url = options_actor
-        options_page_number = 1
+        options_page_number: int = 1
         if len(options_list) > 1:
             options_page_number = options_list[1]
         options_profile_url: str = ''

@@ -1176,9 +1176,9 @@ def _desktop_show_box(indent: str,
                       page_number: int) -> bool:
     """Shows online timeline
     """
-    number_width = 2
-    name_width = 16
-    content_width = 50
+    number_width: int = 2
+    name_width: int = 16
+    content_width: int = 50
 
     # title
     _desktop_clear_screen()
@@ -1210,7 +1210,7 @@ def _desktop_show_box(indent: str,
         print('')
         return False
 
-    ctr = 1
+    ctr: int = 1
     for post_json_object in box_json['orderedItems']:
         if not post_json_object.get('type'):
             continue
@@ -1649,7 +1649,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                  system_language, espeak)
 
     curr_timeline = 'inbox'
-    page_number = 1
+    page_number: int = 1
 
     post_json_object = {}
     original_screen_reader = screenreader
@@ -1808,7 +1808,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     command_str = _desktop_wait_for_cmd(2, debug)
                 break
             if command_str.startswith('show dm'):
-                page_number = 1
+                page_number: int = 1
                 prev_timeline_first_id: str = ''
                 curr_timeline = 'dm'
                 box_json = c2s_box_json(session, nickname, password,
@@ -1823,7 +1823,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       screenreader, system_language, espeak,
                                       page_number)
             elif command_str.startswith('show rep'):
-                page_number = 1
+                page_number: int = 1
                 prev_timeline_first_id: str = ''
                 curr_timeline = 'tlreplies'
                 box_json = c2s_box_json(session, nickname, password,
@@ -1838,7 +1838,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       screenreader, system_language, espeak,
                                       page_number)
             elif command_str.startswith('show b'):
-                page_number = 1
+                page_number: int = 1
                 prev_timeline_first_id: str = ''
                 curr_timeline = 'tlbookmarks'
                 box_json = c2s_box_json(session, nickname, password,
@@ -1854,7 +1854,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       page_number)
             elif string_starts_with(command_str,
                                     ('show sen', 'show out')):
-                page_number = 1
+                page_number: int = 1
                 prev_timeline_first_id: str = ''
                 curr_timeline = 'outbox'
                 box_json = c2s_box_json(session, nickname, password,
@@ -1870,7 +1870,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       page_number)
             elif (command_str == 'show' or command_str.startswith('show in') or
                   command_str == 'clear'):
-                page_number = 1
+                page_number: int = 1
                 prev_timeline_first_id: str = ''
                 curr_timeline = 'inbox'
                 refresh_timeline = True
@@ -2549,7 +2549,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 print('')
             elif (command_str == 'follow requests' or
                   command_str.startswith('follow requests ')):
-                curr_page = 1
+                curr_page: int = 1
                 if ' ' in command_str:
                     page_num = command_str.split(' ')[-1].strip()
                     if len(page_num) > 5:
@@ -2571,7 +2571,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 print('')
             elif (command_str == 'following' or
                   command_str.startswith('following ')):
-                curr_page = 1
+                curr_page: int = 1
                 if ' ' in command_str:
                     page_num = command_str.split(' ')[-1].strip()
                     if len(page_num) > 5:
@@ -2594,7 +2594,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 print('')
             elif (command_str == 'followers' or
                   command_str.startswith('followers ')):
-                curr_page = 1
+                curr_page: int = 1
                 if ' ' in command_str:
                     page_num = command_str.split(' ')[-1].strip()
                     if len(page_num) > 5:

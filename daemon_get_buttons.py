@@ -253,7 +253,7 @@ def delete_button(self, calling_domain: str, path: str,
         print('ERROR: no cookie given when deleting ' + path)
         http_400(self)
         return
-    page_number = 1
+    page_number: int = 1
     if '?page=' in path:
         page_number_str = path.split('?page=')[1]
         if '?' in page_number_str:

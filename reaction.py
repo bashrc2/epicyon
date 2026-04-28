@@ -497,7 +497,7 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
             if ' ' + emoji_content in line:
                 if not reaction_found:
                     reaction_found = True
-                    counter = 1
+                    counter: int = 1
                     count_str = line.split(' ')[0]
                     if count_str.isdigit():
                         counter = int(count_str) + 1

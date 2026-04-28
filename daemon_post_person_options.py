@@ -55,7 +55,7 @@ from data import save_string
 def _person_options_page_number(options_confirm_params: str) -> int:
     """Get the page number
     """
-    page_number = 1
+    page_number: int = 1
     if 'pageNumber=' in options_confirm_params:
         page_number_str = options_confirm_params.split('pageNumber=')[1]
         if '&' in page_number_str:
@@ -1315,7 +1315,7 @@ def person_options2(self, path: str,
                     instance_software: {}) -> None:
     """Receive POST from person options screen
     """
-    page_number = 1
+    page_number: int = 1
     users_path = path.split('/personoptions')[0]
     origin_path_str = http_prefix + '://' + domain_full + users_path
 

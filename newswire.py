@@ -172,7 +172,7 @@ def _download_newswire_feed_favicon(session, base_dir: str,
     fav_url = get_newswire_favicon_url(link)
     if '://' not in link:
         return False
-    timeout_sec = 10
+    timeout_sec: int = 10
     image_data, mime_type = \
         download_image_any_mime_type(session, fav_url, timeout_sec, debug)
     if not image_data or not mime_type:

@@ -1906,12 +1906,12 @@ def run_federated_shares_daemon(base_dir: str, httpd, http_prefix: str,
                                 mitm_servers: []) -> None:
     """Runs the daemon used to update federated shared items
     """
-    seconds_per_hour = 60 * 60
-    file_check_interval_sec = 120
+    seconds_per_hour: int = 60 * 60
+    file_check_interval_sec: int = 120
     time.sleep(60)
     # the token for this instance will be changed every 7-14 days
-    min_days = 7
-    max_days = 14
+    min_days: int = 7
+    max_days: int = 14
     _generate_next_shares_token_update(base_dir, min_days, max_days)
     sites_unavailable: list[str] = []
     while True:

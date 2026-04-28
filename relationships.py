@@ -189,7 +189,7 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             page_ctr: int = 0
             curr_page += 1
     following['totalItems'] = total_ctr
-    last_page = 1
+    last_page: int = 1
     if follows_per_page > 0:
         last_page = int(total_ctr / follows_per_page)
     last_page = max(last_page, 1)

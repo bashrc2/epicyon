@@ -76,7 +76,7 @@ def reaction_button(self, calling_domain: str, path: str,
     Note that this is not the emoji reaction selection icon at the
     bottom of the post
     """
-    page_number = 1
+    page_number: int = 1
     reaction_url = path.split('?react=')[1]
     if '?' in reaction_url:
         reaction_url = reaction_url.split('?')[0]
@@ -382,7 +382,7 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                          instance_software: {}) -> None:
     """A button is pressed to undo emoji reaction
     """
-    page_number = 1
+    page_number: int = 1
     reaction_url = path.split('?unreact=')[1]
     if '?' in reaction_url:
         reaction_url = reaction_url.split('?')[0]
