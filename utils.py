@@ -1841,7 +1841,7 @@ def remove_post_from_index(post_url: str, debug: bool,
     """
     if not os.path.isfile(index_file):
         return
-    post_id: str = remove_id_ending(post_url)
+    post_id: str = remove_id_ending(post_url).strip("\n").strip("\r")
     if not text_in_file(post_id, index_file):
         return
     lines: list[str] = \
@@ -1851,19 +1851,21 @@ def remove_post_from_index(post_url: str, debug: bool,
 
     if not lines:
         return
-    try:
-        with open(index_file, 'w+', encoding='utf-8') as fp_mod2:
-            for line in lines:
-                if line.strip("\n").strip("\r") != post_id:
-                    fp_mod2.write(line)
-                    continue
-                if debug:
-                    print('DEBUG: removed ' + post_id +
-                          ' from index ' + index_file)
-    except OSError as exc:
-        print('EX: ' +
-              'remove_post_from_index unable to write ' +
-              index_file + ' ' + str(exc))
+
+    new_index: str = ''
+    removed: bool = False
+    for line in lines:
+        if line.strip("\n").strip("\r") != post_id:
+            new_index += line
+            continue
+        removed = True
+        if debug:
+            print('DEBUG: removed ' + post_id +
+                  ' from index ' + index_file)
+    if removed:
+        save_string(new_index, index_file,
+                    'EX: remove_post_from_index unable to write ' +
+                    index_file + ' [ex]')
 
 
 def remove_moderation_post_from_index(base_dir: str, post_url: str,
