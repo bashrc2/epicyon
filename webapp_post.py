@@ -608,7 +608,7 @@ def _get_post_from_recent_cache(session,
     if show_public_only:
         return None
 
-    try_cache = False
+    try_cache: bool = False
     bm_timeline = box_name in ('bookmarks', 'tlbookmarks')
     if store_to_cache or bm_timeline:
         try_cache = True
@@ -3284,7 +3284,7 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                     loc_str, loc_address)
             # does this look like a geolocation link?
             if resembles_url(loc_str):
-                bounding_box_degrees = 0.001
+                bounding_box_degrees: float = 0.001
                 map_str = \
                     html_open_street_map(loc_str,
                                          bounding_box_degrees,
@@ -3574,7 +3574,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
         follow_str += '  </form>\n'
         post_str += follow_str + '</p>\n'
 
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     post_str += \
@@ -3621,7 +3621,7 @@ def html_individual_post(recent_posts_cache: {}, max_recent_posts: int,
                 break
             post_json_object = load_json(post_filename)
             if post_json_object:
-                mitm = False
+                mitm: bool = False
                 if os.path.isfile(post_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
@@ -3771,7 +3771,7 @@ def html_post_replies(recent_posts_cache: {}, max_recent_posts: int,
     """
     replies_str: str = ''
     if replies_json.get('orderedItems'):
-        minimize_all_images = False
+        minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         for item in replies_json['orderedItems']:
@@ -3849,7 +3849,7 @@ def html_emoji_reaction_picker(recent_posts_cache: {}, max_recent_posts: int,
                                block_nostr: {}) -> str:
     """Returns the emoji picker screen
     """
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account

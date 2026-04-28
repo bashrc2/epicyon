@@ -225,7 +225,7 @@ def get_actor_update_json(actor_json: {}) -> {}:
     """
     pub_number, _ = get_status_number()
     manually_approves_followers = actor_json['manuallyApprovesFollowers']
-    memorial = False
+    memorial: bool = False
     if actor_json.get('memorial'):
         memorial = True
     indexable = account_is_indexable(actor_json)
@@ -863,7 +863,7 @@ def person_upgrade_actor(base_dir: str, person_json: {},
                          filename: str) -> None:
     """Alter the actor to add any new properties
     """
-    update_actor = False
+    update_actor: bool = False
     if not os.path.isfile(filename):
         print('WARN: actor file not found ' + filename)
         return
@@ -1100,7 +1100,7 @@ def person_lookup(domain: str, path: str, base_dir: str) -> {}:
     elif path.endswith('#main-key'):
         path = path.replace('#main-key', '')
     # is this a shared inbox lookup?
-    is_shared_inbox = False
+    is_shared_inbox: bool = False
     if path in ('/inbox', '/users/inbox', '/sharedInbox'):
         # shared inbox actor on @domain@domain
         path = '/users/inbox'
@@ -1626,8 +1626,8 @@ def deactivate_account(base_dir: str, nickname: str, domain: str) -> bool:
 def activate_account2(base_dir: str, nickname: str, domain: str) -> bool:
     """Makes a deactivated account available
     """
-    activated = False
-    handle = nickname + '@' + domain
+    activated: bool = False
+    handle: str = nickname + '@' + domain
 
     deactivated_dir = base_dir + '/deactivated'
     deactivated_account_dir = deactivated_dir + '/' + handle
@@ -1846,7 +1846,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     if debug:
         print('get_actor_json for ' + handle)
     original_actor: str = handle
-    group_account = False
+    group_account: bool = False
     nickname: str = ''
     domain: str = ''
 
@@ -1872,7 +1872,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
         if '/@/' not in handle:
             handle = handle.replace('/@', detected_users_path)
         paths = get_user_paths()
-        user_path_found = False
+        user_path_found: bool = False
         for user_path in paths:
             if user_path in handle:
                 nickname = handle.split(user_path)[1]
@@ -1959,7 +1959,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
     wf_request = None
 
     original_actor_lower = original_actor.lower()
-    ends_with_instance_actor = False
+    ends_with_instance_actor: bool = False
     if original_actor_lower.endswith('/actor') or \
        original_actor_lower.endswith('/instance.actor'):
         ends_with_instance_actor = True
@@ -2021,7 +2021,7 @@ def get_actor_json(host_domain: str, handle: str, http: bool, gnunet: bool,
                 person_url = person_url.replace(user_path, '/actor/')
     if not person_url and group_account:
         person_url = http_prefix + '://' + domain + '/c/' + nickname
-    try_single_person = False
+    try_single_person: bool = False
     if not person_url:
         # try single user instance
         person_url = http_prefix + '://' + domain + '/' + nickname
@@ -2153,9 +2153,9 @@ def valid_sending_actor(session, base_dir: str,
     # NOTE: the actor should not be obtained from the local cache,
     # because they may have changed fields which are being tested here,
     # such as the bio length
-    gnunet = False
-    ipfs = False
-    ipns = False
+    gnunet: bool = False
+    ipfs: bool = False
+    ipns: bool = False
     actor_json, _ = get_actor_json(domain, sending_actor,
                                    True, gnunet, ipfs, ipns,
                                    debug, True,
@@ -2225,8 +2225,8 @@ def valid_sending_actor(session, base_dir: str,
     # Spam actors will sometimes have attached fields which are all empty
     if actor_json.get('attachment'):
         if isinstance(actor_json['attachment'], list):
-            no_of_tags = 0
-            tags_without_value = 0
+            no_of_tags: int = 0
+            tags_without_value: int = 0
             for tag in actor_json['attachment']:
                 if not isinstance(tag, dict):
                     continue
@@ -2262,12 +2262,12 @@ def valid_sending_actor(session, base_dir: str,
 def get_featured_hashtags(actor_json: {}) -> str:
     """returns a string containing featured hashtags
     """
-    result = ''
+    result: str = ''
     if not actor_json.get('tag'):
         return result
     if not isinstance(actor_json['tag'], list):
         return result
-    ctr = 0
+    ctr: int = 0
     for tag_dict in actor_json['tag']:
         if not tag_dict.get('type'):
             continue
@@ -2306,12 +2306,12 @@ def get_featured_hashtags_as_html(actor_json: {},
                                   profile_description: str) -> str:
     """returns a html string containing featured hashtags
     """
-    result = ''
+    result: str = ''
     if not actor_json.get('tag'):
         return result
     if not isinstance(actor_json['tag'], list):
         return result
-    ctr = 0
+    ctr: int = 0
     for tag_dict in actor_json['tag']:
         if not tag_dict.get('type'):
             continue
@@ -2425,7 +2425,7 @@ def update_memorial_flags(base_dir: str, person_cache: {}) -> None:
             if not actor_json.get('id'):
                 continue
             nickname = account.split('@')[0]
-            actor_changed = False
+            actor_changed: bool = False
             if not actor_json.get('memorial'):
                 if nickname in memorials:
                     actor_json['memorial'] = True

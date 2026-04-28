@@ -126,8 +126,8 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
     agent_domain = None
 
     if agent_str:
-        contains_bot_string = False
-        llm = False
+        contains_bot_string: bool = False
+        llm: bool = False
 
         # is this an LLM crawler?
         # https://github.com/ai-robots-txt/ai.robots.txt/blob/main/robots.txt
@@ -222,7 +222,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
 
     # is the User-Agent type blocked? eg. "Mastodon"
     if user_agents_blocked:
-        blocked_ua = False
+        blocked_ua: bool = False
         for agent_name in user_agents_blocked:
             if agent_name in agent_str:
                 blocked_ua = True
@@ -234,7 +234,7 @@ def blocked_user_agent(calling_domain: str, agent_str: str,
         return False, blocked_cache_last_updated, False
 
     # is the User-Agent domain blocked
-    blocked_ua = False
+    blocked_ua: bool = False
     if not agent_domain.startswith(calling_domain):
         blocked_cache_last_updated = \
             update_blocked_cache(base_dir, blocked_cache,

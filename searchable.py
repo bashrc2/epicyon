@@ -123,7 +123,7 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
                 with open(post_filename, 'r', encoding='utf-8') as fp_post:
                     data = fp_post.read().lower()
 
-                    not_found = False
+                    not_found: bool = False
                     for keyword in search_words:
                         if keyword not in data:
                             not_found = True
@@ -165,7 +165,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
 
     following_list: list[str] = []
     mutuals_list: list[str] = []
-    check_searchable_by = False
+    check_searchable_by: bool = False
     if box_name == 'inbox':
         check_searchable_by = True
         # https://codeberg.org/fediverse/fep/
@@ -185,7 +185,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
                     data = fp_post.read()
                     data_lower = data.lower()
 
-                    not_found = False
+                    not_found: bool = False
                     for keyword in search_words:
                         if keyword not in data_lower:
                             not_found = True

@@ -29,13 +29,13 @@ def redirect_to_login_screen(self, calling_domain: str, path: str,
     if authorized:
         return False
 
-    divert_to_login_screen = False
+    divert_to_login_screen: bool = False
     non_login_paths = ('/media/', '/ontologies/', '/data/', '/sharefiles/',
                        '/statuses/', '/emoji/', '/tags/', '/tagmaps/',
                        '/avatars/', '/favicons/', '/headers/', '/fonts/',
                        '/icons/')
     if not string_contains(path, non_login_paths):
-        divert_to_login_screen = True
+        divert_to_login_screen: bool = True
         if path.startswith('/users/'):
             nick_str = path.split('/users/')[1]
             if '/' not in nick_str and '?' not in nick_str:

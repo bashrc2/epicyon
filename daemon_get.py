@@ -670,7 +670,7 @@ def daemon_http_get(self) -> None:
         return
 
     # turn off dropdowns on new post screen
-    no_drop_down = False
+    no_drop_down: bool = False
     if self.path.endswith('?nodropdown'):
         no_drop_down = True
         self.path = self.path.replace('?nodropdown', '')
@@ -1508,10 +1508,10 @@ def daemon_http_get(self) -> None:
                         self.server.debug)
 
     # is this a html/ssml/icalendar request?
-    html_getreq = False
-    csv_getreq = False
-    ssml_getreq = False
-    icalendar_getreq = False
+    html_getreq: bool = False
+    csv_getreq: bool = False
+    ssml_getreq: bool = False
+    icalendar_getreq: bool = False
     if has_accept(self, calling_domain):
         if request_http(self.headers, self.server.debug):
             html_getreq = True
@@ -1683,7 +1683,7 @@ def daemon_http_get(self) -> None:
                      self.server.fitness)
         return
 
-    users_in_path = False
+    users_in_path: bool = False
     if '/users/' in self.path:
         users_in_path = True
 
@@ -2271,8 +2271,8 @@ def daemon_http_get(self) -> None:
             http_404(self, 125)
             return
         if self.path.endswith('/followingaccounts.csv'):
-            html_getreq = False
-            csv_getreq = True
+            html_getreq: bool = False
+            csv_getreq: bool = True
         if html_getreq:
             msg = html_following_list(self.server.base_dir,
                                       following_filename)
@@ -2640,7 +2640,7 @@ def daemon_http_get(self) -> None:
                 http_304(self)
                 return
 
-            tries = 0
+            tries: int = 0
             media_binary = None
             while tries < 5:
                 exc_str = 'EX: manifest logo ' + str(tries) + ' [ex]'
@@ -2678,7 +2678,7 @@ def daemon_http_get(self) -> None:
                 http_304(self)
                 return
 
-            tries = 0
+            tries: int = 0
             media_binary = None
             while tries < 5:
                 exc_str = 'EX: manifest screenshot ' + str(tries) + ' [ex]'
@@ -2716,7 +2716,7 @@ def daemon_http_get(self) -> None:
                 http_304(self)
                 return
 
-            tries = 0
+            tries: int = 0
             media_binary = None
             while tries < 5:
                 exc_str = 'EX: login screen image ' + str(tries) + ' [ex]'
@@ -3555,7 +3555,7 @@ def daemon_http_get(self) -> None:
                         '_GET', 'emoji search shown done',
                         self.server.debug)
 
-    repeat_private = False
+    repeat_private: bool = False
     if html_getreq and '?repeatprivate=' in self.path:
         repeat_private = True
         self.path = self.path.replace('?repeatprivate=', '?repeat=')
@@ -4371,7 +4371,7 @@ def daemon_http_get(self) -> None:
 
         # replying as a direct message,
         # for moderation posts or the dm timeline
-        reply_is_chat = False
+        reply_is_chat: bool = False
         if '?replydm=' in self.path or '?replychat=' in self.path:
             reply_type = 'replydm'
             if '?replychat=' in self.path:

@@ -141,10 +141,10 @@ def show_media_timeline(self, authorized: bool,
                 timezone = None
                 if account_timezone.get(nickname):
                     timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
-                reverse_sequence = False
+                reverse_sequence: bool = False
                 if nickname in reverse_sequence_nicknames:
                     reverse_sequence = True
                 last_post_id = None
@@ -152,7 +152,7 @@ def show_media_timeline(self, authorized: bool,
                     last_post_id = path.split(';lastpost=')[1]
                     if ';' in last_post_id:
                         last_post_id = last_post_id.split(';')[0]
-                show_announces = True
+                show_announces: bool = True
                 if hide_announces.get(nickname):
                     show_announces = False
                 known_epicyon_instances = \
@@ -362,10 +362,10 @@ def show_blogs_timeline(self, authorized: bool,
                 timezone = None
                 if account_timezone.get(nickname):
                     timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
-                reverse_sequence = False
+                reverse_sequence: bool = False
                 if nickname in reverse_sequence_nicknames:
                     reverse_sequence = True
                 last_post_id = None
@@ -589,10 +589,10 @@ def show_news_timeline(self, authorized: bool,
                 timezone = None
                 if account_timezone.get(nickname):
                     timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
-                reverse_sequence = False
+                reverse_sequence: bool = False
                 if nickname in reverse_sequence_nicknames:
                     reverse_sequence = True
                 known_epicyon_instances = \
@@ -807,10 +807,10 @@ def show_features_timeline(self, authorized: bool,
                 timezone = None
                 if account_timezone.get(nickname):
                     timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
-                reverse_sequence = False
+                reverse_sequence: bool = False
                 if nickname in reverse_sequence_nicknames:
                     reverse_sequence = True
                 known_epicyon_instances = \
@@ -987,10 +987,10 @@ def show_shares_timeline(self, authorized: bool,
                 timezone = None
                 if account_timezone.get(nickname):
                     timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
-                reverse_sequence = False
+                reverse_sequence: bool = False
                 if nickname in reverse_sequence_nicknames:
                     reverse_sequence = True
                 known_epicyon_instances = \
@@ -1138,10 +1138,10 @@ def show_wanted_timeline(self, authorized: bool,
                 timezone = None
                 if account_timezone.get(nickname):
                     timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
-                reverse_sequence = False
+                reverse_sequence: bool = False
                 if nickname in reverse_sequence_nicknames:
                     reverse_sequence = True
                 known_epicyon_instances = \
@@ -1323,10 +1323,10 @@ def show_bookmarks_timeline(self, authorized: bool,
                     timezone = None
                     if account_timezone.get(nickname):
                         timezone = account_timezone.get(nickname)
-                    bold_reading = False
+                    bold_reading: bool = False
                     if bold_reading_nicknames.get(nickname):
                         bold_reading = True
-                    reverse_sequence = False
+                    reverse_sequence: bool = False
                     if nickname in reverse_sequence_nicknames:
                         reverse_sequence = True
                     known_epicyon_instances = \
@@ -1506,7 +1506,7 @@ def show_outbox_timeline(self, authorized: bool,
                         positive_voting,
                         voting_time_mins)
     if outbox_feed:
-        page_number = 0
+        page_number: int = 0
         if '?page=' in nickname:
             page_number = nickname.split('?page=')[1]
             if ';' in page_number:
@@ -1546,13 +1546,13 @@ def show_outbox_timeline(self, authorized: bool,
             timezone = None
             if account_timezone.get(nickname):
                 timezone = account_timezone.get(nickname)
-            bold_reading = False
+            bold_reading: bool = False
             if bold_reading_nicknames.get(nickname):
                 bold_reading = True
-            reverse_sequence = False
+            reverse_sequence: bool = False
             if nickname in reverse_sequence_nicknames:
                 reverse_sequence = True
-            show_announces = True
+            show_announces: bool = True
             if hide_announces.get(nickname):
                 show_announces = False
             known_epicyon_instances = \
@@ -1747,10 +1747,10 @@ def show_mod_timeline(self, authorized: bool,
                     timezone = None
                     if account_timezone.get(nickname):
                         timezone = account_timezone.get(nickname)
-                    bold_reading = False
+                    bold_reading: bool = False
                     if bold_reading_nicknames.get(nickname):
                         bold_reading = True
-                    reverse_sequence = False
+                    reverse_sequence: bool = False
                     if nickname in reverse_sequence_nicknames:
                         reverse_sequence = True
                     known_epicyon_instances = \
@@ -1956,10 +1956,10 @@ def show_dms(self, authorized: bool,
                     timezone = None
                     if account_timezone.get(nickname):
                         timezone = account_timezone.get(nickname)
-                    bold_reading = False
+                    bold_reading: bool = False
                     if bold_reading_nicknames.get(nickname):
                         bold_reading = True
-                    reverse_sequence = False
+                    reverse_sequence: bool = False
                     if nickname in reverse_sequence_nicknames:
                         reverse_sequence = True
                     last_post_id = None
@@ -2172,10 +2172,10 @@ def show_replies(self, authorized: bool,
                 timezone = None
                 if account_timezone.get(nickname):
                     timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
-                reverse_sequence = False
+                reverse_sequence: bool = False
                 if nickname in reverse_sequence_nicknames:
                     reverse_sequence = True
                 last_post_id = None
@@ -2397,10 +2397,10 @@ def show_inbox(self, authorized: bool,
                     timezone = None
                     if account_timezone.get(nickname):
                         timezone = account_timezone.get(nickname)
-                    bold_reading = False
+                    bold_reading: bool = False
                     if bold_reading_nicknames.get(nickname):
                         bold_reading = True
-                    reverse_sequence = False
+                    reverse_sequence: bool = False
                     if nickname in reverse_sequence_nicknames:
                         reverse_sequence = True
                     last_post_id = None
@@ -2408,7 +2408,7 @@ def show_inbox(self, authorized: bool,
                         last_post_id = path.split(';lastpost=')[1]
                         if ';' in last_post_id:
                             last_post_id = last_post_id.split(';')[0]
-                    show_announces = True
+                    show_announces: bool = True
                     if hide_announces.get(nickname):
                         show_announces = False
                     known_epicyon_instances = \

@@ -228,9 +228,9 @@ def post_login_screen(self, calling_domain: str, cookie: str,
             # be careful to avoid logging the password
             login_str = login_params
             if '=' in login_params:
-                login_params_list = login_params.split('=')
+                login_params_list: list = login_params.split('=')
                 login_str: str = ''
-                skip_param = False
+                skip_param: bool = False
                 for login_prm in login_params_list:
                     if not skip_param:
                         login_str += login_prm + '='

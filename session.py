@@ -144,7 +144,7 @@ def _get_json_request(session, url: str, session_headers: {},
         result = session.get(url, headers=session_headers,
                              params=session_params, timeout=timeout_sec,
                              allow_redirects=True)
-        mitm = False
+        mitm: bool = False
         try:
             mitm = detect_mitm(result)
         except BaseException:
@@ -270,8 +270,8 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
         print('Signed GET to_domain: ' + to_domain + ' ' + str(to_port))
         print('Signed GET url: ' + url)
         print('Signed GET http_prefix: ' + http_prefix)
-    message_str = ''
-    with_digest = False
+    message_str: str = ''
+    with_digest: bool = False
     if to_domain_full + '/' in url:
         path = '/' + url.split(to_domain_full + '/')[1]
     else:
@@ -294,7 +294,7 @@ def _get_json_signed(session, url: str, domain_full: str, session_headers: {},
     if debug:
         print('Signed GET session_headers ' + str(session_headers))
 
-    return_json = True
+    return_json: bool = True
     if 'json' not in content_type:
         return_json = False
     return _get_json_request(session, url, session_headers,
@@ -550,7 +550,7 @@ def site_is_verified(session, base_dir: str, http_prefix: str,
     """
     verified_sites_filename = \
         acct_dir(base_dir, nickname, domain) + '/verified_sites.txt'
-    verified_file_exists = False
+    verified_file_exists: bool = False
     if os.path.isfile(verified_sites_filename):
         verified_file_exists = True
         if text_in_file(url + '\n', verified_sites_filename, True):

@@ -204,9 +204,9 @@ def get_links_from_content(content: str) -> {}:
     """
     if '<a href' not in content:
         return {}
-    sections = content.split('<a href')
-    first = True
-    links = {}
+    sections: list = content.split('<a href')
+    first: bool = True
+    links: dict = {}
     for subsection in sections:
         if first:
             first = False

@@ -63,7 +63,7 @@ def get_xmpp_address(actor_json: {}) -> str:
 def set_xmpp_address(actor_json: {}, xmpp_address: str) -> None:
     """Sets an xmpp address for the given actor
     """
-    not_xmpp_address = False
+    not_xmpp_address: bool = False
     if '@' not in xmpp_address:
         not_xmpp_address = True
     if '.' not in xmpp_address:

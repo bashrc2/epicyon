@@ -189,8 +189,8 @@ def html_person_options(default_timeline: str,
             copyfile(dir_str + '/options-background.jpg',
                      dir_str + '/options-background.jpg')
 
-    dormant = False
-    offline = False
+    dormant: bool = False
+    offline: bool = False
     if options_domain in sites_unavailable:
         offline = True
     follow_str = 'Follow'
@@ -199,7 +199,7 @@ def html_person_options(default_timeline: str,
     block_str = 'Block'
     nickname = None
     options_nickname = None
-    follows_you = False
+    follows_you: bool = False
     if origin_path_str.startswith('/users/'):
         nickname = origin_path_str.split('/users/')[1]
         if '/' in nickname:
@@ -372,7 +372,7 @@ def html_person_options(default_timeline: str,
             '  <p class="optionsText">' + \
             translate['Other accounts'] + ': '
 
-        ctr = 0
+        ctr: int = 0
         if isinstance(also_known_as, list):
             for alt_actor in also_known_as:
                 if alt_actor == options_actor:
@@ -628,7 +628,7 @@ def html_person_options(default_timeline: str,
                 options_str += checkbox_str
 
             # checkbox for permission to post to newswire
-            newswire_posts_permitted = False
+            newswire_posts_permitted: bool = False
             if options_domain_full == domain_full:
                 admin_nickname = get_config_param(base_dir, 'admin')
                 if (nickname == admin_nickname or

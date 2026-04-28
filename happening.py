@@ -297,7 +297,7 @@ def get_todays_events(base_dir: str, nickname: str, domain: str,
         return events
 
     calendar_post_ids: list[str] = []
-    recreate_events_file = False
+    recreate_events_file: bool = False
     try:
         with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
             for post_id in fp_events:
@@ -428,7 +428,7 @@ def _icalendar_day(base_dir: str, nickname: str, domain: str,
         post_id = None
         sender_name: str = ''
         sender_actor = None
-        event_is_public = False
+        event_is_public: bool = False
         event_start = None
         event_end = None
 
@@ -583,7 +583,7 @@ def get_month_events_icalendar(base_dir: str, nickname: str, domain: str,
                                text_match: str) -> str:
     """Returns today's events in icalendar format
     """
-    only_show_reminders = False
+    only_show_reminders: bool = False
     month_events = \
         get_calendar_events(base_dir, nickname, domain, year,
                             month_number, text_match,
@@ -624,7 +624,7 @@ def day_events_check(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(calendar_filename):
         return False
 
-    events_exist = False
+    events_exist: bool = False
     try:
         with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
             for post_id in fp_events:
@@ -684,7 +684,7 @@ def get_this_weeks_events(base_dir: str, nickname: str, domain: str) -> {}:
         return events
 
     calendar_post_ids: list[str] = []
-    recreate_events_file = False
+    recreate_events_file: bool = False
     try:
         with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
             for post_id in fp_events:
@@ -761,7 +761,7 @@ def get_calendar_events(base_dir: str, nickname: str, domain: str,
         return events
 
     calendar_post_ids: list[str] = []
-    recreate_events_file = False
+    recreate_events_file: bool = False
     try:
         with open(calendar_filename, 'r', encoding='utf-8') as fp_events:
             for post_id in fp_events:
@@ -1134,8 +1134,8 @@ def dav_put_response(base_dir: str, nickname: str, domain: str,
         if etag in recent_dav_etags[nickname]:
             return 'Not modified'
 
-    stored_count = 0
-    reading_event = False
+    stored_count: int = 0
+    reading_event: bool = False
     lines_list = xml_str.split('\n')
     event_list: list[dict] = []
     for line in lines_list:

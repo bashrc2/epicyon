@@ -56,7 +56,7 @@ def header_buttons_timeline(default_timeline: str,
     tl_str = '<div id="containerHeader" class="containerHeader"><nav>\n'
 
     # if this is a news instance and we are viewing the news timeline
-    features_header = False
+    features_header: bool = False
     if default_timeline == 'tlfeatures' and box_name == 'tlfeatures':
         features_header = True
 

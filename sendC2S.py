@@ -97,8 +97,8 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
 
     # Get the json for the c2s post, not saving anything to file
     # Note that base_dir is set to None
-    save_to_file = False
-    client_to_server = True
+    save_to_file: bool = False
+    client_to_server: bool = True
     if to_domain.lower().endswith('public'):
         to_person_id = 'https://www.w3.org/ns/activitystreams#Public'
         cc_str = \
@@ -121,8 +121,8 @@ def send_post_via_server(signing_priv_key_pem: str, project_version: str,
                 local_actor_url(http_prefix,
                                 from_nickname, from_domain_full)
 
-    is_moderation_report = False
-    schedule_post = False
+    is_moderation_report: bool = False
+    schedule_post: bool = False
     event_uuid = category = join_mode = None
     maximum_attendee_capacity = None
     replies_moderation_option = None

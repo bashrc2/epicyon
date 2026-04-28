@@ -146,7 +146,7 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
                           voters_filename)
 
             newlines: list[str] = []
-            save_voters_file = False
+            save_voters_file: bool = False
             if lines:
                 for vote_line in lines:
                     if vote_line.startswith(actor_url +
@@ -172,11 +172,11 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
                 return None, None
 
     # update the vote counts
-    question_totals_changed = False
+    question_totals_changed: bool = False
     for possible_answer in question_json['object']['oneOf']:
         if not possible_answer.get('name'):
             continue
-        total_items = 0
+        total_items: int = 0
         lines: list[str] = \
             load_list(voters_filename,
                       'EX: question_update_votes unable to read ' +

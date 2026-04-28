@@ -57,7 +57,7 @@ def _get_left_column_shares(base_dir: str,
         return []
 
     links_list: list[str] = []
-    ctr = 0
+    ctr: int = 0
     for _, item in shares_json.items():
         sharedesc = item['displayName']
         if '<' in sharedesc or '?' in sharedesc:
@@ -100,7 +100,7 @@ def _get_left_column_wanted(base_dir: str,
         return []
 
     links_list: list[str] = []
-    ctr = 0
+    ctr: int = 0
     for _, item in shares_json.items():
         sharedesc = item['displayName']
         if '<' in sharedesc or ';' in sharedesc:
@@ -220,10 +220,10 @@ def get_left_column_content(base_dir: str, nickname: str, domain_full: str,
     #     html_str += '<br>'
 
     # flag used not to show the first separator
-    first_separator_added = False
+    first_separator_added: bool = False
 
     links_filename = data_dir(base_dir) + '/links.txt'
-    links_file_contains_entries = False
+    links_file_contains_entries: bool = False
     links_list: list[str] = None
     if os.path.isfile(links_filename):
         links_list = \
@@ -395,11 +395,11 @@ def html_links_mobile(base_dir: str,
 
     # is the user a site editor?
     if nickname == 'news':
-        editor = False
-        artist = False
+        editor: bool = False
+        artist: bool = False
     else:
-        editor = is_editor(base_dir, nickname)
-        artist = is_artist(base_dir, nickname)
+        editor: bool = is_editor(base_dir, nickname)
+        artist: bool = is_artist(base_dir, nickname)
 
     domain = remove_domain_port(domain_full)
 

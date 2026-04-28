@@ -109,7 +109,7 @@ def inbox_update_index(boxname: str, base_dir: str, handle: str,
     if '/' in destination_filename:
         destination_filename = destination_filename.split('/')[-1]
 
-    written = False
+    written: bool = False
     if os.path.isfile(index_filename):
         try:
             with open(index_filename, 'r+', encoding='utf-8') as fp_index:
@@ -192,7 +192,7 @@ def _person_receive_update(base_dir: str,
     domain_full = get_full_domain(domain, port)
     update_domain_full = get_full_domain(update_domain, update_port)
     users_paths = get_user_paths()
-    users_str_found = False
+    users_str_found: bool = False
     for users_str in users_paths:
         actor = update_domain_full + users_str + update_nickname
         if actor in person_json['id']:
@@ -277,7 +277,7 @@ def _person_receive_update(base_dir: str,
                 new_nickname + '@' + new_domain_full
             refollow_str: str = ''
             refollow_filename = data_dir(base_dir) + '/actors_moved.txt'
-            refollow_file_exists = False
+            refollow_file_exists: bool = False
             if os.path.isfile(refollow_filename):
                 refollow_str = \
                     load_string(refollow_filename,
@@ -500,23 +500,23 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
     remove_post_from_cache(message_json, recent_posts_cache)
     # regenerate html for the post
     page_number = 1
-    show_published_date_only = False
-    show_individual_post_icons = True
+    show_published_date_only: bool = False
+    show_individual_post_icons: bool = True
     manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     not_dm = not is_dm(message_json)
     timezone = get_account_timezone(base_dir, nickname, domain)
-    mitm = False
+    mitm: bool = False
     if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
         mitm = True
-    bold_reading = False
+    bold_reading: bool = False
     bold_reading_filename = \
         acct_dir(base_dir, nickname, domain) + '/.boldReading'
     if os.path.isfile(bold_reading_filename):
         bold_reading = True
     timezone = get_account_timezone(base_dir, nickname, domain)
     lists_enabled = get_config_param(base_dir, "listsEnabled")
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account
@@ -1081,16 +1081,16 @@ def receive_like(recent_posts_cache: {},
                 print('Liked post nickname: ' + handle_name + ' ' + domain)
                 print('Liked post cache: ' + str(cached_post_filename))
             page_number = 1
-            show_published_date_only = False
-            show_individual_post_icons = True
+            show_published_date_only: bool = False
+            show_individual_post_icons: bool = True
             manually_approve_followers = \
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(liked_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
-            mitm = False
+            mitm: bool = False
             if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
                 mitm = True
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
@@ -1331,16 +1331,16 @@ def receive_reaction(recent_posts_cache: {},
                 print('Reaction post nickname: ' + handle_name + ' ' + domain)
                 print('Reaction post cache: ' + str(cached_post_filename))
             page_number = 1
-            show_published_date_only = False
-            show_individual_post_icons = True
+            show_published_date_only: bool = False
+            show_individual_post_icons: bool = True
             manually_approve_followers = \
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(reaction_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
-            mitm = False
+            mitm: bool = False
             if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
                 mitm = True
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
@@ -1530,16 +1530,16 @@ def receive_zot_reaction(recent_posts_cache: {},
                 print('Reaction post nickname: ' + handle_name + ' ' + domain)
                 print('Reaction post cache: ' + str(cached_post_filename))
             page_number = 1
-            show_published_date_only = False
-            show_individual_post_icons = True
+            show_published_date_only: bool = False
+            show_individual_post_icons: bool = True
             manually_approve_followers = \
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(reaction_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
-            mitm = False
+            mitm: bool = False
             if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
                 mitm = True
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
@@ -1672,16 +1672,16 @@ def receive_bookmark(recent_posts_cache: {},
             print('Bookmarked post nickname: ' + nickname + ' ' + domain)
             print('Bookmarked post cache: ' + str(cached_post_filename))
         page_number = 1
-        show_published_date_only = False
-        show_individual_post_icons = True
+        show_published_date_only: bool = False
+        show_individual_post_icons: bool = True
         manually_approve_followers = \
             follower_approval_active(base_dir, nickname, domain)
         not_dm = not is_dm(bookmarked_post_json)
         timezone = get_account_timezone(base_dir, nickname, domain)
-        mitm = False
+        mitm: bool = False
         if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
             mitm = True
-        minimize_all_images = False
+        minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         # get the list of mutuals for the current account
@@ -1837,7 +1837,7 @@ def receive_announce(recent_posts_cache: {},
         return False
     if debug:
         print('DEBUG: receiving announce on ' + handle)
-    is_quote = False
+    is_quote: bool = False
     if not has_object_string(message_json, debug):
         if not is_quote_toot(message_json, ''):
             return False
@@ -1983,9 +1983,9 @@ def receive_announce(recent_posts_cache: {},
     domain_full = get_full_domain(domain, port)
 
     # Generate html. This also downloads the announced post.
-    page_number = 1
-    show_published_date_only = False
-    show_individual_post_icons = True
+    page_number: bool = 1
+    show_published_date_only: bool = False
+    show_individual_post_icons: bool = True
     manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     not_dm = True
@@ -2070,7 +2070,7 @@ def receive_announce(recent_posts_cache: {},
                                          block_bluesky,
                                          block_nostr)
     # are annouced/boosted replies allowed?
-    announce_denied = False
+    announce_denied: bool = False
     if post_json_object:
         if has_object_dict(post_json_object):
             if post_json_object['object'].get('inReplyTo'):
@@ -2086,7 +2086,7 @@ def receive_announce(recent_posts_cache: {},
         else:
             print('REJECT: Announce/Boost of reply denied ' +
                   actor_url + ' 🔁 ' + announce_url)
-        not_in_onion = True
+        not_in_onion: bool = True
         if onion_domain:
             if onion_domain in announce_url:
                 not_in_onion = False
@@ -2224,17 +2224,17 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
                 print('EX: replytoQuestion unable to delete ' +
                       cached_post_filename)
 
-    page_number = 1
-    show_published_date_only = False
-    show_individual_post_icons = True
+    page_number: int = 1
+    show_published_date_only: bool = False
+    show_individual_post_icons: bool = True
     manually_approve_followers = \
         follower_approval_active(base_dir, nickname, domain)
     not_dm = not is_dm(question_json)
     timezone = get_account_timezone(base_dir, nickname, domain)
-    mitm = False
+    mitm: bool = False
     if os.path.isfile(question_post_filename.replace('.json', '') + '.mitm'):
         mitm = True
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account

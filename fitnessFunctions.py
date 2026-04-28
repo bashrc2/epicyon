@@ -104,7 +104,7 @@ def html_watch_points_graph(base_dir: str, fitness: {}, fitness_id: str,
         if average_time > max_average_time:
             max_average_time = average_time
 
-    ctr = 0
+    ctr: int = 0
     for watch_point in watch_points_list:
         name = watch_point.split(' ', 1)[1]
         average_time = float(watch_point.split(' ')[0])

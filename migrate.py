@@ -34,7 +34,7 @@ def _move_following_handles_for_account(base_dir: str,
                                         mitm_servers: []) -> int:
     """Goes through all follows for an account and updates any that have moved
     """
-    ctr = 0
+    ctr: int = 0
     following_filename = \
         acct_dir(base_dir, nickname, domain) + '/following.txt'
     if not os.path.isfile(following_filename):
@@ -67,7 +67,7 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
     for each account.
     Returns 1 if moved, 0 otherwise
     """
-    ctr = 0
+    ctr: int = 0
     if '@' not in handle:
         return ctr
     if len(handle) < 5:
@@ -98,13 +98,13 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
         if not person_url:
             return ctr
 
-    gnunet = False
+    gnunet: bool = False
     if http_prefix == 'gnunet':
         gnunet = True
-    ipfs = False
+    ipfs: bool = False
     if http_prefix == 'ipfs':
         ipfs = True
-    ipns = False
+    ipns: bool = False
     if http_prefix == 'ipns':
         ipns = True
     mitm_servers: list[str] = []
@@ -242,7 +242,7 @@ def migrate_accounts(base_dir: str, session,
     Returns the number of accounts migrated
     """
     # update followers and following lists for each account
-    ctr = 0
+    ctr: int = 0
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:

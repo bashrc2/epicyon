@@ -62,7 +62,7 @@ def _has_valid_context_str(url: str) -> bool:
     """is the @context string of a post recognised?
     """
     if url not in VALID_CONTEXTS:
-        wildcard_found = False
+        wildcard_found: bool = False
         for cont in VALID_CONTEXTS:
             if cont.startswith('*'):
                 cont = cont.replace('*', '', 1)

@@ -216,7 +216,7 @@ def _inbox_store_post_to_html_cache(recent_posts_cache: {},
     not_dm = not is_dm(post_json_object)
     yt_replace_domain = get_config_param(base_dir, 'youtubedomain')
     twitter_replacement_domain = get_config_param(base_dir, 'twitterdomain')
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     individual_post_as_html(signing_priv_key_pem,
@@ -274,8 +274,8 @@ def valid_inbox_filenames(base_dir: str, nickname: str, domain: str,
         print('Not an inbox directory: ' + inbox_dir)
         return True
     expected_str = expected_domain + ':' + str(expected_port)
-    expected_found = False
-    ctr = 0
+    expected_found: bool = False
+    ctr: int = 0
     for subdir, _, files in os.walk(inbox_dir):
         for fname in files:
             filename = os.path.join(subdir, fname)
@@ -459,7 +459,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
     post_nickname = None
     post_domain = None
     actor = None
-    obj_dict_exists = False
+    obj_dict_exists: bool = False
 
     # who is sending the post?
     sending_actor = None
@@ -510,7 +510,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
         # allow quote toots going to the shared inbox
         if nickname != 'inbox':
             if is_quote_toot(post_json_object, content_str):
-                allow_quotes = False
+                allow_quotes: bool = False
                 if sending_actor:
                     allow_quotes = \
                         quote_toots_allowed(base_dir, nickname, domain,
@@ -622,7 +622,7 @@ def save_post_to_inbox_queue(base_dir: str, http_prefix: str,
         handle + '/inbox/' + post_id.replace('/', '#') + '.json'
     filename = inbox_queue_dir + '/' + post_id.replace('/', '#') + '.json'
 
-    shared_inbox_item = False
+    shared_inbox_item: bool = False
     if nickname == 'inbox':
         nickname = original_domain
         shared_inbox_item = True
@@ -672,7 +672,7 @@ def _inbox_post_recipients_add(base_dir: str, to_list: [],
     """Given a list of post recipients (to_list) from 'to' or 'cc' parameters
     populate a recipients_dict with the handle for each
     """
-    follower_recipients = False
+    follower_recipients: bool = False
     for recipient in to_list:
         if not recipient:
             continue
@@ -747,7 +747,7 @@ def _inbox_post_recipients(base_dir: str, post_json_object: {},
     actor = get_actor_from_post(post_json_object)
     # first get any specific people which the post is addressed to
 
-    follower_recipients = False
+    follower_recipients: bool = False
     if has_object_dict(post_json_object):
         if post_json_object['object'].get('to'):
             if isinstance(post_json_object['object']['to'], list):
@@ -1388,7 +1388,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     last_bounce_message[0] = curr_time
 
     sender_nickname = sending_handle.split('@')[0]
-    group_account = False
+    group_account: bool = False
     if sending_handle.startswith('!'):
         sending_handle = sending_handle[1:]
         group_account = True
@@ -1401,9 +1401,9 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     # create the bounce DM
     subject = None
     content = translate['DM bounce']
-    save_to_file = False
-    client_to_server = False
-    comments_enabled = False
+    save_to_file: bool = False
+    client_to_server: bool = False
+    comments_enabled: bool = False
     attach_image_filename = None
     media_type = None
     image_description: str = ''
@@ -1411,7 +1411,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     city = 'London, England'
     in_reply_to = remove_id_ending(sender_post_id)
     in_reply_to_atom_uri = None
-    schedule_post = False
+    schedule_post: bool = False
     event_date = None
     event_time = None
     event_end_time = None
@@ -1419,7 +1419,7 @@ def _bounce_dm(sender_post_id: str, session, http_prefix: str,
     location = None
     conversation_id = None
     convthread_id = None
-    low_bandwidth = False
+    low_bandwidth: bool = False
     buy_url: str = ''
     chat_url: str = ''
     auto_cw_cache = {}
@@ -1524,7 +1524,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
     if not sending_actor_domain:
         return False
     # Is this DM to yourself? eg. a reminder
-    sending_to_self = False
+    sending_to_self: bool = False
     if sending_actor_nickname == nickname and \
        sending_actor_domain == domain:
         sending_to_self = True
@@ -1577,7 +1577,7 @@ def _is_valid_dm(base_dir: str, nickname: str, domain: str, port: int,
                        not get_reply_to(obj):
                         bounced_id = \
                             remove_id_ending(post_json_object['id'])
-                        bounce_chat = False
+                        bounce_chat: bool = False
                         if obj.get('type'):
                             if obj['type'] == 'ChatMessage':
                                 bounce_chat = True
@@ -1620,7 +1620,7 @@ def _create_reply_notification_file(base_dir: str, nickname: str, domain: str,
     The file can then be used by other systems to create a notification
     xmpp, matrix, email, etc
     """
-    is_reply_to_muted_post = False
+    is_reply_to_muted_post: bool = False
     if post_is_dm:
         return is_reply_to_muted_post
     if not is_reply(post_json_object, actor):
@@ -1803,7 +1803,7 @@ def _former_representations_to_edits(base_dir: str,
         post_history_json = load_json(post_history_filename)
 
     # check each former post and add it to the edits file if needed
-    posts_added = False
+    posts_added: bool = False
     for prev_post_json in prev_edits_list:
         prev_post_obj = prev_post_json
         if has_object_dict(prev_post_json):
@@ -1933,7 +1933,7 @@ def _inbox_after_initial(server, inbox_start_time,
 
     _update_last_seen(base_dir, handle, actor)
 
-    post_is_dm = False
+    post_is_dm: bool = False
     is_group = _group_handle(base_dir, handle)
     fitness_performance(inbox_start_time, server.fitness,
                         'INBOX', '_group_handle',
@@ -1956,7 +1956,7 @@ def _inbox_after_initial(server, inbox_start_time,
                     get_attributed_to(message_json['attributedTo'])
         quote_post_nickname = None
         quote_post_domain_full = None
-        allow_quotes = False
+        allow_quotes: bool = False
         if quote_post_actor:
             quote_post_nickname = get_nickname_from_actor(quote_post_actor)
             quote_post_domain, quote_post_port = \
@@ -2421,7 +2421,7 @@ def _inbox_after_initial(server, inbox_start_time,
                             debug)
         inbox_start_time = time.time()
 
-        is_reply_to_muted_post = False
+        is_reply_to_muted_post: bool = False
 
         if not is_group:
             # create a DM notification file if needed
@@ -2472,7 +2472,7 @@ def _inbox_after_initial(server, inbox_start_time,
                                 debug)
             inbox_start_time = time.time()
 
-            show_vote_posts = True
+            show_vote_posts: bool = True
             show_vote_file = acct_dir(base_dir, nickname, domain) + '/.noVotes'
             if os.path.isfile(show_vote_file):
                 show_vote_posts = False
@@ -2805,7 +2805,7 @@ def _inbox_after_initial(server, inbox_start_time,
 def clear_queue_items(base_dir: str, queue: []) -> None:
     """Clears the queue for each account
     """
-    ctr = 0
+    ctr: int = 0
     queue.clear()
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
@@ -3018,7 +3018,7 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
 def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
     """check if a json signature exists on this post
     """
-    has_json_signature = False
+    has_json_signature: bool = False
     jwebsig_type = None
     original_json = queue_json['original']
     if not original_json.get('@context') or \
@@ -3043,7 +3043,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
 
             print('unrecognized @context: ' + unknown_context)
 
-            already_unknown = False
+            already_unknown: bool = False
             if os.path.isfile(unknown_contexts_file):
                 if text_in_file(unknown_context, unknown_contexts_file):
                     already_unknown = True
@@ -3058,7 +3058,7 @@ def _check_json_signature(base_dir: str, queue_json: {}) -> (bool, bool):
         unknown_signatures_file = \
             data_dir(base_dir) + '/unknownJsonSignatures.txt'
 
-        already_unknown = False
+        already_unknown: bool = False
         if os.path.isfile(unknown_signatures_file):
             if text_in_file(jwebsig_type, unknown_signatures_file):
                 already_unknown = True
@@ -3176,7 +3176,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
                       handle_dir)
             return True
 
-    is_already_follower = False
+    is_already_follower: bool = False
     if is_follower_of_person(base_dir,
                              nickname_to_follow, domain_to_follow_full,
                              nickname, domain_full):
@@ -3449,7 +3449,7 @@ def run_inbox_queue(server,
     inbox_start_time = time.time()
 
     curr_session_time = int(time.time())
-    session_last_update = 0
+    session_last_update: int = 0
     session = create_session(proxy_type)
     if session:
         session_last_update = curr_session_time
@@ -3461,9 +3461,9 @@ def run_inbox_queue(server,
     session_onion = None
     session_i2p = None
     session_yggdrasil = None
-    session_last_update_onion = 0
-    session_last_update_i2p = 0
-    session_last_update_yggdrasil = 0
+    session_last_update_onion: int = 0
+    session_last_update_i2p: int = 0
+    session_last_update_yggdrasil: int = 0
     if proxy_type != 'tor' and onion_domain:
         print('Starting onion session when starting inbox queue')
         session_onion = create_session('tor')
@@ -3503,8 +3503,8 @@ def run_inbox_queue(server,
         'accounts': {}
     }
 
-    heart_beat_ctr = 0
-    queue_restore_ctr = 0
+    heart_beat_ctr: int = 0
+    queue_restore_ctr: int = 0
     curr_mitm_servers: list[str] = []
 
     # time when the last DM bounce message was sent
@@ -3519,7 +3519,7 @@ def run_inbox_queue(server,
                         'INBOX', 'while_loop_start', debug)
     inbox_start_time = time.time()
     # the last time that a quote request was last received
-    last_quote_request = 0
+    last_quote_request: int = 0
     while True:
         time.sleep(1)
         inbox_start_time = time.time()
@@ -3538,7 +3538,7 @@ def run_inbox_queue(server,
             inbox_start_time = time.time()
             print('>>> Heartbeat Q:' + str(len(queue)) + ' ' +
                   '{:%F %T}'.format(datetime.datetime.now()))
-            heart_beat_ctr = 0
+            heart_beat_ctr: int = 0
 
             # save MITM servers list if it has changed
             if str(server.mitm_servers) != str(curr_mitm_servers):
@@ -3549,7 +3549,7 @@ def run_inbox_queue(server,
             # restore any remaining queue items
             queue_restore_ctr += 1
             if queue_restore_ctr >= 30:
-                queue_restore_ctr = 0
+                queue_restore_ctr: int = 0
                 _restore_queue_items(base_dir, queue)
             fitness_performance(inbox_start_time, server.fitness,
                                 'INBOX', 'restore_queue', debug)
@@ -3768,7 +3768,7 @@ def run_inbox_queue(server,
             print('DEBUG: checking http header signature')
             pprint(queue_json['httpHeaders'])
         post_str = json.dumps(queue_json['post'])
-        http_signature_failed = False
+        http_signature_failed: bool = False
         if not verify_post_headers(http_prefix, pub_key,
                                    queue_json['httpHeaders'],
                                    queue_json['path'], False,
@@ -3870,7 +3870,7 @@ def run_inbox_queue(server,
         curr_destination = queue_json['destination']
 
         # if the post contains a collection of posts then split it up
-        remove_queue_item = False
+        remove_queue_item: bool = False
         posts_list_json = split_post_collection(queue_json['post'])
         for curr_post_json in posts_list_json:
 
@@ -4089,10 +4089,10 @@ def run_inbox_queue(server,
                 destination = \
                     curr_destination.replace(inbox_handle, handle)
                 languages_understood: list[str] = []
-                mitm = False
+                mitm: bool = False
                 if queue_json.get('mitm'):
                     mitm = True
-                bold_reading = False
+                bold_reading: bool = False
                 bold_reading_filename = \
                     acct_handle_dir(base_dir, handle) + '/.boldReading'
                 if os.path.isfile(bold_reading_filename):

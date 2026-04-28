@@ -489,14 +489,14 @@ def html_timeline(default_timeline: str,
                   block_nostr: {}) -> str:
     """Show the timeline as html
     """
-    enable_timing_log = False
+    enable_timing_log: bool = False
 
     timeline_start_time = time.time()
 
     account_dir = acct_dir(base_dir, nickname, domain)
 
     # should the calendar icon be highlighted?
-    new_calendar_event = False
+    new_calendar_event: bool = False
     calendar_image = 'calendar.png'
     calendar_path = '/calendar'
     calendar_file = account_dir + '/.newCalendar'
@@ -514,7 +514,7 @@ def html_timeline(default_timeline: str,
                 calendar_path = '/calendar'
 
     # should the DM button be highlighted?
-    new_dm = False
+    new_dm: bool = False
     dm_file = account_dir + '/.newDM'
     if os.path.isfile(dm_file):
         new_dm = True
@@ -525,7 +525,7 @@ def html_timeline(default_timeline: str,
                 print('EX: html_timeline unable to delete ' + dm_file)
 
     # should the Replies button be highlighted?
-    new_reply = False
+    new_reply: bool = False
     reply_file = account_dir + '/.newReply'
     if os.path.isfile(reply_file):
         new_reply = True
@@ -536,7 +536,7 @@ def html_timeline(default_timeline: str,
                 print('EX: html_timeline unable to delete ' + reply_file)
 
     # should the Shares button be highlighted?
-    new_share = False
+    new_share: bool = False
     new_share_file = account_dir + '/.newShare'
     if os.path.isfile(new_share_file):
         new_share = True
@@ -547,7 +547,7 @@ def html_timeline(default_timeline: str,
                 print('EX: html_timeline unable to delete ' + new_share_file)
 
     # should the Wanted button be highlighted?
-    new_wanted = False
+    new_wanted: bool = False
     new_wanted_file = account_dir + '/.newWanted'
     if os.path.isfile(new_wanted_file):
         new_wanted = True
@@ -558,7 +558,7 @@ def html_timeline(default_timeline: str,
                 print('EX: html_timeline unable to delete ' + new_wanted_file)
 
     # should the Moderation/reports button be highlighted?
-    new_report = False
+    new_report: bool = False
     new_report_file = account_dir + '/.newReport'
     if os.path.isfile(new_report_file):
         new_report = True
@@ -569,7 +569,7 @@ def html_timeline(default_timeline: str,
                 print('EX: html_timeline unable to delete ' + new_report_file)
 
     # show polls/votes?
-    show_vote_posts = True
+    show_vote_posts: bool = True
     show_vote_file = account_dir + '/.noVotes'
     if os.path.isfile(show_vote_file):
         show_vote_posts = False
@@ -777,7 +777,7 @@ def html_timeline(default_timeline: str,
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '4')
 
     # if this is a news instance and we are viewing the news timeline
-    news_header = False
+    news_header: bool = False
     if default_timeline == 'tlfeatures' and box_name == 'tlfeatures':
         news_header = True
 
@@ -998,14 +998,14 @@ def html_timeline(default_timeline: str,
                 '</a>\n  </center>\n'
 
     # show the posts
-    item_ctr = 0
+    item_ctr: int = 0
     if timeline_json:
         if 'orderedItems' not in timeline_json:
             print('ERROR: no orderedItems in timeline for '
                   + box_name + ' ' + str(timeline_json))
             return ''
 
-    use_cache_only = False
+    use_cache_only: bool = False
     if box_name == 'inbox':
         use_cache_only = True
 
@@ -1020,12 +1020,12 @@ def html_timeline(default_timeline: str,
                 tl_str += '<br>'
             tl_str += '<div class="galleryContainer">\n'
 
-        minimize_all_images = False
+        minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
 
         no_seen_posts_filename = account_dir + '/.noSeenPosts'
-        no_seen_posts = False
+        no_seen_posts: bool = False
         if os.path.isfile(no_seen_posts_filename):
             no_seen_posts = True
 
@@ -1325,21 +1325,21 @@ def _html_shares_timeline(translate: {}, page_number: int, items_per_page: int,
             '  </center>\n'
 
     separator_str = html_post_separator(base_dir, None)
-    ctr = 0
+    ctr: int = 0
 
-    is_admin_account = False
+    is_admin_account: bool = False
     if admin_actor and actor == admin_actor:
         is_admin_account = True
-    is_moderator_account = False
+    is_moderator_account: bool = False
     if is_moderator(base_dir, nickname):
         is_moderator_account = True
 
     for _, shared_item in shares_json.items():
-        show_contact_button = False
+        show_contact_button: bool = False
         actor_url = get_actor_from_post(shared_item)
         if actor_url != actor:
             show_contact_button = True
-        show_remove_button = False
+        show_remove_button: bool = False
         if '___' + domain in shared_item['shareId']:
             if actor_url == actor or \
                is_admin_account or is_moderator_account:
@@ -1744,7 +1744,7 @@ def html_inbox_dms(default_timeline: str,
     """Show the DM timeline as html
     """
     artist = is_artist(base_dir, nickname)
-    show_announces = False
+    show_announces: bool = False
     return html_timeline(default_timeline,
                          recent_posts_cache, max_recent_posts,
                          translate, page_number,

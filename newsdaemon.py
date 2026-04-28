@@ -154,7 +154,7 @@ def _hashtag_logical_and(tree: [], hashtags: [], moderated: bool,
     if len(tree) < 3:
         return False
     for arg_index in range(1, len(tree)):
-        arg_value = False
+        arg_value: bool = False
         if isinstance(tree[arg_index], str):
             arg_value = tree[arg_index] in hashtags
         elif isinstance(tree[arg_index], list):
@@ -173,7 +173,7 @@ def _hashtag_logical_or(tree: [], hashtags: [], moderated: bool,
     if len(tree) < 3:
         return False
     for arg_index in range(1, len(tree)):
-        arg_value = False
+        arg_value: bool = False
         if isinstance(tree[arg_index], str):
             arg_value = tree[arg_index] in hashtags
         elif isinstance(tree[arg_index], list):
@@ -191,9 +191,9 @@ def _hashtag_logical_xor(tree: [], hashtags: [], moderated: bool,
     """
     if len(tree) < 3:
         return False
-    true_ctr = 0
+    true_ctr: int = 0
     for arg_index in range(1, len(tree)):
-        arg_value = False
+        arg_value: bool = False
         if isinstance(tree[arg_index], str):
             arg_value = tree[arg_index] in hashtags
         elif isinstance(tree[arg_index], list):
@@ -272,7 +272,7 @@ def hashtag_rule_tree(operators: [],
                    conditions_str.startswith('"'):
                     tags_in_conditions.append(conditions_str)
         tree = [conditions_str.strip()]
-    ctr = 0
+    ctr: int = 0
     while ctr < len(operators):
         oper = operators[ctr]
         opmatch = ' ' + oper + ' '
@@ -462,7 +462,7 @@ def _create_news_mirror(base_dir: str, domain: str,
         os.mkdir(mirror_dir)
 
     # count the directories
-    no_of_dirs = 0
+    no_of_dirs: int = 0
     for _, dirs, _ in os.walk(mirror_dir):
         no_of_dirs = len(dirs)
         break
@@ -478,7 +478,7 @@ def _create_news_mirror(base_dir: str, domain: str,
             with open(mirror_index_filename, 'r',
                       encoding='utf-8') as fp_index:
                 # remove the oldest directories
-                ctr = 0
+                ctr: int = 0
                 while no_of_dirs > max_mirrored_articles:
                     ctr += 1
                     if ctr > 5000:
@@ -656,7 +656,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         # NOTE: the id when the post is created will not be
         # consistent (it's based on the current time, not the
         # published time), so we change that later
-        save_to_file = False
+        save_to_file: bool = False
         attach_image_filename = None
         media_type = None
         image_description = None

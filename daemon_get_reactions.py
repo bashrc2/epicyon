@@ -122,7 +122,7 @@ def reaction_picker2(self, calling_domain: str, path: str,
     if account_timezone.get(self.post_to_nickname):
         timezone = account_timezone.get(self.post_to_nickname)
 
-    bold_reading = False
+    bold_reading: bool = False
     if bold_reading_nicknames.get(self.post_to_nickname):
         bold_reading = True
 

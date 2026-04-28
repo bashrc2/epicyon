@@ -110,7 +110,7 @@ def _create_like(recent_posts_cache: {},
     liked_post_nickname = None
     liked_post_domain = None
     liked_post_port = None
-    group_account = False
+    group_account: bool = False
     if actor_liked:
         liked_post_nickname = get_nickname_from_actor(actor_liked)
         liked_post_domain, liked_post_port = get_domain_from_actor(actor_liked)
@@ -572,10 +572,10 @@ def undo_likes_collection_entry(recent_posts_cache: {},
         return
     if not obj['likes'].get('items'):
         return
-    total_items = 0
+    total_items: int = 0
     if obj['likes'].get('totalItems'):
         total_items = obj['likes']['totalItems']
-    item_found = False
+    item_found: bool = False
     for like_item in obj['likes']['items']:
         if not like_item.get('actor'):
             continue

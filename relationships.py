@@ -52,7 +52,7 @@ def get_moved_accounts(base_dir: str, nickname: str, domain: str,
         follow_str = ''
     follow_list = follow_str.split('\n')
 
-    ctr = 0
+    ctr: int = 0
     for line in refollow_list:
         if ' ' not in line:
             continue
@@ -76,14 +76,14 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
     """
     # Don't show moved accounts to non-authorized viewers
     if not authorized:
-        follows_per_page = 0
+        follows_per_page: int = 0
 
     if '/moved' not in path:
         return None
     if '?page=' not in path:
         path = path.replace('/moved', '/moved?page=true')
     # handle page numbers
-    header_only = True
+    header_only: bool = True
     page_number = None
     if '?page=' in path:
         page_number = path.split('?page=')[1]
@@ -160,9 +160,9 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
 
     handle_domain = domain
     handle_domain = remove_domain_port(handle_domain)
-    curr_page = 1
-    page_ctr = 0
-    total_ctr = 0
+    curr_page: int = 1
+    page_ctr: int = 0
+    total_ctr: int = 0
     for handle, _ in lines.items():
         # nickname@domain
         page_ctr += 1
@@ -186,7 +186,7 @@ def get_moved_feed(base_dir: str, domain: str, port: int, path: str,
             if url:
                 following['orderedItems'].append(url)
         if page_ctr >= follows_per_page:
-            page_ctr = 0
+            page_ctr: int = 0
             curr_page += 1
     following['totalItems'] = total_ctr
     last_page = 1
@@ -211,8 +211,8 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
 
     if debug:
         print('Updating moved actors')
-    actors_dict = {}
-    ctr = 0
+    actors_dict: dict = {}
+    ctr: int = 0
     for _, _, files in os.walk(actors_cache_dir):
         for actor_str in files:
             if not actor_str.endswith('.json'):
@@ -264,8 +264,8 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
     else:
         print('No accounts are following')
 
-    moved_str = ''
-    ctr = 0
+    moved_str: str = ''
+    ctr: int = 0
     for handle in handles_to_check:
         if not actors_dict.get(handle):
             continue
@@ -345,7 +345,7 @@ def _get_inactive_accounts(base_dir: str, nickname: str, domain: str,
             if follower_domain in sites_unavailable:
                 result.append(handle)
                 continue
-            found = False
+            found: bool = False
             for http_prefix in ('https://', 'http://'):
                 for users_str in users_list:
                     actor = \
@@ -395,7 +395,7 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
     if '?page=' not in path:
         path = path.replace('/inactive', '/inactive?page=true')
     # handle page numbers
-    header_only = True
+    header_only: bool = True
     page_number = None
     if '?page=' in path:
         page_number = path.split('?page=')[1]
@@ -472,9 +472,9 @@ def get_inactive_feed(base_dir: str, domain: str, port: int, path: str,
 
     handle_domain = domain
     handle_domain = remove_domain_port(handle_domain)
-    curr_page = 1
-    page_ctr = 0
-    total_ctr = 0
+    curr_page: int = 1
+    page_ctr: int = 0
+    total_ctr: int = 0
     for handle in lines:
         # nickname@domain
         page_ctr += 1

@@ -285,7 +285,7 @@ def get_content_from_post(post_json_object: {}, system_language: str,
              'contentMap' in this_post_json['object'])):
             this_post_json = post_json_object['object']
     map_dict = content_type + 'Map'
-    has_contentmap_dict = False
+    has_contentmap_dict: bool = False
     if this_post_json.get(map_dict):
         if isinstance(this_post_json[map_dict], dict):
             has_contentmap_dict = True
@@ -617,7 +617,7 @@ def remove_html(content: str) -> str:
     """
     if '<' not in content:
         return content
-    removing = False
+    removing: bool = False
     replacements = {
         '<a href': ' <a href',
         '<q>': '"',
@@ -954,7 +954,7 @@ def load_json_onionify(filename: str, domain: str, onion_domain: str,
     if '/Actor@' in filename:
         filename = filename.replace('/Actor@', '/inbox@')
     json_object = None
-    tries = 0
+    tries: int = 0
     while tries < 5:
         data = load_string(filename,
                            'EX: load_json_onionify exception ' + filename)
@@ -1142,7 +1142,7 @@ def html_tag_has_closing(tag_name: str, content: str) -> bool:
     if '<' + tag_name not in content_lower:
         return True
     sections = content_lower.split('<' + tag_name)
-    ctr = 0
+    ctr: int = 0
     end_tag = '</' + tag_name + '>'
     for section in sections:
         if ctr == 0:
@@ -1665,7 +1665,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
 def votes_on_newswire_item(status: []) -> int:
     """Returns the number of votes on a newswire item
     """
-    total_votes = 0
+    total_votes: int = 0
     for line in status:
         if 'vote:' in line:
             total_votes += 1
@@ -2040,7 +2040,7 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
 def _delete_hashtags_on_post(base_dir: str, post_json_object: {}) -> None:
     """Removes hashtags when a post is deleted
     """
-    remove_hashtag_index = False
+    remove_hashtag_index: bool = False
     if has_object_dict(post_json_object):
         if post_json_object['object'].get('content'):
             if '#' in post_json_object['object']['content']:
@@ -2413,7 +2413,7 @@ def delete_post(base_dir: str, http_prefix: str,
     # remove cached html version of the post
     delete_cached_html(base_dir, nickname, domain, post_json_object)
 
-    has_object = False
+    has_object: bool = False
     if post_json_object.get('object'):
         has_object = True
 
@@ -2590,7 +2590,7 @@ def valid_nickname(domain: str, nickname: str) -> bool:
 def no_of_accounts(base_dir: str) -> bool:
     """Returns the number of accounts on the system
     """
-    account_ctr = 0
+    account_ctr: int = 0
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
@@ -2603,7 +2603,7 @@ def no_of_accounts(base_dir: str) -> bool:
 def no_of_active_accounts_monthly(base_dir: str, months: int) -> bool:
     """Returns the number of accounts on the system this month
     """
-    account_ctr = 0
+    account_ctr: int = 0
     curr_time = int(time.time())
     month_seconds = int(60*60*24*30*months)
     dir_str = data_dir(base_dir)
@@ -2910,7 +2910,7 @@ def get_actor_property_url(actor_json: {}, property_name: str) -> str:
             continue
         property_value['value'] = property_value[prop_value_name].strip()
         prefixes = get_protocol_prefixes()
-        prefix_found = False
+        prefix_found: bool = False
         prop_value = remove_html(property_value[prop_value_name])
         for prefix in prefixes:
             if prop_value.startswith(prefix):
@@ -3730,7 +3730,7 @@ def binary_is_image(filename: str, media_binary) -> bool:
     if len(media_binary) < 13:
         return False
     filename_lower = filename.lower()
-    bin_is_image = False
+    bin_is_image: bool = False
     if filename_lower.endswith('.jpeg') or filename_lower.endswith('jpg'):
         if media_binary[6:10] in (b'JFIF', b'Exif'):
             bin_is_image = True
@@ -3764,7 +3764,7 @@ def binary_is_image(filename: str, media_binary) -> bool:
 def get_status_count(base_dir: str) -> int:
     """Get the total number of posts
     """
-    status_ctr = 0
+    status_ctr: int = 0
     accounts_dir = data_dir(base_dir)
     for _, dirs, _ in os.walk(accounts_dir):
         for acct in dirs:

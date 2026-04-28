@@ -186,7 +186,7 @@ def _person_receive_update_outbox(base_dir: str, http_prefix: str,
     actor_json = load_json(actor_filename)
     if not actor_json:
         return
-    actor_changed = False
+    actor_changed: bool = False
     # update fields within actor
     if 'attachment' in updated_actor_json:
         # these attachments are updatable via c2s
@@ -328,7 +328,7 @@ def post_message_to_outbox(session, translate: {},
                                            message_json)
 
     # is Bold Reading enabled for this account?
-    bold_reading = False
+    bold_reading: bool = False
     if server.bold_reading.get(post_to_nickname):
         bold_reading = True
 
@@ -448,7 +448,7 @@ def post_message_to_outbox(session, translate: {},
         message_json['object']['attributedTo'] = actor_url
         message_attachments = get_post_attachments(message_json['object'])
         if message_attachments:
-            attachment_index = 0
+            attachment_index: int = 0
             attach = message_attachments[attachment_index]
             if attach.get('mediaType'):
                 file_extension = 'png'
@@ -537,7 +537,7 @@ def post_message_to_outbox(session, translate: {},
     if debug:
         print('DEBUG: save_post_to_box')
 
-    is_edited_post = False
+    is_edited_post: bool = False
     if message_json['type'] == 'Update' and \
        message_json['object']['type'] in ('Note', 'Event'):
         is_edited_post = True
@@ -635,7 +635,7 @@ def post_message_to_outbox(session, translate: {},
 
             # should this also go to the media timeline?
             if box_name_index == 'inbox':
-                show_vote_posts = True
+                show_vote_posts: bool = True
                 show_vote_file = \
                     acct_dir(base_dir, post_to_nickname, domain) + '/.noVotes'
                 if os.path.isfile(show_vote_file):
@@ -672,20 +672,20 @@ def post_message_to_outbox(session, translate: {},
                                    saved_filename, debug)
 
                 # regenerate the html
-                use_cache_only = False
-                page_number = 1
-                show_individual_post_icons = True
+                use_cache_only: bool = False
+                page_number: int = 1
+                show_individual_post_icons: bool = True
                 manually_approve_followers = \
                     follower_approval_active(base_dir,
                                              post_to_nickname, domain)
                 timezone = \
                     get_account_timezone(base_dir,
                                          post_to_nickname, domain)
-                mitm = False
+                mitm: bool = False
                 if os.path.isfile(saved_filename.replace('.json', '') +
                                   '.mitm'):
                     mitm = True
-                minimize_all_images = False
+                minimize_all_images: bool = False
                 if post_to_nickname in min_images_for_accounts:
                     minimize_all_images = True
                 # get the list of mutuals for the current account

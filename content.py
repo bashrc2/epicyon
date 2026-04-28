@@ -85,8 +85,8 @@ def valid_url_lengths(content: str, max_url_length: int) -> bool:
     """
     if '://' not in content:
         return True
-    sections = content.split('://')
-    ctr = 0
+    sections: list = content.split('://')
+    ctr: int = 0
     for text in sections:
         if ctr == 0:
             ctr += 1
@@ -103,7 +103,7 @@ def valid_url_lengths(content: str, max_url_length: int) -> bool:
 def remove_html_tag(html_str: str, tag: str) -> str:
     """Removes a given tag from a html string
     """
-    tag_found = True
+    tag_found: bool = True
     while tag_found:
         match_str: str = ' ' + tag + '="'
         if match_str not in html_str:
@@ -125,7 +125,7 @@ def _remove_quotes_within_quotes(content: str) -> str:
     if '</blockquote>' not in content:
         return content
     ctr = 1
-    found = True
+    found: bool = True
     while found:
         prefix = content.split('<blockquote>', ctr)[0] + '<blockquote>'
         quoted_str = content.split('<blockquote>', ctr)[1]
@@ -202,7 +202,7 @@ def html_replace_inline_quotes(content: str) -> str:
     if '<p class="quote-inline">' not in content:
         return content
     sections = content.split('<p class="quote-inline">')
-    ctr = 0
+    ctr: int = 0
     new_content = ''
     for section in sections:
         if ctr == 0:
@@ -238,8 +238,8 @@ def html_replace_quote_marks(content: str) -> str:
         sections = content.split('"')
         if len(sections) > 1:
             new_content: str = ''
-            open_quote = True
-            markup = False
+            open_quote: bool = True
+            markup: bool = False
             for char in content:
                 curr_char = char
                 if char == '<':
@@ -255,11 +255,11 @@ def html_replace_quote_marks(content: str) -> str:
                 new_content += curr_char
 
     if '&quot;' in new_content:
-        open_quote = True
+        open_quote: bool = True
         content = new_content
         new_content: str = ''
-        ctr = 0
-        sections = content.split('&quot;')
+        ctr: int = 0
+        sections: list = content.split('&quot;')
         no_of_sections = len(sections)
         for sec in sections:
             new_content += sec
@@ -300,8 +300,8 @@ def dangerous_css(filename: str, allow_local_network_access: bool) -> bool:
 
     # search for non-local web links
     if 'url(' in content:
-        url_list = content.split('url(')
-        ctr = 0
+        url_list: list = content.split('url(')
+        ctr: int = 0
         for url_str in url_list:
             if ctr == 0:
                 ctr = 1
@@ -434,7 +434,7 @@ def _update_common_emoji(base_dir: str, emoji_content: str) -> None:
             common_emoji = common_emoji_str.split('\n')
     if common_emoji:
         new_common_emoji: list[str] = []
-        emoji_found = False
+        emoji_found: bool = False
         for line in common_emoji:
             if ' ' + emoji_content in line:
                 if not emoji_found:
@@ -502,7 +502,7 @@ def replace_emoji_from_tags(session, base_dir: str,
         # emoji/charts/full-emoji-list.html
         if '-' not in icon_name:
             # a single code
-            replaced = False
+            replaced: bool = False
             try:
                 replace_char = chr(int("0x" + icon_name, 16))
                 if not screen_readable:
@@ -533,7 +533,7 @@ def replace_emoji_from_tags(session, base_dir: str,
             icon_codes = icon_name.split('-')
             icon_code_sequence: str = ''
             for icode in icon_codes:
-                replaced = False
+                replaced: bool = False
                 try:
                     icon_code_sequence += chr(int("0x" +
                                                   icode, 16))
@@ -592,7 +592,7 @@ def _add_music_tag(content: str, tag: str) -> str:
         tag = '#' + tag
     if tag in content:
         return content
-    music_site_found = False
+    music_site_found: bool = False
     for site in MUSIC_SITES:
         if site + '/' in content:
             music_site_found = True
@@ -612,8 +612,8 @@ def _shorten_linked_urls(content: str) -> str:
         return content
     if '<' not in content:
         return content
-    sections = content.split('>')
-    ctr = 0
+    sections: list = content.split('>')
+    ctr: int = 0
     for section_text in sections:
         if ctr == 0:
             ctr += 1
@@ -701,8 +701,8 @@ def remove_link_trackers_from_content(content: str) -> str:
     """
     if '?utm_' not in content:
         return content
-    sections = content.split('?utm_')
-    ctr = 0
+    sections: list = content.split('?utm_')
+    ctr: int = 0
     new_content: str = ''
     for section_str in sections:
         if ctr == 0:
@@ -728,7 +728,7 @@ def add_web_links(content: str) -> str:
     prefixes = get_link_prefixes()
 
     # do any of these prefixes exist within the content?
-    prefix_found = False
+    prefix_found: bool = False
     for prefix in prefixes:
         if prefix in content:
             prefix_found = True
@@ -752,7 +752,7 @@ def add_web_links(content: str) -> str:
         if _contains_doi_reference(wrd, replace_dict):
             continue
         # does the word begin with a link prefix?
-        prefix_found = False
+        prefix_found: bool = False
         for prefix in prefixes:
             if wrd.startswith(prefix):
                 prefix_found = True
@@ -862,9 +862,9 @@ def replace_remote_hashtags(content: str,
     if ' href="' not in content:
         return content
 
-    sections = content.split(' href="')
-    ctr = 0
-    replacements = {}
+    sections: list = content.split(' href="')
+    ctr: int = 0
+    replacements: dict = {}
     for section in sections:
         if ctr == 0:
             ctr += 1
@@ -1008,7 +1008,7 @@ def _add_mention(base_dir: str, word_str: str, http_prefix: str,
                 possible_nickname + "</span></a></span>"
             return True
         # try replacing petnames with mentions
-        follow_ctr = 0
+        follow_ctr: int = 0
         if petnames:
             for follow in following:
                 if '@' not in follow:
@@ -1132,9 +1132,9 @@ def _remove_truncated_link(content: str) -> str:
     """
     if '<a href' not in content:
         return content
-    sections = content.split('<a href')
-    ctr = 0
-    remove_strings = []
+    sections: list = content.split('<a href')
+    ctr: int = 0
+    remove_strings: list = []
     for section in sections:
         if ctr == 0:
             ctr = 1
@@ -1157,11 +1157,11 @@ def remove_long_words(content: str, max_word_length: int,
     content = replace_content_duplicates(content)
     content = _remove_truncated_link(content)
 
-    non_html_list = False
+    non_html_list: bool = False
     if '\n\n' in content and '<p>' not in content:
         content = '<p>' + content.replace('\n\n', '</p> <p>') + '</p>'
         non_html_list = True
-    non_html_list2 = False
+    non_html_list2: bool = False
     if '\n' in content and '<p>' not in content:
         content = '<p>' + content.replace('\n', '</p> <p>') + '</p>'
         non_html_list2 = True
@@ -1319,13 +1319,13 @@ def detect_dogwhistles(content: str, dogwhistles: {}) -> {}:
     """Returns a dict containing any detected dogwhistle words
     """
     content = remove_html(content).lower()
-    result = {}
+    result: dict = {}
     words = _get_simplified_content(content).split(' ')
     for whistle, category in dogwhistles.items():
         if not category:
             continue
-        ending = False
-        starting = False
+        ending: bool = False
+        starting: bool = False
         whistle = whistle.lower()
 
         if whistle.startswith('x-'):
@@ -1937,9 +1937,9 @@ def limit_repeated_words(text: str, max_repeats: int) -> str:
     """Removes words which are repeated many times
     """
     words = text.replace('\n', ' ').split(' ')
-    repeat_ctr = 0
+    repeat_ctr: int = 0
     repeated_text: str = ''
-    replacements = {}
+    replacements: dict = {}
     prev_word: str = ''
     for word in words:
         if word == prev_word:
@@ -1952,7 +1952,7 @@ def limit_repeated_words(text: str, max_repeats: int) -> str:
             if repeat_ctr > max_repeats:
                 new_text = ((prev_word + ' ') * max_repeats).strip()
                 replacements[prev_word] = [repeated_text, new_text]
-            repeat_ctr = 0
+            repeat_ctr: int = 0
             repeated_text: str = ''
         prev_word = word
 
@@ -2024,7 +2024,7 @@ def words_similarity(content1: str, content2: str, min_words: int) -> int:
     histogram1 = _words_similarity_histogram(words1)
     histogram2 = _words_similarity_histogram(words2)
 
-    diff = 0
+    diff: int = 0
     for combined_words, histogram1_value in histogram1.items():
         if not histogram2.get(combined_words):
             diff += 1
@@ -2045,7 +2045,7 @@ def contains_invalid_local_links(domain_full: str,
         if match_str not in content:
             continue
         # extract the urls and check whether they are for the local domain
-        ctr = 0
+        ctr: int = 0
         sections = content.split(match_str)
         final_section_index = len(sections) - 1
         for section_str in sections:
@@ -2072,17 +2072,17 @@ def bold_reading_string(text: str) -> str:
     """Returns bold reading formatted text
     """
     text = html.unescape(text)
-    add_paragraph_markup = False
+    add_paragraph_markup: bool = False
     if '<p>' in text:
         text = text.replace('</p>', '\n').replace('<p>', '')
         add_paragraph_markup = True
-    paragraphs = text.split('\n')
-    parag_ctr = 0
+    paragraphs: list = text.split('\n')
+    parag_ctr: int = 0
     new_text: str = ''
     for parag in paragraphs:
-        words = parag.split(' ')
+        words: list = parag.split(' ')
         new_parag: str = ''
-        reading_markup = False
+        reading_markup: bool = False
         for wrd in words:
             if '<' in wrd:
                 reading_markup = True
@@ -2133,8 +2133,8 @@ def import_emoji(base_dir: str, import_filename: str, session) -> None:
     """
     if not os.path.isfile(import_filename):
         return
-    emoji_dict = load_json(base_dir + '/emoji/default_emoji.json')
-    added = 0
+    emoji_dict: dict = load_json(base_dir + '/emoji/default_emoji.json')
+    added: int = 0
     lines_str = load_string(import_filename,
                             'EX: import_emoji failed ' + import_filename)
     if lines_str:
@@ -2264,7 +2264,7 @@ def remove_script(content: str, log_filename: str,
         if prefix not in content:
             continue
         sections = content.split(prefix)
-        ctr = 0
+        ctr: int = 0
         for text in sections:
             if ctr == 0:
                 ctr += 1
@@ -2393,8 +2393,8 @@ def format_mixed_right_to_left(content: str,
     if language_right_to_left(language):
         return content
     result: str = ''
-    changed = False
-    paragraphs = content.split('<p>')
+    changed: bool = False
+    paragraphs: list = content.split('<p>')
     for text_html in paragraphs:
         if '</p>' not in text_html:
             continue
@@ -2413,7 +2413,7 @@ def format_mixed_right_to_left(content: str,
             prev_distilled = distilled
             distilled = distilled.replace('<br><br><br>', '<br><br>')
         paragraphs = distilled.split('<br><br>')
-        ctr = 0
+        ctr: int = 0
         for text_html in paragraphs:
             ctr += 1
             if ctr < len(paragraphs):

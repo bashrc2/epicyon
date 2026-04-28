@@ -192,13 +192,13 @@ def _html_calendar_day(person_cache: {}, translate: {},
             start_time_str: str = ''
             end_time_str: str = ''
             event_description = None
-            event_language = system_language
+            event_language: str = system_language
             event_place = None
             event_address = None
             post_id = None
             sender_name: str = ''
             sender_actor = None
-            event_is_public = False
+            event_is_public: bool = False
             # get the time place and description
             for evnt in event_post:
                 event_language = system_language
@@ -243,7 +243,7 @@ def _html_calendar_day(person_cache: {}, translate: {},
                     if evnt.get('name'):
                         event_place = remove_html(evnt['name'])
                         if '://' in event_place:
-                            bounding_box_degrees = 0.001
+                            bounding_box_degrees: float = 0.001
                             event_map = \
                                 html_open_street_map(event_place,
                                                      bounding_box_degrees,
@@ -405,7 +405,7 @@ def html_calendar(person_cache: {}, translate: {},
     day_number = None
     year: int = default_year
     actor = http_prefix + '://' + domain_full + path.replace('/calendar', '')
-    only_show_reminders = False
+    only_show_reminders: bool = False
     if '?' in actor:
         first = True
         for part in actor.split('?'):
@@ -604,7 +604,7 @@ def html_calendar(person_cache: {}, translate: {},
         translate['Switch to timeline view']
     nav_links[timeline_link_str] = cal_actor + '/' + default_timeline
 
-    day_of_month = 0
+    day_of_month: int = 0
     dow = week_day_of_month_start(month_number, year)
     for week_of_month in range(1, 7):
         if day_of_month == days_in_month:
@@ -618,7 +618,7 @@ def html_calendar(person_cache: {}, translate: {},
 
             day_of_month += 1
 
-            is_today = False
+            is_today: bool = False
             if year == curr_date.year:
                 if curr_date.month == month_number:
                     if day_of_month == curr_date.day:

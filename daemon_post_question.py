@@ -221,7 +221,7 @@ def _send_reply_to_question(self, base_dir: str,
     in_reply_to = message_id
     in_reply_to_atom_uri = message_id
     subject = None
-    schedule_post = False
+    schedule_post: bool = False
     event_date = None
     event_time = None
     event_end_time = None

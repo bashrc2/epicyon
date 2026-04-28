@@ -565,15 +565,15 @@ def html_profile_book_list(base_dir: str, actor: str, no_of_books: int,
                            reverse=True))
     html_str = '<div class="book_list_section">\n'
     html_str += '  <ul class="book_list">\n'
-    ctr = 0
+    ctr: int = 0
     for published_time_sec, book_url in recent_books_json.items():
         if not reader_books_json.get(book_url):
             continue
         book_rating = None
-        book_wanted = False
-        book_reading = False
-        book_finished = False
-        book_event_type = ''
+        book_wanted: bool = False
+        book_reading: bool = False
+        book_finished: bool = False
+        book_event_type: str = ''
         book_image_url = None
         for event_type in ('want', 'finished', 'rated'):
             if not reader_books_json[book_url].get(event_type):

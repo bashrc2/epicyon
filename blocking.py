@@ -135,7 +135,7 @@ def blocked_timeline_json(actor: str, page_number: int, items_per_page: int,
         blocked_list = blocked_accounts_textarea.split('\n')
     start_index = (page_number - 1) * items_per_page
     if start_index >= len(blocked_list):
-        start_index = 0
+        start_index: int = 0
     last_page_number = (len(blocked_list) / items_per_page) + 1
 
     result_json = {
@@ -599,7 +599,7 @@ def update_blocked_cache(base_dir: str,
     curr_time = get_current_time_int()
     if blocked_cache_last_updated > curr_time:
         print('WARN: Cache updated in the future')
-        blocked_cache_last_updated = 0
+        blocked_cache_last_updated: int = 0
     seconds_since_last_update = curr_time - blocked_cache_last_updated
     if seconds_since_last_update < blocked_cache_update_secs:
         return blocked_cache_last_updated
@@ -1347,7 +1347,7 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
     if post_json_obj.get('ignores'):
         domain_full = get_full_domain(domain, port)
         actor = local_actor_url(http_prefix, nickname, domain_full)
-        total_items = 0
+        total_items: int = 0
         if post_json_obj['ignores'].get('totalItems'):
             total_items = post_json_obj['ignores']['totalItems']
         items_list = post_json_obj['ignores']['items']
@@ -1440,7 +1440,7 @@ def outbox_mute(base_dir: str, http_prefix: str,
     domain_full = get_full_domain(domain, port)
     actor_url = get_actor_from_post(message_json)
 
-    actor_found = False
+    actor_found: bool = False
     users_paths = get_user_paths()
     for possible_path in users_paths:
         if actor_url.endswith(domain_full + possible_path + nickname):
@@ -1500,7 +1500,7 @@ def outbox_undo_mute(base_dir: str, http_prefix: str,
     domain_full = get_full_domain(domain, port)
     actor_url = get_actor_from_post(message_json)
 
-    actor_found = False
+    actor_found: bool = False
     users_paths = get_user_paths()
     for possible_path in users_paths:
         if actor_url.endswith(domain_full + possible_path + nickname):
@@ -1644,7 +1644,7 @@ def broch_modeLapses(base_dir: str, lapse_days: int) -> bool:
     curr_time = date_utcnow()
     days_since_broch = (curr_time - modified_date).days
     if days_since_broch >= lapse_days:
-        removed = False
+        removed: bool = False
         try:
             os.remove(allow_filename)
             removed = True
@@ -1670,7 +1670,7 @@ def import_blocking_file(base_dir: str, nickname: str, domain: str,
        'comment' not in lines[0]:
         return False
     fieldnames = lines[0].split(',')
-    comment_field_index = 0
+    comment_field_index: int = 0
     for field_str in fieldnames:
         if 'comment' in field_str:
             break
@@ -2268,7 +2268,7 @@ def sending_is_blocked2(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(send_block_filename):
         return False
 
-    send_blocked = False
+    send_blocked: bool = False
     if text_in_file(to_actor, send_block_filename, False):
         send_blocked = True
     elif text_in_file('://' + to_domain + '\n', send_block_filename, False):

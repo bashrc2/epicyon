@@ -233,7 +233,7 @@ def html_account_info(translate: {},
             post_domain + '</a> '
         if is_blocked_domain(base_dir, post_domain, None, block_federated):
             blocked_posts_links: str = ''
-            url_ctr = 0
+            url_ctr: int = 0
             for url in blocked_post_urls:
                 if url_ctr > 0:
                     blocked_posts_links += '<br>'
@@ -325,7 +325,7 @@ def html_account_info(translate: {},
             info_form += '<div class="accountInfoDomains">\n'
             info_form += '<h1>' + translate['Word frequencies'] + '</h1>\n'
             word_swarm: str = ''
-            ctr = 0
+            ctr: int = 0
             for word, count in word_frequency.items():
                 if count >= minimum_word_count:
                     if ctr > 0:
@@ -385,7 +385,7 @@ def html_moderation_info(translate: {}, base_dir: str,
         translate['Moderation Information'] + \
         '</a></h1></center><br>'
 
-    info_shown = False
+    info_shown: bool = False
 
     accounts: list[str] = []
     dir_str = data_dir(base_dir)
@@ -397,7 +397,7 @@ def html_moderation_info(translate: {}, base_dir: str,
         break
     accounts.sort()
 
-    cols = 5
+    cols: int = 5
     if len(accounts) > 10:
         info_form += '<details><summary><b>' + translate['Show Accounts']
         info_form += '</b></summary>\n'
@@ -409,7 +409,7 @@ def html_moderation_info(translate: {}, base_dir: str,
     info_form += '  </colgroup>\n'
     info_form += '<tr>\n'
 
-    col = 0
+    col: int = 0
     dir_str = data_dir(base_dir)
     for acct in accounts:
         acct_nickname = acct.split('@')[0]
@@ -471,7 +471,7 @@ def html_moderation_info(translate: {}, base_dir: str,
     blocking_filename = dir_str + '/blocking.txt'
     if os.path.isfile(blocking_filename):
         blocking_reasons_filename = dir_str + '/blocking_reasons.txt'
-        blocking_reasons_exist = False
+        blocking_reasons_exist: bool = False
         if os.path.isfile(blocking_reasons_filename):
             blocking_reasons_exist = True
         blocked_lines: list[str] = \

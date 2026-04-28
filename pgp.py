@@ -108,7 +108,7 @@ def get_deltachat_invite(actor_json: {}, translate: {}) -> str:
             name_value = property_value['schema:name']
         if not name_value:
             continue
-        found = False
+        found: bool = False
         for possible_str in match_strings:
             if possible_str in name_value.lower():
                 found = True
@@ -198,7 +198,7 @@ def get_pgp_fingerprint(actor_json: {}) -> str:
 def set_email_address(actor_json: {}, email_address: str) -> None:
     """Sets the email address for the given actor
     """
-    not_email_address = False
+    not_email_address: bool = False
     if '@' not in email_address:
         not_email_address = True
     if '.' not in email_address:
@@ -272,7 +272,7 @@ def set_deltachat_invite(actor_json: {}, invite_link: str,
     """Sets the deltachat invite link for the given actor
     """
     invite_link = invite_link.strip()
-    not_url = False
+    not_url: bool = False
     if '.' not in invite_link:
         not_url = True
     if '://' not in invite_link:
@@ -318,7 +318,7 @@ def set_deltachat_invite(actor_json: {}, invite_link: str,
 def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
     """Sets a PGP public key for the given actor
     """
-    remove_key = False
+    remove_key: bool = False
     if not pgp_pub_key:
         remove_key = True
     else:
@@ -389,7 +389,7 @@ def set_pgp_pub_key(actor_json: {}, pgp_pub_key: str) -> None:
 def set_pgp_fingerprint(actor_json: {}, fingerprint: str) -> None:
     """Sets a PGP fingerprint for the given actor
     """
-    remove_fingerprint = False
+    remove_fingerprint: bool = False
     if not fingerprint:
         remove_fingerprint = True
     else:
@@ -467,7 +467,7 @@ def extract_pgp_public_key(content: str) -> str:
     if '\n' not in content:
         return None
     lines_list = content.split('\n')
-    extracting = False
+    extracting: bool = False
     public_key = ''
     for line in lines_list:
         if not extracting:
@@ -829,8 +829,8 @@ def pgp_public_key_upload(base_dir: str, session,
         'Content-type': 'application/json',
         'Authorization': auth_header
     }
-    quiet = not debug
-    tries = 0
+    quiet: bool = not debug
+    tries: int = 0
     while tries < 4:
         post_result = \
             post_json(http_prefix, domain_full,

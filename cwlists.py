@@ -49,7 +49,7 @@ def _add_cw_match_tags(item: {}, post_tags: {}, cw_text: str,
     """Updates content warning text using hashtags from within
     the post content
     """
-    matched = False
+    matched: bool = False
     for tag in item['hashtags']:
         tag = tag.strip()
         if not tag:
@@ -81,7 +81,7 @@ def _add_cw_match_domains(item: {}, content: str, cw_text: str,
     """Updates content warning text using domains from within
     the post content
     """
-    matched = False
+    matched: bool = False
 
     for domain in item['domains']:
         if '.' in domain or is_yggdrasil_address(domain):
@@ -158,7 +158,7 @@ def add_cw_from_lists(post_json_object: {}, cw_lists: {}, translate: {},
         if warning in cw_text:
             continue
 
-        matched = False
+        matched: bool = False
 
         # match hashtags within the post
         if post_tags and item.get('hashtags'):

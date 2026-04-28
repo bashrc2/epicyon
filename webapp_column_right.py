@@ -303,7 +303,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
         html_str += separator_str
         if moderated_item and 'vote:' + nickname in item[2]:
             total_votes_str: str = ''
-            total_votes = 0
+            total_votes: int = 0
             if moderator:
                 total_votes = votes_on_newswire_item(item[2])
                 total_votes_str = \
@@ -331,7 +331,7 @@ def _html_newswire(base_dir: str, newswire: {}, nickname: str, moderator: bool,
                 html_str += date_shown + '</span></p>\n'
         else:
             total_votes_str: str = ''
-            total_votes = 0
+            total_votes: int = 0
             if moderator:
                 if moderated_item:
                     total_votes = votes_on_newswire_item(item[2])
@@ -449,7 +449,7 @@ def html_citations(base_dir: str, nickname: str, domain: str,
 
     # list of newswire items
     if newswire:
-        ctr = 0
+        ctr: int = 0
         for date_str, item in newswire.items():
             item[0] = remove_html(item[0]).strip()
             if not item[0]:
@@ -510,14 +510,14 @@ def html_newswire_mobile(base_dir: str, nickname: str,
         css_filename = base_dir + '/epicyon.css'
 
     if nickname == 'news':
-        editor = False
-        moderator = False
+        editor: bool = False
+        moderator: bool = False
     else:
         # is the user a moderator?
-        moderator = is_moderator(base_dir, nickname)
+        moderator: bool = is_moderator(base_dir, nickname)
 
         # is the user a site editor?
-        editor = is_editor(base_dir, nickname)
+        editor: bool = is_editor(base_dir, nickname)
 
     show_publish_button = editor
 

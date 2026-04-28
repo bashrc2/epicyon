@@ -337,7 +337,7 @@ def _test_http_signed_get(base_dir: str):
     domain = 'argumentative.social'
     http_prefix = 'https'
     port = 443
-    with_digest = False
+    with_digest: bool = False
     password = 'SuperSecretPassword'
     no_recency_check = True
     private_key_pem, public_key_pem, _, _ = \
@@ -596,7 +596,7 @@ def _test_http_sig_new(algorithm: str, digest_algorithm: str):
                                message_body_json_str, debug, True)
 
     # make a deliberate mistake
-    debug = False
+    debug: bool = False
     headers['signature'] = headers['signature'].replace('V', 'B')
     assert not verify_post_headers(http_prefix, public_key_pem, headers,
                                    path_str, False, None,
@@ -802,7 +802,7 @@ def create_server_alice(path: str, domain: str, port: int,
                                federation_list, False, False)
     if has_posts:
         test_save_to_file = True
-        client_to_server = False
+        client_to_server: bool = False
         test_comments_enabled = True
         test_attach_image_filename = None
         test_media_type = None
@@ -811,13 +811,13 @@ def create_server_alice(path: str, domain: str, port: int,
         test_in_reply_to = None
         test_in_reply_to_atom_uri = None
         test_subject = None
-        test_schedule_post = False
+        test_schedule_post: bool = False
         test_event_date = None
         test_event_time = None
         test_event_end_time = None
         test_event_category = ''
         test_location = None
-        test_is_article = False
+        test_is_article: bool = False
         conversation_id = None
         convthread_id = None
         translate = {}
@@ -894,42 +894,42 @@ def create_server_alice(path: str, domain: str, port: int,
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_ALICE_RUNNING
     TEST_SERVER_ALICE_RUNNING = True
-    max_mentions = 10
-    max_emoji = 10
+    max_mentions: int = 10
+    max_emoji: int = 10
     onion_domain = None
     i2p_domain = None
     yggdrasil_domain = None
     allow_local_network_access = True
-    max_newswire_posts = 20
-    dormant_months = 3
-    send_threads_timeout_mins = 30
-    max_followers = 10
+    max_newswire_posts: int = 20
+    dormant_months: int = 3
+    send_threads_timeout_mins: int = 30
+    max_followers: int = 10
     verify_all_signatures = True
-    broch_mode = False
+    broch_mode: bool = False
     show_node_info_accounts = True
     show_node_info_version = True
-    city = 'London, England'
-    log_login_failures = False
+    city: str = 'London, England'
+    log_login_failures: bool = False
     user_agents_blocked: list[str] = []
-    max_like_count = 10
+    max_like_count: int = 10
     default_reply_interval_hrs = 9999999999
-    lists_enabled = ''
-    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    dyslexic_font = False
+    lists_enabled: str = ''
+    content_license_url: str = 'https://creativecommons.org/licenses/by-nc/4.0'
+    dyslexic_font: bool = False
     crawlers_allowed: list[str] = []
-    check_actor_timeout = 2
+    check_actor_timeout: int = 2
     preferred_podcast_formats = None
     clacks = None
-    map_format = 'gpx'
-    max_hashtags = 20
-    max_shares_on_profile = 8
-    public_replies_unlisted = False
-    no_of_books = 10
+    map_format: str = 'gpx'
+    max_hashtags: int = 20
+    max_shares_on_profile: int = 8
+    public_replies_unlisted: bool = False
+    no_of_books: int = 10
     accounts_data_dir = None
-    watermark_width_percent = 30
-    watermark_position = 'east'
-    watermark_opacity = 5
-    bind_to_ip_address = ''
+    watermark_width_percent: int = 30
+    watermark_position: str = 'east'
+    watermark_opacity: int = 5
+    bind_to_ip_address: str = ''
     print('Server running: Alice')
     run_daemon(accounts_data_dir,
                no_of_books, public_replies_unlisted,
@@ -976,18 +976,18 @@ def create_server_bob(path: str, domain: str, port: int,
     os.mkdir(path)
     os.chdir(path)
     shared_items_federated_domains: list[str] = []
-    system_language = 'en'
-    languages_understood = [system_language]
-    nickname = 'bob'
-    http_prefix = 'http'
+    system_language: str = 'en'
+    languages_understood: list = [system_language]
+    nickname: str = 'bob'
+    http_prefix: str = 'http'
     proxy_type = None
-    client_to_server = False
+    client_to_server: bool = False
     password = 'bobpass'
-    max_replies = 64
-    domain_max_posts_per_day = 1000
-    account_max_posts_per_day = 1000
-    allow_deletion = True
-    low_bandwidth = True
+    max_replies: int = 64
+    domain_max_posts_per_day: int = 1000
+    account_max_posts_per_day: int = 1000
+    allow_deletion: bool = True
+    low_bandwidth: bool = True
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix, True,
                       False, password)
@@ -1005,32 +1005,34 @@ def create_server_bob(path: str, domain: str, port: int,
                                'alice', alice_address, federation_list,
                                False, False)
     if has_posts:
-        test_save_to_file = True
-        test_comments_enabled = True
+        test_save_to_file: bool = True
+        test_comments_enabled: bool = True
         test_attach_image_filename = None
         test_image_description = None
         test_media_type = None
-        test_city = 'London, England'
+        test_city: str = 'London, England'
         test_in_reply_to = None
         test_in_reply_to_atom_uri = None
         test_subject = None
-        test_schedule_post = False
+        test_schedule_post: bool = False
         test_event_date = None
         test_event_time = None
         test_event_end_time = None
         test_event_category = ''
         test_location = None
-        test_is_article = False
+        test_is_article: bool = False
         conversation_id = None
         convthread_id = None
-        content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-        media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-        media_creator = 'Hamster'
-        translate = {}
-        buy_url = ''
-        chat_url = ''
-        auto_cw_cache = {}
-        test_video_transcript = ''
+        content_license_url: str = \
+            'https://creativecommons.org/licenses/by-nc/4.0'
+        media_license_url: str = \
+            'https://creativecommons.org/licenses/by-nc/4.0'
+        media_creator: str = 'Hamster'
+        translate: dict = {}
+        buy_url: str = ''
+        chat_url: str = ''
+        auto_cw_cache: dict = {}
+        test_video_transcript: str = ''
         searchable_by: list[str] = []
         session = None
         create_public_post(path, nickname, domain, port, http_prefix,
@@ -1097,42 +1099,43 @@ def create_server_bob(path: str, domain: str, port: int,
         regenerate_index_for_box(path, nickname, domain, 'outbox')
     global TEST_SERVER_BOB_RUNNING
     TEST_SERVER_BOB_RUNNING = True
-    max_mentions = 10
-    max_emoji = 10
+    max_mentions: int = 10
+    max_emoji: int = 10
     onion_domain = None
     i2p_domain = None
     yggdrasil_domain = None
-    allow_local_network_access = True
-    max_newswire_posts = 20
-    dormant_months = 3
-    send_threads_timeout_mins = 30
-    max_followers = 10
-    verify_all_signatures = True
-    broch_mode = False
-    show_node_info_accounts = True
-    show_node_info_version = True
-    city = 'London, England'
-    log_login_failures = False
+    allow_local_network_access: bool = True
+    max_newswire_posts: int = 20
+    dormant_months: int = 3
+    send_threads_timeout_mins: int = 30
+    max_followers: int = 10
+    verify_all_signatures: bool = True
+    broch_mode: bool = False
+    show_node_info_accounts: bool = True
+    show_node_info_version: bool = True
+    city: str = 'London, England'
+    log_login_failures: bool = False
     user_agents_blocked: list[str] = []
-    max_like_count = 10
-    default_reply_interval_hrs = 9999999999
-    lists_enabled = ''
-    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    dyslexic_font = False
+    max_like_count: int = 10
+    default_reply_interval_hrs: int = 9999999999
+    lists_enabled: str = ''
+    content_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    dyslexic_font: bool = False
     crawlers_allowed: list[str] = []
-    check_actor_timeout = 2
+    check_actor_timeout: int = 2
     preferred_podcast_formats = None
     clacks = None
-    map_format = 'gpx'
-    max_hashtags = 20
-    max_shares_on_profile = 8
-    public_replies_unlisted = False
-    no_of_books = 10
+    map_format: str = 'gpx'
+    max_hashtags: int = 20
+    max_shares_on_profile: int = 8
+    public_replies_unlisted: bool = False
+    no_of_books: int = 10
     accounts_data_dir = None
-    watermark_width_percent = 30
-    watermark_position = 'east'
-    watermark_opacity = 5
-    bind_to_ip_address = ''
+    watermark_width_percent: int = 30
+    watermark_position: str = 'east'
+    watermark_opacity: int = 5
+    bind_to_ip_address: str = ''
     print('Server running: Bob')
     run_daemon(accounts_data_dir,
                no_of_books, public_replies_unlisted,
@@ -1178,11 +1181,11 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     os.mkdir(path)
     os.chdir(path)
     shared_items_federated_domains: list[str] = []
-    nickname = 'eve'
-    http_prefix = 'http'
+    nickname: str = 'eve'
+    http_prefix: str = 'http'
     proxy_type = None
-    password = 'evepass'
-    max_replies = 64
+    password: str = 'evepass'
+    max_replies: int = 64
     allow_deletion = True
     private_key_pem, public_key_pem, person, wf_endpoint = \
         create_person(path, nickname, domain, port, http_prefix, True,
@@ -1195,45 +1198,46 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     delete_all_posts(path, nickname, domain, 'outbox')
     global TEST_SERVER_EVE_RUNNING
     TEST_SERVER_EVE_RUNNING = True
-    max_mentions = 10
-    max_emoji = 10
+    max_mentions: int = 10
+    max_emoji: int = 10
     onion_domain = None
     i2p_domain = None
     yggdrasil_domain = None
-    allow_local_network_access = True
-    max_newswire_posts = 20
-    dormant_months = 3
-    send_threads_timeout_mins = 30
-    max_followers = 10
-    verify_all_signatures = True
-    broch_mode = False
-    show_node_info_accounts = True
-    show_node_info_version = True
-    city = 'London, England'
-    log_login_failures = False
+    allow_local_network_access: bool = True
+    max_newswire_posts: int = 20
+    dormant_months: int = 3
+    send_threads_timeout_mins: int = 30
+    max_followers: int = 10
+    verify_all_signatures: bool = True
+    broch_mode: bool = False
+    show_node_info_accounts: bool = True
+    show_node_info_version: bool = True
+    city: str = 'London, England'
+    log_login_failures: bool = False
     user_agents_blocked: list[str] = []
-    max_like_count = 10
-    low_bandwidth = True
-    default_reply_interval_hrs = 9999999999
-    lists_enabled = ''
-    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    dyslexic_font = False
+    max_like_count: int = 10
+    low_bandwidth: bool = True
+    default_reply_interval_hrs: int = 9999999999
+    lists_enabled: str = ''
+    content_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    dyslexic_font: bool = False
     crawlers_allowed: list[str] = []
-    check_actor_timeout = 2
+    check_actor_timeout: int = 2
     preferred_podcast_formats = None
     clacks = None
-    map_format = 'gpx'
-    max_hashtags = 20
-    max_shares_on_profile = 8
-    public_replies_unlisted = False
-    no_of_books = 10
-    domain_max_posts_per_day = 1000
-    account_max_posts_per_day = 1000
+    map_format: str = 'gpx'
+    max_hashtags: int = 20
+    max_shares_on_profile: int = 8
+    public_replies_unlisted: bool = False
+    no_of_books: int = 10
+    domain_max_posts_per_day: int = 1000
+    account_max_posts_per_day: int = 1000
     accounts_data_dir = None
-    watermark_width_percent = 30
-    watermark_position = 'east'
-    watermark_opacity = 5
-    bind_to_ip_address = ''
+    watermark_width_percent: int = 30
+    watermark_position: str = 'east'
+    watermark_opacity: int = 5
+    bind_to_ip_address: str = ''
     print('Server running: Eve')
     run_daemon(accounts_data_dir, no_of_books,
                public_replies_unlisted,
@@ -1322,43 +1326,44 @@ def create_server_group(path: str, domain: str, port: int,
     delete_all_posts(path, nickname, domain, 'outbox')
     global TEST_SERVER_GROUP_RUNNING
     TEST_SERVER_GROUP_RUNNING = True
-    max_mentions = 10
-    max_emoji = 10
+    max_mentions: int = 10
+    max_emoji: int = 10
     onion_domain = None
     i2p_domain = None
     yggdrasil_domain = None
-    allow_local_network_access = True
-    max_newswire_posts = 20
-    dormant_months = 3
-    send_threads_timeout_mins = 30
-    max_followers = 10
-    verify_all_signatures = True
-    broch_mode = False
-    show_node_info_accounts = True
-    show_node_info_version = True
-    city = 'London, England'
-    log_login_failures = False
+    allow_local_network_access: bool = True
+    max_newswire_posts: int = 20
+    dormant_months: int = 3
+    send_threads_timeout_mins: int = 30
+    max_followers: int = 10
+    verify_all_signatures: bool = True
+    broch_mode: bool = False
+    show_node_info_accounts: bool = True
+    show_node_info_version: bool = True
+    city: str = 'London, England'
+    log_login_failures: bool = False
     user_agents_blocked: list[str] = []
-    max_like_count = 10
-    low_bandwidth = True
-    default_reply_interval_hrs = 9999999999
-    lists_enabled = ''
-    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    dyslexic_font = False
+    max_like_count: int = 10
+    low_bandwidth: bool = True
+    default_reply_interval_hrs: int = 9999999999
+    lists_enabled: str = ''
+    content_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    dyslexic_font: bool = False
     crawlers_allowed: list[str] = []
-    check_actor_timeout = 2
+    check_actor_timeout: int = 2
     preferred_podcast_formats = None
     clacks = None
-    map_format = 'gpx'
-    max_hashtags = 20
-    max_shares_on_profile = 8
-    public_replies_unlisted = False
-    no_of_books = 10
+    map_format: str = 'gpx'
+    max_hashtags: int = 20
+    max_shares_on_profile: int = 8
+    public_replies_unlisted: bool = False
+    no_of_books: int = 10
     accounts_data_dir = None
-    watermark_width_percent = 30
-    watermark_position = 'east'
-    watermark_opacity = 5
-    bind_to_ip_address = ''
+    watermark_width_percent: int = 30
+    watermark_position: str = 'east'
+    watermark_opacity: int = 5
+    bind_to_ip_address: str = ''
     print('Server running: Group')
     run_daemon(accounts_data_dir,
                no_of_books, public_replies_unlisted,
@@ -1403,13 +1408,15 @@ def test_post_message_between_servers(base_dir: str) -> None:
     TEST_SERVER_ALICE_RUNNING = False
     TEST_SERVER_BOB_RUNNING = False
 
-    system_language = 'en'
-    languages_understood = [system_language]
-    http_prefix = 'http'
+    system_language: str = 'en'
+    languages_understood: list[str] = [system_language]
+    http_prefix: str = 'http'
     proxy_type = None
-    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_creator = 'Secret Squirrel'
+    content_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_creator: str = 'Secret Squirrel'
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
@@ -1418,15 +1425,15 @@ def test_post_message_between_servers(base_dir: str) -> None:
     # create the servers
     alice_dir = base_dir + '/.tests/alice'
     alice_domain = '127.0.0.50'
-    alice_port = 61935
+    alice_port: int = 61935
     alice_address = alice_domain + ':' + str(alice_port)
 
     bob_dir = base_dir + '/.tests/bob'
     bob_domain = '127.0.0.100'
-    bob_port = 61936
-    federation_list = [bob_domain, alice_domain]
-    alice_send_threads = []
-    bob_send_threads = []
+    bob_port: int = 61936
+    federation_list: list[str] = [bob_domain, alice_domain]
+    alice_send_threads: list = []
+    bob_send_threads: list = []
     bob_address = bob_domain + ':' + str(bob_port)
 
     global THR_ALICE
@@ -1475,14 +1482,14 @@ def test_post_message_between_servers(base_dir: str) -> None:
     in_reply_to = None
     in_reply_to_atom_uri = None
     subject = None
-    alice_post_log = []
+    alice_post_log: list = []
     save_to_file = True
-    client_to_server = False
+    client_to_server: bool = False
     cc_url = None
-    alice_person_cache = {}
-    alice_cached_webfingers = {}
+    alice_person_cache: dict = {}
+    alice_cached_webfingers: dict = {}
     alice_shared_items_federated_domains: list[str] = []
-    alice_shared_item_federation_tokens = {}
+    alice_shared_item_federation_tokens: dict = {}
     attached_image_filename = base_dir + '/img/logo.png'
     test_image_width, test_image_height = \
         get_image_dimensions(attached_image_filename)
@@ -1491,8 +1498,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
     media_type = get_attachment_media_type(attached_image_filename)
     attached_image_description = 'Logo'
     video_transcript = None
-    is_article = False
-    city = 'London, England'
+    is_article: bool = False
+    city: str = 'London, England'
     # nothing in Alice's outbox
     last_pub_filename = \
         data_dir(alice_dir) + '/alice@' + alice_domain + '/.last_published'
@@ -1500,12 +1507,12 @@ def test_post_message_between_servers(base_dir: str) -> None:
     outbox_path = data_dir(alice_dir) + '/alice@' + alice_domain + '/outbox'
     assert len([name for name in os.listdir(outbox_path)
                 if os.path.isfile(os.path.join(outbox_path, name))]) == 0
-    low_bandwidth = False
+    low_bandwidth: bool = False
     signing_priv_key_pem = None
-    translate = {}
-    buy_url = ''
-    chat_url = ''
-    auto_cw_cache = {}
+    translate: dict = {}
+    buy_url: str = ''
+    chat_url: str = ''
+    auto_cw_cache: dict = {}
     searchable_by: list[str] = []
     mitm_servers: list[str] = []
     send_result = \
@@ -1714,8 +1721,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
                     True, __version__, signing_priv_key_pem,
                     bob_domain, None, None, None, sites_unavailable,
                     system_language, mitm_servers)
-    announce_message_arrived = False
-    outbox_message_arrived = False
+    announce_message_arrived: bool = False
+    outbox_message_arrived: bool = False
     for _ in range(20):
         time.sleep(1)
         if not os.path.isdir(inbox_path):
@@ -1822,7 +1829,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     assert THR_BOB.is_alive() is True
 
     # wait for all servers to be running
-    ctr = 0
+    ctr: int = 0
     while not (TEST_SERVER_ALICE_RUNNING and TEST_SERVER_BOB_RUNNING):
         time.sleep(1)
         ctr += 1
@@ -1842,15 +1849,15 @@ def test_follow_between_servers(base_dir: str) -> None:
     in_reply_to = None
     in_reply_to_atom_uri = None
     subject = None
-    alice_post_log = []
+    alice_post_log: list = []
     save_to_file = True
-    client_to_server = False
+    client_to_server: bool = False
     cc_url = None
-    alice_person_cache = {}
-    alice_cached_webfingers = {}
-    alice_post_log = []
+    alice_person_cache: dict = {}
+    alice_cached_webfingers: dict = {}
+    alice_post_log: list = []
     sites_unavailable: list[str] = []
-    bob_actor = http_prefix + '://' + bob_address + '/users/bob'
+    bob_actor: str = http_prefix + '://' + bob_address + '/users/bob'
     signing_priv_key_pem = None
     mitm_servers: list[str] = []
     send_result = \
@@ -1896,21 +1903,21 @@ def test_follow_between_servers(base_dir: str) -> None:
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
-    alice_post_log = []
-    alice_person_cache = {}
-    alice_cached_webfingers = {}
+    alice_post_log: list = []
+    alice_person_cache: dict = {}
+    alice_cached_webfingers: dict = {}
     alice_shared_items_federated_domains: list[str] = []
-    alice_shared_item_federation_tokens = {}
-    alice_post_log = []
-    is_article = False
-    city = 'London, England'
-    low_bandwidth = False
+    alice_shared_item_federation_tokens: dict = {}
+    alice_post_log: list = []
+    is_article: bool = False
+    city: str = 'London, England'
+    low_bandwidth: bool = False
     signing_priv_key_pem = None
-    translate = {}
-    buy_url = ''
-    chat_url = ''
+    translate: dict = {}
+    buy_url: str = ''
+    chat_url: str = ''
     video_transcript = None
-    auto_cw_cache = {}
+    auto_cw_cache: dict = {}
     searchable_by: list[str] = []
     mitm_servers: list[str] = []
     send_result = \
@@ -1933,7 +1940,7 @@ def test_follow_between_servers(base_dir: str) -> None:
 
     queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
     inbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/inbox'
-    alice_message_arrived = False
+    alice_message_arrived: bool = False
     for _ in range(20):
         time.sleep(1)
         if os.path.isdir(inbox_path):
@@ -2035,7 +2042,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     assert THR_BOB.is_alive() is True
 
     # wait for all servers to be running
-    ctr = 0
+    ctr: int = 0
     while not (TEST_SERVER_ALICE_RUNNING and TEST_SERVER_BOB_RUNNING):
         time.sleep(1)
         ctr += 1
@@ -2085,16 +2092,16 @@ def test_shared_items_federation(base_dir: str) -> None:
     in_reply_to = None
     in_reply_to_atom_uri = None
     subject = None
-    alice_post_log = []
-    save_to_file = True
-    client_to_server = False
+    alice_post_log: list = []
+    save_to_file: bool = True
+    client_to_server: bool = False
     cc_url = None
-    alice_person_cache = {}
-    alice_cached_webfingers = {}
-    alice_post_log = []
+    alice_person_cache: dict = {}
+    alice_cached_webfingers: dict = {}
+    alice_post_log: list = []
     sites_unavailable: list[str] = []
     mitm_servers: list[str] = []
-    bob_actor = http_prefix + '://' + bob_address + '/users/bob'
+    bob_actor: str = http_prefix + '://' + bob_address + '/users/bob'
     send_result = \
         send_follow_request(session_alice, alice_dir,
                             'alice', alice_domain,
@@ -2315,20 +2322,20 @@ def test_shared_items_federation(base_dir: str) -> None:
     assert len(alice_shared_item_federation_tokens.items()) > 0
     for host_str, token in alice_shared_item_federation_tokens.items():
         assert ':' in host_str
-    alice_post_log = []
-    alice_person_cache = {}
-    alice_cached_webfingers = {}
-    alice_shared_items_federated_domains = [bob_address]
-    alice_post_log = []
-    is_article = False
-    city = 'London, England'
-    low_bandwidth = False
+    alice_post_log: list = []
+    alice_person_cache: dict = {}
+    alice_cached_webfingers: dict = {}
+    alice_shared_items_federated_domains: list = [bob_address]
+    alice_post_log: list = []
+    is_article: bool = False
+    city: str = 'London, England'
+    low_bandwidth: bool = False
     signing_priv_key_pem = None
-    translate = {}
-    buy_url = ''
-    chat_url = ''
+    translate: dict = {}
+    buy_url: str = ''
+    chat_url: str = ''
     video_transcript = None
-    auto_cw_cache = {}
+    auto_cw_cache: dict = {}
     searchable_by: list[str] = []
     mitm_servers: list[str] = []
     send_result = \
@@ -2351,7 +2358,7 @@ def test_shared_items_federation(base_dir: str) -> None:
 
     queue_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/queue'
     inbox_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/inbox'
-    alice_message_arrived = False
+    alice_message_arrived: bool = False
     for _ in range(20):
         time.sleep(1)
         if os.path.isdir(inbox_path):
@@ -2410,7 +2417,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     assert len(catalog_json.get('DFC:supplies')) == 3
 
     # queue item removed
-    ctr = 0
+    ctr: int = 0
     while len([name for name in os.listdir(queue_path)
                if os.path.isfile(os.path.join(queue_path, name))]) > 0:
         ctr += 1
@@ -2530,7 +2537,7 @@ def test_group_follow(base_dir: str) -> None:
     assert THR_GROUP.is_alive() is True
 
     # wait for all servers to be running
-    ctr = 0
+    ctr: int = 0
     while not (TEST_SERVER_ALICE_RUNNING and
                TEST_SERVER_BOB_RUNNING and
                TEST_SERVER_GROUP_RUNNING):
@@ -2590,13 +2597,13 @@ def test_group_follow(base_dir: str) -> None:
     in_reply_to = None
     in_reply_to_atom_uri = None
     subject = None
-    alice_post_log = []
-    save_to_file = True
-    client_to_server = False
+    alice_post_log: list = []
+    save_to_file: bool = True
+    client_to_server: bool = False
     cc_url = None
-    alice_person_cache = {}
-    alice_cached_webfingers = {}
-    alice_post_log = []
+    alice_person_cache: dict = {}
+    alice_cached_webfingers: dict = {}
+    alice_post_log: list = []
     sites_unavailable: list[str] = []
     # aliceActor = http_prefix + '://' + alice_address + '/users/alice'
     testgroup_actor = \
@@ -2672,13 +2679,13 @@ def test_group_follow(base_dir: str) -> None:
     in_reply_to = None
     in_reply_to_atom_uri = None
     subject = None
-    bob_post_log = []
-    save_to_file = True
-    client_to_server = False
+    bob_post_log: list = []
+    save_to_file: bool = True
+    client_to_server: bool = False
     cc_url = None
-    bob_person_cache = {}
-    bob_cached_webfingers = {}
-    bob_post_log = []
+    bob_person_cache: dict = {}
+    bob_cached_webfingers: dict = {}
+    bob_post_log: list = []
     sites_unavailable: list[str] = []
     # bob_actor = http_prefix + '://' + bob_address + '/users/bob'
     testgroup_actor = \
@@ -2751,15 +2758,15 @@ def test_group_follow(base_dir: str) -> None:
         len([name for name in os.listdir(inbox_path_bob)
              if os.path.isfile(os.path.join(inbox_path_bob, name))])
     assert start_posts_bob == 0
-    alice_post_log = []
-    alice_person_cache = {}
-    alice_cached_webfingers = {}
+    alice_post_log: list = []
+    alice_person_cache: dict = {}
+    alice_cached_webfingers: dict = {}
     alice_shared_items_federated_domains: list[str] = []
-    alice_shared_item_federation_tokens = {}
-    alice_post_log = []
-    is_article = False
-    city = 'London, England'
-    low_bandwidth = False
+    alice_shared_item_federation_tokens: dict = {}
+    alice_post_log: list = []
+    is_article: bool = False
+    city: str = 'London, England'
+    low_bandwidth: bool = False
     signing_priv_key_pem = None
 
     queue_path = \
@@ -2768,7 +2775,7 @@ def test_group_follow(base_dir: str) -> None:
         data_dir(testgroup_dir) + '/testgroup@' + testgroup_domain + '/inbox'
     outbox_path = \
         data_dir(testgroup_dir) + '/testgroup@' + testgroup_domain + '/outbox'
-    alice_message_arrived = False
+    alice_message_arrived: bool = False
     start_posts_inbox = \
         len([name for name in os.listdir(inbox_path)
              if os.path.isfile(os.path.join(inbox_path, name))])
@@ -2823,7 +2830,7 @@ def test_group_follow(base_dir: str) -> None:
     print('\n\n*********************************************************')
     print('Check that post was relayed from test group to bob')
 
-    bob_message_arrived = False
+    bob_message_arrived: bool = False
     for _ in range(20):
         time.sleep(1)
         if os.path.isdir(inbox_path_bob):
@@ -2839,7 +2846,7 @@ def test_group_follow(base_dir: str) -> None:
 
     # check that the received post has an id from the group,
     # not from the original sender (alice)
-    group_id_checked = False
+    group_id_checked: bool = False
     for name in os.listdir(inbox_path_bob):
         filename = os.path.join(inbox_path_bob, name)
         if os.path.isfile(filename):
@@ -3043,12 +3050,12 @@ def _test_group_followers(base_dir: str) -> None:
 def _test_follows(base_dir: str) -> None:
     print('test_follows')
     curr_dir = base_dir
-    nickname = 'test529'
-    domain = 'testdomain.com'
-    password = 'mypass'
-    port = 80
-    http_prefix = 'https'
-    federation_list = ['wild.com', 'mesh.com']
+    nickname: str = 'test529'
+    domain: str = 'testdomain.com'
+    password: str = 'mypass'
+    port: int = 80
+    http_prefix: str = 'https'
+    federation_list: list[str] = ['wild.com', 'mesh.com']
     base_dir = curr_dir + '/.tests_testfollows'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
@@ -3072,7 +3079,7 @@ def _test_follows(base_dir: str) -> None:
     account_dir = acct_dir(base_dir, nickname, domain)
     with open(account_dir + '/following.txt', 'r',
               encoding='utf-8') as fp_foll:
-        domain_found = False
+        domain_found: bool = False
         for following_domain in fp_foll:
             test_domain = following_domain.split('@')[1]
             test_domain = remove_eol(test_domain)
@@ -3086,7 +3093,7 @@ def _test_follows(base_dir: str) -> None:
         unfollow_account(base_dir, nickname, domain, 'batman', 'mesh.com',
                          True, False, 'following.txt')
 
-        domain_found = False
+        domain_found: bool = False
         for following_domain in fp_foll:
             test_domain = following_domain.split('@')[1]
             test_domain = remove_eol(test_domain)
@@ -3124,16 +3131,16 @@ def _test_follows(base_dir: str) -> None:
 
 def _test_create_person_account(base_dir: str):
     print('test_create_person_account')
-    system_language = 'en'
-    languages_understood = [system_language]
-    curr_dir = base_dir
-    nickname = 'test382'
-    domain = 'badgerdomain.com'
-    password = 'mypass'
-    port = 80
-    http_prefix = 'https'
-    client_to_server = False
-    base_dir = curr_dir + '/.tests_createperson'
+    system_language: str = 'en'
+    languages_understood: list = [system_language]
+    curr_dir: str = base_dir
+    nickname: str = 'test382'
+    domain: str = 'badgerdomain.com'
+    password: str = 'mypass'
+    port: int = 80
+    http_prefix: str = 'https'
+    client_to_server: bool = False
+    base_dir: str = curr_dir + '/.tests_createperson'
     if os.path.isdir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
     os.mkdir(base_dir)
@@ -3157,11 +3164,11 @@ def _test_create_person_account(base_dir: str):
     test_in_reply_to = None
     test_in_reply_to_atom_uri = None
     test_subject = None
-    test_schedule_post = False
+    test_schedule_post: bool = False
     test_event_date = None
     test_event_time = None
     test_event_end_time = None
-    test_event_category = ''
+    test_event_category: str = ''
     test_location = None
     test_is_article = False
     save_to_file = True
@@ -3171,18 +3178,20 @@ def _test_create_person_account(base_dir: str):
     conversation_id = None
     convthread_id = None
     low_bandwidth = True
-    translate = {}
-    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_creator = 'Hissing Sid'
+    translate: dict = {}
+    content_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_creator: str = 'Hissing Sid'
     content = \
         "If your \"independent organization\" is government funded...\n\n" + \
         "(yawn)\n\n...then it's not really independent.\n\n" + \
         "Politicians will threaten to withdraw funding if you do " + \
         "anything which challenges middle class sensibilities or incomes."
-    buy_url = ''
-    chat_url = ''
-    auto_cw_cache = {}
+    buy_url: str = ''
+    chat_url: str = ''
+    auto_cw_cache: dict = {}
     searchable_by: list[str] = []
     session = None
     test_post_json = \
@@ -3239,7 +3248,7 @@ def _test_create_person_account(base_dir: str):
     content_str = test_post_json['object']['content']
     object_content = remove_long_words(content_str, 40, [])
     assert 'Fediverse' in object_content
-    bold_reading = False
+    bold_reading: bool = False
     object_content = remove_text_formatting(object_content, bold_reading)
     assert 'Fediverse' in object_content
     object_content = limit_repeated_words(object_content, 6)
@@ -3313,16 +3322,16 @@ def test_client_to_server(base_dir: str):
     global TEST_SERVER_BOB_RUNNING
     content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_creator = 'King Tut'
+    media_creator: str = 'King Tut'
     TEST_SERVER_ALICE_RUNNING = False
     TEST_SERVER_BOB_RUNNING = False
 
-    system_language = 'en'
-    languages_understood = [system_language]
-    http_prefix = 'http'
+    system_language: str = 'en'
+    languages_understood: list = [system_language]
+    http_prefix: str = 'http'
     proxy_type = None
     federation_list: list[str] = []
-    low_bandwidth = False
+    low_bandwidth: bool = False
 
     if os.path.isdir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
@@ -3331,14 +3340,14 @@ def test_client_to_server(base_dir: str):
     # create the servers
     alice_dir = base_dir + '/.tests/alice'
     alice_domain = '127.0.0.42'
-    alice_port = 61935
-    alice_send_threads = []
+    alice_port: int = 61935
+    alice_send_threads: list = []
     alice_address = alice_domain + ':' + str(alice_port)
 
     bob_dir = base_dir + '/.tests/bob'
     bob_domain = '127.0.0.64'
-    bob_port = 61936
-    bob_send_threads = []
+    bob_port: int = 61936
+    bob_send_threads: list = []
     bob_address = bob_domain + ':' + str(bob_port)
 
     global THR_ALICE
@@ -3375,7 +3384,7 @@ def test_client_to_server(base_dir: str):
     assert THR_BOB.is_alive() is True
 
     # wait for both servers to be running
-    ctr = 0
+    ctr: int = 0
     while not (TEST_SERVER_ALICE_RUNNING and TEST_SERVER_BOB_RUNNING):
         time.sleep(1)
         ctr += 1
@@ -3399,12 +3408,12 @@ def test_client_to_server(base_dir: str):
     session_alice = create_session(proxy_type)
     attached_image_filename = base_dir + '/img/logo.png'
     media_type = get_attachment_media_type(attached_image_filename)
-    attached_image_description = 'Logo'
-    city = 'London, England'
-    is_article = False
-    cached_webfingers = {}
-    person_cache = {}
-    password = 'alicepass'
+    attached_image_description: str = 'Logo'
+    city: str = 'London, England'
+    is_article: bool = False
+    cached_webfingers: dict = {}
+    person_cache: dict = {}
+    password: str = 'alicepass'
     conversation_id = None
     convthread_id = None
 
@@ -3511,7 +3520,7 @@ def test_client_to_server(base_dir: str):
     print("c2s send success\n\n\n")
 
     print('\n\nEVENT: Getting message id for the post')
-    status_number = 0
+    status_number: int = 0
     outbox_post_filename = None
     outbox_post_id = None
     for name in os.listdir(outbox_path):
@@ -4181,14 +4190,14 @@ def _test_web_links():
 
 def _test_addemoji(base_dir: str):
     print('test_addemoji')
-    content = "Emoji :lemon: :strawberry: :banana:"
-    http_prefix = 'http'
-    nickname = 'testuser'
-    domain = 'testdomain.net'
-    port = 3682
+    content: str = "Emoji :lemon: :strawberry: :banana:"
+    http_prefix: str = 'http'
+    nickname: str = 'testuser'
+    domain: str = 'testdomain.net'
+    port: int = 3682
     recipients: list[str] = []
-    translate = {}
-    hashtags = {}
+    translate: dict = {}
+    hashtags: dict = {}
     base_dir_original = base_dir
     path = base_dir + '/.tests'
     if not os.path.isdir(path):
@@ -4282,7 +4291,7 @@ def _test_addemoji(base_dir: str):
     assert ':cupofcoffee:' not in profile_description2
 
     recipients: list[str] = []
-    hashtags = {}
+    hashtags: dict = {}
     content2 = '"This is a quote with a #hashtag".'
     content_modified2 = \
         add_html_tags(base_dir, http_prefix,
@@ -4318,7 +4327,7 @@ def _test_get_status_number():
 def _test_json_string() -> None:
     print('test_json_string')
     filename = '.epicyon_tests_test_json_string.json'
-    message_str = "Crème brûlée यह एक परीक्षण ह"
+    message_str: str = "Crème brûlée यह एक परीक्षण ह"
     test_json = {
         "content": message_str
     }
@@ -4650,7 +4659,7 @@ def _test_danger_svg(base_dir: str) -> None:
 
 def _test_danger_markup():
     print('test_dangerous_markup')
-    allow_local_network_access = False
+    allow_local_network_access: bool = False
     content = '<p>This is a valid message</p>'
     assert not dangerous_markup(content, allow_local_network_access, [])
 
@@ -4865,7 +4874,7 @@ def _test_translation_labels() -> None:
             if 'translate[' not in source_str:
                 continue
             sections = source_str.split('translate[')
-            ctr = 0
+            ctr: int = 0
             for text in sections:
                 if ctr == 0:
                     ctr += 1
@@ -5083,7 +5092,7 @@ def _test_hashtag_rules():
     hashtags = ['#carrot', '#stick']
     assert not hashtag_rule_resolve(tree, hashtags, moderated, content, url)
 
-    moderated = False
+    moderated: bool = False
     conditions_str = 'not moderated and #foo or #bar'
     tags_in_conditions: list[str] = []
     tree = hashtag_rule_tree(operators, conditions_str,
@@ -5273,21 +5282,21 @@ def _test_mentioned_people(base_dir: str) -> None:
 
 
 def _test_reply_to_public_post(base_dir: str) -> None:
-    system_language = 'en'
-    languages_understood = [system_language]
-    nickname = 'test7492362'
-    domain = 'other.site'
-    port = 443
-    http_prefix = 'https'
+    system_language: str = 'en'
+    languages_understood: list = [system_language]
+    nickname: str = 'test7492362'
+    domain: str = 'other.site'
+    port: int = 443
+    http_prefix: str = 'https'
     post_id = \
         http_prefix + '://rat.site/users/ninjarodent/statuses/63746173435'
     content = "@ninjarodent@rat.site This is a test."
-    save_to_file = False
-    client_to_server = False
-    comments_enabled = True
+    save_to_file: bool = False
+    client_to_server: bool = False
+    comments_enabled: bool = True
     attach_image_filename = None
     media_type = None
-    image_description = 'Some description'
+    image_description: str = 'Some description'
     city = 'London, England'
     test_in_reply_to = post_id
     test_in_reply_to_atom_uri = None
@@ -5301,15 +5310,17 @@ def _test_reply_to_public_post(base_dir: str) -> None:
     test_is_article = False
     conversation_id = None
     convthread_id = None
-    low_bandwidth = True
-    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_creator = 'Skeletor'
-    translate = {}
-    buy_url = ''
-    chat_url = ''
-    auto_cw_cache = {}
-    video_transcript = ''
+    low_bandwidth: bool = True
+    content_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_creator: str = 'Skeletor'
+    translate: dict = {}
+    buy_url: str = ''
+    chat_url: str = ''
+    auto_cw_cache: dict = {}
+    video_transcript: str = ''
     searchable_by: list[str] = []
     session = None
     reply = \
@@ -5410,7 +5421,7 @@ def _function_args_match(call_args: [], func_args: []) -> bool:
         return True
 
     # count non-optional arguments in function call
-    call_args_ctr = 0
+    call_args_ctr: int = 0
     for arg1 in call_args:
         if arg1 == 'self':
             continue
@@ -5418,7 +5429,7 @@ def _function_args_match(call_args: [], func_args: []) -> bool:
             call_args_ctr += 1
 
     # count non-optional arguments in function def
-    func_args_ctr = 0
+    func_args_ctr: int = 0
     for arg2 in func_args:
         if arg2 == 'self':
             continue
@@ -5773,7 +5784,7 @@ def _test_thread_functions():
     for mod_name in threads_called_in_modules:
         thread_sections = \
             modules[mod_name]['source'].split('thread_with_trace(')
-        ctr = 0
+        ctr: int = 0
         for thread_str in thread_sections:
             if ctr == 0 or ',' not in thread_str:
                 ctr += 1
@@ -5813,13 +5824,13 @@ def _test_thread_functions():
                       ' module ' + mod_name)
                 ctr += 1
                 continue
-            arg_ctr = 0
+            arg_ctr: int = 0
             calling_function_args_list: list[str] = []
             for func_arg in thread_function_args:
                 if arg_ctr == 0:
                     arg_ctr += 1
                     continue
-                last_arg = False
+                last_arg: bool = False
                 if '(' in func_arg and '()' not in func_arg:
                     func_arg = func_arg.split('(')[1]
 
@@ -5854,7 +5865,7 @@ def _check_self_variables(mod_name: str, method_name: str,
     """ Detects whether self.server.variable exists as a function argument
     """
     self_vars = line.split('self.server.')
-    ctr = 0
+    ctr: int = 0
     terminators = (' ', '.', ',', ')', '[', ' ', ':')
     func_args: list[str] = []
     for arg_str in method_args:
@@ -5929,13 +5940,13 @@ def _test_functions():
             lines: list[str] = load_list(source_file, '')
             assert lines is not None
             modules[mod_name]['lines'] = lines
-            line_count = 0
+            line_count: int = 0
             prev_line = 'start'
-            method_name = ''
+            method_name: str = ''
             method_args: list[str] = []
-            module_line = 0
-            curr_return_types = ''
-            is_comment = False
+            module_line: int = 0
+            curr_return_types: str = ''
+            is_comment: bool = False
             for line in lines:
                 if '"""' in line:
                     is_comment = not is_comment
@@ -5978,7 +5989,7 @@ def _test_functions():
                                 method_loc.append(loc_str)
                                 line_count = 0
 
-                    is_return_statement = False
+                    is_return_statement: bool = False
                     if ' return' in line:
                         before_return = line.split(' return')[0].strip()
                         if not before_return:
@@ -6097,9 +6108,9 @@ def _test_functions():
     if bad_function_names:
         bad_function_names2 = \
             sorted(bad_function_names, key=len, reverse=True)
-        function_names_str = ''
-        function_names_sh = ''
-        ctr = 0
+        function_names_str: str = ''
+        function_names_sh: str = ''
+        ctr: int = 0
         for name in bad_function_names2:
             if ctr > 0:
                 function_names_str += '\n' + name
@@ -6119,7 +6130,7 @@ def _test_functions():
     for mod_name, mod_props in modules.items():
         print('Module: ' + mod_name + ' ✓')
         for name, properties in function_properties.items():
-            line_ctr = 0
+            line_ctr: int = 0
             for line in mod_props['lines']:
                 line_str = line.strip()
                 if line_str.startswith('def '):
@@ -6236,7 +6247,7 @@ def _test_functions():
             continue
         if properties['module'] in exclude_mods:
             continue
-        is_local_function = False
+        is_local_function: bool = False
         if not properties['calledInModule']:
             print('function ' + name +
                   ' in module ' + properties['module'] +
@@ -6285,11 +6296,11 @@ def _test_functions():
         'goldenrod', 'burlywood2', 'bisque1', 'brown1',
         'chartreuse2', 'cornsilk', 'darksalmon'
     )
-    max_module_calls = 1
-    max_function_calls = 1
-    color_ctr = 0
+    max_module_calls: int = 1
+    max_function_calls: int = 1
+    color_ctr: int = 0
     for mod_name, mod_props in modules.items():
-        line_ctr = 0
+        line_ctr: int = 0
         mod_props['color'] = module_colors[color_ctr]
         color_ctr += 1
         if color_ctr >= len(module_colors):
@@ -6353,42 +6364,44 @@ def _test_functions():
 
 def _test_links_within_post(base_dir: str) -> None:
     print('test_links_within_post')
-    system_language = 'en'
-    languages_understood = [system_language]
-    nickname = 'test27636'
-    domain = 'rando.site'
-    port = 443
-    http_prefix = 'https'
-    content = 'This is a test post with links.\n\n' + \
+    system_language: str = 'en'
+    languages_understood: list = [system_language]
+    nickname: str = 'test27636'
+    domain: str = 'rando.site'
+    port: int = 443
+    http_prefix: str = 'https'
+    content: str = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
-    save_to_file = False
-    client_to_server = False
-    comments_enabled = True
+    save_to_file: bool = False
+    client_to_server: bool = False
+    comments_enabled: bool = True
     attach_image_filename = None
     media_type = None
     image_description = None
-    city = 'London, England'
+    city: str = 'London, England'
     test_in_reply_to = None
     test_in_reply_to_atom_uri = None
     test_subject = None
-    test_schedule_post = False
+    test_schedule_post: bool = False
     test_event_date = None
     test_event_time = None
     test_event_end_time = None
-    test_event_category = ''
+    test_event_category: str = ''
     test_location = None
-    test_is_article = False
+    test_is_article: bool = False
     conversation_id = None
     convthread_id = None
-    low_bandwidth = True
-    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_creator = 'Dr No'
-    translate = {}
-    buy_url = ''
-    chat_url = ''
-    auto_cw_cache = {}
-    video_transcript = ''
+    low_bandwidth: bool = True
+    content_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_creator: str = 'Dr No'
+    translate: dict = {}
+    buy_url: str = ''
+    chat_url: str = ''
+    auto_cw_cache: dict = {}
+    video_transcript: str = ''
     searchable_by: list[str] = []
     session = None
 
@@ -6718,7 +6731,7 @@ def _test_extract_text_fields_from_post():
         '"Wildebeest",false\ndomo.cafe,suspend,false,false,"Wildebeest",' + \
         'false\nemaw.social,suspend,false,false\n\r\n ' + \
         '-----------------------------116202748023898664511855843036--\r\n'
-    debug = False
+    debug: bool = False
     fields = extract_text_fields_in_post(None, boundary, debug, form_data)
     assert fields['submitPost'] == 'Submit'
     assert fields['subject'] == ''
@@ -6867,7 +6880,7 @@ def test_update_actor(base_dir: str):
     assert THR_ALICE.is_alive() is True
 
     # wait for server to be running
-    ctr = 0
+    ctr: int = 0
     while not TEST_SERVER_ALICE_RUNNING:
         time.sleep(1)
         ctr += 1
@@ -6929,7 +6942,7 @@ def test_update_actor(base_dir: str):
     if len(actor_json['attachment']) == 0:
         print("actor_json['attachment'] has no contents")
     assert len(actor_json['attachment']) > 0
-    property_found = False
+    property_found: bool = False
     for property_value in actor_json['attachment']:
         if not isinstance(property_value, dict):
             continue
@@ -7021,8 +7034,8 @@ def _test_spoofed_geolocation() -> None:
     assert not point_in_nogo(test_square, -5, 5)
     nogo_list: list[str] = []
     curr_time = date_utcnow()
-    decoy_seed = 7634681
-    city_radius = 0.1
+    decoy_seed: int = 7634681
+    city_radius: float = 0.1
     coords = spoof_geolocation('', 'los angeles', curr_time,
                                decoy_seed, cities_list, nogo_list)
     assert coords[0] >= 34.0536909 - city_radius
@@ -7504,7 +7517,7 @@ def _translate_ontology(base_dir: str) -> None:
     assert languages_str
 
     for otype in ontology_types:
-        changed = False
+        changed: bool = False
         filename = base_dir + '/ontology/' + otype + 'Types.json'
         if not os.path.isfile(filename):
             continue
@@ -7552,42 +7565,44 @@ def _translate_ontology(base_dir: str) -> None:
 
 def _test_can_replyto(base_dir: str) -> None:
     print('test_can_reply_to')
-    system_language = 'en'
-    languages_understood = [system_language]
-    nickname = 'test27637'
-    domain = 'rando.site'
-    port = 443
-    http_prefix = 'https'
-    content = 'This is a test post with links.\n\n' + \
+    system_language: str = 'en'
+    languages_understood: list = [system_language]
+    nickname: str = 'test27637'
+    domain: str = 'rando.site'
+    port: int = 443
+    http_prefix: str = 'https'
+    content: str = 'This is a test post with links.\n\n' + \
         'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://libreserver.org'
-    save_to_file = False
-    client_to_server = False
-    comments_enabled = True
+    save_to_file: bool = False
+    client_to_server: bool = False
+    comments_enabled: bool = True
     attach_image_filename = None
     media_type = None
     image_description = None
-    city = 'London, England'
+    city: str = 'London, England'
     test_in_reply_to = None
     test_in_reply_to_atom_uri = None
     test_subject = None
-    test_schedule_post = False
+    test_schedule_post: bool = False
     test_event_date = None
     test_event_time = None
     test_event_end_time = None
-    test_event_category = ''
+    test_event_category: str = ''
     test_location = None
     test_is_article = False
     conversation_id = None
     convthread_id = None
-    low_bandwidth = True
-    content_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
-    media_creator = 'The Penguin'
-    translate = {}
-    buy_url = ''
-    chat_url = ''
-    auto_cw_cache = {}
-    video_transcript = ''
+    low_bandwidth: bool = True
+    content_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_license_url: str = \
+        'https://creativecommons.org/licenses/by-nc/4.0'
+    media_creator: str = 'The Penguin'
+    translate: dict = {}
+    buy_url: str = ''
+    chat_url: str = ''
+    auto_cw_cache: dict = {}
+    video_transcript: str = ''
     searchable_by: list[str] = []
     session = None
 
@@ -7817,7 +7832,7 @@ def _test_httpsig_base_new(with_digest: bool, base_dir: str,
     print('headers: ' + str(headers))
 
     getreq_method = not with_digest
-    debug = True
+    debug: bool = True
     assert verify_post_headers(http_prefix, public_key_pem, headers,
                                boxpath, getreq_method, None,
                                message_body_json_str, debug)
@@ -8271,10 +8286,10 @@ def _test_missing_theme_colors(base_dir: str) -> None:
         theme_json = load_json(theme_filename)
         if not theme_json:
             continue
-        updated = False
-        for property, value in default_theme_json.items():
-            if not theme_json.get(property):
-                theme_json[property] = value
+        updated: bool = False
+        for prop, value in default_theme_json.items():
+            if not theme_json.get(prop):
+                theme_json[prop] = value
                 updated = True
         if updated:
             save_json(theme_json, theme_filename)

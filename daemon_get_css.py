@@ -36,7 +36,7 @@ def get_style_sheet(self, base_dir: str, calling_domain: str, path: str,
     if css_cache.get(path):
         css = css_cache[path]
     elif os.path.isfile(path):
-        tries = 0
+        tries: int = 0
         while tries < 5:
             try:
                 css = get_css(path)

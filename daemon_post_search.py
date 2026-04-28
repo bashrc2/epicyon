@@ -105,7 +105,7 @@ def _receive_search_hashtag(self, actor_str: str,
     timezone = None
     if account_timezone.get(nickname):
         timezone = account_timezone.get(nickname)
-    bold_reading = False
+    bold_reading: bool = False
     if bold_reading_nicknames.get(nickname):
         bold_reading = True
     hashtag_str = \
@@ -260,7 +260,7 @@ def _receive_search_my_posts(self, search_str: str,
     timezone = None
     if account_timezone.get(nickname):
         timezone = account_timezone.get(nickname)
-    bold_reading = False
+    bold_reading: bool = False
     if bold_reading_nicknames.get(nickname):
         bold_reading = True
     history_str = \
@@ -379,7 +379,7 @@ def _receive_search_bookmarks(self, search_str: str,
     timezone = None
     if account_timezone.get(nickname):
         timezone = account_timezone.get(nickname)
-    bold_reading = False
+    bold_reading: bool = False
     if bold_reading_nicknames.get(nickname):
         bold_reading = True
     bookmarks_str = \
@@ -473,7 +473,7 @@ def _receive_search_handle(self, search_str: str,
                            instance_software: {}) -> bool:
     """Receive a search for a fediverse handle or url from the search screen
     """
-    remote_only = False
+    remote_only: bool = False
     if search_str.endswith(';remote'):
         search_str = search_str.replace(';remote', '')
         remote_only = True
@@ -596,7 +596,7 @@ def _receive_search_handle(self, search_str: str,
         self.server.postreq_busy = False
         return True
 
-    bold_reading = False
+    bold_reading: bool = False
     if bold_reading_nicknames.get(nickname):
         bold_reading = True
 

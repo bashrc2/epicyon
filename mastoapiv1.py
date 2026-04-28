@@ -66,8 +66,8 @@ def _meta_data_instance_v1(show_accounts: bool,
             })
             rule_ctr += 1
 
-    is_bot = False
-    is_group = False
+    is_bot: bool = False
+    is_group: bool = False
     if admin_actor['type'] == 'Group':
         is_group = True
     elif admin_actor['type'] != 'Person':
@@ -224,19 +224,19 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
     if account_json.get('published'):
         joined_date = account_json['published']
     noindex = not account_is_indexable(account_json)
-    discoverable = True
+    discoverable: bool = True
     if 'discoverable' in account_json:
         if account_json['discoverable'] is False:
             discoverable = False
-    group = False
-    bot = False
+    group: bool = False
+    bot: bool = False
     if account_json['type'] == 'Group':
         group = True
     elif account_json['type'] != 'Person':
         bot = True
-    no_of_statuses = 0
-    no_of_followers = 0
-    no_of_following = 0
+    no_of_statuses: int = 0
+    no_of_followers: int = 0
+    no_of_following: int = 0
     fields: list[dict] = []
     published = None
     if show_accounts and not broch_mode:

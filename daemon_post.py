@@ -498,7 +498,7 @@ def daemon_http_post(self) -> None:
                         '_POST', '_news_post_edit',
                         self.server.debug)
 
-    users_in_path = False
+    users_in_path: bool = False
     if '/users/' in self.path:
         users_in_path = True
 
@@ -533,7 +533,7 @@ def daemon_http_post(self) -> None:
                         '_POST', '_moderator_actions',
                         self.server.debug)
 
-    search_for_emoji = False
+    search_for_emoji: bool = False
     if self.path.endswith('/searchhandleemoji'):
         search_for_emoji = True
         self.path = self.path.replace('/searchhandleemoji',
@@ -1135,7 +1135,7 @@ def daemon_http_post(self) -> None:
         self.server.postreq_busy = False
         return
 
-    is_media_content = False
+    is_media_content: bool = False
     if string_starts_with(self.headers['Content-type'],
                           ('image/', 'video/', 'audio/')):
         is_media_content = True
@@ -1223,7 +1223,7 @@ def daemon_http_post(self) -> None:
 
     # check content length before reading bytes
     if self.path in ('/sharedInbox', '/inbox'):
-        length = 0
+        length: int = 0
         if self.headers.get('Content-length'):
             length = int(self.headers['Content-length'])
         elif self.headers.get('Content-Length'):

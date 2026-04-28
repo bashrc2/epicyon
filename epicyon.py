@@ -903,7 +903,7 @@ def _command_options() -> None:
         print(poisoned_str)
         sys.exit()
 
-    debug = False
+    debug: bool = False
     if argb.debug:
         debug = True
     else:
@@ -1012,7 +1012,7 @@ def _command_options() -> None:
             print('origin_domain: ' + str(origin_domain))
         if argb.posts.startswith('@'):
             argb.posts = argb.posts[1:]
-        url_with_at = False
+        url_with_at: bool = False
         if '://' in argb.posts and '/@' in argb.posts and \
            '/@/' not in argb.posts:
             url_with_at = True
@@ -1257,7 +1257,7 @@ def _command_options() -> None:
                 argb.port = 80
         elif argb.gnunet:
             proxy_type = 'gnunet'
-        max_blocked_domains = 0
+        max_blocked_domains: int = 0
         if not argb.language:
             argb.language = 'en'
         signing_priv_key_pem = None
@@ -1312,7 +1312,7 @@ def _command_options() -> None:
             print('origin_domain: ' + str(origin_domain))
         if argb.postsraw.startswith('@'):
             argb.postsraw = argb.postsraw[1:]
-        url_with_at = False
+        url_with_at: bool = False
         if '://' in argb.postsraw and '/@' in argb.postsraw and \
            '/@/' not in argb.postsraw:
             url_with_at = True
@@ -1391,8 +1391,8 @@ def _command_options() -> None:
         sys.exit()
 
     if argb.instance_software:
-        debug = False
-        http_prefix = 'https'
+        debug: bool = False
+        http_prefix: str = 'https'
         if '127.0.0.1' in argb.instance_software or \
            'localhost' in argb.instance_software:
             http_prefix = 'http'
@@ -1974,7 +1974,7 @@ def _command_options() -> None:
 
         accounts_dir = acct_dir(base_dir, argb.nickname, domain)
         approve_follows_filename = accounts_dir + '/followrequests.txt'
-        approve_ctr = 0
+        approve_ctr: int = 0
         if os.path.isfile(approve_follows_filename):
             try:
                 with open(approve_follows_filename, 'r',
@@ -2061,7 +2061,7 @@ def _command_options() -> None:
         if attach:
             media_type = get_attachment_media_type(attach)
         reply_to = argb.replyto
-        is_article = False
+        is_article: bool = False
         if not domain:
             domain = get_config_param(base_dir, 'domain')
         signing_priv_key_pem = None
@@ -3946,7 +3946,7 @@ def _command_options() -> None:
         delete_all_posts(base_dir, nickname, domain, 'outbox')
 
         test_save_to_file = True
-        test_c2s = False
+        test_c2s: bool = False
         test_comments_enabled = True
         test_attach_image_filename = None
         test_media_type = None
@@ -3955,16 +3955,16 @@ def _command_options() -> None:
         test_in_reply_to = None
         test_in_reply_to_atom_uri = None
         test_subject = None
-        test_schedule_post = False
+        test_schedule_post: bool = False
         test_event_date = None
         test_event_time = None
         test_event_end_time = None
         test_event_category: str = ''
         test_location = None
-        test_is_article = False
+        test_is_article: bool = False
         conversation_id = None
         convthread_id = None
-        low_bandwidth = False
+        low_bandwidth: bool = False
         languages_understood = [argb.language]
         translate = {}
         buy_url: str = ''
@@ -4149,7 +4149,7 @@ def _command_options() -> None:
 
     registration = get_config_param(base_dir, 'registration')
     if not registration:
-        registration = False
+        registration: bool = False
 
     map_format = get_config_param(base_dir, 'mapFormat')
     if map_format:

@@ -34,7 +34,7 @@ from utils import is_yggdrasil_url
 def _parse_handle(handle: str) -> (str, str, bool):
     """Parses a handle and returns nickname and domain
     """
-    group_account = False
+    group_account: bool = False
     if '.' not in handle:
         if not is_yggdrasil_url(handle):
             return None, None, False
@@ -401,17 +401,17 @@ def webfinger_lookup(path: str, base_dir: str,
             handle = 'inbox@' + handle_domain
     # if this is a lookup for a handle using its onion domain
     # then swap the onion domain for the clearnet version
-    onionify = False
+    onionify: bool = False
     if onion_domain:
         if onion_domain in handle:
             handle = handle.replace(onion_domain, domain)
             onionify = True
-    i2pify = False
+    i2pify: bool = False
     if i2p_domain:
         if i2p_domain in handle:
             handle = handle.replace(i2p_domain, domain)
             i2pify = True
-    yggdrasilify = False
+    yggdrasilify: bool = False
     if yggdrasil_domain:
         if yggdrasil_domain in handle:
             handle = handle.replace(yggdrasil_domain, domain)
@@ -447,7 +447,7 @@ def webfinger_lookup(path: str, base_dir: str,
 def _webfinger_update_avatar(wf_json: {}, actor_json: {}) -> bool:
     """Updates the avatar image link
     """
-    found = False
+    found: bool = False
     url_str = get_url_from_post(actor_json['icon']['url'])
     avatar_url = remove_html(url_str)
     media_type = actor_json['icon']['mediaType']
@@ -492,7 +492,7 @@ def _webfinger_update_vcard(wf_json: {}, actor_json: {}) -> bool:
 def _webfinger_add_blog_link(wf_json: {}, actor_json: {}) -> bool:
     """Adds a blog link to webfinger if needed
     """
-    found = False
+    found: bool = False
     if '/users/' in actor_json['id']:
         blog_url = \
             actor_json['id'].split('/users/')[0] + '/blog/' + \
@@ -527,7 +527,7 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
     if not actor_json.get('attachment'):
         return False
 
-    changed = False
+    changed: bool = False
 
     webfinger_property_name = {
         "xmpp": "xmpp",
@@ -556,7 +556,7 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
         if not name_value:
             continue
         property_name = name_value.lower()
-        found = False
+        found: bool = False
         for name, alias in webfinger_property_name.items():
             if name == property_name:
                 if alias in aliases_not_found:
@@ -578,8 +578,8 @@ def _webfinger_update_from_profile(wf_json: {}, actor_json: {}) -> bool:
         if '://' in new_value:
             new_value = new_value.split('://')[1]
 
-        alias_index = 0
-        found = False
+        alias_index: int = 0
+        found: bool = False
         for alias in wf_json['aliases']:
             if alias.startswith(webfinger_property_name[property_name] + ':'):
                 found = True
@@ -628,9 +628,9 @@ def webfinger_update(base_dir: str, nickname: str, domain: str,
         return
 
     filename = base_dir + wf_subdir + '/' + handle + '.json'
-    onionify = False
-    i2pify = False
-    yggdrasilify = False
+    onionify: bool = False
+    i2pify: bool = False
+    yggdrasilify: bool = False
     if onion_domain:
         if onion_domain in handle:
             handle = handle.replace(onion_domain, domain)

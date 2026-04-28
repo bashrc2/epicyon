@@ -116,7 +116,7 @@ def html_conversation_view(authorized: bool, post_id: str,
     separator_str = html_post_separator(base_dir, None)
     text_mode_separator = '<div class="transparent"><hr></div>\n'
 
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     current_reading_str: str = ''
@@ -137,7 +137,7 @@ def html_conversation_view(authorized: bool, post_id: str,
                           from_nickname, from_domain,
                           blocked_cache, block_federated):
                 show_individual_post_icons = False
-        allow_deletion = False
+        allow_deletion: bool = False
         # get the list of mutuals for the current account
         mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \

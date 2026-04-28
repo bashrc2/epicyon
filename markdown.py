@@ -26,9 +26,9 @@ def _markdown_get_sections(markdown: str) -> []:
         return [markdown]
     lines = markdown.split('\n')
     sections: list[str] = []
-    section_text = ''
-    section_active = False
-    ctr = 0
+    section_text: str = ''
+    section_active: bool = False
+    ctr: int = 0
     for line in lines:
         if ctr > 0:
             section_text += '\n'
@@ -136,9 +136,9 @@ def _markdown_replace_quotes(markdown: str) -> str:
     if '> ' not in markdown:
         return markdown
     lines = markdown.split('\n')
-    result = ''
+    result: str = ''
     prev_quote_line = None
-    code_section = False
+    code_section: bool = False
     for line in lines:
         # avoid code sections
         if not code_section:
@@ -184,14 +184,14 @@ def _markdown_replace_links(markdown: str) -> str:
     Optionally replace image links
     """
     sections = _markdown_get_sections(markdown)
-    result = ''
+    result: str = ''
     for section_text in sections:
         if '<code>' in section_text or \
            '](' not in section_text:
             result += section_text
             continue
         sections_links = section_text.split('](')
-        ctr = 0
+        ctr: int = 0
         for link_section in sections_links:
             if ctr == 0:
                 ctr += 1
@@ -253,7 +253,7 @@ def _markdown_replace_misskey(markdown: str) -> str:
     if '$[' not in markdown or ']' not in markdown:
         return markdown
     sections = _markdown_get_sections(markdown)
-    result = ''
+    result: str = ''
     for section_text in sections:
         if '<code>' in section_text or \
            '$[' not in section_text or \
@@ -262,7 +262,7 @@ def _markdown_replace_misskey(markdown: str) -> str:
             result += section_text
             continue
         sections_links = section_text.split('$[')
-        ctr = 0
+        ctr: int = 0
         for link_section in sections_links:
             if ctr == 0:
                 ctr += 1
@@ -280,8 +280,8 @@ def _markdown_replace_misskey(markdown: str) -> str:
             # get the type of animation
             animation_type = misskey_str.split(' ')[0]
             append_emoji = None
-            mfm_type = ''
-            found = False
+            mfm_type: str = ''
+            found: bool = False
             for anim, anim_emoji in animation_types.items():
                 if animation_type.startswith(anim):
                     mfm_type = anim
@@ -313,11 +313,11 @@ def _markdown_replace_bullet_points(markdown: str) -> str:
     """
     lines = markdown.split('\n')
     bullet_style = ('* ', ' * ', '- ', ' - ')
-    bullet_matched = ''
-    start_line = -1
-    line_ctr = 0
-    changed = False
-    code_section = False
+    bullet_matched: str = ''
+    start_line: int = -1
+    line_ctr: int = 0
+    changed: bool = False
+    code_section: bool = False
     for line in lines:
         if not line.strip():
             # skip blank lines
@@ -370,11 +370,11 @@ def _markdown_replace_code(markdown: str) -> str:
     """Replaces code sections within markdown
     """
     lines = markdown.split('\n')
-    start_line = -1
-    line_ctr = 0
-    changed = False
-    section_active = False
-    url_encode = False
+    start_line: int = -1
+    line_ctr: int = 0
+    changed: bool = False
+    section_active: bool = False
+    url_encode: bool = False
     html_escape_table = {
         "&": "&amp;",
         '"': "&quot;",
@@ -422,8 +422,8 @@ def markdown_example_numbers(markdown: str) -> str:
     document are sequential
     """
     lines = markdown.split('\n')
-    example_number = 1
-    line_ctr = 0
+    example_number: int = 1
+    line_ctr: int = 0
     for line in lines:
         if not line.strip():
             # skip blank lines
@@ -453,9 +453,9 @@ def markdown_to_html(markdown: str) -> str:
 
     # replace headers
     lines_list = markdown.split('\n')
-    html_str = ''
-    ctr = 0
-    code_section = False
+    html_str: str = ''
+    ctr: int = 0
+    code_section: bool = False
     titles = {
         "h6": '######',
         "h5": '#####',

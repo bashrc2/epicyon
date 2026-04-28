@@ -88,7 +88,7 @@ def _load_dfc_ids(base_dir: str, system_language: str,
     if not product_types['@graph'][0].get('rdfs:label'):
         print('@graph list entry has no rdfs:label')
         return None
-    language_exists = False
+    language_exists: bool = False
     for label in product_types['@graph'][0]['rdfs:label']:
         if not label.get('@language'):
             continue
@@ -369,7 +369,7 @@ def add_share(base_dir: str,
 
     # has an image for this share been uploaded?
     image_url = None
-    move_image = False
+    move_image: bool = False
     if not image_filename:
         shares_image_filename = \
             acct_dir(base_dir, nickname, domain) + '/upload'
@@ -446,7 +446,7 @@ def expire_shares(base_dir: str, max_shares_on_profile: int,
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
             shares_list = get_shares_files_list()
-            expired_ctr = 0
+            expired_ctr: int = 0
             for shares_file_type in shares_list:
                 ctr = \
                     _expire_shares_for_account(base_dir, nickname, domain,
@@ -526,7 +526,7 @@ def get_shares_feed_for_person(base_dir: str,
     if '/' + shares_file_type not in path:
         return None
     # handle page numbers
-    header_only = True
+    header_only: bool = True
     page_number = None
     if '?page=' in path:
         page_number = path.split('?page=')[1]
@@ -566,7 +566,7 @@ def get_shares_feed_for_person(base_dir: str,
         shares_file_type + '.json'
 
     if header_only:
-        no_of_shares = 0
+        no_of_shares: int = 0
         if os.path.isfile(shares_filename):
             shares_json = load_json(shares_filename)
             if shares_json:
@@ -606,9 +606,9 @@ def get_shares_feed_for_person(base_dir: str,
 
     if not os.path.isfile(shares_filename):
         return shares
-    curr_page = 1
-    page_ctr = 0
-    total_ctr = 0
+    curr_page: int = 1
+    page_ctr: int = 0
+    total_ctr: int = 0
 
     shares_json = load_json(shares_filename)
     if shares_json:
@@ -1307,9 +1307,9 @@ def outbox_undo_share_upload(base_dir: str, nickname: str, domain: str,
 def _shares_catalog_params(path: str) -> (bool, float, float, str):
     """Returns parameters when accessing the shares catalog
     """
-    today = False
-    min_price = 0
-    max_price = 9999999
+    today: bool = False
+    min_price: int = 0
+    max_price: int = 9999999
     match_pattern = None
     if '?' not in path:
         return today, min_price, max_price, match_pattern
@@ -1568,7 +1568,7 @@ def generate_shared_item_federation_tokens(shared_items_federated_domains: [],
             if tokens_json is None:
                 tokens_json = {}
 
-    tokens_added = False
+    tokens_added: bool = False
     for domain_full in shared_items_federated_domains:
         if not tokens_json.get(domain_full):
             tokens_json[domain_full] = ''
@@ -1600,7 +1600,7 @@ def update_shared_item_federation_token(base_dir: str,
             tokens_json = load_json(tokens_filename)
             if tokens_json is None:
                 tokens_json = {}
-    update_required = False
+    update_required: bool = False
     if tokens_json.get(token_domain_full):
         if tokens_json[token_domain_full] != new_token:
             update_required = True
@@ -1620,7 +1620,7 @@ def merge_shared_item_tokens(base_dir: str, domain_full: str,
     the tokens dict accordingly
     """
     removals: list[str] = []
-    changed = False
+    changed: bool = False
     for token_domain_full, _ in tokens_json.items():
         if domain_full:
             if token_domain_full.startswith(domain_full):
@@ -1839,7 +1839,7 @@ def _generate_next_shares_token_update(base_dir: str,
             if next_update_str.isdigit():
                 next_update_sec = int(next_update_str)
     curr_time = get_current_time_int()
-    updated = False
+    updated: bool = False
     if next_update_sec:
         if curr_time > next_update_sec:
             next_update_days = randint(min_days, max_days)
@@ -2378,12 +2378,12 @@ def add_shares_to_actor(base_dir: str,
     """
     if 'attachment' not in actor_json:
         actor_json['attachment']: list[dict] = []
-    changed = False
+    changed: bool = False
 
     # remove any existing ValueFlows items from attachment list
     new_attachment: list[dict] = []
     for attach_item in actor_json['attachment']:
-        is_proposal = False
+        is_proposal: bool = False
         if _is_valueflows_attachment(attach_item):
             changed = True
             is_proposal = True

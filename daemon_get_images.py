@@ -83,7 +83,7 @@ def show_avatar_or_banner(self, referer_domain: str, path: str,
         original_ext = avatar_file_ext
         original_avatar_file = avatar_file
         alt_ext = get_image_extensions()
-        alt_found = False
+        alt_found: bool = False
         for alt in alt_ext:
             if alt == original_ext:
                 continue
@@ -494,7 +494,7 @@ def show_qrcode(self, calling_domain: str, path: str,
             http_304(self)
             return True
 
-        tries = 0
+        tries: int = 0
         media_binary = None
         while tries < 5:
             exc_str = 'EX: _show_qrcode ' + str(tries) + ' [ex]'
@@ -541,7 +541,7 @@ def search_screen_banner(self, path: str,
             http_304(self)
             return True
 
-        tries = 0
+        tries: int = 0
         media_binary = None
         while tries < 5:
             exc_str = 'EX: _search_screen_banner ' + str(tries) + ' [ex]'
@@ -583,7 +583,7 @@ def column_image(self, side: str, path: str, base_dir: str, domain: str,
             http_304(self)
             return True
 
-        tries = 0
+        tries: int = 0
         media_binary = None
         while tries < 5:
             exc_str = 'EX: _column_image ' + str(tries) + ' [ex]'
@@ -624,7 +624,7 @@ def show_default_profile_background(self, base_dir: str, theme_name: str,
                 http_304(self)
                 return True
 
-            tries = 0
+            tries: int = 0
             bg_binary = None
             while tries < 5:
                 exc_str = 'EX: _show_default_profile_background ' + \
@@ -674,7 +674,7 @@ def show_background_image(self, path: str,
                         http_304(self)
                         return True
 
-                    tries = 0
+                    tries: int = 0
                     bg_binary = None
                     while tries < 5:
                         exc_str = 'EX: _show_background_image ' + \

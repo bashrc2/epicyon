@@ -250,7 +250,7 @@ def _reject_quote_request(message_json: {}, domain_full: str,
                     print('Domain switched from ' + domain +
                           ' to ' + curr_domain)
 
-            client_to_server = False
+            client_to_server: bool = False
             send_signed_json(reject_json, curr_session, base_dir,
                              nickname_to_follow, domain_to_follow, port,
                              nickname, domain, curr_port,
@@ -320,8 +320,8 @@ def _accept_follow(base_dir: str, message_json: {},
                 print('DEBUG: unrecognized actor ' + this_actor)
             return
     else:
-        actor_found = False
-        users_list = get_user_paths()
+        actor_found: bool = False
+        users_list: list = get_user_paths()
         for users_str in users_list:
             if '/' + accepted_domain + users_str + nickname in this_actor:
                 actor_found = True

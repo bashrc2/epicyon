@@ -63,7 +63,7 @@ def get_briar_address(actor_json: {}) -> str:
 def set_briar_address(actor_json: {}, briar_address: str) -> None:
     """Sets an briar address for the given actor
     """
-    not_briar_address = False
+    not_briar_address: bool = False
 
     if len(briar_address) < 50:
         not_briar_address = True

@@ -45,7 +45,7 @@ def get_website(actor_json: {}, translate: {}) -> str:
             name_value = property_value['schema:name']
         if not name_value:
             continue
-        found = False
+        found: bool = False
         name_value_lower = name_value.lower()
         if name_value_lower.endswith(' ' + website_str) or \
            name_value_lower.endswith(' homepage'):
@@ -126,7 +126,7 @@ def set_website(actor_json: {}, website_url: str, translate: {}) -> None:
     """Sets a web address
     """
     website_url = website_url.strip()
-    not_url = False
+    not_url: bool = False
     if '.' not in website_url:
         not_url = True
     if '://' not in website_url:
@@ -173,7 +173,7 @@ def set_gemini_link(actor_json: {}, gemini_link: str) -> None:
     """Sets a gemini link
     """
     gemini_link = gemini_link.strip()
-    not_link = False
+    not_link: bool = False
     if '.' not in gemini_link:
         not_link = True
     if '://' not in gemini_link:

@@ -224,7 +224,7 @@ def create_announce(session, base_dir: str, federation_list: [],
     announce_nickname = None
     announce_domain = None
     announce_port = None
-    group_account = False
+    group_account: bool = False
     if has_users_path(object_url):
         announce_nickname = get_nickname_from_actor(object_url)
         announce_domain, announce_port = get_domain_from_actor(object_url)
@@ -614,10 +614,10 @@ def undo_announce_collection_entry(recent_posts_cache: {},
         return
     if not post_json_object['object']['shares'].get('items'):
         return
-    total_items = 0
+    total_items: int = 0
     if post_json_object['object']['shares'].get('totalItems'):
         total_items = post_json_object['object']['shares']['totalItems']
-    item_found = False
+    item_found: bool = False
     for announce_item in post_json_object['object']['shares']['items']:
         if not isinstance(announce_item, dict):
             continue

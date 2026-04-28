@@ -248,7 +248,7 @@ def update_headers_catalog(base_dir: str, headers_catalog: {},
     This allows us to spot anything unexpected for later investigation
     """
     headers_catalog_fieldname = data_dir(base_dir) + '/headers_catalog.json'
-    changed = False
+    changed: bool = False
     for fieldname, fieldvalue in headers.items():
         if fieldname in headers_catalog:
             continue

@@ -123,9 +123,9 @@ def _receive_new_post_process_newpost(self, fields: {},
     is then sent to the outbox
     """
     if not fields.get('pinToProfile'):
-        pin_to_profile = False
+        pin_to_profile: bool = False
     else:
-        pin_to_profile = True
+        pin_to_profile: bool = True
         # is the post message empty?
         if not fields['message']:
             # remove the pinned content from profile screen
@@ -318,8 +318,8 @@ def _receive_new_post_process_newblog(self, fields: {},
         print('WARN: blog posts must have content')
         return NEW_POST_FAILED
     # submit button on newblog screen
-    save_to_file = False
-    client_to_server = False
+    save_to_file: bool = False
+    client_to_server: bool = False
     city = None
     conversation_id = None
     if fields.get('conversationId'):
@@ -570,8 +570,8 @@ def _receive_new_post_process_newunlisted(self, fields: {},
     and is then sent to the outbox
     """
     city = get_spoofed_city(city, base_dir, nickname, domain)
-    save_to_file = False
-    client_to_server = False
+    save_to_file: bool = False
+    client_to_server: bool = False
 
     conversation_id = None
     if fields.get('conversationId'):
@@ -742,8 +742,8 @@ def _receive_new_post_process_newfollowers(self, fields: {},
     and is then sent to the outbox
     """
     city = get_spoofed_city(city, base_dir, nickname, domain)
-    save_to_file = False
-    client_to_server = False
+    save_to_file: bool = False
+    client_to_server: bool = False
 
     conversation_id = None
     if fields.get('conversationId'):
@@ -928,8 +928,8 @@ def _receive_new_post_process_newdm(self, fields: {},
     print('A DM was posted')
     if '@' in mentions_str:
         city = get_spoofed_city(city, base_dir, nickname, domain)
-        save_to_file = False
-        client_to_server = False
+        save_to_file: bool = False
+        client_to_server: bool = False
 
         conversation_id = None
         if fields.get('conversationId'):
@@ -944,7 +944,7 @@ def _receive_new_post_process_newdm(self, fields: {},
                                      nickname, domain_full,
                                      person_cache)
 
-        reply_is_chat = False
+        reply_is_chat: bool = False
         if fields.get('replychatmsg'):
             reply_is_chat = fields['replychatmsg']
 
@@ -1120,9 +1120,9 @@ def _receive_new_post_process_newreminder(self, fields: {}, nickname: str,
     if '@' + handle not in mentions_str:
         mentions_str = '@' + handle + ' ' + mentions_str
     city = get_spoofed_city(city, base_dir, nickname, domain)
-    save_to_file = False
-    client_to_server = False
-    comments_enabled = False
+    save_to_file: bool = False
+    client_to_server: bool = False
+    comments_enabled: bool = False
     conversation_id = None
     convthread_id = None
     mentions_message = mentions_str + fields['message']
@@ -1472,7 +1472,7 @@ def _receive_new_post_process_newreading(self, fields: {},
     if not fields.get('bookurl'):
         print(post_type + ' no bookurl')
         return NEW_POST_FAILED
-    book_rating = 0.0
+    book_rating: float = 0.0
     if fields.get('bookrating'):
         if isinstance(fields['bookrating'], (float, int)):
             book_rating = fields['bookrating']
@@ -1587,9 +1587,9 @@ def _receive_new_post_process_newreading(self, fields: {},
         if fields['schedulePost']:
             return NEW_POST_SUCCESS
         if not fields.get('pinToProfile'):
-            pin_to_profile = False
+            pin_to_profile: bool = False
         else:
-            pin_to_profile = True
+            pin_to_profile: bool = True
         if pin_to_profile:
             sys_language = system_language
             content_str = \
@@ -1678,7 +1678,7 @@ def _receive_new_post_process_newshare(self, fields: {},
     else:
         print('Adding wanted item')
         shares_file_type = 'wanted'
-    share_on_profile = False
+    share_on_profile: bool = False
     if fields.get('shareOnProfile'):
         if fields['shareOnProfile'] == 'on':
             share_on_profile = True
@@ -1931,7 +1931,7 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
             print('WARN: no text fields could be extracted from POST')
 
     # was the citations button pressed on the newblog screen?
-    citations_button_press = False
+    citations_button_press: bool = False
     if post_type == 'newblog' and fields.get('submitCitations'):
         if fields['submitCitations'] == translate['Citations']:
             citations_button_press = True
@@ -2038,9 +2038,9 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
     if fields.get('mentions'):
         mentions_str = fields['mentions'].strip() + ' '
     if not fields.get('commentsEnabled'):
-        comments_enabled = False
+        comments_enabled: bool = False
     else:
-        comments_enabled = True
+        comments_enabled: bool = True
 
     buy_url: str = ''
     if fields.get('buyUrl'):
@@ -2503,7 +2503,7 @@ def receive_new_post(self, post_type, path: str,
 
     if self.server.new_post_thread.get(new_post_thread_name):
         print('Waiting for previous new post thread to end')
-        wait_ctr = 0
+        wait_ctr: int = 0
         np_thread = self.server.new_post_thread[new_post_thread_name]
         while np_thread.is_alive() and wait_ctr < 8:
             time.sleep(1)

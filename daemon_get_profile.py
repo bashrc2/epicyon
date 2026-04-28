@@ -112,7 +112,7 @@ def show_person_profile(self, authorized: bool,
             city = get_spoofed_city(city, base_dir, nickname, domain)
             if account_timezone.get(nickname):
                 timezone = account_timezone.get(nickname)
-        bold_reading = False
+        bold_reading: bool = False
         if bold_reading_nicknames.get(nickname):
             bold_reading = True
         known_epicyon_instances = \
@@ -286,7 +286,7 @@ def show_roles(self, calling_domain: str, referer_domain: str,
                 timezone = None
                 if account_timezone.get(nickname):
                     timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
                 known_epicyon_instances = \
@@ -447,7 +447,7 @@ def show_skills(self, calling_domain: str, referer_domain: str,
                             nick = nickname
                             if account_timezone.get(nick):
                                 timezone = account_timezone.get(nick)
-                            bold_reading = False
+                            bold_reading: bool = False
                             if bold_reading_nicknames.get(nick):
                                 bold_reading = True
                             known_epicyon_instances = \

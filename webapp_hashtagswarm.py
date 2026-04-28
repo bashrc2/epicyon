@@ -337,7 +337,7 @@ def _update_cached_hashtag_swarm(base_dir: str, nickname: str, domain: str,
             if diff_mins < 30:
                 # was saved recently, so don't save again
                 # This avoids too much disk I/O
-                save_swarm = False
+                save_swarm: bool = False
                 print('Not updating hashtag swarm')
             else:
                 print('Updating cached hashtag swarm, last changed ' +
@@ -372,7 +372,7 @@ def _store_tag_name(base_dir: str, nickname: str,
     if map_links and published:
         add_tag_map_links(tag_maps_dir, tag_name, map_links,
                           published, post_url)
-    hashtag_added = False
+    hashtag_added: bool = False
     if not os.path.isfile(tags_filename):
         if save_string(tag_line, tags_filename,
                        'EX: store_hash_tags unable to write ' + tags_filename):
@@ -461,7 +461,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
 
     post_url = remove_id_ending(post_json_object['id'])
     post_url = post_url.replace('/', '#')
-    hashtags_ctr = 0
+    hashtags_ctr: int = 0
     for tag in object_tags:
         if not tag.get('type'):
             continue

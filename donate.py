@@ -44,7 +44,7 @@ def get_donation_url(actor_json: {}) -> str:
         if not name_value:
             continue
         name_value_lower = name_value.lower()
-        found = False
+        found: bool = False
         for donation_type_str in donation_type_list:
             if donation_type_str in name_value_lower:
                 found = True
@@ -81,7 +81,7 @@ def get_donation_url(actor_json: {}) -> str:
 def set_donation_url(actor_json: {}, donate_url: str) -> None:
     """Sets a link used for donations
     """
-    not_url = False
+    not_url: bool = False
     if '.' not in donate_url:
         not_url = True
     if '://' not in donate_url:

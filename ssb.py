@@ -59,7 +59,7 @@ def get_ssb_address(actor_json: {}) -> str:
 def set_ssb_address(actor_json: {}, ssb_address: str) -> None:
     """Sets an ssb address for the given actor
     """
-    not_ssb_address = False
+    not_ssb_address: bool = False
     if not ssb_address.startswith('@'):
         not_ssb_address = True
     if '=.' not in ssb_address:

@@ -188,7 +188,7 @@ def no_of_followers_on_domain(base_dir: str, handle: str,
     if not os.path.isfile(filename):
         return 0
 
-    ctr = 0
+    ctr: int = 0
     try:
         with open(filename, 'r', encoding='utf-8') as fp_followers:
             for follower_handle in fp_followers:
@@ -363,7 +363,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
                    system_language: str,
                    mitm_servers: []) -> (str, str, str, str, str,
                                          str, str, bool):
-    debug = False
+    debug: bool = False
     profile_str = 'https://www.w3.org/ns/activitystreams'
     as_header = {
         'Accept': 'application/activity+json; profile="' + profile_str + '"'
@@ -401,7 +401,7 @@ def get_person_box(signing_priv_key_pem: str, origin_domain: str,
     if not person_json:
         return None, None, None, None, None, None, None, None
 
-    is_group = False
+    is_group: bool = False
     if person_json.get('type'):
         if person_json['type'] == 'Group':
             is_group = True
@@ -510,13 +510,13 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
             this_item = item['object']
         # check that this is a public post
         # #Public should appear in the "to" list
-        item_is_note = False
+        item_is_note: bool = False
         if item['type'] in ('Note', 'Event', 'Page'):
             item_is_note = True
 
         if isinstance(this_item, dict):
             if this_item.get('to'):
-                is_public = False
+                is_public: bool = False
                 if isinstance(this_item['to'], list):
                     for recipient in this_item['to']:
                         if recipient.endswith('#Public') or \
@@ -534,7 +534,7 @@ def _is_public_feed_post(item: {}, person_posts: {}, debug: bool) -> bool:
                     return False
         elif isinstance(this_item, str) or item_is_note:
             if item.get('to'):
-                is_public = False
+                is_public: bool = False
                 if isinstance(item['to'], list):
                     for recipient in item['to']:
                         if recipient.endswith('#Public') or \
@@ -608,7 +608,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
         if debug:
             print('Returning the raw feed')
         result: list[dict] = []
-        i = 0
+        i: int = 0
         user_feed = parse_user_feed(signing_priv_key_pem,
                                     session, outbox_url, as_header,
                                     project_version, http_prefix,
@@ -633,7 +633,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
     if not user_feed:
         return person_posts
 
-    i = 0
+    i: int = 0
     for item in user_feed:
         if is_create_inside_announce(item):
             item = item['object']
@@ -666,11 +666,11 @@ def _get_posts(session, outbox_url: str, max_posts: int,
         content = content.replace('&apos;', "'")
 
         mentions: list[str] = []
-        emoji = {}
-        summary = ''
-        in_reply_to = ''
+        emoji: dict = {}
+        summary: str = ''
+        in_reply_to: str = ''
         attachment: list[list] = []
-        sensitive = False
+        sensitive: bool = False
         if isinstance(this_item, dict):
             if this_item.get('tag'):
                 for tag_item in this_item['tag']:
@@ -743,7 +743,7 @@ def _get_posts(session, outbox_url: str, max_posts: int,
                                 if debug:
                                     print('url not permitted ' + url_str)
 
-            sensitive = False
+            sensitive: bool = False
             if this_item.get('sensitive'):
                 sensitive = this_item['sensitive']
 
@@ -844,7 +844,7 @@ def get_post_domains(session, outbox_url: str, max_posts: int, debug: bool,
 
     post_domains = domain_list
 
-    i = 0
+    i: int = 0
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
                                 project_version, http_prefix, domain,
@@ -917,7 +917,7 @@ def _get_posts_for_blocked_domains(base_dir: str,
 
     blocked_posts = {}
 
-    i = 0
+    i: int = 0
     user_feed = parse_user_feed(signing_priv_key_pem,
                                 session, outbox_url, as_header,
                                 project_version, http_prefix, domain,
@@ -1746,7 +1746,7 @@ def _create_post_mentions(cc_url: str, new_post: {},
         to_cc = new_post['object']['cc']
         if len(to_recipients) != 1:
             return
-        to_public_recipient = False
+        to_public_recipient: bool = False
         if to_recipients[0].endswith('#Public') or \
            to_recipients[0] == 'as:Public' or \
            to_recipients[0] == 'Public':
@@ -1914,7 +1914,7 @@ def create_post_base(base_dir: str,
         local_actor_url(http_prefix, nickname, domain) + \
         '/statuses/' + status_number
 
-    sensitive = False
+    sensitive: bool = False
     summary = None
     if subject:
         summary = remove_invalid_chars(valid_content_warning(subject))
@@ -1934,7 +1934,7 @@ def create_post_base(base_dir: str,
             if mention not in to_cc:
                 to_cc.append(mention)
 
-    is_public = False
+    is_public: bool = False
     for recipient in to_recipients:
         if recipient.endswith('#Public') or \
            recipient == 'as:Public' or \
@@ -2152,7 +2152,7 @@ def _post_is_addressed_to_followers(nickname: str, domain: str, port: int,
         local_actor_url(http_prefix, nickname, domain_full) + '/followers'
 
     # does the followers url exist in 'to' or 'cc' lists?
-    addressed_to_followers = False
+    addressed_to_followers: bool = False
     if followers_url in to_list:
         addressed_to_followers = True
     elif followers_url in cc_list:
@@ -2306,7 +2306,7 @@ def create_public_post(base_dir: str,
     """Public post
     """
     domain_full = get_full_domain(domain, port)
-    is_moderation_report = False
+    is_moderation_report: bool = False
     event_uuid = None
     category = None
     join_mode = None
@@ -2507,10 +2507,10 @@ def create_news_post(base_dir: str,
                      languages_understood: [], translate: {},
                      buy_url: str, chat_url: str, session) -> {}:
     auto_cw_cache = {}
-    client_to_server = False
+    client_to_server: bool = False
     in_reply_to = None
     in_reply_to_atom_uri = None
-    schedule_post = False
+    schedule_post: bool = False
     event_date = None
     event_time = None
     event_end_time = None
@@ -2558,10 +2558,10 @@ def create_question_post(base_dir: str,
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
     buy_url = ''
     chat_url = ''
-    is_moderation_report = False
-    is_article = False
+    is_moderation_report: bool = False
+    is_article: bool = False
     in_reply_to = in_reply_to_atom_uri = None
-    schedule_post = False
+    schedule_post: bool = False
     event_date = event_time = location = event_uuid = category = None
     join_mode = end_date = end_time = event_category = None
     maximum_attendee_capacity = replies_moderation_option = None
@@ -2637,8 +2637,8 @@ def create_unlisted_post(base_dir: str,
     """
     domain_full = get_full_domain(domain, port)
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
-    is_moderation_report = False
-    is_article = False
+    is_moderation_report: bool = False
+    is_article: bool = False
     event_uuid = category = join_mode = None
     maximum_attendee_capacity = None
     replies_moderation_option = None
@@ -2701,8 +2701,8 @@ def create_followers_only_post(base_dir: str,
     """
     domain_full = get_full_domain(domain, port)
     local_actor = local_actor_url(http_prefix, nickname, domain_full)
-    is_moderation_report = False
-    is_article = False
+    is_moderation_report: bool = False
+    is_article: bool = False
     event_uuid = category = join_mode = None
     maximum_attendee_capacity = None
     replies_moderation_option = None
@@ -2806,8 +2806,8 @@ def create_direct_message_post(base_dir: str,
         return None
     post_to = None
     post_cc = None
-    is_moderation_report = False
-    is_article = False
+    is_moderation_report: bool = False
+    is_article: bool = False
     event_uuid = category = join_mode = None
     maximum_attendee_capacity = None
     replies_moderation_option = None
@@ -2931,9 +2931,9 @@ def create_report_post(base_dir: str,
     buy_url = ''
     chat_url = ''
     is_moderation_report = True
-    is_article = False
+    is_article: bool = False
     in_reply_to = in_reply_to_atom_uri = None
-    schedule_post = False
+    schedule_post: bool = False
     event_date = None
     event_time = None
     location = None
@@ -3057,11 +3057,11 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
                      nickname: str, domain: str) -> None:
     """Sends a with retries
     """
-    tries = 0
+    tries: int = 0
     send_interval_sec = 30
     for _ in range(20):
         post_result = None
-        unauthorized = False
+        unauthorized: bool = False
         if debug:
             print('Getting post_json_string for ' + inbox_url)
         try:
@@ -3083,7 +3083,7 @@ def thread_send_post(session, post_json_str: str, federation_list: [],
         if unauthorized:
             # try again with application/ld+json header
             post_result = None
-            unauthorized = False
+            unauthorized: bool = False
             if debug:
                 print('Getting ld post_json_string for ' + inbox_url)
             try:
@@ -3239,8 +3239,8 @@ def send_post(signing_priv_key_pem: str, project_version: str,
         return 5
     # shared_inbox is optional
 
-    is_moderation_report = False
-    schedule_post = False
+    is_moderation_report: bool = False
+    schedule_post: bool = False
     event_date = event_time = location = None
     event_uuid = category = None
     join_mode = None
@@ -3298,7 +3298,7 @@ def send_post(signing_priv_key_pem: str, project_version: str,
     post_path = inbox_url.split(to_domain, 1)[1]
 
     if not post_json_object.get('signature'):
-        json_copied = False
+        json_copied: bool = False
         try:
             signed_post_json_object = post_json_object.copy()
             json_copied = True
@@ -3698,8 +3698,8 @@ def add_to_field(activity_type: str, post_json_object: {},
         pprint(post_json_object)
         print('DEBUG: no "to" field when sending to named addresses 2')
 
-    is_same_type = False
-    to_field_added = False
+    is_same_type: bool = False
+    to_field_added: bool = False
     if post_json_object.get('object'):
         if isinstance(post_json_object['object'], str):
             if post_json_object.get('type'):
@@ -3797,7 +3797,7 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
         return
     if not post_json_object.get('object'):
         return
-    is_profile_update = False
+    is_profile_update: bool = False
     if has_object_dict(post_json_object):
         if _is_profile_update(post_json_object):
             # use the original object, which has a 'to'
@@ -3878,7 +3878,7 @@ def _send_to_named_addresses(server, session, session_onion, session_i2p,
     # any particular account in terms of delivery time
     random.shuffle(recipients)
     # this is after the message has arrived at the server
-    client_to_server = False
+    client_to_server: bool = False
     for address in recipients:
         to_nickname = get_nickname_from_actor(address)
         if not to_nickname:
@@ -4123,7 +4123,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
     # print(str(grouped))
 
     # this is after the message has arrived at the server
-    client_to_server = False
+    client_to_server: bool = False
 
     curr_proxy_type = None
     if domain.endswith('.onion'):
@@ -4136,7 +4136,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
     sending_start_time = date_utcnow()
     print('Sending post to followers begins ' +
           sending_start_time.strftime("%Y-%m-%dT%H:%M:%SZ"))
-    sending_ctr = 0
+    sending_ctr: int = 0
 
     # randomize the order of sending to instances
     randomized_instances: list[str] = []
@@ -4213,7 +4213,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                   ' does not have a shared inbox')
 
         to_port = port
-        index = 0
+        index: int = 0
         to_domain = follower_handles[index].split('@')[1]
         if ':' in to_domain:
             to_port = get_port_from_domain(to_domain)
@@ -4264,7 +4264,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
         if with_shared_inbox:
             to_nickname = follower_handles[index].split('@')[0]
 
-            group_account = False
+            group_account: bool = False
             if to_nickname.startswith('!'):
                 group_account = True
                 to_nickname = to_nickname[1:]
@@ -4306,7 +4306,7 @@ def send_to_followers(server, session, session_onion, session_i2p,
                 print('Sending post to followers ' + handle)
                 to_nickname = handle.split('@')[0]
 
-                group_account = False
+                group_account: bool = False
                 if to_nickname.startswith('!'):
                     group_account = True
                     to_nickname = to_nickname[1:]
@@ -4629,7 +4629,7 @@ def remove_post_interactions(post_json_object: {}, force: bool) -> bool:
     marketers and other surveillance-oriented organizations.
     Returns False if this is a private post
     """
-    has_object = False
+    has_object: bool = False
     if has_object_dict(post_json_object):
         has_object = True
     if has_object:
@@ -4763,8 +4763,8 @@ def _create_box_items(base_dir: str,
     index_filename = \
         acct_dir(base_dir, timeline_nickname, original_domain) + \
         '/' + index_box_name + '.index'
-    total_posts_count = 0
-    posts_added_to_timeline = 0
+    total_posts_count: int = 0
+    posts_added_to_timeline: int = 0
     if not os.path.isfile(index_filename):
         return total_posts_count, posts_added_to_timeline
 
@@ -4781,7 +4781,7 @@ def _create_box_items(base_dir: str,
     prev_post_filename = None
     try:
         with open(index_filename, 'r', encoding='utf-8') as fp_index:
-            posts_added_to_timeline = 0
+            posts_added_to_timeline: int = 0
             while posts_added_to_timeline < items_per_page:
                 post_filename = fp_index.readline()
 
@@ -4923,7 +4923,7 @@ def _create_box_indexed(recent_posts_cache: {},
         print('ERROR: invalid boxname ' + boxname)
         return None
 
-    unauthorized_premium = False
+    unauthorized_premium: bool = False
     if not authorized and boxname == 'outbox':
         unauthorized_premium = is_premium_account(base_dir, nickname, domain)
 
@@ -5053,14 +5053,14 @@ def _create_box_indexed(recent_posts_cache: {},
 
     for post_str in posts_in_box:
         # Check if the post has replies
-        has_replies = False
+        has_replies: bool = False
         if post_str.endswith('<hasReplies>'):
             has_replies = True
             # remove the replies identifier
             post_str = post_str.replace('<hasReplies>', '')
 
         # Check if the post was delivered via a third party
-        mitm = False
+        mitm: bool = False
         if post_str.endswith('<postmitm>'):
             mitm = True
             # remove the mitm identifier
@@ -5114,7 +5114,7 @@ def _expire_announce_cache_for_person(base_dir: str,
     if not os.path.isdir(cache_dir):
         print('No cached announces for ' + nickname + '@' + domain)
         return 0
-    expired_post_count = 0
+    expired_post_count: int = 0
     posts_in_cache = os.scandir(cache_dir)
     for cache_filename in posts_in_cache:
         cache_filename = cache_filename.name
@@ -5143,7 +5143,7 @@ def _expire_conversations_for_person(base_dir: str,
     if not os.path.isdir(conv_dir):
         print('No conversations for ' + nickname + '@' + domain)
         return 0
-    expired_post_count = 0
+    expired_post_count: int = 0
     posts_in_conv = os.scandir(conv_dir)
     for conv_filename in posts_in_conv:
         conv_filename = conv_filename.name
@@ -5175,7 +5175,7 @@ def _expire_posts_cache_for_person(base_dir: str,
     if not os.path.isdir(cache_dir):
         print('No cached posts for ' + nickname + '@' + domain)
         return 0
-    expired_post_count = 0
+    expired_post_count: int = 0
     posts_in_cache = os.scandir(cache_dir)
     for cache_filename in posts_in_cache:
         cache_filename = cache_filename.name
@@ -5204,7 +5204,7 @@ def _novel_fields_for_person(nickname: str, domain: str,
     box_dir = create_person_dir(nickname, domain, base_dir, boxname)
     posts_in_box = os.scandir(box_dir)
 
-    posts_ctr = 0
+    posts_ctr: int = 0
     fields: list[str] = []
     expected_fields = (
         'alsoKnownAs',
@@ -5402,7 +5402,7 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
                              keep_dms: bool) -> int:
     """Removes posts older than some number of days
     """
-    expired_post_count = 0
+    expired_post_count: int = 0
     if max_age_days <= 0:
         return expired_post_count
 
@@ -5471,8 +5471,8 @@ def _expire_posts_for_person(http_prefix: str, nickname: str, domain: str,
 def get_post_expiry_keep_dms(base_dir: str, nickname: str, domain: str) -> int:
     """Returns true if dms should expire
     """
-    keep_dms = True
-    handle = nickname + '@' + domain
+    keep_dms: bool = True
+    handle: str = nickname + '@' + domain
     expire_dms_filename = \
         acct_handle_dir(base_dir, handle) + '/.expire_posts_dms'
     if os.path.isfile(expire_dms_filename):
@@ -5504,7 +5504,7 @@ def expire_posts(base_dir: str, http_prefix: str,
                  recent_posts_cache: {}, debug: bool) -> int:
     """Expires posts for instance accounts
     """
-    expired_post_count = 0
+    expired_post_count: int = 0
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for handle in dirs:
@@ -5586,7 +5586,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             os.mkdir(archive_dir)
     box_dir = create_person_dir(nickname, domain, base_dir, boxname)
     posts_in_box = os.scandir(box_dir)
-    no_of_posts = 0
+    no_of_posts: int = 0
     for _ in posts_in_box:
         no_of_posts += 1
     if no_of_posts <= max_posts_in_box:
@@ -5599,7 +5599,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
     index_filename = \
         acct_handle_dir(base_dir, handle) + '/' + boxname + '.index'
     if os.path.isfile(index_filename):
-        index_ctr = 0
+        index_ctr: int = 0
         # get the existing index entries as a string
         new_index = ''
         try:
@@ -5623,9 +5623,9 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         ext = '.' + ext_name
         posts_in_box = os.scandir(box_dir)
         edits_in_box_dict = {}
-        edits_ctr = 0
-        edits_removed_ctr = 0
-        edit_files_ctr = 0
+        edits_ctr: int = 0
+        edits_removed_ctr: int = 0
+        edit_files_ctr: int = 0
         for post_filename in posts_in_box:
             post_filename = post_filename.name
             if not post_filename.endswith(ext):
@@ -5676,7 +5676,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             edits_in_box_sorted = \
                 OrderedDict(sorted(edits_in_box_dict.items(), reverse=False))
 
-            remove_edits_ctr = 0
+            remove_edits_ctr: int = 0
             for published_str, edit_filename in edits_in_box_sorted.items():
                 file_path = os.path.join(box_dir, edit_filename)
                 if not os.path.isfile(file_path):
@@ -5706,8 +5706,8 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                 print('Removed ' + str(remove_edits_ctr) + ' ' + boxname +
                       ' ' + ext_name + ' for ' + nickname + '@' + domain)
 
-    posts_in_box_dict = {}
-    posts_ctr = 0
+    posts_in_box_dict: dict = {}
+    posts_ctr: int = 0
     posts_in_box = os.scandir(box_dir)
     for post_filename in posts_in_box:
         post_filename = post_filename.name
@@ -5742,7 +5742,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
     # directory containing cached html posts
     post_cache_dir = box_dir.replace('/' + boxname, '/postcache')
 
-    remove_ctr = 0
+    remove_ctr: int = 0
     for published_str, post_filename in posts_in_box_sorted.items():
         file_path = os.path.join(box_dir, post_filename)
         if not os.path.isfile(file_path):
@@ -5834,10 +5834,10 @@ def get_public_posts_of_person(base_dir: str, nickname: str, domain: str,
         if debug:
             print('Session was not created')
         return
-    person_cache = {}
-    cached_webfingers = {}
+    person_cache: dict = {}
+    cached_webfingers: dict = {}
     federation_list: list[str] = []
-    group_account = False
+    group_account: bool = False
     if nickname.startswith('!'):
         nickname = nickname[1:]
         group_account = True
@@ -6116,13 +6116,13 @@ def check_domains(session, base_dir: str,
                   mitm_servers: []) -> None:
     """Checks follower accounts for references to globally blocked domains
     """
-    word_frequency = {}
+    word_frequency: dict = {}
     non_mutuals = _get_non_mutuals_of_person(base_dir, nickname, domain)
     if not non_mutuals:
         print('No non-mutual followers were found')
         return
     follower_warning_filename = data_dir(base_dir) + '/followerWarnings.txt'
-    update_follower_warnings = False
+    update_follower_warnings: bool = False
     follower_warning_str = ''
     if os.path.isfile(follower_warning_filename):
         follower_warning_str = \
@@ -6198,7 +6198,7 @@ def populate_replies_json(base_dir: str, nickname: str, domain: str,
         with open(post_replies_filename, 'r',
                   encoding='utf-8') as fp_replies:
             for message_id in fp_replies:
-                reply_found = False
+                reply_found: bool = False
                 # examine inbox and outbox
                 for boxname in replies_boxes:
                     message_id2 = remove_eol(message_id)
@@ -6571,7 +6571,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
         # Check the content of the announce
         convert_post_content_to_html(announced_json)
         content_str = announced_json['content']
-        using_content_map = False
+        using_content_map: bool = False
         if 'contentMap' in announced_json:
             if announced_json['contentMap'].get(system_language):
                 content_str = announced_json['contentMap'][system_language]
@@ -6799,7 +6799,7 @@ def post_is_muted(base_dir: str, nickname: str, domain: str,
         post_dir + '/inbox/' + message_id.replace('/', '#') + '.json.muted'
     if os.path.isfile(mute_filename):
         return True
-    is_muted = False
+    is_muted: bool = False
     mute_filename = \
         post_dir + '/outbox/' + \
         message_id.replace('/', '#') + '.json.muted'
@@ -7067,7 +7067,7 @@ def json_post_allows_comments(post_json_object: {}) -> bool:
             else:
                 # capabilities exist but there is no reply field
                 reply_control = 'noreply'
-    obj_dict_exists = False
+    obj_dict_exists: bool = False
     if has_object_dict(post_json_object):
         obj_dict_exists = True
         post_obj = post_json_object['object']

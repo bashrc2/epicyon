@@ -130,7 +130,7 @@ def convert_video_to_note(base_dir: str, nickname: str, domain: str,
         if isinstance(post_json_object['commentsEnabled'], bool):
             comments_enabled = post_json_object['commentsEnabled']
 
-    sensitive = False
+    sensitive: bool = False
     if 'sensitive' in post_json_object:
         if isinstance(post_json_object['sensitive'], bool):
             sensitive = post_json_object['sensitive']

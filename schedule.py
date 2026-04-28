@@ -42,7 +42,7 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
 
     schedule_dir = acct_handle_dir(base_dir, handle) + '/scheduled/'
     index_lines: list[str] = []
-    delete_schedule_post = False
+    delete_schedule_post: bool = False
     nickname = handle.split('@')[0]
     shared_items_federated_domains = httpd.shared_items_federated_domains
     shared_item_federation_tokens = httpd.shared_item_federation_tokens

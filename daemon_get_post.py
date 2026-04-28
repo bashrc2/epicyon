@@ -135,7 +135,7 @@ def _show_post_from_file(self, post_filename: str, liked_by: str,
             if os.path.isfile(mitm_filename):
                 mitm = True
 
-        bold_reading = False
+        bold_reading: bool = False
         if bold_reading_nicknames.get(nickname):
             bold_reading = True
 
@@ -322,12 +322,12 @@ def show_individual_post(self, ssml_getreq: bool, authorized: bool,
         http_404(self, 75)
         return True
 
-    post_filename = \
+    post_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/outbox/' + \
         http_prefix + ':##' + domain_full + '#users#' + nickname + \
         '#statuses#' + status_number + '.json'
 
-    include_create_wrapper = False
+    include_create_wrapper: bool = False
     if post_sections[-1] == 'activity':
         include_create_wrapper = True
 
@@ -423,8 +423,8 @@ def show_new_post(self, edit_post_params: {},
                   ua_str: str) -> bool:
     """Shows the new post screen
     """
-    searchable_by_default = 'yourself'
-    is_new_post_endpoint = False
+    searchable_by_default: str = 'yourself'
+    is_new_post_endpoint: bool = False
     new_post_month = None
     new_post_year = None
     if '/users/' in path and '/new' in path:
@@ -488,7 +488,7 @@ def show_new_post(self, edit_post_params: {},
                     if reply_language:
                         default_post_language2 = reply_language
 
-        bold_reading = False
+        bold_reading: bool = False
         if bold_reading_nicknames.get(nickname):
             bold_reading = True
 
@@ -677,7 +677,7 @@ def show_individual_at_post(self, ssml_getreq: bool, authorized: bool,
         http_prefix + ':##' + domain_full + '#users#' + nickname + \
         '#statuses#' + status_number + '.json'
 
-    include_create_wrapper = False
+    include_create_wrapper: bool = False
     if post_sections[-1] == 'activity':
         include_create_wrapper = True
 
@@ -777,7 +777,7 @@ def show_likers_of_post(self, authorized: bool,
         post_url = post_url.split('?')[0]
     post_url = post_url.replace('--', '/')
 
-    bold_reading = False
+    bold_reading: bool = False
     if bold_reading_nicknames.get(nickname):
         bold_reading = True
 
@@ -880,7 +880,7 @@ def show_announcers_of_post(self, authorized: bool,
         post_url = post_url.split('?')[0]
     post_url = post_url.replace('--', '/')
 
-    bold_reading = False
+    bold_reading: bool = False
     if bold_reading_nicknames.get(nickname):
         bold_reading = True
 
@@ -1036,7 +1036,7 @@ def show_replies_to_post(self, authorized: bool,
             timezone = None
             if account_timezone.get(nickname):
                 timezone = account_timezone.get(nickname)
-            bold_reading = False
+            bold_reading: bool = False
             if bold_reading_nicknames.get(nickname):
                 bold_reading = True
             # get the list of mutuals for the current account
@@ -1158,7 +1158,7 @@ def show_replies_to_post(self, authorized: bool,
         timezone = None
         if account_timezone.get(nickname):
             timezone = account_timezone.get(nickname)
-        bold_reading = False
+        bold_reading: bool = False
         if bold_reading_nicknames.get(nickname):
             bold_reading = True
         # get the list of mutuals for the current account
@@ -1284,14 +1284,14 @@ def show_notify_post(self, authorized: bool,
     nickname = path.split('/users/')[1]
     if '/' in nickname:
         return False
-    replies = False
+    replies: bool = False
 
     post_filename = locate_post(base_dir, nickname, domain,
                                 post_id, replies)
     if not post_filename:
         return False
 
-    include_create_wrapper = False
+    include_create_wrapper: bool = False
     if path.endswith('/activity'):
         include_create_wrapper = True
 
@@ -1423,7 +1423,7 @@ def show_conversation_thread(self, authorized: bool,
     timezone = None
     if account_timezone.get(nickname):
         timezone = account_timezone.get(nickname)
-    bold_reading = False
+    bold_reading: bool = False
     if bold_reading_nicknames.get(nickname):
         bold_reading = True
     conv_str = \

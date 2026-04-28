@@ -71,8 +71,8 @@ def uninvert_text(text: str) -> str:
         '\u2234': '\u2235'
     }
 
-    matches = 0
-    possible_result = ''
+    matches: int = 0
+    possible_result: str = ''
     for ch_test in text:
         ch_result = ch_test
         for ch1, ch_inv in flip_table.items():
@@ -176,7 +176,7 @@ def _standardize_text_range(text: str,
     """Convert any fancy characters within the given range into ordinary ones
     """
     offset = ord(offset)
-    ctr = 0
+    ctr: int = 0
     text = list(text)
     while ctr < len(text):
         val = ord(text[ctr])

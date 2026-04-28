@@ -63,7 +63,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
         return 0
 
     try_post_box = ('tlblogs', 'inbox', 'outbox')
-    box_found = False
+    box_found: bool = False
     for post_box in try_post_box:
         post_filename = \
             acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
@@ -82,7 +82,7 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
         return 0
 
     removals: list[str] = []
-    replies = 0
+    replies: int = 0
     lines: list[str] = \
         load_list(post_filename,
                   'EX: failed to read blog ' + post_filename)
@@ -130,7 +130,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
         return ''
 
     try_post_box = ('tlblogs', 'inbox', 'outbox')
-    box_found = False
+    box_found: bool = False
     for post_box in try_post_box:
         post_filename = \
             acct_dir(base_dir, nickname, domain) + '/' + post_box + '/' + \
@@ -189,7 +189,7 @@ def _get_blog_replies(base_dir: str, http_prefix: str, translate: {},
 
         # indicate the reply indentation level
         indent_str: str = '>'
-        indent_level = 0
+        indent_level: int = 0
         while indent_level < depth:
             indent_str += ' >'
             indent_level += 1
@@ -204,7 +204,7 @@ def html_blog_post_gemini_links(content: str) -> str:
     """
     if '=> ' not in content:
         return content
-    ctr = 0
+    ctr: int = 0
     sections = content.split('=> ')
     new_content: str = ''
     for section in sections:
@@ -277,7 +277,7 @@ def html_blog_post_markdown(content: str) -> str:
         if markdown_text not in new_content:
             continue
         sections = new_content.split(markdown_text)
-        ctr = 0
+        ctr: int = 0
         new_content2: str = ''
         for section in sections:
             if ctr == 0:
@@ -321,7 +321,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
                             blog_separator: str) -> str:
     """Returns the html content for a single blog post
     """
-    linked_author = False
+    linked_author: bool = False
     actor: str = ''
     blog_str: str = ''
     message_link: str = ''
@@ -329,7 +329,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
         message_link = \
             post_json_object['object']['id'].replace('/statuses/', '/')
     title_str: str = ''
-    article_added = False
+    article_added: bool = False
     if post_json_object['object'].get('summary'):
         title_str = post_json_object['object']['summary']
         blog_str += '<article><h1><a href="' + message_link + '">' + \
@@ -392,7 +392,7 @@ def _html_blog_post_content(debug: bool, session, authorized: bool,
         languages_understood = get_actor_languages_list(actor_json)
     json_content = get_content_from_post(post_json_object, system_language,
                                          languages_understood, "content")
-    minimize_all_images = False
+    minimize_all_images: bool = False
     attachment_str, _ = \
         get_post_attachments_as_html(base_dir, nickname, domain,
                                      domain_full, post_json_object,
@@ -832,7 +832,7 @@ def html_blog_page_rss3(base_dir: str, http_prefix: str,
 def _no_of_blog_accounts(base_dir: str) -> int:
     """Returns the number of blog accounts
     """
-    ctr = 0
+    ctr: int = 0
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
         for acct in dirs:

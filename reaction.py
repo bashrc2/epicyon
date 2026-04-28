@@ -111,7 +111,7 @@ def _reactionpost(recent_posts_cache: {},
     reaction_post_nickname = None
     reaction_post_domain = None
     reaction_post_port = None
-    group_account = False
+    group_account: bool = False
     if actor_reaction:
         reaction_post_nickname = get_nickname_from_actor(actor_reaction)
         reaction_post_domain, reaction_post_port = \
@@ -492,7 +492,7 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
                       common_reactions_filename)
     if common_reactions:
         new_common_reactions: list[str] = []
-        reaction_found = False
+        reaction_found: bool = False
         for line in common_reactions:
             if ' ' + emoji_content in line:
                 if not reaction_found:
@@ -737,10 +737,10 @@ def undo_reaction_collection_entry(recent_posts_cache: {},
         return
     if not obj['reactions'].get('items'):
         return
-    total_items = 0
+    total_items: int = 0
     if obj['reactions'].get('totalItems'):
         total_items = obj['reactions']['totalItems']
-    item_found = False
+    item_found: bool = False
     for like_item in obj['reactions']['items']:
         if not like_item.get('actor'):
             continue

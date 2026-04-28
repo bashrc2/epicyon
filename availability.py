@@ -31,7 +31,7 @@ def set_availability(base_dir: str, nickname: str, domain: str,
     # avoid giant strings
     if len(status) > 128:
         return False
-    actor_exists = False
+    actor_exists: bool = False
     if actor_json:
         actor_exists = isinstance(actor_json, dict)
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
@@ -49,7 +49,7 @@ def get_availability(base_dir: str, nickname: str, domain: str,
                      actor_json: {}) -> str:
     """Returns the availability for a given person
     """
-    actor_exists = False
+    actor_exists: bool = False
     if actor_json:
         actor_exists = isinstance(actor_json, dict)
     if not actor_exists:

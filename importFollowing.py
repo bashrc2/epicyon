@@ -111,9 +111,9 @@ def _update_import_following(base_dir: str,
             # get the appropriate session
             curr_session = main_session
             curr_proxy_type = httpd.proxy_type
-            use_onion_session = False
-            use_i2p_session = False
-            use_yggdrasil_session = False
+            use_onion_session: bool = False
+            use_i2p_session: bool = False
+            use_yggdrasil_session: bool = False
             if '.onion' not in domain and \
                httpd.onion_domain and '.onion' in following_domain:
                 curr_session = httpd.session_onion

@@ -60,7 +60,7 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
     links: list[str] = []
     if '://' in content_text:
         sections = content_text.split('://')
-        ctr = 0
+        ctr: int = 0
         prev_section: str = ''
         for section in sections:
             if ctr > 0:

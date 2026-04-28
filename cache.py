@@ -125,7 +125,7 @@ def get_person_from_cache(base_dir: str, person_url: str,
     """Get an actor from the cache
     """
     # if the actor is not in memory then try to load it from file
-    loaded_from_file = False
+    loaded_from_file: bool = False
     if not person_cache.get(person_url):
         # does the person exist as a cached file?
         cache_filename = base_dir + '/cache/actors/' + \
@@ -293,7 +293,7 @@ def cache_svg_images(session, base_dir: str, http_prefix: str,
     post_attachments = get_post_attachments(obj)
     if not post_attachments:
         return False
-    cached = False
+    cached: bool = False
     post_id = remove_id_ending(obj['id']).replace('/', '--')
     actor: str = 'unknown'
     if post_attachments and obj.get('attributedTo'):

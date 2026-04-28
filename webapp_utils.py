@@ -324,7 +324,7 @@ def _set_actor_property_url(actor_json: {},
         actor_json['attachment'].remove(property_found)
 
     prefixes = get_protocol_prefixes()
-    prefix_found = False
+    prefix_found: bool = False
     for prefix in prefixes:
         if url.startswith(prefix):
             prefix_found = True
@@ -526,7 +526,7 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                     continue
             # actor who owns this share
             owner = actor.split('/users/')[0] + '/users/' + account_nickname
-            ctr = 0
+            ctr: int = 0
             for item_id, item in shares_json.items():
                 # assign owner to the item
                 item['actor'] = owner
@@ -555,7 +555,7 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                     shares_json = load_json(shares_filename)
                     if not shares_json:
                         continue
-                    ctr = 0
+                    ctr: int = 0
                     for item_id, item in shares_json.items():
                         # assign owner to the item
                         if '--shareditems--' not in item_id:
@@ -583,7 +583,7 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
                 break
     # sort the shared items in descending order of publication date
     shares_json = OrderedDict(sorted(all_shares_json.items(), reverse=True))
-    last_page = False
+    last_page: bool = False
     start_index = items_per_page * page_number
     max_index = len(shares_json.items())
     if max_index < items_per_page:
@@ -592,8 +592,8 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
         last_page = True
         start_index = max_index - items_per_page
         start_index = max(start_index, 0)
-    ctr = 0
-    result_json = {}
+    ctr: int = 0
+    result_json: dict = {}
     for published, item in shares_json.items():
         if ctr >= start_index + items_per_page:
             break
@@ -652,7 +652,7 @@ def get_shares_collection(actor: str, page_number: int, items_per_page: int,
 def post_contains_public(post_json_object: {}) -> bool:
     """Does the given post contain #Public
     """
-    contains_public = False
+    contains_public: bool = False
     if not post_json_object['object'].get('to'):
         return contains_public
 
@@ -1110,7 +1110,7 @@ def load_individual_post_as_html_from_cache(base_dir: str,
     if not os.path.isfile(cached_post_filename):
         return post_html
 
-    tries = 0
+    tries: int = 0
     while tries < 3:
         post_html = \
             load_string(cached_post_filename,
@@ -1309,7 +1309,7 @@ def get_post_attachments_as_html(base_dir: str,
 
     attachment_dict += post_attachments
 
-    media_style_added = False
+    media_style_added: bool = False
     post_id = None
     if post_json_object['object'].get('id'):
         post_id = post_json_object['object']['id']
@@ -1479,7 +1479,7 @@ def get_post_attachments_as_html(base_dir: str,
             # display svg images if they have first been rendered harmless
             svg_harmless = True
             if 'svg' in media_type:
-                svg_harmless = False
+                svg_harmless: bool = False
                 if '://' + domain_full + '/' in image_url:
                     svg_harmless = True
                 else:
@@ -1556,7 +1556,7 @@ def get_post_attachments_as_html(base_dir: str,
 
                 # optionally hide the image
                 attributed_actor = None
-                minimize_images = False
+                minimize_images: bool = False
                 if minimize_all_images:
                     minimize_images = True
                 if post_json_object['object'].get('attributedTo'):
@@ -2059,7 +2059,7 @@ def html_search_result_share(base_dir: str, shared_item: {}, translate: {},
             translate['Contact'] + '</button></a>\n'
 
     # should the remove button be shown?
-    show_remove_button = False
+    show_remove_button: bool = False
     nickname = get_nickname_from_actor(actor)
     if not nickname:
         return ''
@@ -2213,8 +2213,8 @@ def html_common_emoji(base_dir: str, no_of_emoji: int) -> str:
                   'EX: html_common_emoji unable to load file')
     if not common_emoji:
         return ''
-    line_ctr = 0
-    ctr = 0
+    line_ctr: int = 0
+    ctr: int = 0
     html_str: str = ''
     while ctr < no_of_emoji and line_ctr < len(common_emoji):
         name_initial = common_emoji[line_ctr].split(' ')

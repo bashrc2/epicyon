@@ -102,9 +102,9 @@ def _get_git_hash(patch_str: str) -> str:
 def _get_patch_description(patch_str: str) -> str:
     """Returns the description from a given patch
     """
-    patch_lines = patch_str.split('\n')
+    patch_lines: list = patch_str.split('\n')
     description: str = ''
-    started = False
+    started: bool = False
     for line in patch_lines:
         if started:
             if line.strip() == '---':

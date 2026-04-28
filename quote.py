@@ -25,7 +25,7 @@ def get_quote_toot_url(post_json_object: str) -> str:
         '_misskey_quote', 'quote'
     )
     post_obj = post_json_object
-    obj_exists = False
+    obj_exists: bool = False
     if has_object_dict(post_json_object):
         post_obj = post_json_object['object']
         obj_exists = True
@@ -62,7 +62,7 @@ def get_quote_toot_url(post_json_object: str) -> str:
         if not isinstance(item, dict):
             continue
         if item.get('rel'):
-            mk_quote = False
+            mk_quote: bool = False
             if isinstance(item['rel'], list):
                 for rel_str in item['rel']:
                     if not isinstance(rel_str, str):

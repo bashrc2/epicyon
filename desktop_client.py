@@ -229,7 +229,7 @@ def _has_read_post(actor: str, post_id: str, post_category: str) -> bool:
 def _post_is_to_you(actor: str, post_json_object: {}) -> bool:
     """Returns true if the post is to the actor
     """
-    to_your_actor = False
+    to_your_actor: bool = False
     if post_json_object.get('to'):
         if isinstance(post_json_object['to'], list):
             if actor in post_json_object['to']:
@@ -272,8 +272,8 @@ def _new_desktop_notifications(actor: str, inbox_json: {},
         return
     if not inbox_json.get('orderedItems'):
         return
-    dm_done = False
-    reply_done = False
+    dm_done: bool = False
+    reply_done: bool = False
     for post_json_object in inbox_json['orderedItems']:
         if not post_json_object.get('id'):
             continue
@@ -286,7 +286,7 @@ def _new_desktop_notifications(actor: str, inbox_json: {},
         if is_dm(post_json_object):
             if not dm_done:
                 if not _has_read_post(actor, post_json_object['id'], 'dm'):
-                    changed = False
+                    changed: bool = False
                     if not notify_json.get('dmPostId'):
                         changed = True
                     else:
@@ -301,7 +301,7 @@ def _new_desktop_notifications(actor: str, inbox_json: {},
             if not reply_done:
                 if not _has_read_post(actor, post_json_object['id'],
                                       'replies'):
-                    changed = False
+                    changed: bool = False
                     if not notify_json.get('repliesPostId'):
                         changed = True
                     else:
@@ -560,7 +560,7 @@ def _desktop_reply_to_post(session, post_id: str,
     attach = None
     media_type = None
     attached_image_description = None
-    is_article = False
+    is_article: bool = False
     subject = None
     comments_enabled = True
     city = 'London, England'
@@ -649,7 +649,7 @@ def _desktop_new_post(session,
     media_type = None
     attached_image_description = None
     city = 'London, England'
-    is_article = False
+    is_article: bool = False
     subject = None
     comments_enabled = True
     subject = None
@@ -698,7 +698,7 @@ def _safe_message(content: str) -> str:
 def _timeline_is_empty(box_json: {}) -> bool:
     """Returns true if the given timeline is empty
     """
-    empty = False
+    empty: bool = False
     if not box_json:
         empty = True
     else:
@@ -776,7 +776,7 @@ def _show_likes_on_post(post_json_object: {}, max_likes: int) -> None:
     if not isinstance(object_likes['items'], list):
         return
     print('')
-    ctr = 0
+    ctr: int = 0
     for item in object_likes['items']:
         print('  ❤ ' + str(item['actor']))
         ctr += 1
@@ -799,7 +799,7 @@ def _show_replies_on_post(post_json_object: {}, max_replies: int) -> None:
     if not isinstance(object_replies['items'], list):
         return
     print('')
-    ctr = 0
+    ctr: int = 0
     for item in object_replies['items']:
         url_str = get_url_from_post(item['url'])
         item_url = remove_html(url_str)
@@ -846,10 +846,10 @@ def _read_local_box_post(session, nickname: str, domain: str,
         if not name_str:
             return {}
         recent_posts_cache = {}
-        allow_local_network_access = False
+        allow_local_network_access: bool = False
         yt_replace_domain = None
         twitter_replacement_domain = None
-        show_vote_posts = False
+        show_vote_posts: bool = False
         languages_understood: list[str] = []
         person_url = local_actor_url(http_prefix, nickname, domain_full)
         actor_json = \
@@ -1015,7 +1015,7 @@ def _desktop_show_actor(http_prefix: str,
         _say_command(say_str, say_str, screenreader, system_language, espeak)
     if actor_json.get('alsoKnownAs'):
         also_known_as_str: str = ''
-        ctr = 0
+        ctr: int = 0
         for alt_actor in actor_json['alsoKnownAs']:
             if ctr > 0:
                 also_known_as_str += ', '
@@ -1069,12 +1069,12 @@ def _desktop_show_profile(session, nickname: str,
     if not actor:
         return {}
 
-    is_http = False
+    is_http: bool = False
     if 'http://' in actor:
         is_http = True
-    is_gnunet = False
-    is_ipfs = False
-    is_ipns = False
+    is_gnunet: bool = False
+    is_ipfs: bool = False
+    is_ipns: bool = False
     actor_json, _ = \
         get_actor_json(domain, actor, is_http, is_gnunet, is_ipfs, is_ipns,
                        False, True, signing_priv_key_pem, session,
@@ -1114,7 +1114,7 @@ def _desktop_show_profile_from_handle(session, nickname: str, domain: str,
 def _desktop_get_box_post_object(box_json: {}, index: int) -> {}:
     """Gets the post with the given index from the timeline
     """
-    ctr = 0
+    ctr: int = 0
     for post_json_object in box_json['orderedItems']:
         if not post_json_object.get('type'):
             continue
@@ -1268,7 +1268,7 @@ def _desktop_show_box(indent: str,
             continue
 
         # append icons to the end of the name
-        space_added = False
+        space_added: bool = False
         reply_id = get_reply_to(post_json_object['object'])
         if reply_id:
             if not space_added:
@@ -1452,8 +1452,8 @@ def _desktop_new_dm_base(session, to_handle: str,
     attach = None
     media_type = None
     attached_image_description = None
-    city = 'London, England'
-    is_article = False
+    city: str = 'London, England'
+    is_article: bool = False
     subject = None
     comments_enabled = True
     subject = None
@@ -1604,7 +1604,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     """Runs the desktop and screen reader client,
     which announces new inbox items
     """
-    bold_reading = False
+    bold_reading: bool = False
 
     # TODO: this should probably be retrieved somehow from the server
     signing_priv_key_pem = None
@@ -1655,10 +1655,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     original_screen_reader = screenreader
     sounds_dir = 'theme/default/sounds/'
     # prev_say: str = ''
-    # prev_calendar = False
-    # prev_follow = False
+    # prev_calendar: bool = False
+    # prev_follow: bool = False
     # prev_like: str = ''
-    # prev_share = False
+    # prev_share: bool = False
     dm_sound_filename = sounds_dir + 'dm.ogg'
     reply_sound_filename = sounds_dir + 'reply.ogg'
     # calendar_sound_filename = sounds_dir + 'calendar.ogg'
@@ -1672,7 +1672,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
     content = None
     cached_webfingers = {}
     person_cache = {}
-    pgp_key_upload = False
+    pgp_key_upload: bool = False
 
     say_str = indent + 'Loading translations file'
     _say_command(say_str, say_str, screenreader,
@@ -1702,7 +1702,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
         "repliesNotifyChanged": False
     }
     prev_timeline_first_id: str = ''
-    desktop_shown = False
+    desktop_shown: bool = False
     while (1):
         if not pgp_key_upload:
             if not has_local_pg_pkey():
@@ -1796,7 +1796,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
         else:
             command_str = _desktop_wait_for_cmd(30, debug)
         if command_str:
-            refresh_timeline = False
+            refresh_timeline: bool = False
 
             if command_str.startswith('/'):
                 command_str = command_str[1:]
@@ -2103,7 +2103,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                     refresh_timeline = True
                 print('')
             elif command_str == 'like' or command_str.startswith('like '):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2151,7 +2151,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       'remove ignore ',
                                       'unignore ',
                                       'unmute '))):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2189,7 +2189,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
             elif (command_str in ('mute', 'ignore') or
                   string_starts_with(command_str,
                                      ('mute ', 'ignore '))):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2240,7 +2240,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                       'remove bookmark ',
                                       'unbookmark ',
                                       'unbm '))):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2279,7 +2279,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
             elif (command_str in ('bookmark', 'bm') or
                   string_starts_with(command_str,
                                      ('bookmark ', 'bm '))):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2318,7 +2318,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                      'remove block ',
                                      'rm block ',
                                      'unblock ')):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2363,7 +2363,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 print('')
             elif command_str.startswith('block '):
                 block_actor = None
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2415,7 +2415,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 refresh_timeline = True
                 print('')
             elif command_str in ('unlike', 'undo like'):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2454,7 +2454,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 print('')
             elif string_starts_with(command_str,
                                     ('announce', 'boost', 'retweet')):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2510,7 +2510,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                                      'unboost',
                                      'undo boost',
                                      'undo retweet')):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2778,14 +2778,14 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 say_str = 'Notification sounds on'
                 _say_command(say_str, say_str, screenreader,
                              system_language, espeak)
-                notification_sounds = True
+                notification_sounds: bool = True
             elif command_str in ('sounds off',
                                  'sound off',
                                  'nosound'):
                 say_str = 'Notification sounds off'
                 _say_command(say_str, say_str, screenreader,
                              system_language, espeak)
-                notification_sounds = False
+                notification_sounds: bool = False
             elif command_str in ('speak',
                                  'screen reader on',
                                  'speak on',
@@ -2813,7 +2813,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 else:
                     print('No --screenreader option was specified')
             elif command_str.startswith('open'):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:
@@ -2826,10 +2826,10 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 if post_json_object:
                     if post_json_object['type'] == 'Announce':
                         recent_posts_cache = {}
-                        allow_local_network_access = False
+                        allow_local_network_access: bool = False
                         yt_replace_domain = None
                         twitter_replacement_domain = None
-                        show_vote_posts = False
+                        show_vote_posts: bool = False
                         block_military = {}
                         block_government = {}
                         block_bluesky = {}
@@ -2867,7 +2867,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                         speakable_text(http_prefix,
                                        nickname, domain, domain_full,
                                        base_dir, content, translate)
-                    link_opened = False
+                    link_opened: bool = False
                     for url in detected_links:
                         if '://' in url:
                             webbrowser.open(url)
@@ -2898,7 +2898,7 @@ def run_desktop_client(base_dir: str, proxy_type: str, http_prefix: str,
                 refresh_timeline = True
             elif (command_str in ('delete', 'rm') or
                   string_starts_with(command_str, ('delete ', 'rm '))):
-                curr_index = 0
+                curr_index: int = 0
                 if ' ' in command_str:
                     post_index = command_str.split(' ')[-1].strip()
                     if len(post_index) > 5:

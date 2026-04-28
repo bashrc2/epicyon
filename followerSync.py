@@ -54,7 +54,7 @@ def _get_followers_for_domain(base_dir: str,
         if line_str.endswith('@' + search_domain):
             nick = line_str.split('@')[0]
             paths_list = get_user_paths()
-            found = False
+            found: bool = False
             for prefix in ('https', 'http'):
                 if found:
                     break

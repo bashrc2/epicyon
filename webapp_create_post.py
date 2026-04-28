@@ -360,7 +360,7 @@ def html_new_post(edit_post_params: {},
 
     reply_str: str = ''
 
-    is_new_reminder = False
+    is_new_reminder: bool = False
     if path.endswith('/newreminder'):
         is_new_reminder = True
 
@@ -438,7 +438,7 @@ def html_new_post(edit_post_params: {},
                     if post_json_object:
                         timezone = \
                             get_account_timezone(base_dir, nickname, domain)
-                        minimize_all_images = False
+                        minimize_all_images: bool = False
                         if nickname in min_images_for_accounts:
                             minimize_all_images = True
                         # get the list of mutuals for the current account

@@ -11,7 +11,7 @@ import time
 
 
 def write2(self, msg) -> bool:
-    tries = 0
+    tries: int = 0
     while tries < 5:
         try:
             self.wfile.write(msg)

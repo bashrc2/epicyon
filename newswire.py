@@ -340,7 +340,7 @@ def parse_feed_date(pub_date: str, unique_string_identifier: str) -> str:
         'UT'
     )
     for date_format in formats:
-        timezone_mismatch = False
+        timezone_mismatch: bool = False
         for timezone_ending in timezone_endings:
             if timezone_ending in pub_date and \
                timezone_ending not in date_format:
@@ -482,7 +482,7 @@ def _get_podcast_categories(xml_item: str, xml_str: str) -> str:
             item_str = xml_str
 
         category_list = item_str.split(category_tag)
-        first_category = True
+        first_category: bool = True
         for episode_category in category_list:
             if first_category:
                 first_category = False
@@ -608,8 +608,8 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
         "socialInteract": [],
     }
 
-    pod_lines = xml_item.split('<podcast:')
-    ctr = 0
+    pod_lines: list = xml_item.split('<podcast:')
+    ctr: int = 0
     for pod_line in pod_lines:
         if ctr == 0 or '>' not in pod_line:
             ctr += 1
@@ -649,7 +649,7 @@ def xml_podcast_to_dict(base_dir: str, xml_item: str, xml_str: str) -> {}:
             if pod_text:
                 pod_entry['text'] = pod_text
 
-        appended = False
+        appended: bool = False
         if pod_key + 's' in podcast_properties:
             if isinstance(podcast_properties[pod_key + 's'], list):
                 podcast_properties[pod_key + 's'].append(pod_entry)
@@ -738,8 +738,8 @@ def get_link_from_rss_item(rss_item: str,
     mime_type = None
 
     if preferred_mime_types and '<podcast:alternateEnclosure ' in rss_item:
-        enclosures = rss_item.split('<podcast:alternateEnclosure ')
-        ctr = 0
+        enclosures: list = rss_item.split('<podcast:alternateEnclosure ')
+        ctr: int = 0
         for enclosure in enclosures:
             if ctr == 0:
                 ctr += 1
@@ -758,7 +758,7 @@ def get_link_from_rss_item(rss_item: str,
             if 'uri="' not in enclosure:
                 continue
             uris = enclosure.split('uri="')
-            ctr2 = 0
+            ctr2: int = 0
             for uri in uris:
                 if ctr2 == 0:
                     ctr2 += 1
@@ -830,7 +830,7 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
     """
     if '<item>' not in xml_str:
         return {}
-    result = {}
+    result: dict = {}
 
     # is this an rss feed containing hashtag categories?
     if '<title>#categories</title>' in xml_str:
@@ -838,10 +838,10 @@ def _xml2str_to_dict(base_dir: str, domain: str, xml_str: str,
                                        max_categories_feed_item_size_kb)
         return {}
 
-    rss_items = xml_str.split('<item>')
-    post_ctr = 0
-    max_bytes = max_feed_item_size_kb * 1024
-    first_item = True
+    rss_items: list = xml_str.split('<item>')
+    post_ctr: int = 0
+    max_bytes: int = max_feed_item_size_kb * 1024
+    first_item: bool = True
     for rss_item in rss_items:
         if first_item:
             first_item = False
@@ -952,7 +952,7 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
     item_str = '<item'
     if item_str not in xml_str:
         return {}
-    result = {}
+    result: dict = {}
 
     # is this an rss feed containing hashtag categories?
     if '<title>#categories</title>' in xml_str:
@@ -960,10 +960,10 @@ def _xml1str_to_dict(base_dir: str, domain: str, xml_str: str,
                                        max_categories_feed_item_size_kb)
         return {}
 
-    rss_items = xml_str.split(item_str)
-    post_ctr = 0
-    max_bytes = max_feed_item_size_kb * 1024
-    first_item = True
+    rss_items: list = xml_str.split(item_str)
+    post_ctr: int = 0
+    max_bytes: int = max_feed_item_size_kb * 1024
+    first_item: bool = True
     for rss_item in rss_items:
         if first_item:
             first_item = False
@@ -1071,11 +1071,11 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
     """
     if '<entry>' not in xml_str:
         return {}
-    result = {}
-    atom_items = xml_str.split('<entry>')
-    post_ctr = 0
-    max_bytes = max_feed_item_size_kb * 1024
-    first_item = True
+    result: dict = {}
+    atom_items: list = xml_str.split('<entry>')
+    post_ctr: int = 0
+    max_bytes: int = max_feed_item_size_kb * 1024
+    first_item: bool = True
     for atom_item in atom_items:
         if first_item:
             first_item = False
@@ -1148,7 +1148,7 @@ def _atom_feed_to_dict(base_dir: str, domain: str, xml_str: str,
                 unescaped_text(obj_str.split('</activity:object>')[0])
             obj_str = remove_script(obj_str, None, None, None)
             sections = obj_str.split('<link ')
-            ctr = 0
+            ctr: int = 0
             for section_str in sections:
                 if ctr == 0:
                     ctr = 1
@@ -1242,8 +1242,8 @@ def _json_feed_v1to_dict(base_dir: str, xml_str: str,
         return {}
     if not isinstance(feed_json['items'], list):
         return {}
-    post_ctr = 0
-    result = {}
+    post_ctr: int = 0
+    result: dict = {}
     for json_feed_item in feed_json['items']:
         if not json_feed_item:
             continue
@@ -1350,11 +1350,11 @@ def _atom_feed_yt_to_dict(base_dir: str, xml_str: str,
         return {}
     if is_blocked_domain(base_dir, 'www.youtube.com', None, None):
         return {}
-    result = {}
+    result: dict = {}
     atom_items = xml_str.split('<entry>')
-    post_ctr = 0
-    max_bytes = max_feed_item_size_kb * 1024
-    first_entry = True
+    post_ctr: int = 0
+    max_bytes: int = max_feed_item_size_kb * 1024
+    first_entry: bool = True
     for atom_item in atom_items:
         if first_entry:
             first_entry = False
@@ -1669,7 +1669,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(index_filename):
         return
     # local blog entries are unmoderated by default
-    moderated = False
+    moderated: bool = False
 
     # local blogs can potentially be moderated
     moderated_filename = \
@@ -1680,7 +1680,7 @@ def _add_account_blogs_to_newswire(base_dir: str, nickname: str, domain: str,
     try:
         with open(index_filename, 'r', encoding='utf-8') as fp_index:
             post_filename = 'start'
-            ctr = 0
+            ctr: int = 0
             while post_filename:
                 post_filename = fp_index.readline()
                 if not post_filename:
@@ -1843,13 +1843,13 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
             continue
 
         # should this feed be moderated?
-        moderated = False
+        moderated: bool = False
         if '*' in url:
             moderated = True
             url = url.replace('*', '').strip()
 
         # should this feed content be mirrored?
-        mirrored = False
+        mirrored: bool = False
         if '!' in url:
             mirrored = True
             url = url.replace('!', '').strip()
@@ -1877,7 +1877,7 @@ def get_dict_from_newswire(session, base_dir: str, domain: str,
     # are there too many posts? If so then remove the oldest ones
     no_of_posts = len(sorted_result.items())
     if no_of_posts > max_newswire_posts:
-        ctr = 0
+        ctr: int = 0
         removals: list[str] = []
         for date_str, item in sorted_result.items():
             ctr += 1

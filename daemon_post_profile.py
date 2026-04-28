@@ -156,7 +156,7 @@ def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
                                      fields: {}, self) -> bool:
     """ HTTP POST deactivate the account
     """
-    deactivated = False
+    deactivated: bool = False
     if fields.get('deactivateThisAccount'):
         if fields['deactivateThisAccount'] == 'on':
             deactivate_account(base_dir, nickname, domain)
@@ -639,7 +639,7 @@ def _profile_post_low_bandwidth(base_dir: str, path: str,
        is_artist(base_dir, nickname):
         curr_low_bandwidth = \
             get_config_param(base_dir, 'lowBandwidth')
-        low_bandwidth = False
+        low_bandwidth: bool = False
         if fields.get('lowBandwidth'):
             if fields['lowBandwidth'] == 'on':
                 low_bandwidth = True
@@ -660,7 +660,7 @@ def _profile_post_dyslexic_font(base_dir: str, path: str,
     """
     if path.startswith('/users/' + admin_nickname + '/') or \
        is_artist(base_dir, nickname):
-        dyslexic_font2 = False
+        dyslexic_font2: bool = False
         if fields.get('dyslexicFont'):
             if fields['dyslexicFont'] == 'on':
                 dyslexic_font2 = True
@@ -681,7 +681,7 @@ def _profile_post_grayscale_theme(base_dir: str, path: str,
     """
     if path.startswith('/users/' + admin_nickname + '/') or \
        is_artist(base_dir, nickname):
-        grayscale = False
+        grayscale: bool = False
         if fields.get('grayscale'):
             if fields['grayscale'] == 'on':
                 grayscale = True
@@ -737,7 +737,7 @@ def _profile_post_notify_reactions(base_dir: str,
                     notify_reactions_filename)
         actor_changed = True
     else:
-        notify_reactions_active = False
+        notify_reactions_active: bool = False
         if fields.get('notifyReactions'):
             if fields['notifyReactions'] == 'on' and \
                not hide_reaction_button_active:
@@ -771,7 +771,7 @@ def _profile_post_notify_likes(on_final_welcome_screen: bool,
                     notify_likes_filename)
         actor_changed = True
     else:
-        notify_likes_active = False
+        notify_likes_active: bool = False
         if fields.get('notifyLikes'):
             if fields['notifyLikes'] == 'on' and \
                not hide_like_button_active:
@@ -793,7 +793,7 @@ def _profile_post_notify_likes(on_final_welcome_screen: bool,
 def _profile_post_block_military(nickname: str, fields: {}, self) -> None:
     """ HTTP POST block military instances
     """
-    block_mil_instances = False
+    block_mil_instances: bool = False
     if fields.get('blockMilitary'):
         if fields['blockMilitary'] == 'on':
             block_mil_instances = True
@@ -812,7 +812,7 @@ def _profile_post_block_military(nickname: str, fields: {}, self) -> None:
 def _profile_post_block_government(nickname: str, fields: {}, self) -> None:
     """ HTTP POST block government instances
     """
-    block_gov_instances = False
+    block_gov_instances: bool = False
     if fields.get('blockGovernment'):
         if fields['blockGovernment'] == 'on':
             block_gov_instances = True
@@ -831,7 +831,7 @@ def _profile_post_block_government(nickname: str, fields: {}, self) -> None:
 def _profile_post_block_bluesky(nickname: str, fields: {}, self) -> None:
     """ HTTP POST block bluesky bridges
     """
-    block_bsky_instances = False
+    block_bsky_instances: bool = False
     if fields.get('blockBlueSky'):
         if fields['blockBlueSky'] == 'on':
             block_bsky_instances = True
@@ -850,7 +850,7 @@ def _profile_post_block_bluesky(nickname: str, fields: {}, self) -> None:
 def _profile_post_block_nostr(nickname: str, fields: {}, self) -> None:
     """ HTTP POST block nostr bridges
     """
-    block_nostr_instances = False
+    block_nostr_instances: bool = False
     if fields.get('blockNostr'):
         if fields['blockNostr'] == 'on':
             block_nostr_instances = True
@@ -872,7 +872,7 @@ def _profile_post_no_reply_boosts(base_dir: str, nickname: str, domain: str,
     """
     no_reply_boosts_filename = \
         acct_dir(base_dir, nickname, domain) + '/.noReplyBoosts'
-    no_reply_boosts = False
+    no_reply_boosts: bool = False
     if fields.get('noReplyBoosts'):
         if fields['noReplyBoosts'] == 'on':
             no_reply_boosts = True
@@ -897,7 +897,7 @@ def _profile_post_no_seen_posts(base_dir: str, nickname: str, domain: str,
     """
     no_seen_posts_filename = \
         acct_dir(base_dir, nickname, domain) + '/.noSeenPosts'
-    no_seen_posts = False
+    no_seen_posts: bool = False
     if fields.get('noSeenPosts'):
         if fields['noSeenPosts'] == 'on':
             no_seen_posts = True
@@ -923,7 +923,7 @@ def _profile_post_watermark_enabled(base_dir: str,
     """
     watermark_enabled_filename = \
         acct_dir(base_dir, nickname, domain) + '/.watermarkEnabled'
-    watermark_enabled = False
+    watermark_enabled: bool = False
     if fields.get('watermarkEnabled'):
         if fields['watermarkEnabled'] == 'on':
             watermark_enabled = True
@@ -1017,7 +1017,7 @@ def _profile_post_hide_recent_posts(base_dir: str, nickname: str, domain: str,
 def _profile_post_mutuals_replies(account_dir: str, fields: {}) -> None:
     """ HTTP POST show replies only from mutuals checkbox
     """
-    show_replies_mutuals = False
+    show_replies_mutuals: bool = False
     if fields.get('repliesFromMutualsOnly'):
         if fields['repliesFromMutualsOnly'] == 'on':
             show_replies_mutuals = True
@@ -1040,7 +1040,7 @@ def _profile_post_only_follower_replies(fields: {},
                                         account_dir: str) -> None:
     """ HTTP POST show replies only from followers checkbox
     """
-    show_replies_followers = False
+    show_replies_followers: bool = False
     if fields.get('repliesFromFollowersOnly'):
         if fields['repliesFromFollowersOnly'] == 'on':
             show_replies_followers = True
@@ -1064,7 +1064,7 @@ def _profile_post_only_follower_replies(fields: {},
 def _profile_post_show_quote_toots(fields: {}, account_dir: str) -> None:
     """ HTTP POST show quote toots checkbox on edit profile
     """
-    show_quote_toots = False
+    show_quote_toots: bool = False
     if fields.get('showQuotes'):
         if fields['showQuotes'] == 'on':
             show_quote_toots = True
@@ -1086,7 +1086,7 @@ def _profile_post_show_quote_toots(fields: {}, account_dir: str) -> None:
 def _profile_post_show_questions(fields: {}, account_dir: str) -> None:
     """ HTTP POST show poll/vote/question posts checkbox
     """
-    show_vote_posts = False
+    show_vote_posts: bool = False
     if fields.get('showVotes'):
         if fields['showVotes'] == 'on':
             show_vote_posts = True
@@ -1109,7 +1109,7 @@ def _profile_post_reverse_timelines(base_dir: str, nickname: str,
                                     fields: {}, self) -> None:
     """ HTTP POST reverse timelines checkbox
     """
-    reverse = False
+    reverse: bool = False
     if fields.get('reverseTimelines'):
         if fields['reverseTimelines'] == 'on':
             reverse = True
@@ -1131,7 +1131,7 @@ def _profile_post_bold_reading(base_dir: str,
     """
     bold_reading_filename = \
         acct_dir(base_dir, nickname, domain) + '/.boldReading'
-    bold_reading = False
+    bold_reading: bool = False
     if fields.get('boldReading'):
         if fields['boldReading'] == 'on':
             bold_reading = True
@@ -1159,7 +1159,7 @@ def _profile_post_hide_reaction_button2(base_dir: str,
         acct_dir(base_dir, nickname, domain) + '/.hideReactionButton'
     notify_reactions_filename = \
         acct_dir(base_dir, nickname, domain) + '/.notifyReactions'
-    hide_reaction_button_active = False
+    hide_reaction_button_active: bool = False
     if fields.get('hideReactionButton'):
         if fields['hideReactionButton'] == 'on':
             hide_reaction_button_active = True
@@ -1187,7 +1187,7 @@ def _profile_post_minimize_images(base_dir: str, nickname: str, domain: str,
                                   min_images_for_accounts: []) -> None:
     """ HTTP POST Minimize all images from edit profile screen
     """
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if fields.get('minimizeAllImages'):
         if fields['minimizeAllImages'] == 'on':
             minimize_all_images = True
@@ -1214,7 +1214,7 @@ def _profile_post_hide_like_button2(base_dir: str, nickname: str, domain: str,
         acct_dir(base_dir, nickname, domain) + '/.hideLikeButton'
     notify_likes_filename = \
         acct_dir(base_dir, nickname, domain) + '/.notifyLikes'
-    hide_like_button_active = False
+    hide_like_button_active: bool = False
     if fields.get('hideLikeButton'):
         if fields['hideLikeButton'] == 'on':
             hide_like_button_active = True
@@ -1243,7 +1243,7 @@ def _profile_post_remove_retweets(base_dir: str, nickname: str, domain: str,
     """
     remove_twitter_filename = \
         acct_dir(base_dir, nickname, domain) + '/.removeTwitter'
-    remove_twitter_active = False
+    remove_twitter_active: bool = False
     if fields.get('removeTwitter'):
         if fields['removeTwitter'] == 'on':
             remove_twitter_active = True
@@ -1274,7 +1274,7 @@ def _profile_post_dms_from_followers(base_dir: str, nickname: str, domain: str,
                     follow_dms_filename)
         actor_changed = True
     else:
-        follow_dms_active = False
+        follow_dms_active: bool = False
         if fields.get('followDMs'):
             if fields['followDMs'] == 'on':
                 follow_dms_active = True
@@ -1347,7 +1347,7 @@ def _profile_post_keep_dms(base_dir: str,
                            actor_changed: bool) -> bool:
     """ HTTP POST keep DMs during post expiry
     """
-    expire_keep_dms = False
+    expire_keep_dms: bool = False
     if fields.get('expiryKeepDMs'):
         if fields['expiryKeepDMs'] == 'on':
             expire_keep_dms = True
@@ -1364,11 +1364,11 @@ def _profile_post_reject_spam_actors(base_dir: str,
                                      fields: {}) -> None:
     """ HTTP POST reject spam actors
     """
-    reject_spam_actors = False
+    reject_spam_actors: bool = False
     if fields.get('rejectSpamActors'):
         if fields['rejectSpamActors'] == 'on':
             reject_spam_actors = True
-    curr_reject_spam_actors = False
+    curr_reject_spam_actors: bool = False
     actor_spam_filter_filename = \
         acct_dir(base_dir, nickname, domain) + '/.reject_spam_actors'
     if os.path.isfile(actor_spam_filter_filename):
@@ -1402,7 +1402,7 @@ def _profile_post_approve_followers(on_final_welcome_screen: bool,
             if fields['approveFollowers'] == 'on':
                 approve_followers = True
 
-        premium_activated = False
+        premium_activated: bool = False
         if fields.get('premiumAccount'):
             if fields['premiumAccount'] == 'on':
                 # turn on premium flag
@@ -1464,7 +1464,7 @@ def _profile_post_broch_mode(base_dir: str, domain_full: str,
                              fields: {}) -> None:
     """ HTTP POST broch mode
     """
-    broch_mode = False
+    broch_mode: bool = False
     if fields.get('brochMode'):
         if fields['brochMode'] == 'on':
             broch_mode = True
@@ -1479,7 +1479,7 @@ def _profile_post_verify_all_signatures(base_dir: str, fields: {},
                                         self) -> None:
     """ HTTP POST verify all signatures
     """
-    verify_all_signatures = False
+    verify_all_signatures: bool = False
     if fields.get('verifyallsignatures'):
         if fields['verifyallsignatures'] == 'on':
             verify_all_signatures = True
@@ -1492,7 +1492,7 @@ def _profile_post_show_nodeinfo_version(base_dir: str, fields: {},
                                         self) -> None:
     """ HTTP POST show nodeinfo version
     """
-    show_node_info_version = False
+    show_node_info_version: bool = False
     if fields.get('showNodeInfoVersion'):
         if fields['showNodeInfoVersion'] == 'on':
             show_node_info_version = True
@@ -1505,7 +1505,7 @@ def _profile_post_show_nodeinfo_version(base_dir: str, fields: {},
 def _profile_post_show_nodeinfo(base_dir: str, fields: {}, self) -> None:
     """ HTTP POST Show number of accounts within nodeinfo
     """
-    show_node_info_accounts = False
+    show_node_info_accounts: bool = False
     if fields.get('showNodeInfoAccounts'):
         if fields['showNodeInfoAccounts'] == 'on':
             show_node_info_accounts = True
@@ -2311,7 +2311,7 @@ def _profile_post_libretranslate_url(base_dir: str, fields: {}) -> None:
 def _profile_post_replies_unlisted(base_dir: str, fields: {}, self) -> None:
     """ HTTP POST change public replies unlisted
     """
-    pub_replies_unlisted = False
+    pub_replies_unlisted: bool = False
     if self.server.public_replies_unlisted or \
        get_config_param(base_dir, "publicRepliesUnlisted") is True:
         pub_replies_unlisted = True
@@ -2333,7 +2333,7 @@ def _profile_post_replies_unlisted(base_dir: str, fields: {}, self) -> None:
 def _profile_post_registrations_open(base_dir: str, fields: {}, self) -> None:
     """ HTTP POST change registrations open status
     """
-    registrations_open = False
+    registrations_open: bool = False
     if self.server.registration or \
        get_config_param(base_dir, "registration") == 'open':
         registrations_open = True
@@ -2758,8 +2758,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
     if boundary:
         # get the various avatar, banner and background images
-        actor_changed = True
-        send_move_activity = False
+        actor_changed: bool = True
+        send_move_activity: bool = False
         profile_media_types = (
             'avatar', 'image',
             'banner', 'search_banner',
@@ -2884,8 +2884,8 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
         post_bytes_str = post_bytes.decode('utf-8')
         redirect_path: str = ''
-        check_name_and_bio = False
-        on_final_welcome_screen = False
+        check_name_and_bio: bool = False
+        on_final_welcome_screen: bool = False
         if 'name="previewAvatar"' in post_bytes_str:
             redirect_path = '/welcome_profile'
         elif 'name="initialWelcomeScreen"' in post_bytes_str:
@@ -3297,11 +3297,11 @@ def profile_edit(self, calling_domain: str, cookie: str,
 
                 notify_likes_filename = \
                     acct_dir(base_dir, nickname, domain) + '/.notifyLikes'
-                hide_reaction_button_active = False
+                hide_reaction_button_active: bool = False
                 if fields.get('hideReactionButton'):
                     if fields['hideReactionButton'] == 'on':
                         hide_reaction_button_active = True
-                hide_like_button_active = False
+                hide_like_button_active: bool = False
                 if fields.get('hideLikeButton'):
                     if fields['hideLikeButton'] == 'on':
                         hide_like_button_active = True

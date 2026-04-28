@@ -262,7 +262,7 @@ def set_hashtag_category(base_dir: str, hashtag: str, category: str,
         if os.path.isfile(category_filename):
             return False
 
-    category_written = False
+    category_written: bool = False
     try:
         with open(category_filename, 'w+', encoding='utf-8') as fp_category:
             fp_category.write(category)
@@ -291,8 +291,8 @@ def guess_hashtag_category(tag_name: str, hashtag_categories: {},
         return ''
 
     category_matched: str = ''
-    tag_matched_len = 0
-    finished = False
+    tag_matched_len: int = 0
+    finished: bool = False
 
     for category_str, hashtag_list in hashtag_categories.items():
         if finished:

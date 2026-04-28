@@ -252,7 +252,7 @@ def get_location_from_post(post_json_object: {}) -> str:
             locn = _get_location_from_tags(post_obj['tag'])
 
     # location representation used by pixelfed
-    locn_exists = False
+    locn_exists: bool = False
     locn2 = None
     if post_obj.get('location'):
         locn2 = post_obj['location']
@@ -637,7 +637,7 @@ def _geocoords_from_gmaps_link(url: str) -> (int, float, float):
         coords_str = coords_str.split('/place/', 1)[1]
 
     # NOTE: zoom may have been replaced by metres elevation
-    zoom_exists = False
+    zoom_exists: bool = False
     if 'z' in coords_str:
         coords_str = coords_str.split('z', 1)[0]
         zoom_exists = True
@@ -965,7 +965,7 @@ def get_map_links_from_post_content(content: str, session) -> []:
     osm_domain = 'openstreetmap.org'
     sections = content.split('://')
     map_links: list[str] = []
-    ctr = 0
+    ctr: int = 0
     for link_str in sections:
         if ctr == 0:
             ctr += 1
@@ -997,7 +997,7 @@ def get_map_links_from_post_content(content: str, session) -> []:
         ctr += 1
 
     # https://en.wikipedia.org/wiki/Geo_URI_scheme
-    ctr = 0
+    ctr: int = 0
     sections = content.split('geo:')
     for link_str in sections:
         if ctr == 0:
@@ -1046,7 +1046,7 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
     secs_since_epoch = \
         int((date_from_string_format(published, ['%Y-%m-%dT%H:%M:%S%z']) -
              date_epoch()).total_seconds())
-    links_changed = False
+    links_changed: bool = False
     for link in map_links:
         line = str(secs_since_epoch) + ' ' + link + ' ' + post_url
         if line in existing_map_links:
@@ -1059,7 +1059,7 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
     # sort the list of map links
     existing_map_links.sort(reverse=True)
     map_links_str: str = ''
-    ctr = 0
+    ctr: int = 0
     for link in existing_map_links:
         if not link:
             continue
@@ -1113,7 +1113,7 @@ def _hashtag_map_to_format(base_dir: str, tag_name: str,
                            map_format: str, session) -> str:
     """Returns the KML/GPX for a given hashtag between the given times
     """
-    place_ctr = 0
+    place_ctr: int = 0
     osm_domain = 'openstreetmap.org'
     tag_map_filename = base_dir + '/tagmaps/' + tag_name + '.txt'
 

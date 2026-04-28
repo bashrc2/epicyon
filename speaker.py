@@ -537,7 +537,7 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
     if post_json_object['object'].get('id'):
         post_id = remove_id_ending(post_json_object['object']['id'])
 
-    follow_requests_exist = False
+    follow_requests_exist: bool = False
     follow_requests_list: list[str] = []
     accounts_dir = acct_dir(base_dir, nickname, domain_full)
     approve_follows_filename = accounts_dir + '/followrequests.txt'
@@ -551,11 +551,11 @@ def _post_to_speaker_json(base_dir: str, http_prefix: str,
             for i, _ in enumerate(follows):
                 follows[i] = follows[i].strip()
             follow_requests_list = follows
-    post_dm = False
+    post_dm: bool = False
     dm_filename = accounts_dir + '/.newDM'
     if os.path.isfile(dm_filename):
         post_dm = True
-    post_reply = False
+    post_reply: bool = False
     reply_filename = accounts_dir + '/.newReply'
     if os.path.isfile(reply_filename):
         post_reply = True

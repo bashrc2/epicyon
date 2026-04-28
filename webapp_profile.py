@@ -185,7 +185,7 @@ def _valid_profile_preview_post(post_json_object: {},
     """
     if not isinstance(post_json_object, dict):
         return False, None
-    is_announced_feed_item = False
+    is_announced_feed_item: bool = False
     if is_create_inside_announce(post_json_object):
         is_announced_feed_item = True
         post_json_object = post_json_object['object']
@@ -277,10 +277,10 @@ def html_profile_after_search(authorized: bool,
                               block_nostr: {}) -> str:
     """Show a profile page after a search for a fediverse address
     """
-    http = False
-    gnunet = False
-    ipfs = False
-    ipns = False
+    http: bool = False
+    gnunet: bool = False
+    ipfs: bool = False
+    ipns: bool = False
     if http_prefix == 'http':
         http = True
     elif http_prefix == 'gnunet':
@@ -338,7 +338,7 @@ def html_profile_after_search(authorized: bool,
     if os.path.isfile(base_dir + '/epicyon.css'):
         css_filename = base_dir + '/epicyon.css'
 
-    is_group = False
+    is_group: bool = False
     if profile_json.get('type'):
         if profile_json['type'] == 'Group':
             is_group = True
@@ -541,7 +541,7 @@ def html_profile_after_search(authorized: bool,
 
     domain_full = get_full_domain(domain, port)
 
-    follow_is_permitted = True
+    follow_is_permitted: bool = True
     if not profile_json.get('followers'):
         # no followers collection specified within actor
         follow_is_permitted = False
@@ -626,10 +626,10 @@ def html_profile_after_search(authorized: bool,
         if debug:
             print('DEBUG: no user feed in profile preview')
     else:
-        minimize_all_images = False
+        minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
-        i = 0
+        i: int = 0
         for item in user_feed:
             if not isinstance(item, dict):
                 continue
@@ -845,7 +845,7 @@ def _get_profile_header(base_dir: str, http_prefix: str, nickname: str,
             '    <p>' + translate['Other accounts'] + ': '
 
         actor = local_actor_url(http_prefix, nickname, domain_full)
-        ctr = 0
+        ctr: int = 0
         if isinstance(also_known_as, list):
             for alt_actor in also_known_as:
                 if alt_actor == actor:
@@ -1038,7 +1038,7 @@ def _get_profile_header_after_search(base_dir: str,
         other_accounts_html = \
             '        <p>' + translate['Other accounts'] + ': '
 
-        ctr = 0
+        ctr: int = 0
         if isinstance(also_known_as, list):
             for alt_actor in also_known_as:
                 if alt_actor == actor:
@@ -1182,7 +1182,7 @@ def html_profile(signing_priv_key_pem: str,
                  block_nostr: {}) -> str:
     """Show the profile page as html
     """
-    show_moved_accounts = False
+    show_moved_accounts: bool = False
     if authorized:
         moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
         if os.path.isfile(moved_accounts_filename):
@@ -1293,7 +1293,7 @@ def html_profile(signing_priv_key_pem: str,
     login_button: str = ''
 
     follow_approvals_section: str = ''
-    follow_approvals = False
+    follow_approvals: bool = False
     edit_profile_str: str = ''
     logout_str: str = ''
     actor = profile_json['id']
@@ -1665,7 +1665,7 @@ def html_profile(signing_priv_key_pem: str,
     # keyboard navigation
     user_path_str = '/users/' + nickname
     deft = default_timeline
-    is_group = False
+    is_group: bool = False
     followers_str = translate['Followers']
     if premium:
         followers_str = translate['Fans']
@@ -1819,7 +1819,7 @@ def html_profile(signing_priv_key_pem: str,
 
     if selected == 'posts' and not premium:
         if hide_recent_posts.get(nickname):
-            max_profile_posts = 0
+            max_profile_posts: int = 0
         else:
             max_profile_posts = \
                 get_max_profile_posts(base_dir, nickname, domain, 20)
@@ -1977,11 +1977,11 @@ def _html_profile_posts(recent_posts_cache: {}, max_recent_posts: int,
     """
     separator_str = html_post_separator(base_dir, None)
     profile_str: str = ''
-    max_items = max_profile_posts
-    ctr = 0
-    curr_page = 1
-    box_name = 'outbox'
-    minimize_all_images = False
+    max_items: int = max_profile_posts
+    ctr: int = 0
+    curr_page: int = 1
+    box_name: str = 'outbox'
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     shown_items: list[str] = []
@@ -2086,8 +2086,8 @@ def _html_profile_following(translate: {}, base_dir: str, http_prefix: str,
 
     for following_actor in following_json['orderedItems']:
         # is this a dormant followed account?
-        dormant = False
-        offline = False
+        dormant: bool = False
+        offline: bool = False
 
         following_domain, _ = get_domain_from_actor(following_actor)
         if authorized:
@@ -2238,7 +2238,7 @@ def _html_edit_profile_graphic_design(base_dir: str, translate: {}) -> str:
     """
     graphics_str = begin_edit_section(translate['Graphic Design'])
 
-    low_bandwidth = get_config_param(base_dir, 'lowBandwidth')
+    low_bandwidth: bool = get_config_param(base_dir, 'lowBandwidth')
     if not low_bandwidth:
         low_bandwidth = False
     graphics_str += _html_themes_dropdown(base_dir, translate)
@@ -2332,13 +2332,13 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
         translate['Instance Logo'] + '</label>' + \
         '  <input type="file" id="instanceLogo" name="instanceLogo"' + \
         '      accept="' + image_formats + '"><br>\n  <br>\n'
-    public_replies_unlisted = False
+    public_replies_unlisted: bool = False
     if get_config_param(base_dir, "publicRepliesUnlisted") is True:
         public_replies_unlisted = True
     instance_str += \
         edit_check_box(translate['Public replies default to unlisted scope'],
                        'publicRepliesUnlisted', public_replies_unlisted)
-    registrations_open = False
+    registrations_open: bool = False
     if get_config_param(base_dir, "registration") == 'open':
         registrations_open = True
     instance_str += \
@@ -2347,7 +2347,7 @@ def _html_edit_profile_instance(base_dir: str, translate: {},
     if registrations_open:
         remaining_config_exists = \
             get_config_param(base_dir, 'registrationsRemaining')
-        registrations_remaining = 0
+        registrations_remaining: int = 0
         if remaining_config_exists is not None:
             registrations_remaining = int(remaining_config_exists)
         instance_str += \
@@ -2908,7 +2908,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         idx = 'Block military instances'
         if translate.get(idx):
             name = translate[idx]
-        block_mil = False
+        block_mil: bool = False
         if block_military.get(nickname):
             block_mil = block_military[nickname]
         edit_profile_form += \
@@ -2917,7 +2917,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         idx = 'Block government instances'
         if translate.get(idx):
             name = translate[idx]
-        block_gov = False
+        block_gov: bool = False
         if block_government.get(nickname):
             block_gov = block_government[nickname]
         edit_profile_form += \
@@ -2926,7 +2926,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         idx = 'Block BlueSky bridges'
         if translate.get(idx):
             name = translate[idx]
-        block_bsky = False
+        block_bsky: bool = False
         if block_bluesky.get(nickname):
             block_bsky = block_bluesky[nickname]
         edit_profile_form += \
@@ -2935,7 +2935,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         idx = 'Block Nostr bridges'
         if translate.get(idx):
             name = translate[idx]
-        blocknostr = False
+        blocknostr: bool = False
         if block_nostr.get(nickname):
             blocknostr = block_nostr[nickname]
         edit_profile_form += \
@@ -2944,7 +2944,7 @@ def _html_edit_profile_filtering(base_dir: str, nickname: str, domain: str,
         cw_lists_str: str = ''
         for name, list_json in cw_lists.items():
             variablename = get_cw_list_variable(name)
-            list_is_enabled = False
+            list_is_enabled: bool = False
             if lists_enabled:
                 if name in lists_enabled:
                     list_is_enabled = True
@@ -3296,7 +3296,7 @@ def _html_edit_profile_options(is_admin: bool,
     edit_profile_form += \
         edit_check_box(bold_str, 'boldReading', bold_reading)
 
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     minimize_all_images_str = translate['Minimize all images']
@@ -3304,7 +3304,7 @@ def _html_edit_profile_options(is_admin: bool,
         edit_check_box(minimize_all_images_str, 'minimizeAllImages',
                        minimize_all_images)
 
-    reverse = False
+    reverse: bool = False
     if nickname in reverse_sequence:
         reverse = True
     reverse_str = translate['Reverse timelines']
@@ -3420,7 +3420,7 @@ def _html_edit_profile_main(base_dir: str, display_nickname: str,
     also_known_as_str: str = ''
     if actor_json.get('alsoKnownAs'):
         also_known_as = actor_json['alsoKnownAs']
-        ctr = 0
+        ctr: int = 0
         for alt_actor in also_known_as:
             if ctr > 0:
                 also_known_as_str += ', '
@@ -3560,7 +3560,7 @@ def html_edit_profile(server, translate: {},
         return ''
     domain_full = get_full_domain(domain, port)
 
-    bold_reading = False
+    bold_reading: bool = False
     if server.bold_reading.get(nickname):
         bold_reading = True
 
@@ -3698,7 +3698,7 @@ def html_edit_profile(server, translate: {},
        path.startswith('/users/' + str(admin_nickname) + '/'):
         graphics_str = _html_edit_profile_graphic_design(base_dir, translate)
 
-    is_admin = False
+    is_admin: bool = False
     if admin_nickname:
         if path.startswith('/users/' + admin_nickname + '/'):
             is_admin = True
@@ -3761,32 +3761,32 @@ def html_edit_profile(server, translate: {},
                                 featured_hashtags)
 
     # whether to show quote toots
-    show_quote_toots = False
+    show_quote_toots: bool = False
     if os.path.isfile(account_dir + '/.allowQuotes'):
         show_quote_toots = True
 
     # whether to show votes
-    show_vote_posts = True
+    show_vote_posts: bool = True
     if os.path.isfile(account_dir + '/.noVotes'):
         show_vote_posts = False
 
     # only show replies from followers
-    show_replies_followers = False
+    show_replies_followers: bool = False
     if os.path.isfile(account_dir + '/.repliesFromFollowersOnly'):
         show_replies_followers = True
 
     # only show replies from mutuals
-    show_replies_mutuals = False
+    show_replies_mutuals: bool = False
     if os.path.isfile(account_dir + '/.repliesFromMutualsOnly'):
         show_replies_mutuals = True
 
     # don't show follows on profile
-    hide_follows = False
+    hide_follows: bool = False
     if os.path.isfile(account_dir + '/.hideFollows'):
         hide_follows = True
 
     # don't show recent public posts on profile
-    hide_recent_posts = False
+    hide_recent_posts: bool = False
     if os.path.isfile(account_dir + '/.hideRecentPosts'):
         hide_recent_posts = True
 
@@ -3795,19 +3795,19 @@ def html_edit_profile(server, translate: {},
 
     # are boosts of replies permitted in the inbox?
     no_reply_boosts_filename = account_dir + '/.noReplyBoosts'
-    no_reply_boosts = False
+    no_reply_boosts: bool = False
     if os.path.isfile(no_reply_boosts_filename):
         no_reply_boosts = True
 
     # are seen posts permitted in timelines?
     no_seen_posts_filename = account_dir + '/.noSeenPosts'
-    no_seen_posts = False
+    no_seen_posts: bool = False
     if os.path.isfile(no_seen_posts_filename):
         no_seen_posts = True
 
     # is watermarking enabled?
     watermark_enabled_filename = account_dir + '/.watermarkEnabled'
-    watermark_enabled = False
+    watermark_enabled: bool = False
     if os.path.isfile(watermark_enabled_filename):
         watermark_enabled = True
 
@@ -3951,7 +3951,7 @@ def _individual_follow_as_html(signing_priv_key_pem: str,
         avatar_url = follow_url + '/avatar.png'
 
     display_name = get_display_name(base_dir, follow_url, person_cache)
-    is_group = False
+    is_group: bool = False
     if not display_name:
         # lookup the correct webfinger for the follow_url
         follow_url_handle = follow_url_nickname + '@' + follow_url_domain_full

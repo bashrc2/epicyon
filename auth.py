@@ -55,8 +55,8 @@ def constant_time_string_check(string1: str, string2: str) -> bool:
     # strings must be of equal length
     if len(string1) != len(string2):
         return False
-    ctr = 0
-    matched = True
+    ctr: int = 0
+    matched: bool = True
     for char in string1:
         if char != string2[ctr]:
             matched = False
@@ -303,7 +303,7 @@ def record_login_failure(base_dir: str, ip_address: str,
     """
     if not count_dict.get(ip_address):
         while len(count_dict.items()) > 100:
-            oldest_time = 0
+            oldest_time: int = 0
             oldest_ip = None
             for ip_addr, ip_item in count_dict.items():
                 if oldest_time == 0 or ip_item['time'] < oldest_time:

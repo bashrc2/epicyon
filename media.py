@@ -488,7 +488,7 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
     print('Low bandwidth image conversion: ' + cmd)
     subprocess.call(cmd, shell=True)
     # wait for conversion to happen
-    ctr = 0
+    ctr: int = 0
     while not os.path.isfile(low_bandwidth_filename):
         print('Waiting for low bandwidth image conversion ' + str(ctr))
         time.sleep(0.2)

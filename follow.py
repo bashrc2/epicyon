@@ -130,7 +130,7 @@ def _remove_from_follow_base(base_dir: str,
         # for each possible users path construct an actor and
         # check if it exists in the file
         users_paths = get_user_paths()
-        actor_found = False
+        actor_found: bool = False
         for users_name in users_paths:
             accept_deny_actor = \
                 '://' + accept_deny_domain + users_name + accept_deny_nickname
@@ -275,7 +275,7 @@ def is_follower_of_person(base_dir: str, nickname: str, domain: str,
         return False
     handle = follower_nickname + '@' + follower_domain
 
-    already_following = False
+    already_following: bool = False
 
     followers_str = load_string(followers_file,
                                 'EX: is_follower_of_person ' +
@@ -411,7 +411,7 @@ def _get_no_of_follows(base_dir: str, nickname: str, domain: str,
     filename = accounts_dir + '/' + follow_file
     if not os.path.isfile(filename):
         return 0
-    ctr = 0
+    ctr: int = 0
     lines: list[str] = \
         load_list(filename,
                   'EX: _get_no_of_follows ' + filename)
@@ -468,7 +468,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
                 print('EX: get_following_feed unable to convert to int ' +
                       str(page_number))
         path = path.split('?page=')[0]
-        header_only = False
+        header_only: bool = False
 
     if not path.endswith('/' + follow_file):
         return None
@@ -531,9 +531,9 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
     filename = accounts_dir + '/' + follow_file + '.txt'
     if not os.path.isfile(filename):
         return following
-    curr_page = 1
-    page_ctr = 0
-    total_ctr = 0
+    curr_page: int = 1
+    page_ctr: int = 0
+    total_ctr: int = 0
     lines: list[str] = \
         load_list(filename,
                   'EX: get_following_feed ' + filename)
@@ -569,7 +569,7 @@ def get_following_feed(base_dir: str, domain: str, port: int, path: str,
                     append_str = remove_eol(append_str1)
                     following['orderedItems'].append(append_str)
         if page_ctr >= follows_per_page:
-            page_ctr = 0
+            page_ctr: int = 0
             curr_page += 1
     following['totalItems'] = total_ctr
     last_page = int(total_ctr / follows_per_page)
@@ -591,7 +591,7 @@ def follow_approval_required(base_dir: str, nickname_to_follow: str,
                               follow_request_handle):
         return False
 
-    manually_approve_follows = False
+    manually_approve_follows: bool = False
     domain_to_follow = remove_domain_port(domain_to_follow)
     actor_filename = data_dir(base_dir) + '/' + \
         nickname_to_follow + '@' + domain_to_follow + '.json'
@@ -619,7 +619,7 @@ def no_of_follow_requests(base_dir: str,
     approve_follows_filename = accounts_dir + '/followrequests.txt'
     if not os.path.isfile(approve_follows_filename):
         return 0
-    ctr = 0
+    ctr: int = 0
     lines: list[str] = \
         load_list(approve_follows_filename,
                   'EX: no_of_follow_requests ' +
@@ -772,7 +772,7 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
           nickname_to_follow + '@' + domain_to_follow +
           ' port ' + str(port) + ' to ' +
           accept_handle + ' port ' + str(from_port))
-    client_to_server = False
+    client_to_server: bool = False
 
     if remove_follow_activity:
         # remove the follow request json
@@ -787,7 +787,7 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
                       'followed_account_accepts unable to delete ' +
                       follow_activity_filename)
 
-    group_account = False
+    group_account: bool = False
     if follow_json:
         if follow_json.get('actor'):
             actor_url = get_actor_from_post(follow_json)
@@ -863,9 +863,9 @@ def followed_account_rejects(session, session_onion, session_i2p,
               nickname_to_follow + '@' + domain_to_follow +
               ' port ' + str(port) + ' to ' +
               nickname + '@' + domain + ' port ' + str(from_port))
-    client_to_server = False
+    client_to_server: bool = False
     deny_handle = get_full_domain(nickname + '@' + domain, from_port)
-    group_account = False
+    group_account: bool = False
     if has_group_type(base_dir, person_url, person_cache):
         group_account = True
     # remove from the follow requests file
@@ -938,7 +938,7 @@ def send_follow_request(session, base_dir: str,
 
     status_number, _ = get_status_number()
 
-    group_account = False
+    group_account: bool = False
     if follow_nickname:
         followed_id = followed_actor
         follow_handle = follow_nickname + '@' + request_domain
@@ -1527,7 +1527,7 @@ def follower_approval_active(base_dir: str,
                              nickname: str, domain: str) -> bool:
     """Returns true if the given account requires follower approval
     """
-    manually_approves_followers = False
+    manually_approves_followers: bool = False
     actor_filename = acct_dir(base_dir, nickname, domain) + '.json'
     if os.path.isfile(actor_filename):
         actor_json = load_json(actor_filename)
@@ -1558,7 +1558,7 @@ def remove_follower(base_dir: str,
     handle = remove_nickname + '@' + remove_domain
     handle = handle.lower()
     new_followers_str: str = ''
-    found = False
+    found: bool = False
     for handle2 in followers_list:
         if not handle2:
             continue

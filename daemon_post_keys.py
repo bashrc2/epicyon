@@ -73,7 +73,7 @@ def keyboard_shortcuts(self, calling_domain: str, cookie: str,
         self.server.postreq_busy = False
         return
 
-    save_keys = False
+    save_keys: bool = False
     access_keys_template = access_keys
     for variable_name, _ in access_keys_template.items():
         if not access_keys2.get(variable_name):

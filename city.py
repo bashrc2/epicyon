@@ -211,10 +211,10 @@ def spoof_geolocation(base_dir: str,
     if not os.path.isfile(nogo_filename):
         nogo_filename = base_dir + '/locations_nogo.txt'
 
-    man_city_radius = 0.1
-    variance_at_location = 0.0004
-    default_latitude = 51.8744
-    default_longitude = 0.368333
+    man_city_radius: float = 0.1
+    variance_at_location: float = 0.0004
+    default_latitude: float = 51.8744
+    default_longitude: float = 0.368333
     default_latdirection: str = 'N'
     default_longdirection: str = 'W'
 
@@ -261,7 +261,7 @@ def spoof_geolocation(base_dir: str,
             city_fields = city_name.split(':')
             latitude = city_fields[1]
             longitude = city_fields[2]
-            area_km2 = 0
+            area_km2: int = 0
             if len(city_fields) > 3:
                 area_km2 = int(city_fields[3])
             latdirection: str = 'N'
@@ -282,8 +282,8 @@ def spoof_geolocation(base_dir: str,
                 datetime.timedelta(hours=approx_time_zone)
             cam_make, cam_model, cam_serial_number = \
                 _get_decoy_camera(decoy_seed)
-            valid_coord = False
-            seed_offset = 0
+            valid_coord: bool = False
+            seed_offset: int = 0
             while not valid_coord:
                 # patterns of activity change in the city over time
                 (distance_from_city_center, angle_radians) = \
@@ -351,11 +351,11 @@ def get_spoofed_city(city: str, base_dir: str,
 def _point_in_polygon(poly: [], x_coord: float, y_coord: float) -> bool:
     """Returns true if the given point is inside the given polygon
     """
-    num = len(poly)
-    inside = False
-    p2x = 0.0
-    p2y = 0.0
-    xints = 0.0
+    num: int = len(poly)
+    inside: bool = False
+    p2x: float = 0.0
+    p2y: float = 0.0
+    xints: float = 0.0
     p1x, p1y = poly[0]
     for i in range(num + 1):
         p2x, p2y = poly[i % num]

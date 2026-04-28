@@ -2041,7 +2041,7 @@ def html_poisoned(dictionary: [], twograms: {}) -> str:
             prev_wrd = ''
             for word_index in range(no_of_words):
                 wrd = ''
-                pair_found = False
+                pair_found: bool = False
                 if prev_wrd:
                     # common word sequences
                     if twograms.get(prev_wrd) and \

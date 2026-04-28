@@ -315,7 +315,7 @@ def is_unlisted_post(post_json_object: {}) -> bool:
         return False
     if not post_json_object['object'].get('cc'):
         return False
-    has_followers = False
+    has_followers: bool = False
     if isinstance(post_json_object['object']['to'], list):
         for recipient in post_json_object['object']['to']:
             if recipient.endswith('/followers'):
@@ -583,7 +583,7 @@ def is_valid_date(date_str: str) -> bool:
     date_sections = date_str.split('-')
     if len(date_sections) != 3:
         return False
-    date_sect_ctr = 0
+    date_sect_ctr: int = 0
     for section_str in date_sections:
         if not section_str.isdigit():
             return False

@@ -95,10 +95,10 @@ def html_likers_of_post(base_dir: str, nickname: str,
 
     # show the post which was liked
     timezone = get_account_timezone(base_dir, nickname, domain)
-    mitm = False
+    mitm: bool = False
     if os.path.isfile(filename.replace('.json', '') + '.mitm'):
         mitm = True
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account

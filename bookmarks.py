@@ -106,10 +106,10 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
         return
     if not post_json_object['object']['bookmarks'].get('items'):
         return
-    total_items = 0
+    total_items: int = 0
     if post_json_object['object']['bookmarks'].get('totalItems'):
         total_items = post_json_object['object']['bookmarks']['totalItems']
-    item_found = False
+    item_found: bool = False
     for bookmark_item in post_json_object['object']['bookmarks']['items']:
         if bookmark_item.get('actor'):
             if bookmark_item['actor'] == actor:

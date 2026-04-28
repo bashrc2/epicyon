@@ -59,7 +59,7 @@ def get_cwtch_address(actor_json: {}) -> str:
 def set_cwtch_address(actor_json: {}, cwtch_address: str) -> None:
     """Sets an cwtch address for the given actor
     """
-    not_cwtch_address = False
+    not_cwtch_address: bool = False
 
     if len(cwtch_address) < 56:
         not_cwtch_address = True

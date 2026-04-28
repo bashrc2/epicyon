@@ -240,7 +240,7 @@ def set_role(base_dir: str, nickname: str, domain: str,
         if not actor_json.get('hasOccupation'):
             return False
         roles_list = get_actor_roles_list(actor_json)
-        actor_changed = False
+        actor_changed: bool = False
         if role:
             # add the role
             if role_files.get(role):

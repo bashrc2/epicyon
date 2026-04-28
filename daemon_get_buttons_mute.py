@@ -121,16 +121,16 @@ def mute_button(self, calling_domain: str, path: str,
                   nickname + ' ' + domain)
             print('mute_post: Muted post cache: ' +
                   str(cached_post_filename))
-            show_individual_post_icons = True
-            manually_approve_followers = \
+            show_individual_post_icons: bool = True
+            manually_approve_followers: bool = \
                 follower_approval_active(base_dir,
                                          nickname, domain)
-            show_repeats = not is_dm(mute_post_json)
-            show_public_only = False
-            store_to_cache = True
-            use_cache_only = False
-            allow_downloads = False
-            show_avatar_options = True
+            show_repeats: bool = not is_dm(mute_post_json)
+            show_public_only: bool = False
+            store_to_cache: bool = True
+            use_cache_only: bool = False
+            allow_downloads: bool = False
+            show_avatar_options: bool = True
             avatar_url = None
             timezone = None
             if account_timezone.get(nickname):
@@ -144,7 +144,7 @@ def mute_button(self, calling_domain: str, path: str,
             bold_reading = False
             if bold_reading_nicknames.get(nickname):
                 bold_reading = True
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
@@ -312,15 +312,15 @@ def mute_button_undo(self, calling_domain: str, path: str,
                   nickname + ' ' + domain)
             print('unmute_post: Unmuted post cache: ' +
                   str(cached_post_filename))
-            show_individual_post_icons = True
-            manually_approve_followers = \
+            show_individual_post_icons: bool = True
+            manually_approve_followers: bool = \
                 follower_approval_active(base_dir, nickname, domain)
-            show_repeats = not is_dm(mute_post_json)
-            show_public_only = False
-            store_to_cache = True
-            use_cache_only = False
-            allow_downloads = False
-            show_avatar_options = True
+            show_repeats: bool = not is_dm(mute_post_json)
+            show_public_only: bool = False
+            store_to_cache: bool = True
+            use_cache_only: bool = False
+            allow_downloads: bool = False
+            show_avatar_options: bool = True
             avatar_url = None
             timezone = None
             if account_timezone.get(nickname):
@@ -334,7 +334,7 @@ def mute_button_undo(self, calling_domain: str, path: str,
             bold_reading = False
             if bold_reading_nicknames.get(nickname):
                 bold_reading = True
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account

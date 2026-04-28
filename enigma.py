@@ -47,7 +47,7 @@ def get_enigma_pub_key(actor_json: {}) -> str:
 def set_enigma_pub_key(actor_json: {}, enigma_pub_key: str) -> None:
     """Sets a Enigma public key for the given actor
     """
-    remove_key = False
+    remove_key: bool = False
     if not enigma_pub_key:
         remove_key = True
 

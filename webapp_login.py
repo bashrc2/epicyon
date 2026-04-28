@@ -48,7 +48,7 @@ def html_get_login_credentials(login_params: str,
     login_args = login_params.split('&')
     nickname = None
     password = None
-    register = False
+    register: bool = False
     for arg in login_args:
         if '=' not in arg:
             continue
@@ -156,7 +156,7 @@ def html_login(translate: {},
     # show the register button
     register_button_str: str = ''
     if get_config_param(base_dir, 'registration') == 'open':
-        remaining = 0
+        remaining: int = 0
         if get_config_param(base_dir, 'registrationsRemaining'):
             remaining = get_config_param(base_dir, 'registrationsRemaining')
             if isinstance(remaining, str):

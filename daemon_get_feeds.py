@@ -125,7 +125,7 @@ def show_shares_feed(self, authorized: bool,
                 timezone = None
                 if account_timezone.get(nickname):
                     timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
                 known_epicyon_instances = \
@@ -321,7 +321,7 @@ def show_following_feed(self, authorized: bool,
                     if account_timezone.get(nickname):
                         timezone = account_timezone.get(nickname)
 
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
                 if not authorized and hide_follows.get(nickname):
@@ -523,7 +523,7 @@ def show_moved_feed(self, authorized: bool,
                     if account_timezone.get(nickname):
                         timezone = account_timezone.get(nickname)
 
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
 
@@ -719,7 +719,7 @@ def show_inactive_feed(self, authorized: bool,
                     city = get_spoofed_city(city, base_dir, nickname, domain)
                     if account_timezone.get(nickname):
                         timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
                 known_epicyon_instances = \
@@ -915,7 +915,7 @@ def show_followers_feed(self, authorized: bool,
                     city = get_spoofed_city(city, base_dir, nickname, domain)
                     if account_timezone.get(nickname):
                         timezone = account_timezone.get(nickname)
-                bold_reading = False
+                bold_reading: bool = False
                 if bold_reading_nicknames.get(nickname):
                     bold_reading = True
                 known_epicyon_instances = \

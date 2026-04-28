@@ -19,7 +19,7 @@ class thread_with_trace(threading.Thread):
     def __init__(self, *args, **keywords):
         self.start_time = date_utcnow()
         self.is_started = False
-        tries = 0
+        tries: int = 0
         while tries < 3:
             try:
                 self._args, self._keywords = args, keywords
@@ -32,7 +32,7 @@ class thread_with_trace(threading.Thread):
                 tries += 1
 
     def start(self):
-        tries = 0
+        tries: int = 0
         while tries < 3:
             try:
                 self.__run_backup = self.run
@@ -95,13 +95,13 @@ def remove_dormant_threads(base_dir: str, threads_list: [], debug: bool,
     if not threads_list:
         return
 
-    timeout_secs = int(timeout_mins * 60)
-    dormant_threads = []
+    timeout_secs: int = int(timeout_mins * 60)
+    dormant_threads: list = []
     curr_time = date_utcnow()
-    changed = False
+    changed: bool = False
 
     # which threads are dormant?
-    no_of_active_threads = 0
+    no_of_active_threads: int = 0
     for thrd in threads_list:
         remove_thread = False
 
@@ -133,7 +133,7 @@ def remove_dormant_threads(base_dir: str, threads_list: [], debug: bool,
               ' active threads out of ' + str(len(threads_list)))
 
     # remove the dormant threads
-    dormant_ctr = 0
+    dormant_ctr: int = 0
     for thrd in dormant_threads:
         if debug:
             print('DEBUG: Removing dormant thread ' + str(dormant_ctr))
@@ -144,7 +144,7 @@ def remove_dormant_threads(base_dir: str, threads_list: [], debug: bool,
 
     # start scheduled threads
     if len(threads_list) < 10:
-        ctr = 0
+        ctr: int = 0
         for thrd in threads_list:
             if not thrd.is_started:
                 print('Starting new send thread ' + str(ctr))

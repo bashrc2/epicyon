@@ -34,7 +34,7 @@ def insert_question(base_dir: str, translate: {},
     votes_filename = \
         acct_dir(base_dir, nickname, domain) + '/questions.txt'
 
-    show_question_results = False
+    show_question_results: bool = False
     if os.path.isfile(votes_filename):
         if text_in_file(message_id, votes_filename):
             show_question_results = True
@@ -73,7 +73,7 @@ def insert_question(base_dir: str, translate: {},
                 continue
             if not question_option.get('replies'):
                 continue
-            votes = 0
+            votes: int = 0
             try:
                 votes = int(question_option['replies']['totalItems'])
             except BaseException:
@@ -87,7 +87,7 @@ def insert_question(base_dir: str, translate: {},
                 continue
             if not question_option.get('replies'):
                 continue
-            votes = 0
+            votes: int = 0
             try:
                 votes = int(question_option['replies']['totalItems'])
             except BaseException:

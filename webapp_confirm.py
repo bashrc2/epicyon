@@ -85,13 +85,13 @@ def html_confirm_delete(server,
         html_header_with_external_style(css_filename, instance_title, None,
                                         preload_images)
     timezone = get_account_timezone(base_dir, nickname, domain)
-    mitm = False
+    mitm: bool = False
     if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
         mitm = True
-    bold_reading = False
+    bold_reading: bool = False
     if server.bold_reading.get(nickname):
         bold_reading = True
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     # get the list of mutuals for the current account

@@ -122,12 +122,12 @@ def convert_torrent_to_note(base_dir: str, nickname: str, domain: str,
             'url': media_url
     }]
 
-    comments_enabled = True
+    comments_enabled: bool = True
     if 'commentsEnabled' in post_json_object:
         if isinstance(post_json_object['commentsEnabled'], bool):
             comments_enabled = post_json_object['commentsEnabled']
 
-    sensitive = False
+    sensitive: bool = False
     if 'sensitive' in post_json_object:
         if isinstance(post_json_object['sensitive'], bool):
             sensitive = post_json_object['sensitive']

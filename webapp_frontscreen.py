@@ -59,8 +59,8 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
     max_items: int = 4
     ctr: int = 0
     curr_page: int = 1
-    box_name = 'tlfeatures'
-    authorized = True
+    box_name: str = 'tlfeatures'
+    authorized: bool = True
     while ctr < max_items and curr_page < 4:
         outbox_feed_path_str = \
             '/users/' + nickname + '/' + box_name + \
@@ -78,7 +78,7 @@ def _html_front_screen_posts(recent_posts_cache: {}, max_recent_posts: int,
             if item['type'] != 'Create':
                 continue
             timezone = get_account_timezone(base_dir, nickname, domain)
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
@@ -157,7 +157,7 @@ def html_front_screen(signing_priv_key_pem: str,
                       block_nostr: {}) -> str:
     """Show the news instance front screen
     """
-    bold_reading = False
+    bold_reading: bool = False
     nickname = profile_json['preferredUsername']
     if not nickname:
         return ""

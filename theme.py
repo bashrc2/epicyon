@@ -282,7 +282,7 @@ def set_css_param(css: str, param: str, value: str) -> str:
     if param.startswith('rgba('):
         return css.replace(param, value)
     # if the parameter begins with * then don't prepend --
-    once_only = False
+    once_only: bool = False
     if param.startswith('*'):
         if param.startswith('**'):
             once_only = True
@@ -815,7 +815,7 @@ def set_theme(base_dir: str, name: str, domain: str,
               dyslexic_font: bool, designer_reset: bool) -> bool:
     """Sets the theme with the given name as the current theme
     """
-    result = False
+    result: bool = False
 
     prev_theme_name = get_theme(base_dir)
 

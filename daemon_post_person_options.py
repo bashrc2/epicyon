@@ -293,7 +293,7 @@ def _person_options_view(self, options_confirm_params: str,
             self.server.postreq_busy = False
             return True
 
-        bold_reading = False
+        bold_reading: bool = False
         if bold_reading_nicknames.get(chooser_nickname):
             bold_reading = True
 
@@ -936,9 +936,9 @@ def _person_options_dm(self, options_confirm_params: str,
         custom_submit_text = get_config_param(base_dir, 'customSubmitText')
         conversation_id = None
         convthread_id = None
-        reply_is_chat = False
+        reply_is_chat: bool = False
 
-        bold_reading = False
+        bold_reading: bool = False
         if bold_reading_nicknames.get(chooser_nickname):
             bold_reading = True
 
@@ -1190,9 +1190,9 @@ def _person_options_report(self, options_confirm_params: str,
         custom_submit_text = get_config_param(base_dir, 'customSubmitText')
         conversation_id = None
         convthread_id = None
-        reply_is_chat = False
+        reply_is_chat: bool = False
 
-        bold_reading = False
+        bold_reading: bool = False
         if bold_reading_nicknames.get(chooser_nickname):
             bold_reading = True
 

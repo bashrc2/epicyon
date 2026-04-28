@@ -1497,7 +1497,7 @@ class JsonLdProcessor(object):
 
         # split N-Quad input into lines
         lines = re.split(eoln, input_)
-        line_number = 0
+        line_number: int = 0
         for line in lines:
             line_number += 1
 
@@ -1563,7 +1563,7 @@ class JsonLdProcessor(object):
                 dataset[name] = [triple]
             # add triple if unique to its graph
             else:
-                unique = True
+                unique: bool = True
                 triples = dataset[name]
                 for t in dataset[name]:
                     if JsonLdProcessor._compare_rdf_triples(t, triple):
@@ -3250,8 +3250,8 @@ class JsonLdProcessor(object):
             return False
 
         # check ducktype
-        wildcard = True
-        matches_some = False
+        wildcard: bool = True
+        matches_some: bool = False
         for k, v in frame.items():
             if _is_keyword(k):
                 # skip non-@id and non-@type
@@ -3505,9 +3505,9 @@ class JsonLdProcessor(object):
                 path_namer_copy = copy.deepcopy(path_namer)
 
                 # build adjacent path
-                path = ''
-                skipped = False
-                recurse = []
+                path: str = ''
+                skipped: bool = False
+                recurse: list = []
                 for bnode in permutation:
                     # use canonical name if available
                     if namer.is_named(bnode):
@@ -4370,10 +4370,10 @@ class UniqueNamer(object):
 
         :param prefix: the prefix to use ('<prefix><counter>').
         """
-        self.prefix = prefix
-        self.counter = 0
-        self.existing = {}
-        self.order = []
+        self.prefix: str = prefix
+        self.counter: int = 0
+        self.existing: dict = {}
+        self.order: list = []
 
         """
         Gets the new name for the given old name, where if no old name is
@@ -4541,7 +4541,7 @@ def _validate_type_value(v):
         return
 
     # must be an array
-    is_valid = False
+    is_valid: bool = False
     if _is_array(v):
         # must contain only strings
         is_valid = True
@@ -4617,7 +4617,7 @@ def _is_subject(v):
     # 1. It is an Object.
     # 2. It is not a @value, @set, or @list.
     # 3. It has more than 1 key OR any existing key is not @id.
-    rval = False
+    rval: bool = False
     if (_is_object(v) and
             '@value' not in v and '@set' not in v and '@list' not in v):
         rval = len(v) > 1 or '@id' not in v
@@ -4678,7 +4678,7 @@ def _is_bnode(v):
     # 1. It is an Object.
     # 2. If it has an @id key its value begins with '_:'.
     # 3. It has no keys OR is not a @value, @set, or @list.
-    rval = False
+    rval: bool = False
     if _is_object(v):
         if '@id' in v:
             rval = v['@id'].startswith('_:')

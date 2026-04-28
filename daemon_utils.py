@@ -185,7 +185,8 @@ def _get_outbox_thread_index(self, nickname: str,
         return 0
 
     # increment the ring buffer index
-    index = self.server.outbox_thread_index[account_outbox_thread_name] + 1
+    index: int = \
+        self.server.outbox_thread_index[account_outbox_thread_name] + 1
     if index >= max_outbox_threads_per_account:
         index = 0
 
@@ -684,7 +685,7 @@ def show_person_options(self, calling_domain: str, path: str,
         options_link = None
         if len(options_list) > 3:
             options_link = options_list[3]
-        is_group = False
+        is_group: bool = False
         donate_url = None
         website_url = None
         gemini_link = None
@@ -708,7 +709,7 @@ def show_person_options(self, calling_domain: str, path: str,
         ssb_address = None
         email_address = None
         deltachat_invite = None
-        locked_account = False
+        locked_account: bool = False
         also_known_as = None
         moved_to: str = ''
         repo_url = None

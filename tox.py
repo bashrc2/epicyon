@@ -62,7 +62,7 @@ def get_tox_address(actor_json: {}) -> str:
 def set_tox_address(actor_json: {}, tox_address: str) -> None:
     """Sets an tox address for the given actor
     """
-    not_tox_address = False
+    not_tox_address: bool = False
 
     if len(tox_address) != 76:
         not_tox_address = True

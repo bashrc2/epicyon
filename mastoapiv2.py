@@ -73,8 +73,8 @@ def _meta_data_instance_v2(show_accounts: bool,
             })
             rule_ctr += 1
 
-    is_bot = False
-    is_group = False
+    is_bot: bool = False
+    is_group: bool = False
     if admin_actor['type'] == 'Group':
         is_group = True
     elif admin_actor['type'] != 'Person':
@@ -104,9 +104,9 @@ def _meta_data_instance_v2(show_accounts: bool,
     if 'discoverable' in admin_actor:
         if admin_actor['discoverable'] is False:
             discoverable = False
-    no_of_statuses = 0
-    no_of_followers = 0
-    no_of_following = 0
+    no_of_statuses: int = 0
+    no_of_followers: int = 0
+    no_of_following: int = 0
     if show_accounts:
         no_of_followers = lines_in_file(account_dir + '/followers.txt')
         no_of_following = lines_in_file(account_dir + '/following.txt')

@@ -136,7 +136,7 @@ def html_search_emoji(translate: {}, base_dir: str, search_str: str,
             emoji_form += '<center><h5>' + \
                 translate['No results'] + '</h5></center>'
 
-        heading_shown = False
+        heading_shown: bool = False
         emoji_form += '<center>'
         msg_str1 = translate['Copy the text then paste it into your post']
         msg_str2 = ':<img loading="lazy" decoding="async" ' + \
@@ -257,7 +257,7 @@ def _html_shares_result(base_dir: str, shares_json: {}, page_number: int,
                                                        search_str_lower,
                                                        translate, False)
                     return results_exist, curr_page, ctr, shared_items_form
-                ctr = 0
+                ctr: int = 0
     return results_exist, curr_page, ctr, shared_items_form
 
 
@@ -274,8 +274,8 @@ def html_search_shared_items(translate: {},
                              access_keys: {}) -> str:
     """Search results for shared items
     """
-    curr_page = 1
-    ctr = 0
+    curr_page: int = 1
+    ctr: int = 0
     shared_items_form: str = ''
     search_str_lower = urllib.parse.unquote(search_str)
     search_str_lower = search_str_lower.lower().strip('\n').strip('\r')
@@ -315,7 +315,7 @@ def html_search_shared_items(translate: {},
     shared_items_form += \
         '<center><h1>' + \
         '<a href="' + actor + '/search">' + title_str + '</a></h1></center>'
-    results_exist = False
+    results_exist: bool = False
     dir_str = data_dir(base_dir)
     for _, dirs, files in os.walk(dir_str):
         for handle in dirs:
@@ -685,7 +685,7 @@ def html_skills_search(actor: str, translate: {}, base_dir: str,
             '</h5></center>'
     else:
         skill_search_form += '<center>'
-        ctr = 0
+        ctr: int = 0
         for skill_match in results:
             skill_match_fields = skill_match.split(';')
             if len(skill_match_fields) != 4:
@@ -818,7 +818,7 @@ def html_history_search(translate: {}, base_dir: str,
         end_index = no_of_box_filenames - 1
 
     index = start_index
-    minimize_all_images = False
+    minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
     while index <= end_index:
@@ -831,7 +831,7 @@ def html_history_search(translate: {}, base_dir: str,
             index += 1
             continue
         show_individual_post_icons = True
-        allow_deletion = False
+        allow_deletion: bool = False
         # get the list of mutuals for the current account
         mutuals_list = get_mutuals_of_person(base_dir, nickname, domain)
         post_str = \
@@ -1060,19 +1060,19 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
         if not is_public_post(post_json_object):
             index += 1
             continue
-        show_individual_post_icons = False
+        show_individual_post_icons: bool = False
         if nickname:
             show_individual_post_icons = True
-        allow_deletion = False
+        allow_deletion: bool = False
         show_repeats = show_individual_post_icons
         show_icons = show_individual_post_icons
-        manually_approves_followers = False
-        show_public_only = False
-        store_to_sache = False
-        allow_downloads = True
+        manually_approves_followers: bool = False
+        show_public_only: bool = False
+        store_to_sache: bool = False
+        allow_downloads: bool = True
         avatar_url = None
-        show_avatar_options = True
-        minimize_all_images = False
+        show_avatar_options: bool = True
+        minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         # get the list of mutuals for the current account
@@ -1244,7 +1244,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
     text_mode_separator = '<div class="transparent"><hr></div>'
-    post_ctr = 0
+    post_ctr: int = 0
     for post_id in lines:
         print('Hashtag post_id ' + post_id)
         post_json_object = \
@@ -1284,17 +1284,17 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
         # render harmless any dangerous markup
         harmless_markup(post_json_object)
 
-        show_individual_post_icons = False
-        allow_deletion = False
-        show_repeats = show_individual_post_icons
-        show_icons = show_individual_post_icons
-        manually_approves_followers = False
-        show_public_only = False
-        store_to_sache = False
-        allow_downloads = True
+        show_individual_post_icons: bool = False
+        allow_deletion: bool = False
+        show_repeats: bool = show_individual_post_icons
+        show_icons: bool = show_individual_post_icons
+        manually_approves_followers: bool = False
+        show_public_only: bool = False
+        store_to_sache: bool = False
+        allow_downloads: bool = True
         avatar_url = None
-        show_avatar_options = True
-        minimize_all_images = False
+        show_avatar_options: bool = True
+        minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         # get the list of mutuals for the current account
@@ -1523,7 +1523,7 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
         hashtag_json['prev'] = \
             http_prefix + '://' + domain_full + '/tags/' + \
             hashtag + '?page=' + str(page_number - 1)
-    page_items = 0
+    page_items: int = 0
     for index, _ in enumerate(lines):
         post_id = lines[index].strip('\n').strip('\r')
         if '  ' not in post_id:

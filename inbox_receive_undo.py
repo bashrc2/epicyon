@@ -257,17 +257,17 @@ def receive_undo_like(recent_posts_cache: {},
                 print('Unliked post json: ' + str(liked_post_json))
                 print('Unliked post nickname: ' + handle_name + ' ' + domain)
                 print('Unliked post cache: ' + str(cached_post_filename))
-            page_number = 1
-            show_published_date_only = False
-            show_individual_post_icons = True
+            page_number: int = 1
+            show_published_date_only: bool = False
+            show_individual_post_icons: bool = True
             manually_approve_followers = \
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(liked_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
-            mitm = False
+            mitm: bool = False
             if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
                 mitm = True
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
@@ -415,17 +415,17 @@ def receive_undo_reaction(recent_posts_cache: {},
                 print('Unreaction post nickname: ' +
                       handle_name + ' ' + domain)
                 print('Unreaction post cache: ' + str(cached_post_filename))
-            page_number = 1
-            show_published_date_only = False
-            show_individual_post_icons = True
+            page_number: int = 1
+            show_published_date_only: bool = False
+            show_individual_post_icons: bool = True
             manually_approve_followers = \
                 follower_approval_active(base_dir, handle_name, domain)
             not_dm = not is_dm(reaction_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
-            mitm = False
+            mitm: bool = False
             if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
                 mitm = True
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
@@ -559,17 +559,17 @@ def receive_undo_bookmark(recent_posts_cache: {},
             print('Unbookmarked post json: ' + str(bookmarked_post_json))
             print('Unbookmarked post nickname: ' + nickname + ' ' + domain)
             print('Unbookmarked post cache: ' + str(cached_post_filename))
-        page_number = 1
-        show_published_date_only = False
-        show_individual_post_icons = True
+        page_number: int = 1
+        show_published_date_only: bool = False
+        show_individual_post_icons: bool = True
         manually_approve_followers = \
             follower_approval_active(base_dir, nickname, domain)
         not_dm = not is_dm(bookmarked_post_json)
         timezone = get_account_timezone(base_dir, nickname, domain)
-        mitm = False
+        mitm: bool = False
         if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
             mitm = True
-        minimize_all_images = False
+        minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
             minimize_all_images = True
         # get the list of mutuals for the current account

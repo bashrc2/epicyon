@@ -262,10 +262,10 @@ def reaction_button(self, calling_domain: str, path: str,
                     reaction_post_filename.replace('.json', '') + '.mitm'
                 if os.path.isfile(mitm_filename):
                     mitm = True
-            bold_reading = False
+            bold_reading: bool = False
             if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account
@@ -556,10 +556,10 @@ def reaction_button_undo(self, calling_domain: str, path: str,
                     reaction_post_filename.replace('.json', '') + '.mitm'
                 if os.path.isfile(mitm_filename):
                     mitm = True
-            bold_reading = False
+            bold_reading: bool = False
             if bold_reading_nicknames.get(self.post_to_nickname):
                 bold_reading = True
-            minimize_all_images = False
+            minimize_all_images: bool = False
             if self.post_to_nickname in min_images_for_accounts:
                 minimize_all_images = True
             # get the list of mutuals for the current account

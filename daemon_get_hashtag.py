@@ -216,7 +216,7 @@ def hashtag_search2(self, calling_domain: str,
     timezone = None
     if account_timezone.get(nickname):
         timezone = account_timezone.get(nickname)
-    bold_reading = False
+    bold_reading: bool = False
     if bold_reading_nicknames.get(nickname):
         bold_reading = True
     hashtag_str = \

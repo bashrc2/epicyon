@@ -200,12 +200,12 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
     except OSError:
         print('EX: manual_approve_follow_request unable to read ' +
               approve_follows_filename)
-    exists = False
+    exists: bool = False
     approve_handle_full = approve_handle
     if approve_handle in approve_follows_str:
         exists = True
     elif '@' in approve_handle:
-        group_account = False
+        group_account: bool = False
         if approve_handle.startswith('!'):
             group_account = True
         req_nick = approve_handle.split('@')[0].replace('!', '')
@@ -237,7 +237,7 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
     try:
         with open(approve_follows_filename + '.new', 'w+',
                   encoding='utf-8') as fp_approve_new:
-            update_approved_followers = False
+            update_approved_followers: bool = False
             follow_activity_filename = None
             with open(approve_follows_filename, 'r',
                       encoding='utf-8') as fp_approve:
