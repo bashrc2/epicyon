@@ -1872,7 +1872,7 @@ def remove_moderation_post_from_index(base_dir: str, post_url: str,
                                       debug: bool) -> None:
     """Removes a url from the moderation index
     """
-    moderation_index_file = data_dir(base_dir) + '/moderation.txt'
+    moderation_index_file: str = data_dir(base_dir) + '/moderation.txt'
     remove_post_from_index(post_url, debug, moderation_index_file)
 
 
@@ -1882,16 +1882,16 @@ def _is_reply_to_blog_post(base_dir: str, nickname: str, domain: str,
     """
     if not has_object_dict(post_json_object):
         return False
-    reply_id = get_reply_to(post_json_object['object'])
+    reply_id: str = get_reply_to(post_json_object['object'])
     if not reply_id:
         return False
     if not isinstance(reply_id, str):
         return False
-    blogs_index_filename = \
+    blogs_index_filename: str = \
         acct_dir(base_dir, nickname, domain) + '/tlblogs.index'
     if not os.path.isfile(blogs_index_filename):
         return False
-    post_id = remove_id_ending(reply_id)
+    post_id: str = remove_id_ending(reply_id)
     post_id = post_id.replace('/', '#')
     if text_in_file(post_id, blogs_index_filename):
         return True
@@ -1904,25 +1904,26 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
                                 manual: bool) -> None:
     """Removes replies when deleting a post
     """
-    replies_filename = post_filename.replace('.json', '.replies')
+    replies_filename: str = post_filename.replace('.json', '.replies')
     if not os.path.isfile(replies_filename):
         return
     if debug:
         print('DEBUG: removing replies to ' + post_filename)
-    try:
-        with open(replies_filename, 'r', encoding='utf-8') as fp_replies:
-            for reply_id in fp_replies:
-                reply_file = locate_post(base_dir, nickname, domain, reply_id)
-                if not reply_file:
-                    continue
-                if not os.path.isfile(reply_file):
-                    continue
-                delete_post(base_dir, http_prefix,
-                            nickname, domain, reply_file, debug,
-                            recent_posts_cache, manual)
-    except OSError:
-        print('EX: _delete_post_remove_replies unable to read ' +
-              replies_filename)
+    replies_list: list[str] = \
+        load_list(replies_filename,
+                  'EX: _delete_post_remove_replies unable to read ' +
+                  replies_filename)
+    for reply_id in replies_list:
+        reply_id_str: str = reply_id.replace('\n', '').replace('\r', '')
+        reply_file: str = \
+            locate_post(base_dir, nickname, domain, reply_id_str)
+        if not reply_file:
+            continue
+        if not os.path.isfile(reply_file):
+            continue
+        delete_post(base_dir, http_prefix,
+                    nickname, domain, reply_file, debug,
+                    recent_posts_cache, manual)
     # remove the replies file
     try:
         os.remove(replies_filename)
