@@ -88,6 +88,15 @@ def save_string(text: str, filename: str, exception_text: str) -> bool:
     return _store_base(text, filename, exception_text, 'w+')
 
 
+def save_flag_file(filename: str, exception_text: str) -> bool:
+    """Saves a flag file
+    This creates a file containing a single character, and the presence
+    or absence of the file is used to implement the checkbox profile
+    options
+    """
+    return _store_base('\n', filename, exception_text, 'w+')
+
+
 def save_binary(text: str, filename: str, exception_text: str) -> bool:
     """Saves a binary to file
     """

@@ -139,6 +139,7 @@ from inbox_receive_undo import receive_undo_bookmark
 from inbox_receive_undo import receive_undo_announce
 from inbox_receive_undo import receive_undo
 from data import save_string
+from data import save_flag_file
 from data import load_string
 from data import append_string
 
@@ -2529,9 +2530,9 @@ def _inbox_after_initial(server, inbox_start_time,
                 # via a third party
                 destination_filename_mitm = \
                     destination_filename.replace('.json', '') + '.mitm'
-                save_string('\n', destination_filename_mitm,
-                            'EX: _inbox_after_initial unable to write ' +
-                            destination_filename_mitm)
+                save_flag_file(destination_filename_mitm,
+                               'EX: _inbox_after_initial unable to write ' +
+                               destination_filename_mitm)
 
             _low_frequency_post_notification(base_dir, http_prefix,
                                              nickname, domain, port,
@@ -2546,9 +2547,9 @@ def _inbox_after_initial(server, inbox_start_time,
             if is_reply_to_muted_post:
                 print('MUTE REPLY: ' + destination_filename)
                 destination_filename_muted = destination_filename + '.muted'
-                save_string('\n', destination_filename_muted,
-                            'EX: _inbox_after_initial unable to write 2 ' +
-                            destination_filename_muted)
+                save_flag_file(destination_filename_muted,
+                               'EX: _inbox_after_initial unable to write 2 ' +
+                               destination_filename_muted)
 
             # is this an edit of a previous post?
             # in Mastodon "delete and redraft"

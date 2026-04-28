@@ -16,7 +16,7 @@ from utils import acct_dir
 from webapp_utils import html_header_with_external_style
 from webapp_utils import html_footer
 from markdown import markdown_to_html
-from data import save_string
+from data import save_flag_file
 from data import load_string
 
 
@@ -39,9 +39,9 @@ def welcome_screen_is_complete(base_dir: str,
     if not os.path.isdir(account_path):
         return
     complete_filename = account_path + '/.welcome_complete'
-    save_string('\n', complete_filename,
-                'EX: welcome_screen_is_complete unable to write ' +
-                complete_filename)
+    save_flag_file(complete_filename,
+                   'EX: welcome_screen_is_complete unable to write ' +
+                   complete_filename)
 
 
 def html_welcome_screen(base_dir: str, nickname: str,

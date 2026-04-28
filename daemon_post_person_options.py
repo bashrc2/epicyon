@@ -49,7 +49,7 @@ from blocking import blocked_quote_toots_remove
 from notifyOnPost import add_notify_on_post
 from notifyOnPost import remove_notify_on_post
 from flags import is_moderator
-from data import save_string
+from data import save_flag_file
 
 
 def _person_options_page_number(options_confirm_params: str) -> int:
@@ -612,9 +612,10 @@ def _person_options_post_to_news(self, options_confirm_params: str,
             else:
                 if os.path.isdir(account_dir):
                     nw_filename = newswire_blocked_filename
-                    if save_string('\n', nw_filename,
-                                   'EX: _person_options_post_to_news unable ' +
-                                   'to write ' + nw_filename + ' [ex]'):
+                    if save_flag_file(nw_filename,
+                                      'EX: _person_options_post_to_news ' +
+                                      'unable to write ' + nw_filename +
+                                      ' [ex]'):
                         refresh_newswire(base_dir)
         users_path_str = \
             users_path + '/' + default_timeline + \
@@ -665,10 +666,10 @@ def _person_options_post_to_features(self, options_confirm_params: str,
             else:
                 if os.path.isdir(account_dir):
                     feat_filename = features_blocked_filename
-                    if save_string('\n', feat_filename,
-                                   'EX: _person_options_post_to_features ' +
-                                   'unable to write ' + feat_filename +
-                                   ' [ex]'):
+                    if save_flag_file(feat_filename,
+                                      'EX: _person_options_post_to_features ' +
+                                      'unable to write ' + feat_filename +
+                                      ' [ex]'):
                         refresh_newswire(base_dir)
         users_path_str = \
             users_path + '/' + default_timeline + \
@@ -718,9 +719,9 @@ def _person_options_mod_news(self, options_confirm_params: str,
             else:
                 if os.path.isdir(account_dir):
                     nw_filename = newswire_mod_filename
-                    save_string('\n', nw_filename,
-                                'EX: _person_options_mod_news ' +
-                                'unable to write ' + nw_filename)
+                    save_flag_file(nw_filename,
+                                   'EX: _person_options_mod_news ' +
+                                   'unable to write ' + nw_filename)
         users_path_str = \
             users_path + '/' + default_timeline + \
             '?page=' + str(page_number)

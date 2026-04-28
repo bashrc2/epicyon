@@ -147,6 +147,7 @@ from blog import html_blog_post_markdown
 from blog import html_blog_post_gemini_links
 from data import load_list
 from data import save_string
+from data import save_flag_file
 
 # maximum length for display name within html posts
 MAX_DISPLAY_NAME_LENGTH = 42
@@ -2607,9 +2608,9 @@ def individual_post_as_html(signing_priv_key_pem: str,
                                        translate, actor_url,
                                        theme_name, system_language,
                                        box_name)
-                        save_string('\n', announce_filename + '.tts',
-                                    'EX: unable to write tts ' +
-                                    announce_filename + '.tts')
+                        save_flag_file(announce_filename + '.tts',
+                                       'EX: unable to write tts ' +
+                                       announce_filename + '.tts')
 
         is_announced = True
 

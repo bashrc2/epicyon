@@ -93,6 +93,7 @@ from filters import is_filtered_bio
 from follow import is_following_actor
 from data import load_list
 from data import save_string
+from data import save_flag_file
 from data import load_string
 from data import append_string
 
@@ -785,24 +786,25 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
     if manual_follower_approval:
         follow_dms_filename = \
             acct_dir(base_dir, nickname, domain) + '/.followDMs'
-        save_string('\n', follow_dms_filename,
-                    'EX: create_person unable to write ' + follow_dms_filename)
+        save_flag_file(follow_dms_filename,
+                       'EX: create_person unable to write ' +
+                       follow_dms_filename)
 
     # notify when posts are liked
     if nickname != 'news':
         notify_likes_filename = \
             acct_dir(base_dir, nickname, domain) + '/.notifyLikes'
-        save_string('\n', notify_likes_filename,
-                    'EX: create_person unable to write 2 ' +
-                    notify_likes_filename)
+        save_flag_file(notify_likes_filename,
+                       'EX: create_person unable to write 2 ' +
+                       notify_likes_filename)
 
     # notify when posts have emoji reactions
     if nickname != 'news':
         notify_reactions_filename = \
             acct_dir(base_dir, nickname, domain) + '/.notifyReactions'
-        save_string('\n', notify_reactions_filename,
-                    'EX: create_person unable to write 3 ' +
-                    notify_reactions_filename)
+        save_flag_file(notify_reactions_filename,
+                       'EX: create_person unable to write 3 ' +
+                       notify_reactions_filename)
 
     theme = get_config_param(base_dir, 'theme')
     if not theme:

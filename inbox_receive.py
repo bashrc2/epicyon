@@ -87,6 +87,7 @@ from speaker import update_speaker
 from webapp_post import individual_post_as_html
 from webapp_hashtagswarm import store_hash_tags
 from data import save_string
+from data import save_flag_file
 from data import append_string
 from data import load_string
 
@@ -1996,8 +1997,8 @@ def receive_announce(recent_posts_cache: {},
     if mitm:
         post_filename_mitm = \
             post_filename.replace('.json', '') + '.mitm'
-        save_string('\n', post_filename_mitm,
-                    'EX: unable to write mitm ' + post_filename_mitm)
+        save_flag_file(post_filename_mitm,
+                       'EX: unable to write mitm ' + post_filename_mitm)
     minimize_all_images = False
     if nickname in min_images_for_accounts:
         minimize_all_images = True
@@ -2135,9 +2136,9 @@ def receive_announce(recent_posts_cache: {},
                                        translate, lookup_actor,
                                        theme_name, system_language,
                                        'inbox')
-                        save_string('\n', post_filename + '.tts',
-                                    'EX: unable to write recent post ' +
-                                    post_filename)
+                        save_flag_file(post_filename + '.tts',
+                                       'EX: unable to write recent post ' +
+                                       post_filename)
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +

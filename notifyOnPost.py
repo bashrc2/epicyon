@@ -13,6 +13,7 @@ from utils import acct_dir
 from utils import text_in_file
 from data import load_string
 from data import save_string
+from data import save_flag_file
 
 
 def _notify_on_post_arrival(base_dir: str, nickname: str, domain: str,
@@ -126,7 +127,7 @@ def notify_when_person_posts(base_dir: str, nickname: str, domain: str,
     handle = following_nickname + '@' + following_domain
     if not os.path.isfile(notify_on_post_filename):
         # create a new notifyOnPost file
-        save_string('\n', notify_on_post_filename,
-                    'EX: notify_when_person_posts unable to write ' +
-                    notify_on_post_filename)
+        save_flag_file(notify_on_post_filename,
+                       'EX: notify_when_person_posts unable to write ' +
+                       notify_on_post_filename)
     return text_in_file(handle + '\n', notify_on_post_filename, False)

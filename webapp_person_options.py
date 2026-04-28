@@ -44,6 +44,7 @@ from filters import is_filtered
 from availability import get_availability
 from data import load_string
 from data import save_string
+from data import save_flag_file
 
 
 def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
@@ -85,9 +86,9 @@ def _minimize_attached_images(base_dir: str, nickname: str, domain: str,
         # create a new minimize file from the following file
         print('Creating minimize file ' + minimize_filename)
         if add:
-            save_string('\n', minimize_filename,
-                        'EX: minimize_attached_images unable to write ' +
-                        minimize_filename)
+            save_flag_file('\n', minimize_filename,
+                           'EX: minimize_attached_images unable to write ' +
+                           minimize_filename)
 
     # already in the minimize file?
     if handle + '\n' in minimize_handles:

@@ -9,7 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 from utils import acct_dir
-from data import save_string
+from data import save_flag_file
 
 
 def is_minimal(base_dir: str, domain: str, nickname: str) -> bool:
@@ -40,5 +40,5 @@ def set_minimal(base_dir: str, domain: str, nickname: str,
         except OSError:
             print('EX: set_minimal unable to delete ' + minimal_filename)
     elif not minimal and not minimal_file_exists:
-        save_string('\n', minimal_filename,
-                    'EX: unable to write minimal ' + minimal_filename)
+        save_flag_file(minimal_filename,
+                       'EX: unable to write minimal ' + minimal_filename)

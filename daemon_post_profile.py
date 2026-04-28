@@ -149,6 +149,7 @@ from cache import remove_avatar_from_cache
 from cache import store_person_in_cache
 from daemon_utils import post_to_outbox
 from data import save_string
+from data import save_flag_file
 
 
 def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
@@ -732,9 +733,9 @@ def _profile_post_notify_reactions(base_dir: str,
     if on_final_welcome_screen:
         # default setting from welcome screen
         notify_react_filename = notify_reactions_filename
-        save_string('\n', notify_react_filename,
-                    'EX: unable to write notify reactions ' +
-                    notify_reactions_filename)
+        save_flag_file(notify_react_filename,
+                       'EX: unable to write notify reactions ' +
+                       notify_reactions_filename)
         actor_changed = True
     else:
         notify_reactions_active: bool = False
@@ -742,10 +743,10 @@ def _profile_post_notify_reactions(base_dir: str,
             if fields['notifyReactions'] == 'on' and \
                not hide_reaction_button_active:
                 notify_reactions_active = True
-                save_string('\n', notify_reactions_filename,
-                            'EX: unable to write ' +
-                            'notify reactions ' +
-                            notify_reactions_filename)
+                save_flag_file(notify_reactions_filename,
+                               'EX: unable to write ' +
+                               'notify reactions ' +
+                               notify_reactions_filename)
         if not notify_reactions_active:
             if os.path.isfile(notify_reactions_filename):
                 try:
@@ -766,9 +767,9 @@ def _profile_post_notify_likes(on_final_welcome_screen: bool,
     """
     if on_final_welcome_screen:
         # default setting from welcome screen
-        save_string('\n', notify_likes_filename,
-                    'EX: unable to write notify likes ' +
-                    notify_likes_filename)
+        save_flag_file(notify_likes_filename,
+                       'EX: unable to write notify likes ' +
+                       notify_likes_filename)
         actor_changed = True
     else:
         notify_likes_active: bool = False
@@ -776,9 +777,9 @@ def _profile_post_notify_likes(on_final_welcome_screen: bool,
             if fields['notifyLikes'] == 'on' and \
                not hide_like_button_active:
                 notify_likes_active = True
-                save_string('\n', notify_likes_filename,
-                            'EX: unable to write notify likes ' +
-                            notify_likes_filename)
+                save_flag_file(notify_likes_filename,
+                               'EX: unable to write notify likes ' +
+                               notify_likes_filename)
         if not notify_likes_active:
             if os.path.isfile(notify_likes_filename):
                 try:
@@ -878,9 +879,9 @@ def _profile_post_no_reply_boosts(base_dir: str, nickname: str, domain: str,
             no_reply_boosts = True
     if no_reply_boosts:
         if not os.path.isfile(no_reply_boosts_filename):
-            save_string('\n', no_reply_boosts_filename,
-                        'EX: unable to write noReplyBoosts ' +
-                        no_reply_boosts_filename)
+            save_flag_file(no_reply_boosts_filename,
+                           'EX: unable to write noReplyBoosts ' +
+                           no_reply_boosts_filename)
     if not no_reply_boosts:
         if os.path.isfile(no_reply_boosts_filename):
             try:
@@ -903,9 +904,9 @@ def _profile_post_no_seen_posts(base_dir: str, nickname: str, domain: str,
             no_seen_posts = True
     if no_seen_posts:
         if not os.path.isfile(no_seen_posts_filename):
-            save_string('\n', no_seen_posts_filename,
-                        'EX: unable to write noSeenPosts ' +
-                        no_seen_posts_filename)
+            save_flag_file(no_seen_posts_filename,
+                           'EX: unable to write noSeenPosts ' +
+                           no_seen_posts_filename)
     if not no_seen_posts:
         if os.path.isfile(no_seen_posts_filename):
             try:
@@ -929,9 +930,9 @@ def _profile_post_watermark_enabled(base_dir: str,
             watermark_enabled = True
     if watermark_enabled:
         if not os.path.isfile(watermark_enabled_filename):
-            save_string('\n', watermark_enabled_filename,
-                        'EX: unable to write watermarkEnabled ' +
-                        watermark_enabled_filename)
+            save_flag_file(watermark_enabled_filename,
+                           'EX: unable to write watermarkEnabled ' +
+                           watermark_enabled_filename)
     if not watermark_enabled:
         if os.path.isfile(watermark_enabled_filename):
             try:
@@ -960,9 +961,9 @@ def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
         actor_json['hideFollows'] = True
         actor_changed = True
         if not os.path.isfile(hide_follows_filename):
-            save_string('\n', hide_follows_filename,
-                        'EX: unable to write hideFollows ' +
-                        hide_follows_filename)
+            save_flag_file(hide_follows_filename,
+                           'EX: unable to write hideFollows ' +
+                           hide_follows_filename)
     if not hide_follows:
         actor_json['hideFollows'] = False
         if self.server.hide_follows.get(nickname):
@@ -996,9 +997,9 @@ def _profile_post_hide_recent_posts(base_dir: str, nickname: str, domain: str,
         actor_json['hideRecentPosts'] = True
         actor_changed = True
         if not os.path.isfile(hide_recent_posts_filename):
-            save_string('\n', hide_recent_posts_filename,
-                        'EX: unable to write hideRecentPosts ' +
-                        hide_recent_posts_filename)
+            save_flag_file(hide_recent_posts_filename,
+                           'EX: unable to write hideRecentPosts ' +
+                           hide_recent_posts_filename)
     if not hide_recent_posts:
         actor_json['hideRecentPosts'] = False
         if self.server.hide_recent_posts.get(nickname):
@@ -1031,9 +1032,9 @@ def _profile_post_mutuals_replies(account_dir: str, fields: {}) -> None:
                       show_replies_mutuals_file)
     else:
         if show_replies_mutuals:
-            save_string('\n', show_replies_mutuals_file,
-                        'EX: unable to write repliesFromMutualsOnly file ' +
-                        show_replies_mutuals_file)
+            save_flag_file(show_replies_mutuals_file,
+                           'EX: unable to write repliesFromMutualsOnly file ' +
+                           show_replies_mutuals_file)
 
 
 def _profile_post_only_follower_replies(fields: {},
@@ -1055,10 +1056,10 @@ def _profile_post_only_follower_replies(fields: {},
                       show_replies_followers_file)
     else:
         if show_replies_followers:
-            save_string('\n', show_replies_followers_file,
-                        'EX: unable to write ' +
-                        'repliesFromFollowersOnly file ' +
-                        show_replies_followers_file)
+            save_flag_file(show_replies_followers_file,
+                           'EX: unable to write ' +
+                           'repliesFromFollowersOnly file ' +
+                           show_replies_followers_file)
 
 
 def _profile_post_show_quote_toots(fields: {}, account_dir: str) -> None:
@@ -1078,9 +1079,9 @@ def _profile_post_show_quote_toots(fields: {}, account_dir: str) -> None:
                       show_quote_toots_file)
     else:
         if show_quote_toots:
-            save_string('\n', show_quote_toots_file,
-                        'EX: unable to write allowQuotes file ' +
-                        show_quote_toots_file)
+            save_flag_file(show_quote_toots_file,
+                           'EX: unable to write allowQuotes file ' +
+                           show_quote_toots_file)
 
 
 def _profile_post_show_questions(fields: {}, account_dir: str) -> None:
@@ -1100,9 +1101,9 @@ def _profile_post_show_questions(fields: {}, account_dir: str) -> None:
                       show_vote_file)
     else:
         if not show_vote_posts:
-            save_string('\n', show_vote_file,
-                        'EX: unable to write noVotes file ' +
-                        show_vote_file)
+            save_flag_file(show_vote_file,
+                           'EX: unable to write noVotes file ' +
+                           show_vote_file)
 
 
 def _profile_post_reverse_timelines(base_dir: str, nickname: str,
@@ -1136,9 +1137,9 @@ def _profile_post_bold_reading(base_dir: str,
         if fields['boldReading'] == 'on':
             bold_reading = True
             self.server.bold_reading[nickname] = True
-            save_string('\n', bold_reading_filename,
-                        'EX: unable to write bold reading ' +
-                        bold_reading_filename)
+            save_flag_file(bold_reading_filename,
+                           'EX: unable to write bold reading ' +
+                           bold_reading_filename)
     if not bold_reading:
         if self.server.bold_reading.get(nickname):
             del self.server.bold_reading[nickname]
@@ -1163,9 +1164,9 @@ def _profile_post_hide_reaction_button2(base_dir: str,
     if fields.get('hideReactionButton'):
         if fields['hideReactionButton'] == 'on':
             hide_reaction_button_active = True
-            save_string('\n', hide_reaction_button_file,
-                        'EX: unable to write hide reaction ' +
-                        hide_reaction_button_file)
+            save_flag_file(hide_reaction_button_file,
+                           'EX: unable to write hide reaction ' +
+                           hide_reaction_button_file)
             # remove notify Reaction selection
             if os.path.isfile(notify_reactions_filename):
                 try:
@@ -1218,9 +1219,9 @@ def _profile_post_hide_like_button2(base_dir: str, nickname: str, domain: str,
     if fields.get('hideLikeButton'):
         if fields['hideLikeButton'] == 'on':
             hide_like_button_active = True
-            save_string('\n', hide_like_button_file,
-                        'EX: unable to write hide like ' +
-                        hide_like_button_file)
+            save_flag_file(hide_like_button_file,
+                           'EX: unable to write hide like ' +
+                           hide_like_button_file)
             # remove notify likes selection
             if os.path.isfile(notify_likes_filename):
                 try:
@@ -1247,9 +1248,9 @@ def _profile_post_remove_retweets(base_dir: str, nickname: str, domain: str,
     if fields.get('removeTwitter'):
         if fields['removeTwitter'] == 'on':
             remove_twitter_active = True
-            save_string('\n', remove_twitter_filename,
-                        'EX: unable to write remove twitter ' +
-                        remove_twitter_filename)
+            save_flag_file(remove_twitter_filename,
+                           'EX: unable to write remove twitter ' +
+                           remove_twitter_filename)
     if not remove_twitter_active:
         if os.path.isfile(remove_twitter_filename):
             try:
@@ -1269,18 +1270,18 @@ def _profile_post_dms_from_followers(base_dir: str, nickname: str, domain: str,
     if on_final_welcome_screen:
         # initial default setting created via
         # the welcome screen
-        save_string('\n', follow_dms_filename,
-                    'EX: unable to write follow DMs ' +
-                    follow_dms_filename)
+        save_flag_file(follow_dms_filename,
+                       'EX: unable to write follow DMs ' +
+                       follow_dms_filename)
         actor_changed = True
     else:
         follow_dms_active: bool = False
         if fields.get('followDMs'):
             if fields['followDMs'] == 'on':
                 follow_dms_active = True
-                save_string('\n', follow_dms_filename,
-                            'EX: unable to write follow DMs 2 ' +
-                            follow_dms_filename)
+                save_flag_file(follow_dms_filename,
+                               'EX: unable to write follow DMs 2 ' +
+                               follow_dms_filename)
         if not follow_dms_active:
             if os.path.isfile(follow_dms_filename):
                 try:
@@ -1375,8 +1376,8 @@ def _profile_post_reject_spam_actors(base_dir: str,
         curr_reject_spam_actors = True
     if reject_spam_actors != curr_reject_spam_actors:
         if reject_spam_actors:
-            save_string('\n', actor_spam_filter_filename,
-                        'EX: unable to write reject spam actors')
+            save_flag_file(actor_spam_filter_filename,
+                           'EX: unable to write reject spam actors')
         else:
             try:
                 os.remove(actor_spam_filter_filename)

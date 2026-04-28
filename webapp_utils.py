@@ -60,7 +60,7 @@ from blocking import allowed_announce
 from shares import vf_proposal_from_share
 from webapp_pwa import get_pwa_theme_colors
 from data import load_list
-from data import save_string
+from data import save_flag_file
 from data import save_binary
 from data import load_string
 
@@ -83,8 +83,9 @@ def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
         if not os.path.isfile(following_filename):
             return False
         # create a new minimize file from the following file
-        save_string('\n', minimize_filename,
-                    'EX: minimizing_attached_images 2 ' + minimize_filename)
+        save_flag_file(minimize_filename,
+                       'EX: minimizing_attached_images 2 ' +
+                       minimize_filename)
     return text_in_file(handle + '\n', minimize_filename, False)
 
 

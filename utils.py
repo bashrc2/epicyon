@@ -24,6 +24,7 @@ from unicodetext import standardize_text
 from formats import get_image_extensions
 from data import load_list
 from data import save_string
+from data import save_flag_file
 from data import load_string
 from data import append_string
 
@@ -524,9 +525,9 @@ def refresh_newswire(base_dir: str) -> None:
     refresh_newswire_filename = data_dir(base_dir) + '/.refresh_newswire'
     if os.path.isfile(refresh_newswire_filename):
         return
-    save_string('\n', refresh_newswire_filename,
-                'EX: refresh_newswire unable to write ' +
-                refresh_newswire_filename)
+    save_flag_file(refresh_newswire_filename,
+                   'EX: refresh_newswire unable to write ' +
+                   refresh_newswire_filename)
 
 
 def get_sha_256(msg: str):
@@ -2764,9 +2765,9 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
             if recent_posts_cache['html'].get(post_url):
                 del recent_posts_cache['html'][post_url]
 
-    save_string('\n', post_filename + '.reject',
-                'EX: reject_post_id unable to write ' +
-                post_filename + '.reject')
+    save_flag_file(post_filename + '.reject',
+                   'EX: reject_post_id unable to write ' +
+                   post_filename + '.reject')
 
     # if the post is in the inbox index then remove it
     index_file = \
@@ -3489,9 +3490,9 @@ def set_minimize_all_images(base_dir: str,
         if nickname not in min_images_for_accounts:
             min_images_for_accounts.append(nickname)
         if not os.path.isfile(filename):
-            save_string('\n', filename,
-                        'EX: set_minimize_all_images unable to write ' +
-                        filename)
+            save_flag_file(filename,
+                           'EX: set_minimize_all_images unable to write ' +
+                           filename)
         return
 
     if nickname in min_images_for_accounts:
@@ -3539,9 +3540,9 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> None:
                 acct_dir(base_dir, nickname, domain) + '/.reverse_timeline'
             if nickname in reverse_sequence:
                 if not os.path.isfile(reverse_filename):
-                    save_string('\n', reverse_filename,
-                                'EX: failed to save reverse ' +
-                                reverse_filename)
+                    save_flag_file(reverse_filename,
+                                   'EX: failed to save reverse ' +
+                                   reverse_filename)
             else:
                 if os.path.isfile(reverse_filename):
                     try:
@@ -4100,9 +4101,9 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
                 return False
     else:
         if flag_state:
-            if not save_string('\n', premium_filename,
-                               'EX: unable to set premium flag ' +
-                               premium_filename):
+            if not save_flag_file(premium_filename,
+                                  'EX: unable to set premium flag ' +
+                                  premium_filename):
                 return False
     return True
 

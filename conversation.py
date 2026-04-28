@@ -22,6 +22,7 @@ from keys import get_instance_actor_key
 from session import get_json
 from session import get_json_valid
 from data import save_string
+from data import save_flag_file
 from data import append_string
 
 
@@ -93,8 +94,8 @@ def mute_conversation(base_dir: str, nickname: str, domain: str,
         return
     if os.path.isfile(conversation_filename + '.muted'):
         return
-    save_string('\n', conversation_filename + '.muted',
-                'EX: unable to write mute ' + conversation_filename)
+    save_flag_file(conversation_filename + '.muted',
+                   'EX: unable to write mute ' + conversation_filename)
 
 
 def unmute_conversation(base_dir: str, nickname: str, domain: str,

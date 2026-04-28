@@ -147,6 +147,7 @@ from quote import quote_toots_allowed
 from data import load_list
 from data import load_string
 from data import save_string
+from data import save_flag_file
 from data import append_string
 
 
@@ -5495,9 +5496,9 @@ def set_post_expiry_keep_dms(base_dir: str, nickname: str, domain: str,
                 print('EX: unable to write set_post_expiry_keep_dms False ' +
                       expire_dms_filename)
         return
-    save_string('\n', expire_dms_filename,
-                'EX: unable to write set_post_expiry_keep_dms True ' +
-                expire_dms_filename)
+    save_flag_file(expire_dms_filename,
+                   'EX: unable to write set_post_expiry_keep_dms True ' +
+                   expire_dms_filename)
 
 
 def expire_posts(base_dir: str, http_prefix: str,
@@ -6269,9 +6270,9 @@ def _reject_announce(announce_filename: str,
     if os.path.isfile(announce_filename + '.reject'):
         return
 
-    save_string('\n', announce_filename + '.reject',
-                'EX: _reject_announce unable to write ' +
-                announce_filename + '.reject')
+    save_flag_file(announce_filename + '.reject',
+                   'EX: _reject_announce unable to write ' +
+                   announce_filename + '.reject')
 
 
 def download_announce(session, base_dir: str, http_prefix: str,

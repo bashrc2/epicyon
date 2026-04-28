@@ -56,6 +56,7 @@ from session import get_json
 from data import load_string
 from data import load_list
 from data import save_string
+from data import save_flag_file
 from data import append_string
 
 
@@ -1246,9 +1247,9 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
         else:
             print('MUTE: cached post not found ' + cached_post_filename)
 
-    if not save_string('\n', post_filename + '.muted',
-                       'EX: Failed to save mute file ' +
-                       post_filename + '.muted'):
+    if not save_flag_file(post_filename + '.muted',
+                          'EX: Failed to save mute file ' +
+                          post_filename + '.muted'):
         return
     print('MUTE: ' + post_filename + '.muted file added')
 

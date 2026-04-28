@@ -30,6 +30,7 @@ from content import dangerous_css
 from textmode import set_text_mode_theme
 from data import load_string
 from data import save_string
+from data import save_flag_file
 
 
 def import_theme(base_dir: str, filename: str) -> bool:
@@ -441,9 +442,9 @@ def enable_grayscale(base_dir: str) -> None:
                     filename + ' [ex]')
     grayscale_filename = data_dir(base_dir) + '/.grayscale'
     if not os.path.isfile(grayscale_filename):
-        save_string(' ', grayscale_filename,
-                    'EX: enable_grayscale unable to write ' +
-                    grayscale_filename + ' [ex]')
+        save_flag_file(grayscale_filename,
+                       'EX: enable_grayscale unable to write ' +
+                       grayscale_filename + ' [ex]')
 
 
 def disable_grayscale(base_dir: str) -> None:
@@ -806,8 +807,9 @@ def _set_clear_cache_flag(base_dir: str) -> None:
     if not os.path.isdir(dir_str):
         return
     flag_filename = dir_str + '/.clear_cache'
-    save_string('\n', flag_filename,
-                'EX: _set_clear_cache_flag unable to write ' + flag_filename)
+    save_flag_file(flag_filename,
+                   'EX: _set_clear_cache_flag unable to write ' +
+                   flag_filename)
 
 
 def set_theme(base_dir: str, name: str, domain: str,
