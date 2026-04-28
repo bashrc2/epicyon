@@ -1500,31 +1500,32 @@ def html_profile(signing_priv_key_pem: str,
         follow_requests_filename = \
             acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
         if os.path.isfile(follow_requests_filename):
-            try:
-                with open(follow_requests_filename, 'r',
-                          encoding='utf-8') as fp_foll:
-                    for line in fp_foll:
-                        if not line:
-                            continue
-                        follow_approvals = True
-                        followers_button = 'buttonhighlighted'
-                        if selected == 'followers':
-                            followers_button = 'buttonselectedhighlighted'
-                        break
-            except OSError as exc:
-                print('EX: html_profile unable to read ' +
-                      follow_requests_filename + ' ' + str(exc))
+            follow_requests_list: list[str] = \
+                load_list(follow_requests_filename,
+                          'EX: html_profile unable to read 1 ' +
+                          follow_requests_filename + ' [ex]')
+            if follow_requests_list is not None:
+                for line in follow_requests_list:
+                    if not line:
+                        continue
+                    follow_approvals = True
+                    followers_button = 'buttonhighlighted'
+                    if selected == 'followers':
+                        followers_button = 'buttonselectedhighlighted'
+                    break
         if selected == 'followers':
             if follow_approvals:
                 curr_follower_domains = \
                     get_follower_domains(base_dir, nickname, domain)
-                with open(follow_requests_filename, 'r',
-                          encoding='utf-8') as fp_req:
-                    for follower_handle in fp_req:
+                follow_requests_list: list[str] = \
+                    load_list(follow_requests_filename,
+                              'EX: html_profile unable to read 2 ' +
+                              follow_requests_filename + ' [ex]')
+                if follow_requests_list is not None:
+                    for follower_handle in follow_requests_list:
                         if not follower_handle:
                             continue
-                        follower_handle = \
-                            remove_eol(follower_handle)
+                        follower_handle = remove_eol(follower_handle)
                         if '://' in follower_handle:
                             follower_actor = follower_handle
                         else:
