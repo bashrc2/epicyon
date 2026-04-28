@@ -826,18 +826,19 @@ def get_followers_of_person(base_dir: str,
                 continue
             if not os.path.isfile(filename):
                 continue
-            try:
-                with open(filename, 'r', encoding='utf-8') as fp_following:
-                    for following_handle in fp_following:
-                        following_handle2 = remove_eol(following_handle)
-                        if following_handle2 != handle:
-                            continue
-                        if account not in followers:
-                            followers.append(account)
-                        break
-            except OSError as exc:
-                print('EX: get_followers_of_person unable to read ' +
-                      filename + ' ' + str(exc))
+            following_list: list[str] = \
+                load_list(filename,
+                          'EX: get_followers_of_person unable to read ' +
+                          filename + ' [ex]')
+            if following_list is None:
+                continue
+            for following_handle in following_list:
+                following_handle2 = remove_eol(following_handle)
+                if following_handle2 != handle:
+                    continue
+                if account not in followers:
+                    followers.append(account)
+                break
         break
     return followers
 
@@ -1913,17 +1914,18 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
         load_list(replies_filename,
                   'EX: _delete_post_remove_replies unable to read ' +
                   replies_filename)
-    for reply_id in replies_list:
-        reply_id_str: str = reply_id.replace('\n', '').replace('\r', '')
-        reply_file: str = \
-            locate_post(base_dir, nickname, domain, reply_id_str)
-        if not reply_file:
-            continue
-        if not os.path.isfile(reply_file):
-            continue
-        delete_post(base_dir, http_prefix,
-                    nickname, domain, reply_file, debug,
-                    recent_posts_cache, manual)
+    if replies_list is not None:
+        for reply_id in replies_list:
+            reply_id_str: str = reply_id.replace('\n', '').replace('\r', '')
+            reply_file: str = \
+                locate_post(base_dir, nickname, domain, reply_id_str)
+            if not reply_file:
+                continue
+            if not os.path.isfile(reply_file):
+                continue
+            delete_post(base_dir, http_prefix,
+                        nickname, domain, reply_file, debug,
+                        recent_posts_cache, manual)
     # remove the replies file
     try:
         os.remove(replies_filename)
