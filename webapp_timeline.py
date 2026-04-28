@@ -52,6 +52,7 @@ from announce import is_self_announce
 from question import is_html_question
 from question import is_question
 from data import load_string
+from data import load_list
 
 
 def _log_timeline_timing(enable_timing_log: bool, timeline_start_time,
@@ -664,28 +665,27 @@ def html_timeline(default_timeline: str,
     follow_requests_filename = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(follow_requests_filename):
-        try:
-            with open(follow_requests_filename, 'r',
-                      encoding='utf-8') as fp_foll:
-                for line in fp_foll:
-                    if not line:
-                        continue
-                    # show follow approvals icon
-                    follow_approvals = \
-                        '<a href="' + users_path + \
-                        '/followers#buttonheader" ' + \
-                        'accesskey="' + \
-                        access_keys['followButton'] + '">' + \
-                        '<img loading="lazy" decoding="async" ' + \
-                        'class="timelineicon" alt="' + \
-                        translate['Approve follow requests'] + \
-                        '" title="' + \
-                        translate['Approve follow requests'] + \
-                        '" src="/icons/person.png"/></a>\n'
-                    break
-        except OSError:
-            print('EX: html_timeline unable to read ' +
-                  follow_requests_filename)
+        follow_requests_list: list[str] = \
+            load_list(follow_requests_filename,
+                      'EX: html_timeline unable to read ' +
+                      follow_requests_filename)
+        if follow_requests_list is not None:
+            for line in follow_requests_list:
+                if not line:
+                    continue
+                # show follow approvals icon
+                follow_approvals = \
+                    '<a href="' + users_path + \
+                    '/followers#buttonheader" ' + \
+                    'accesskey="' + \
+                    access_keys['followButton'] + '">' + \
+                    '<img loading="lazy" decoding="async" ' + \
+                    'class="timelineicon" alt="' + \
+                    translate['Approve follow requests'] + \
+                    '" title="' + \
+                    translate['Approve follow requests'] + \
+                    '" src="/icons/person.png"/></a>\n'
+                break
 
     _log_timeline_timing(enable_timing_log, timeline_start_time, box_name, '3')
 
