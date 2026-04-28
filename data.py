@@ -28,7 +28,7 @@ def load_string(filename: str, exception_text: str) -> str:
     """
     try:
         with open(filename, 'r', encoding='utf-8') as fp:
-            text = fp.read()
+            text: str = fp.read()
             return text
     except OSError as exc:
         if '[ex]' in exception_text:
@@ -56,7 +56,7 @@ def load_line(filename: str, exception_text: str) -> str:
     """
     try:
         with open(filename, 'r', encoding='utf-8') as fp:
-            text = fp.readline()
+            text: str = fp.readline()
             return text
     except OSError as exc:
         if '[ex]' in exception_text:
@@ -70,7 +70,7 @@ def load_list(filename: str, exception_text: str) -> str:
     This is used to replace readlines
     """
     lines: list[str] = []
-    lines_str = load_string(filename, exception_text)
+    lines_str: str = load_string(filename, exception_text)
     if lines_str is None:
         return None
     if lines_str:
