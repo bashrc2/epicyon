@@ -353,8 +353,10 @@ def _set_theme_from_dict(base_dir: str, name: str,
         if not os.path.isfile(template_filename):
             continue
 
-        with open(template_filename, 'r', encoding='utf-8') as fp_css:
-            css = fp_css.read()
+        css: str = load_string(template_filename,
+                               'EX: _set_theme_from_dict unable to load ' +
+                               template_filename)
+        if css is not None:
             for param_name, param_value in theme_params.items():
                 if param_name == 'newswire-publish-icon':
                     if param_value.lower() == 'true':
@@ -887,13 +889,12 @@ def update_default_themes_list(base_dir: str) -> None:
     """
     theme_names = get_themes_list(base_dir)
     default_themes_filename = base_dir + '/defaultthemes.txt'
-    try:
-        with open(default_themes_filename, 'w+', encoding='utf-8') as fp_def:
-            for name in theme_names:
-                fp_def.write(name + '\n')
-    except OSError:
-        print('EX: update_default_themes_list unable to write ' +
-              default_themes_filename)
+    text = ''
+    for name in theme_names:
+        text += name + '\n'
+    save_string(text, default_themes_filename,
+                'EX: update_default_themes_list unable to write ' +
+                default_themes_filename)
 
 
 def scan_themes_for_scripts(base_dir: str) -> bool:
