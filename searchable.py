@@ -120,9 +120,11 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
                 post_filename = path + '/' + post_filename.strip()
                 if not os.path.isfile(post_filename):
                     continue
-                with open(post_filename, 'r', encoding='utf-8') as fp_post:
-                    data = fp_post.read().lower()
-
+                data = load_string(post_filename,
+                                   'EX: _search_virtual_box_posts ' +
+                                   'unable to read ' + post_filename)
+                if data is not None:
+                    data = data.lower()
                     not_found: bool = False
                     for keyword in search_words:
                         if keyword not in data:
@@ -180,54 +182,52 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     for root, _, fnames in os.walk(path):
         for fname in fnames:
             file_path = os.path.join(root, fname)
-            try:
-                with open(file_path, 'r', encoding='utf-8') as fp_post:
-                    data = fp_post.read()
-                    data_lower = data.lower()
+            data = load_string(file_path,
+                               'EX: search_box_posts unable to read ' +
+                               file_path + ' [ex]')
+            if data is not None:
+                data_lower = data.lower()
 
-                    not_found: bool = False
-                    for keyword in search_words:
-                        if keyword not in data_lower:
-                            not_found = True
-                            break
-                    if not_found:
+                not_found: bool = False
+                for keyword in search_words:
+                    if keyword not in data_lower:
+                        not_found = True
+                        break
+                if not_found:
+                    continue
+
+                # if this is not an outbox/bookmarks search then is the
+                # post marked as being searchable?
+                # https://codeberg.org/fediverse/fep/
+                # src/branch/main/fep/268d/fep-268d.md
+                if check_searchable_by:
+                    if '"searchableBy":' not in data:
                         continue
-
-                    # if this is not an outbox/bookmarks search then is the
-                    # post marked as being searchable?
-                    # https://codeberg.org/fediverse/fep/
-                    # src/branch/main/fep/268d/fep-268d.md
-                    if check_searchable_by:
-                        if '"searchableBy":' not in data:
-                            continue
-                        searchable_by = \
-                            data.split('"searchableBy":')[1].strip()
-                        if searchable_by.startswith('['):
-                            searchable_by = searchable_by.split(']')[0]
-                        if '"' in searchable_by:
-                            searchable_by = searchable_by.split('"')[1]
-                        elif "'" in searchable_by:
-                            searchable_by = searchable_by.split("'")[1]
+                    searchable_by = \
+                        data.split('"searchableBy":')[1].strip()
+                    if searchable_by.startswith('['):
+                        searchable_by = searchable_by.split(']')[0]
+                    if '"' in searchable_by:
+                        searchable_by = searchable_by.split('"')[1]
+                    elif "'" in searchable_by:
+                        searchable_by = searchable_by.split("'")[1]
+                    else:
+                        continue
+                    if '#Public' not in searchable_by:
+                        if '/followers' in searchable_by and \
+                           following_list:
+                            if not _actor_in_searchable_by(searchable_by,
+                                                           following_list):
+                                continue
+                        elif '/mutuals' in searchable_by and mutuals_list:
+                            if not _actor_in_searchable_by(searchable_by,
+                                                           mutuals_list):
+                                continue
                         else:
                             continue
-                        if '#Public' not in searchable_by:
-                            if '/followers' in searchable_by and \
-                               following_list:
-                                if not _actor_in_searchable_by(searchable_by,
-                                                               following_list):
-                                    continue
-                            elif '/mutuals' in searchable_by and mutuals_list:
-                                if not _actor_in_searchable_by(searchable_by,
-                                                               mutuals_list):
-                                    continue
-                            else:
-                                continue
 
-                    res.append(file_path)
-                    if len(res) >= max_results:
-                        return res
-            except OSError as exc:
-                print('EX: search_box_posts unable to read ' +
-                      file_path + ' ' + str(exc))
+                res.append(file_path)
+                if len(res) >= max_results:
+                    return res
         break
     return res
