@@ -510,13 +510,13 @@ def _update_common_reactions(base_dir: str, emoji_content: str) -> None:
         if not reaction_found:
             new_common_reactions.append(str(1).zfill(16) + ' ' + emoji_content)
         new_common_reactions.sort(reverse=True)
-        try:
-            with open(common_reactions_filename, 'w+',
-                      encoding='utf-8') as fp_react:
-                for line in new_common_reactions:
-                    fp_react.write(line + '\n')
-        except OSError:
-            print('EX: error writing common reactions 1')
+
+        text = ''
+        for line in new_common_reactions:
+            text += line + '\n'
+        if not save_string(text, common_reactions_filename,
+                           'EX: error writing common reactions 1 ' +
+                           common_reactions_filename):
             return
     else:
         line = str(1).zfill(16) + ' ' + emoji_content + '\n'
