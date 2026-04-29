@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 from utils import data_dir
 from utils import string_starts_with
 from data import load_string
+from data import save_string
 
 
 class Result:
@@ -163,14 +164,13 @@ def save_unavailable_sites(base_dir: str, sites_unavailable: []) -> None:
     """
     unavailable_sites_filename = data_dir(base_dir) + '/unavailable_sites.txt'
     sites_unavailable.sort()
-    try:
-        with open(unavailable_sites_filename, 'w+',
-                  encoding='utf-8') as fp_sites:
-            for site in sites_unavailable:
-                if site:
-                    fp_sites.write(site + '\n')
-    except OSError:
-        print('EX: unable to save unavailable sites')
+    text = ''
+    for site in sites_unavailable:
+        if site:
+            text += site + '\n'
+    save_string(text, unavailable_sites_filename,
+                'EX: unable to save unavailable sites ' +
+                unavailable_sites_filename)
 
 
 def load_unavailable_sites(base_dir: str) -> []:
