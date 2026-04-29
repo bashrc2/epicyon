@@ -32,6 +32,9 @@ from shutil import rmtree
 from shutil import move
 from city import spoof_geolocation
 from data import load_binary
+from data import save_string
+from data import load_string
+from data import append_string
 
 
 # music file ID3 v1 genres
@@ -331,20 +334,18 @@ def _spoof_meta_data(base_dir: str, nickname: str, domain: str,
     decoy_seed_filename = acct_dir(base_dir, nickname, domain) + '/decoyseed'
     decoy_seed = 63725
     if os.path.isfile(decoy_seed_filename):
-        try:
-            with open(decoy_seed_filename, 'r', encoding='utf-8') as fp_seed:
-                decoy_seed = int(fp_seed.read())
-        except OSError:
-            print('EX: _spoof_meta_data unable to read ' + decoy_seed_filename)
+        decoy_seed_str = \
+            load_string(decoy_seed_filename,
+                        'EX: _spoof_meta_data unable to read ' +
+                        decoy_seed_filename)
+        if decoy_seed_str:
+            decoy_seed = int(decoy_seed_str)
     else:
         decoy_seed = randint(10000, 10000000000000000)
-        try:
-            with open(decoy_seed_filename, 'w+',
-                      encoding='utf-8') as fp_seed:
-                fp_seed.write(str(decoy_seed))
-        except OSError:
-            print('EX: _spoof_meta_data unable to write ' +
-                  decoy_seed_filename)
+        text = str(decoy_seed)
+        save_string(text, decoy_seed_filename,
+                    'EX: _spoof_meta_data unable to write ' +
+                    decoy_seed_filename)
 
     if os.path.isfile('/usr/bin/exiftool'):
         print('Spoofing metadata in ' + output_filename + ' using exiftool')
@@ -602,13 +603,9 @@ def _update_etag(media_filename: str) -> None:
     # calculate hash
     etag = sha1(data).hexdigest()  # nosec
     # save the hash
-    try:
-        with open(media_filename + '.etag', 'w+',
-                  encoding='utf-8') as fp_media:
-            fp_media.write(etag)
-    except OSError:
-        print('EX: _update_etag unable to write ' +
-              str(media_filename) + '.etag')
+    save_string(etag, media_filename + '.etag',
+                'EX: _update_etag unable to write ' +
+                str(media_filename) + '.etag')
 
 
 def _store_video_transcript(video_transcript: str,
@@ -623,12 +620,10 @@ def _store_video_transcript(video_transcript: str,
         print('WARN: does not look like a video transcript ' +
               video_transcript)
         return False
-    try:
-        with open(media_filename + '.vtt', 'w+', encoding='utf-8') as fp_vtt:
-            fp_vtt.write(video_transcript)
+    if save_string(video_transcript, media_filename + '.vtt',
+                   'EX: unable to save video transcript ' +
+                   media_filename + '.vtt'):
         return True
-    except OSError:
-        print('EX: unable to save video transcript ' + media_filename + '.vtt')
     return False
 
 
@@ -641,25 +636,24 @@ def _log_uploaded_media(base_dir: str, nickname: str, domain: str,
     media_log = []
     write_type = 'w+'
     if os.path.isfile(account_media_log_filename):
-        try:
-            with open(account_media_log_filename, 'r',
-                      encoding='utf-8') as fp_log:
-                media_log = fp_log.read().split('\n')
-                write_type = 'a+'
-        except OSError:
-            print('EX: unable to read media log for ' + nickname)
+        media_log_str = \
+            load_string(account_media_log_filename,
+                        'EX: unable to read media log for ' + nickname)
+        if media_log_str:
+            media_log = media_log_str.split('\n')
+            write_type = 'a+'
     # don't include the base directory, in case the installation is later
     # moved around
     if base_dir in media_filename:
         media_filename = media_filename.split(base_dir)[1]
     if media_filename in media_log:
         return
-    try:
-        with open(account_media_log_filename, write_type,
-                  encoding='utf-8') as fp_log:
-            fp_log.write(media_filename + '\n')
-    except OSError:
-        print('EX: unable to write media log for ' + nickname)
+    if write_type == 'w+':
+        save_string(media_filename + '\n', account_media_log_filename,
+                    'EX: unable to write media log for ' + nickname)
+    else:
+        append_string(media_filename + '\n', account_media_log_filename,
+                      'EX: unable to append media log for ' + nickname)
 
 
 def attach_media(base_dir: str, http_prefix: str,

@@ -22,6 +22,7 @@ from utils import data_dir
 from utils import account_is_indexable
 from utils import is_yggdrasil_address
 from data import load_list
+from data import load_string
 
 
 def _meta_data_instance_v1(show_accounts: bool,
@@ -272,13 +273,10 @@ def _get_masto_api_v1account(base_dir: str, nickname: str, domain: str,
         published_filename = \
             acct_dir(base_dir, nickname, domain) + '/.last_published'
         if os.path.isfile(published_filename):
-            try:
-                with open(published_filename, 'r',
-                          encoding='utf-8') as fp_pub:
-                    published = fp_pub.read()
-            except OSError:
-                print('EX: unable to read last published time 1 ' +
-                      published_filename)
+            published: str = \
+                load_string(published_filename,
+                            'EX: unable to read last published time 1 ' +
+                            published_filename)
 
     masto_account_json = {
         "id": get_masto_api_v1id_from_nickname(nickname),

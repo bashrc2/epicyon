@@ -24,6 +24,8 @@ from timeFunctions import date_epoch
 from timeFunctions import date_from_string_format
 from timeFunctions import date_utcnow
 from session import get_resolved_url
+from data import load_string
+from data import save_string
 
 
 def geocoords_to_osm_link(osm_domain: str, zoom: int,
@@ -1030,20 +1032,20 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
     """Appends to a hashtag file containing map links
     This is used to show a map for a particular hashtag
     """
-    tag_map_filename = tag_maps_dir + '/' + tag_name + '.txt'
+    tag_map_filename: str = tag_maps_dir + '/' + tag_name + '.txt'
     post_url = post_url.replace('#', '/')
 
     # read the existing map links
     existing_map_links: list[str] = []
     if os.path.isfile(tag_map_filename):
-        try:
-            with open(tag_map_filename, 'r', encoding='utf-8') as fp_tag:
-                existing_map_links = fp_tag.read().split('\n')
-        except OSError:
-            print('EX: error reading tag map ' + tag_map_filename)
+        existing_map_links_str = \
+            load_string(tag_map_filename,
+                        'EX: error reading tag map ' + tag_map_filename)
+        if existing_map_links_str:
+            existing_map_links = existing_map_links_str.split('\n')
 
     # combine map links with the existing list
-    secs_since_epoch = \
+    secs_since_epoch: int = \
         int((date_from_string_format(published, ['%Y-%m-%dT%H:%M:%S%z']) -
              date_epoch()).total_seconds())
     links_changed: bool = False
@@ -1070,11 +1072,8 @@ def add_tag_map_links(tag_maps_dir: str, tag_name: str,
             break
 
     # save the tag
-    try:
-        with open(tag_map_filename, 'w+', encoding='utf-8') as fp_tag:
-            fp_tag.write(map_links_str)
-    except OSError:
-        print('EX: error writing tag map ' + tag_map_filename)
+    save_string(map_links_str, tag_map_filename,
+                'EX: error writing tag map ' + tag_map_filename)
 
 
 def _gpx_location(latitude: float, longitude: float, post_id: str) -> str:
@@ -1127,11 +1126,11 @@ def _hashtag_map_to_format(base_dir: str, tag_name: str,
 
     if os.path.isfile(tag_map_filename):
         map_links: list[str] = []
-        try:
-            with open(tag_map_filename, 'r', encoding='utf-8') as fp_tag:
-                map_links = fp_tag.read().split('\n')
-        except OSError:
-            print('EX: unable to read tag map links ' + tag_map_filename)
+        map_links_str = \
+            load_string(tag_map_filename,
+                        'EX: unable to read tag map links ' + tag_map_filename)
+        if map_links_str:
+            map_links = map_links_str.split('\n')
         if map_links:
             start_secs_since_epoch = int(start_hours_since_epoch * 60 * 60)
             end_secs_since_epoch = int(end_hours_since_epoch * 60 * 60)

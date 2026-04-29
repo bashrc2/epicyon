@@ -24,6 +24,7 @@ from formats import get_image_extensions
 from formats import get_audio_extensions
 from formats import get_video_extensions
 from data import load_list
+from data import load_string
 
 
 def _get_masto_api_v2id_from_nickname(nickname: str) -> int:
@@ -118,14 +119,11 @@ def _meta_data_instance_v2(show_accounts: bool,
     published_filename = \
         acct_dir(base_dir, admin_nickname, domain) + '/.last_published'
     if os.path.isfile(published_filename):
-        try:
-            with open(published_filename, 'r',
-                      encoding='utf-8') as fp_pub:
-                published = fp_pub.read()
-        except OSError:
-            print('EX: _meta_data_instance_v2 ' +
-                  'unable to read last published time 2 ' +
-                  published_filename)
+        published = \
+            load_string(published_filename,
+                        'EX: _meta_data_instance_v2 ' +
+                        'unable to read last published time 2 ' +
+                        published_filename)
 
     # get all supported mime types
     supported_mime_types: list[str] = []

@@ -17,6 +17,7 @@ from utils import get_url_from_post
 from utils import get_markdown_blog_filename
 from utils import get_micron_blog_filename
 from utils import get_gemini_blog_published
+from data import save_string
 
 
 def _markdown_get_sections(markdown: str) -> []:
@@ -573,12 +574,10 @@ def blog_to_markdown(base_dir: str, nickname: str, domain: str,
     for link_str in links:
         content_text += link_str + '\n'
 
-    try:
-        with open(markdown_blog_filename, 'w+',
-                  encoding='utf-8') as fp_markdown:
-            fp_markdown.write(published + '\n\n' + content_text)
-    except OSError:
-        print('EX: blog_to_markdown unable to write ' + markdown_blog_filename)
+    if not save_string(published + '\n\n' + content_text,
+                       markdown_blog_filename,
+                       'EX: blog_to_markdown unable to write ' +
+                       markdown_blog_filename):
         return False
 
     return True
@@ -651,12 +650,10 @@ def blog_to_micron(base_dir: str, nickname: str, domain: str,
     for link_str in links:
         content_text += link_str + '\n'
 
-    try:
-        with open(micron_blog_filename, 'w+',
-                  encoding='utf-8') as fp_micron:
-            fp_micron.write(published + '\n\n' + content_text)
-    except OSError:
-        print('EX: blog_to_micron unable to write ' + micron_blog_filename)
+    if not save_string(published + '\n\n' + content_text,
+                       micron_blog_filename,
+                       'EX: blog_to_micron unable to write ' +
+                       micron_blog_filename):
         return False
 
     return True
