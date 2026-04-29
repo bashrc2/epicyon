@@ -160,14 +160,12 @@ def question_update_votes(base_dir: str, nickname: str, domain: str,
                     else:
                         newlines.append(vote_line)
             if save_voters_file:
-                try:
-                    with open(voters_filename, 'w+',
-                              encoding='utf-8') as fp_voters:
-                        for vote_line in newlines:
-                            fp_voters.write(vote_line)
-                except OSError:
-                    print('EX: unable to write voters file2 ' +
-                          voters_filename)
+                text = ''
+                for vote_line in newlines:
+                    text += vote_line
+                save_string(text, voters_filename,
+                            'EX: unable to write voters file2 ' +
+                            voters_filename)
             else:
                 return None, None
 
