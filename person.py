@@ -1327,14 +1327,13 @@ def reenable_account(base_dir: str, nickname: str, domain: str) -> None:
                       suspended_filename)
         if lines is None:
             return
-        try:
-            with open(suspended_filename, 'w+', encoding='utf-8') as fp_sus:
-                for suspended in lines:
-                    if suspended.strip('\n').strip('\r') != nickname:
-                        fp_sus.write(suspended)
-        except OSError as ex:
-            print('EX: reenable_account unable to save ' +
-                  suspended_filename + ' ' + str(ex))
+        text = ''
+        for suspended in lines:
+            if suspended.strip('\n').strip('\r') != nickname:
+                text += suspended
+        save_string(text, suspended_filename,
+                    'EX: reenable_account unable to save ' +
+                    suspended_filename + ' [ex]')
         account_dir = acct_dir(base_dir, nickname, domain)
         _unsuspend_media_for_account(base_dir, account_dir)
 
@@ -1482,14 +1481,13 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
                       tag_filename)
         if lines is None:
             continue
-        try:
-            with open(tag_filename, 'w+', encoding='utf-8') as fp_tag:
-                for tagline in lines:
-                    if match_str not in tagline:
-                        fp_tag.write(tagline)
-        except OSError:
-            print('EX: _remove_tags_for_nickname unable to write ' +
-                  tag_filename)
+        text = ''
+        for tagline in lines:
+            if match_str not in tagline:
+                text += tagline
+        save_string(text, tag_filename,
+                    'EX: _remove_tags_for_nickname unable to write ' +
+                    tag_filename)
 
 
 def _remove_account_media(base_dir: str, nickname: str, domain: str) -> None:
@@ -1665,25 +1663,28 @@ def is_person_snoozed(base_dir: str, nickname: str, domain: str,
         return False
     # remove the snooze entry if it has timed out
     replace_str = None
-    try:
-        with open(snoozed_filename, 'r', encoding='utf-8') as fp_snoozed:
-            for line in fp_snoozed:
-                # is this the entry for the actor?
-                if line.startswith(snooze_actor + ' '):
-                    snoozed_time_str1 = line.split(' ')[1]
-                    snoozed_time_str = remove_eol(snoozed_time_str1)
-                    # is there a time appended?
-                    if snoozed_time_str.isdigit():
-                        snoozed_time = int(snoozed_time_str)
-                        curr_time = get_current_time_int()
-                        # has the snooze timed out?
-                        if int(curr_time - snoozed_time) > 60 * 60 * 24:
-                            replace_str = line
-                    else:
-                        replace_str = line
-                    break
-    except OSError:
-        print('EX: is_person_snoozed unable to read ' + snoozed_filename)
+
+    snoozed_list: list[str] = \
+        load_list(snoozed_filename,
+                  'EX: is_person_snoozed unable to read ' + snoozed_filename)
+    if snoozed_list is not None:
+        for line in snoozed_list:
+            # is this the entry for the actor?
+            if not line.startswith(snooze_actor + ' '):
+                continue
+            snoozed_time_str1 = line.split(' ')[1]
+            snoozed_time_str = remove_eol(snoozed_time_str1)
+            # is there a time appended?
+            if snoozed_time_str.isdigit():
+                snoozed_time = int(snoozed_time_str)
+                curr_time = get_current_time_int()
+                # has the snooze timed out?
+                if int(curr_time - snoozed_time) > 60 * 60 * 24:
+                    replace_str = line
+            else:
+                replace_str = line
+            break
+
     if replace_str:
         content = load_string(snoozed_filename,
                               'EX: is_person_snoozed unable to read 2 ' +
@@ -1731,14 +1732,16 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
     if not text_in_file(snooze_actor + ' ', snoozed_filename):
         return
     replace_str = None
-    try:
-        with open(snoozed_filename, 'r', encoding='utf-8') as fp_snoozed:
-            for line in fp_snoozed:
-                if line.startswith(snooze_actor + ' '):
-                    replace_str = line
-                    break
-    except OSError:
-        print('EX: person_unsnooze unable to read ' + snoozed_filename)
+
+    snoozed_list: list[str] = \
+        load_list(snoozed_filename,
+                  'EX: person_unsnooze unable to read ' + snoozed_filename)
+    if snoozed_list is not None:
+        for line in snoozed_list:
+            if line.startswith(snooze_actor + ' '):
+                replace_str = line
+                break
+
     if replace_str:
         content = load_string(snoozed_filename,
                               'EX: person_unsnooze unable to read 2 ' +

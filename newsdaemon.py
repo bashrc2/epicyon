@@ -43,6 +43,9 @@ from threads import thread_with_trace
 from webapp_hashtagswarm import store_hash_tags
 from cache import clear_from_post_caches
 from data import load_list
+from data import load_string
+from data import save_string
+from data import append_string
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,
@@ -67,24 +70,17 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
                       index_filename + ' ' + str(ex))
         return
 
-    try:
-        with open(index_filename, 'w+', encoding='utf-8') as fp_feeds:
-            fp_feeds.write(post_id + '\n')
-    except OSError:
-        print('EX: _update_feeds_outbox_index unable to write ' +
-              index_filename)
+    save_string(post_id + '\n', index_filename,
+                'EX: _update_feeds_outbox_index unable to write ' +
+                index_filename)
 
 
 def _save_arrived_time(post_filename: str, arrived: str) -> None:
     """Saves the time when an rss post arrived to a file
     """
-    try:
-        with open(post_filename + '.arrived', 'w+',
-                  encoding='utf-8') as fp_arrived:
-            fp_arrived.write(arrived)
-    except OSError:
-        print('EX: _save_arrived_time unable to write ' +
-              post_filename + '.arrived')
+    save_string(arrived, post_filename + '.arrived',
+                'EX: _save_arrived_time unable to write ' +
+                post_filename + '.arrived')
 
 
 def _remove_control_characters(content: str) -> str:
@@ -501,24 +497,17 @@ def _create_news_mirror(base_dir: str, domain: str,
 
         # remove the corresponding index entries
         if removals:
-            index_content = ''
-            try:
-                with open(mirror_index_filename, 'r',
-                          encoding='utf-8') as fp_index:
-                    index_content = fp_index.read()
-                    for remove_post_id in removals:
-                        index_content = \
-                            index_content.replace(remove_post_id + '\n', '')
-            except OSError:
-                print('EX: _create_news_mirror unable to read ' +
-                      mirror_index_filename)
-            try:
-                with open(mirror_index_filename, 'w+',
-                          encoding='utf-8') as fp_index:
-                    fp_index.write(index_content)
-            except OSError:
-                print('EX: _create_news_mirror unable to write ' +
-                      mirror_index_filename)
+            index_content: str = \
+                load_string(mirror_index_filename,
+                            'EX: _create_news_mirror unable to read ' +
+                            mirror_index_filename)
+            if index_content is not None:
+                for remove_post_id in removals:
+                    index_content = \
+                        index_content.replace(remove_post_id + '\n', '')
+            save_string(index_content, mirror_index_filename,
+                        'EX: _create_news_mirror unable to write ' +
+                        mirror_index_filename)
 
     mirror_article_dir = mirror_dir + '/' + post_id_number
     if os.path.isdir(mirror_article_dir):
@@ -543,21 +532,13 @@ def _create_news_mirror(base_dir: str, domain: str,
 
     # append the post Id number to the index file
     if os.path.isfile(mirror_index_filename):
-        try:
-            with open(mirror_index_filename, 'a+',
-                      encoding='utf-8') as fp_index:
-                fp_index.write(post_id_number + '\n')
-        except OSError:
-            print('EX: _create_news_mirror unable to append ' +
-                  mirror_index_filename)
+        append_string(post_id_number + '\n', mirror_index_filename,
+                      'EX: _create_news_mirror unable to append ' +
+                      mirror_index_filename)
     else:
-        try:
-            with open(mirror_index_filename, 'w+',
-                      encoding='utf-8') as fp_index:
-                fp_index.write(post_id_number + '\n')
-        except OSError:
-            print('EX: _create_news_mirror unable to write ' +
-                  mirror_index_filename)
+        save_string(post_id_number + '\n', mirror_index_filename,
+                    'EX: _create_news_mirror unable to write ' +
+                    mirror_index_filename)
 
     return True
 

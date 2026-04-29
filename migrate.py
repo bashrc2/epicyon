@@ -21,6 +21,8 @@ from posts import get_user_url
 from follow import unfollow_account
 from person import get_actor_json
 from data import load_list
+from data import save_string
+from data import append_string
 
 
 def _move_following_handles_for_account(base_dir: str,
@@ -168,40 +170,35 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
             acct_dir(base_dir, nickname, domain) + '/refollow.txt'
 
         # unfollow the old handle
-        with open(following_filename, 'w+', encoding='utf-8') as fp_foll2:
-            for follow_handle in following_handles:
-                if follow_handle.strip("\n").strip("\r").lower() != \
-                   handle_lower:
-                    fp_foll2.write(follow_handle)
-                    continue
-                handle_nickname = handle.split('@')[0]
-                handle_domain = handle.split('@')[1]
-                unfollow_account(base_dir, nickname, domain,
-                                 handle_nickname,
-                                 handle_domain,
-                                 debug, group_account, 'following.txt')
-                ctr += 1
-                print('Unfollowed ' + handle + ' who has moved to ' +
-                      moved_to_handle)
+        text = ''
+        for follow_handle in following_handles:
+            if follow_handle.strip("\n").strip("\r").lower() != \
+               handle_lower:
+                text += follow_handle
+                continue
+            handle_nickname = handle.split('@')[0]
+            handle_domain = handle.split('@')[1]
+            unfollow_account(base_dir, nickname, domain,
+                             handle_nickname,
+                             handle_domain,
+                             debug, group_account, 'following.txt')
+            ctr += 1
+            print('Unfollowed ' + handle + ' who has moved to ' +
+                  moved_to_handle)
 
-                # save the new handles to the refollow list
-                if os.path.isfile(refollow_filename):
-                    try:
-                        with open(refollow_filename, 'a+',
-                                  encoding='utf-8') as fp_refoll:
-                            fp_refoll.write(moved_to_handle + '\n')
-                    except OSError:
-                        print('EX: ' +
+            # save the new handles to the refollow list
+            if os.path.isfile(refollow_filename):
+                append_string(moved_to_handle + '\n', refollow_filename,
+                              'EX: ' +
                               '_update_moved_handle unable to append ' +
                               refollow_filename)
-                else:
-                    try:
-                        with open(refollow_filename, 'w+',
-                                  encoding='utf-8') as fp_refoll:
-                            fp_refoll.write(moved_to_handle + '\n')
-                    except OSError:
-                        print('EX: _update_moved_handle unable to write ' +
-                              refollow_filename)
+            else:
+                save_string(moved_to_handle + '\n', refollow_filename,
+                            'EX: _update_moved_handle unable to write ' +
+                            refollow_filename)
+        save_string(text, following_filename,
+                    'EX: _update_moved_handle unable to save ' +
+                    following_filename)
 
     followers_filename = \
         acct_dir(base_dir, nickname, domain) + '/followers.txt'
@@ -216,18 +213,16 @@ def _update_moved_handle(base_dir: str, nickname: str, domain: str,
         handle_lower = handle.lower()
 
         # remove followers who have moved
-        try:
-            with open(followers_filename, 'w+', encoding='utf-8') as fp_foll4:
-                for follower_handle in follower_handles:
-                    if follower_handle.strip("\n").strip("\r").lower() != \
-                       handle_lower:
-                        fp_foll4.write(follower_handle)
-                    else:
-                        ctr += 1
-                        print('Removed follower who has moved ' + handle)
-        except OSError:
-            print('EX: _update_moved_handle unable to remove moved follower ' +
-                  handle)
+        text = ''
+        for follower_handle in follower_handles:
+            if follower_handle.strip("\n").strip("\r").lower() != handle_lower:
+                text += follower_handle
+            else:
+                ctr += 1
+                print('Removed follower who has moved ' + handle)
+        save_string(text, followers_filename,
+                    'EX: _update_moved_handle ' +
+                    'unable to remove moved follower ' + handle)
 
     return ctr
 
