@@ -144,23 +144,25 @@ def _remove_from_follow_base(base_dir: str,
                 actor_found = True
         if not actor_found:
             return
-    try:
-        with open(approve_follows_filename + '.new', 'w+',
-                  encoding='utf-8') as fp_approve_new:
-            with open(approve_follows_filename, 'r',
-                      encoding='utf-8') as fp_approve:
-                if not accept_deny_actor:
-                    for approve_handle in fp_approve:
-                        accept_deny_handle = accept_or_deny_handle
-                        if not approve_handle.startswith(accept_deny_handle):
-                            fp_approve_new.write(approve_handle)
-                else:
-                    for approve_handle in fp_approve:
-                        if accept_deny_actor not in approve_handle:
-                            fp_approve_new.write(approve_handle)
-    except OSError as ex:
-        print('EX: _remove_from_follow_base ' +
-              approve_follows_filename + ' ' + str(ex))
+
+    text: str = ''
+    approve_follows_list: list[str] = \
+        load_list(approve_follows_filename,
+                  'EX: _remove_from_follow_base ' +
+                  approve_follows_filename + ' 2 [ex]')
+    if approve_follows_list is not None:
+        if not accept_deny_actor:
+            for approve_handle in approve_follows_list:
+                accept_deny_handle = accept_or_deny_handle
+                if not approve_handle.startswith(accept_deny_handle):
+                    text += approve_handle
+        else:
+            for approve_handle in approve_follows_list:
+                if accept_deny_actor not in approve_handle:
+                    text += approve_handle
+    save_string(text, approve_follows_filename + '.new',
+                'EX: _remove_from_follow_base ' +
+                approve_follows_filename + ' 1 [ex]')
 
     try:
         os.rename(approve_follows_filename + '.new',
@@ -337,16 +339,15 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
         return False
 
     if lines:
-        try:
-            with open(filename, 'w+', encoding='utf-8') as fp_unfoll:
-                for line in lines:
-                    check_handle = line.strip("\n").strip("\r").lower()
-                    if check_handle not in (handle_to_unfollow_lower,
-                                            '!' + handle_to_unfollow_lower):
-                        fp_unfoll.write(line)
-        except OSError as ex:
-            print('EX: unfollow_account unable to write ' +
-                  filename + ' ' + str(ex))
+        text: str = ''
+        for line in lines:
+            check_handle = line.strip("\n").strip("\r").lower()
+            if check_handle not in (handle_to_unfollow_lower,
+                                    '!' + handle_to_unfollow_lower):
+                text += line
+        save_string(text, filename,
+                    'EX: unfollow_account unable to write ' +
+                    filename + ' [ex]')
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
@@ -1593,30 +1594,29 @@ def pending_followers_timeline_json(actor: str, base_dir: str,
     follow_requests_filename = \
         acct_dir(base_dir, nickname, domain) + '/followrequests.txt'
     if os.path.isfile(follow_requests_filename):
-        try:
-            with open(follow_requests_filename, 'r',
-                      encoding='utf-8') as fp_req:
-                for follower_handle in fp_req:
-                    if len(follower_handle) == 0:
-                        continue
-                    follower_handle = remove_eol(follower_handle)
-                    foll_domain, _ = get_domain_from_actor(follower_handle)
-                    if not foll_domain:
-                        continue
-                    foll_nickname = get_nickname_from_actor(follower_handle)
-                    if not foll_nickname:
-                        continue
-                    follow_activity_filename = \
-                        acct_dir(base_dir, nickname, domain) + \
-                        '/requests/' + \
-                        foll_nickname + '@' + foll_domain + '.follow'
-                    if not os.path.isfile(follow_activity_filename):
-                        continue
-                    follow_json = load_json(follow_activity_filename)
-                    if not follow_json:
-                        continue
-                    result_json['orderedItems'].append(follow_json)
-        except OSError as exc:
-            print('EX: unable to read follow requests ' +
-                  follow_requests_filename + ' ' + str(exc))
+        follow_requests_list: list[str] = \
+            load_list(follow_requests_filename,
+                      'EX: unable to read follow requests ' +
+                      follow_requests_filename + ' [ex]')
+        if follow_requests_list is not None:
+            for follower_handle in follow_requests_list:
+                if len(follower_handle) == 0:
+                    continue
+                follower_handle = remove_eol(follower_handle)
+                foll_domain, _ = get_domain_from_actor(follower_handle)
+                if not foll_domain:
+                    continue
+                foll_nickname = get_nickname_from_actor(follower_handle)
+                if not foll_nickname:
+                    continue
+                follow_activity_filename = \
+                    acct_dir(base_dir, nickname, domain) + \
+                    '/requests/' + \
+                    foll_nickname + '@' + foll_domain + '.follow'
+                if not os.path.isfile(follow_activity_filename):
+                    continue
+                follow_json = load_json(follow_activity_filename)
+                if not follow_json:
+                    continue
+                result_json['orderedItems'].append(follow_json)
     return result_json

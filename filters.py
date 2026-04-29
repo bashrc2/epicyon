@@ -17,6 +17,8 @@ from unicodetext import standardize_text
 from unicodetext import remove_inverted_text
 from unicodetext import remove_square_capitals
 from data import append_string
+from data import save_string
+from data import load_list
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
@@ -61,17 +63,23 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
     if not text_in_file(words, filters_filename):
         return False
     new_filters_filename = filters_filename + '.new'
-    try:
-        with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
-            with open(new_filters_filename, 'w+', encoding='utf-8') as fp_new:
-                for line in fp_filt:
-                    line = remove_eol(line)
-                    if line != words:
-                        fp_new.write(line + '\n')
-    except OSError as ex:
-        print('EX: unable to remove filter ' +
-              filters_filename + ' ' + str(ex))
+
+    filters_list: list[str] = \
+        load_list(filters_filename,
+                  'EX: unable to remove filter ' +
+                  filters_filename + ' 1 [ex]')
+    if filters_list is None:
         return False
+
+    text: str = ''
+    for line in filters_list:
+        line = remove_eol(line)
+        if line != words:
+            text += line + '\n'
+    save_string(text, new_filters_filename,
+                'EX: unable to remove filter ' +
+                filters_filename + ' 2 [ex]')
+
     if os.path.isfile(new_filters_filename):
         try:
             os.rename(new_filters_filename, filters_filename)
@@ -91,17 +99,23 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
     if not text_in_file(words, filters_filename):
         return False
     new_filters_filename = filters_filename + '.new'
-    try:
-        with open(filters_filename, 'r', encoding='utf-8') as fp_filt:
-            with open(new_filters_filename, 'w+', encoding='utf-8') as fp_new:
-                for line in fp_filt:
-                    line = remove_eol(line)
-                    if line != words:
-                        fp_new.write(line + '\n')
-    except OSError as ex:
-        print('EX: unable to remove global filter ' +
-              filters_filename + ' ' + str(ex))
+
+    global_list: list[str] = \
+        load_list(filters_filename,
+                  'EX: unable to remove global filter ' +
+                  filters_filename + ' [ex]')
+    if global_list is None:
         return False
+
+    text: str = ''
+    for line in global_list:
+        line = remove_eol(line)
+        if line != words:
+            text += line + '\n'
+    save_string(text, new_filters_filename,
+                'EX: unable to remove global filter ' +
+                filters_filename + ' 2 [ex]')
+
     if os.path.isfile(new_filters_filename):
         try:
             os.rename(new_filters_filename, filters_filename)
@@ -152,25 +166,25 @@ def _is_filtered_base(filename: str, content: str,
     # convert any fancy characters to ordinary ones
     content = standardize_text(content)
 
-    try:
-        with open(filename, 'r', encoding='utf-8') as fp_filt:
-            for line in fp_filt:
-                filter_str = remove_eol(line)
-                if not filter_str:
-                    continue
-                if len(filter_str) < 2:
-                    continue
-                if '+' not in filter_str:
-                    if filtered_match(filter_str, content):
-                        return True
-                else:
-                    filter_words = filter_str.replace('"', '').split('+')
-                    for filter_wrd in filter_words:
-                        if not filtered_match(filter_wrd, content):
-                            return False
+    filtered_list: list[str] = \
+        load_list(filename,
+                  'EX: _is_filtered_base ' + filename + ' [ex]')
+    if filtered_list is not None:
+        for line in filtered_list:
+            filter_str = remove_eol(line)
+            if not filter_str:
+                continue
+            if len(filter_str) < 2:
+                continue
+            if '+' not in filter_str:
+                if filtered_match(filter_str, content):
                     return True
-    except OSError as ex:
-        print('EX: _is_filtered_base ' + filename + ' ' + str(ex))
+            else:
+                filter_words = filter_str.replace('"', '').split('+')
+                for filter_wrd in filter_words:
+                    if not filtered_match(filter_wrd, content):
+                        return False
+                return True
     return False
 
 
