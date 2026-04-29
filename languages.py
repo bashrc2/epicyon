@@ -20,6 +20,8 @@ from utils import get_config_param
 from utils import local_actor_url
 from utils import resembles_url
 from cache import get_person_from_cache
+from data import load_string
+from data import save_string
 
 
 def get_actor_languages(actor_json: {}) -> str:
@@ -354,13 +356,9 @@ def set_default_post_language(base_dir: str, nickname: str, domain: str,
     """
     default_post_language_filename = \
         acct_dir(base_dir, nickname, domain) + '/.new_post_language'
-    try:
-        with open(default_post_language_filename, 'w+',
-                  encoding='utf-8') as fp_lang:
-            fp_lang.write(language)
-    except OSError:
-        print('EX: Unable to write default post language ' +
-              default_post_language_filename)
+    save_string(language, default_post_language_filename,
+                'EX: Unable to write default post language ' +
+                default_post_language_filename)
 
 
 def load_default_post_languages(base_dir: str) -> {}:
@@ -379,13 +377,11 @@ def load_default_post_languages(base_dir: str) -> {}:
                 acct_dir(base_dir, nickname, domain) + '/.new_post_language'
             if not os.path.isfile(default_post_language_filename):
                 continue
-            try:
-                with open(default_post_language_filename, 'r',
-                          encoding='utf-8') as fp_lang:
-                    result[nickname] = fp_lang.read()
-            except OSError:
-                print('EX: Unable to read default post language ' +
-                      default_post_language_filename)
+            text = load_string(default_post_language_filename,
+                               'EX: Unable to read default post language ' +
+                               default_post_language_filename)
+            if text:
+                result[nickname] = text
         break
     return result
 

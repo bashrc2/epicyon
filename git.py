@@ -17,6 +17,7 @@ from utils import get_attachment_property_value
 from utils import remove_html
 from utils import get_attributed_to
 from utils import string_contains
+from data import save_string
 
 
 def _git_format_content(content: str) -> str:
@@ -213,17 +214,14 @@ def receive_git_patch(base_dir: str, nickname: str, domain: str,
     patch_str = \
         _git_add_from_handle(patch_str,
                              '@' + from_nickname + '@' + from_domain)
-    try:
-        with open(patch_filename, 'w+', encoding='utf-8') as fp_patch:
-            fp_patch.write(patch_str)
-            patch_notify_filename = \
-                acct_dir(base_dir, nickname, domain) + '/.newPatchContent'
-            with open(patch_notify_filename, 'w+',
-                      encoding='utf-8') as fp_patch_notify:
-                fp_patch_notify.write(patch_str)
-                return True
-    except OSError as ex:
-        print('EX: receive_git_patch ' + patch_filename + ' ' + str(ex))
+    if save_string(patch_str, patch_filename,
+                   'EX: receive_git_patch ' + patch_filename + ' 1 [ex]'):
+        patch_notify_filename = \
+            acct_dir(base_dir, nickname, domain) + '/.newPatchContent'
+        if save_string(patch_str, patch_notify_filename,
+                       'EX: receive_git_patch ' +
+                       patch_filename + ' 2 [ex]'):
+            return True
     return False
 
 

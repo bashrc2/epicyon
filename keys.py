@@ -8,6 +8,7 @@ __status__ = "Production"
 __module_group__ = "ActivityPub"
 
 import os
+from data import load_string
 
 
 def _get_local_private_key(base_dir: str, nickname: str, domain: str) -> str:
@@ -19,11 +20,11 @@ def _get_local_private_key(base_dir: str, nickname: str, domain: str) -> str:
     key_filename = base_dir + '/keys/private/' + handle.lower() + '.key'
     if not os.path.isfile(key_filename):
         return None
-    try:
-        with open(key_filename, 'r', encoding='utf-8') as fp_pem:
-            return fp_pem.read()
-    except OSError:
-        print('EX: _get_local_private_key unable to read ' + key_filename)
+    text = load_string(key_filename,
+                       'EX: _get_local_private_key unable to read ' +
+                       key_filename)
+    if text is not None:
+        return text
     return None
 
 
@@ -36,11 +37,11 @@ def _get_local_public_key(base_dir: str, nickname: str, domain: str) -> str:
     key_filename = base_dir + '/keys/public/' + handle.lower() + '.key'
     if not os.path.isfile(key_filename):
         return None
-    try:
-        with open(key_filename, 'r', encoding='utf-8') as fp_pem:
-            return fp_pem.read()
-    except OSError:
-        print('EX: _get_local_public_key unable to read ' + key_filename)
+    text = load_string(key_filename,
+                       'EX: _get_local_public_key unable to read ' +
+                       key_filename)
+    if text is not None:
+        return text
     return None
 
 
