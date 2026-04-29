@@ -69,18 +69,16 @@ def _add_role(base_dir: str, nickname: str, domain: str,
                 return
         lines.append(nickname)
 
-        try:
-            with open(role_file, 'w+', encoding='utf-8') as fp_role:
-                for role_nickname in lines:
-                    role_nickname = role_nickname.strip('\n').strip('\r')
-                    if len(role_nickname) < 2:
-                        continue
-                    dir_str = data_dir(base_dir)
-                    if os.path.isdir(dir_str + '/' +
-                                     role_nickname + '@' + domain):
-                        fp_role.write(role_nickname + '\n')
-        except OSError:
-            print('EX: _add_role, failed to write roles file1 ' + role_file)
+        text = ''
+        for role_nickname in lines:
+            role_nickname = role_nickname.strip('\n').strip('\r')
+            if len(role_nickname) < 2:
+                continue
+            dir_str = data_dir(base_dir)
+            if os.path.isdir(dir_str + '/' + role_nickname + '@' + domain):
+                text += role_nickname + '\n'
+        save_string(text, role_file,
+                    'EX: _add_role, failed to write roles file1 ' + role_file)
     else:
         account_dir = acct_dir(base_dir, nickname, domain)
         if os.path.isdir(account_dir):
@@ -103,14 +101,14 @@ def _remove_role(base_dir: str, nickname: str, role_filename: str) -> None:
     if lines is None:
         return
 
-    try:
-        with open(role_file, 'w+', encoding='utf-8') as fp_role:
-            for role_nickname in lines:
-                role_nickname = role_nickname.strip('\n').strip('\r')
-                if len(role_nickname) > 1 and role_nickname != nickname:
-                    fp_role.write(role_nickname + '\n')
-    except OSError:
-        print('EX: _remove_role, failed to regenerate roles file ' + role_file)
+    text = ''
+    for role_nickname in lines:
+        role_nickname = role_nickname.strip('\n').strip('\r')
+        if len(role_nickname) > 1 and role_nickname != nickname:
+            text += role_nickname + '\n'
+    save_string(text, role_file,
+                'EX: _remove_role, failed to regenerate roles file ' +
+                role_file)
 
 
 def _set_actor_role(actor_json: {}, role_name: str) -> bool:
@@ -326,17 +324,16 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
     if ',' in fields[list_name]:
         # if the list was given as comma separated
         roles_list = fields[list_name].split(',')
-        try:
-            with open(roles_filename, 'w+',
-                      encoding='utf-8') as fp_roles:
-                for roles_nick in roles_list:
-                    roles_nick = roles_nick.strip()
-                    roles_dir = acct_dir(base_dir, roles_nick, domain)
-                    if os.path.isdir(roles_dir):
-                        fp_roles.write(roles_nick + '\n')
-        except OSError as ex:
-            print('EX: unable to write ' + list_name + ' ' +
-                  roles_filename + ' ' + str(ex))
+
+        text = ''
+        for roles_nick in roles_list:
+            roles_nick = roles_nick.strip()
+            roles_dir = acct_dir(base_dir, roles_nick, domain)
+            if os.path.isdir(roles_dir):
+                text += roles_nick + '\n'
+        save_string(text, roles_filename,
+                    'EX: unable to write ' + list_name + ' ' +
+                    roles_filename + ' [ex]')
 
         for roles_nick in roles_list:
             roles_nick = roles_nick.strip()
@@ -346,17 +343,16 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
     else:
         # nicknames on separate lines
         roles_list = fields[list_name].split('\n')
-        try:
-            with open(roles_filename, 'w+',
-                      encoding='utf-8') as fp_roles:
-                for roles_nick in roles_list:
-                    roles_nick = roles_nick.strip()
-                    roles_dir = acct_dir(base_dir, roles_nick, domain)
-                    if os.path.isdir(roles_dir):
-                        fp_roles.write(roles_nick + '\n')
-        except OSError as ex:
-            print('EX: unable to write  ' + list_name + ' ' +
-                  roles_filename + ' ' + str(ex))
+
+        text = ''
+        for roles_nick in roles_list:
+            roles_nick = roles_nick.strip()
+            roles_dir = acct_dir(base_dir, roles_nick, domain)
+            if os.path.isdir(roles_dir):
+                text += roles_nick + '\n'
+        save_string(text, roles_filename,
+                    'EX: unable to write  ' + list_name + ' ' +
+                    roles_filename + ' [ex]')
 
         for roles_nick in roles_list:
             roles_nick = roles_nick.strip()
