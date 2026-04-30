@@ -34,15 +34,10 @@ def get_hashtag_category(base_dir: str, hashtag: str) -> str:
             if not os.path.isfile(category_filename):
                 return ''
 
-    category_str = None
-    try:
-        with open(category_filename, 'r', encoding='utf-8') as fp_category:
-            category_str = fp_category.read()
-    except OSError:
-        print('EX: unable to read category ' + category_filename)
-    except UnicodeEncodeError as ex:
-        print('EX: unable to read category unicode ' + category_filename +
-              ' ' + str(ex))
+    category_str: str = \
+        load_string(category_filename,
+                    'EX: unable to read category ' +
+                    category_filename + ' [ex]')
     if category_str:
         return category_str
     return ''
@@ -74,7 +69,7 @@ def load_city_hashtags(base_dir: str, translate: {}) -> None:
             cities_str = \
                 load_string(cities_filename,
                             'EX: unable to load cities file ' +
-                            cities_filename)
+                            cities_filename + ' [ex]')
             if cities_str:
                 cities = cities_str.split('\n')
             if not cities:
@@ -137,17 +132,10 @@ def get_hashtag_categories(base_dir: str,
             if len(hashtag) > MAX_TAG_LENGTH:
                 continue
 
-            category_str = None
-            try:
-                with open(category_filename, 'r',
-                          encoding='utf-8') as fp_category:
-                    category_str = fp_category.read()
-            except OSError:
-                print('EX: get_hashtag_categories ' + category_filename)
-            except UnicodeEncodeError as ex:
-                print('EX: get_hashtag_categories unicode ' +
-                      category_filename + ' ' + str(ex))
-
+            category_str: str = \
+                load_string(category_filename,
+                            'EX: get_hashtag_categories ' +
+                            category_filename + ' [ex]')
             if not category_str:
                 continue
 
@@ -263,16 +251,10 @@ def set_hashtag_category(base_dir: str, hashtag: str, category: str,
             return False
 
     category_written: bool = False
-    try:
-        with open(category_filename, 'w+', encoding='utf-8') as fp_category:
-            fp_category.write(category)
-            category_written = True
-    except OSError as ex:
-        print('EX: unable to write category ' + category_filename +
-              ' ' + str(ex))
-    except UnicodeEncodeError as ex:
-        print('EX: unable to write category unicode ' + category_filename +
-              ' ' + str(ex))
+    if save_string(category, category_filename,
+                   'EX: unable to write category ' + category_filename +
+                   ' [ex]'):
+        category_written = True
 
     if category_written:
         if update:

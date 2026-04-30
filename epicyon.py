@@ -136,6 +136,7 @@ from webapp_post import get_instance_software
 from siteactive import site_is_active
 from siteactive import is_online
 from data import save_string
+from data import load_list
 
 
 def str2bool(value_str) -> bool:
@@ -1976,16 +1977,15 @@ def _command_options() -> None:
         approve_follows_filename = accounts_dir + '/followrequests.txt'
         approve_ctr: int = 0
         if os.path.isfile(approve_follows_filename):
-            try:
-                with open(approve_follows_filename, 'r',
-                          encoding='utf-8') as fp_approve:
-                    for approve in fp_approve:
-                        approve1 = remove_eol(approve)
-                        print(approve1)
-                        approve_ctr += 1
-            except OSError:
-                print('EX: unable to read follow approvals file ' +
-                      approve_follows_filename)
+            approve_follows_list: list[str] = \
+                load_list(approve_follows_filename,
+                          'EX: unable to read follow approvals file ' +
+                          approve_follows_filename)
+            if approve_follows_list is not None:
+                for approve in approve_follows_list:
+                    approve1 = remove_eol(approve)
+                    print(approve1)
+                    approve_ctr += 1
         if approve_ctr == 0:
             print('There are no follow requests pending approval.')
         sys.exit()

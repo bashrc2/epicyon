@@ -20,6 +20,10 @@ def _store_base(text: str, filename: str, exception_text: str,
         if '[ex]' in exception_text:
             exception_text = exception_text.replace('[ex]', str(exc))
         print(exception_text)
+    except UnicodeEncodeError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        print(exception_text)
     return False
 
 
@@ -31,6 +35,10 @@ def load_string(filename: str, exception_text: str) -> str:
             text: str = fp.read()
             return text
     except OSError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        print(exception_text)
+    except UnicodeEncodeError as exc:
         if '[ex]' in exception_text:
             exception_text = exception_text.replace('[ex]', str(exc))
         print(exception_text)
@@ -59,6 +67,10 @@ def load_line(filename: str, exception_text: str) -> str:
             text: str = fp.readline()
             return text
     except OSError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        print(exception_text)
+    except UnicodeEncodeError as exc:
         if '[ex]' in exception_text:
             exception_text = exception_text.replace('[ex]', str(exc))
         print(exception_text)

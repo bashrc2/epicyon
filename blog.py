@@ -48,6 +48,7 @@ from newswire import rss2footer
 from cache import get_person_from_cache
 from flags import is_image_file
 from data import load_string
+from data import save_string
 from data import load_list
 
 
@@ -106,15 +107,14 @@ def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
     if lines and removals:
         print('Rewriting ' + post_filename + ' to remove ' +
               str(len(removals)) + ' entries')
-        try:
-            with open(post_filename, 'w+', encoding='utf-8') as fp_post:
-                for reply_post_id in lines:
-                    reply_post_id = remove_eol(reply_post_id)
-                    if reply_post_id not in removals:
-                        fp_post.write(reply_post_id + '\n')
-        except OSError as ex:
-            print('EX: unable to remove replies from post ' +
-                  post_filename + ' ' + str(ex))
+        text: str = ''
+        for reply_post_id in lines:
+            reply_post_id = remove_eol(reply_post_id)
+            if reply_post_id not in removals:
+                text += reply_post_id + '\n'
+        save_string(text, post_filename,
+                    'EX: unable to remove replies from post ' +
+                    post_filename + ' [ex]')
 
     return replies
 

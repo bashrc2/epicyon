@@ -1615,15 +1615,13 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
             break
 
         # write the allow file
-        try:
-            with open(allow_filename, 'w+',
-                      encoding='utf-8') as fp_allow:
-                fp_allow.write(domain_full + '\n')
-                for allowed in allowed_domains:
-                    fp_allow.write(allowed + '\n')
-                print('Broch mode enabled')
-        except OSError as ex:
-            print('EX: Broch mode not enabled due to file write ' + str(ex))
+        text = domain_full + '\n'
+        for allowed in allowed_domains:
+            text += allowed + '\n'
+        if save_string(text, allow_filename,
+                       'EX: Broch mode not enabled due to file write [ex]'):
+            print('Broch mode enabled')
+        else:
             return
 
     set_config_param(base_dir, "brochMode", enabled)
