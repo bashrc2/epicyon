@@ -246,6 +246,7 @@ from gemini import blog_to_gemini
 from blog import html_blog_post_gemini_links
 from data import load_list
 from data import load_string
+from data import save_string
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -2136,7 +2137,9 @@ def test_shared_items_federation(base_dir: str) -> None:
                                  alice_domain, alice_port)
     filename = bob_dir_str + '/bob@' + bob_domain + '/followers.txt'
     if not text_in_file('alice@' + alice_domain, filename):
-        text = load_string(filename, '')
+        text: str = load_string(filename,
+                                'EX: test_shared_items_federation load ' +
+                                filename)
         print('alice@' + alice_domain + ' not in\n' + str(text))
     assert text_in_file('alice@' + alice_domain, filename)
     assert text_in_file('bob@' + bob_domain,
@@ -2658,9 +2661,10 @@ def test_group_follow(base_dir: str) -> None:
     print('acct: exists within the webfinger endpoint for testgroup')
 
     testgroup_handle = 'testgroup@' + testgroup_domain
-    following_str = ''
-    with open(alice_following_filename, 'r', encoding='utf-8') as fp_foll:
-        following_str = fp_foll.read()
+    following_str: str = \
+        load_string(alice_following_filename,
+                    'EX: test_group_follow load 1 ' + alice_following_filename)
+    if following_str:
         print('Alice following.txt:\n\n' + following_str)
     if '!testgroup' not in following_str:
         print('Alice following.txt does not contain !testgroup@' +
@@ -2739,9 +2743,10 @@ def test_group_follow(base_dir: str) -> None:
     print('acct: exists within the webfinger endpoint for testgroup')
 
     testgroup_handle = 'testgroup@' + testgroup_domain
-    following_str = ''
-    with open(bob_following_filename, 'r', encoding='utf-8') as fp_foll:
-        following_str = fp_foll.read()
+    following_str: str = \
+        load_string(bob_following_filename,
+                    'EX: test_group_follow load 2 ' + bob_following_filename)
+    if following_str:
         print('Bob following.txt:\n\n' + following_str)
     if '!testgroup' not in following_str:
         print('Bob following.txt does not contain !testgroup@' +
@@ -3079,29 +3084,35 @@ def _test_follows(base_dir: str) -> None:
                   federation_list, False, False, 'following.txt')
 
     account_dir = acct_dir(base_dir, nickname, domain)
-    with open(account_dir + '/following.txt', 'r',
-              encoding='utf-8') as fp_foll:
-        domain_found: bool = False
-        for following_domain in fp_foll:
-            test_domain = following_domain.split('@')[1]
-            test_domain = remove_eol(test_domain)
-            if test_domain == 'mesh.com':
-                domain_found = True
-            if test_domain not in federation_list:
-                print(test_domain)
-                assert False
+    foll_list1: list[str] = \
+        load_list(account_dir + '/following.txt',
+                  'EX: _test_follows load list ' +
+                  account_dir + '/following.txt')
+    domain_found: bool = False
+    for following_domain in foll_list1:
+        test_domain = following_domain.split('@')[1]
+        test_domain = remove_eol(test_domain)
+        if test_domain == 'mesh.com':
+            domain_found = True
+        if test_domain not in federation_list:
+            print(test_domain)
+            assert False
+    assert domain_found
 
-        assert domain_found
-        unfollow_account(base_dir, nickname, domain, 'batman', 'mesh.com',
-                         True, False, 'following.txt')
+    unfollow_account(base_dir, nickname, domain, 'batman', 'mesh.com',
+                     True, False, 'following.txt')
 
-        domain_found: bool = False
-        for following_domain in fp_foll:
-            test_domain = following_domain.split('@')[1]
-            test_domain = remove_eol(test_domain)
-            if test_domain == 'mesh.com':
-                domain_found = True
-        assert domain_found is False
+    foll_list2: list[str] = \
+        load_list(account_dir + '/following.txt',
+                  'EX: _test_follows load list ' +
+                  account_dir + '/following.txt')
+    domain_found: bool = False
+    for following_domain in foll_list2:
+        test_domain = following_domain.split('@')[1]
+        test_domain = remove_eol(test_domain)
+        if test_domain == 'mesh.com':
+            domain_found = True
+    assert domain_found is False
 
     clear_followers(base_dir, nickname, domain)
     add_follower_of_person(base_dir, nickname, domain, 'badger', 'wild.com',
@@ -3118,14 +3129,16 @@ def _test_follows(base_dir: str) -> None:
                            federation_list, False, False)
 
     account_dir = acct_dir(base_dir, nickname, domain)
-    with open(account_dir + '/followers.txt', 'r',
-              encoding='utf-8') as fp_foll:
-        for follower_domain in fp_foll:
-            test_domain = follower_domain.split('@')[1]
-            test_domain = remove_eol(test_domain)
-            if test_domain not in federation_list:
-                print(test_domain)
-                assert False
+    foll_list: list[str] = \
+        load_list(account_dir + '/followers.txt',
+                  'EX: _test_follows load list ' +
+                  account_dir + '/followers.txt')
+    for follower_domain in foll_list:
+        test_domain = follower_domain.split('@')[1]
+        test_domain = remove_eol(test_domain)
+        if test_domain not in federation_list:
+            print(test_domain)
+            assert False
 
     os.chdir(curr_dir)
     shutil.rmtree(base_dir, ignore_errors=False)
@@ -3401,8 +3414,8 @@ def test_client_to_server(base_dir: str):
     print('Bob follows the calendar of Alice')
     following_cal_path = \
         data_dir(bob_dir) + '/bob@' + bob_domain + '/followingCalendar.txt'
-    with open(following_cal_path, 'w+', encoding='utf-8') as fp_foll:
-        fp_foll.write('alice@' + alice_domain + '\n')
+    save_string('alice@' + alice_domain + '\n', following_cal_path,
+                'EX: test_client_to_server save ' + following_cal_path)
 
     print('\n\n*******************************************************')
     print('EVENT: Alice sends to Bob via c2s')
@@ -4868,9 +4881,10 @@ def _test_translation_labels() -> None:
                 continue
             if source_file.startswith('flycheck_'):
                 continue
-            source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as fp_source:
-                source_str = fp_source.read()
+            source_str: str = \
+                load_string(source_file,
+                            'EX: _test_translation_labels load ' +
+                            source_file)
             if not source_str:
                 continue
             if 'translate[' not in source_str:
@@ -5520,8 +5534,8 @@ def _diagram_groups(include_groups: [],
     for group_name in include_groups:
         filename += '_' + group_name.replace(' ', '-')
     filename += '.dot'
-    with open(filename, 'w+', encoding='utf-8') as fp_graph:
-        fp_graph.write(call_graph_str)
+    if save_string(call_graph_str, filename,
+                   'EX: _diagram_groups save ' + filename):
         print('Graph saved to ' + filename)
         print('Plot using: ' +
               'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
@@ -5539,9 +5553,10 @@ def _test_post_variable_names():
                 continue
             if source_file.startswith('flycheck_'):
                 continue
-            source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as fp_source:
-                source_str = fp_source.read()
+            source_str: str = \
+                load_string(source_file,
+                            'EX: _test_post_variable_names load ' +
+                            source_file)
             if not source_str:
                 continue
             if ' name="' not in source_str:
@@ -5574,9 +5589,10 @@ def _test_config_param_names():
                 continue
             if source_file.startswith('flycheck_'):
                 continue
-            source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as fp_source:
-                source_str = fp_source.read()
+            source_str: str = \
+                load_string(source_file,
+                            'EX: _test_config_param_names load ' +
+                            source_file)
             if not source_str:
                 continue
             for fname in fnames:
@@ -5622,9 +5638,10 @@ def _test_source_contains_no_tabs():
                 continue
             if source_file.startswith('flycheck_'):
                 continue
-            source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as fp_source:
-                source_str = fp_source.read()
+            source_str: str = \
+                load_string(source_file,
+                            'EX: _test_source_contains_no_tabs load ' +
+                            source_file)
             if not source_str:
                 continue
             if '\t' in source_str:
@@ -5649,9 +5666,10 @@ def _test_checkbox_names():
                 continue
             if source_file.startswith('flycheck_'):
                 continue
-            source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as fp_source:
-                source_str = fp_source.read()
+            source_str: str = \
+                load_string(source_file,
+                            'EX: _test_checkbox_names load ' +
+                            source_file)
             if not source_str:
                 continue
             for fname in fnames:
@@ -5689,9 +5707,9 @@ def _test_post_field_names(source_file: str, fieldnames: []):
     for field in fieldnames:
         fnames.append(field + '.get')
 
-    source_str = ''
-    with open(source_file, 'r', encoding='utf-8') as fp_source:
-        source_str = fp_source.read()
+    source_str: str = \
+        load_string(source_file,
+                    'EX: _test_post_field_names load ' + source_file)
     if not source_str:
         return
     for fname in fnames:
@@ -5773,9 +5791,10 @@ def _test_thread_functions():
             modules[mod_name] = {
                 'functions': []
             }
-            source_str = ''
-            with open(source_file, 'r', encoding='utf-8') as fp_src:
-                source_str = fp_src.read()
+            source_str: str = \
+                load_string(source_file,
+                            'EX: load ' + source_file)
+            if source_str:
                 modules[mod_name]['source'] = source_str
                 if 'thread_with_trace(' in source_str:
                     threads_called_in_modules.append(mod_name)
@@ -5936,7 +5955,9 @@ def _test_functions():
                 'functions': []
             }
             # load the module source
-            source_str: str = load_string(source_file, '')
+            source_str: str = \
+                load_string(source_file, 'EX: test_functions load ' +
+                            source_file)
             modules[mod_name]['source'] = source_str
             # go through the source line by line
             lines: list[str] = load_list(source_file, '')
@@ -6123,9 +6144,8 @@ def _test_functions():
                 'sed -i "s|' + name + '|' + snake_case_name + '|g" *.py\n'
             ctr += 1
         print(function_names_str + '\n')
-        with open('scripts/bad_function_names.sh', 'w+',
-                  encoding='utf-8') as fp_file:
-            fp_file.write(function_names_sh)
+        save_string(function_names_sh, 'scripts/bad_function_names.sh',
+                    'EX: scripts/bad_function_names.sh')
         assert False
 
     # which modules is each function used within?
