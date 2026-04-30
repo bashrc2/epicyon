@@ -74,6 +74,7 @@ from person import get_actor_json
 from cache import get_person_from_cache
 from data import save_string
 from data import load_string
+from data import prepend_string
 
 
 def _desktop_help() -> None:
@@ -188,17 +189,8 @@ def _mark_post_as_read(actor: str, post_id: str, post_category: str) -> None:
     if os.path.isfile(read_posts_filename):
         if text_in_file(post_id, read_posts_filename):
             return
-        try:
-            # prepend to read posts file
-            post_id += '\n'
-            with open(read_posts_filename, 'r+',
-                      encoding='utf-8') as fp_read:
-                content = fp_read.read()
-                if post_id not in content:
-                    fp_read.seek(0, 0)
-                    fp_read.write(post_id + content)
-        except OSError as ex:
-            print('EX: Failed to mark post as read 1 ' + str(ex))
+        prepend_string(post_id, read_posts_filename,
+                       'EX: Failed to prepend post as read 1 [ex]')
     else:
         save_string(post_id + '\n', read_posts_filename,
                     'EX: Failed to mark post as read 2 [ex]')

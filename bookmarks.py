@@ -37,6 +37,7 @@ from posts import get_person_box
 from session import post_json
 from data import load_string
 from data import save_string
+from data import prepend_string
 
 
 def undo_bookmarks_collection_entry(recent_posts_cache: {},
@@ -252,19 +253,12 @@ def update_bookmarks_collection(recent_posts_cache: {},
     bookmark_index = post_filename.split('/')[-1]
     if os.path.isfile(bookmarks_index_filename):
         if not text_in_file(bookmark_index, bookmarks_index_filename):
-            try:
-                with open(bookmarks_index_filename, 'r+',
-                          encoding='utf-8') as fp_bmi:
-                    content = fp_bmi.read()
-                    if bookmark_index + '\n' not in content:
-                        fp_bmi.seek(0, 0)
-                        fp_bmi.write(bookmark_index + '\n' + content)
-                        if debug:
-                            print('DEBUG: bookmark added to index')
-            except OSError as ex:
+            if prepend_string(bookmark_index, bookmarks_index_filename,
+                              'EX: ' +
+                              'Failed to prepend entry to bookmarks index ' +
+                              bookmarks_index_filename + ' [ex]'):
                 if debug:
-                    print('WARN: Failed to write entry to bookmarks index ' +
-                          bookmarks_index_filename + ' ' + str(ex))
+                    print('DEBUG: bookmark added to index')
     else:
         save_string(bookmark_index + '\n', bookmarks_index_filename,
                     'EX: unable to write bookmarks index ' +

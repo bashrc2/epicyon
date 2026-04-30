@@ -40,6 +40,7 @@ from data import load_list
 from data import load_string
 from data import save_string
 from data import append_string
+from data import prepend_string
 
 
 def _strings_are_digits(strings_list: []) -> bool:
@@ -159,16 +160,10 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
 
         if os.path.isfile(tl_events_filename):
             _remove_event_from_timeline(event_id, tl_events_filename)
-            try:
-                with open(tl_events_filename, 'r+',
-                          encoding='utf-8') as fp_tl_events:
-                    content = fp_tl_events.read()
-                    if event_id + '\n' not in content:
-                        fp_tl_events.seek(0, 0)
-                        fp_tl_events.write(event_id + '\n' + content)
-            except OSError as ex:
-                print('EX: Failed to write entry to events file ' +
-                      tl_events_filename + ' ' + str(ex))
+            ex_str: str = \
+                'EX: Failed to prepend entry to events file ' + \
+                tl_events_filename + ' [ex]'
+            if not prepend_string(event_id, tl_events_filename, ex_str):
                 return False
         else:
             save_string(event_id + '\n', tl_events_filename,

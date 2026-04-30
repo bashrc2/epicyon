@@ -24,6 +24,7 @@ from timeFunctions import date_epoch
 from timeFunctions import date_from_string_format
 from data import save_string
 from data import load_string
+from data import prepend_string
 
 
 def get_book_link_from_content(content: str) -> str:
@@ -396,18 +397,12 @@ def _update_recent_books_list(base_dir: str, book_id: str,
     """
     recent_books_filename = data_dir(base_dir) + '/recent_books.txt'
     if os.path.isfile(recent_books_filename):
-        try:
-            with open(recent_books_filename, 'r+',
-                      encoding='utf-8') as fp_recent:
-                content = fp_recent.read()
-                if book_id + '\n' not in content:
-                    fp_recent.seek(0, 0)
-                    fp_recent.write(book_id + '\n' + content)
-                    if debug:
-                        print('DEBUG: recent book added')
-        except OSError as ex:
-            print('WARN: Failed to write entry to recent books ' +
-                  recent_books_filename + ' ' + str(ex))
+        ex_str: str = \
+            'EX: Failed to prepend entry to recent books ' + \
+            recent_books_filename + ' [ex]'
+        if prepend_string(book_id, recent_books_filename, ex_str):
+            if debug:
+                print('DEBUG: recent book added')
     else:
         save_string(book_id + '\n', recent_books_filename,
                     'EX: unable to write recent books ' +

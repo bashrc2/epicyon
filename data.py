@@ -127,3 +127,24 @@ def append_string(text: str, filename: str, exception_text: str) -> bool:
     """Appends a string to file
     """
     return _store_base(text, filename, exception_text, 'a+')
+
+
+def prepend_string(text: str, filename: str, exception_text: str) -> bool:
+    """Prepends a string to a file
+    """
+    try:
+        with open(filename, 'r+', encoding='utf-8') as fp:
+            content: str = fp.read()
+            if text + '\n' not in content:
+                fp.seek(0, 0)
+                fp.write(text + '\n' + content)
+            return True
+    except OSError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        print(exception_text)
+    except UnicodeEncodeError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        print(exception_text)
+    return False

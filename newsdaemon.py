@@ -46,6 +46,7 @@ from data import load_list
 from data import load_string
 from data import save_string
 from data import append_string
+from data import prepend_string
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,
@@ -57,17 +58,11 @@ def _update_feeds_outbox_index(base_dir: str, domain: str,
 
     if os.path.isfile(index_filename):
         if not text_in_file(post_id, index_filename):
-            try:
-                with open(index_filename, 'r+',
-                          encoding='utf-8') as fp_feeds:
-                    content = fp_feeds.read()
-                    if post_id + '\n' not in content:
-                        fp_feeds.seek(0, 0)
-                        fp_feeds.write(post_id + '\n' + content)
-                        print('DEBUG: feeds post added to index')
-            except OSError as ex:
-                print('EX: Failed to write entry to feeds posts index ' +
-                      index_filename + ' ' + str(ex))
+            if prepend_string(post_id, index_filename,
+                              'EX: ' +
+                              'Failed to prepend entry to feeds posts index ' +
+                              index_filename + ' [ex]'):
+                print('DEBUG: feeds post added to index')
         return
 
     save_string(post_id + '\n', index_filename,

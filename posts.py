@@ -149,6 +149,7 @@ from data import load_string
 from data import save_string
 from data import save_flag_file
 from data import append_string
+from data import prepend_string
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -1104,16 +1105,10 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
     days_since_epoch = days_diff.days
     tag_line = \
         str(days_since_epoch) + '  ' + nickname + '  ' + \
-        new_post_id + '\n'
-    try:
-        with open(tags_filename, 'r+', encoding='utf-8') as fp_tags:
-            content = fp_tags.read()
-            if tag_line not in content:
-                fp_tags.seek(0, 0)
-                fp_tags.write(tag_line + content)
-    except OSError as ex:
-        print('EX: Failed to write entry to tags file ' +
-              tags_filename + ' ' + str(ex))
+        new_post_id
+    prepend_string(tag_line, tags_filename,
+                   'EX: Failed to prepend entry to tags file ' +
+                   tags_filename + ' [ex]')
 
 
 def _add_schedule_post(base_dir: str, nickname: str, domain: str,
@@ -1127,17 +1122,12 @@ def _add_schedule_post(base_dir: str, nickname: str, domain: str,
     index_str = event_date_str + ' ' + post_id.replace('/', '#')
     if os.path.isfile(schedule_index_filename):
         if not text_in_file(index_str, schedule_index_filename):
-            try:
-                with open(schedule_index_filename, 'r+',
-                          encoding='utf-8') as fp_schedule:
-                    content = fp_schedule.read()
-                    if index_str + '\n' not in content:
-                        fp_schedule.seek(0, 0)
-                        fp_schedule.write(index_str + '\n' + content)
-                        print('DEBUG: scheduled post added to index')
-            except OSError as ex:
-                print('EX: Failed to write entry to scheduled posts index ' +
-                      schedule_index_filename + ' ' + str(ex))
+            ex_str: str = \
+                'EX: Failed to prepend entry to scheduled posts index ' + \
+                schedule_index_filename + ' [ex]'
+            if prepend_string(index_str, schedule_index_filename,
+                              ex_str):
+                print('DEBUG: scheduled post added to index')
         return
 
     save_string(index_str + '\n', schedule_index_filename,

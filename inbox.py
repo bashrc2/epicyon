@@ -142,6 +142,7 @@ from data import save_string
 from data import save_flag_file
 from data import load_string
 from data import append_string
+from data import prepend_string
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -940,16 +941,9 @@ def update_edited_post(base_dir: str,
     index_filename = \
         acct_dir(base_dir, nickname, domain) + '/' + box_name + '.index'
     if not text_in_file(id_str, index_filename):
-        try:
-            with open(index_filename, 'r+',
-                      encoding='utf-8') as fp_index:
-                content = fp_index.read()
-                if id_str + '\n' not in content:
-                    fp_index.seek(0, 0)
-                    fp_index.write(id_str + '\n' + content)
-        except OSError as ex:
-            print('WARN: Failed to write index after edit ' +
-                  index_filename + ' ' + str(ex))
+        prepend_string(id_str, index_filename,
+                       'WARN: Failed to prepend index after edit ' +
+                       index_filename + ' [ex]')
 
 
 def populate_replies(base_dir: str, http_prefix: str, domain: str,
@@ -3347,22 +3341,19 @@ def _receive_follow_request(session, session_onion, session_i2p,
                        is_group_account(base_dir, nickname, domain):
                         print('Group cannot follow a group')
                         return True
-                    try:
-                        with open(followers_filename, 'r+',
-                                  encoding='utf-8') as fp_followers:
-                            content = fp_followers.read()
-                            if approve_handle + '\n' not in content:
-                                fp_followers.seek(0, 0)
-                                if not group_account:
-                                    fp_followers.write(approve_handle +
-                                                       '\n' + content)
-                                else:
-                                    fp_followers.write('!' + approve_handle +
-                                                       '\n' + content)
-                    except OSError as ex:
-                        print('WARN: ' +
-                              'Failed to write entry to followers file ' +
-                              str(ex))
+
+                    if not group_account:
+                        ex_str: str = \
+                            'EX: Failed to prepend entry to followers file' + \
+                            ' [ex]'
+                        prepend_string(approve_handle, followers_filename,
+                                       ex_str)
+                    else:
+                        ex_str: str = \
+                            'EX: Failed to prepend group to followers file' + \
+                            ' [ex]'
+                        prepend_string('!' + approve_handle,
+                                       followers_filename, ex_str)
             else:
                 save_string(approve_handle + '\n', followers_filename,
                             'EX: _receive_follow_request unable to write ' +

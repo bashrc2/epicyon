@@ -27,6 +27,7 @@ from session import create_session
 from data import save_string
 from data import load_string
 from data import append_string
+from data import prepend_string
 from data import load_list
 
 
@@ -345,17 +346,10 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
         print('Manual follow accept: updating ' + followers_filename)
         if os.path.isfile(followers_filename):
             if not text_in_file(approve_handle_full, followers_filename):
-                try:
-                    with open(followers_filename, 'r+',
-                              encoding='utf-8') as fp_followers:
-                        content = fp_followers.read()
-                        if approve_handle_full + '\n' not in content:
-                            fp_followers.seek(0, 0)
-                            fp_followers.write(approve_handle_full + '\n' +
-                                               content)
-                except OSError as ex:
-                    print('WARN: Manual follow accept. ' +
-                          'Failed to write entry to followers file ' + str(ex))
+                prepend_string(approve_handle_full, followers_filename,
+                               'EX: Manual follow accept. ' +
+                               'Failed to prepend entry to followers file ' +
+                               '[ex]')
             else:
                 print('WARN: Manual follow accept: ' + approve_handle_full +
                       ' already exists in ' + followers_filename)

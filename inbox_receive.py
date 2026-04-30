@@ -89,6 +89,7 @@ from webapp_hashtagswarm import store_hash_tags
 from data import save_string
 from data import save_flag_file
 from data import append_string
+from data import prepend_string
 from data import load_string
 
 
@@ -112,16 +113,9 @@ def inbox_update_index(boxname: str, base_dir: str, handle: str,
 
     written: bool = False
     if os.path.isfile(index_filename):
-        try:
-            with open(index_filename, 'r+', encoding='utf-8') as fp_index:
-                content = fp_index.read()
-                if destination_filename + '\n' not in content:
-                    fp_index.seek(0, 0)
-                    fp_index.write(destination_filename + '\n' + content)
-                written = True
-                return True
-        except OSError as ex:
-            print('EX: Failed to write entry to index ' + str(ex))
+        if prepend_string(destination_filename, index_filename,
+                          'EX: Failed to prepend entry to index [ex]'):
+            written = True
     else:
         if save_string(destination_filename + '\n',
                        index_filename,
