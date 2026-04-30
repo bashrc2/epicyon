@@ -486,19 +486,21 @@ def remove_global_block(base_dir: str,
         unblock_handle = unblock_nickname + '@' + unblock_domain
         if os.path.isfile(unblocking_filename):
             if text_in_file(unblock_handle, unblocking_filename):
-                try:
-                    with open(unblocking_filename, 'r',
-                              encoding='utf-8') as fp_unblock:
-                        with open(unblocking_filename + '.new', 'w+',
-                                  encoding='utf-8') as fpnew:
-                            for line in fp_unblock:
-                                handle = remove_eol(line)
-                                if unblock_handle not in line:
-                                    fpnew.write(handle + '\n')
-                except OSError as ex:
-                    print('EX: failed to remove global block ' +
-                          unblocking_filename + ' ' + str(ex))
+                unblocking_list: list[str] = \
+                    load_list(unblocking_filename,
+                              'EX: failed to remove global block ' +
+                              unblocking_filename + ' 1 [ex]')
+                if unblocking_list is None:
                     return False
+
+                text: str = ''
+                for line in unblocking_list:
+                    handle = remove_eol(line)
+                    if unblock_handle not in line:
+                        text += handle + '\n'
+                save_string(text, unblocking_filename + '.new',
+                            'EX: failed to remove global block ' +
+                            unblocking_filename + ' 1 [ex]')
 
                 if os.path.isfile(unblocking_filename + '.new'):
                     try:
@@ -513,19 +515,21 @@ def remove_global_block(base_dir: str,
         unblock_hashtag = unblock_nickname
         if os.path.isfile(unblocking_filename):
             if text_in_file(unblock_hashtag + '\n', unblocking_filename):
-                try:
-                    with open(unblocking_filename, 'r',
-                              encoding='utf-8') as fp_unblock:
-                        with open(unblocking_filename + '.new', 'w+',
-                                  encoding='utf-8') as fpnew:
-                            for line in fp_unblock:
-                                block_line = remove_eol(line)
-                                if unblock_hashtag not in line:
-                                    fpnew.write(block_line + '\n')
-                except OSError as ex:
-                    print('EX: failed to remove global hashtag block ' +
-                          unblocking_filename + ' ' + str(ex))
+                unblocking_list: list[str] = \
+                    load_list(unblocking_filename,
+                              'EX: failed to remove global hashtag block ' +
+                              unblocking_filename + ' 1 [ex]')
+                if unblocking_list is None:
                     return False
+
+                text: str = ''
+                for line in unblocking_list:
+                    block_line = remove_eol(line)
+                    if unblock_hashtag not in line:
+                        text += block_line + '\n'
+                save_string(text, unblocking_filename + '.new',
+                            'EX: failed to remove global hashtag block ' +
+                            unblocking_filename + ' 2 [ex]')
 
                 if os.path.isfile(unblocking_filename + '.new'):
                     try:
@@ -549,19 +553,21 @@ def remove_block(base_dir: str, nickname: str, domain: str,
     unblock_handle = unblock_nickname + '@' + unblock_domain
     if os.path.isfile(unblocking_filename):
         if text_in_file(unblock_handle, unblocking_filename):
-            try:
-                with open(unblocking_filename, 'r',
-                          encoding='utf-8') as fp_unblock:
-                    with open(unblocking_filename + '.new', 'w+',
-                              encoding='utf-8') as fpnew:
-                        for line in fp_unblock:
-                            handle = remove_eol(line)
-                            if unblock_handle not in line:
-                                fpnew.write(handle + '\n')
-            except OSError as ex:
-                print('EX: failed to remove block ' +
-                      unblocking_filename + ' ' + str(ex))
+            unblocking_list: list[str] = \
+                load_list(unblocking_filename,
+                          'EX: failed to remove block ' +
+                          unblocking_filename + ' 1 [ex]')
+            if unblocking_list is None:
                 return False
+
+            text: str = ''
+            for line in unblocking_list:
+                handle = remove_eol(line)
+                if unblock_handle not in line:
+                    text += handle + '\n'
+            save_string(text, unblocking_filename + '.new',
+                        'EX: failed to remove block ' +
+                        unblocking_filename + ' 2 [ex]')
 
             if os.path.isfile(unblocking_filename + '.new'):
                 try:
