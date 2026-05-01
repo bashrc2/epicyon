@@ -73,6 +73,7 @@ from inbox_receive import inbox_update_index
 from gemini import blog_to_gemini
 from markdown import blog_to_markdown
 from markdown import blog_to_micron
+from data import remove_file
 
 
 def _localonly_not_local(message_json: {}, domain_full: str) -> bool:
@@ -614,11 +615,9 @@ def post_message_to_outbox(session, translate: {},
                 data_dir(base_dir) + '/' + \
                 post_to_nickname + '@' + domain + '/.citations.txt'
             if os.path.isfile(citations_filename):
-                try:
-                    os.remove(citations_filename)
-                except OSError:
-                    print('EX: post_message_to_outbox unable to delete ' +
-                          citations_filename)
+                remove_file(citations_filename,
+                            'EX: post_message_to_outbox unable to delete ' +
+                            citations_filename)
 
     # The following activity types get added to the index files
     indexed_activities = (

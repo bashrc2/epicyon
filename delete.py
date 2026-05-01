@@ -28,6 +28,7 @@ from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from posts import get_person_box
+from data import remove_file
 
 
 def send_delete_via_server(base_dir: str, session,
@@ -214,8 +215,6 @@ def remove_old_hashtags(base_dir: str, max_months: int) -> str:
         break
 
     for remove_filename in remove_hashtags:
-        try:
-            os.remove(remove_filename)
-        except OSError:
-            print('EX: remove_old_hashtags unable to delete ' +
-                  remove_filename)
+        remove_file(remove_filename,
+                    'EX: remove_old_hashtags unable to delete ' +
+                    remove_filename)

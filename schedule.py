@@ -26,6 +26,7 @@ from threads import begin_thread
 from siteactive import save_unavailable_sites
 from data import save_string
 from data import load_list
+from data import remove_file
 
 
 def _update_post_schedule(base_dir: str, handle: str, httpd,
@@ -64,12 +65,11 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
             if delete_schedule_post:
                 # delete extraneous scheduled posts
                 if os.path.isfile(post_filename):
-                    try:
-                        os.remove(post_filename)
-                    except OSError:
-                        print('EX: ' +
-                              '_update_post_schedule unable to delete ' +
-                              str(post_filename))
+                    ex_text = \
+                        'EX: ' + \
+                        '_update_post_schedule unable to delete ' + \
+                        str(post_filename)
+                    remove_file(post_filename, ex_text)
                 continue
             # create the new index file
             index_lines.append(line)
@@ -173,11 +173,10 @@ def _update_post_schedule(base_dir: str, handle: str, httpd,
                                           httpd.mitm_servers,
                                           httpd.instance_software):
                 index_lines.remove(line)
-                try:
-                    os.remove(post_filename)
-                except OSError:
-                    print('EX: _update_post_schedule unable to delete ' +
-                          str(post_filename))
+                ex_text = \
+                    'EX: _update_post_schedule unable to delete ' + \
+                    str(post_filename)
+                remove_file(post_filename, ex_text)
                 continue
 
             # move to the outbox
@@ -262,11 +261,9 @@ def remove_scheduled_posts(base_dir: str, nickname: str, domain: str) -> None:
     schedule_index_filename = \
         acct_dir(base_dir, nickname, domain) + '/schedule.index'
     if os.path.isfile(schedule_index_filename):
-        try:
-            os.remove(schedule_index_filename)
-        except OSError:
-            print('EX: remove_scheduled_posts unable to delete ' +
-                  schedule_index_filename)
+        remove_file(schedule_index_filename,
+                    'EX: remove_scheduled_posts unable to delete ' +
+                    schedule_index_filename)
     # remove the scheduled posts
     scheduled_dir = acct_dir(base_dir, nickname, domain) + '/scheduled'
     if not os.path.isdir(scheduled_dir):
@@ -275,8 +272,6 @@ def remove_scheduled_posts(base_dir: str, nickname: str, domain: str) -> None:
         file_path = os.path.join(scheduled_dir, scheduled_post_filename)
         if not os.path.isfile(file_path):
             continue
-        try:
-            os.remove(file_path)
-        except OSError:
-            print('EX: remove_scheduled_posts unable to delete ' +
-                  file_path)
+        remove_file(file_path,
+                    'EX: remove_scheduled_posts unable to delete ' +
+                    file_path)

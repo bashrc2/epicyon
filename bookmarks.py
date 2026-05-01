@@ -38,6 +38,7 @@ from session import post_json
 from data import load_string
 from data import save_string
 from data import prepend_string
+from data import remove_file
 
 
 def undo_bookmarks_collection_entry(recent_posts_cache: {},
@@ -60,13 +61,11 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
                                  domain, post_json_object)
     if cached_post_filename:
         if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
-            except OSError:
-                if debug:
-                    print('EX: undo_bookmarks_collection_entry ' +
-                          'unable to delete cached post file ' +
-                          str(cached_post_filename))
+            ex_text = \
+                'EX: undo_bookmarks_collection_entry ' + \
+                'unable to delete cached post file ' + \
+                str(cached_post_filename)
+            remove_file(cached_post_filename, ex_text)
     remove_post_from_cache(post_json_object, recent_posts_cache)
 
     # remove from the index
@@ -182,13 +181,11 @@ def update_bookmarks_collection(recent_posts_cache: {},
                                  domain, post_json_object)
     if cached_post_filename:
         if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
-            except OSError:
-                if debug:
-                    print('EX: update_bookmarks_collection ' +
-                          'unable to delete cached post ' +
-                          str(cached_post_filename))
+            ex_text = \
+                'EX: update_bookmarks_collection ' + \
+                'unable to delete cached post ' + \
+                str(cached_post_filename)
+            remove_file(cached_post_filename, ex_text)
     remove_post_from_cache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('object'):

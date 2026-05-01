@@ -91,6 +91,7 @@ from data import save_flag_file
 from data import append_string
 from data import prepend_string
 from data import load_string
+from data import remove_file
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -352,11 +353,9 @@ def _receive_update_to_question(recent_posts_cache: {}, message_json: {},
         get_cached_post_filename(base_dir, nickname, domain, message_json)
     if cached_post_filename:
         if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
-            except OSError:
-                print('EX: _receive_update_to_question unable to delete ' +
-                      cached_post_filename)
+            remove_file(cached_post_filename,
+                        'EX: _receive_update_to_question unable to delete ' +
+                        cached_post_filename)
     # remove from memory cache
     remove_post_from_cache(message_json, recent_posts_cache)
     return True
@@ -484,11 +483,9 @@ def receive_edit_to_post(recent_posts_cache: {}, message_json: {},
         get_cached_post_filename(base_dir, nickname, domain, message_json)
     if cached_post_filename:
         if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
-            except OSError:
-                print('EX: _receive_edit_to_post unable to delete ' +
-                      cached_post_filename)
+            remove_file(cached_post_filename,
+                        'EX: _receive_edit_to_post unable to delete ' +
+                        cached_post_filename)
     # remove any cached html for the post which was edited
     delete_cached_html(base_dir, nickname, domain, post_json_object)
     # remove from memory cache
@@ -2088,11 +2085,10 @@ def receive_announce(recent_posts_cache: {},
         if domain not in announce_url and not_in_onion:
             if os.path.isfile(post_filename):
                 # if the announce can't be downloaded then remove it
-                try:
-                    os.remove(post_filename)
-                except OSError:
-                    print('EX: _receive_announce unable to delete ' +
-                          str(post_filename))
+                ex_text = \
+                    'EX: _receive_announce unable to delete ' + \
+                    str(post_filename)
+                remove_file(post_filename, ex_text)
     else:
         if debug:
             actor_url = get_actor_from_post(message_json)
@@ -2213,11 +2209,9 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
         get_cached_post_filename(base_dir, nickname, domain, question_json)
     if cached_post_filename:
         if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
-            except OSError:
-                print('EX: replytoQuestion unable to delete ' +
-                      cached_post_filename)
+            remove_file(cached_post_filename,
+                        'EX: replytoQuestion unable to delete ' +
+                        cached_post_filename)
 
     page_number: int = 1
     show_published_date_only: bool = False

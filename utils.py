@@ -27,6 +27,7 @@ from data import save_string
 from data import save_flag_file
 from data import load_string
 from data import append_string
+from data import remove_file
 
 VALID_HASHTAG_CHARS = \
     set('_0123456789' +
@@ -1795,11 +1796,10 @@ def _remove_attachment(base_dir: str, http_prefix: str,
     media_filename: str = base_dir + '/' + \
         attachment_url.replace(http_prefix + '://' + domain + '/', '')
     if os.path.isfile(media_filename):
-        try:
-            os.remove(media_filename)
-        except OSError:
-            print('EX: _remove_attachment unable to delete media file ' +
-                  str(media_filename))
+        ex_text = \
+            'EX: _remove_attachment unable to delete media file ' + \
+            str(media_filename)
+        remove_file(media_filename, ex_text)
 
     # remove from the log file
     account_dir: str = acct_dir(base_dir, nickname, domain)
@@ -1819,20 +1819,18 @@ def _remove_attachment(base_dir: str, http_prefix: str,
 
     # remove the transcript
     if os.path.isfile(media_filename + '.vtt'):
-        try:
-            os.remove(media_filename + '.vtt')
-        except OSError:
-            print('EX: _remove_attachment unable to delete media transcript ' +
-                  str(media_filename) + '.vtt')
+        ex_text = \
+            'EX: _remove_attachment unable to delete media transcript ' + \
+            str(media_filename) + '.vtt'
+        remove_file(media_filename + '.vtt', ex_text)
 
     # remove the etag
     etag_filename: str = media_filename + '.etag'
     if os.path.isfile(etag_filename):
-        try:
-            os.remove(etag_filename)
-        except OSError:
-            print('EX: _remove_attachment unable to delete etag file ' +
-                  str(etag_filename))
+        ex_text = \
+            'EX: _remove_attachment unable to delete etag file ' + \
+            str(etag_filename)
+        remove_file(etag_filename, ex_text)
     post_json['attachment']: list[dict] = []
 
 
@@ -1927,11 +1925,10 @@ def _delete_post_remove_replies(base_dir: str, nickname: str, domain: str,
                         nickname, domain, reply_file, debug,
                         recent_posts_cache, manual)
     # remove the replies file
-    try:
-        os.remove(replies_filename)
-    except OSError:
-        print('EX: _delete_post_remove_replies ' +
-              'unable to delete replies file ' + str(replies_filename))
+    ex_text = \
+        'EX: _delete_post_remove_replies ' + \
+        'unable to delete replies file ' + str(replies_filename)
+    remove_file(replies_filename, ex_text)
 
 
 def _is_bookmarked(base_dir: str, nickname: str, domain: str,
@@ -1989,31 +1986,27 @@ def delete_cached_html(base_dir: str, nickname: str, domain: str,
     if not cached_post_filename:
         return
     if os.path.isfile(cached_post_filename):
-        try:
-            os.remove(cached_post_filename)
-        except OSError:
-            print('EX: delete_cached_html ' +
-                  'unable to delete cached post file ' +
-                  str(cached_post_filename))
+        ex_text = \
+            'EX: delete_cached_html unable to delete cached post file ' + \
+            str(cached_post_filename)
+        remove_file(cached_post_filename, ex_text)
 
     cached_post_filename = cached_post_filename.replace('.html', '.ssml')
     if os.path.isfile(cached_post_filename):
-        try:
-            os.remove(cached_post_filename)
-        except OSError:
-            print('EX: delete_cached_html ' +
-                  'unable to delete cached ssml post file ' +
-                  str(cached_post_filename))
+        ex_text = \
+            'EX: ' + \
+            'delete_cached_html unable to delete cached ssml post file ' + \
+            str(cached_post_filename)
+        remove_file(cached_post_filename, ex_text)
 
     cached_post_filename = \
         cached_post_filename.replace('/postcache/', '/outbox/')
     if os.path.isfile(cached_post_filename):
-        try:
-            os.remove(cached_post_filename)
-        except OSError:
-            print('EX: delete_cached_html ' +
-                  'unable to delete cached outbox ssml post file ' +
-                  str(cached_post_filename))
+        ex_text = \
+            'EX: delete_cached_html ' + \
+            'unable to delete cached outbox ssml post file ' + \
+            str(cached_post_filename)
+        remove_file(cached_post_filename, ex_text)
 
 
 def _remove_post_id_from_tag_index(tag_index_filename: str,
@@ -2034,11 +2027,9 @@ def _remove_post_id_from_tag_index(tag_index_filename: str,
         newlines += file_line
     if not newlines.strip():
         # if there are no lines then remove the hashtag file
-        try:
-            os.remove(tag_index_filename)
-        except OSError:
-            print('EX: _delete_hashtags_on_post ' +
-                  'unable to delete tag index ' + str(tag_index_filename))
+        ex_text = 'EX: _delete_hashtags_on_post ' + \
+            'unable to delete tag index ' + str(tag_index_filename)
+        remove_file(tag_index_filename, ex_text)
     else:
         # write the new hashtag index without the given post in it
         save_string(newlines, tag_index_filename,
@@ -2127,18 +2118,14 @@ def _delete_conversation_post(base_dir: str, nickname: str, domain: str,
                     conversation_filename)
     else:
         if os.path.isfile(conversation_filename + '.muted'):
-            try:
-                os.remove(conversation_filename + '.muted')
-            except OSError:
-                print('EX: _delete_conversation_post ' +
-                      'unable to remove conversation ' +
-                      str(conversation_filename) + '.muted')
-        try:
-            os.remove(conversation_filename)
-        except OSError:
-            print('EX: _delete_conversation_post ' +
-                  'unable to remove conversation ' +
-                  str(conversation_filename))
+            ex_text = 'EX: _delete_conversation_post ' + \
+                'unable to remove conversation ' + \
+                str(conversation_filename) + '.muted'
+            remove_file(conversation_filename + '.muted', ex_text)
+        ex_text = 'EX: _delete_conversation_post ' + \
+            'unable to remove conversation ' + \
+            str(conversation_filename)
+        remove_file(conversation_filename, ex_text)
 
 
 def is_dm(post_json_object: {}) -> bool:
@@ -2315,13 +2302,10 @@ def delete_post(base_dir: str, http_prefix: str,
                                     http_prefix, post_filename,
                                     recent_posts_cache, debug, manual)
         # finally, remove the post itself
-        try:
-            os.remove(post_filename)
+        ex_text = 'EX: delete_post unable to delete post ' + \
+            str(post_filename)
+        if remove_file(post_filename, ex_text):
             return True
-        except OSError:
-            if debug:
-                print('EX: delete_post unable to delete post ' +
-                      str(post_filename))
         return False
 
     # don't allow DMs to be deleted if they came from a different instance
@@ -2353,13 +2337,10 @@ def delete_post(base_dir: str, http_prefix: str,
                                  debug, False)
     if gemini_blog_filename:
         if os.path.isfile(gemini_blog_filename):
-            try:
-                os.remove(gemini_blog_filename)
+            ex_text = 'EX: delete_post unable to delete gemini post ' + \
+                str(gemini_blog_filename)
+            if remove_file(gemini_blog_filename, ex_text):
                 return True
-            except OSError:
-                if debug:
-                    print('EX: delete_post unable to delete gemini post ' +
-                          str(gemini_blog_filename))
 
     # delete markdown blog post
     markdown_blog_filename: str = \
@@ -2368,13 +2349,10 @@ def delete_post(base_dir: str, http_prefix: str,
                                    debug, False)
     if markdown_blog_filename:
         if os.path.isfile(markdown_blog_filename):
-            try:
-                os.remove(markdown_blog_filename)
+            ex_text = 'EX: delete_post unable to delete markdown post ' + \
+                str(markdown_blog_filename)
+            if remove_file(markdown_blog_filename, ex_text):
                 return True
-            except OSError:
-                if debug:
-                    print('EX: delete_post unable to delete markdown post ' +
-                          str(markdown_blog_filename))
 
     # delete micron blog post
     micron_blog_filename: str = \
@@ -2383,13 +2361,10 @@ def delete_post(base_dir: str, http_prefix: str,
                                  debug, False)
     if micron_blog_filename:
         if os.path.isfile(micron_blog_filename):
-            try:
-                os.remove(micron_blog_filename)
+            ex_text = 'EX: delete_post unable to delete micron post ' + \
+                str(micron_blog_filename)
+            if remove_file(micron_blog_filename, ex_text):
                 return True
-            except OSError:
-                if debug:
-                    print('EX: delete_post unable to delete micron post ' +
-                          str(micron_blog_filename))
 
     # remove from recent posts cache in memory
     remove_post_from_cache(post_json_object, recent_posts_cache)
@@ -2407,19 +2382,15 @@ def delete_post(base_dir: str, http_prefix: str,
     for ext in extensions:
         ext_filename: str = post_filename + '.' + ext
         if os.path.isfile(ext_filename):
-            try:
-                os.remove(ext_filename)
-            except OSError:
-                print('EX: delete_post unable to remove ext ' +
-                      str(ext_filename))
+            ex_text = 'EX: delete_post unable to remove ext ' + \
+                str(ext_filename)
+            remove_file(ext_filename, ex_text)
         elif post_filename.endswith('.json'):
             ext_filename = post_filename.replace('.json', '') + '.' + ext
             if os.path.isfile(ext_filename):
-                try:
-                    os.remove(ext_filename)
-                except OSError:
-                    print('EX: delete_post unable to remove ext ' +
-                          str(ext_filename))
+                ex_text = 'EX: delete_post unable to remove ext ' + \
+                    str(ext_filename)
+                remove_file(ext_filename, ex_text)
 
     # remove cached html version of the post
     delete_cached_html(base_dir, nickname, domain, post_json_object)
@@ -2445,13 +2416,10 @@ def delete_post(base_dir: str, http_prefix: str,
                                 http_prefix, post_filename,
                                 recent_posts_cache, debug, manual)
     # finally, remove the post itself
-    try:
-        os.remove(post_filename)
+    ex_text = 'EX: delete_post unable to delete post ' + \
+        str(post_filename)
+    if remove_file(post_filename, ex_text):
         return True
-    except OSError:
-        if debug:
-            print('EX: delete_post unable to delete post ' +
-                  str(post_filename))
     return False
 
 
@@ -3513,10 +3481,8 @@ def set_minimize_all_images(base_dir: str,
     if nickname in min_images_for_accounts:
         min_images_for_accounts.remove(nickname)
     if os.path.isfile(filename):
-        try:
-            os.remove(filename)
-        except OSError:
-            print('EX: unable to delete ' + filename)
+        remove_file(filename,
+                    'EX: unable to delete ' + filename)
 
 
 def load_reverse_timeline(base_dir: str) -> []:
@@ -3560,11 +3526,9 @@ def save_reverse_timeline(base_dir: str, reverse_sequence: []) -> None:
                                    reverse_filename)
             else:
                 if os.path.isfile(reverse_filename):
-                    try:
-                        os.remove(reverse_filename)
-                    except OSError:
-                        print('EX: failed to delete reverse ' +
-                              reverse_filename)
+                    remove_file(reverse_filename,
+                                'EX: failed to delete reverse ' +
+                                reverse_filename)
         break
 
 
@@ -4115,10 +4079,9 @@ def set_premium_account(base_dir: str, nickname: str, domain: str,
     premium_filename: str = acct_dir(base_dir, nickname, domain) + '/.premium'
     if os.path.isfile(premium_filename):
         if not flag_state:
-            try:
-                os.remove(premium_filename)
-            except OSError:
-                print('EX: unable to remove premium flag ' + premium_filename)
+            if not remove_file(premium_filename,
+                               'EX: unable to remove premium flag ' +
+                               premium_filename):
                 return False
     else:
         if flag_state:

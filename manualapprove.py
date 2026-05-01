@@ -29,6 +29,7 @@ from data import load_string
 from data import append_string
 from data import prepend_string
 from data import load_list
+from data import remove_file
 
 
 def manual_deny_follow_request2(session, session_onion, session_i2p,
@@ -377,17 +378,13 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
         # remove the .follow file
         if follow_activity_filename:
             if os.path.isfile(follow_activity_filename):
-                try:
-                    os.remove(follow_activity_filename)
-                except OSError:
-                    print('EX: manual_approve_follow_request ' +
-                          'unable to delete ' + follow_activity_filename)
+                remove_file(follow_activity_filename,
+                            'EX: manual_approve_follow_request ' +
+                            'unable to delete ' + follow_activity_filename)
     else:
-        try:
-            os.remove(approve_follows_filename + '.new')
-        except OSError:
-            print('EX: manual_approve_follow_request unable to delete ' +
-                  approve_follows_filename + '.new')
+        remove_file(approve_follows_filename + '.new',
+                    'EX: manual_approve_follow_request unable to delete ' +
+                    approve_follows_filename + '.new')
 
 
 def manual_approve_follow_request_thread(session, session_onion, session_i2p,

@@ -41,6 +41,7 @@ from data import load_string
 from data import save_string
 from data import append_string
 from data import prepend_string
+from data import remove_file
 
 
 def _strings_are_digits(strings_list: []) -> bool:
@@ -101,10 +102,8 @@ def _remove_event_from_timeline(event_id: str,
         save_string(events_timeline, tl_events_filename,
                     'EX: ERROR: unable to save events timeline')
     elif os.path.isfile(tl_events_filename):
-        try:
-            os.remove(tl_events_filename)
-        except OSError:
-            print('EX: ERROR: unable to remove events timeline')
+        remove_file(tl_events_filename,
+                    'EX: ERROR: unable to remove events timeline')
 
 
 def save_event_post(base_dir: str, handle: str, post_id: str,

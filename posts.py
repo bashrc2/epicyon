@@ -150,6 +150,7 @@ from data import save_string
 from data import save_flag_file
 from data import append_string
 from data import prepend_string
+from data import remove_file
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -1053,18 +1054,16 @@ def save_post_to_box(base_dir: str, http_prefix: str, post_id: str,
                                  '/postcache/').replace('.json', '')
             ssml_filename = base_filename + '.ssml'
             if os.path.isfile(ssml_filename):
-                try:
-                    os.remove(ssml_filename)
-                except OSError:
-                    print('EX: save_post_to_box unable to delete ssml file ' +
-                          ssml_filename)
+                remove_file(ssml_filename,
+                            'EX: ' +
+                            'save_post_to_box unable to delete ssml file ' +
+                            ssml_filename)
             html_filename = base_filename + '.html'
             if os.path.isfile(html_filename):
-                try:
-                    os.remove(html_filename)
-                except OSError:
-                    print('EX: save_post_to_box unable to delete html file ' +
-                          html_filename)
+                remove_file(html_filename,
+                            'EX: ' +
+                            'save_post_to_box unable to delete html file ' +
+                            html_filename)
     return filename
 
 
@@ -2168,10 +2167,8 @@ def undo_pinned_post(base_dir: str, nickname: str, domain: str) -> None:
     pinned_filename = account_dir + '/pinToProfile.txt'
     if not os.path.isfile(pinned_filename):
         return
-    try:
-        os.remove(pinned_filename)
-    except OSError:
-        print('EX: undo_pinned_post unable to delete ' + pinned_filename)
+    remove_file(pinned_filename,
+                'EX: undo_pinned_post unable to delete ' + pinned_filename)
 
 
 def get_pinned_post_as_json(base_dir: str, http_prefix: str,
@@ -5114,11 +5111,9 @@ def _expire_announce_cache_for_person(base_dir: str,
         last_modified = file_last_modified(full_filename)
         # get time difference
         if not valid_post_date(last_modified, max_age_days, False):
-            try:
-                os.remove(full_filename)
-            except OSError:
-                print('EX: unable to delete from announce cache ' +
-                      full_filename)
+            remove_file(full_filename,
+                        'EX: unable to delete from announce cache ' +
+                        full_filename)
             expired_post_count += 1
     return expired_post_count
 
@@ -5146,11 +5141,9 @@ def _expire_conversations_for_person(base_dir: str,
         last_modified = file_last_modified(full_filename)
         # get time difference
         if not valid_post_date(last_modified, max_age_days, False):
-            try:
-                os.remove(full_filename)
-            except OSError:
-                print('EX: unable to delete from conversations ' +
-                      full_filename)
+            remove_file(full_filename,
+                        'EX: unable to delete from conversations ' +
+                        full_filename)
             expired_post_count += 1
     return expired_post_count
 
@@ -5175,11 +5168,9 @@ def _expire_posts_cache_for_person(base_dir: str,
         last_modified = file_last_modified(full_filename)
         # get time difference
         if not valid_post_date(last_modified, max_age_days, False):
-            try:
-                os.remove(full_filename)
-            except OSError:
-                print('EX: unable to delete from post cache ' +
-                      full_filename)
+            remove_file(full_filename,
+                        'EX: unable to delete from post cache ' +
+                        full_filename)
             expired_post_count += 1
     return expired_post_count
 
@@ -5478,11 +5469,9 @@ def set_post_expiry_keep_dms(base_dir: str, nickname: str, domain: str,
         acct_handle_dir(base_dir, handle) + '/.expire_posts_dms'
     if keep_dms:
         if os.path.isfile(expire_dms_filename):
-            try:
-                os.remove(expire_dms_filename)
-            except OSError:
-                print('EX: unable to write set_post_expiry_keep_dms False ' +
-                      expire_dms_filename)
+            remove_file(expire_dms_filename,
+                        'EX: unable to write set_post_expiry_keep_dms False ' +
+                        expire_dms_filename)
         return
     save_flag_file(expire_dms_filename,
                    'EX: unable to write set_post_expiry_keep_dms True ' +
@@ -5626,12 +5615,11 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             if not os.path.isfile(full_original_filename):
                 # if the original file doesn't exist (was remotely deleted by
                 # its author) then remove the corresponding edits
-                try:
-                    os.remove(full_filename)
+                if remove_file(full_filename,
+                               'EX: unable to remove ' + ext_name + ' file ' +
+                               full_filename):
                     edits_removed_ctr += 1
-                except OSError:
-                    print('EX: unable to remove ' + ext_name + ' file ' +
-                          full_filename)
+                else:
                     continue
             edit_files_ctr += 1
             if os.path.isfile(full_filename):
@@ -5681,13 +5669,11 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
                               ext_name + ' ' + file_path + ' -> ' +
                               archive_path)
                 else:
-                    try:
-                        os.remove(edit_filename)
+                    if remove_file(edit_filename,
+                                   'EX: archive_posts_for_person ' +
+                                   'unable to delete ' +
+                                   ext_name + ' ' + edit_filename):
                         remove_edits_ctr += 1
-                    except OSError:
-                        print('EX: ' +
-                              'archive_posts_for_person unable to delete ' +
-                              ext_name + ' ' + edit_filename)
             if archive_dir:
                 print('Archived ' + str(remove_edits_ctr) + ' ' + boxname +
                       ' ' + ext_name + ' for ' + nickname + '@' + domain)
@@ -5780,11 +5766,9 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
             os.path.join(post_cache_dir, post_filename)
         post_cache_filename = post_cache_filename.replace('.json', '.html')
         if os.path.isfile(post_cache_filename):
-            try:
-                os.remove(post_cache_filename)
-            except OSError:
-                print('EX: archive_posts_for_person unable to delete ' +
-                      post_cache_filename)
+            remove_file(post_cache_filename,
+                        'EX: archive_posts_for_person unable to delete ' +
+                        post_cache_filename)
 
         no_of_posts -= 1
         remove_ctr += 1

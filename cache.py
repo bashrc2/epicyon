@@ -33,6 +33,7 @@ from timeFunctions import date_utcnow
 from content import remove_script
 from data import save_binary
 from data import load_binary
+from data import remove_file
 
 
 def remove_person_from_cache(base_dir: str, person_url: str,
@@ -42,10 +43,9 @@ def remove_person_from_cache(base_dir: str, person_url: str,
     cache_filename = base_dir + '/cache/actors/' + \
         person_url.replace('/', '#') + '.json'
     if os.path.isfile(cache_filename):
-        try:
-            os.remove(cache_filename)
-        except OSError:
-            print('EX: unable to delete cached actor ' + str(cache_filename))
+        ex_text = \
+            'EX: unable to delete cached actor ' + str(cache_filename)
+        remove_file(cache_filename, ex_text)
     if person_cache.get(person_url):
         del person_cache[person_url]
 
@@ -404,12 +404,11 @@ def remove_avatar_from_cache(base_dir: str, actor_str: str) -> None:
             base_dir + '/cache/avatars/' + actor_str + '.' + extension
         if not os.path.isfile(avatar_filename):
             continue
-        try:
-            os.remove(avatar_filename)
-        except OSError:
-            print('EX: remove_avatar_from_cache ' +
-                  'unable to delete cached avatar ' +
-                  str(avatar_filename))
+        ex_text = \
+            'EX: remove_avatar_from_cache ' + \
+            'unable to delete cached avatar ' + \
+            str(avatar_filename)
+        remove_file(avatar_filename, ex_text)
 
 
 def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
@@ -428,11 +427,10 @@ def clear_from_post_caches(base_dir: str, recent_posts_cache: {},
             cache_dir = os.path.join(dir_str, acct)
             post_filename = cache_dir + filename
             if os.path.isfile(post_filename):
-                try:
-                    os.remove(post_filename)
-                except OSError:
-                    print('EX: clear_from_post_caches file not removed ' +
-                          str(post_filename))
+                ex_text = \
+                    'EX: clear_from_post_caches file not removed ' + \
+                    str(post_filename)
+                remove_file(post_filename, ex_text)
             # if the post is in the recent posts cache then remove it
             if recent_posts_cache.get('index'):
                 if post_id in recent_posts_cache['index']:

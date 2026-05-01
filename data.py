@@ -7,6 +7,8 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
+import os
+
 
 def _store_base(text: str, filename: str, exception_text: str,
                 mode: str) -> bool:
@@ -144,6 +146,19 @@ def prepend_string(text: str, filename: str, exception_text: str) -> bool:
             exception_text = exception_text.replace('[ex]', str(exc))
         print(exception_text)
     except UnicodeEncodeError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        print(exception_text)
+    return False
+
+
+def remove_file(filename: str, exception_text: str) -> bool:
+    """Deletes a file
+    """
+    try:
+        os.remove(filename)
+        return True
+    except OSError as exc:
         if '[ex]' in exception_text:
             exception_text = exception_text.replace('[ex]', str(exc))
         print(exception_text)

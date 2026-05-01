@@ -27,6 +27,7 @@ from httpheaders import redirect_headers
 from content import extract_text_fields_in_post
 from content import load_dogwhistles
 from data import save_string
+from data import remove_file
 
 
 def newswire_update(self, calling_domain: str, cookie: str,
@@ -128,11 +129,9 @@ def newswire_update(self, calling_domain: str, cookie: str,
             else:
                 # text area has been cleared and there is no new feed
                 if os.path.isfile(newswire_filename):
-                    try:
-                        os.remove(newswire_filename)
-                    except OSError:
-                        print('EX: _newswire_update unable to delete ' +
-                              newswire_filename)
+                    remove_file(newswire_filename,
+                                'EX: _newswire_update unable to delete ' +
+                                newswire_filename)
 
         # save filtered words list for the newswire
         filter_newswire_filename = \
@@ -144,11 +143,9 @@ def newswire_update(self, calling_domain: str, cookie: str,
                         filter_newswire_filename)
         else:
             if os.path.isfile(filter_newswire_filename):
-                try:
-                    os.remove(filter_newswire_filename)
-                except OSError:
-                    print('EX: _newswire_update unable to delete ' +
-                          filter_newswire_filename)
+                remove_file(filter_newswire_filename,
+                            'EX: _newswire_update unable to delete ' +
+                            filter_newswire_filename)
 
         # save dogwhistle words list
         dogwhistles_filename = data_dir(base_dir) + '/dogwhistles.txt'
@@ -175,11 +172,9 @@ def newswire_update(self, calling_domain: str, cookie: str,
                         hashtag_rules_filename)
         else:
             if os.path.isfile(hashtag_rules_filename):
-                try:
-                    os.remove(hashtag_rules_filename)
-                except OSError:
-                    print('EX: _newswire_update unable to delete ' +
-                          hashtag_rules_filename)
+                remove_file(hashtag_rules_filename,
+                            'EX: _newswire_update unable to delete ' +
+                            hashtag_rules_filename)
 
         newswire_tusted_filename = data_dir(base_dir) + '/newswiretrusted.txt'
         if fields.get('trustedNewswire'):
@@ -191,11 +186,9 @@ def newswire_update(self, calling_domain: str, cookie: str,
                         newswire_tusted_filename)
         else:
             if os.path.isfile(newswire_tusted_filename):
-                try:
-                    os.remove(newswire_tusted_filename)
-                except OSError:
-                    print('EX: _newswire_update unable to delete ' +
-                          newswire_tusted_filename)
+                remove_file(newswire_tusted_filename,
+                            'EX: _newswire_update unable to delete ' +
+                            newswire_tusted_filename)
 
     # redirect back to the default timeline
     redirect_headers(self, actor_str + '/' + default_timeline,
@@ -230,11 +223,9 @@ def citations_update(self, calling_domain: str, cookie: str,
         acct_dir(base_dir, nickname, domain) + '/.citations.txt'
     # remove any existing citations file
     if os.path.isfile(citations_filename):
-        try:
-            os.remove(citations_filename)
-        except OSError:
-            print('EX: _citations_update unable to delete ' +
-                  citations_filename)
+        remove_file(citations_filename,
+                    'EX: _citations_update unable to delete ' +
+                    citations_filename)
 
     if newswire and \
        ' boundary=' in self.headers['Content-type']:

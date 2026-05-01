@@ -9,6 +9,7 @@ __module_group__ = "Timeline"
 
 import os
 from utils import acct_dir
+from data import remove_file
 from data import save_flag_file
 
 
@@ -35,10 +36,8 @@ def set_minimal(base_dir: str, domain: str, nickname: str,
     minimal_filename = account_dir + '/.notminimal'
     minimal_file_exists = os.path.isfile(minimal_filename)
     if minimal and minimal_file_exists:
-        try:
-            os.remove(minimal_filename)
-        except OSError:
-            print('EX: set_minimal unable to delete ' + minimal_filename)
+        remove_file(minimal_filename,
+                    'EX: set_minimal unable to delete ' + minimal_filename)
     elif not minimal and not minimal_file_exists:
         save_flag_file(minimal_filename,
                        'EX: unable to write minimal ' + minimal_filename)

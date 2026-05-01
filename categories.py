@@ -16,6 +16,7 @@ from utils import replace_strings
 from utils import get_invalid_characters
 from data import load_string
 from data import save_string
+from data import remove_file
 
 MAX_TAG_LENGTH = 42
 
@@ -174,12 +175,10 @@ def update_hashtag_categories(base_dir: str) -> None:
     hashtag_categories = get_hashtag_categories(base_dir, False, None)
     if not hashtag_categories:
         if os.path.isfile(category_list_filename):
-            try:
-                os.remove(category_list_filename)
-            except OSError:
-                print('EX: update_hashtag_categories ' +
-                      'unable to delete cached category list ' +
-                      category_list_filename)
+            remove_file(category_list_filename,
+                        'EX: update_hashtag_categories ' +
+                        'unable to delete cached category list ' +
+                        category_list_filename)
         return
 
     category_list: list[str] = []

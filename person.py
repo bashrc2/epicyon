@@ -96,6 +96,7 @@ from data import save_string
 from data import save_flag_file
 from data import load_string
 from data import append_string
+from data import remove_file
 
 
 def generate_rsa_key() -> (str, str):
@@ -704,15 +705,13 @@ def clear_person_qrcodes(base_dir: str) -> None:
             qrcode_filename = \
                 acct_dir(base_dir, nickname, domain) + '/qrcode.png'
             if os.path.isfile(qrcode_filename):
-                try:
-                    os.remove(qrcode_filename)
-                except OSError:
-                    pass
+                remove_file(qrcode_filename,
+                            'EX: clear_person_qrcodes 1 ' +
+                            qrcode_filename)
             if os.path.isfile(qrcode_filename + '.etag'):
-                try:
-                    os.remove(qrcode_filename + '.etag')
-                except OSError:
-                    pass
+                remove_file(qrcode_filename + '.etag',
+                            'EX: clear_person_qrcodes 2 ' +
+                            qrcode_filename + '.etag')
         break
 
 
@@ -1388,16 +1387,12 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
     account_dir = acct_dir(base_dir, nickname, domain)
     salt_filename = account_dir + '/.salt'
     if os.path.isfile(salt_filename):
-        try:
-            os.remove(salt_filename)
-        except OSError:
-            print('EX: suspend_account unable to delete ' + salt_filename)
+        remove_file(salt_filename,
+                    'EX: suspend_account unable to delete ' + salt_filename)
     token_filename = acct_dir(base_dir, nickname, domain) + '/.token'
     if os.path.isfile(token_filename):
-        try:
-            os.remove(token_filename)
-        except OSError:
-            print('EX: suspend_account unable to delete 2 ' + token_filename)
+        remove_file(token_filename,
+                    'EX: suspend_account unable to delete 2 ' + token_filename)
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
@@ -1509,10 +1504,8 @@ def _remove_account_media(base_dir: str, nickname: str, domain: str) -> None:
         media_filename = base_dir + filename
         if not os.path.isfile(media_filename):
             continue
-        try:
-            os.remove(media_filename)
-        except OSError:
-            print('EX: unable to remove media ' + media_filename)
+        remove_file(media_filename,
+                    'EX: unable to remove media ' + media_filename)
 
 
 def remove_account(base_dir: str, nickname: str,
@@ -1550,38 +1543,28 @@ def remove_account(base_dir: str, nickname: str,
     if os.path.isdir(handle_dir):
         shutil.rmtree(handle_dir, ignore_errors=False)
     if os.path.isfile(handle_dir + '.json'):
-        try:
-            os.remove(handle_dir + '.json')
-        except OSError:
-            print('EX: remove_account unable to delete ' +
-                  handle_dir + '.json')
+        remove_file(handle_dir + '.json',
+                    'EX: remove_account unable to delete ' +
+                    handle_dir + '.json')
     if os.path.isfile(base_dir + '/wfendpoints/' + handle + '.json'):
-        try:
-            os.remove(base_dir + '/wfendpoints/' + handle + '.json')
-        except OSError:
-            print('EX: remove_account unable to delete ' +
-                  base_dir + '/wfendpoints/' + handle + '.json')
+        remove_file(base_dir + '/wfendpoints/' + handle + '.json',
+                    'EX: remove_account unable to delete ' +
+                    base_dir + '/wfendpoints/' + handle + '.json')
     if os.path.isfile(base_dir + '/keys/private/' + handle + '.key'):
-        try:
-            os.remove(base_dir + '/keys/private/' + handle + '.key')
-        except OSError:
-            print('EX: remove_account unable to delete ' +
-                  base_dir + '/keys/private/' + handle + '.key')
+        remove_file(base_dir + '/keys/private/' + handle + '.key',
+                    'EX: remove_account unable to delete ' +
+                    base_dir + '/keys/private/' + handle + '.key')
     if os.path.isfile(base_dir + '/keys/public/' + handle + '.pem'):
-        try:
-            os.remove(base_dir + '/keys/public/' + handle + '.pem')
-        except OSError:
-            print('EX: remove_account unable to delete ' +
-                  base_dir + '/keys/public/' + handle + '.pem')
+        remove_file(base_dir + '/keys/public/' + handle + '.pem',
+                    'EX: remove_account unable to delete ' +
+                    base_dir + '/keys/public/' + handle + '.pem')
     if os.path.isdir(base_dir + '/sharefiles/' + nickname):
         shutil.rmtree(base_dir + '/sharefiles/' + nickname,
                       ignore_errors=False)
     if os.path.isfile(base_dir + '/wfdeactivated/' + handle + '.json'):
-        try:
-            os.remove(base_dir + '/wfdeactivated/' + handle + '.json')
-        except OSError:
-            print('EX: remove_account unable to delete ' +
-                  base_dir + '/wfdeactivated/' + handle + '.json')
+        remove_file(base_dir + '/wfdeactivated/' + handle + '.json',
+                    'EX: remove_account unable to delete ' +
+                    base_dir + '/wfdeactivated/' + handle + '.json')
     if os.path.isdir(base_dir + '/sharefilesdeactivated/' + nickname):
         shutil.rmtree(base_dir + '/sharefilesdeactivated/' + nickname,
                       ignore_errors=False)

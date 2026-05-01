@@ -55,6 +55,7 @@ from data import load_string
 from data import save_string
 from data import save_binary
 from data import append_string
+from data import remove_file
 
 MUSIC_SITES = ('soundcloud.com', 'bandcamp.com', 'resonate.coop')
 
@@ -1685,21 +1686,16 @@ def save_media_in_form_post(media_bytes, debug: bool,
             for ex in extension_types:
                 possible_other_format = filename_base + '.' + ex
                 if os.path.isfile(possible_other_format):
-                    try:
-                        os.remove(possible_other_format)
-                    except OSError:
-                        if debug:
-                            print('EX: save_media_in_form_post ' +
-                                  'unable to delete other ' +
-                                  str(possible_other_format))
+                    ex_text = \
+                        'EX: save_media_in_form_post ' + \
+                        'unable to delete other ' + \
+                        str(possible_other_format)
+                    remove_file(possible_other_format, ex_text)
             if os.path.isfile(filename_base):
-                try:
-                    os.remove(filename_base)
-                except OSError:
-                    if debug:
-                        print('EX: save_media_in_form_post ' +
-                              'unable to delete ' +
-                              str(filename_base))
+                ex_text = \
+                    'EX: save_media_in_form_post ' + \
+                    'unable to delete ' + str(filename_base)
+                remove_file(filename_base, ex_text)
 
         if debug:
             print('DEBUG: No media found within POST')
@@ -1788,13 +1784,11 @@ def save_media_in_form_post(media_bytes, debug: bool,
                                                       detected_extension, '.' +
                                                       ex)
             if os.path.isfile(possible_other_format):
-                try:
-                    os.remove(possible_other_format)
-                except OSError:
-                    if debug:
-                        print('EX: save_media_in_form_post ' +
-                              'unable to delete other 2 ' +
-                              str(possible_other_format))
+                ex_text = \
+                    'EX: save_media_in_form_post ' + \
+                    'unable to delete other 2 ' + \
+                    str(possible_other_format)
+                remove_file(possible_other_format, ex_text)
 
     # don't allow scripts within svg files
     if detected_extension == 'svg':

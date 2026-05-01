@@ -14,6 +14,7 @@ from utils import get_attachment_property_value
 from utils import acct_dir
 from utils import load_json
 from utils import string_contains
+from data import remove_file
 
 VALID_LXMF_CHARS = set('0123456789abcdefghijklmnopqrstuvwxyz')
 
@@ -111,10 +112,8 @@ def set_lxmf_address(base_dir: str, nickname: str, domain: str,
         qrcode_filename = \
             acct_dir(base_dir, nickname, domain) + '/qrcode_lxmf.png'
         if os.path.isfile(qrcode_filename):
-            try:
-                os.remove(qrcode_filename)
-            except OSError:
-                print('EX: cannot remove lxmf qrcode ' + qrcode_filename)
+            remove_file(qrcode_filename,
+                        'EX: cannot remove lxmf qrcode ' + qrcode_filename)
 
     lxmf_address = lxmf_address.strip()
 

@@ -11,6 +11,7 @@ import os
 from shutil import copyfile
 from utils import data_dir
 from data import load_string
+from data import remove_file
 
 
 def text_mode_browser(ua_str: str) -> bool:
@@ -92,11 +93,9 @@ def set_text_mode_theme(base_dir: str, name: str) -> None:
     text_mode_banner_filename = \
         base_dir + '/theme/' + name + '/banner.txt'
     if os.path.isfile(dir_str + '/banner.txt'):
-        try:
-            os.remove(dir_str + '/banner.txt')
-        except OSError:
-            print('EX: set_text_mode_theme unable to delete ' +
-                  dir_str + '/banner.txt')
+        remove_file(dir_str + '/banner.txt',
+                    'EX: set_text_mode_theme unable to delete ' +
+                    dir_str + '/banner.txt')
     if os.path.isfile(text_mode_banner_filename):
         try:
             copyfile(text_mode_banner_filename, dir_str + '/banner.txt')

@@ -143,6 +143,7 @@ from data import save_flag_file
 from data import load_string
 from data import append_string
 from data import prepend_string
+from data import remove_file
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -2810,12 +2811,11 @@ def clear_queue_items(base_dir: str, queue: []) -> None:
                 continue
             for _, _, queuefiles in os.walk(queue_dir):
                 for qfile in queuefiles:
-                    try:
-                        os.remove(os.path.join(queue_dir, qfile))
+                    filename = os.path.join(queue_dir, qfile)
+                    if remove_file(filename,
+                                   'EX: clear_queue_items unable to delete ' +
+                                   qfile):
                         ctr += 1
-                    except OSError:
-                        print('EX: clear_queue_items unable to delete ' +
-                              qfile)
                 break
         break
     if ctr > 0:
@@ -2924,11 +2924,10 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                       post_domain + ' reached (' +
                       str(domain_max_posts_per_day) + ')')
                 if queue:
-                    try:
-                        os.remove(queue_filename)
-                    except OSError:
-                        print('EX: _inbox_quota_exceeded unable to delete 1 ' +
-                              str(queue_filename))
+                    ex_text = \
+                        'EX: _inbox_quota_exceeded unable to delete 1 ' + \
+                        str(queue_filename)
+                    remove_file(queue_filename, ex_text)
                     if queue:
                         queue.pop(0)
                 return True
@@ -2947,11 +2946,10 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                       post_domain + ' reached (' +
                       str(domain_max_posts_per_min) + ')')
                 if queue:
-                    try:
-                        os.remove(queue_filename)
-                    except OSError:
-                        print('EX: _inbox_quota_exceeded unable to delete 2 ' +
-                              str(queue_filename))
+                    ex_text = \
+                        'EX: _inbox_quota_exceeded unable to delete 2 ' + \
+                        str(queue_filename)
+                    remove_file(queue_filename, ex_text)
                     if queue:
                         queue.pop(0)
                 return True
@@ -2969,11 +2967,10 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                       post_handle + ' reached (' +
                       str(account_max_posts_per_day) + ')')
                 if queue:
-                    try:
-                        os.remove(queue_filename)
-                    except OSError:
-                        print('EX: _inbox_quota_exceeded unable to delete 3 ' +
-                              str(queue_filename))
+                    ex_text = \
+                        'EX: _inbox_quota_exceeded unable to delete 3 ' + \
+                        str(queue_filename)
+                    remove_file(queue_filename, ex_text)
                     if queue:
                         queue.pop(0)
                 return True
@@ -2992,11 +2989,10 @@ def _inbox_quota_exceeded(queue: {}, queue_filename: str,
                       post_handle + ' reached (' +
                       str(account_max_posts_per_min) + ')')
                 if queue:
-                    try:
-                        os.remove(queue_filename)
-                    except OSError:
-                        print('EX: _inbox_quota_exceeded unable to delete 4 ' +
-                              str(queue_filename))
+                    ex_text = \
+                        'EX: _inbox_quota_exceeded unable to delete 4 ' + \
+                        str(queue_filename)
+                    remove_file(queue_filename, ex_text)
                     if queue:
                         queue.pop(0)
                 return True
@@ -3574,11 +3570,10 @@ def run_inbox_queue(server,
                 queue.pop(0)
             # delete the queue file
             if os.path.isfile(queue_filename):
-                try:
-                    os.remove(queue_filename)
-                except OSError:
-                    print('EX: run_inbox_queue 1 unable to delete ' +
-                          str(queue_filename))
+                ex_text = \
+                    'EX: run_inbox_queue 1 unable to delete ' + \
+                    str(queue_filename)
+                remove_file(queue_filename, ex_text)
             continue
 
         curr_time = get_current_time_int()
@@ -3666,11 +3661,10 @@ def run_inbox_queue(server,
                 sender_nickname = get_nickname_from_actor(queue_json['actor'])
                 if evil_nickname(sender_nickname):
                     if os.path.isfile(queue_filename):
-                        try:
-                            os.remove(queue_filename)
-                        except OSError:
-                            print('EX: run_inbox_queue 11 unable to delete ' +
-                                  str(queue_filename))
+                        ex_text = \
+                            'EX: run_inbox_queue 11 unable to delete ' + \
+                            str(queue_filename)
+                        remove_file(queue_filename, ex_text)
                     if queue:
                         queue.pop(0)
                     continue
@@ -3743,11 +3737,10 @@ def run_inbox_queue(server,
             if debug:
                 print('Queue: public key could not be obtained from ' + key_id)
             if os.path.isfile(queue_filename):
-                try:
-                    os.remove(queue_filename)
-                except OSError:
-                    print('EX: run_inbox_queue 2 unable to delete ' +
-                          str(queue_filename))
+                ex_text = \
+                    'EX: run_inbox_queue 2 unable to delete ' + \
+                    str(queue_filename)
+                remove_file(queue_filename, ex_text)
             if queue:
                 queue.pop(0)
             continue
@@ -3803,11 +3796,10 @@ def run_inbox_queue(server,
 
             if http_signature_failed or verify_all_signatures:
                 if os.path.isfile(queue_filename):
-                    try:
-                        os.remove(queue_filename)
-                    except OSError:
-                        print('EX: run_inbox_queue 3 unable to delete ' +
-                              str(queue_filename))
+                    ex_text = \
+                        'EX: run_inbox_queue 3 unable to delete ' + \
+                        str(queue_filename)
+                    remove_file(queue_filename, ex_text)
                 if queue:
                     queue.pop(0)
                 continue
@@ -3825,11 +3817,10 @@ def run_inbox_queue(server,
                         print('WARN: jsonld inbox signature check failed ' +
                               key_id)
                     if os.path.isfile(queue_filename):
-                        try:
-                            os.remove(queue_filename)
-                        except OSError:
-                            print('EX: run_inbox_queue 4 unable to delete ' +
-                                  str(queue_filename))
+                        ex_text = \
+                            'EX: run_inbox_queue 4 unable to delete ' + \
+                            str(queue_filename)
+                        remove_file(queue_filename, ex_text)
                     if queue:
                         queue.pop(0)
                     fitness_performance(inbox_start_time, server.fitness,
@@ -4138,10 +4129,9 @@ def run_inbox_queue(server,
         # should the current queue item be removed?
         if remove_queue_item:
             if os.path.isfile(queue_filename):
-                try:
-                    os.remove(queue_filename)
-                except OSError:
-                    print('EX: run_inbox_queue 10 unable to delete ' +
-                          str(queue_filename))
+                ex_text = \
+                    'EX: run_inbox_queue 10 unable to delete ' + \
+                    str(queue_filename)
+                remove_file(queue_filename, ex_text)
             if queue:
                 queue.pop(0)

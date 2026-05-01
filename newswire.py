@@ -57,6 +57,7 @@ from content import remove_script
 from data import load_list
 from data import load_string
 from data import save_binary
+from data import remove_file
 
 
 def _remove_cdata(text: str) -> str:
@@ -1799,11 +1800,10 @@ def _add_blogs_to_newswire(base_dir: str, domain: str, newswire: {},
     else:
         # remove the file if there is nothing to moderate
         if os.path.isfile(newswire_moderation_filename):
-            try:
-                os.remove(newswire_moderation_filename)
-            except OSError:
-                print('EX: _add_blogs_to_newswire unable to delete ' +
-                      str(newswire_moderation_filename))
+            ex_text = \
+                'EX: _add_blogs_to_newswire unable to delete ' + \
+                str(newswire_moderation_filename)
+            remove_file(newswire_moderation_filename, ex_text)
 
 
 def get_dict_from_newswire(session, base_dir: str, domain: str,

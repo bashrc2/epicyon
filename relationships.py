@@ -24,6 +24,7 @@ from utils import get_domain_from_actor
 from utils import load_json
 from data import load_string
 from data import save_string
+from data import remove_file
 
 
 def get_moved_accounts(base_dir: str, nickname: str, domain: str,
@@ -306,11 +307,9 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
     moved_accounts_filename = data_dir(base_dir) + '/actors_moved.txt'
     if not moved_str:
         if os.path.isfile(moved_accounts_filename):
-            try:
-                os.remove(moved_accounts_filename)
-            except OSError:
-                print('EX: update_moved_actors unable to remove ' +
-                      moved_accounts_filename)
+            remove_file(moved_accounts_filename,
+                        'EX: update_moved_actors unable to remove ' +
+                        moved_accounts_filename)
         return
 
     save_string(moved_str, moved_accounts_filename,

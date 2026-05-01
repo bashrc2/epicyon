@@ -24,6 +24,7 @@ from threads import begin_thread
 from person import set_person_notes
 from data import load_string
 from data import save_string
+from data import remove_file
 
 
 def _establish_import_session(httpd,
@@ -220,11 +221,9 @@ def run_import_following(base_dir: str, httpd):
                 continue
             if not _update_import_following(base_dir, account, httpd,
                                             import_filename):
-                try:
-                    os.remove(import_filename)
-                except OSError:
-                    print('EX: unable to remove import file ' +
-                          import_filename)
+                remove_file(import_filename,
+                            'EX: unable to remove import file ' +
+                            import_filename)
             else:
                 break
 

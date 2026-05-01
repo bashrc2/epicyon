@@ -24,6 +24,7 @@ from session import get_json_valid
 from data import save_string
 from data import save_flag_file
 from data import append_string
+from data import remove_file
 
 
 def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
@@ -112,11 +113,9 @@ def unmute_conversation(base_dir: str, nickname: str, domain: str,
         return
     if not os.path.isfile(conversation_filename + '.muted'):
         return
-    try:
-        os.remove(conversation_filename + '.muted')
-    except OSError:
-        print('EX: unmute_conversation unable to delete ' +
-              conversation_filename + '.muted')
+    remove_file(conversation_filename + '.muted',
+                'EX: unmute_conversation unable to delete ' +
+                conversation_filename + '.muted')
 
 
 def _get_replies_to_post(post_json_object: {},

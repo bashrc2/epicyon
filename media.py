@@ -35,6 +35,7 @@ from data import load_binary
 from data import save_string
 from data import load_string
 from data import append_string
+from data import remove_file
 
 
 # music file ID3 v1 genres
@@ -475,11 +476,9 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
     """
     low_bandwidth_filename = image_filename + '.low'
     if os.path.isfile(low_bandwidth_filename):
-        try:
-            os.remove(low_bandwidth_filename)
-        except OSError:
-            print('EX: convert_image_to_low_bandwidth unable to delete ' +
-                  low_bandwidth_filename)
+        remove_file(low_bandwidth_filename,
+                    'EX: convert_image_to_low_bandwidth unable to delete ' +
+                    low_bandwidth_filename)
 
     cmd = \
         '/usr/bin/convert +noise Multiplicative ' + \
@@ -498,11 +497,9 @@ def convert_image_to_low_bandwidth(image_filename: str) -> None:
             print('WARN: timed out waiting for low bandwidth image conversion')
             break
     if os.path.isfile(low_bandwidth_filename):
-        try:
-            os.remove(image_filename)
-        except OSError:
-            print('EX: convert_image_to_low_bandwidth unable to delete ' +
-                  image_filename)
+        remove_file(image_filename,
+                    'EX: convert_image_to_low_bandwidth unable to delete ' +
+                    image_filename)
         try:
             os.rename(low_bandwidth_filename, image_filename)
         except OSError:
@@ -927,11 +924,9 @@ def apply_watermark_to_image(base_dir: str, nickname: str, domain: str,
     if not os.path.isfile(post_image_filename + '.watermarked'):
         return False
 
-    try:
-        os.remove(post_image_filename)
-    except OSError:
-        print('EX: _apply_watermark_to_image unable to remove ' +
-              post_image_filename)
+    if not remove_file(post_image_filename,
+                       'EX: _apply_watermark_to_image unable to remove ' +
+                       post_image_filename):
         return False
 
     try:

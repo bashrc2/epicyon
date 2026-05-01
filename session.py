@@ -30,6 +30,7 @@ from data import append_string
 from data import save_string
 from data import save_binary
 from data import load_binary
+from data import remove_file
 
 
 def create_session(proxy_type: str):
@@ -846,11 +847,9 @@ def download_image(session, url: str, image_filename: str, debug: bool,
                           str(result.status_code))
                 # remove partial download
                 if os.path.isfile(image_filename):
-                    try:
-                        os.remove(image_filename)
-                    except OSError:
-                        print('EX: download_image unable to delete ' +
-                              image_filename)
+                    remove_file(image_filename,
+                                'EX: download_image unable to delete ' +
+                                image_filename)
             else:
                 media_binary = result.content
                 if binary_is_image(image_filename, media_binary):

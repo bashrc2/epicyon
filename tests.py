@@ -247,6 +247,7 @@ from blog import html_blog_post_gemini_links
 from data import load_list
 from data import load_string
 from data import save_string
+from data import remove_file
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -4352,10 +4353,7 @@ def _test_json_string() -> None:
     assert received_json['content'] == message_str
     encoded_str = json.dumps(test_json, ensure_ascii=False)
     assert message_str in encoded_str
-    try:
-        os.remove(filename)
-    except OSError:
-        pass
+    remove_file(filename, 'EX: _test_json_string')
 
 
 def _test_save_load_json():
@@ -4366,10 +4364,7 @@ def _test_save_load_json():
     }
     test_filename = '.epicyon_tests_test_save_load_json.json'
     if os.path.isfile(test_filename):
-        try:
-            os.remove(test_filename)
-        except OSError:
-            pass
+        remove_file(test_filename, 'EX: _test_save_load_json 1')
     assert save_json(test_json, test_filename)
     assert os.path.isfile(test_filename)
     test_load_json = load_json(test_filename)
@@ -4378,10 +4373,7 @@ def _test_save_load_json():
     assert test_load_json.get('param2')
     assert test_load_json['param1'] == 3
     assert test_load_json['param2'] == '"Crème brûlée यह एक परीक्षण ह"'
-    try:
-        os.remove(test_filename)
-    except OSError:
-        pass
+    remove_file(test_filename, 'EX: _test_save_load_json 2')
 
 
 def _test_theme():
@@ -4666,7 +4658,7 @@ def _test_danger_svg(base_dir: str) -> None:
 
     with open(svg_image_filename, 'rb') as fp_svg:
         cached_content = fp_svg.read().decode()
-    os.remove(svg_image_filename)
+    remove_file(svg_image_filename, 'EX: _test_danger_svg')
     assert cached_content == svg_clean
 
     assert not scan_themes_for_scripts(base_dir)

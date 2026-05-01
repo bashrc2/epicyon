@@ -58,6 +58,7 @@ from data import load_list
 from data import save_string
 from data import save_flag_file
 from data import append_string
+from data import remove_file
 
 
 def get_global_block_reason(search_text: str,
@@ -216,17 +217,13 @@ def add_account_blocks(base_dir: str,
 
     if not blocking_file_text:
         if os.path.isfile(blocking_filename):
-            try:
-                os.remove(blocking_filename)
-            except OSError:
-                print('EX: _profile_edit unable to delete  blocking ' +
-                      blocking_filename)
+            remove_file(blocking_filename,
+                        'EX: _profile_edit unable to delete  blocking ' +
+                        blocking_filename)
         if os.path.isfile(blocking_reasons_filename):
-            try:
-                os.remove(blocking_reasons_filename)
-            except OSError:
-                print('EX: _profile_edit unable to delete blocking reasons' +
-                      blocking_reasons_filename)
+            remove_file(blocking_reasons_filename,
+                        'EX: _profile_edit unable to delete blocking reasons' +
+                        blocking_reasons_filename)
         return True
 
     save_string(blocking_file_text, blocking_filename,
@@ -1244,12 +1241,10 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
     if cached_post_filename:
         if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
+            if remove_file(cached_post_filename,
+                           'EX: MUTE cached post not removed ' +
+                           cached_post_filename):
                 print('MUTE: cached post removed ' + cached_post_filename)
-            except OSError:
-                print('EX: MUTE cached post not removed ' +
-                      cached_post_filename)
         else:
             print('MUTE: cached post not found ' + cached_post_filename)
 
@@ -1285,13 +1280,12 @@ def mute_post(base_dir: str, nickname: str, domain: str, port: int,
                                              post_json_obj)
                 if cached_post_filename:
                     if os.path.isfile(cached_post_filename):
-                        try:
-                            os.remove(cached_post_filename)
+                        ex_text = \
+                            'EX: ' + \
+                            'MUTE cached referenced post not removed ' + \
+                            cached_post_filename
+                        if remove_file(cached_post_filename, ex_text):
                             print('MUTE: cached referenced post removed ' +
-                                  cached_post_filename)
-                        except OSError:
-                            print('EX: ' +
-                                  'MUTE cached referenced post not removed ' +
                                   cached_post_filename)
 
         if recent_posts_cache.get('json'):
@@ -1320,12 +1314,10 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
 
     mute_filename = post_filename + '.muted'
     if os.path.isfile(mute_filename):
-        try:
-            os.remove(mute_filename)
-        except OSError:
-            if debug:
-                print('EX: unmute_post mute filename not deleted ' +
-                      str(mute_filename))
+        ex_text = \
+            'EX: unmute_post mute filename not deleted ' + \
+            str(mute_filename)
+        remove_file(mute_filename, ex_text)
         print('UNMUTE: ' + mute_filename + ' file removed')
 
     post_json_obj = post_json_object
@@ -1381,12 +1373,10 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
         get_cached_post_filename(base_dir, nickname, domain, post_json_object)
     if cached_post_filename:
         if os.path.isfile(cached_post_filename):
-            try:
-                os.remove(cached_post_filename)
-            except OSError:
-                if debug:
-                    print('EX: unmute_post cached post not deleted ' +
-                          str(cached_post_filename))
+            ex_text = \
+                'EX: unmute_post cached post not deleted ' + \
+                str(cached_post_filename)
+            remove_file(cached_post_filename, ex_text)
 
     # if the post is in the recent posts cache then mark it as unmuted
     if recent_posts_cache.get('index'):
@@ -1412,15 +1402,13 @@ def unmute_post(base_dir: str, nickname: str, domain: str, port: int,
                                          post_json_obj)
             if cached_post_filename:
                 if os.path.isfile(cached_post_filename):
-                    try:
-                        os.remove(cached_post_filename)
+                    ex_text = \
+                        'EX: ' + \
+                        'unmute_post cached ref post not removed ' + \
+                        str(cached_post_filename)
+                    if remove_file(cached_post_filename, ex_text):
                         print('MUTE: cached referenced post removed ' +
                               cached_post_filename)
-                    except OSError:
-                        if debug:
-                            print('EX: ' +
-                                  'unmute_post cached ref post not removed ' +
-                                  str(cached_post_filename))
 
         if recent_posts_cache.get('json'):
             if recent_posts_cache['json'].get(also_update_post_id):
@@ -1581,11 +1569,10 @@ def set_broch_mode(base_dir: str, domain_full: str, enabled: bool) -> None:
     if not enabled:
         # remove instance allow list
         if os.path.isfile(allow_filename):
-            try:
-                os.remove(allow_filename)
-            except OSError:
-                print('EX: set_broch_mode allow file not deleted ' +
-                      str(allow_filename))
+            ex_text = \
+                'EX: set_broch_mode allow file not deleted ' + \
+                str(allow_filename)
+            remove_file(allow_filename, ex_text)
             print('Broch mode turned off')
     else:
         if os.path.isfile(allow_filename):
@@ -1650,12 +1637,11 @@ def broch_modeLapses(base_dir: str, lapse_days: int) -> bool:
     days_since_broch = (curr_time - modified_date).days
     if days_since_broch >= lapse_days:
         removed: bool = False
-        try:
-            os.remove(allow_filename)
+        ex_text = \
+            'EX: broch_modeLapses allow file not deleted ' + \
+            str(allow_filename)
+        if remove_file(allow_filename, ex_text):
             removed = True
-        except OSError:
-            print('EX: broch_modeLapses allow file not deleted ' +
-                  str(allow_filename))
         if removed:
             set_config_param(base_dir, "brochMode", False)
             print('Broch mode has elapsed')
@@ -2178,10 +2164,9 @@ def _update_federated_blocks(session, base_dir: str,
     if not new_block_api_str:
         print('DEBUG: federated blocklist not loaded: ' + block_api_filename)
         if os.path.isfile(block_api_filename):
-            try:
-                os.remove(block_api_filename)
-            except OSError:
-                print('EX: unable to remove block api: ' + block_api_filename)
+            remove_file(block_api_filename,
+                        'EX: unable to remove block api: ' +
+                        block_api_filename)
     else:
         print('DEBUG: federated blocklist loaded: ' + str(block_federated))
         save_string(new_block_api_str, block_api_filename,
@@ -2212,17 +2197,13 @@ def save_block_federated_endpoints(base_dir: str,
         result.append(endpoint)
     if not block_federated_endpoints_str:
         if os.path.isfile(block_api_endpoints_filename):
-            try:
-                os.remove(block_api_endpoints_filename)
-            except OSError:
-                print('EX: unable to delete block_api_endpoints.txt')
+            remove_file(block_api_endpoints_filename,
+                        'EX: unable to delete block_api_endpoints.txt')
         block_api_filename = \
             data_dir(base_dir) + '/block_api.txt'
         if os.path.isfile(block_api_filename):
-            try:
-                os.remove(block_api_filename)
-            except OSError:
-                print('EX: unable to delete block_api.txt')
+            remove_file(block_api_filename,
+                        'EX: unable to delete block_api.txt')
     else:
         save_string(block_federated_endpoints_str,
                     block_api_endpoints_filename,
