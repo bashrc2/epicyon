@@ -11,6 +11,8 @@ import time
 
 
 def write2(self, msg) -> bool:
+    """HTTP write
+    """
     tries: int = 0
     while tries < 5:
         try:
@@ -29,6 +31,8 @@ def write2(self, msg) -> bool:
 
 def _http_return_code(self, http_code: int, http_description: str,
                       long_description: str, etag: str) -> None:
+    """Sends a HTTP return code
+    """
     msg = \
         '<html><head><title>' + str(http_code) + '</title></head>' + \
         '<body bgcolor="linen" text="black">' + \
@@ -53,6 +57,8 @@ def _http_return_code(self, http_code: int, http_description: str,
 
 
 def http_200(self) -> None:
+    """HTTP code 200
+    """
     if self.server.translate:
         ok_str = self.server.translate['This is nothing ' +
                                        'less than an utter triumph']
@@ -65,6 +71,8 @@ def http_200(self) -> None:
 
 
 def http_401(self, post_msg: str) -> None:
+    """HTTP code 401
+    """
     if self.server.translate:
         if self.server.translate.get(post_msg):
             ok_str = self.server.translate[post_msg]
@@ -79,6 +87,8 @@ def http_401(self, post_msg: str) -> None:
 
 
 def http_402(self) -> None:
+    """HTTP code 402
+    """
     if self.server.translate:
         text = self.server.translate["It's time to splash that cash"]
         _http_return_code(self, 402,
@@ -90,6 +100,8 @@ def http_402(self) -> None:
 
 
 def http_201(self, etag: str) -> None:
+    """HTTP code 201
+    """
     if self.server.translate:
         done_str = self.server.translate['It is done']
         _http_return_code(self, 201,
@@ -100,6 +112,8 @@ def http_201(self, etag: str) -> None:
 
 
 def http_207(self) -> None:
+    """HTTP code 207
+    """
     if self.server.translate:
         multi_str = self.server.translate['Lots of things']
         _http_return_code(self, 207,
@@ -111,6 +125,8 @@ def http_207(self) -> None:
 
 
 def http_403(self) -> None:
+    """HTTP code 403
+    """
     if self.server.translate:
         _http_return_code(self, 403, self.server.translate['Forbidden'],
                           self.server.translate["You're not allowed"],
@@ -121,6 +137,8 @@ def http_403(self) -> None:
 
 
 def http_404(self, ref: int) -> None:
+    """HTTP code 404
+    """
     if self.server.translate:
         text = \
             self.server.translate['These are not the ' +
@@ -137,6 +155,8 @@ def http_404(self, ref: int) -> None:
 
 
 def http_304(self) -> None:
+    """HTTP code 304
+    """
     if self.server.translate:
         _http_return_code(self, 304, self.server.translate['Not changed'],
                           self.server.translate['The contents of ' +
@@ -152,6 +172,8 @@ def http_304(self) -> None:
 
 
 def http_400(self) -> None:
+    """HTTP code 400
+    """
     if self.server.translate:
         _http_return_code(self, 400,
                           self.server.translate['Bad Request'],
@@ -164,6 +186,8 @@ def http_400(self) -> None:
 
 
 def http_503(self) -> None:
+    """HTTP code 503
+    """
     if self.server.translate:
         busy_str = \
             self.server.translate['The server is busy. ' +
