@@ -76,6 +76,7 @@ from markdown import blog_to_micron
 from data import erase_file
 from data import move_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _localonly_not_local(message_json: {}, domain_full: str) -> bool:
@@ -603,7 +604,7 @@ def post_message_to_outbox(session, translate: {},
                 saved_post_id = saved_filename.split('/')[-1]
                 blogs_dir = \
                     data_dir(base_dir) + '/news@' + domain + '/tlblogs'
-                if not os.path.isdir(blogs_dir):
+                if not is_a_dir(blogs_dir):
                     os.mkdir(blogs_dir)
                 copyfile(saved_filename, blogs_dir + '/' + saved_post_id)
                 inbox_update_index('tlblogs', base_dir,

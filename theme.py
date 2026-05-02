@@ -33,6 +33,7 @@ from data import save_string
 from data import save_flag_file
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def import_theme(base_dir: str, filename: str) -> bool:
@@ -41,7 +42,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
     if not is_a_file(filename):
         return False
     temp_theme_dir = base_dir + '/imports/files'
-    if os.path.isdir(temp_theme_dir):
+    if is_a_dir(temp_theme_dir):
         rmtree(temp_theme_dir, ignore_errors=False, onexc=None)
     os.mkdir(temp_theme_dir)
     unpack_archive(filename, temp_theme_dir, 'zip')
@@ -86,10 +87,10 @@ def import_theme(base_dir: str, filename: str) -> bool:
             new_theme_name = new_theme_name + '2'
 
     theme_dir = base_dir + '/theme/' + new_theme_name
-    if not os.path.isdir(theme_dir):
+    if not is_a_dir(theme_dir):
         os.mkdir(theme_dir)
     copytree(temp_theme_dir, theme_dir, False, None)
-    if os.path.isdir(temp_theme_dir):
+    if is_a_dir(temp_theme_dir):
         rmtree(temp_theme_dir, ignore_errors=False, onexc=None)
     if scan_themes_for_scripts(theme_dir):
         rmtree(theme_dir, ignore_errors=False, onexc=None)
@@ -103,7 +104,7 @@ def export_theme(base_dir: str, theme: str) -> bool:
     theme_dir = base_dir + '/theme/' + theme
     if not is_a_file(theme_dir + '/theme.json'):
         return False
-    if not os.path.isdir(base_dir + '/exports'):
+    if not is_a_dir(base_dir + '/exports'):
         os.mkdir(base_dir + '/exports')
     export_filename = base_dir + '/exports/' + theme + '.zip'
     if is_a_file(export_filename):
@@ -161,7 +162,7 @@ def _copy_theme_help_files(base_dir: str, theme_name: str,
     if not system_language:
         system_language = 'en'
     theme_dir = base_dir + '/theme/' + theme_name + '/welcome'
-    if not os.path.isdir(theme_dir):
+    if not is_a_dir(theme_dir):
         theme_dir = base_dir + '/defaultwelcome'
     dir_str = data_dir(base_dir)
     for _, _, files in os.walk(theme_dir):
@@ -173,7 +174,7 @@ def _copy_theme_help_files(base_dir: str, theme_name: str,
                                            '.md')
             if dest_help_markdown_file in ('profile.md', 'final.md'):
                 dest_help_markdown_file = 'welcome_' + dest_help_markdown_file
-            if os.path.isdir(dir_str):
+            if is_a_dir(dir_str):
                 copyfile(theme_dir + '/' + help_markdown_file,
                          dir_str + '/' + dest_help_markdown_file)
         break
@@ -635,7 +636,7 @@ def _set_theme_fonts(base_dir: str, theme_name: str) -> None:
     fonts_dir = base_dir + '/fonts'
     theme_fonts_dir = \
         base_dir + '/theme/' + theme_name_lower + '/fonts'
-    if not os.path.isdir(theme_fonts_dir):
+    if not is_a_dir(theme_fonts_dir):
         return
     for _, _, files in os.walk(theme_fonts_dir):
         for filename in files:
@@ -781,7 +782,7 @@ def set_news_avatar(base_dir: str, name: str,
     if is_a_file(filename):
         erase_file(filename,
                    'EX: set_news_avatar unable to delete ' + filename)
-    if os.path.isdir(base_dir + '/cache/avatars'):
+    if is_a_dir(base_dir + '/cache/avatars'):
         copyfile(new_filename, filename)
     account_dir = acct_dir(base_dir, nickname, domain)
     copyfile(new_filename, account_dir + '/avatar.png')
@@ -792,7 +793,7 @@ def _set_clear_cache_flag(base_dir: str) -> None:
     (eg. a script in a cron job) to clear the browser cache
     """
     dir_str = data_dir(base_dir)
-    if not os.path.isdir(dir_str):
+    if not is_a_dir(dir_str):
         return
     flag_filename = dir_str + '/.clear_cache'
     save_flag_file(flag_filename,
@@ -852,7 +853,7 @@ def set_theme(base_dir: str, name: str, domain: str,
     news_avatar_theme_filename = \
         base_dir + '/theme/' + name + '/icons/avatar_news.png'
     dir_str = data_dir(base_dir)
-    if os.path.isdir(dir_str + '/news@' + domain):
+    if is_a_dir(dir_str + '/news@' + domain):
         if is_a_file(news_avatar_theme_filename):
             news_avatar_filename = dir_str + '/news@' + domain + '/avatar.png'
             copyfile(news_avatar_theme_filename, news_avatar_filename)

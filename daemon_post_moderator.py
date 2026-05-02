@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import errno
 import urllib.parse
 from socket import error as SocketError
@@ -37,6 +36,7 @@ from cache import clear_actor_cache
 from blocking import add_global_block
 from blocking import update_blocked_cache
 from blocking import remove_global_block
+from data import is_a_dir
 
 
 def moderator_actions(self, path: str, calling_domain: str, cookie: str,
@@ -153,7 +153,7 @@ def moderator_actions(self, path: str, calling_domain: str, cookie: str,
                         local_handle = \
                             search_handle + '@' + domain
                         dir_str = data_dir(base_dir)
-                        if os.path.isdir(dir_str + '/' + local_handle):
+                        if is_a_dir(dir_str + '/' + local_handle):
                             search_handle = local_handle
                         else:
                             search_handle: str = ''

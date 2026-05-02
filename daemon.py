@@ -107,6 +107,7 @@ from poison import load_dictionary
 from poison import load_2grams
 from data import load_string
 from data import is_a_file
+from data import is_a_dir
 
 
 class PubServer(BaseHTTPRequestHandler):
@@ -168,8 +169,7 @@ class PubServer(BaseHTTPRequestHandler):
             http_400(self)
             return
         dir_str = data_dir(self.server.base_dir)
-        if not os.path.isdir(dir_str + '/' +
-                             nickname + '@' + self.server.domain):
+        if not is_a_dir(dir_str + '/' + nickname + '@' + self.server.domain):
             print(endpoint_type.upper() +
                   ' for non-existent account ' + self.path)
             http_404(self, 146)
@@ -699,7 +699,7 @@ def run_daemon(accounts_data_dir: str,
         set_accounts_data_dir(base_dir, accounts_data_dir)
 
     dir_str = data_dir(base_dir)
-    if not os.path.isdir(dir_str):
+    if not is_a_dir(dir_str):
         print('Creating accounts directory')
         os.mkdir(dir_str)
 
@@ -1197,11 +1197,11 @@ def run_daemon(accounts_data_dir: str,
     set_broch_mode(base_dir, httpd.domain_full, broch_mode)
 
     dir_str = data_dir(base_dir)
-    if not os.path.isdir(dir_str + '/inbox@' + domain):
+    if not is_a_dir(dir_str + '/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)
         create_shared_inbox(base_dir, 'inbox', domain, port, http_prefix)
 
-    if not os.path.isdir(dir_str + '/news@' + domain):
+    if not is_a_dir(dir_str + '/news@' + domain):
         print('Creating news inbox: news@' + domain)
         create_news_inbox(base_dir, domain, port, http_prefix)
         set_config_param(base_dir, "listsEnabled", "Murdoch press")
@@ -1243,24 +1243,24 @@ def run_daemon(accounts_data_dir: str,
                     domain,
                     httpd.domain_full)
 
-    if not os.path.isdir(base_dir + '/cache'):
+    if not is_a_dir(base_dir + '/cache'):
         os.mkdir(base_dir + '/cache')
-    if not os.path.isdir(base_dir + '/cache/actors'):
+    if not is_a_dir(base_dir + '/cache/actors'):
         print('Creating actors cache')
         os.mkdir(base_dir + '/cache/actors')
-    if not os.path.isdir(base_dir + '/cache/announce'):
+    if not is_a_dir(base_dir + '/cache/announce'):
         print('Creating announce cache')
         os.mkdir(base_dir + '/cache/announce')
-    if not os.path.isdir(base_dir + '/cache/avatars'):
+    if not is_a_dir(base_dir + '/cache/avatars'):
         print('Creating avatars cache')
         os.mkdir(base_dir + '/cache/avatars')
 
     archive_dir = base_dir + '/archive'
-    if not os.path.isdir(archive_dir):
+    if not is_a_dir(archive_dir):
         print('Creating archive')
         os.mkdir(archive_dir)
 
-    if not os.path.isdir(base_dir + '/sharefiles'):
+    if not is_a_dir(base_dir + '/sharefiles'):
         print('Creating shared item files directory')
         os.mkdir(base_dir + '/sharefiles')
 

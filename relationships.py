@@ -26,6 +26,7 @@ from data import load_string
 from data import save_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def get_moved_accounts(base_dir: str, nickname: str, domain: str,
@@ -206,7 +207,7 @@ def update_moved_actors(base_dir: str, debug: bool) -> None:
     """Updates the file containing moved actors
     """
     actors_cache_dir = base_dir + '/cache/actors'
-    if not os.path.isdir(actors_cache_dir):
+    if not is_a_dir(actors_cache_dir):
         if debug:
             print('No cached actors')
         return

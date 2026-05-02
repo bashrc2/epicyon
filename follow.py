@@ -52,6 +52,7 @@ from data import save_string
 from data import erase_file
 from data import move_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
@@ -69,7 +70,7 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
             if not is_a_file(following_filename):
                 continue
             last_seen_dir = account_dir + '/lastseen'
-            if not os.path.isdir(last_seen_dir):
+            if not is_a_dir(last_seen_dir):
                 os.mkdir(last_seen_dir)
             following_handles: list[str] = \
                 load_list(following_filename,
@@ -199,7 +200,7 @@ def is_following_actor(base_dir: str,
     """
     domain = remove_domain_port(domain)
     accounts_dir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(accounts_dir):
+    if not is_a_dir(accounts_dir):
         return False
     following_file = accounts_dir + '/following.txt'
     if not is_a_file(following_file):
@@ -315,10 +316,10 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
     if group_account:
         handle_to_unfollow = '!' + handle_to_unfollow
     dir_str = data_dir(base_dir)
-    if not os.path.isdir(dir_str):
+    if not is_a_dir(dir_str):
         os.mkdir(dir_str)
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         os.mkdir(handle_dir)
 
     accounts_dir = acct_dir(base_dir, nickname, domain)
@@ -382,10 +383,10 @@ def clear_follows(base_dir: str, nickname: str, domain: str,
     """Removes all follows
     """
     dir_str = data_dir(base_dir)
-    if not os.path.isdir(dir_str):
+    if not is_a_dir(dir_str):
         os.mkdir(dir_str)
     accounts_dir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(accounts_dir):
+    if not is_a_dir(accounts_dir):
         os.mkdir(accounts_dir)
     filename = accounts_dir + '/' + follow_file
     if is_a_file(filename):
@@ -651,7 +652,7 @@ def store_follow_request(base_dir: str,
     """Stores the follow request for later use
     """
     accounts_dir = acct_dir(base_dir, nickname_to_follow, domain_to_follow)
-    if not os.path.isdir(accounts_dir):
+    if not is_a_dir(accounts_dir):
         return False
 
     domain_full = get_full_domain(domain, from_port)
@@ -730,7 +731,7 @@ def store_follow_request(base_dir: str,
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
     requests_dir = accounts_dir + '/requests'
-    if not os.path.isdir(requests_dir):
+    if not is_a_dir(requests_dir):
         os.mkdir(requests_dir)
     follow_activity_filename = requests_dir + '/' + approve_handle + '.follow'
     return save_json(follow_json, follow_activity_filename)

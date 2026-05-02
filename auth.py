@@ -25,6 +25,7 @@ from data import save_string
 from data import load_list
 from data import move_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _hash_password(password: str) -> str:
@@ -189,7 +190,7 @@ def store_basic_credentials(base_dir: str,
     password = remove_eol(password).strip()
 
     dir_str = data_dir(base_dir)
-    if not os.path.isdir(dir_str):
+    if not is_a_dir(dir_str):
         os.mkdir(dir_str)
 
     password_file = dir_str + '/passwords'

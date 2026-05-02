@@ -153,6 +153,7 @@ from data import prepend_string
 from data import erase_file
 from data import move_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -993,7 +994,7 @@ def delete_all_posts(base_dir: str,
         try:
             if is_a_file(file_path):
                 os.unlink(file_path)
-            elif os.path.isdir(file_path):
+            elif is_a_dir(file_path):
                 shutil.rmtree(file_path, ignore_errors=False, onexc=None)
         except OSError as ex:
             print('ERROR: delete_all_posts ' + str(ex))
@@ -1079,7 +1080,7 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
 
     # create hashtags directory
     tags_dir = base_dir + '/tags'
-    if not os.path.isdir(tags_dir):
+    if not is_a_dir(tags_dir):
         os.mkdir(tags_dir)
     tag_name = tag['name']
     tags_filename = tags_dir + '/' + tag_name[1:] + '.txt'
@@ -2247,7 +2248,7 @@ def regenerate_index_for_box(base_dir: str,
     box_dir = acct_dir(base_dir, nickname, domain) + '/' + box_name
     box_index_filename = box_dir + '.index'
 
-    if not os.path.isdir(box_dir):
+    if not is_a_dir(box_dir):
         return
     if is_a_file(box_index_filename):
         return
@@ -2738,7 +2739,7 @@ def get_mentioned_people(base_dir: str, http_prefix: str,
         if '@' not in handle:
             handle = handle + '@' + domain
             handle_dir = acct_handle_dir(base_dir, handle)
-            if not os.path.isdir(handle_dir):
+            if not is_a_dir(handle_dir):
                 continue
         else:
             external_domain = handle.split('@')[1]
@@ -5099,7 +5100,7 @@ def _expire_announce_cache_for_person(base_dir: str,
     """Expires entries within the announces cache
     """
     cache_dir = base_dir + '/cache/announce/' + nickname
-    if not os.path.isdir(cache_dir):
+    if not is_a_dir(cache_dir):
         print('No cached announces for ' + nickname + '@' + domain)
         return 0
     expired_post_count: int = 0
@@ -5126,7 +5127,7 @@ def _expire_conversations_for_person(base_dir: str,
     """Expires entries within the conversation directory
     """
     conv_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
-    if not os.path.isdir(conv_dir):
+    if not is_a_dir(conv_dir):
         print('No conversations for ' + nickname + '@' + domain)
         return 0
     expired_post_count: int = 0
@@ -5156,7 +5157,7 @@ def _expire_posts_cache_for_person(base_dir: str,
     """Expires entries within the posts cache
     """
     cache_dir = acct_dir(base_dir, nickname, domain) + '/postcache'
-    if not os.path.isdir(cache_dir):
+    if not is_a_dir(cache_dir):
         print('No cached posts for ' + nickname + '@' + domain)
         return 0
     expired_post_count: int = 0
@@ -5321,11 +5322,11 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
         return
 
     if archive_dir:
-        if not os.path.isdir(archive_dir):
+        if not is_a_dir(archive_dir):
             os.mkdir(archive_dir)
 
     if archive_dir:
-        if not os.path.isdir(archive_dir + '/accounts'):
+        if not is_a_dir(archive_dir + '/accounts'):
             os.mkdir(archive_dir + '/accounts')
 
     dir_str = data_dir(base_dir)
@@ -5337,11 +5338,11 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                 archive_subdir = None
                 if archive_dir:
                     archive_handle_dir = acct_handle_dir(archive_dir, handle)
-                    if not os.path.isdir(archive_handle_dir):
+                    if not is_a_dir(archive_handle_dir):
                         os.mkdir(archive_handle_dir)
-                    if not os.path.isdir(archive_handle_dir + '/inbox'):
+                    if not is_a_dir(archive_handle_dir + '/inbox'):
                         os.mkdir(archive_handle_dir + '/inbox')
-                    if not os.path.isdir(archive_handle_dir + '/outbox'):
+                    if not is_a_dir(archive_handle_dir + '/outbox'):
                         os.mkdir(archive_handle_dir + '/outbox')
                     archive_subdir = archive_handle_dir + '/inbox'
                 archive_posts_for_person(http_prefix,
@@ -5562,7 +5563,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
     if boxname not in ('inbox', 'outbox'):
         return
     if archive_dir:
-        if not os.path.isdir(archive_dir):
+        if not is_a_dir(archive_dir):
             os.mkdir(archive_dir)
     box_dir = create_person_dir(nickname, domain, base_dir, boxname)
     posts_in_box = os.scandir(box_dir)
@@ -6268,7 +6269,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
 
     # get the announced post
     announce_cache_dir = base_dir + '/cache/announce/' + nickname
-    if not os.path.isdir(announce_cache_dir):
+    if not is_a_dir(announce_cache_dir):
         os.mkdir(announce_cache_dir)
 
     post_id = None

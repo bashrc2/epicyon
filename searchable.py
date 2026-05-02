@@ -23,6 +23,7 @@ from utils import get_mutuals_of_person
 from data import load_string
 from data import save_string
 from data import is_a_file
+from data import is_a_dir
 
 
 def load_searchable_by_default(base_dir: str) -> {}:
@@ -95,7 +96,7 @@ def _search_virtual_box_posts(base_dir: str, nickname: str, domain: str,
     if box_name == 'bookmarks':
         box_name = 'inbox'
     path = acct_dir(base_dir, nickname, domain) + '/' + box_name
-    if not os.path.isdir(path):
+    if not is_a_dir(path):
         return []
 
     search_str = search_str.lower().strip()
@@ -151,7 +152,7 @@ def search_box_posts(base_dir: str, nickname: str, domain: str,
     """
     path = acct_dir(base_dir, nickname, domain) + '/' + box_name
     # is this a virtual box, such as direct messages?
-    if not os.path.isdir(path):
+    if not is_a_dir(path):
         if is_a_file(path + '.index'):
             return _search_virtual_box_posts(base_dir, nickname, domain,
                                              search_str, max_results, box_name)

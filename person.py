@@ -99,6 +99,7 @@ from data import append_string
 from data import erase_file
 from data import move_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def generate_rsa_key() -> (str, str):
@@ -149,7 +150,7 @@ def set_profile_image(base_dir: str, http_prefix: str,
         print('person definition not found: ' + person_filename)
         return False
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('Account not found: ' + handle_dir)
         return False
 
@@ -195,8 +196,8 @@ def _account_exists(base_dir: str, nickname: str, domain: str) -> bool:
     """
     domain = remove_domain_port(domain)
     account_dir = acct_dir(base_dir, nickname, domain)
-    return os.path.isdir(account_dir) or \
-        os.path.isdir(base_dir + '/deactivated/' + nickname + '@' + domain)
+    return is_a_dir(account_dir) or \
+        is_a_dir(base_dir + '/deactivated/' + nickname + '@' + domain)
 
 
 def randomize_actor_images(person_json: {}) -> None:
@@ -603,29 +604,26 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
 
     if save_to_file:
         # save person to file
-        if not os.path.isdir(base_dir):
+        if not is_a_dir(base_dir):
             os.mkdir(base_dir)
         people_subdir = data_dir(base_dir)
-        if not os.path.isdir(people_subdir):
+        if not is_a_dir(people_subdir):
             os.mkdir(people_subdir)
-        if not os.path.isdir(people_subdir + '/' + handle):
+        if not is_a_dir(people_subdir + '/' + handle):
             os.mkdir(people_subdir + '/' + handle)
-        if not os.path.isdir(people_subdir + '/' +
-                             handle + '/inbox'):
+        if not is_a_dir(people_subdir + '/' + handle + '/inbox'):
             os.mkdir(people_subdir + '/' + handle + '/inbox')
-        if not os.path.isdir(people_subdir + '/' +
-                             handle + '/outbox'):
+        if not is_a_dir(people_subdir + '/' + handle + '/outbox'):
             os.mkdir(people_subdir + '/' + handle + '/outbox')
-        if not os.path.isdir(people_subdir + '/' +
-                             handle + '/queue'):
+        if not is_a_dir(people_subdir + '/' + handle + '/queue'):
             os.mkdir(people_subdir + '/' + handle + '/queue')
         filename = people_subdir + '/' + handle + '.json'
         save_json(new_person, filename)
 
         # save to cache
-        if not os.path.isdir(base_dir + '/cache'):
+        if not is_a_dir(base_dir + '/cache'):
             os.mkdir(base_dir + '/cache')
-        if not os.path.isdir(base_dir + '/cache/actors'):
+        if not is_a_dir(base_dir + '/cache/actors'):
             os.mkdir(base_dir + '/cache/actors')
         cache_filename = base_dir + '/cache/actors/' + \
             new_person['id'].replace('/', '#') + '.json'
@@ -633,9 +631,9 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
 
         # save the private key
         private_keys_subdir = '/keys/private'
-        if not os.path.isdir(base_dir + '/keys'):
+        if not is_a_dir(base_dir + '/keys'):
             os.mkdir(base_dir + '/keys')
-        if not os.path.isdir(base_dir + private_keys_subdir):
+        if not is_a_dir(base_dir + private_keys_subdir):
             os.mkdir(base_dir + private_keys_subdir)
         filename = base_dir + private_keys_subdir + '/' + handle + '.key'
         save_string(private_key_pem, filename,
@@ -643,7 +641,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
 
         # save the public key
         public_keys_subdir = '/keys/public'
-        if not os.path.isdir(base_dir + public_keys_subdir):
+        if not is_a_dir(base_dir + public_keys_subdir):
             os.mkdir(base_dir + public_keys_subdir)
         filename = base_dir + public_keys_subdir + '/' + handle + '.pem'
         save_string(public_key_pem, filename,
@@ -755,7 +753,7 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
                 return None, None, None, None
     else:
         dir_str = data_dir(base_dir)
-        if os.path.isdir(dir_str + '/news@' + domain):
+        if is_a_dir(dir_str + '/news@' + domain):
             # news account already exists
             return None, None, None, None
 
@@ -778,10 +776,10 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
             set_role(base_dir, nickname, domain, 'editor')
 
     dir_str = data_dir(base_dir)
-    if not os.path.isdir(dir_str):
+    if not is_a_dir(dir_str):
         os.mkdir(dir_str)
     account_dir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         os.mkdir(account_dir)
 
     if manual_follower_approval:
@@ -1449,7 +1447,7 @@ def _remove_tags_for_nickname(base_dir: str, nickname: str,
                               domain: str, port: int) -> None:
     """Removes tags for a nickname
     """
-    if not os.path.isdir(base_dir + '/tags'):
+    if not is_a_dir(base_dir + '/tags'):
         return
     domain_full = get_full_domain(domain, port)
     match_str = domain_full + '/users/' + nickname + '/'
@@ -1534,11 +1532,11 @@ def remove_account(base_dir: str, nickname: str,
     handle = nickname + '@' + domain
     remove_password(base_dir, nickname)
     _remove_tags_for_nickname(base_dir, nickname, domain, port)
-    if os.path.isdir(base_dir + '/deactivated/' + handle):
+    if is_a_dir(base_dir + '/deactivated/' + handle):
         shutil.rmtree(base_dir + '/deactivated/' + handle,
                       ignore_errors=False)
     handle_dir = acct_handle_dir(base_dir, handle)
-    if os.path.isdir(handle_dir):
+    if is_a_dir(handle_dir):
         shutil.rmtree(handle_dir, ignore_errors=False)
     if is_a_file(handle_dir + '.json'):
         erase_file(handle_dir + '.json',
@@ -1556,14 +1554,14 @@ def remove_account(base_dir: str, nickname: str,
         erase_file(base_dir + '/keys/public/' + handle + '.pem',
                    'EX: remove_account unable to delete ' +
                    base_dir + '/keys/public/' + handle + '.pem')
-    if os.path.isdir(base_dir + '/sharefiles/' + nickname):
+    if is_a_dir(base_dir + '/sharefiles/' + nickname):
         shutil.rmtree(base_dir + '/sharefiles/' + nickname,
                       ignore_errors=False)
     if is_a_file(base_dir + '/wfdeactivated/' + handle + '.json'):
         erase_file(base_dir + '/wfdeactivated/' + handle + '.json',
                    'EX: remove_account unable to delete ' +
                    base_dir + '/wfdeactivated/' + handle + '.json')
-    if os.path.isdir(base_dir + '/sharefilesdeactivated/' + nickname):
+    if is_a_dir(base_dir + '/sharefilesdeactivated/' + nickname):
         shutil.rmtree(base_dir + '/sharefilesdeactivated/' + nickname,
                       ignore_errors=False)
 
@@ -1578,30 +1576,30 @@ def deactivate_account(base_dir: str, nickname: str, domain: str) -> bool:
     handle = nickname + '@' + domain
 
     account_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         return False
     deactivated_dir = base_dir + '/deactivated'
-    if not os.path.isdir(deactivated_dir):
+    if not is_a_dir(deactivated_dir):
         os.mkdir(deactivated_dir)
     shutil.move(account_dir, deactivated_dir + '/' + handle)
 
     if is_a_file(base_dir + '/wfendpoints/' + handle + '.json'):
         deactivated_webfinger_dir = base_dir + '/wfdeactivated'
-        if not os.path.isdir(deactivated_webfinger_dir):
+        if not is_a_dir(deactivated_webfinger_dir):
             os.mkdir(deactivated_webfinger_dir)
         shutil.move(base_dir + '/wfendpoints/' + handle + '.json',
                     deactivated_webfinger_dir + '/' + handle + '.json')
 
-    if os.path.isdir(base_dir + '/sharefiles/' + nickname):
+    if is_a_dir(base_dir + '/sharefiles/' + nickname):
         deactivated_sharefiles_dir = base_dir + '/sharefilesdeactivated'
-        if not os.path.isdir(deactivated_sharefiles_dir):
+        if not is_a_dir(deactivated_sharefiles_dir):
             os.mkdir(deactivated_sharefiles_dir)
         shutil.move(base_dir + '/sharefiles/' + nickname,
                     deactivated_sharefiles_dir + '/' + nickname)
 
     refresh_newswire(base_dir)
 
-    return os.path.isdir(deactivated_dir + '/' + nickname + '@' + domain)
+    return is_a_dir(deactivated_dir + '/' + nickname + '@' + domain)
 
 
 def activate_account2(base_dir: str, nickname: str, domain: str) -> bool:
@@ -1612,9 +1610,9 @@ def activate_account2(base_dir: str, nickname: str, domain: str) -> bool:
 
     deactivated_dir = base_dir + '/deactivated'
     deactivated_account_dir = deactivated_dir + '/' + handle
-    if os.path.isdir(deactivated_account_dir):
+    if is_a_dir(deactivated_account_dir):
         account_dir = acct_handle_dir(base_dir, handle)
-        if not os.path.isdir(account_dir):
+        if not is_a_dir(account_dir):
             shutil.move(deactivated_account_dir, account_dir)
         activated = True
 
@@ -1624,8 +1622,8 @@ def activate_account2(base_dir: str, nickname: str, domain: str) -> bool:
                     base_dir + '/wfendpoints/' + handle + '.json')
 
     deactivated_sharefiles_dir = base_dir + '/sharefilesdeactivated'
-    if os.path.isdir(deactivated_sharefiles_dir + '/' + nickname):
-        if not os.path.isdir(base_dir + '/sharefiles/' + nickname):
+    if is_a_dir(deactivated_sharefiles_dir + '/' + nickname):
+        if not is_a_dir(base_dir + '/sharefiles/' + nickname):
             shutil.move(deactivated_sharefiles_dir + '/' + nickname,
                         base_dir + '/sharefiles/' + nickname)
 
@@ -1687,7 +1685,7 @@ def person_snooze(base_dir: str, nickname: str, domain: str,
     """Temporarily ignores the given actor
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         print('ERROR: unknown account ' + account_dir)
         return
     snoozed_filename = account_dir + '/snoozed.txt'
@@ -1704,7 +1702,7 @@ def person_unsnooze(base_dir: str, nickname: str, domain: str,
     """Undoes a temporarily ignore of the given actor
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         print('ERROR: unknown account ' + account_dir)
         return
     snoozed_filename = account_dir + '/snoozed.txt'
@@ -1744,7 +1742,7 @@ def set_person_notes(base_dir: str, nickname: str, domain: str,
     if handle.startswith('@'):
         handle = handle[1:]
     notes_dir = acct_dir(base_dir, nickname, domain) + '/notes'
-    if not os.path.isdir(notes_dir):
+    if not is_a_dir(notes_dir):
         os.mkdir(notes_dir)
     notes_filename = notes_dir + '/' + handle + '.txt'
     if not save_string(notes, notes_filename,
@@ -1784,7 +1782,7 @@ def get_person_notes_endpoint(base_dir: str, nickname: str, domain: str,
         "items": []
     }
     dir_str = acct_dir(base_dir, nickname, domain) + '/notes'
-    if not os.path.isdir(dir_str):
+    if not is_a_dir(dir_str):
         return notes_json
     handle_txt = ''
     if handle:

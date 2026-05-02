@@ -20,6 +20,7 @@ from data import load_list
 from data import save_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _clear_role_status(base_dir: str, role: str) -> None:
@@ -77,13 +78,13 @@ def _add_role(base_dir: str, nickname: str, domain: str,
             if len(role_nickname) < 2:
                 continue
             dir_str = data_dir(base_dir)
-            if os.path.isdir(dir_str + '/' + role_nickname + '@' + domain):
+            if is_a_dir(dir_str + '/' + role_nickname + '@' + domain):
                 text += role_nickname + '\n'
         save_string(text, role_file,
                     'EX: _add_role, failed to write roles file1 ' + role_file)
     else:
         account_dir = acct_dir(base_dir, nickname, domain)
-        if os.path.isdir(account_dir):
+        if is_a_dir(account_dir):
             save_string(nickname + '\n', role_file,
                         'EX: _add_role, failed to write roles file2 ' +
                         role_file)
@@ -329,7 +330,7 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
         for roles_nick in roles_list:
             roles_nick = roles_nick.strip()
             roles_dir = acct_dir(base_dir, roles_nick, domain)
-            if os.path.isdir(roles_dir):
+            if is_a_dir(roles_dir):
                 text += roles_nick + '\n'
         save_string(text, roles_filename,
                     'EX: unable to write ' + list_name + ' ' +
@@ -338,7 +339,7 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
         for roles_nick in roles_list:
             roles_nick = roles_nick.strip()
             roles_dir = acct_dir(base_dir, roles_nick, domain)
-            if os.path.isdir(roles_dir):
+            if is_a_dir(roles_dir):
                 set_role(base_dir, roles_nick, domain, role_name)
     else:
         # nicknames on separate lines
@@ -348,7 +349,7 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
         for roles_nick in roles_list:
             roles_nick = roles_nick.strip()
             roles_dir = acct_dir(base_dir, roles_nick, domain)
-            if os.path.isdir(roles_dir):
+            if is_a_dir(roles_dir):
                 text += roles_nick + '\n'
         save_string(text, roles_filename,
                     'EX: unable to write  ' + list_name + ' ' +
@@ -357,5 +358,5 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
         for roles_nick in roles_list:
             roles_nick = roles_nick.strip()
             roles_dir = acct_dir(base_dir, roles_nick, domain)
-            if os.path.isdir(roles_dir):
+            if is_a_dir(roles_dir):
                 set_role(base_dir, roles_nick, domain, role_name)

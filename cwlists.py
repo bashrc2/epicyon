@@ -12,12 +12,13 @@ from utils import load_json
 from utils import get_content_from_post
 from utils import content_is_single_url
 from utils import is_yggdrasil_address
+from data import is_a_dir
 
 
 def load_cw_lists(base_dir: str, verbose: bool) -> {}:
     """Load lists used for content warnings
     """
-    if not os.path.isdir(base_dir + '/cwlists'):
+    if not is_a_dir(base_dir + '/cwlists'):
         return {}
     result = {}
     # NOTE: here we do want to allow recursive walk through

@@ -61,6 +61,7 @@ from data import load_list
 from data import load_string
 from data import save_string
 from data import is_a_file
+from data import is_a_dir
 
 
 def html_search_emoji(translate: {}, base_dir: str, search_str: str,
@@ -355,7 +356,7 @@ def html_search_shared_items(translate: {},
         catalogs_dir = base_dir + '/cache/catalogs'
     else:
         catalogs_dir = base_dir + '/cache/wantedItems'
-    if curr_page <= page_number and os.path.isdir(catalogs_dir):
+    if curr_page <= page_number and is_a_dir(catalogs_dir):
         for _, dirs, files in os.walk(catalogs_dir):
             for fname in files:
                 if '#' in fname:
@@ -923,7 +924,7 @@ def html_hashtag_search(nickname: str, domain: str, port: int,
     # check that the directory for the nickname exists
     if nickname:
         account_dir = acct_dir(base_dir, nickname, domain)
-        if not os.path.isdir(account_dir):
+        if not is_a_dir(account_dir):
             nickname = None
 
     # read the index
@@ -1192,7 +1193,7 @@ def html_hashtag_search_remote(nickname: str, domain: str, port: int,
     # check that the directory for the nickname exists
     if nickname:
         account_dir = acct_dir(base_dir, nickname, domain)
-        if not os.path.isdir(account_dir):
+        if not is_a_dir(account_dir):
             return None
 
     # read the css
@@ -1378,7 +1379,7 @@ def hashtag_search_rss(nickname: str, domain: str, port: int,
     # check that the directory for the nickname exists
     if nickname:
         account_dir = acct_dir(base_dir, nickname, domain)
-        if not os.path.isdir(account_dir):
+        if not is_a_dir(account_dir):
             nickname = None
 
     # read the index
@@ -1490,7 +1491,7 @@ def hashtag_search_json(nickname: str, domain: str, port: int,
     # check that the directory for the nickname exists
     if nickname:
         account_dir = acct_dir(base_dir, nickname, domain)
-        if not os.path.isdir(account_dir):
+        if not is_a_dir(account_dir):
             nickname = None
 
     # read the index

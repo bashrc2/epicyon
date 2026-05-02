@@ -44,6 +44,7 @@ from data import load_string
 from data import save_string
 from data import load_line
 from data import is_a_file
+from data import is_a_dir
 
 
 def get_hashtag_categories_feed(base_dir: str,
@@ -428,7 +429,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
     tags_dir = base_dir + '/tags'
 
     # add tags directory if it doesn't exist
-    if not os.path.isdir(tags_dir):
+    if not is_a_dir(tags_dir):
         print('Creating tags directory')
         os.mkdir(tags_dir)
 
@@ -456,7 +457,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
     tag_maps_dir = base_dir + '/tagmaps'
     if map_links:
         # add tagmaps directory if it doesn't exist
-        if not os.path.isdir(tag_maps_dir):
+        if not is_a_dir(tag_maps_dir):
             print('Creating tagmaps directory')
             os.mkdir(tag_maps_dir)
 

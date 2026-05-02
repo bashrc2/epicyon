@@ -65,6 +65,7 @@ from data import save_binary
 from data import load_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
@@ -542,7 +543,7 @@ def shares_timeline_json(actor: str, page_number: int, items_per_page: int,
             catalogs_dir = base_dir + '/cache/catalogs'
         else:
             catalogs_dir = base_dir + '/cache/wantedItems'
-        if os.path.isdir(catalogs_dir):
+        if is_a_dir(catalogs_dir):
             for _, dirs, files in os.walk(catalogs_dir):
                 for fname in files:
                     if '#' in fname:
@@ -2123,7 +2124,7 @@ def html_show_share(base_dir: str, domain: str, nickname: str,
             catalogs_dir = base_dir + '/cache/catalogs'
         else:
             catalogs_dir = base_dir + '/cache/wantedItems'
-        if not os.path.isdir(catalogs_dir):
+        if not is_a_dir(catalogs_dir):
             return None
         for _, _, files in os.walk(catalogs_dir):
             for fname in files:

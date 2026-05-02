@@ -20,6 +20,7 @@ from httpcodes import http_404
 from fitnessFunctions import fitness_performance
 from newswire import rss2header
 from newswire import rss2footer
+from data import is_a_dir
 
 
 def get_rss2feed(self, calling_domain: str, path: str,
@@ -38,7 +39,7 @@ def get_rss2feed(self, calling_domain: str, path: str,
         nickname = nickname.split('/')[0]
     if not nickname.startswith('rss.'):
         account_dir = acct_dir(base_dir, nickname, domain)
-        if os.path.isdir(account_dir):
+        if is_a_dir(account_dir):
             curr_session = \
                 establish_session("RSS request",
                                   curr_session,
@@ -154,7 +155,7 @@ def get_rss3feed(self, calling_domain: str, path: str,
         nickname = nickname.split('/')[0]
     if not nickname.startswith('rss.'):
         account_dir = acct_dir(base_dir, nickname, domain)
-        if os.path.isdir(account_dir):
+        if is_a_dir(account_dir):
             curr_session = \
                 establish_session("get_rss3feed",
                                   curr_session, proxy_type,

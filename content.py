@@ -57,6 +57,7 @@ from data import save_binary
 from data import append_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 MUSIC_SITES = ('soundcloud.com', 'bandcamp.com', 'resonate.coop')
 
@@ -375,7 +376,7 @@ def _save_custom_emoji(session, base_dir: str, emoji_name: str, url: str,
         return
     emoji_name = emoji_name.replace(':', '').strip().lower()
     custom_emoji_dir = base_dir + '/emojicustom'
-    if not os.path.isdir(custom_emoji_dir):
+    if not is_a_dir(custom_emoji_dir):
         os.mkdir(custom_emoji_dir)
     emoji_image_filename = custom_emoji_dir + '/' + emoji_name + '.' + ext
     if not download_image(session, url,

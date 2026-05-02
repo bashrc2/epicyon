@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
-import os
 import base64
 import subprocess
 from pathlib import Path
@@ -39,6 +38,7 @@ from briar import get_briar_address
 from cwtch import get_cwtch_address
 from blog import get_blog_address
 from website import get_website
+from data import is_a_dir
 
 
 from utils import get_attachment_property_value
@@ -555,7 +555,7 @@ def has_local_pg_pkey() -> bool:
     """
     home_dir = str(Path.home())
     gpg_dir = home_dir + '/.gnupg'
-    if os.path.isdir(gpg_dir):
+    if is_a_dir(gpg_dir):
         key_id = pgp_local_public_key()
         if key_id:
             return True

@@ -149,6 +149,7 @@ from data import load_list
 from data import save_string
 from data import save_flag_file
 from data import is_a_file
+from data import is_a_dir
 
 # maximum length for display name within html posts
 MAX_DISPLAY_NAME_LENGTH = 42
@@ -571,7 +572,7 @@ def _save_individual_post_as_html_to_cache(base_dir: str,
         return False
 
     # create the cache directory if needed
-    if not os.path.isdir(html_post_cache_dir):
+    if not is_a_dir(html_post_cache_dir):
         os.mkdir(html_post_cache_dir)
 
     if save_string(post_html, cached_post_filename,

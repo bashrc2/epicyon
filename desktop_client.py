@@ -76,6 +76,7 @@ from data import save_string
 from data import load_string
 from data import prepend_string
 from data import is_a_file
+from data import is_a_dir
 
 
 def _desktop_help() -> None:
@@ -157,9 +158,9 @@ def _create_desktop_config(actor: str) -> None:
     """Sets up directories for desktop client configuration
     """
     home_dir = str(Path.home())
-    if not os.path.isdir(home_dir + '/.config'):
+    if not is_a_dir(home_dir + '/.config'):
         os.mkdir(home_dir + '/.config')
-    if not os.path.isdir(home_dir + '/.config/epicyon'):
+    if not is_a_dir(home_dir + '/.config/epicyon'):
         os.mkdir(home_dir + '/.config/epicyon')
     nickname = get_nickname_from_actor(actor)
     domain, port = get_domain_from_actor(actor)
@@ -167,7 +168,7 @@ def _create_desktop_config(actor: str) -> None:
     if port not in (443, 80):
         handle += '_' + str(port)
     read_posts_dir = home_dir + '/.config/epicyon/' + handle
-    if not os.path.isdir(read_posts_dir):
+    if not is_a_dir(read_posts_dir):
         os.mkdir(read_posts_dir)
 
 

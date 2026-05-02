@@ -248,6 +248,7 @@ from data import load_list
 from data import load_string
 from data import save_string
 from data import erase_file
+from data import is_a_dir
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -329,7 +330,7 @@ def _test_http_signed_get(base_dir: str):
                                    no_recency_check)
 
     path = base_dir + '/.testHttpsigGET'
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
@@ -375,7 +376,7 @@ def _test_http_signed_get(base_dir: str):
     assert verify_post_headers(http_prefix, public_key_pem, headers,
                                boxpath, getreq_method, None,
                                message_body_json_str, debug, no_recency_check)
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
 
 
@@ -609,7 +610,7 @@ def _test_httpsig_base(with_digest: bool, base_dir: str):
     print('test_httpsig(' + str(with_digest) + ')')
 
     path = base_dir + '/.testHttpsigBase'
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
@@ -770,7 +771,7 @@ def create_server_alice(path: str, domain: str, port: int,
                         has_follows: bool, has_posts: bool,
                         send_threads: []):
     print('Creating test server: Alice on port ' + str(port))
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
@@ -975,7 +976,7 @@ def create_server_bob(path: str, domain: str, port: int,
                       has_follows: bool, has_posts: bool,
                       send_threads: []):
     print('Creating test server: Bob on port ' + str(port))
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
@@ -1180,7 +1181,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
                       has_follows: bool, has_posts: bool,
                       send_threads: []):
     print('Creating test server: Eve on port ' + str(port))
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
@@ -1305,7 +1306,7 @@ def create_server_group(path: str, domain: str, port: int,
                         has_follows: bool, has_posts: bool,
                         send_threads: []):
     print('Creating test server: Group on port ' + str(port))
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
@@ -1422,7 +1423,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
         'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator: str = 'Secret Squirrel'
 
-    if os.path.isdir(base_dir + '/.tests'):
+    if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
     os.mkdir(base_dir + '/.tests')
 
@@ -1545,7 +1546,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     m_path = get_media_path()
     media_path = alice_dir + '/' + m_path
     for _ in range(30):
-        if os.path.isdir(inbox_path):
+        if is_a_dir(inbox_path):
             if len([name for name in os.listdir(inbox_path)
                     if os.path.isfile(os.path.join(inbox_path, name))]) > 0:
                 if len([name for name in os.listdir(outbox_path)
@@ -1565,7 +1566,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     # check that a news account exists
     news_actor_dir = data_dir(alice_dir) + '/news@' + alice_domain
     print("news_actor_dir: " + news_actor_dir)
-    assert os.path.isdir(news_actor_dir)
+    assert is_a_dir(news_actor_dir)
     news_actor_file = news_actor_dir + '.json'
     assert os.path.isfile(news_actor_file)
     news_actor_json = load_json(news_actor_file)
@@ -1729,7 +1730,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
     outbox_message_arrived: bool = False
     for _ in range(20):
         time.sleep(1)
-        if not os.path.isdir(inbox_path):
+        if not is_a_dir(inbox_path):
             continue
         if len([name for name in os.listdir(outbox_path)
                 if os.path.isfile(os.path.join(outbox_path, name))]) > 0:
@@ -1782,7 +1783,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator = 'Penfold'
 
-    if os.path.isdir(base_dir + '/.tests'):
+    if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
     os.mkdir(base_dir + '/.tests')
 
@@ -1947,7 +1948,7 @@ def test_follow_between_servers(base_dir: str) -> None:
     alice_message_arrived: bool = False
     for _ in range(20):
         time.sleep(1)
-        if os.path.isdir(inbox_path):
+        if is_a_dir(inbox_path):
             if len([name for name in os.listdir(inbox_path)
                     if os.path.isfile(os.path.join(inbox_path, name))]) > 0:
                 alice_message_arrived = True
@@ -1992,7 +1993,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator = 'Dr Drokk'
 
-    if os.path.isdir(base_dir + '/.tests'):
+    if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
     os.mkdir(base_dir + '/.tests')
 
@@ -2084,8 +2085,8 @@ def test_shared_items_federation(base_dir: str) -> None:
 
     print('\n\n*********************************************************')
     print("Alice and Bob agree to share items catalogs")
-    assert os.path.isdir(alice_dir)
-    assert os.path.isdir(bob_dir)
+    assert is_a_dir(alice_dir)
+    assert is_a_dir(bob_dir)
     set_config_param(alice_dir, 'sharedItemsFederatedDomains', bob_address)
     set_config_param(bob_dir, 'sharedItemsFederatedDomains', alice_address)
 
@@ -2154,7 +2155,7 @@ def test_shared_items_federation(base_dir: str) -> None:
 
     print('\n\n*********************************************************')
     print('Bob publishes some shared items')
-    if os.path.isdir(bob_dir + '/ontology'):
+    if is_a_dir(bob_dir + '/ontology'):
         shutil.rmtree(bob_dir + '/ontology', ignore_errors=False)
     os.mkdir(bob_dir + '/ontology')
     copyfile(base_dir + '/img/logo.png', bob_dir + '/logo.png')
@@ -2367,7 +2368,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     alice_message_arrived: bool = False
     for _ in range(20):
         time.sleep(1)
-        if os.path.isdir(inbox_path):
+        if is_a_dir(inbox_path):
             if len([name for name in os.listdir(inbox_path)
                     if os.path.isfile(os.path.join(inbox_path, name))]) > 0:
                 alice_message_arrived = True
@@ -2469,7 +2470,7 @@ def test_group_follow(base_dir: str) -> None:
     media_license_url = 'https://creativecommons.org/licenses/by-nc/4.0'
     media_creator = 'Bumble'
 
-    if os.path.isdir(base_dir + '/.tests'):
+    if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
     os.mkdir(base_dir + '/.tests')
 
@@ -2818,7 +2819,7 @@ def test_group_follow(base_dir: str) -> None:
 
     for _ in range(20):
         time.sleep(1)
-        if os.path.isdir(inbox_path):
+        if is_a_dir(inbox_path):
             curr_posts_inbox = \
                 len([name for name in os.listdir(inbox_path)
                      if os.path.isfile(os.path.join(inbox_path, name))])
@@ -2841,7 +2842,7 @@ def test_group_follow(base_dir: str) -> None:
     bob_message_arrived: bool = False
     for _ in range(20):
         time.sleep(1)
-        if os.path.isdir(inbox_path_bob):
+        if is_a_dir(inbox_path_bob):
             curr_posts_bob = \
                 len([name for name in os.listdir(inbox_path_bob)
                      if os.path.isfile(os.path.join(inbox_path_bob, name))])
@@ -2902,7 +2903,7 @@ def _test_followers_of_person(base_dir: str) -> None:
     http_prefix = 'https'
     federation_list: list[str] = []
     base_dir = curr_dir + '/.tests_followersofperson'
-    if os.path.isdir(base_dir):
+    if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
     os.mkdir(base_dir)
     os.chdir(base_dir)
@@ -2952,7 +2953,7 @@ def _test_followers_on_domain(base_dir: str) -> None:
     http_prefix = 'https'
     federation_list: list[str] = []
     base_dir = curr_dir + '/.tests_nooffollowersOndomain'
-    if os.path.isdir(base_dir):
+    if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
     os.mkdir(base_dir)
     os.chdir(base_dir)
@@ -3019,7 +3020,7 @@ def _test_group_followers(base_dir: str) -> None:
     http_prefix = 'https'
     federation_list: list[str] = []
     base_dir = curr_dir + '/.tests_testgroupfollowers'
-    if os.path.isdir(base_dir):
+    if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
     os.mkdir(base_dir)
     os.chdir(base_dir)
@@ -3065,7 +3066,7 @@ def _test_follows(base_dir: str) -> None:
     http_prefix: str = 'https'
     federation_list: list[str] = ['wild.com', 'mesh.com']
     base_dir = curr_dir + '/.tests_testfollows'
-    if os.path.isdir(base_dir):
+    if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
     os.mkdir(base_dir)
     os.chdir(base_dir)
@@ -3157,7 +3158,7 @@ def _test_create_person_account(base_dir: str):
     http_prefix: str = 'https'
     client_to_server: bool = False
     base_dir: str = curr_dir + '/.tests_createperson'
-    if os.path.isdir(base_dir):
+    if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
     os.mkdir(base_dir)
     os.chdir(base_dir)
@@ -3297,7 +3298,7 @@ def _test_authentication(base_dir: str) -> None:
     password = 'SuperSecretPassword12345'
 
     base_dir = curr_dir + '/.tests_authentication'
-    if os.path.isdir(base_dir):
+    if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
     os.mkdir(base_dir)
     os.chdir(base_dir)
@@ -3349,7 +3350,7 @@ def test_client_to_server(base_dir: str):
     federation_list: list[str] = []
     low_bandwidth: bool = False
 
-    if os.path.isdir(base_dir + '/.tests'):
+    if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
     os.mkdir(base_dir + '/.tests')
 
@@ -3490,7 +3491,7 @@ def test_client_to_server(base_dir: str):
     print('send_result: ' + str(send_result))
 
     for _ in range(30):
-        if os.path.isdir(outbox_path):
+        if is_a_dir(outbox_path):
             if len([name for name in os.listdir(outbox_path)
                     if os.path.isfile(os.path.join(outbox_path, name))]) == 1:
                 break
@@ -3505,7 +3506,7 @@ def test_client_to_server(base_dir: str):
     print(">>> c2s post arrived in Alice's outbox\n\n\n")
 
     for _ in range(30):
-        if os.path.isdir(inbox_path):
+        if is_a_dir(inbox_path):
             if len([name for name in os.listdir(bob_inbox_path)
                     if os.path.isfile(os.path.join(bob_inbox_path,
                                                    name))]) == 1:
@@ -3524,10 +3525,10 @@ def test_client_to_server(base_dir: str):
     time.sleep(2)
 
     calendar_path = data_dir(bob_dir) + '/bob@' + bob_domain + '/calendar'
-    if not os.path.isdir(calendar_path):
+    if not is_a_dir(calendar_path):
         print('Missing calendar path: ' + calendar_path)
-    assert os.path.isdir(calendar_path)
-    assert os.path.isdir(calendar_path + '/' + str(test_date.year))
+    assert is_a_dir(calendar_path)
+    assert is_a_dir(calendar_path + '/' + str(test_date.year))
     assert os.path.isfile(calendar_path + '/' + str(test_date.year) + '/' +
                           str(test_date.month) + '.txt')
     print(">>> calendar entry created for s2s post which arrived at " +
@@ -3701,7 +3702,7 @@ def test_client_to_server(base_dir: str):
                          True, __version__, signing_priv_key_pem,
                          system_language, mitm_servers)
     for _ in range(20):
-        if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
+        if is_a_dir(outbox_path) and is_a_dir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
                     if os.path.isfile(os.path.join(outbox_path, name))]) == 2:
                 test = len([name for name in os.listdir(inbox_path)
@@ -3733,7 +3734,7 @@ def test_client_to_server(base_dir: str):
                              True, __version__, signing_priv_key_pem,
                              system_language, mitm_servers)
     for _ in range(20):
-        if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
+        if is_a_dir(outbox_path) and is_a_dir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
                     if os.path.isfile(os.path.join(outbox_path, name))]) == 3:
                 test = len([name for name in os.listdir(inbox_path)
@@ -3782,7 +3783,7 @@ def test_client_to_server(base_dir: str):
                              signing_priv_key_pem,
                              system_language, mitm_servers)
     for _ in range(30):
-        if os.path.isdir(outbox_path) and os.path.isdir(inbox_path):
+        if is_a_dir(outbox_path) and is_a_dir(inbox_path):
             if len([name for name in os.listdir(outbox_path)
                     if os.path.isfile(os.path.join(outbox_path, name))]) == 4:
                 if len([name for name in os.listdir(inbox_path)
@@ -3824,7 +3825,7 @@ def test_client_to_server(base_dir: str):
                            True, __version__, signing_priv_key_pem,
                            system_language, mitm_servers)
     for _ in range(30):
-        if os.path.isdir(inbox_path):
+        if is_a_dir(inbox_path):
             test = len([name for name in os.listdir(inbox_path)
                         if os.path.isfile(os.path.join(inbox_path, name))])
             if test == bob_posts_before-1:
@@ -4216,15 +4217,15 @@ def _test_addemoji(base_dir: str):
     hashtags: dict = {}
     base_dir_original = base_dir
     path = base_dir + '/.tests'
-    if not os.path.isdir(path):
+    if not is_a_dir(path):
         os.mkdir(path)
     path = base_dir + '/.tests/emoji'
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     base_dir = path
     path = base_dir + '/emoji'
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     copytree(base_dir_original + '/emoji', base_dir + '/emoji', False, None)
@@ -6863,7 +6864,7 @@ def test_update_actor(base_dir: str):
     federation_list: list[str] = []
     system_language = 'en'
 
-    if os.path.isdir(base_dir + '/.tests'):
+    if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests',
                       ignore_errors=False)
     os.mkdir(base_dir + '/.tests')
@@ -6972,7 +6973,7 @@ def test_update_actor(base_dir: str):
     assert THR_ALICE.is_alive() is False
 
     os.chdir(base_dir)
-    if os.path.isdir(base_dir + '/.tests'):
+    if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
 
 
@@ -7780,7 +7781,7 @@ def _test_httpsig_base_new(with_digest: bool, base_dir: str,
 
     debug = True
     path = base_dir + '/.testHttpsigBaseNew'
-    if os.path.isdir(path):
+    if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
     os.mkdir(path)
     os.chdir(path)
@@ -8956,7 +8957,7 @@ def _test_book_link(base_dir: str):
     max_cached_readers = 10
 
     base_dir2 = base_dir + '/.testbookevents'
-    if os.path.isdir(base_dir2):
+    if is_a_dir(base_dir2):
         shutil.rmtree(base_dir2, ignore_errors=False)
     os.mkdir(base_dir2)
 
@@ -9285,7 +9286,7 @@ def _test_book_link(base_dir: str):
     assert books_cache['reader_list'][expected_readers - 1] == actor
     assert books_cache['readers'].get(actor)
 
-    if os.path.isdir(base_dir2):
+    if is_a_dir(base_dir2):
         shutil.rmtree(base_dir2, ignore_errors=False)
 
 
@@ -9626,7 +9627,7 @@ def _test_gemini_blog(base_dir: str) -> None:
                             message_json, system_language,
                             debug, True)
     assert result
-    assert os.path.isdir(gemini_blog_dir)
+    assert is_a_dir(gemini_blog_dir)
     assert os.path.isfile(gemini_blog_filename)
     assert text_in_file('# ' + title + '\n', gemini_blog_filename)
     assert text_in_file(content, gemini_blog_filename)
@@ -9658,7 +9659,7 @@ def _test_markdown_blog(base_dir: str) -> None:
                               message_json, system_language,
                               debug, True)
     assert result
-    assert os.path.isdir(markdown_blog_dir)
+    assert is_a_dir(markdown_blog_dir)
     assert os.path.isfile(markdown_blog_filename)
     assert text_in_file(content, markdown_blog_filename)
     assert text_in_file('2022-02-25', markdown_blog_filename)
@@ -9688,7 +9689,7 @@ def _test_micron_blog(base_dir: str) -> None:
                             message_json, system_language,
                             debug, True)
     assert result
-    assert os.path.isdir(micron_blog_dir)
+    assert is_a_dir(micron_blog_dir)
     assert os.path.isfile(micron_blog_filename)
     assert text_in_file(content, micron_blog_filename)
     assert text_in_file('2022-02-25', micron_blog_filename)

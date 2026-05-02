@@ -19,6 +19,7 @@ from utils import get_attributed_to
 from utils import string_contains
 from data import save_string
 from data import is_a_file
+from data import is_a_dir
 
 
 def _git_format_content(content: str) -> str:
@@ -202,10 +203,10 @@ def receive_git_patch(base_dir: str, nickname: str, domain: str,
             patch_subject = patch_subject.replace(' ', '_')
             project_name = \
                 _get_git_project_name(base_dir, nickname, domain, subject)
-            if not os.path.isdir(patches_dir):
+            if not is_a_dir(patches_dir):
                 os.mkdir(patches_dir)
             project_dir = patches_dir + '/' + project_name
-            if not os.path.isdir(project_dir):
+            if not is_a_dir(project_dir):
                 os.mkdir(project_dir)
             patch_filename = \
                 project_dir + '/' + patch_subject + '.patch'

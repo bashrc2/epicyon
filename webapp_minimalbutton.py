@@ -7,11 +7,11 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-import os
 from utils import acct_dir
 from data import erase_file
 from data import save_flag_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def is_minimal(base_dir: str, domain: str, nickname: str) -> bool:
@@ -19,7 +19,7 @@ def is_minimal(base_dir: str, domain: str, nickname: str) -> bool:
        for the given account
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         return True
     minimal_filename = account_dir + '/.notminimal'
     if is_a_file(minimal_filename):
@@ -32,7 +32,7 @@ def set_minimal(base_dir: str, domain: str, nickname: str,
     """Sets whether an account should display minimal buttons
     """
     account_dir = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         return
     minimal_filename = account_dir + '/.notminimal'
     minimal_file_exists = is_a_file(minimal_filename)

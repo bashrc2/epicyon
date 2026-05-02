@@ -51,6 +51,7 @@ from data import load_string
 from data import save_string
 from data import load_list
 from data import is_a_file
+from data import is_a_dir
 
 
 def _no_of_blog_replies(base_dir: str, http_prefix: str, translate: {},
@@ -1107,7 +1108,7 @@ def account_has_blog(base_dir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account has a blog
     """
     blogs_dir = acct_dir(base_dir, nickname, domain) + '/tlblogs'
-    if os.path.isdir(blogs_dir):
+    if is_a_dir(blogs_dir):
         for path in os.listdir(blogs_dir):
             if path.endswith('.json'):
                 return True

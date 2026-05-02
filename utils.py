@@ -29,6 +29,7 @@ from data import load_string
 from data import append_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 VALID_HASHTAG_CHARS = \
     set('_0123456789' +
@@ -717,7 +718,7 @@ def set_memorials(base_dir: str, domain: str, memorial_str) -> None:
     for memorial_item in memorial_list:
         memorial_nick = memorial_item.strip()
         check_dir = acct_dir(base_dir, memorial_nick, domain)
-        if os.path.isdir(check_dir):
+        if is_a_dir(check_dir):
             new_memorial_str += memorial_nick + '\n'
     memorial_str = new_memorial_str
 
@@ -817,7 +818,7 @@ def get_followers_of_person(base_dir: str,
     domain: str = remove_domain_port(domain)
     handle: str = nickname + '@' + domain
     handle_dir: str = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         return followers
     dir_str: str = data_dir(base_dir)
     for subdir, dirs, _ in os.walk(dir_str):
@@ -1035,10 +1036,10 @@ def create_person_dir(nickname: str, domain: str, base_dir: str,
     """
     handle: str = nickname + '@' + domain
     handle_dir: str = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         os.mkdir(handle_dir)
     box_dir: str = acct_handle_dir(base_dir, handle) + '/' + dir_name
-    if not os.path.isdir(box_dir):
+    if not is_a_dir(box_dir):
         os.mkdir(box_dir)
     return box_dir
 
@@ -1589,7 +1590,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
         handle: str = nickname + '@' + domain
 
     handle_dir: str = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('WARN: account for ' + handle + ' does not exist')
         return False
 
@@ -1622,7 +1623,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
                             unfollowed_filename)
 
     dir_str: str = data_dir(base_dir)
-    if not os.path.isdir(dir_str):
+    if not is_a_dir(dir_str):
         os.mkdir(dir_str)
     handle_to_follow = follow_nickname + '@' + follow_domain
     if group_account:
@@ -2616,7 +2617,7 @@ def copytree(src: str, dst: str, symlinks: str, ignore: bool) -> None:
     for item in os.listdir(src):
         s_dir = os.path.join(src, item)
         d_dir = os.path.join(dst, item)
-        if os.path.isdir(s_dir):
+        if is_a_dir(s_dir):
             shutil.copytree(s_dir, d_dir, symlinks, ignore)
         else:
             shutil.copy2(s_dir, d_dir)
@@ -2637,7 +2638,7 @@ def get_cached_post_filename(base_dir: str, nickname: str, domain: str,
     """
     cached_post_dir: str = \
         get_cached_post_directory(base_dir, nickname, domain)
-    if not os.path.isdir(cached_post_dir):
+    if not is_a_dir(cached_post_dir):
         # print('ERROR: invalid html cache directory ' + cached_post_dir)
         return None
     if '@' not in cached_post_dir:
@@ -2768,7 +2769,7 @@ def reject_post_id(base_dir: str, nickname: str, domain: str,
 def load_translations_from_file(base_dir: str, language: str) -> ({}, str):
     """Returns the translations dictionary
     """
-    if not os.path.isdir(base_dir + '/translations'):
+    if not is_a_dir(base_dir + '/translations'):
         print('ERROR: translations directory not found')
         return None, None
     if not language:

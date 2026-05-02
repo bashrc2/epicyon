@@ -26,6 +26,7 @@ from data import save_string
 from data import load_string
 from data import prepend_string
 from data import is_a_file
+from data import is_a_dir
 
 
 def get_book_link_from_content(content: str) -> str:
@@ -473,15 +474,15 @@ def store_book_events(base_dir: str,
         return False
     dir_str = data_dir(base_dir)
     reading_path = dir_str + '/reading'
-    if not os.path.isdir(dir_str):
+    if not is_a_dir(dir_str):
         os.mkdir(dir_str)
-    if not os.path.isdir(reading_path):
+    if not is_a_dir(reading_path):
         os.mkdir(reading_path)
     books_path = reading_path + '/books'
-    if not os.path.isdir(books_path):
+    if not is_a_dir(books_path):
         os.mkdir(books_path)
     readers_path = reading_path + '/readers'
-    if not os.path.isdir(readers_path):
+    if not is_a_dir(readers_path):
         os.mkdir(readers_path)
 
     actor = book_dict['actor']

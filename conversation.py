@@ -26,6 +26,7 @@ from data import save_flag_file
 from data import append_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
@@ -43,7 +44,7 @@ def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
     if not post_json_object['object'].get('id'):
         return None
     conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
-    if not os.path.isdir(conversation_dir):
+    if not is_a_dir(conversation_dir):
         os.mkdir(conversation_dir)
     if post_json_object['object'].get('conversation'):
         conversation_id = post_json_object['object']['conversation']

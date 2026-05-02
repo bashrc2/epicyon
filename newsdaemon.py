@@ -49,6 +49,7 @@ from data import append_string
 from data import prepend_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,
@@ -451,7 +452,7 @@ def _create_news_mirror(base_dir: str, domain: str,
         return True
 
     mirror_dir = data_dir(base_dir) + '/newsmirror'
-    if not os.path.isdir(mirror_dir):
+    if not is_a_dir(mirror_dir):
         os.mkdir(mirror_dir)
 
     # count the directories
@@ -483,7 +484,7 @@ def _create_news_mirror(base_dir: str, domain: str,
                         continue
                     post_id = post_id.strip()
                     mirror_article_dir = mirror_dir + '/' + post_id
-                    if os.path.isdir(mirror_article_dir):
+                    if is_a_dir(mirror_article_dir):
                         rmtree(mirror_article_dir,
                                ignore_errors=False, onexc=None)
                         removals.append(post_id)
@@ -507,7 +508,7 @@ def _create_news_mirror(base_dir: str, domain: str,
                         mirror_index_filename)
 
     mirror_article_dir = mirror_dir + '/' + post_id_number
-    if os.path.isdir(mirror_article_dir):
+    if is_a_dir(mirror_article_dir):
         # already mirrored
         return True
 
@@ -523,7 +524,7 @@ def _create_news_mirror(base_dir: str, domain: str,
     proc = Popen(command_str, shell=True)
     os.waitpid(proc.pid, 0)
 
-    if not os.path.isdir(mirror_article_dir):
+    if not is_a_dir(mirror_article_dir):
         print('WARN: failed to mirror ' + url)
         return True
 
@@ -560,7 +561,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
         return
 
     base_path = data_dir(base_dir) + '/news@' + domain + '/outbox'
-    if not os.path.isdir(base_path):
+    if not is_a_dir(base_path):
         os.mkdir(base_path)
 
     # oldest items first

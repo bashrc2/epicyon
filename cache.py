@@ -35,6 +35,7 @@ from data import save_binary
 from data import load_binary
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def remove_person_from_cache(base_dir: str, person_url: str,
@@ -114,7 +115,7 @@ def store_person_in_cache(base_dir: str, person_url: str,
     # store to file
     if not allow_write_to_file:
         return
-    if os.path.isdir(base_dir + '/cache/actors'):
+    if is_a_dir(base_dir + '/cache/actors'):
         cache_filename = base_dir + '/cache/actors/' + \
             person_url.replace('/', '#') + '.json'
         if not is_a_file(cache_filename):

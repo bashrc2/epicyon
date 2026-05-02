@@ -29,6 +29,7 @@ from data import load_list
 from data import erase_file
 from data import move_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _update_post_schedule(base_dir: str, handle: str, httpd,
@@ -266,7 +267,7 @@ def remove_scheduled_posts(base_dir: str, nickname: str, domain: str) -> None:
                    schedule_index_filename)
     # remove the scheduled posts
     scheduled_dir = acct_dir(base_dir, nickname, domain) + '/scheduled'
-    if not os.path.isdir(scheduled_dir):
+    if not is_a_dir(scheduled_dir):
         return
     for scheduled_post_filename in os.listdir(scheduled_dir):
         file_path = os.path.join(scheduled_dir, scheduled_post_filename)

@@ -152,6 +152,7 @@ from data import save_string
 from data import save_flag_file
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
@@ -468,7 +469,7 @@ def _profile_post_import_theme(base_dir: str, nickname: str,
     """ HTTP POST import theme from file
     """
     if fields.get('importTheme'):
-        if not os.path.isdir(base_dir + '/imports'):
+        if not is_a_dir(base_dir + '/imports'):
             os.mkdir(base_dir + '/imports')
         filename_base = base_dir + '/imports/newtheme.zip'
         if is_a_file(filename_base):
@@ -2723,7 +2724,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
             if m_type == 'instanceLogo':
                 filename_base = data_dir(base_dir) + '/login.temp'
             elif m_type == 'importTheme':
-                if not os.path.isdir(base_dir + '/imports'):
+                if not is_a_dir(base_dir + '/imports'):
                     os.mkdir(base_dir + '/imports')
                 filename_base = base_dir + '/imports/newtheme.zip'
                 if is_a_file(filename_base):

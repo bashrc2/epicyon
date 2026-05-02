@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-import os
 from flags import has_group_type
 from timeFunctions import get_account_timezone
 from announce import undo_announce_collection_entry
@@ -38,6 +37,7 @@ from webapp_post import individual_post_as_html
 from reaction import undo_reaction_collection_entry
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _receive_undo_follow(base_dir: str, message_json: {},
@@ -215,7 +215,7 @@ def receive_undo_like(recent_posts_cache: {},
                   message_json['type'])
         return False
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('DEBUG: unknown recipient of undo like - ' + handle)
     # if this post in the outbox of the person?
     handle_name = handle.split('@')[0]
@@ -365,7 +365,7 @@ def receive_undo_reaction(recent_posts_cache: {},
                   message_json['type'])
         return False
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('DEBUG: unknown recipient of undo reaction - ' + handle)
     # if this post in the outbox of the person?
     handle_name = handle.split('@')[0]
@@ -631,7 +631,7 @@ def receive_undo_announce(recent_posts_cache: {},
                   message_json['type'] + ' announce')
         return False
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('DEBUG: unknown recipient of undo announce - ' + handle)
     # if this post in the outbox of the person?
     handle_name = handle.split('@')[0]

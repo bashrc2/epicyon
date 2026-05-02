@@ -43,6 +43,7 @@ from data import append_string
 from data import prepend_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _strings_are_digits(strings_list: []) -> bool:
@@ -117,10 +118,10 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
     master/lib/federation/activity_stream/converter/event.ex
     """
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('WARN: Account does not exist at ' + handle_dir)
     calendar_path = handle_dir + '/calendar'
-    if not os.path.isdir(calendar_path):
+    if not is_a_dir(calendar_path):
         os.mkdir(calendar_path)
 
     # get the year, month and day from the event
@@ -144,11 +145,11 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         # if this is a full description of an event then save it
         # as a separate json file
         events_path = handle_dir + '/events'
-        if not os.path.isdir(events_path):
+        if not is_a_dir(events_path):
             os.mkdir(events_path)
         events_year_path = \
             handle_dir + '/events/' + str(event_year)
-        if not os.path.isdir(events_year_path):
+        if not is_a_dir(events_year_path):
             os.mkdir(events_year_path)
         event_id = str(event_year) + '-' + event_time.strftime("%m") + '-' + \
             event_time.strftime("%d") + '_' + event_json['uuid']
@@ -171,7 +172,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
                         tl_events_filename)
 
     # create a directory for the calendar year
-    if not os.path.isdir(calendar_path + '/' + str(event_year)):
+    if not is_a_dir(calendar_path + '/' + str(event_year)):
         os.mkdir(calendar_path + '/' + str(event_year))
 
     # calendar month file containing event post Ids
@@ -1080,7 +1081,7 @@ def _dav_store_event(base_dir: str, nickname: str, domain: str,
     handle = nickname + '@' + domain
     handle_dir = acct_handle_dir(base_dir, handle)
     outbox_dir = handle_dir + '/outbox'
-    if not os.path.isdir(outbox_dir):
+    if not is_a_dir(outbox_dir):
         return False
     filename = outbox_dir + '/' + post_id.replace('/', '#') + '.json'
     save_json(event_json, filename)

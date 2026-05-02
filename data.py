@@ -183,3 +183,9 @@ def is_a_file(filename: str) -> bool:
     """Returns true if the given filename exists
     """
     return os.path.isfile(filename)
+
+
+def is_a_dir(directory: str) -> bool:
+    """Returns true if the given directory exists
+    """
+    return os.path.isdir(directory)

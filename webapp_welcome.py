@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Onboarding"
 
-import os
 from shutil import copyfile
 from utils import data_dir
 from utils import get_config_param
@@ -19,6 +18,7 @@ from markdown import markdown_to_html
 from data import save_flag_file
 from data import load_string
 from data import is_a_file
+from data import is_a_dir
 
 
 def is_welcome_screen_complete(base_dir: str,
@@ -26,7 +26,7 @@ def is_welcome_screen_complete(base_dir: str,
     """Returns true if the welcome screen is complete for the given account
     """
     account_path = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(account_path):
+    if not is_a_dir(account_path):
         return False
     complete_filename = account_path + '/.welcome_complete'
     return is_a_file(complete_filename)
@@ -37,7 +37,7 @@ def welcome_screen_is_complete(base_dir: str,
     """Indicates that the welcome screen has been shown for a given account
     """
     account_path = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(account_path):
+    if not is_a_dir(account_path):
         return
     complete_filename = account_path + '/.welcome_complete'
     save_flag_file(complete_filename,

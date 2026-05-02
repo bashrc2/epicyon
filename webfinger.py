@@ -30,6 +30,7 @@ from utils import get_nickname_from_actor
 from utils import get_domain_from_actor
 from utils import is_yggdrasil_url
 from data import is_a_file
+from data import is_a_dir
 
 
 def _parse_handle(handle: str) -> (str, str, bool):
@@ -160,7 +161,7 @@ def store_webfinger_endpoint(nickname: str, domain: str, port: int,
     domain = get_full_domain(domain, port)
     handle = nickname + '@' + domain
     wf_subdir = '/wfendpoints'
-    if not os.path.isdir(base_dir + wf_subdir):
+    if not is_a_dir(base_dir + wf_subdir):
         os.mkdir(base_dir + wf_subdir)
     filename = base_dir + wf_subdir + '/' + handle + '.json'
     save_json(wf_json, filename)
@@ -625,7 +626,7 @@ def webfinger_update(base_dir: str, nickname: str, domain: str,
     """
     handle = nickname + '@' + domain
     wf_subdir = '/wfendpoints'
-    if not os.path.isdir(base_dir + wf_subdir):
+    if not is_a_dir(base_dir + wf_subdir):
         return
 
     filename = base_dir + wf_subdir + '/' + handle + '.json'

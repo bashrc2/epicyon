@@ -138,6 +138,7 @@ from siteactive import is_online
 from data import save_string
 from data import load_list
 from data import is_a_file
+from data import is_a_dir
 
 
 def str2bool(value_str) -> bool:
@@ -1589,12 +1590,12 @@ def _command_options() -> None:
         sys.exit()
 
     # create cache for actors
-    if not os.path.isdir(base_dir + '/cache'):
+    if not is_a_dir(base_dir + '/cache'):
         os.mkdir(base_dir + '/cache')
-    if not os.path.isdir(base_dir + '/cache/actors'):
+    if not is_a_dir(base_dir + '/cache/actors'):
         print('Creating actors cache')
         os.mkdir(base_dir + '/cache/actors')
-    if not os.path.isdir(base_dir + '/cache/announce'):
+    if not is_a_dir(base_dir + '/cache/announce'):
         print('Creating announce cache')
         os.mkdir(base_dir + '/cache/announce')
 
@@ -3313,10 +3314,10 @@ def _command_options() -> None:
             print('Password should be at least 8 characters')
             sys.exit()
         account_dir = acct_dir(base_dir, nickname, domain)
-        if os.path.isdir(account_dir):
+        if is_a_dir(account_dir):
             print('Account already exists')
             sys.exit()
-        if os.path.isdir(base_dir + '/deactivated/' + nickname + '@' + domain):
+        if is_a_dir(base_dir + '/deactivated/' + nickname + '@' + domain):
             print('Account is deactivated')
             sys.exit()
         if domain.endswith('.onion') or \
@@ -3331,7 +3332,7 @@ def _command_options() -> None:
             http_prefix = 'ipns'
         create_person(base_dir, nickname, domain, port, http_prefix,
                       True, not argb.noapproval, argb.password.strip())
-        if os.path.isdir(account_dir):
+        if is_a_dir(account_dir):
             print('Account created for ' + nickname + '@' + domain)
         else:
             print('Account creation failed')
@@ -3363,12 +3364,12 @@ def _command_options() -> None:
             print('Password should be at least 8 characters')
             sys.exit()
         account_dir = acct_dir(base_dir, nickname, domain)
-        if os.path.isdir(account_dir):
+        if is_a_dir(account_dir):
             print('Group already exists')
             sys.exit()
         create_group(base_dir, nickname, domain, port, http_prefix,
                      True, argb.password.strip())
-        if os.path.isdir(account_dir):
+        if is_a_dir(account_dir):
             print('Group created for ' + nickname + '@' + domain)
         else:
             print('Group creation failed')
@@ -3458,7 +3459,7 @@ def _command_options() -> None:
             print('Password should be at least 8 characters')
             sys.exit()
         account_dir = acct_dir(base_dir, nickname, domain)
-        if not os.path.isdir(account_dir):
+        if not is_a_dir(account_dir):
             print('Account ' + nickname + '@' + domain + ' not found')
             sys.exit()
         password_file = data_dir(base_dir) + '/passwords'
@@ -3886,18 +3887,18 @@ def _command_options() -> None:
         password = 'boringpassword'
         print('Generating some test data for user: ' + nickname)
 
-        if os.path.isdir(base_dir + '/tags'):
+        if is_a_dir(base_dir + '/tags'):
             shutil.rmtree(base_dir + '/tags', ignore_errors=False)
         dir_str = data_dir(base_dir)
-        if os.path.isdir(dir_str):
+        if is_a_dir(dir_str):
             shutil.rmtree(dir_str, ignore_errors=False)
-        if os.path.isdir(base_dir + '/keys'):
+        if is_a_dir(base_dir + '/keys'):
             shutil.rmtree(base_dir + '/keys', ignore_errors=False)
-        if os.path.isdir(base_dir + '/media'):
+        if is_a_dir(base_dir + '/media'):
             shutil.rmtree(base_dir + '/media', ignore_errors=False)
-        if os.path.isdir(base_dir + '/sharefiles'):
+        if is_a_dir(base_dir + '/sharefiles'):
             shutil.rmtree(base_dir + '/sharefiles', ignore_errors=False)
-        if os.path.isdir(base_dir + '/wfendpoints'):
+        if is_a_dir(base_dir + '/wfendpoints'):
             shutil.rmtree(base_dir + '/wfendpoints', ignore_errors=False)
 
         set_config_param(base_dir, 'registrationsRemaining',

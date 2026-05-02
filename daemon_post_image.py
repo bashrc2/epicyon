@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import errno
 from socket import error as SocketError
 from httpcodes import http_404
@@ -15,6 +14,7 @@ from utils import acct_dir
 from utils import binary_is_image
 from formats import get_image_extension_from_mime_type
 from data import save_binary
+from data import is_a_dir
 
 
 def receive_image_attachment(self, length: int, path: str, base_dir: str,
@@ -37,7 +37,7 @@ def receive_image_attachment(self, length: int, path: str, base_dir: str,
         return
     self.post_from_nickname = path_users_section.split('/')[0]
     accounts_dir = acct_dir(base_dir, self.post_from_nickname, domain)
-    if not os.path.isdir(accounts_dir):
+    if not is_a_dir(accounts_dir):
         http_404(self, 13)
         self.server.postreq_busy = False
         return

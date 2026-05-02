@@ -18,6 +18,7 @@ from utils import get_gemini_blog_title
 from utils import get_gemini_blog_published
 from utils import get_gemini_blog_filename
 from data import save_string
+from data import is_a_dir
 
 
 def blog_to_gemini(base_dir: str, nickname: str, domain: str,
@@ -31,10 +32,10 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
         account_dir = acct_dir(base_dir, nickname, domain)
     else:
         account_dir = base_dir
-        if os.path.isdir(account_dir + '/geminitest'):
+        if is_a_dir(account_dir + '/geminitest'):
             shutil.rmtree(account_dir + '/geminitest', ignore_errors=True)
 
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         if debug:
             print('WARN: blog_to_gemini account directory not found ' +
                   account_dir)
@@ -86,7 +87,7 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
         gemini_blog_dir = account_dir + '/gemini'
     else:
         gemini_blog_dir = account_dir + '/geminitest'
-    if not os.path.isdir(gemini_blog_dir):
+    if not is_a_dir(gemini_blog_dir):
         os.mkdir(gemini_blog_dir)
 
     gemini_blog_filename = \

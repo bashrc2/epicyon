@@ -18,6 +18,7 @@ from utils import get_markdown_blog_filename
 from utils import get_micron_blog_filename
 from utils import get_gemini_blog_published
 from data import save_string
+from data import is_a_dir
 
 
 def _markdown_get_sections(markdown: str) -> []:
@@ -518,10 +519,10 @@ def blog_to_markdown(base_dir: str, nickname: str, domain: str,
         account_dir = acct_dir(base_dir, nickname, domain)
     else:
         account_dir = base_dir
-        if os.path.isdir(account_dir + '/markdowntest'):
+        if is_a_dir(account_dir + '/markdowntest'):
             shutil.rmtree(account_dir + '/markdowntest', ignore_errors=True)
 
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         if debug:
             print('WARN: blog_to_markdown account directory not found ' +
                   account_dir)
@@ -545,7 +546,7 @@ def blog_to_markdown(base_dir: str, nickname: str, domain: str,
         markdown_blog_dir = account_dir + '/markdown'
     else:
         markdown_blog_dir = account_dir + '/markdowntest'
-    if not os.path.isdir(markdown_blog_dir):
+    if not is_a_dir(markdown_blog_dir):
         os.mkdir(markdown_blog_dir)
 
     markdown_blog_filename = \
@@ -594,10 +595,10 @@ def blog_to_micron(base_dir: str, nickname: str, domain: str,
         account_dir = acct_dir(base_dir, nickname, domain)
     else:
         account_dir = base_dir
-        if os.path.isdir(account_dir + '/microntest'):
+        if is_a_dir(account_dir + '/microntest'):
             shutil.rmtree(account_dir + '/microntest', ignore_errors=True)
 
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         if debug:
             print('WARN: blog_to_micron account directory not found ' +
                   account_dir)
@@ -621,7 +622,7 @@ def blog_to_micron(base_dir: str, nickname: str, domain: str,
         micron_blog_dir = account_dir + '/micron'
     else:
         micron_blog_dir = account_dir + '/microntest'
-    if not os.path.isdir(micron_blog_dir):
+    if not is_a_dir(micron_blog_dir):
         os.mkdir(micron_blog_dir)
 
     micron_blog_filename = \

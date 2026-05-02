@@ -145,6 +145,7 @@ from data import append_string
 from data import prepend_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -170,8 +171,8 @@ def _store_last_post_id(base_dir: str, nickname: str, domain: str,
         return
     account_dir = acct_dir(base_dir, nickname, domain)
     lastpost_dir = account_dir + '/lastpost'
-    if not os.path.isdir(lastpost_dir):
-        if os.path.isdir(account_dir):
+    if not is_a_dir(lastpost_dir):
+        if is_a_dir(account_dir):
             os.mkdir(lastpost_dir)
     actor_filename = lastpost_dir + '/' + actor.replace('/', '#')
     save_string(post_id, actor_filename,
@@ -252,7 +253,7 @@ def valid_inbox(base_dir: str, nickname: str, domain: str) -> bool:
     """
     domain = remove_domain_port(domain)
     inbox_dir = acct_dir(base_dir, nickname, domain) + '/inbox'
-    if not os.path.isdir(inbox_dir):
+    if not is_a_dir(inbox_dir):
         return True
     for subdir, _, files in os.walk(inbox_dir):
         for fname in files:
@@ -274,7 +275,7 @@ def valid_inbox_filenames(base_dir: str, nickname: str, domain: str,
     """
     domain = remove_domain_port(domain)
     inbox_dir = acct_dir(base_dir, nickname, domain) + '/inbox'
-    if not os.path.isdir(inbox_dir):
+    if not is_a_dir(inbox_dir):
         print('Not an inbox directory: ' + inbox_dir)
         return True
     expected_str = expected_domain + ':' + str(expected_port)
@@ -698,7 +699,7 @@ def _inbox_post_recipients_add(base_dir: str, to_list: [],
             nickname = recipient.split(domain_match)[1]
             handle = nickname + '@' + domain
             handle_dir = acct_handle_dir(base_dir, handle)
-            if os.path.isdir(handle_dir):
+            if is_a_dir(handle_dir):
                 if nickname == 'inbox':
                     # 'to' is the shared inbox
                     follower_recipients = True
@@ -1077,7 +1078,7 @@ def _dm_notify(base_dir: str, handle: str, url: str) -> None:
     """Creates a notification that a new DM has arrived
     """
     account_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         return
     dm_file = account_dir + '/.newDM'
     if not is_a_file(dm_file):
@@ -1090,7 +1091,7 @@ def _notify_post_arrival(base_dir: str, handle: str, url: str) -> None:
     on the person options screen
     """
     account_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         return
     notify_file = account_dir + '/.newNotifiedPost'
     if is_a_file(notify_file):
@@ -1110,7 +1111,7 @@ def _reply_notify(base_dir: str, handle: str, url: str) -> None:
     """Creates a notification that a new reply has arrived
     """
     account_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         return
     reply_file = account_dir + '/.newReply'
     if not is_a_file(reply_file):
@@ -1123,7 +1124,7 @@ def _git_patch_notify(base_dir: str, handle: str, subject: str,
     """Creates a notification that a new git patch has arrived
     """
     account_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(account_dir):
+    if not is_a_dir(account_dir):
         return
     patch_file = account_dir + '/.newPatch'
     subject = subject.replace('[PATCH]', '').strip()
@@ -1325,12 +1326,12 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
     domain = handle.split('@')[1]
     domain = remove_domain_port(domain)
     account_path = acct_dir(base_dir, nickname, domain)
-    if not os.path.isdir(account_path):
+    if not is_a_dir(account_path):
         return
     if not is_following_actor(base_dir, nickname, domain, actor):
         return
     last_seen_path = account_path + '/lastseen'
-    if not os.path.isdir(last_seen_path):
+    if not is_a_dir(last_seen_path):
         os.mkdir(last_seen_path)
     last_seen_filename = \
         last_seen_path + '/' + actor.replace('/', '#') + '.txt'
@@ -2808,7 +2809,7 @@ def clear_queue_items(base_dir: str, queue: []) -> None:
     for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
             queue_dir = dir_str + '/' + account + '/queue'
-            if not os.path.isdir(queue_dir):
+            if not is_a_dir(queue_dir):
                 continue
             for _, _, queuefiles in os.walk(queue_dir):
                 for qfile in queuefiles:
@@ -2831,7 +2832,7 @@ def _restore_queue_items(base_dir: str, queue: []) -> None:
     for _, dirs, _ in os.walk(dir_str):
         for account in dirs:
             queue_dir = dir_str + '/' + account + '/queue'
-            if not os.path.isdir(queue_dir):
+            if not is_a_dir(queue_dir):
                 continue
             for _, _, queuefiles in os.walk(queue_dir):
                 for qfile in queuefiles:
@@ -3162,7 +3163,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
     handle_to_follow = nickname_to_follow + '@' + domain_to_follow
     if domain_to_follow == domain:
         handle_dir = acct_handle_dir(base_dir, handle_to_follow)
-        if not os.path.isdir(handle_dir):
+        if not is_a_dir(handle_dir):
             if debug:
                 print('DEBUG: followed account not found - ' +
                       handle_dir)
@@ -3292,7 +3293,7 @@ def _receive_follow_request(session, session_onion, session_i2p,
         # update the followers
         account_to_be_followed = \
             acct_dir(base_dir, nickname_to_follow, domain_to_follow)
-        if os.path.isdir(account_to_be_followed):
+        if is_a_dir(account_to_be_followed):
             followers_filename = account_to_be_followed + '/followers.txt'
 
             # for actors which don't follow the mastodon

@@ -93,6 +93,7 @@ from data import prepend_string
 from data import load_string
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def inbox_update_index(boxname: str, base_dir: str, handle: str,
@@ -1015,7 +1016,7 @@ def receive_like(recent_posts_cache: {},
                   message_json['type'])
         return False
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
     handle_name = handle.split('@')[0]
@@ -1241,7 +1242,7 @@ def receive_reaction(recent_posts_cache: {},
                   message_json['type'])
         return False
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('DEBUG: unknown recipient of emoji reaction - ' + handle)
     if is_a_file(handle_dir + '/.hideReactionButton'):
         print('Emoji reaction rejected by ' + handle +
@@ -1454,7 +1455,7 @@ def receive_zot_reaction(recent_posts_cache: {},
                   message_json['object']['type'])
         return False
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('DEBUG: unknown recipient of zot emoji reaction - ' + handle)
     if is_a_file(handle_dir + '/.hideReactionButton'):
         print('Zot emoji reaction rejected by ' + handle +
@@ -1758,7 +1759,7 @@ def receive_delete(handle: str, base_dir: str,
         if debug:
             print('DEBUG: actor is not the owner of the post to be deleted')
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
     message_id = remove_id_ending(message_json['object'])
@@ -1924,7 +1925,7 @@ def receive_announce(recent_posts_cache: {},
             return False
 
     handle_dir = acct_handle_dir(base_dir, handle)
-    if not os.path.isdir(handle_dir):
+    if not is_a_dir(handle_dir):
         print('DEBUG: unknown recipient of announce - ' + handle)
 
     # is the announce actor blocked?

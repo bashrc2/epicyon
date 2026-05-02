@@ -59,6 +59,7 @@ from data import load_string
 from data import save_binary
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _remove_cdata(text: str) -> str:
@@ -188,7 +189,7 @@ def _download_newswire_feed_favicon(session, base_dir: str,
             break
 
     # create cached favicons directory if needed
-    if not os.path.isdir(base_dir + '/favicons'):
+    if not is_a_dir(base_dir + '/favicons'):
         os.mkdir(base_dir + '/favicons')
 
     # check svg for dubious scripts

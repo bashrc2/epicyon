@@ -38,6 +38,7 @@ from data import append_string
 from data import erase_file
 from data import move_file
 from data import is_a_file
+from data import is_a_dir
 
 
 # music file ID3 v1 genres
@@ -545,9 +546,9 @@ def _is_media(image_filename: str) -> bool:
 def create_media_dirs(base_dir: str, media_path: str) -> None:
     """Creates stored media directories
     """
-    if not os.path.isdir(base_dir + '/media'):
+    if not is_a_dir(base_dir + '/media'):
         os.mkdir(base_dir + '/media')
-    if not os.path.isdir(base_dir + '/' + media_path):
+    if not is_a_dir(base_dir + '/' + media_path):
         os.mkdir(base_dir + '/' + media_path)
 
 
@@ -772,9 +773,9 @@ def archive_media(base_dir: str, archive_directory: str,
     min_week = weeks_since_epoch - max_weeks
 
     if archive_directory:
-        if not os.path.isdir(archive_directory):
+        if not is_a_dir(archive_directory):
             os.mkdir(archive_directory)
-        if not os.path.isdir(archive_directory + '/media'):
+        if not is_a_dir(archive_directory + '/media'):
             os.mkdir(archive_directory + '/media')
 
     for _, dirs, _ in os.walk(base_dir + '/media'):

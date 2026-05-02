@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import errno
 import urllib.parse
 from socket import error as SocketError
@@ -52,6 +51,7 @@ from flags import is_moderator
 from data import save_flag_file
 from data import erase_file
 from data import is_a_file
+from data import is_a_dir
 
 
 def _person_options_page_number(options_confirm_params: str) -> int:
@@ -610,7 +610,7 @@ def _person_options_post_to_news(self, options_confirm_params: str,
                                newswire_blocked_filename)
                     refresh_newswire(base_dir)
             else:
-                if os.path.isdir(account_dir):
+                if is_a_dir(account_dir):
                     nw_filename = newswire_blocked_filename
                     if save_flag_file(nw_filename,
                                       'EX: _person_options_post_to_news ' +
@@ -662,7 +662,7 @@ def _person_options_post_to_features(self, options_confirm_params: str,
                                features_blocked_filename)
                     refresh_newswire(base_dir)
             else:
-                if os.path.isdir(account_dir):
+                if is_a_dir(account_dir):
                     feat_filename = features_blocked_filename
                     if save_flag_file(feat_filename,
                                       'EX: _person_options_post_to_features ' +
@@ -713,7 +713,7 @@ def _person_options_mod_news(self, options_confirm_params: str,
                                'EX: _person_options unable to delete ' +
                                newswire_mod_filename)
             else:
-                if os.path.isdir(account_dir):
+                if is_a_dir(account_dir):
                     nw_filename = newswire_mod_filename
                     save_flag_file(nw_filename,
                                    'EX: _person_options_mod_news ' +
