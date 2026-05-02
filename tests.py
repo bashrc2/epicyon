@@ -1509,9 +1509,8 @@ def test_post_message_between_servers(base_dir: str) -> None:
         data_dir(alice_dir) + '/alice@' + alice_domain + '/.last_published'
     assert not os.path.isfile(last_pub_filename)
     outbox_path = data_dir(alice_dir) + '/alice@' + alice_domain + '/outbox'
-    test_filename = os.path.join(outbox_path, name)
     assert len([name for name in os.listdir(outbox_path)
-                if os.path.isfile(test_filename)]) == 0
+                if os.path.isfile(os.path.join(outbox_path, name))]) == 0
     low_bandwidth: bool = False
     signing_priv_key_pem = None
     translate: dict = {}
