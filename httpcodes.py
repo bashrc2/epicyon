@@ -70,35 +70,6 @@ def http_200(self) -> None:
                           'than an utter triumph', None)
 
 
-def http_401(self, post_msg: str) -> None:
-    """HTTP code 401
-    """
-    if self.server.translate:
-        if self.server.translate.get(post_msg):
-            ok_str = self.server.translate[post_msg]
-        else:
-            ok_str = post_msg
-        _http_return_code(self, 401,
-                          self.server.translate['Unauthorized'],
-                          ok_str, None)
-    else:
-        _http_return_code(self, 401, 'Unauthorized',
-                          post_msg, None)
-
-
-def http_402(self) -> None:
-    """HTTP code 402
-    """
-    if self.server.translate:
-        text = self.server.translate["It's time to splash that cash"]
-        _http_return_code(self, 402,
-                          self.server.translate['Payment required'],
-                          text, None)
-    else:
-        text = "It's time to splash that cash"
-        _http_return_code(self, 402, 'Payment required', text, None)
-
-
 def http_201(self, etag: str) -> None:
     """HTTP code 201
     """
@@ -122,36 +93,6 @@ def http_207(self) -> None:
     else:
         _http_return_code(self, 207, 'Multi Status',
                           'Lots of things', None)
-
-
-def http_403(self) -> None:
-    """HTTP code 403
-    """
-    if self.server.translate:
-        _http_return_code(self, 403, self.server.translate['Forbidden'],
-                          self.server.translate["You're not allowed"],
-                          None)
-    else:
-        _http_return_code(self, 403, 'Forbidden',
-                          "You're not allowed", None)
-
-
-def http_404(self, ref: int) -> None:
-    """HTTP code 404
-    """
-    if self.server.translate:
-        text = \
-            self.server.translate['These are not the ' +
-                                  'droids you are ' +
-                                  'looking for'] + \
-            ' ' + str(ref)
-        _http_return_code(self, 404,
-                          self.server.translate['Not Found'],
-                          text, None)
-    else:
-        text = \
-            'These are not the droids you are looking for ' + str(ref)
-        _http_return_code(self, 404, 'Not Found', text, None)
 
 
 def http_304(self) -> None:
@@ -183,6 +124,65 @@ def http_400(self) -> None:
     else:
         _http_return_code(self, 400, 'Bad Request',
                           'Better luck next time', None)
+
+
+def http_401(self, post_msg: str) -> None:
+    """HTTP code 401
+    """
+    if self.server.translate:
+        if self.server.translate.get(post_msg):
+            ok_str = self.server.translate[post_msg]
+        else:
+            ok_str = post_msg
+        _http_return_code(self, 401,
+                          self.server.translate['Unauthorized'],
+                          ok_str, None)
+    else:
+        _http_return_code(self, 401, 'Unauthorized',
+                          post_msg, None)
+
+
+def http_402(self) -> None:
+    """HTTP code 402
+    """
+    if self.server.translate:
+        text = self.server.translate["It's time to splash that cash"]
+        _http_return_code(self, 402,
+                          self.server.translate['Payment required'],
+                          text, None)
+    else:
+        text = "It's time to splash that cash"
+        _http_return_code(self, 402, 'Payment required', text, None)
+
+
+def http_403(self) -> None:
+    """HTTP code 403
+    """
+    if self.server.translate:
+        _http_return_code(self, 403, self.server.translate['Forbidden'],
+                          self.server.translate["You're not allowed"],
+                          None)
+    else:
+        _http_return_code(self, 403, 'Forbidden',
+                          "You're not allowed", None)
+
+
+def http_404(self, ref: int) -> None:
+    """HTTP code 404
+    """
+    if self.server.translate:
+        text = \
+            self.server.translate['These are not the ' +
+                                  'droids you are ' +
+                                  'looking for'] + \
+            ' ' + str(ref)
+        _http_return_code(self, 404,
+                          self.server.translate['Not Found'],
+                          text, None)
+    else:
+        text = \
+            'These are not the droids you are looking for ' + str(ref)
+        _http_return_code(self, 404, 'Not Found', text, None)
 
 
 def http_503(self) -> None:
