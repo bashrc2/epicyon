@@ -1080,7 +1080,8 @@ def receive_like(recent_posts_cache: {},
             not_dm = not is_dm(liked_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
             mitm: bool = False
-            if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+            test_filename = post_filename.replace('.json', '') + '.mitm'
+            if os.path.isfile(test_filename):
                 mitm = True
             minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
@@ -1330,7 +1331,8 @@ def receive_reaction(recent_posts_cache: {},
             not_dm = not is_dm(reaction_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
             mitm: bool = False
-            if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+            test_filename = post_filename.replace('.json', '') + '.mitm'
+            if os.path.isfile(test_filename):
                 mitm = True
             minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
@@ -1529,7 +1531,8 @@ def receive_zot_reaction(recent_posts_cache: {},
             not_dm = not is_dm(reaction_post_json)
             timezone = get_account_timezone(base_dir, handle_name, domain)
             mitm: bool = False
-            if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+            test_filename = post_filename.replace('.json', '') + '.mitm'
+            if os.path.isfile(test_filename):
                 mitm = True
             minimize_all_images: bool = False
             if handle_name in min_images_for_accounts:
@@ -1671,7 +1674,8 @@ def receive_bookmark(recent_posts_cache: {},
         not_dm = not is_dm(bookmarked_post_json)
         timezone = get_account_timezone(base_dir, nickname, domain)
         mitm: bool = False
-        if os.path.isfile(post_filename.replace('.json', '') + '.mitm'):
+        test_filename = post_filename.replace('.json', '') + '.mitm'
+        if os.path.isfile(test_filename):
             mitm = True
         minimize_all_images: bool = False
         if nickname in min_images_for_accounts:
@@ -2221,7 +2225,8 @@ def receive_question_vote(server, base_dir: str, nickname: str, domain: str,
     not_dm = not is_dm(question_json)
     timezone = get_account_timezone(base_dir, nickname, domain)
     mitm: bool = False
-    if os.path.isfile(question_post_filename.replace('.json', '') + '.mitm'):
+    test_filename = question_post_filename.replace('.json', '') + '.mitm'
+    if os.path.isfile(test_filename):
         mitm = True
     minimize_all_images: bool = False
     if nickname in min_images_for_accounts:
