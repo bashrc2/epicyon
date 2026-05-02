@@ -45,6 +45,7 @@ from data import save_string
 from data import load_line
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def get_hashtag_categories_feed(base_dir: str,
@@ -431,7 +432,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
     # add tags directory if it doesn't exist
     if not is_a_dir(tags_dir):
         print('Creating tags directory')
-        os.mkdir(tags_dir)
+        makedir(tags_dir)
 
     # obtain any map links and these can be associated with hashtags
     # get geolocations from content
@@ -459,7 +460,7 @@ def store_hash_tags(base_dir: str, nickname: str, domain: str,
         # add tagmaps directory if it doesn't exist
         if not is_a_dir(tag_maps_dir):
             print('Creating tagmaps directory')
-            os.mkdir(tag_maps_dir)
+            makedir(tag_maps_dir)
 
     post_url = remove_id_ending(post_json_object['id'])
     post_url = post_url.replace('/', '#')

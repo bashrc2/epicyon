@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Core"
 
-import os
 from uuid import UUID
 from hashlib import md5
 from datetime import datetime
@@ -44,6 +43,7 @@ from data import prepend_string
 from data import erase_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def _strings_are_digits(strings_list: []) -> bool:
@@ -122,7 +122,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         print('WARN: Account does not exist at ' + handle_dir)
     calendar_path = handle_dir + '/calendar'
     if not is_a_dir(calendar_path):
-        os.mkdir(calendar_path)
+        makedir(calendar_path)
 
     # get the year, month and day from the event
     event_time = date_from_string_format(event_json['startTime'],
@@ -146,11 +146,11 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
         # as a separate json file
         events_path = handle_dir + '/events'
         if not is_a_dir(events_path):
-            os.mkdir(events_path)
+            makedir(events_path)
         events_year_path = \
             handle_dir + '/events/' + str(event_year)
         if not is_a_dir(events_year_path):
-            os.mkdir(events_year_path)
+            makedir(events_year_path)
         event_id = str(event_year) + '-' + event_time.strftime("%m") + '-' + \
             event_time.strftime("%d") + '_' + event_json['uuid']
         event_filename = events_year_path + '/' + event_id + '.json'
@@ -173,7 +173,7 @@ def save_event_post(base_dir: str, handle: str, post_id: str,
 
     # create a directory for the calendar year
     if not is_a_dir(calendar_path + '/' + str(event_year)):
-        os.mkdir(calendar_path + '/' + str(event_year))
+        makedir(calendar_path + '/' + str(event_year))
 
     # calendar month file containing event post Ids
     calendar_filename = calendar_path + '/' + str(event_year) + \

@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Profile Metadata"
 
-import os
 import html
 from utils import remove_link_tracking
 from utils import acct_dir
@@ -20,6 +19,7 @@ from utils import string_contains
 from data import save_string
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def _git_format_content(content: str) -> str:
@@ -204,10 +204,10 @@ def receive_git_patch(base_dir: str, nickname: str, domain: str,
             project_name = \
                 _get_git_project_name(base_dir, nickname, domain, subject)
             if not is_a_dir(patches_dir):
-                os.mkdir(patches_dir)
+                makedir(patches_dir)
             project_dir = patches_dir + '/' + project_name
             if not is_a_dir(project_dir):
-                os.mkdir(project_dir)
+                makedir(project_dir)
             patch_filename = \
                 project_dir + '/' + patch_subject + '.patch'
             break

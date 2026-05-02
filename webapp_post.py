@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 import time
 import urllib.parse
 from dateutil.parser import parse
@@ -150,6 +149,7 @@ from data import save_string
 from data import save_flag_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 # maximum length for display name within html posts
 MAX_DISPLAY_NAME_LENGTH = 42
@@ -573,7 +573,7 @@ def _save_individual_post_as_html_to_cache(base_dir: str,
 
     # create the cache directory if needed
     if not is_a_dir(html_post_cache_dir):
-        os.mkdir(html_post_cache_dir)
+        makedir(html_post_cache_dir)
 
     if save_string(post_html, cached_post_filename,
                    'ERROR: saving post to cache, [ex]'):

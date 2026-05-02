@@ -53,6 +53,7 @@ from data import erase_file
 from data import move_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
@@ -71,7 +72,7 @@ def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
                 continue
             last_seen_dir = account_dir + '/lastseen'
             if not is_a_dir(last_seen_dir):
-                os.mkdir(last_seen_dir)
+                makedir(last_seen_dir)
             following_handles: list[str] = \
                 load_list(following_filename,
                           'EX: create_initial_last_seen ' +
@@ -317,10 +318,10 @@ def unfollow_account(base_dir: str, nickname: str, domain: str,
         handle_to_unfollow = '!' + handle_to_unfollow
     dir_str = data_dir(base_dir)
     if not is_a_dir(dir_str):
-        os.mkdir(dir_str)
+        makedir(dir_str)
     handle_dir = acct_handle_dir(base_dir, handle)
     if not is_a_dir(handle_dir):
-        os.mkdir(handle_dir)
+        makedir(handle_dir)
 
     accounts_dir = acct_dir(base_dir, nickname, domain)
     filename = accounts_dir + '/' + follow_file
@@ -384,10 +385,10 @@ def clear_follows(base_dir: str, nickname: str, domain: str,
     """
     dir_str = data_dir(base_dir)
     if not is_a_dir(dir_str):
-        os.mkdir(dir_str)
+        makedir(dir_str)
     accounts_dir = acct_dir(base_dir, nickname, domain)
     if not is_a_dir(accounts_dir):
-        os.mkdir(accounts_dir)
+        makedir(accounts_dir)
     filename = accounts_dir + '/' + follow_file
     if is_a_file(filename):
         erase_file(filename,
@@ -732,7 +733,7 @@ def store_follow_request(base_dir: str,
     # We don't rely upon the inbox because items in there could expire
     requests_dir = accounts_dir + '/requests'
     if not is_a_dir(requests_dir):
-        os.mkdir(requests_dir)
+        makedir(requests_dir)
     follow_activity_filename = requests_dir + '/' + approve_handle + '.follow'
     return save_json(follow_json, follow_activity_filename)
 

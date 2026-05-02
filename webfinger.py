@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "ActivityPub"
 
-import os
 import urllib.parse
 from session import get_json
 from session import get_json_valid
@@ -31,6 +30,7 @@ from utils import get_domain_from_actor
 from utils import is_yggdrasil_url
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def _parse_handle(handle: str) -> (str, str, bool):
@@ -162,7 +162,7 @@ def store_webfinger_endpoint(nickname: str, domain: str, port: int,
     handle = nickname + '@' + domain
     wf_subdir = '/wfendpoints'
     if not is_a_dir(base_dir + wf_subdir):
-        os.mkdir(base_dir + wf_subdir)
+        makedir(base_dir + wf_subdir)
     filename = base_dir + wf_subdir + '/' + handle + '.json'
     save_json(wf_json, filename)
     if nickname == 'inbox':

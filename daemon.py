@@ -108,6 +108,7 @@ from poison import load_2grams
 from data import load_string
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 class PubServer(BaseHTTPRequestHandler):
@@ -701,7 +702,7 @@ def run_daemon(accounts_data_dir: str,
     dir_str = data_dir(base_dir)
     if not is_a_dir(dir_str):
         print('Creating accounts directory')
-        os.mkdir(dir_str)
+        makedir(dir_str)
 
     httpd = None
     try:
@@ -1244,25 +1245,25 @@ def run_daemon(accounts_data_dir: str,
                     httpd.domain_full)
 
     if not is_a_dir(base_dir + '/cache'):
-        os.mkdir(base_dir + '/cache')
+        makedir(base_dir + '/cache')
     if not is_a_dir(base_dir + '/cache/actors'):
         print('Creating actors cache')
-        os.mkdir(base_dir + '/cache/actors')
+        makedir(base_dir + '/cache/actors')
     if not is_a_dir(base_dir + '/cache/announce'):
         print('Creating announce cache')
-        os.mkdir(base_dir + '/cache/announce')
+        makedir(base_dir + '/cache/announce')
     if not is_a_dir(base_dir + '/cache/avatars'):
         print('Creating avatars cache')
-        os.mkdir(base_dir + '/cache/avatars')
+        makedir(base_dir + '/cache/avatars')
 
     archive_dir = base_dir + '/archive'
     if not is_a_dir(archive_dir):
         print('Creating archive')
-        os.mkdir(archive_dir)
+        makedir(archive_dir)
 
     if not is_a_dir(base_dir + '/sharefiles'):
         print('Creating shared item files directory')
-        os.mkdir(base_dir + '/sharefiles')
+        makedir(base_dir + '/sharefiles')
 
     print('THREAD: Creating fitness thread')
     httpd.thrFitness = \

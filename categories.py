@@ -19,6 +19,7 @@ from data import save_string
 from data import erase_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 MAX_TAG_LENGTH = 42
 
@@ -244,7 +245,7 @@ def set_hashtag_category(base_dir: str, hashtag: str, category: str,
                     return False
 
     if not is_a_dir(base_dir + '/tags'):
-        os.mkdir(base_dir + '/tags')
+        makedir(base_dir + '/tags')
     category_filename = base_dir + '/tags/' + hashtag + '.category'
     if force:
         # don't overwrite any existing categories

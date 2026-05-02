@@ -8,7 +8,6 @@ __status__ = "Production"
 __module_group__ = "Core"
 
 
-import os
 from collections import OrderedDict
 from utils import data_dir
 from utils import get_post_attachments
@@ -27,6 +26,7 @@ from data import load_string
 from data import prepend_string
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def get_book_link_from_content(content: str) -> str:
@@ -475,15 +475,15 @@ def store_book_events(base_dir: str,
     dir_str = data_dir(base_dir)
     reading_path = dir_str + '/reading'
     if not is_a_dir(dir_str):
-        os.mkdir(dir_str)
+        makedir(dir_str)
     if not is_a_dir(reading_path):
-        os.mkdir(reading_path)
+        makedir(reading_path)
     books_path = reading_path + '/books'
     if not is_a_dir(books_path):
-        os.mkdir(books_path)
+        makedir(books_path)
     readers_path = reading_path + '/readers'
     if not is_a_dir(readers_path):
-        os.mkdir(readers_path)
+        makedir(readers_path)
 
     actor = book_dict['actor']
     book_url = remove_id_ending(book_dict['href'])

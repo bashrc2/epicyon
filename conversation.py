@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-import os
 from utils import has_object_dict
 from utils import acct_dir
 from utils import remove_id_ending
@@ -27,6 +26,7 @@ from data import append_string
 from data import erase_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
@@ -45,7 +45,7 @@ def _get_conversation_filename(base_dir: str, nickname: str, domain: str,
         return None
     conversation_dir = acct_dir(base_dir, nickname, domain) + '/conversation'
     if not is_a_dir(conversation_dir):
-        os.mkdir(conversation_dir)
+        makedir(conversation_dir)
     if post_json_object['object'].get('conversation'):
         conversation_id = post_json_object['object']['conversation']
     elif post_json_object['object'].get('context'):

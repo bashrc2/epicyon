@@ -30,6 +30,7 @@ from data import append_string
 from data import erase_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 VALID_HASHTAG_CHARS = \
     set('_0123456789' +
@@ -1037,10 +1038,10 @@ def create_person_dir(nickname: str, domain: str, base_dir: str,
     handle: str = nickname + '@' + domain
     handle_dir: str = acct_handle_dir(base_dir, handle)
     if not is_a_dir(handle_dir):
-        os.mkdir(handle_dir)
+        makedir(handle_dir)
     box_dir: str = acct_handle_dir(base_dir, handle) + '/' + dir_name
     if not is_a_dir(box_dir):
-        os.mkdir(box_dir)
+        makedir(box_dir)
     return box_dir
 
 
@@ -1624,7 +1625,7 @@ def follow_person(base_dir: str, nickname: str, domain: str,
 
     dir_str: str = data_dir(base_dir)
     if not is_a_dir(dir_str):
-        os.mkdir(dir_str)
+        makedir(dir_str)
     handle_to_follow = follow_nickname + '@' + follow_domain
     if group_account:
         handle_to_follow = '!' + handle_to_follow

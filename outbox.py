@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-import os
 from shutil import copyfile
 from auth import create_password
 from posts import is_image_media
@@ -77,6 +76,7 @@ from data import erase_file
 from data import move_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def _localonly_not_local(message_json: {}, domain_full: str) -> bool:
@@ -605,7 +605,7 @@ def post_message_to_outbox(session, translate: {},
                 blogs_dir = \
                     data_dir(base_dir) + '/news@' + domain + '/tlblogs'
                 if not is_a_dir(blogs_dir):
-                    os.mkdir(blogs_dir)
+                    makedir(blogs_dir)
                 copyfile(saved_filename, blogs_dir + '/' + saved_post_id)
                 inbox_update_index('tlblogs', base_dir,
                                    'news@' + domain,

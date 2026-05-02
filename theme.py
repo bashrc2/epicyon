@@ -34,6 +34,7 @@ from data import save_flag_file
 from data import erase_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def import_theme(base_dir: str, filename: str) -> bool:
@@ -44,7 +45,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
     temp_theme_dir = base_dir + '/imports/files'
     if is_a_dir(temp_theme_dir):
         rmtree(temp_theme_dir, ignore_errors=False, onexc=None)
-    os.mkdir(temp_theme_dir)
+    makedir(temp_theme_dir)
     unpack_archive(filename, temp_theme_dir, 'zip')
     essential_theme_files = ('name.txt', 'theme.json')
     for theme_file in essential_theme_files:
@@ -88,7 +89,7 @@ def import_theme(base_dir: str, filename: str) -> bool:
 
     theme_dir = base_dir + '/theme/' + new_theme_name
     if not is_a_dir(theme_dir):
-        os.mkdir(theme_dir)
+        makedir(theme_dir)
     copytree(temp_theme_dir, theme_dir, False, None)
     if is_a_dir(temp_theme_dir):
         rmtree(temp_theme_dir, ignore_errors=False, onexc=None)
@@ -105,7 +106,7 @@ def export_theme(base_dir: str, theme: str) -> bool:
     if not is_a_file(theme_dir + '/theme.json'):
         return False
     if not is_a_dir(base_dir + '/exports'):
-        os.mkdir(base_dir + '/exports')
+        makedir(base_dir + '/exports')
     export_filename = base_dir + '/exports/' + theme + '.zip'
     if is_a_file(export_filename):
         ex_text = \

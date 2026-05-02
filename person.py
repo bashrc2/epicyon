@@ -100,6 +100,7 @@ from data import erase_file
 from data import move_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def generate_rsa_key() -> (str, str):
@@ -605,26 +606,26 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
     if save_to_file:
         # save person to file
         if not is_a_dir(base_dir):
-            os.mkdir(base_dir)
+            makedir(base_dir)
         people_subdir = data_dir(base_dir)
         if not is_a_dir(people_subdir):
-            os.mkdir(people_subdir)
+            makedir(people_subdir)
         if not is_a_dir(people_subdir + '/' + handle):
-            os.mkdir(people_subdir + '/' + handle)
+            makedir(people_subdir + '/' + handle)
         if not is_a_dir(people_subdir + '/' + handle + '/inbox'):
-            os.mkdir(people_subdir + '/' + handle + '/inbox')
+            makedir(people_subdir + '/' + handle + '/inbox')
         if not is_a_dir(people_subdir + '/' + handle + '/outbox'):
-            os.mkdir(people_subdir + '/' + handle + '/outbox')
+            makedir(people_subdir + '/' + handle + '/outbox')
         if not is_a_dir(people_subdir + '/' + handle + '/queue'):
-            os.mkdir(people_subdir + '/' + handle + '/queue')
+            makedir(people_subdir + '/' + handle + '/queue')
         filename = people_subdir + '/' + handle + '.json'
         save_json(new_person, filename)
 
         # save to cache
         if not is_a_dir(base_dir + '/cache'):
-            os.mkdir(base_dir + '/cache')
+            makedir(base_dir + '/cache')
         if not is_a_dir(base_dir + '/cache/actors'):
-            os.mkdir(base_dir + '/cache/actors')
+            makedir(base_dir + '/cache/actors')
         cache_filename = base_dir + '/cache/actors/' + \
             new_person['id'].replace('/', '#') + '.json'
         save_json(new_person, cache_filename)
@@ -632,9 +633,9 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         # save the private key
         private_keys_subdir = '/keys/private'
         if not is_a_dir(base_dir + '/keys'):
-            os.mkdir(base_dir + '/keys')
+            makedir(base_dir + '/keys')
         if not is_a_dir(base_dir + private_keys_subdir):
-            os.mkdir(base_dir + private_keys_subdir)
+            makedir(base_dir + private_keys_subdir)
         filename = base_dir + private_keys_subdir + '/' + handle + '.key'
         save_string(private_key_pem, filename,
                     'EX: _create_person_base unable to save 1 ' + filename)
@@ -642,7 +643,7 @@ def _create_person_base(base_dir: str, nickname: str, domain: str, port: int,
         # save the public key
         public_keys_subdir = '/keys/public'
         if not is_a_dir(base_dir + public_keys_subdir):
-            os.mkdir(base_dir + public_keys_subdir)
+            makedir(base_dir + public_keys_subdir)
         filename = base_dir + public_keys_subdir + '/' + handle + '.pem'
         save_string(public_key_pem, filename,
                     'EX: _create_person_base unable to save 2 ' + filename)
@@ -777,10 +778,10 @@ def create_person(base_dir: str, nickname: str, domain: str, port: int,
 
     dir_str = data_dir(base_dir)
     if not is_a_dir(dir_str):
-        os.mkdir(dir_str)
+        makedir(dir_str)
     account_dir = acct_dir(base_dir, nickname, domain)
     if not is_a_dir(account_dir):
-        os.mkdir(account_dir)
+        makedir(account_dir)
 
     if manual_follower_approval:
         follow_dms_filename = \
@@ -1580,20 +1581,20 @@ def deactivate_account(base_dir: str, nickname: str, domain: str) -> bool:
         return False
     deactivated_dir = base_dir + '/deactivated'
     if not is_a_dir(deactivated_dir):
-        os.mkdir(deactivated_dir)
+        makedir(deactivated_dir)
     shutil.move(account_dir, deactivated_dir + '/' + handle)
 
     if is_a_file(base_dir + '/wfendpoints/' + handle + '.json'):
         deactivated_webfinger_dir = base_dir + '/wfdeactivated'
         if not is_a_dir(deactivated_webfinger_dir):
-            os.mkdir(deactivated_webfinger_dir)
+            makedir(deactivated_webfinger_dir)
         shutil.move(base_dir + '/wfendpoints/' + handle + '.json',
                     deactivated_webfinger_dir + '/' + handle + '.json')
 
     if is_a_dir(base_dir + '/sharefiles/' + nickname):
         deactivated_sharefiles_dir = base_dir + '/sharefilesdeactivated'
         if not is_a_dir(deactivated_sharefiles_dir):
-            os.mkdir(deactivated_sharefiles_dir)
+            makedir(deactivated_sharefiles_dir)
         shutil.move(base_dir + '/sharefiles/' + nickname,
                     deactivated_sharefiles_dir + '/' + nickname)
 
@@ -1743,7 +1744,7 @@ def set_person_notes(base_dir: str, nickname: str, domain: str,
         handle = handle[1:]
     notes_dir = acct_dir(base_dir, nickname, domain) + '/notes'
     if not is_a_dir(notes_dir):
-        os.mkdir(notes_dir)
+        makedir(notes_dir)
     notes_filename = notes_dir + '/' + handle + '.txt'
     if not save_string(notes, notes_filename,
                        'EX: set_person_notes unable to write ' +

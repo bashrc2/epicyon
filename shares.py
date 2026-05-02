@@ -65,6 +65,7 @@ from data import load_string
 from data import erase_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def _load_dfc_ids(base_dir: str, system_language: str,
@@ -387,9 +388,9 @@ def add_share(base_dir: str,
     if image_filename:
         if is_a_file(image_filename):
             if not is_a_dir(base_dir + '/sharefiles'):
-                os.mkdir(base_dir + '/sharefiles')
+                makedir(base_dir + '/sharefiles')
             if not is_a_dir(base_dir + '/sharefiles/' + nickname):
-                os.mkdir(base_dir + '/sharefiles/' + nickname)
+                makedir(base_dir + '/sharefiles/' + nickname)
             item_idfile = base_dir + '/sharefiles/' + nickname + '/' + item_id
             formats = get_image_extensions()
             for ext in formats:
@@ -1735,13 +1736,13 @@ def _update_federated_shares_cache(session, shared_items_federated_domains: [],
     # create directories where catalogs will be stored
     cache_dir = base_dir + '/cache'
     if not is_a_dir(cache_dir):
-        os.mkdir(cache_dir)
+        makedir(cache_dir)
     if shares_file_type == 'shares':
         catalogs_dir = cache_dir + '/catalogs'
     else:
         catalogs_dir = cache_dir + '/wantedItems'
     if not is_a_dir(catalogs_dir):
-        os.mkdir(catalogs_dir)
+        makedir(catalogs_dir)
 
     as_header = {
         "Accept": "application/ld+json",
@@ -1822,9 +1823,9 @@ def _generate_next_shares_token_update(base_dir: str,
     """
     token_update_dir = data_dir(base_dir)
     if not is_a_dir(base_dir):
-        os.mkdir(base_dir)
+        makedir(base_dir)
     if not is_a_dir(token_update_dir):
-        os.mkdir(token_update_dir)
+        makedir(token_update_dir)
     token_update_filename = token_update_dir + '/.tokenUpdate'
     next_update_sec = None
     if is_a_file(token_update_filename):

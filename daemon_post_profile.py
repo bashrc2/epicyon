@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Daemon POST"
 
-import os
 import errno
 from webfinger import webfinger_update
 from socket import error as SocketError
@@ -153,6 +152,7 @@ from data import save_flag_file
 from data import erase_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
@@ -470,7 +470,7 @@ def _profile_post_import_theme(base_dir: str, nickname: str,
     """
     if fields.get('importTheme'):
         if not is_a_dir(base_dir + '/imports'):
-            os.mkdir(base_dir + '/imports')
+            makedir(base_dir + '/imports')
         filename_base = base_dir + '/imports/newtheme.zip'
         if is_a_file(filename_base):
             erase_file(filename_base,
@@ -2725,7 +2725,7 @@ def profile_edit(self, calling_domain: str, cookie: str,
                 filename_base = data_dir(base_dir) + '/login.temp'
             elif m_type == 'importTheme':
                 if not is_a_dir(base_dir + '/imports'):
-                    os.mkdir(base_dir + '/imports')
+                    makedir(base_dir + '/imports')
                 filename_base = base_dir + '/imports/newtheme.zip'
                 if is_a_file(filename_base):
                     erase_file(filename_base,

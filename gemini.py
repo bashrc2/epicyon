@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Timeline"
 
-import os
 import shutil
 from utils import acct_dir
 from utils import remove_html
@@ -19,6 +18,7 @@ from utils import get_gemini_blog_published
 from utils import get_gemini_blog_filename
 from data import save_string
 from data import is_a_dir
+from data import makedir
 
 
 def blog_to_gemini(base_dir: str, nickname: str, domain: str,
@@ -88,7 +88,7 @@ def blog_to_gemini(base_dir: str, nickname: str, domain: str,
     else:
         gemini_blog_dir = account_dir + '/geminitest'
     if not is_a_dir(gemini_blog_dir):
-        os.mkdir(gemini_blog_dir)
+        makedir(gemini_blog_dir)
 
     gemini_blog_filename = \
         get_gemini_blog_filename(base_dir, nickname, domain,

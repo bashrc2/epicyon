@@ -249,6 +249,7 @@ from data import load_string
 from data import save_string
 from data import erase_file
 from data import is_a_dir
+from data import makedir
 
 
 TEST_SERVER_GROUP_RUNNING = False
@@ -332,7 +333,7 @@ def _test_http_signed_get(base_dir: str):
     path = base_dir + '/.testHttpsigGET'
     if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
-    os.mkdir(path)
+    makedir(path)
     os.chdir(path)
 
     nickname = 'testactor'
@@ -612,7 +613,7 @@ def _test_httpsig_base(with_digest: bool, base_dir: str):
     path = base_dir + '/.testHttpsigBase'
     if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
-    os.mkdir(path)
+    makedir(path)
     os.chdir(path)
 
     algorithm = 'rsa-sha256'
@@ -773,7 +774,7 @@ def create_server_alice(path: str, domain: str, port: int,
     print('Creating test server: Alice on port ' + str(port))
     if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
-    os.mkdir(path)
+    makedir(path)
     os.chdir(path)
     shared_items_federated_domains: list[str] = []
     system_language: str = 'en'
@@ -978,7 +979,7 @@ def create_server_bob(path: str, domain: str, port: int,
     print('Creating test server: Bob on port ' + str(port))
     if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
-    os.mkdir(path)
+    makedir(path)
     os.chdir(path)
     shared_items_federated_domains: list[str] = []
     system_language: str = 'en'
@@ -1183,7 +1184,7 @@ def create_server_eve(path: str, domain: str, port: int, federation_list: [],
     print('Creating test server: Eve on port ' + str(port))
     if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
-    os.mkdir(path)
+    makedir(path)
     os.chdir(path)
     shared_items_federated_domains: list[str] = []
     nickname: str = 'eve'
@@ -1308,7 +1309,7 @@ def create_server_group(path: str, domain: str, port: int,
     print('Creating test server: Group on port ' + str(port))
     if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
-    os.mkdir(path)
+    makedir(path)
     os.chdir(path)
     shared_items_federated_domains: list[str] = []
     # system_language = 'en'
@@ -1425,7 +1426,7 @@ def test_post_message_between_servers(base_dir: str) -> None:
 
     if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
-    os.mkdir(base_dir + '/.tests')
+    makedir(base_dir + '/.tests')
 
     # create the servers
     alice_dir = base_dir + '/.tests/alice'
@@ -1785,7 +1786,7 @@ def test_follow_between_servers(base_dir: str) -> None:
 
     if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
-    os.mkdir(base_dir + '/.tests')
+    makedir(base_dir + '/.tests')
 
     # create the servers
     alice_dir = base_dir + '/.tests/alice'
@@ -1995,7 +1996,7 @@ def test_shared_items_federation(base_dir: str) -> None:
 
     if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
-    os.mkdir(base_dir + '/.tests')
+    makedir(base_dir + '/.tests')
 
     # create the servers
     alice_dir = base_dir + '/.tests/alice'
@@ -2157,7 +2158,7 @@ def test_shared_items_federation(base_dir: str) -> None:
     print('Bob publishes some shared items')
     if is_a_dir(bob_dir + '/ontology'):
         shutil.rmtree(bob_dir + '/ontology', ignore_errors=False)
-    os.mkdir(bob_dir + '/ontology')
+    makedir(bob_dir + '/ontology')
     copyfile(base_dir + '/img/logo.png', bob_dir + '/logo.png')
     copyfile(base_dir + '/ontology/foodTypes.json',
              bob_dir + '/ontology/foodTypes.json')
@@ -2472,7 +2473,7 @@ def test_group_follow(base_dir: str) -> None:
 
     if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
-    os.mkdir(base_dir + '/.tests')
+    makedir(base_dir + '/.tests')
 
     # create the servers
     alice_dir = base_dir + '/.tests/alice'
@@ -2905,7 +2906,7 @@ def _test_followers_of_person(base_dir: str) -> None:
     base_dir = curr_dir + '/.tests_followersofperson'
     if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
-    os.mkdir(base_dir)
+    makedir(base_dir)
     os.chdir(base_dir)
     create_person(base_dir, nickname, domain, port,
                   http_prefix, True, False, password)
@@ -2955,7 +2956,7 @@ def _test_followers_on_domain(base_dir: str) -> None:
     base_dir = curr_dir + '/.tests_nooffollowersOndomain'
     if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
-    os.mkdir(base_dir)
+    makedir(base_dir)
     os.chdir(base_dir)
     create_person(base_dir, nickname, domain, port, http_prefix, True,
                   False, password)
@@ -3022,7 +3023,7 @@ def _test_group_followers(base_dir: str) -> None:
     base_dir = curr_dir + '/.tests_testgroupfollowers'
     if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
-    os.mkdir(base_dir)
+    makedir(base_dir)
     os.chdir(base_dir)
     create_person(base_dir, nickname, domain, port, http_prefix, True,
                   False, password)
@@ -3068,7 +3069,7 @@ def _test_follows(base_dir: str) -> None:
     base_dir = curr_dir + '/.tests_testfollows'
     if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
-    os.mkdir(base_dir)
+    makedir(base_dir)
     os.chdir(base_dir)
     create_person(base_dir, nickname, domain, port, http_prefix, True,
                   False, password)
@@ -3160,7 +3161,7 @@ def _test_create_person_account(base_dir: str):
     base_dir: str = curr_dir + '/.tests_createperson'
     if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
-    os.mkdir(base_dir)
+    makedir(base_dir)
     os.chdir(base_dir)
 
     private_key_pem, public_key_pem, person, wf_endpoint = \
@@ -3300,7 +3301,7 @@ def _test_authentication(base_dir: str) -> None:
     base_dir = curr_dir + '/.tests_authentication'
     if is_a_dir(base_dir):
         shutil.rmtree(base_dir, ignore_errors=False)
-    os.mkdir(base_dir)
+    makedir(base_dir)
     os.chdir(base_dir)
 
     assert store_basic_credentials(base_dir, 'othernick', 'otherpass')
@@ -3352,7 +3353,7 @@ def test_client_to_server(base_dir: str):
 
     if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests', ignore_errors=False)
-    os.mkdir(base_dir + '/.tests')
+    makedir(base_dir + '/.tests')
 
     # create the servers
     alice_dir = base_dir + '/.tests/alice'
@@ -4218,16 +4219,16 @@ def _test_addemoji(base_dir: str):
     base_dir_original = base_dir
     path = base_dir + '/.tests'
     if not is_a_dir(path):
-        os.mkdir(path)
+        makedir(path)
     path = base_dir + '/.tests/emoji'
     if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
-    os.mkdir(path)
+    makedir(path)
     base_dir = path
     path = base_dir + '/emoji'
     if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
-    os.mkdir(path)
+    makedir(path)
     copytree(base_dir_original + '/emoji', base_dir + '/emoji', False, None)
     os.chdir(base_dir)
     private_key_pem, public_key_pem, person, wf_endpoint = \
@@ -6867,7 +6868,7 @@ def test_update_actor(base_dir: str):
     if is_a_dir(base_dir + '/.tests'):
         shutil.rmtree(base_dir + '/.tests',
                       ignore_errors=False)
-    os.mkdir(base_dir + '/.tests')
+    makedir(base_dir + '/.tests')
 
     # create the server
     alice_dir = base_dir + '/.tests/alice'
@@ -7783,7 +7784,7 @@ def _test_httpsig_base_new(with_digest: bool, base_dir: str,
     path = base_dir + '/.testHttpsigBaseNew'
     if is_a_dir(path):
         shutil.rmtree(path, ignore_errors=False)
-    os.mkdir(path)
+    makedir(path)
     os.chdir(path)
 
     content_type = 'application/activity+json'
@@ -8959,7 +8960,7 @@ def _test_book_link(base_dir: str):
     base_dir2 = base_dir + '/.testbookevents'
     if is_a_dir(base_dir2):
         shutil.rmtree(base_dir2, ignore_errors=False)
-    os.mkdir(base_dir2)
+    makedir(base_dir2)
 
     content = 'Not a link'
     result = get_book_link_from_content(content)

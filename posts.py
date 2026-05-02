@@ -154,6 +154,7 @@ from data import erase_file
 from data import move_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def convert_post_content_to_html(message_json: {}) -> None:
@@ -1081,7 +1082,7 @@ def _update_hashtags_index(base_dir: str, tag: {}, new_post_id: str,
     # create hashtags directory
     tags_dir = base_dir + '/tags'
     if not is_a_dir(tags_dir):
-        os.mkdir(tags_dir)
+        makedir(tags_dir)
     tag_name = tag['name']
     tags_filename = tags_dir + '/' + tag_name[1:] + '.txt'
 
@@ -5323,11 +5324,11 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
 
     if archive_dir:
         if not is_a_dir(archive_dir):
-            os.mkdir(archive_dir)
+            makedir(archive_dir)
 
     if archive_dir:
         if not is_a_dir(archive_dir + '/accounts'):
-            os.mkdir(archive_dir + '/accounts')
+            makedir(archive_dir + '/accounts')
 
     dir_str = data_dir(base_dir)
     for _, dirs, _ in os.walk(dir_str):
@@ -5339,11 +5340,11 @@ def archive_posts(base_dir: str, http_prefix: str, archive_dir: str,
                 if archive_dir:
                     archive_handle_dir = acct_handle_dir(archive_dir, handle)
                     if not is_a_dir(archive_handle_dir):
-                        os.mkdir(archive_handle_dir)
+                        makedir(archive_handle_dir)
                     if not is_a_dir(archive_handle_dir + '/inbox'):
-                        os.mkdir(archive_handle_dir + '/inbox')
+                        makedir(archive_handle_dir + '/inbox')
                     if not is_a_dir(archive_handle_dir + '/outbox'):
-                        os.mkdir(archive_handle_dir + '/outbox')
+                        makedir(archive_handle_dir + '/outbox')
                     archive_subdir = archive_handle_dir + '/inbox'
                 archive_posts_for_person(http_prefix,
                                          nickname, domain, base_dir,
@@ -5564,7 +5565,7 @@ def archive_posts_for_person(http_prefix: str, nickname: str, domain: str,
         return
     if archive_dir:
         if not is_a_dir(archive_dir):
-            os.mkdir(archive_dir)
+            makedir(archive_dir)
     box_dir = create_person_dir(nickname, domain, base_dir, boxname)
     posts_in_box = os.scandir(box_dir)
     no_of_posts: int = 0
@@ -6270,7 +6271,7 @@ def download_announce(session, base_dir: str, http_prefix: str,
     # get the announced post
     announce_cache_dir = base_dir + '/cache/announce/' + nickname
     if not is_a_dir(announce_cache_dir):
-        os.mkdir(announce_cache_dir)
+        makedir(announce_cache_dir)
 
     post_id = None
     if post_json_object.get('id'):

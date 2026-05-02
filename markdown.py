@@ -7,7 +7,6 @@ __email__ = "bob@libreserver.org"
 __status__ = "Production"
 __module_group__ = "Web Interface"
 
-import os
 import shutil
 from utils import acct_dir
 from utils import remove_html
@@ -19,6 +18,7 @@ from utils import get_micron_blog_filename
 from utils import get_gemini_blog_published
 from data import save_string
 from data import is_a_dir
+from data import makedir
 
 
 def _markdown_get_sections(markdown: str) -> []:
@@ -547,7 +547,7 @@ def blog_to_markdown(base_dir: str, nickname: str, domain: str,
     else:
         markdown_blog_dir = account_dir + '/markdowntest'
     if not is_a_dir(markdown_blog_dir):
-        os.mkdir(markdown_blog_dir)
+        makedir(markdown_blog_dir)
 
     markdown_blog_filename = \
         get_markdown_blog_filename(base_dir, nickname, domain,
@@ -623,7 +623,7 @@ def blog_to_micron(base_dir: str, nickname: str, domain: str,
     else:
         micron_blog_dir = account_dir + '/microntest'
     if not is_a_dir(micron_blog_dir):
-        os.mkdir(micron_blog_dir)
+        makedir(micron_blog_dir)
 
     micron_blog_filename = \
         get_micron_blog_filename(base_dir, nickname, domain,

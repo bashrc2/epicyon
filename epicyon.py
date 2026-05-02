@@ -139,6 +139,7 @@ from data import save_string
 from data import load_list
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def str2bool(value_str) -> bool:
@@ -1591,13 +1592,13 @@ def _command_options() -> None:
 
     # create cache for actors
     if not is_a_dir(base_dir + '/cache'):
-        os.mkdir(base_dir + '/cache')
+        makedir(base_dir + '/cache')
     if not is_a_dir(base_dir + '/cache/actors'):
         print('Creating actors cache')
-        os.mkdir(base_dir + '/cache/actors')
+        makedir(base_dir + '/cache/actors')
     if not is_a_dir(base_dir + '/cache/announce'):
         print('Creating announce cache')
-        os.mkdir(base_dir + '/cache/announce')
+        makedir(base_dir + '/cache/announce')
 
     # set the theme in config.json
     theme_name = get_config_param(base_dir, 'theme')

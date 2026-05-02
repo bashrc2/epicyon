@@ -189,3 +189,9 @@ def is_a_dir(directory: str) -> bool:
     """Returns true if the given directory exists
     """
     return os.path.isdir(directory)
+
+
+def makedir(directory: str) -> None:
+    """Creates a directory
+    """
+    os.mkdir(directory)

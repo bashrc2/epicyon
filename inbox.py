@@ -146,6 +146,7 @@ from data import prepend_string
 from data import erase_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def _store_last_post_id(base_dir: str, nickname: str, domain: str,
@@ -173,7 +174,7 @@ def _store_last_post_id(base_dir: str, nickname: str, domain: str,
     lastpost_dir = account_dir + '/lastpost'
     if not is_a_dir(lastpost_dir):
         if is_a_dir(account_dir):
-            os.mkdir(lastpost_dir)
+            makedir(lastpost_dir)
     actor_filename = lastpost_dir + '/' + actor.replace('/', '#')
     save_string(post_id, actor_filename,
                 'EX: Unable to write last post id to ' + actor_filename)
@@ -1332,7 +1333,7 @@ def _update_last_seen(base_dir: str, handle: str, actor: str) -> None:
         return
     last_seen_path = account_path + '/lastseen'
     if not is_a_dir(last_seen_path):
-        os.mkdir(last_seen_path)
+        makedir(last_seen_path)
     last_seen_filename = \
         last_seen_path + '/' + actor.replace('/', '#') + '.txt'
     curr_time = date_utcnow()

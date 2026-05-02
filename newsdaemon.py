@@ -50,6 +50,7 @@ from data import prepend_string
 from data import erase_file
 from data import is_a_file
 from data import is_a_dir
+from data import makedir
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,
@@ -453,7 +454,7 @@ def _create_news_mirror(base_dir: str, domain: str,
 
     mirror_dir = data_dir(base_dir) + '/newsmirror'
     if not is_a_dir(mirror_dir):
-        os.mkdir(mirror_dir)
+        makedir(mirror_dir)
 
     # count the directories
     no_of_dirs: int = 0
@@ -562,7 +563,7 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
 
     base_path = data_dir(base_dir) + '/news@' + domain + '/outbox'
     if not is_a_dir(base_path):
-        os.mkdir(base_path)
+        makedir(base_path)
 
     # oldest items first
     newswire_reverse = OrderedDict(sorted(newswire.items(), reverse=False))
