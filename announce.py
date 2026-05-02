@@ -41,7 +41,7 @@ from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from data import save_string
-from data import remove_file
+from data import erase_file
 
 
 def no_of_announces(post_json_object: {}) -> int:
@@ -597,7 +597,7 @@ def undo_announce_collection_entry(recent_posts_cache: {},
                 'EX: undo_announce_collection_entry ' + \
                 'unable to delete cached post ' + \
                 str(cached_post_filename)
-            remove_file(cached_post_filename, ex_text)
+            erase_file(cached_post_filename, ex_text)
     remove_post_from_cache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('type'):
@@ -669,7 +669,7 @@ def update_announce_collection(recent_posts_cache: {},
                 'EX: update_announce_collection ' + \
                 'unable to delete cached post ' + \
                 str(cached_post_filename)
-            remove_file(cached_post_filename, ex_text)
+            erase_file(cached_post_filename, ex_text)
     remove_post_from_cache(post_json_object, recent_posts_cache)
 
     if not has_object_dict(post_json_object):

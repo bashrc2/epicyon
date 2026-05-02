@@ -96,7 +96,8 @@ from data import save_string
 from data import save_flag_file
 from data import load_string
 from data import append_string
-from data import remove_file
+from data import erase_file
+from data import move_file
 
 
 def generate_rsa_key() -> (str, str):
@@ -705,13 +706,13 @@ def clear_person_qrcodes(base_dir: str) -> None:
             qrcode_filename = \
                 acct_dir(base_dir, nickname, domain) + '/qrcode.png'
             if os.path.isfile(qrcode_filename):
-                remove_file(qrcode_filename,
-                            'EX: clear_person_qrcodes 1 ' +
-                            qrcode_filename)
+                erase_file(qrcode_filename,
+                           'EX: clear_person_qrcodes 1 ' +
+                           qrcode_filename)
             if os.path.isfile(qrcode_filename + '.etag'):
-                remove_file(qrcode_filename + '.etag',
-                            'EX: clear_person_qrcodes 2 ' +
-                            qrcode_filename + '.etag')
+                erase_file(qrcode_filename + '.etag',
+                           'EX: clear_person_qrcodes 2 ' +
+                           qrcode_filename + '.etag')
         break
 
 
@@ -1309,10 +1310,8 @@ def _unsuspend_media_for_account(base_dir: str, account_dir: str) -> None:
         media_filename = base_dir + filename
         if not os.path.isfile(media_filename + '.suspended'):
             continue
-        try:
-            os.rename(media_filename + '.suspended', media_filename)
-        except OSError:
-            print('EX: unable to unsuspend media ' + media_filename)
+        move_file(media_filename + '.suspended', media_filename,
+                  'EX: unable to unsuspend media ' + media_filename)
 
 
 def reenable_account(base_dir: str, nickname: str, domain: str) -> None:
@@ -1355,10 +1354,8 @@ def _suspend_media_for_account(base_dir: str, account_dir: str) -> None:
         media_filename = base_dir + filename
         if not os.path.isfile(media_filename):
             continue
-        try:
-            os.rename(media_filename, media_filename + '.suspended')
-        except OSError:
-            print('EX: unable to suspend media ' + media_filename)
+        move_file(media_filename, media_filename + '.suspended',
+                  'EX: unable to suspend media ' + media_filename)
 
 
 def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
@@ -1387,12 +1384,12 @@ def suspend_account(base_dir: str, nickname: str, domain: str) -> None:
     account_dir = acct_dir(base_dir, nickname, domain)
     salt_filename = account_dir + '/.salt'
     if os.path.isfile(salt_filename):
-        remove_file(salt_filename,
-                    'EX: suspend_account unable to delete ' + salt_filename)
+        erase_file(salt_filename,
+                   'EX: suspend_account unable to delete ' + salt_filename)
     token_filename = acct_dir(base_dir, nickname, domain) + '/.token'
     if os.path.isfile(token_filename):
-        remove_file(token_filename,
-                    'EX: suspend_account unable to delete 2 ' + token_filename)
+        erase_file(token_filename,
+                   'EX: suspend_account unable to delete 2 ' + token_filename)
 
     suspended_filename = data_dir(base_dir) + '/suspended.txt'
     if os.path.isfile(suspended_filename):
@@ -1504,8 +1501,8 @@ def _remove_account_media(base_dir: str, nickname: str, domain: str) -> None:
         media_filename = base_dir + filename
         if not os.path.isfile(media_filename):
             continue
-        remove_file(media_filename,
-                    'EX: unable to remove media ' + media_filename)
+        erase_file(media_filename,
+                   'EX: unable to remove media ' + media_filename)
 
 
 def remove_account(base_dir: str, nickname: str,
@@ -1543,28 +1540,28 @@ def remove_account(base_dir: str, nickname: str,
     if os.path.isdir(handle_dir):
         shutil.rmtree(handle_dir, ignore_errors=False)
     if os.path.isfile(handle_dir + '.json'):
-        remove_file(handle_dir + '.json',
-                    'EX: remove_account unable to delete ' +
-                    handle_dir + '.json')
+        erase_file(handle_dir + '.json',
+                   'EX: remove_account unable to delete ' +
+                   handle_dir + '.json')
     if os.path.isfile(base_dir + '/wfendpoints/' + handle + '.json'):
-        remove_file(base_dir + '/wfendpoints/' + handle + '.json',
-                    'EX: remove_account unable to delete ' +
-                    base_dir + '/wfendpoints/' + handle + '.json')
+        erase_file(base_dir + '/wfendpoints/' + handle + '.json',
+                   'EX: remove_account unable to delete ' +
+                   base_dir + '/wfendpoints/' + handle + '.json')
     if os.path.isfile(base_dir + '/keys/private/' + handle + '.key'):
-        remove_file(base_dir + '/keys/private/' + handle + '.key',
-                    'EX: remove_account unable to delete ' +
-                    base_dir + '/keys/private/' + handle + '.key')
+        erase_file(base_dir + '/keys/private/' + handle + '.key',
+                   'EX: remove_account unable to delete ' +
+                   base_dir + '/keys/private/' + handle + '.key')
     if os.path.isfile(base_dir + '/keys/public/' + handle + '.pem'):
-        remove_file(base_dir + '/keys/public/' + handle + '.pem',
-                    'EX: remove_account unable to delete ' +
-                    base_dir + '/keys/public/' + handle + '.pem')
+        erase_file(base_dir + '/keys/public/' + handle + '.pem',
+                   'EX: remove_account unable to delete ' +
+                   base_dir + '/keys/public/' + handle + '.pem')
     if os.path.isdir(base_dir + '/sharefiles/' + nickname):
         shutil.rmtree(base_dir + '/sharefiles/' + nickname,
                       ignore_errors=False)
     if os.path.isfile(base_dir + '/wfdeactivated/' + handle + '.json'):
-        remove_file(base_dir + '/wfdeactivated/' + handle + '.json',
-                    'EX: remove_account unable to delete ' +
-                    base_dir + '/wfdeactivated/' + handle + '.json')
+        erase_file(base_dir + '/wfdeactivated/' + handle + '.json',
+                   'EX: remove_account unable to delete ' +
+                   base_dir + '/wfdeactivated/' + handle + '.json')
     if os.path.isdir(base_dir + '/sharefilesdeactivated/' + nickname):
         shutil.rmtree(base_dir + '/sharefilesdeactivated/' + nickname,
                       ignore_errors=False)

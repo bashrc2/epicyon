@@ -19,7 +19,7 @@ from utils import get_config_param
 from httpheaders import redirect_headers
 from content import extract_text_fields_in_post
 from data import save_string
-from data import remove_file
+from data import erase_file
 
 
 def _links_update_edited(fields: {}, links_filename: str) -> None:
@@ -44,9 +44,9 @@ def _links_update_edited(fields: {}, links_filename: str) -> None:
                         links_filename)
         else:
             if os.path.isfile(links_filename):
-                remove_file(links_filename,
-                            'EX: _links_update unable to delete ' +
-                            links_filename)
+                erase_file(links_filename,
+                           'EX: _links_update unable to delete ' +
+                           links_filename)
 
 
 def _links_update_about(fields: {}, allow_local_network_access: bool,
@@ -62,9 +62,9 @@ def _links_update_about(fields: {}, allow_local_network_access: bool,
                         about_filename)
     else:
         if os.path.isfile(about_filename):
-            remove_file(about_filename,
-                        'EX: _links_update unable to delete ' +
-                        about_filename)
+            erase_file(about_filename,
+                       'EX: _links_update unable to delete ' +
+                       about_filename)
 
 
 def _links_update_tos(fields: {}, allow_local_network_access: bool,
@@ -79,9 +79,9 @@ def _links_update_tos(fields: {}, allow_local_network_access: bool,
                         'EX: unable to write TOS ' + tos_filename)
     else:
         if os.path.isfile(tos_filename):
-            remove_file(tos_filename,
-                        'EX: _links_update unable to delete ' +
-                        tos_filename)
+            erase_file(tos_filename,
+                       'EX: _links_update unable to delete ' +
+                       tos_filename)
 
 
 def _links_update_sepcification(fields: {},
@@ -95,9 +95,9 @@ def _links_update_sepcification(fields: {},
                     specification_filename)
     else:
         if os.path.isfile(specification_filename):
-            remove_file(specification_filename,
-                        'EX: _links_update_specification unable to delete ' +
-                        specification_filename)
+            erase_file(specification_filename,
+                       'EX: _links_update_specification unable to delete ' +
+                       specification_filename)
 
 
 def links_update(self, calling_domain: str, cookie: str,

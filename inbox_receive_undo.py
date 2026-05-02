@@ -36,7 +36,7 @@ from follow import follower_approval_active
 from bookmarks import undo_bookmarks_collection_entry
 from webapp_post import individual_post_as_html
 from reaction import undo_reaction_collection_entry
-from data import remove_file
+from data import erase_file
 
 
 def _receive_undo_follow(base_dir: str, message_json: {},
@@ -656,5 +656,5 @@ def receive_undo_announce(recent_posts_cache: {},
         ex_text = \
             'EX: _receive_undo_announce unable to delete ' + \
             str(post_filename)
-        remove_file(post_filename, ex_text)
+        erase_file(post_filename, ex_text)
     return True

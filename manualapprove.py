@@ -29,7 +29,8 @@ from data import load_string
 from data import append_string
 from data import prepend_string
 from data import load_list
-from data import remove_file
+from data import erase_file
+from data import move_file
 
 
 def manual_deny_follow_request2(session, session_onion, session_i2p,
@@ -368,23 +369,21 @@ def manual_approve_follow_request(session, session_onion, session_i2p,
         # mark this handle as approved for following
         _approve_follower_handle(account_dir, approve_handle)
         # update the follow requests with the handles not yet approved
-        try:
-            os.rename(approve_follows_filename + '.new',
-                      approve_follows_filename)
-        except OSError:
-            print('EX: manual_approve_follow_request could not rename ' +
+        move_file(approve_follows_filename + '.new',
+                  approve_follows_filename,
+                  'EX: manual_approve_follow_request could not rename ' +
                   approve_follows_filename + '.new' + ' -> ' +
                   approve_follows_filename)
         # remove the .follow file
         if follow_activity_filename:
             if os.path.isfile(follow_activity_filename):
-                remove_file(follow_activity_filename,
-                            'EX: manual_approve_follow_request ' +
-                            'unable to delete ' + follow_activity_filename)
+                erase_file(follow_activity_filename,
+                           'EX: manual_approve_follow_request ' +
+                           'unable to delete ' + follow_activity_filename)
     else:
-        remove_file(approve_follows_filename + '.new',
-                    'EX: manual_approve_follow_request unable to delete ' +
-                    approve_follows_filename + '.new')
+        erase_file(approve_follows_filename + '.new',
+                   'EX: manual_approve_follow_request unable to delete ' +
+                   approve_follows_filename + '.new')
 
 
 def manual_approve_follow_request_thread(session, session_onion, session_i2p,

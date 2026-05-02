@@ -38,7 +38,7 @@ from session import post_json
 from data import load_string
 from data import save_string
 from data import prepend_string
-from data import remove_file
+from data import erase_file
 
 
 def undo_bookmarks_collection_entry(recent_posts_cache: {},
@@ -65,7 +65,7 @@ def undo_bookmarks_collection_entry(recent_posts_cache: {},
                 'EX: undo_bookmarks_collection_entry ' + \
                 'unable to delete cached post file ' + \
                 str(cached_post_filename)
-            remove_file(cached_post_filename, ex_text)
+            erase_file(cached_post_filename, ex_text)
     remove_post_from_cache(post_json_object, recent_posts_cache)
 
     # remove from the index
@@ -185,7 +185,7 @@ def update_bookmarks_collection(recent_posts_cache: {},
                 'EX: update_bookmarks_collection ' + \
                 'unable to delete cached post ' + \
                 str(cached_post_filename)
-            remove_file(cached_post_filename, ex_text)
+            erase_file(cached_post_filename, ex_text)
     remove_post_from_cache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('object'):

@@ -23,6 +23,7 @@ from timeFunctions import date_utcnow
 from data import append_string
 from data import save_string
 from data import load_list
+from data import move_file
 
 
 def _hash_password(password: str) -> str:
@@ -219,10 +220,8 @@ def store_basic_credentials(base_dir: str,
 
             passwords_list.clear()
 
-            try:
-                os.rename(password_file + '.new', password_file)
-            except OSError:
-                print('EX: unable to save password 2')
+            if not move_file(password_file + '.new', password_file,
+                             'EX: unable to save password 2'):
                 return False
         else:
             # append to password file
@@ -273,10 +272,8 @@ def remove_password(base_dir: str, nickname: str) -> None:
         passwords_list.clear()
         passwords_list_new: str = ''
 
-        try:
-            os.rename(password_file + '.new', password_file)
-        except OSError:
-            print('EX: unable to remove password from file 2')
+        if not move_file(password_file + '.new', password_file,
+                         'EX: unable to remove password from file 2'):
             return
 
 

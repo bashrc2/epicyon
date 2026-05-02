@@ -39,7 +39,7 @@ from webapp_utils import html_footer
 from webapp_utils import html_hide_from_screen_reader
 from webapp_utils import html_keyboard_navigation
 from maps import html_open_street_map
-from data import remove_file
+from data import erase_file
 
 
 def html_calendar_delete_confirm(translate: {}, base_dir: str,
@@ -132,8 +132,8 @@ def _html_calendar_day(person_cache: {}, translate: {},
     account_dir = acct_dir(base_dir, nickname, domain)
     calendar_file = account_dir + '/.newCalendar'
     if os.path.isfile(calendar_file):
-        remove_file(calendar_file,
-                    'EX: _html_calendar_day unable to delete ' + calendar_file)
+        erase_file(calendar_file,
+                   'EX: _html_calendar_day unable to delete ' + calendar_file)
 
     css_filename = base_dir + '/epicyon-calendar.css'
     if os.path.isfile(base_dir + '/calendar.css'):

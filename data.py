@@ -152,11 +152,25 @@ def prepend_string(text: str, filename: str, exception_text: str) -> bool:
     return False
 
 
-def remove_file(filename: str, exception_text: str) -> bool:
+def erase_file(filename: str, exception_text: str) -> bool:
     """Deletes a file
     """
     try:
         os.remove(filename)
+        return True
+    except OSError as exc:
+        if '[ex]' in exception_text:
+            exception_text = exception_text.replace('[ex]', str(exc))
+        print(exception_text)
+    return False
+
+
+def move_file(old_filename: str, new_filename: str,
+              exception_text: str) -> bool:
+    """Moves/overwrites a file
+    """
+    try:
+        os.rename(old_filename, new_filename)
         return True
     except OSError as exc:
         if '[ex]' in exception_text:

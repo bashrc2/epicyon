@@ -47,7 +47,7 @@ from data import load_string
 from data import save_string
 from data import append_string
 from data import prepend_string
-from data import remove_file
+from data import erase_file
 
 
 def _update_feeds_outbox_index(base_dir: str, domain: str,
@@ -754,10 +754,10 @@ def _convert_rss_to_activitypub(base_dir: str, http_prefix: str,
                                        blog['object']['arrived'])
                 else:
                     if os.path.isfile(filename + '.arrived'):
-                        remove_file(filename + '.arrived',
-                                    'EX: _convert_rss_to_activitypub ' +
-                                    'unable to delete ' +
-                                    filename + '.arrived')
+                        erase_file(filename + '.arrived',
+                                   'EX: _convert_rss_to_activitypub ' +
+                                   'unable to delete ' +
+                                   filename + '.arrived')
 
                 # setting the url here links to the activitypub object
                 # stored locally
@@ -869,7 +869,7 @@ def run_newswire_daemon(base_dir: str, httpd,
             ex_text = \
                 'EX: run_newswire_daemon unable to delete ' + \
                 str(refresh_filename)
-            remove_file(refresh_filename, ex_text)
+            erase_file(refresh_filename, ex_text)
             break
 
 

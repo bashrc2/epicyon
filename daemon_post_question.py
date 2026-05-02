@@ -29,7 +29,7 @@ from posts import create_direct_message_post
 from daemon_utils import post_to_outbox
 from inbox import populate_replies
 from data import append_string
-from data import remove_file
+from data import erase_file
 
 
 def receive_vote(self, calling_domain: str, cookie: str,
@@ -303,10 +303,10 @@ def _send_reply_to_question(self, base_dir: str,
                                                  post_json_object)
                     if cached_post_filename:
                         if os.path.isfile(cached_post_filename):
-                            remove_file(cached_post_filename,
-                                        'EX: _send_reply_to_question ' +
-                                        'unable to delete ' +
-                                        cached_post_filename)
+                            erase_file(cached_post_filename,
+                                       'EX: _send_reply_to_question ' +
+                                       'unable to delete ' +
+                                       cached_post_filename)
                     # remove from memory cache
                     remove_post_from_cache(post_json_object,
                                            recent_posts_cache)

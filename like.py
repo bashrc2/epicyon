@@ -33,7 +33,7 @@ from session import post_json
 from webfinger import webfinger_handle
 from auth import create_basic_auth_header
 from posts import get_person_box
-from data import remove_file
+from data import erase_file
 
 
 def no_of_likes(post_json_object: {}) -> int:
@@ -472,9 +472,9 @@ def update_likes_collection(recent_posts_cache: {},
                                  domain, post_json_object)
     if cached_post_filename:
         if os.path.isfile(cached_post_filename):
-            remove_file(cached_post_filename,
-                        'EX: update_likes_collection unable to delete ' +
-                        cached_post_filename)
+            erase_file(cached_post_filename,
+                       'EX: update_likes_collection unable to delete ' +
+                       cached_post_filename)
 
     obj = post_json_object
     if has_object_dict(post_json_object):
@@ -554,7 +554,7 @@ def undo_likes_collection_entry(recent_posts_cache: {},
                 'EX: undo_likes_collection_entry ' + \
                 'unable to delete cached post ' + \
                 str(cached_post_filename)
-            remove_file(cached_post_filename, ex_text)
+            erase_file(cached_post_filename, ex_text)
     remove_post_from_cache(post_json_object, recent_posts_cache)
 
     if not post_json_object.get('type'):

@@ -53,7 +53,7 @@ from question import is_html_question
 from question import is_question
 from data import load_string
 from data import load_list
-from data import remove_file
+from data import erase_file
 
 
 def _log_timeline_timing(enable_timing_log: bool, timeline_start_time,
@@ -521,8 +521,8 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(dm_file):
         new_dm = True
         if box_name == 'dm':
-            remove_file(dm_file,
-                        'EX: html_timeline unable to delete ' + dm_file)
+            erase_file(dm_file,
+                       'EX: html_timeline unable to delete ' + dm_file)
 
     # should the Replies button be highlighted?
     new_reply: bool = False
@@ -530,8 +530,8 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(reply_file):
         new_reply = True
         if box_name == 'tlreplies':
-            remove_file(reply_file,
-                        'EX: html_timeline unable to delete ' + reply_file)
+            erase_file(reply_file,
+                       'EX: html_timeline unable to delete ' + reply_file)
 
     # should the Shares button be highlighted?
     new_share: bool = False
@@ -539,9 +539,9 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(new_share_file):
         new_share = True
         if box_name == 'tlshares':
-            remove_file(new_share_file,
-                        'EX: html_timeline unable to delete ' +
-                        new_share_file)
+            erase_file(new_share_file,
+                       'EX: html_timeline unable to delete ' +
+                       new_share_file)
 
     # should the Wanted button be highlighted?
     new_wanted: bool = False
@@ -549,9 +549,9 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(new_wanted_file):
         new_wanted = True
         if box_name == 'tlwanted':
-            remove_file(new_wanted_file,
-                        'EX: html_timeline unable to delete ' +
-                        new_wanted_file)
+            erase_file(new_wanted_file,
+                       'EX: html_timeline unable to delete ' +
+                       new_wanted_file)
 
     # should the Moderation/reports button be highlighted?
     new_report: bool = False
@@ -559,9 +559,9 @@ def html_timeline(default_timeline: str,
     if os.path.isfile(new_report_file):
         new_report = True
         if box_name == 'moderation':
-            remove_file(new_report_file,
-                        'EX: html_timeline unable to delete ' +
-                        new_report_file)
+            erase_file(new_report_file,
+                       'EX: html_timeline unable to delete ' +
+                       new_report_file)
 
     # show polls/votes?
     show_vote_posts: bool = True

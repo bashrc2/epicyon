@@ -49,7 +49,8 @@ from data import load_string
 from data import append_string
 from data import load_list
 from data import save_string
-from data import remove_file
+from data import erase_file
+from data import move_file
 
 
 def create_initial_last_seen(base_dir: str, http_prefix: str) -> None:
@@ -165,11 +166,9 @@ def _remove_from_follow_base(base_dir: str,
                 'EX: _remove_from_follow_base ' +
                 approve_follows_filename + ' 1 [ex]')
 
-    try:
-        os.rename(approve_follows_filename + '.new',
-                  approve_follows_filename)
-    except OSError:
-        print('EX: _remove_from_follow_base could not rename ' +
+    move_file(approve_follows_filename + '.new',
+              approve_follows_filename,
+              'EX: _remove_from_follow_base could not rename ' +
               approve_follows_filename + '.new' + ' -> ' +
               approve_follows_filename)
 
@@ -389,8 +388,8 @@ def clear_follows(base_dir: str, nickname: str, domain: str,
         os.mkdir(accounts_dir)
     filename = accounts_dir + '/' + follow_file
     if os.path.isfile(filename):
-        remove_file(filename,
-                    'EX: clear_follows unable to delete ' + filename)
+        erase_file(filename,
+                   'EX: clear_follows unable to delete ' + filename)
 
 
 def clear_followers(base_dir: str, nickname: str, domain: str) -> None:
@@ -780,10 +779,10 @@ def followed_account_accepts(session, base_dir: str, http_prefix: str,
             acct_dir(base_dir, nickname_to_follow, domain_to_follow) + \
             '/requests/' + nickname + '@' + domain + '.follow'
         if os.path.isfile(follow_activity_filename):
-            remove_file(follow_activity_filename,
-                        'EX: follow Accept ' +
-                        'followed_account_accepts unable to delete ' +
-                        follow_activity_filename)
+            erase_file(follow_activity_filename,
+                       'EX: follow Accept ' +
+                       'followed_account_accepts unable to delete ' +
+                       follow_activity_filename)
 
     group_account: bool = False
     if follow_json:
@@ -870,9 +869,9 @@ def followed_account_rejects(session, session_onion, session_i2p,
     remove_from_follow_requests(base_dir, nickname_to_follow, domain_to_follow,
                                 deny_handle, debug)
     # remove the follow request json
-    remove_file(follow_activity_filename,
-                'EX: followed_account_rejects unable to delete ' +
-                follow_activity_filename)
+    erase_file(follow_activity_filename,
+               'EX: followed_account_rejects unable to delete ' +
+               follow_activity_filename)
     curr_session = session
     if domain.endswith('.onion') and session_onion:
         curr_session = session_onion

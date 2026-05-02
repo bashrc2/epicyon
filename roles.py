@@ -18,7 +18,7 @@ from utils import get_config_param
 from status import get_status_number
 from data import load_list
 from data import save_string
-from data import remove_file
+from data import erase_file
 
 
 def _clear_role_status(base_dir: str, role: str) -> None:
@@ -316,8 +316,8 @@ def set_roles_from_list(base_dir: str, domain: str, admin_nickname: str,
     if not fields.get(list_name):
         if os.path.isfile(roles_filename):
             _clear_role_status(base_dir, role_name)
-            remove_file(roles_filename,
-                        'EX: failed to remove roles file ' + roles_filename)
+            erase_file(roles_filename,
+                       'EX: failed to remove roles file ' + roles_filename)
         return
     _clear_role_status(base_dir, role_name)
     if ',' in fields[list_name]:

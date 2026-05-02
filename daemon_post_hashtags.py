@@ -20,7 +20,7 @@ from content import extract_text_fields_in_post
 from blocking import is_blocked_hashtag
 from filters import is_filtered
 from categories import set_hashtag_category
-from data import remove_file
+from data import erase_file
 
 
 def set_hashtag_category2(self, calling_domain: str, cookie: str,
@@ -132,9 +132,9 @@ def set_hashtag_category2(self, calling_domain: str, cookie: str,
         else:
             category_filename = base_dir + '/tags/' + hashtag + '.category'
             if os.path.isfile(category_filename):
-                remove_file(category_filename,
-                            'EX: _set_hashtag_category unable to delete ' +
-                            category_filename)
+                erase_file(category_filename,
+                           'EX: _set_hashtag_category unable to delete ' +
+                           category_filename)
 
     # redirect back to the default timeline
     redirect_headers(self, tag_screen_str,

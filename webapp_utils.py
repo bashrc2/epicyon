@@ -63,7 +63,7 @@ from data import load_list
 from data import save_flag_file
 from data import save_binary
 from data import load_string
-from data import remove_file
+from data import erase_file
 
 
 def minimizing_attached_images(base_dir: str, nickname: str, domain: str,
@@ -425,10 +425,10 @@ def update_avatar_image_cache(signing_priv_key_pem: str,
                           str(result.status_code))
                 # remove partial download
                 if os.path.isfile(avatar_image_filename):
-                    remove_file(avatar_image_filename,
-                                'EX: ' +
-                                'update_avatar_image_cache unable to delete ' +
-                                avatar_image_filename)
+                    erase_file(avatar_image_filename,
+                               'EX: ' +
+                               'update_avatar_image_cache unable to delete ' +
+                               avatar_image_filename)
             else:
                 media_binary = result.content
                 if binary_is_image(avatar_image_filename, media_binary):

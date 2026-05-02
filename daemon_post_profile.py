@@ -150,7 +150,7 @@ from cache import store_person_in_cache
 from daemon_utils import post_to_outbox
 from data import save_string
 from data import save_flag_file
-from data import remove_file
+from data import erase_file
 
 
 def _profile_post_deactivate_account(base_dir: str, nickname: str, domain: str,
@@ -258,9 +258,9 @@ def _profile_post_git_projects(base_dir: str, nickname: str, domain: str,
                     'EX: unable to write git ' + git_projects_filename)
     else:
         if os.path.isfile(git_projects_filename):
-            remove_file(git_projects_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        git_projects_filename)
+            erase_file(git_projects_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       git_projects_filename)
 
 
 def _profile_post_peertube_instances(base_dir: str, fields: {}, self,
@@ -284,9 +284,9 @@ def _profile_post_peertube_instances(base_dir: str, fields: {}, self,
                 peertube_instances.append(url)
     else:
         if os.path.isfile(peertube_instances_file):
-            remove_file(peertube_instances_file,
-                        'EX: _profile_edit unable to delete ' +
-                        peertube_instances_file)
+            erase_file(peertube_instances_file,
+                       'EX: _profile_edit unable to delete ' +
+                       peertube_instances_file)
         peertube_instances.clear()
 
 
@@ -316,10 +316,10 @@ def _profile_post_robots_txt(base_dir: str, fields: {}, self) -> None:
         if not new_robots_txt:
             self.server.robots_txt = ''
             if os.path.isfile(robots_txt_filename):
-                remove_file(robots_txt_filename,
-                            'EX: _profile_post_robots_txt' +
-                            ' unable to delete ' +
-                            robots_txt_filename)
+                erase_file(robots_txt_filename,
+                           'EX: _profile_post_robots_txt' +
+                           ' unable to delete ' +
+                           robots_txt_filename)
         else:
             save_string(new_robots_txt, robots_txt_filename,
                         'EX: _profile_post_robots_txt unable to save ' +
@@ -357,8 +357,8 @@ def _profile_post_buy_domains(base_dir: str, fields: {}, self) -> None:
             save_json(buy_sites, buy_sites_filename)
         else:
             if os.path.isfile(buy_sites_filename):
-                remove_file(buy_sites_filename,
-                            'EX: unable to delete ' + buy_sites_filename)
+                erase_file(buy_sites_filename,
+                           'EX: unable to delete ' + buy_sites_filename)
 
 
 def _profile_post_crawlers_allowed(base_dir: str, fields: {}, self) -> None:
@@ -437,9 +437,9 @@ def _profile_post_allowed_instances(base_dir: str, nickname: str, domain: str,
                     allowed_instances_filename)
     else:
         if os.path.isfile(allowed_instances_filename):
-            remove_file(allowed_instances_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        allowed_instances_filename)
+            erase_file(allowed_instances_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       allowed_instances_filename)
 
 
 def _profile_post_dm_instances(base_dir: str, nickname: str, domain: str,
@@ -457,9 +457,9 @@ def _profile_post_dm_instances(base_dir: str, nickname: str, domain: str,
                     dm_allowed_instances_filename)
     else:
         if os.path.isfile(dm_allowed_instances_filename):
-            remove_file(dm_allowed_instances_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        dm_allowed_instances_filename)
+            erase_file(dm_allowed_instances_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       dm_allowed_instances_filename)
 
 
 def _profile_post_import_theme(base_dir: str, nickname: str,
@@ -471,9 +471,9 @@ def _profile_post_import_theme(base_dir: str, nickname: str,
             os.mkdir(base_dir + '/imports')
         filename_base = base_dir + '/imports/newtheme.zip'
         if os.path.isfile(filename_base):
-            remove_file(filename_base,
-                        'EX: _profile_edit unable to delete ' +
-                        filename_base)
+            erase_file(filename_base,
+                       'EX: _profile_edit unable to delete ' +
+                       filename_base)
         if nickname == admin_nickname or is_artist(base_dir, nickname):
             if import_theme(base_dir, filename_base):
                 print(nickname + ' uploaded a theme')
@@ -525,9 +525,9 @@ def _profile_post_auto_cw(base_dir: str, nickname: str, domain: str,
         self.server.auto_cw_cache[nickname] = fields['autoCW'].split('\n')
     else:
         if os.path.isfile(auto_cw_filename):
-            remove_file(auto_cw_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        auto_cw_filename)
+            erase_file(auto_cw_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       auto_cw_filename)
             self.server.auto_cw_cache[nickname]: list[str] = []
 
 
@@ -544,9 +544,9 @@ def _profile_post_autogenerated_tags(base_dir: str,
                     auto_tags_filename)
     else:
         if os.path.isfile(auto_tags_filename):
-            remove_file(auto_tags_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        auto_tags_filename)
+            erase_file(auto_tags_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       auto_tags_filename)
 
 
 def _profile_post_word_replacements(base_dir: str,
@@ -562,9 +562,9 @@ def _profile_post_word_replacements(base_dir: str,
                     switch_filename)
     else:
         if os.path.isfile(switch_filename):
-            remove_file(switch_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        switch_filename)
+            erase_file(switch_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       switch_filename)
 
 
 def _profile_post_filtered_words_within_bio(base_dir: str,
@@ -580,10 +580,10 @@ def _profile_post_filtered_words_within_bio(base_dir: str,
                     filter_bio_filename)
     else:
         if os.path.isfile(filter_bio_filename):
-            remove_file(filter_bio_filename,
-                        'EX: _profile_edit ' +
-                        'unable to delete bio filter ' +
-                        filter_bio_filename)
+            erase_file(filter_bio_filename,
+                       'EX: _profile_edit ' +
+                       'unable to delete bio filter ' +
+                       filter_bio_filename)
 
 
 def _profile_post_filtered_words(base_dir: str, nickname: str, domain: str,
@@ -597,9 +597,9 @@ def _profile_post_filtered_words(base_dir: str, nickname: str, domain: str,
                     filter_filename)
     else:
         if os.path.isfile(filter_filename):
-            remove_file(filter_filename,
-                        'EX: _profile_edit unable to delete filter ' +
-                        filter_filename)
+            erase_file(filter_filename,
+                       'EX: _profile_edit unable to delete filter ' +
+                       filter_filename)
 
 
 def _profile_post_low_bandwidth(base_dir: str, path: str,
@@ -720,9 +720,9 @@ def _profile_post_notify_reactions(base_dir: str,
                                notify_reactions_filename)
         if not notify_reactions_active:
             if os.path.isfile(notify_reactions_filename):
-                remove_file(notify_reactions_filename,
-                            'EX: _profile_edit unable to delete ' +
-                            notify_reactions_filename)
+                erase_file(notify_reactions_filename,
+                           'EX: _profile_edit unable to delete ' +
+                           notify_reactions_filename)
     return actor_changed
 
 
@@ -750,9 +750,9 @@ def _profile_post_notify_likes(on_final_welcome_screen: bool,
                                notify_likes_filename)
         if not notify_likes_active:
             if os.path.isfile(notify_likes_filename):
-                remove_file(notify_likes_filename,
-                            'EX: _profile_edit unable to delete ' +
-                            notify_likes_filename)
+                erase_file(notify_likes_filename,
+                           'EX: _profile_edit unable to delete ' +
+                           notify_likes_filename)
     return actor_changed
 
 
@@ -849,9 +849,9 @@ def _profile_post_no_reply_boosts(base_dir: str, nickname: str, domain: str,
                            no_reply_boosts_filename)
     if not no_reply_boosts:
         if os.path.isfile(no_reply_boosts_filename):
-            remove_file(no_reply_boosts_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        no_reply_boosts_filename)
+            erase_file(no_reply_boosts_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       no_reply_boosts_filename)
 
 
 def _profile_post_no_seen_posts(base_dir: str, nickname: str, domain: str,
@@ -871,9 +871,9 @@ def _profile_post_no_seen_posts(base_dir: str, nickname: str, domain: str,
                            no_seen_posts_filename)
     if not no_seen_posts:
         if os.path.isfile(no_seen_posts_filename):
-            remove_file(no_seen_posts_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        no_seen_posts_filename)
+            erase_file(no_seen_posts_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       no_seen_posts_filename)
 
 
 def _profile_post_watermark_enabled(base_dir: str,
@@ -894,10 +894,10 @@ def _profile_post_watermark_enabled(base_dir: str,
                            watermark_enabled_filename)
     if not watermark_enabled:
         if os.path.isfile(watermark_enabled_filename):
-            remove_file(watermark_enabled_filename,
-                        'EX: _profile_edit ' +
-                        'unable to delete ' +
-                        watermark_enabled_filename)
+            erase_file(watermark_enabled_filename,
+                       'EX: _profile_edit ' +
+                       'unable to delete ' +
+                       watermark_enabled_filename)
 
 
 def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
@@ -927,10 +927,10 @@ def _profile_post_hide_follows(base_dir: str, nickname: str, domain: str,
             del self.server.hide_follows[nickname]
             actor_changed = True
         if os.path.isfile(hide_follows_filename):
-            remove_file(hide_follows_filename,
-                        'EX: _profile_post_hide_follows ' +
-                        'unable to delete ' +
-                        hide_follows_filename)
+            erase_file(hide_follows_filename,
+                       'EX: _profile_post_hide_follows ' +
+                       'unable to delete ' +
+                       hide_follows_filename)
     return actor_changed
 
 
@@ -961,10 +961,10 @@ def _profile_post_hide_recent_posts(base_dir: str, nickname: str, domain: str,
             del self.server.hide_recent_posts[nickname]
             actor_changed = True
         if os.path.isfile(hide_recent_posts_filename):
-            remove_file(hide_recent_posts_filename,
-                        'EX: _profile_post_hide_recent_posts ' +
-                        'unable to delete ' +
-                        hide_recent_posts_filename)
+            erase_file(hide_recent_posts_filename,
+                       'EX: _profile_post_hide_recent_posts ' +
+                       'unable to delete ' +
+                       hide_recent_posts_filename)
     return actor_changed
 
 
@@ -978,9 +978,9 @@ def _profile_post_mutuals_replies(account_dir: str, fields: {}) -> None:
     show_replies_mutuals_file = account_dir + '/.repliesFromMutualsOnly'
     if os.path.isfile(show_replies_mutuals_file):
         if not show_replies_mutuals:
-            remove_file(show_replies_mutuals_file,
-                        'EX: unable to remove repliesFromMutualsOnly file ' +
-                        show_replies_mutuals_file)
+            erase_file(show_replies_mutuals_file,
+                       'EX: unable to remove repliesFromMutualsOnly file ' +
+                       show_replies_mutuals_file)
     else:
         if show_replies_mutuals:
             save_flag_file(show_replies_mutuals_file,
@@ -999,10 +999,10 @@ def _profile_post_only_follower_replies(fields: {},
     show_replies_followers_file = account_dir + '/.repliesFromFollowersOnly'
     if os.path.isfile(show_replies_followers_file):
         if not show_replies_followers:
-            remove_file(show_replies_followers_file,
-                        'EX: unable to remove ' +
-                        'repliesFromFollowersOnly file ' +
-                        show_replies_followers_file)
+            erase_file(show_replies_followers_file,
+                       'EX: unable to remove ' +
+                       'repliesFromFollowersOnly file ' +
+                       show_replies_followers_file)
     else:
         if show_replies_followers:
             save_flag_file(show_replies_followers_file,
@@ -1021,9 +1021,9 @@ def _profile_post_show_quote_toots(fields: {}, account_dir: str) -> None:
     show_quote_toots_file = account_dir + '/.allowQuotes'
     if os.path.isfile(show_quote_toots_file):
         if not show_quote_toots:
-            remove_file(show_quote_toots_file,
-                        'EX: unable to remove allowQuotes file ' +
-                        show_quote_toots_file)
+            erase_file(show_quote_toots_file,
+                       'EX: unable to remove allowQuotes file ' +
+                       show_quote_toots_file)
     else:
         if show_quote_toots:
             save_flag_file(show_quote_toots_file,
@@ -1041,9 +1041,9 @@ def _profile_post_show_questions(fields: {}, account_dir: str) -> None:
     show_vote_file = account_dir + '/.noVotes'
     if os.path.isfile(show_vote_file):
         if show_vote_posts:
-            remove_file(show_vote_file,
-                        'EX: unable to remove noVotes file ' +
-                        show_vote_file)
+            erase_file(show_vote_file,
+                       'EX: unable to remove noVotes file ' +
+                       show_vote_file)
     else:
         if not show_vote_posts:
             save_flag_file(show_vote_file,
@@ -1089,9 +1089,9 @@ def _profile_post_bold_reading(base_dir: str,
         if self.server.bold_reading.get(nickname):
             del self.server.bold_reading[nickname]
         if os.path.isfile(bold_reading_filename):
-            remove_file(bold_reading_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        bold_reading_filename)
+            erase_file(bold_reading_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       bold_reading_filename)
 
 
 def _profile_post_hide_reaction_button2(base_dir: str,
@@ -1112,14 +1112,14 @@ def _profile_post_hide_reaction_button2(base_dir: str,
                            hide_reaction_button_file)
             # remove notify Reaction selection
             if os.path.isfile(notify_reactions_filename):
-                remove_file(notify_reactions_filename,
-                            'EX: _profile_edit unable to delete ' +
-                            notify_reactions_filename)
+                erase_file(notify_reactions_filename,
+                           'EX: _profile_edit unable to delete ' +
+                           notify_reactions_filename)
     if not hide_reaction_button_active:
         if os.path.isfile(hide_reaction_button_file):
-            remove_file(hide_reaction_button_file,
-                        'EX: _profile_edit unable to delete ' +
-                        hide_reaction_button_file)
+            erase_file(hide_reaction_button_file,
+                       'EX: _profile_edit unable to delete ' +
+                       hide_reaction_button_file)
 
 
 def _profile_post_minimize_images(base_dir: str, nickname: str, domain: str,
@@ -1163,14 +1163,14 @@ def _profile_post_hide_like_button2(base_dir: str, nickname: str, domain: str,
                            hide_like_button_file)
             # remove notify likes selection
             if os.path.isfile(notify_likes_filename):
-                remove_file(notify_likes_filename,
-                            'EX: _profile_edit unable to delete ' +
-                            notify_likes_filename)
+                erase_file(notify_likes_filename,
+                           'EX: _profile_edit unable to delete ' +
+                           notify_likes_filename)
     if not hide_like_button_active:
         if os.path.isfile(hide_like_button_file):
-            remove_file(hide_like_button_file,
-                        'EX: _profile_edit unable to delete ' +
-                        hide_like_button_file)
+            erase_file(hide_like_button_file,
+                       'EX: _profile_edit unable to delete ' +
+                       hide_like_button_file)
 
 
 def _profile_post_remove_retweets(base_dir: str, nickname: str, domain: str,
@@ -1188,9 +1188,9 @@ def _profile_post_remove_retweets(base_dir: str, nickname: str, domain: str,
                            remove_twitter_filename)
     if not remove_twitter_active:
         if os.path.isfile(remove_twitter_filename):
-            remove_file(remove_twitter_filename,
-                        'EX: _profile_edit unable to delete ' +
-                        remove_twitter_filename)
+            erase_file(remove_twitter_filename,
+                       'EX: _profile_edit unable to delete ' +
+                       remove_twitter_filename)
 
 
 def _profile_post_dms_from_followers(base_dir: str, nickname: str, domain: str,
@@ -1217,9 +1217,9 @@ def _profile_post_dms_from_followers(base_dir: str, nickname: str, domain: str,
                                follow_dms_filename)
         if not follow_dms_active:
             if os.path.isfile(follow_dms_filename):
-                remove_file(follow_dms_filename,
-                            'EX: _profile_edit unable to delete ' +
-                            follow_dms_filename)
+                erase_file(follow_dms_filename,
+                           'EX: _profile_edit unable to delete ' +
+                           follow_dms_filename)
     return actor_changed
 
 
@@ -1237,17 +1237,17 @@ def _profile_post_remove_custom_font(base_dir: str, nickname: str, domain: str,
         font_ext = ('woff', 'woff2', 'otf', 'ttf')
         for ext in font_ext:
             if os.path.isfile(base_dir + '/fonts/custom.' + ext):
-                remove_file(base_dir + '/fonts/custom.' + ext,
-                            'EX: _profile_edit unable to delete ' +
-                            base_dir + '/fonts/custom.' + ext)
+                erase_file(base_dir + '/fonts/custom.' + ext,
+                           'EX: _profile_edit unable to delete ' +
+                           base_dir + '/fonts/custom.' + ext)
             if os.path.isfile(base_dir +
                               '/fonts/custom.' + ext + '.etag'):
-                remove_file(base_dir +
-                            '/fonts/custom.' + ext + '.etag',
-                            'EX: _profile_edit ' +
-                            'unable to delete ' +
-                            base_dir + '/fonts/custom.' +
-                            ext + '.etag')
+                erase_file(base_dir +
+                           '/fonts/custom.' + ext + '.etag',
+                           'EX: _profile_edit ' +
+                           'unable to delete ' +
+                           base_dir + '/fonts/custom.' +
+                           ext + '.etag')
         curr_theme = get_theme(base_dir)
         if curr_theme:
             self.server.theme_name = curr_theme
@@ -1306,8 +1306,8 @@ def _profile_post_reject_spam_actors(base_dir: str,
             save_flag_file(actor_spam_filter_filename,
                            'EX: unable to write reject spam actors')
         else:
-            remove_file(actor_spam_filter_filename,
-                        'EX: unable to remove reject spam actors')
+            erase_file(actor_spam_filter_filename,
+                       'EX: unable to remove reject spam actors')
 
 
 def _profile_post_approve_followers(on_final_welcome_screen: bool,
@@ -2730,9 +2730,9 @@ def profile_edit(self, calling_domain: str, cookie: str,
                     os.mkdir(base_dir + '/imports')
                 filename_base = base_dir + '/imports/newtheme.zip'
                 if os.path.isfile(filename_base):
-                    remove_file(filename_base,
-                                'EX: _profile_edit unable to delete ' +
-                                filename_base)
+                    erase_file(filename_base,
+                               'EX: _profile_edit unable to delete ' +
+                               filename_base)
             elif m_type == 'importFollows':
                 filename_base = \
                     acct_dir(base_dir, nickname, domain) + \
@@ -2776,9 +2776,9 @@ def profile_edit(self, calling_domain: str, cookie: str,
                       ' media removing metadata')
             # remove existing etag
             if os.path.isfile(post_image_filename + '.etag'):
-                remove_file(post_image_filename + '.etag',
-                            'EX: _profile_edit unable to delete ' +
-                            post_image_filename + '.etag')
+                erase_file(post_image_filename + '.etag',
+                           'EX: _profile_edit unable to delete ' +
+                           post_image_filename + '.etag')
 
             city = get_spoofed_city(self.server.city,
                                     base_dir, nickname, domain)

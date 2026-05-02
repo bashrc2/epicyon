@@ -31,7 +31,7 @@ from textmode import set_text_mode_theme
 from data import load_string
 from data import save_string
 from data import save_flag_file
-from data import remove_file
+from data import erase_file
 
 
 def import_theme(base_dir: str, filename: str) -> bool:
@@ -108,7 +108,7 @@ def export_theme(base_dir: str, theme: str) -> bool:
     if os.path.isfile(export_filename):
         ex_text = \
             'EX: export_theme unable to delete ' + str(export_filename)
-        remove_file(export_filename, ex_text)
+        erase_file(export_filename, ex_text)
     try:
         make_archive(base_dir + '/exports/' + theme, 'zip', theme_dir)
     except BaseException:
@@ -265,9 +265,9 @@ def _remove_theme(base_dir: str):
     for filename in theme_files:
         if not os.path.isfile(base_dir + '/' + filename):
             continue
-        remove_file(base_dir + '/' + filename,
-                    'EX: _remove_theme unable to delete ' +
-                    base_dir + '/' + filename)
+        erase_file(base_dir + '/' + filename,
+                   'EX: _remove_theme unable to delete ' +
+                   base_dir + '/' + filename)
 
 
 def set_css_param(css: str, param: str, value: str) -> str:
@@ -469,9 +469,9 @@ def disable_grayscale(base_dir: str) -> None:
                     filename + ' [ex]')
     grayscale_filename = data_dir(base_dir) + '/.grayscale'
     if os.path.isfile(grayscale_filename):
-        remove_file(grayscale_filename,
-                    'EX: disable_grayscale unable to delete ' +
-                    grayscale_filename)
+        erase_file(grayscale_filename,
+                   'EX: disable_grayscale unable to delete ' +
+                   grayscale_filename)
 
 
 def _set_dyslexic_font(base_dir: str) -> bool:
@@ -560,9 +560,9 @@ def reset_theme_designer_settings(base_dir: str) -> None:
     """
     custom_variables_file = data_dir(base_dir) + '/theme.json'
     if os.path.isfile(custom_variables_file):
-        if remove_file(custom_variables_file,
-                       'EX: ' +
-                       'unable to remove theme designer settings on reset'):
+        if erase_file(custom_variables_file,
+                      'EX: ' +
+                      'unable to remove theme designer settings on reset'):
             print('Theme designer settings were reset')
 
 
@@ -703,11 +703,11 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                     # so remove any existing file
                     if os.path.isfile(dir_str + '/' +
                                       background_type + '-background.' + ext):
-                        remove_file(dir_str + '/' +
-                                    background_type + '-background.' + ext,
-                                    'EX: _set_theme_images unable to delete ' +
-                                    dir_str + '/' +
-                                    background_type + '-background.' + ext)
+                        erase_file(dir_str + '/' +
+                                   background_type + '-background.' + ext,
+                                   'EX: _set_theme_images unable to delete ' +
+                                   dir_str + '/' +
+                                   background_type + '-background.' + ext)
 
             if os.path.isfile(profile_image_filename) and \
                os.path.isfile(banner_filename):
@@ -739,9 +739,9 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                                  account_dir + '/left_col_image.png')
                     elif os.path.isfile(account_dir +
                                         '/left_col_image.png'):
-                        remove_file(account_dir + '/left_col_image.png',
-                                    'EX: _set_theme_images unable to delete ' +
-                                    account_dir + '/left_col_image.png')
+                        erase_file(account_dir + '/left_col_image.png',
+                                   'EX: _set_theme_images unable to delete ' +
+                                   account_dir + '/left_col_image.png')
                 except OSError:
                     print('EX: _set_theme_images unable to copy ' +
                           left_col_image_filename)
@@ -753,10 +753,10 @@ def _set_theme_images(base_dir: str, name: str) -> None:
                     else:
                         if os.path.isfile(account_dir +
                                           '/right_col_image.png'):
-                            remove_file(account_dir + '/right_col_image.png',
-                                        'EX: _set_theme_images ' +
-                                        'unable to delete ' +
-                                        account_dir + '/right_col_image.png')
+                            erase_file(account_dir + '/right_col_image.png',
+                                       'EX: _set_theme_images ' +
+                                       'unable to delete ' +
+                                       account_dir + '/right_col_image.png')
                 except OSError:
                     print('EX: _set_theme_images unable to copy ' +
                           right_col_image_filename)
@@ -780,8 +780,8 @@ def set_news_avatar(base_dir: str, name: str,
     filename = base_dir + '/cache/avatars/' + avatar_filename
 
     if os.path.isfile(filename):
-        remove_file(filename,
-                    'EX: set_news_avatar unable to delete ' + filename)
+        erase_file(filename,
+                   'EX: set_news_avatar unable to delete ' + filename)
     if os.path.isdir(base_dir + '/cache/avatars'):
         copyfile(new_filename, filename)
     account_dir = acct_dir(base_dir, nickname, domain)

@@ -62,7 +62,7 @@ from cache import remove_person_from_cache
 from cache import store_person_in_cache
 from data import save_string
 from data import load_string
-from data import remove_file
+from data import erase_file
 
 
 def _load_dfc_ids(base_dir: str, system_language: str,
@@ -172,9 +172,9 @@ def remove_shared_item2(base_dir: str, nickname: str, domain: str,
                     continue
                 if not os.path.isfile(item_idfile + '.' + ext):
                     continue
-                remove_file(item_idfile + '.' + ext,
-                            'EX: remove_shared_item unable to delete ' +
-                            item_idfile + '.' + ext)
+                erase_file(item_idfile + '.' + ext,
+                           'EX: remove_shared_item unable to delete ' +
+                           item_idfile + '.' + ext)
         # remove the item itself
         del shares_json[item_id]
         save_json(shares_json, shares_filename)
@@ -403,7 +403,7 @@ def add_share(base_dir: str,
                     ex_text = \
                         'EX: add_share unable to delete ' + \
                         str(image_filename)
-                    remove_file(image_filename, ex_text)
+                    erase_file(image_filename, ex_text)
                 image_url = \
                     http_prefix + '://' + domain_full + \
                     '/sharefiles/' + nickname + '/' + item_id + '.' + ext
@@ -505,9 +505,9 @@ def _expire_shares_for_account(base_dir: str, nickname: str, domain: str,
         for ext in formats:
             if not os.path.isfile(item_idfile + '.' + ext):
                 continue
-            remove_file(item_idfile + '.' + ext,
-                        'EX: _expire_shares_for_account unable to delete ' +
-                        item_idfile + '.' + ext)
+            erase_file(item_idfile + '.' + ext,
+                       'EX: _expire_shares_for_account unable to delete ' +
+                       item_idfile + '.' + ext)
     save_json(shares_json, shares_filename)
     return removed_ctr
 

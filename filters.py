@@ -19,6 +19,7 @@ from unicodetext import remove_square_capitals
 from data import append_string
 from data import save_string
 from data import load_list
+from data import move_file
 
 
 def add_filter(base_dir: str, nickname: str, domain: str, words: str) -> bool:
@@ -81,12 +82,10 @@ def remove_filter(base_dir: str, nickname: str, domain: str,
                 filters_filename + ' 2 [ex]')
 
     if os.path.isfile(new_filters_filename):
-        try:
-            os.rename(new_filters_filename, filters_filename)
+        if move_file(new_filters_filename, filters_filename,
+                     'EX: remove_filter could not rename ' +
+                     new_filters_filename + ' -> ' + filters_filename):
             return True
-        except OSError:
-            print('EX: remove_filter could not rename ' +
-                  new_filters_filename + ' -> ' + filters_filename)
     return False
 
 
@@ -117,12 +116,10 @@ def remove_global_filter(base_dir: str, words: str) -> bool:
                 filters_filename + ' 2 [ex]')
 
     if os.path.isfile(new_filters_filename):
-        try:
-            os.rename(new_filters_filename, filters_filename)
+        if move_file(new_filters_filename, filters_filename,
+                     'EX: remove_global_filter could not rename ' +
+                     new_filters_filename + ' -> ' + filters_filename):
             return True
-        except OSError:
-            print('EX: remove_global_filter could not rename ' +
-                  new_filters_filename + ' -> ' + filters_filename)
     return False
 
 

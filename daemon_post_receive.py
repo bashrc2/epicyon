@@ -66,7 +66,8 @@ from shares import add_shares_to_actor
 from person import get_actor_update_json
 from maps import geocoords_to_osm_link
 from data import save_string
-from data import remove_file
+from data import erase_file
+from data import move_file
 
 NEW_POST_SUCCESS = 1
 NEW_POST_FAILED = -1
@@ -424,9 +425,9 @@ def _receive_new_post_process_editblog(self, fields: {},
                 fields['postUrl'].replace('/', '#') + '.html'
             if os.path.isfile(cached_filename):
                 print('Edited blog post, removing cached html')
-                remove_file(cached_filename,
-                            'EX: _receive_new_post_process ' +
-                            'unable to delete ' + cached_filename)
+                erase_file(cached_filename,
+                           'EX: _receive_new_post_process ' +
+                           'unable to delete ' + cached_filename)
             # remove from memory cache
             remove_post_from_cache(post_json_object,
                                    recent_posts_cache)
@@ -1745,9 +1746,9 @@ def _receive_new_post_process_newshare(self, fields: {},
 
     if filename:
         if os.path.isfile(filename):
-            remove_file(filename,
-                        'EX: _receive_new_post_process ' +
-                        'unable to delete ' + filename)
+            erase_file(filename,
+                       'EX: _receive_new_post_process ' +
+                       'unable to delete ' + filename)
     self.post_to_nickname = nickname
     return NEW_POST_SUCCESS
 
@@ -1911,12 +1912,10 @@ def _receive_new_post_process(self, post_type: str, path: str, headers: {},
         else:
             if os.path.isfile(filename):
                 new_filename = filename.replace('.temp', '')
-                try:
-                    os.rename(filename, new_filename)
+                if move_file(filename, new_filename,
+                             'EX: POST could not rename ' +
+                             filename + ' -> ' + new_filename):
                     filename = new_filename
-                except OSError:
-                    print('EX: POST could not rename ' +
-                          filename + ' -> ' + new_filename)
 
     fields = \
         extract_text_fields_in_post(post_bytes, boundary, debug, None)
